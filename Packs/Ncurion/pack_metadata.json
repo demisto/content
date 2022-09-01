@@ -1,0 +1,19 @@
+{
+    "name": "Ncurion",
+    "description": "Ncurion is a container-based, standardized detection engine that protects the nature of intrusion detection.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Ncurity",
+    "url": "www.ncurity.com",
+    "email": "paloalto@ncurity.com",
+    "created": "2022-03-16T06:56:01Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shleeNc"
+    ]
+}

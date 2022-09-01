@@ -12,6 +12,12 @@ args:
   required: false
   secret: true
 - default: false
+  description: Password to protect the ZIP file, inserted as a non sensative argument.
+  isArray: false
+  name: nonsensitive_password
+  required: false
+  secret: false
+- default: false
   description: The entry ID of the attached ZIPp file in the War Room.
   isArray: false
   name: entryID
@@ -54,7 +60,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.12410
+dockerimage: demisto/unzip:1.0.0.23423
 runonce: false
 tests:
 - ZipFile-Test

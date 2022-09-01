@@ -1,0 +1,119 @@
+{
+    "data": [
+        {
+            "id": "9a441a8d-2410-43f4-9ef2-f7a265e12b74",
+            "name": "Engineering_escalation",
+            "description": "",
+            "ownerTeam": {
+                "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
+                "name": "Engineering"
+            },
+            "rules": [
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "default",
+                    "delay": {
+                        "timeAmount": 0,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "schedule",
+                        "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
+                        "name": "Engineering_schedule"
+                    }
+                },
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "next",
+                    "delay": {
+                        "timeAmount": 5,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "schedule",
+                        "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
+                        "name": "Engineering_schedule"
+                    }
+                },
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "all",
+                    "delay": {
+                        "timeAmount": 10,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "team",
+                        "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
+                        "name": "Engineering"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "c8a0f950-577c-4da5-894b-1fd463d9f51c",
+            "name": "Integration Team_escalation",
+            "description": "",
+            "ownerTeam": {
+                "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
+                "name": "Integration Team"
+            },
+            "rules": [
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "default",
+                    "delay": {
+                        "timeAmount": 0,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "schedule",
+                        "id": "df918339-b999-4878-b69b-3c2c0d508b01",
+                        "name": "Integration Team_schedule"
+                    }
+                },
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "default",
+                    "delay": {
+                        "timeAmount": 1,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "user",
+                        "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
+                        "username": "dvilenchik@paloaltonetworks.com"
+                    }
+                },
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "next",
+                    "delay": {
+                        "timeAmount": 5,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "schedule",
+                        "id": "df918339-b999-4878-b69b-3c2c0d508b01",
+                        "name": "Integration Team_schedule"
+                    }
+                },
+                {
+                    "condition": "if-not-acked",
+                    "notifyType": "all",
+                    "delay": {
+                        "timeAmount": 10,
+                        "timeUnit": "minutes"
+                    },
+                    "recipient": {
+                        "type": "team",
+                        "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
+                        "name": "Integration Team"
+                    }
+                }
+            ]
+        }
+    ],
+    "took": 0.094,
+    "requestId": "1018636c-8ced-4ea3-9ff1-b3e3fea3ded6"
+}

@@ -1,0 +1,425 @@
+id: Detonate URL - FireEye AX
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate URL - FireEye AX
+description: Detonating URL with FireEye AX.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: ac486e14-1500-41db-8579-c2acb8b805ef
+    type: start
+    task:
+      id: ac486e14-1500-41db-8579-c2acb8b805ef
+      version: -1
+      name: ''
+      description: starting test
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: b553e4e7-adfb-4d47-822f-23c2baa6c75a
+    type: condition
+    task:
+      id: b553e4e7-adfb-4d47-822f-23c2baa6c75a
+      version: -1
+      name: Is there an active FireEye AX instance?
+      description: Check for an active instance.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FireEye (AX Series)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+    type: condition
+    task:
+      id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+      version: -1
+      name: Is there a URL?
+      description: Check for a URL.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
+    type: regular
+    task:
+      id: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
+      version: -1
+      name: Send URL to FireEye AX sandbox
+      description: Submit a URL for analysis by FireEye.
+      script: fireeye|||fe-submit-url
+      type: regular
+      iscommand: true
+      brand: fireeye
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      analysistype:
+        simple: '2'
+      application:
+        simple: '2'
+      force:
+        simple: 'true'
+      prefetch:
+        simple: '1'
+      priority:
+        simple: '0'
+      profiles:
+        simple: win7-sp1
+      timeout:
+        simple: ${inputs.timeout}
+      urls:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: d2a9dd93-a95a-4910-821f-4cffe8b019b8
+    type: playbook
+    task:
+      id: d2a9dd93-a95a-4910-821f-4cffe8b019b8
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      Ids:
+        simple: ${FireEyeAX.Submissions.Key}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: submissionID
+      PollingCommandName:
+        simple: fe-submit-status
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: FireEyeAX.Submissions(val.Status == 'finished')
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
+    type: title
+    task:
+      id: bee9857d-c4a9-4e9f-8939-822514c68078
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 922099fa-9796-48f4-8b19-090d46bda6ac
+    type: regular
+    task:
+      id: 922099fa-9796-48f4-8b19-090d46bda6ac
+      version: -1
+      name: Get task report
+      description: Results of the file submission.
+      script: fireeye|||fe-submit-result
+      type: regular
+      iscommand: true
+      brand: fireeye
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      submission_Key:
+        simple: ${FireEyeAX.Submissions.Key}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 26314852-2b16-4e29-84f7-47fa57ecfe90
+    type: regular
+    task:
+      id: 26314852-2b16-4e29-84f7-47fa57ecfe90
+      version: -1
+      name: Sleep (let the sandbox create the task)
+      description: sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 43aabf88-212c-42eb-840b-09571fc1e200
+    type: regular
+    task:
+      id: 43aabf88-212c-42eb-840b-09571fc1e200
+      version: -1
+      name: View task
+      description: commands.server.feSubmitStatus.description
+      script: fireeye|||fe-submit-status
+      type: regular
+      iscommand: true
+      brand: fireeye
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      submission_Key:
+        simple: ${FireEyeAX.Submissions.Key}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: '1'
+  required: false
+  description: How often to poll for results.
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: '10'
+  required: false
+  description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
+outputs:
+- contextPath: FireEyeAX.Submissions.Key
+  description: The submission key.
+- contextPath: FireEyeAX.Submissions.Severity
+  description: The severity level of the file.
+- contextPath: FireEyeAX.Submissions.InfoLevel
+  description: The info level of the report.
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: unknown
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

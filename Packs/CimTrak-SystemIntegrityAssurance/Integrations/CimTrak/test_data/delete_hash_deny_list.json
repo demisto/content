@@ -1,0 +1,34 @@
+{
+    "name": "delete_hash_deny_list",
+    "execute": "response_raw = CimTrak.delete_hash_deny_list_command(client,{'hash':'SHA256:B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.deleteHashBlacklist",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "hash": "SHA256:B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                        "tagId": 0,
+                        "status": "failed"
+                    }
+                ],
+                "resultDetails": []
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "hash": "SHA256:B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                "tagId": 0,
+                "status": "failed"
+            }
+        ]
+    }
+}

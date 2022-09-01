@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: AWS Default Region
   name: defaultRegion
-  required: false
+  required: true
   type: 0
 - display: Role Arn
   name: roleArn
@@ -27,8 +27,36 @@ configuration:
   name: sessionDuration
   required: false
   type: 0
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
 - display: Guard Duty Severity level
   name: gs_severity
+  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". 
+    For example, if you set the severity
+    level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -306,7 +334,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: A list of trusted IP addresses that have been whitelisted for secure
+    description: A list of trusted IP addresses on allow list for secure
       communication with AWS infrastructure and applications.
     execution: false
     name: aws-gd-create-ip-set
@@ -1248,7 +1276,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3:2.0.0.21477
+  dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: true
   longRunning: false

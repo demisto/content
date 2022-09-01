@@ -56,7 +56,8 @@ class Portal():
             return False
 
     def get(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
-        return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
+        return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain,
+                             **kwargs)
 
     def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
                  remove_subdomain=False, **kwargs):
@@ -134,6 +135,11 @@ class Portal():
             aros.extend(r["items"])
         return aros
 
+    def get_active_response_profile(self, org_id):
+        r = self.get('my_organizations/{org_id}', auth=self.auth, org_id=org_id)
+        org_details = r.json()
+        return org_details.get('active_response_profile', None)
+
 
 ''' Commands '''
 
@@ -146,7 +152,7 @@ def portal_check():
         Portal(bearer=API_KEY)
         return True
     except Exception:
-        demisto.log(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
         return False
 
 
@@ -158,7 +164,8 @@ def fetch_incidents(last_run, first_run_time_range):
     if last_fetch is None:
         aro_time_min = aro_time_max - timedelta(days=first_run_time_range)
     else:
-        aro_time_min = dateparser.parse(last_fetch)
+        aro_time_min = dateparser.parse(last_fetch)  # type: ignore
+    assert aro_time_min is not None
 
     p = Portal(bearer=API_KEY)
     query = {'resolution': 'Unresolved',
@@ -175,18 +182,21 @@ def fetch_incidents(last_run, first_run_time_range):
     for a in reversed(aros):
         if a['ID'] != last_aro_id:
             created_time = dateparser.parse(a['creation_time'])
+            assert created_time is not None, f'could not parse {a["creation_time"]}'
             created_time_str = created_time.strftime(DATE_FORMAT)
 
             if a.get('organization', None):
                 org_name = a['organization'].get('name', 'No org name')
+                org_id = a['organization'].get('ID', None)
             else:
                 org_name = 'No org name'
+                org_id = None
 
             aro_type = a.get('type', 'No ARO type')
 
             aro_title = a.get('title', 'No title')
 
-            incident = {
+            incident: Dict[str, Any] = {
                 'name': f'''[{org_name}] [{aro_type}] {aro_title}''',
                 'occured': created_time_str,
                 'rawJSON': json.dumps(a)
@@ -221,6 +231,14 @@ def fetch_incidents(last_run, first_run_time_range):
                         incident['details'] += '\n\nMitigation Steps\n'
                         for step in a['steps']:
                             incident['details'] += f'''- {step['label']}\n'''
+                if org_id:
+                    active_response_profile = p.get_active_response_profile(org_id)
+                    if active_response_profile:
+                        policy = active_response_profile.get('response_policy')
+                        options = active_response_profile.get('options')
+                        incident['details'] += '\nActive Response Profile\n'
+                        incident['details'] += f'''- Response policy: {policy}\n'''
+                        incident['details'] += f'''- Exclusions/ Modifications: {options}\n'''
 
             incidents.append(incident)
 
@@ -240,7 +258,7 @@ def get_aros():
     q = demisto.args().get('query', None)
 
     if q:
-        query = {}
+        query = {}  # pragma: no cover
         for param in q.split('&'):
             key = param.split('=')[0]
             value = param.split('=')[1]
@@ -315,7 +333,8 @@ def main():
         elif demisto.command() == 'cov-mgsec-list-org':
             r = list_organizations()
             if r:
-                readable_output = tableToMarkdown('Organizations', r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown('Organizations', r, removeNull=True,
+                                                  headerTransform=string_to_table_header)
             else:
                 readable_output = 'No organizations found'
 

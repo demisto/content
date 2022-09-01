@@ -1,0 +1,16 @@
+commonfields:
+  id: ContextGetIps
+  version: -1
+name: ContextGetIps
+script: ''
+type: javascript
+tags: []
+comment: Gets all IP addresses in context, excluding ones given.
+enabled: true
+args:
+- name: excludedIps
+  description: IP addresses to exclude (separated by commas)
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

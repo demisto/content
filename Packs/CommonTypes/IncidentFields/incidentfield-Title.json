@@ -19,13 +19,18 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
+  "SysAid Change",
+  "SysAid Incident",
+  "SysAid Problem",
+  "SysAid Request",
   "IAM - New Hire",
   "IAM - Terminate User",
   "IAM - Update User",
   "User Profile",
   "IAM - Sync User",
   "IAM - Rehire User",
-  "Mandiant Automated Defense Incident"
+  "Mandiant Automated Defense Incident",
+  "OpsGenie Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,

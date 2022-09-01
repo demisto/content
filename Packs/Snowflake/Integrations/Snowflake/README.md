@@ -57,7 +57,7 @@
 <p><strong>Credentials</strong><br> To use Key Pair authentication, follow these instructions:</p>
 <ol>
 <li>Follow steps 1-4 in the instructions detailed in the <a href="https://docs.snowflake.net/manuals/user-guide/python-connector-example.html#using-key-pair-authentication">Snowflake Computing documentation</a>.</li>
-<li>Follow the instructions under the section titled <strong>Configure Cortex XSOAR Credentials</strong> at this <a href="https://support.demisto.com/hc/en-us/articles/115002567894">link</a>.</li>
+<li>Follow the instructions under the section titled <strong>Configure Cortex XSOAR Credentials</strong> at this <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">link</a>.</li>
 <li>Use the credentials you configured. Refer to the two images at the bottom of the section titled <strong>Configure an External Credentials Vault</strong>.</li>
 </ol>
 </li>

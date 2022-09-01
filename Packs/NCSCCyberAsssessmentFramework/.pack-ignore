@@ -6,3 +6,5 @@ ignore=BA101
 
 [file:README.md]
 ignore=RM104
+[file:pack_metadata.json]
+ignore=PA129

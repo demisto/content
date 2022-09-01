@@ -340,70 +340,70 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html"
     name: ios-facts
     outputs:
-    - contextPath: CiscoIOS.IosFacts.ansible_net_gather_subset
+    - contextPath: CiscoIOS.IosFacts.net_gather_subset
       description: The list of fact subsets collected from the device
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_gather_network_resources
+    - contextPath: CiscoIOS.IosFacts.net_gather_network_resources
       description: The list of fact for network resource subsets collected from the
         device
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_model
+    - contextPath: CiscoIOS.IosFacts.net_model
       description: The model name returned from the device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_serialnum
+    - contextPath: CiscoIOS.IosFacts.net_serialnum
       description: The serial number of the remote device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_version
+    - contextPath: CiscoIOS.IosFacts.net_version
       description: The operating system version running on the remote device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_iostype
+    - contextPath: CiscoIOS.IosFacts.net_iostype
       description: The operating system type (IOS or IOS-XE) running on the remote
         device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_hostname
+    - contextPath: CiscoIOS.IosFacts.net_hostname
       description: The configured hostname of the device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_image
+    - contextPath: CiscoIOS.IosFacts.net_image
       description: The image file the device is running
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_stacked_models
+    - contextPath: CiscoIOS.IosFacts.net_stacked_models
       description: The model names of each device in the stack
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_stacked_serialnums
+    - contextPath: CiscoIOS.IosFacts.net_stacked_serialnums
       description: The serial numbers of each device in the stack
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_api
+    - contextPath: CiscoIOS.IosFacts.net_api
       description: The name of the transport
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_python_version
+    - contextPath: CiscoIOS.IosFacts.net_python_version
       description: The Python version Ansible controller is using
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_filesystems
+    - contextPath: CiscoIOS.IosFacts.net_filesystems
       description: All file system names available on the device
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_filesystems_info
+    - contextPath: CiscoIOS.IosFacts.net_filesystems_info
       description: A hash of all file systems containing info about each file system
         (e.g. free and total space)
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_memfree_mb
+    - contextPath: CiscoIOS.IosFacts.net_memfree_mb
       description: The available free memory on the remote device in Mb
       type: number
-    - contextPath: CiscoIOS.IosFacts.ansible_net_memtotal_mb
+    - contextPath: CiscoIOS.IosFacts.net_memtotal_mb
       description: The total memory on the remote device in Mb
       type: number
-    - contextPath: CiscoIOS.IosFacts.ansible_net_config
+    - contextPath: CiscoIOS.IosFacts.net_config
       description: The current active config from the device
       type: string
-    - contextPath: CiscoIOS.IosFacts.ansible_net_all_ipv4_addresses
+    - contextPath: CiscoIOS.IosFacts.net_all_ipv4_addresses
       description: All IPv4 addresses configured on the device
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_all_ipv6_addresses
+    - contextPath: CiscoIOS.IosFacts.net_all_ipv6_addresses
       description: All IPv6 addresses configured on the device
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_interfaces
+    - contextPath: CiscoIOS.IosFacts.net_interfaces
       description: A hash of all interfaces running on the system
       type: unknown
-    - contextPath: CiscoIOS.IosFacts.ansible_net_neighbors
+    - contextPath: CiscoIOS.IosFacts.net_neighbors
       description: The list of CDP and LLDP neighbors from the remote device. If both,
         CDP and LLDP neighbor data is present on one port, CDP is preferred.
       type: unknown
@@ -1167,10 +1167,10 @@ script:
     - contextPath: CiscoIOS.IosVrf.delta
       description: The time elapsed to perform all operations
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleCiscoIOS

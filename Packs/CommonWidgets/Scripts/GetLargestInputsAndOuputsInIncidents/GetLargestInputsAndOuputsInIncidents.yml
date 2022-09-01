@@ -23,7 +23,18 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: "WARNING: Setting this argument to true might result in CPU and RAM issues. Set to true to allow the script to run even though it was deprecated."
+  isArray: false
+  name: ignore_deprecated
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Deprecated. Use System Diagonstics page instead (available from version 6.2.0). Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
 commonfields:
   id: GetLargestInputsAndOuputsInIncidents
   version: -1
@@ -36,5 +47,6 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
+deprecated: true

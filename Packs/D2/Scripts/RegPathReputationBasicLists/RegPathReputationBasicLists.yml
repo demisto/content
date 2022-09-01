@@ -8,7 +8,7 @@ subtype: python2
 tags:
 - registry
 - reputation
-comment: Check the given registry path against a small blacklist (score 3), whitelist
+comment: Check the given registry path against a small block list (score 3), allow list
   (score 1), and suspicious list (score 2). If the key matches neither, returns an
   answer of 0.
 enabled: true
@@ -22,4 +22,4 @@ runas: DBotWeakRole
 tests:
 - RegPathReputationBasicLists_test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

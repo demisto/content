@@ -86,7 +86,7 @@ configuration:
   name: maxFetch
   required: false
   type: 0
-- defaultvalue: 'false'
+- defaultvalue: 'true'
   display: Run as a separate process (protects against memory depletion)
   name: separate_process
   required: false
@@ -1228,7 +1228,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/py-ews:1.0.0.23126
+  dockerimage: demisto/py-ews:1.0.0.29712
   feed: false
   isfetch: true
   longRunning: false

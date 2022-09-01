@@ -1,0 +1,93 @@
+versionedfields: {}
+commonfields:
+  id: jamf
+  version: -1
+name: jamf
+display: jamf (Deprecated)
+category: Endpoint
+description: Deprecated. Use Jamf v2 instead. Jamf device management. Please note,
+  this integration is currently only compatible with the Jamf V1 API.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: jamf-get-computers
+    description: Get a list of managed computers
+    arguments: []
+    outputs:
+    - contextPath: Jamf.Computers.ID
+      description: Computer ID
+    - contextPath: Jamf.Computers.Name
+      description: Computer name
+  - name: jamf-get-computers-match
+    description: Get a list of managed computers that matches inputs query
+    arguments:
+    - name: match
+      required: true
+      description: Match criteria. e.g. to retrieve all computers associated with
+        a user use $UserID
+    outputs:
+    - contextPath: Jamf.Computers.ID
+      description: Computer ID
+    - contextPath: Jamf.Computers.Name
+      description: Computer name
+    - contextPath: Jamf.Computers.AltMAC
+      description: Computer alternative MAC
+    - contextPath: Jamf.Computers.MAC
+      description: Computer MAC
+    - contextPath: Jamf.Computers.Serial
+      description: Computer serial
+    - contextPath: Jamf.Computers.UDID
+      description: Computer UDID
+    - contextPath: Jamf.Computers.AssetTag
+      description: Computer asset tag
+    - contextPath: Jamf.Computers.BarCode.1
+      description: Computer barcode 1
+    - contextPath: Jamf.Computers.BarCode.2
+      description: Computer barcode 2
+    - contextPath: Jamf.Computers.Building
+      description: Computer building
+    - contextPath: Jamf.Computers.BuildingName
+      description: Computer building name
+    - contextPath: Jamf.Computers.Department
+      description: Computer department
+    - contextPath: Jamf.Computers.DepartmentName
+      description: Computer department name
+    - contextPath: Jamf.Computers.Email
+      description: Computer email
+    - contextPath: Jamf.Computers.EmailAddress
+      description: Computer email address
+    - contextPath: Jamf.Computers.Position
+      description: Computer position
+    - contextPath: Jamf.Computers.Username
+      description: Computer username
+    - contextPath: Jamf.Computers.Realname
+      description: Computer real name
+    - contextPath: Jamf.Computers.Room
+      description: Computer room
+hidden: false
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0

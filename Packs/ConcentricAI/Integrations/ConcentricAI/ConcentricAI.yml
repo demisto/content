@@ -139,7 +139,7 @@ script:
     - contextPath: ConcentricAI.FileSharingInfo.user_name
       description: User name.
       type: Array
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

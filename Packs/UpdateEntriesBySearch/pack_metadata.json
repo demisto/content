@@ -2,7 +2,7 @@
     "name": "UpdateEntriesBySearch",
     "description": "Update WarRoom entries with setting tags, mark as note or mark as evidence by search with a pattern",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1,0 +1,276 @@
+{
+    "Tables": [
+        {
+            "TableName": "Table_0",
+            "Columns": [
+                {
+                    "ColumnName": "ClientActivityId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Text",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Database",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StartedOn",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "LastUpdatedOn",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "Duration",
+                    "DataType": "TimeSpan",
+                    "ColumnType": "timespan"
+                },
+                {
+                    "ColumnName": "State",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "RootActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "User",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "FailureReason",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "TotalCpu",
+                    "DataType": "TimeSpan",
+                    "ColumnType": "timespan"
+                },
+                {
+                    "ColumnName": "CacheStatistics",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Application",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "MemoryPeak",
+                    "DataType": "Int64",
+                    "ColumnType": "long"
+                },
+                {
+                    "ColumnName": "ScannedExtentsStatistics",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Principal",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "ClientRequestProperties",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "ResultSetStatistics",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "WorkloadGroup",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "KustoWebV2;a9f21b87-bfab-4cec-953f-3f3ba9a5dded",
+                    "set notruncation;\r\nCovid19_Bing |limit 1000000000000",
+                    "Samples",
+                    "2021-10-18T13:48:31.8763907Z",
+                    "2021-10-18T13:48:31.8763907Z",
+                    "00:00:00",
+                    "InProgress",
+                    "b5d1a558-ea97-44a5-ae0b-5eae88c86ee8",
+                    "dataExplorer@qmasterslabgmail.onmicrosoft.com",
+                    "",
+                    "00:00:00",
+                    "null",
+                    "KusWeb",
+                    0,
+                    "null",
+                    "aaduser=0cd1dcb9-3fa1-4470-b5f9-c9f2574a0c4d;0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                    "{\"SecurityTokenPresent\":true,\"AuthorizationScheme\":\"Bearer\",\"RequestHostName\":\"https://help.kusto.windows.net:443/\",\"LocalClusterName\":\"https://help.kusto.windows.net/\",\"OriginClusterName\":\"https://help.kusto.windows.net/\",\"Options\":{\"servertimeout\":600000000,\"queryconsistency\":\"strongconsistency\",\"query_language\":\"csl\",\"request_readonly\":true,\"request_readonly_hardline\":false,\"api_version\":\"v2\",\"request_app_name\":\"KusWeb\",\"query_datascope\":1,\"query_fanout_nodes_percent\":100,\"query_fanout_threads_percent\":100,\"maxmemoryconsumptionperiterator\":5368709120,\"max_memory_consumption_per_query_per_node\":2000000000,\"truncationmaxsize\":67108864,\"truncationmaxrecords\":500000}}",
+                    "null",
+                    "default"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_1",
+            "Columns": [
+                {
+                    "ColumnName": "Value",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "{\"Visualization\":null,\"Title\":null,\"XColumn\":null,\"Series\":null,\"YColumns\":null,\"AnomalyColumns\":null,\"XTitle\":null,\"YTitle\":null,\"XAxis\":null,\"YAxis\":null,\"Legend\":null,\"YSplit\":null,\"Accumulate\":false,\"IsQuerySorted\":false,\"Kind\":null,\"Ymin\":\"NaN\",\"Ymax\":\"NaN\"}"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_2",
+            "Columns": [
+                {
+                    "ColumnName": "Timestamp",
+                    "DataType": "DateTime",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "ColumnName": "Severity",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "SeverityName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "StatusCode",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "StatusDescription",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Count",
+                    "DataType": "Int32",
+                    "ColumnType": "int"
+                },
+                {
+                    "ColumnName": "RequestId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "SubActivityId",
+                    "DataType": "Guid",
+                    "ColumnType": "guid"
+                },
+                {
+                    "ColumnName": "ClientActivityId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    "2021-10-18T13:48:39.9076672Z",
+                    4,
+                    "Info",
+                    0,
+                    "Query completed successfully",
+                    1,
+                    "dacb1549-e4f6-45de-bd5a-12320b9734e3",
+                    "dacb1549-e4f6-45de-bd5a-12320b9734e3",
+                    "f037c21a-d431-4b5b-a0cf-fd1d1268a063",
+                    "xsoar-ofek"
+                ],
+                [
+                    "2021-10-18T13:48:39.9076672Z",
+                    6,
+                    "Stats",
+                    0,
+                    "{\"ExecutionTime\":0.0155595,\"resource_usage\":{\"cache\":{\"memory\":{\"hits\":0,\"misses\":0,\"total\":0},\"disk\":{\"hits\":0,\"misses\":0,\"total\":0},\"shards\":{\"hot\":{\"hitbytes\":0,\"missbytes\":0,\"retrievebytes\":0},\"cold\":{\"hitbytes\":0,\"missbytes\":0,\"retrievebytes\":0},\"bypassbytes\":0}},\"cpu\":{\"user\":\"00:00:00\",\"kernel\":\"00:00:00\",\"total cpu\":\"00:00:00\"},\"memory\":{\"peak_per_node\":524384},\"network\":{\"inter_cluster_total_bytes\":2223,\"intra_cluster_total_bytes\":0}},\"input_dataset_statistics\":{\"extents\":{\"total\":0,\"scanned\":0,\"scanned_min_datetime\":\"0001-01-01T00:00:00.0000000Z\",\"scanned_max_datetime\":\"0001-01-01T00:00:00.0000000Z\"},\"rows\":{\"total\":0,\"scanned\":0},\"rowstores\":{\"scanned_rows\":0,\"scanned_values_size\":0},\"shards\":{\"queries_generic\":0,\"queries_specialized\":0}},\"dataset_statistics\":[{\"table_row_count\":1,\"table_size\":1120}]}",
+                    1,
+                    "dacb1549-e4f6-45de-bd5a-12320b9734e3",
+                    "dacb1549-e4f6-45de-bd5a-12320b9734e3",
+                    "f037c21a-d431-4b5b-a0cf-fd1d1268a063",
+                    "xsoar-ofek"
+                ]
+            ]
+        },
+        {
+            "TableName": "Table_3",
+            "Columns": [
+                {
+                    "ColumnName": "Ordinal",
+                    "DataType": "Int64",
+                    "ColumnType": "long"
+                },
+                {
+                    "ColumnName": "Kind",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Name",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "Id",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "PrettyName",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    0,
+                    "QueryResult",
+                    "PrimaryResult",
+                    "11a21d05-06e7-40f7-9c3d-88793dbe7ba3",
+                    ""
+                ],
+                [
+                    1,
+                    "QueryProperties",
+                    "@ExtendedProperties",
+                    "33c119c3-feb3-4ab8-bdc4-53022a7007ac",
+                    ""
+                ],
+                [
+                    2,
+                    "QueryStatus",
+                    "QueryStatus",
+                    "00000000-0000-0000-0000-000000000000",
+                    ""
+                ]
+            ]
+        }
+    ]
+}

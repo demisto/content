@@ -159,7 +159,7 @@ def test_module(client: Client, args: dict):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        client.get_access_token()
+        client.get_quotas()
     except Exception as e:
         raise DemistoException(
             f"Test failed. Please check your parameters. \n {e}")
@@ -302,7 +302,8 @@ def get_file_metadata_command(client: Client, args: dict):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=DBOT_SCORE[file_label]
+            score=DBOT_SCORE[file_label],
+            reliability=demisto.params().get('integrationReliability')
         )
         file_entry = Common.File(sha256=sha256, md5=file.get('md5'), sha1=file.get('sha1'), dbot_score=dbot_score)
         table_name = f'{VENDOR_NAME} File reputation for: {sha256}'

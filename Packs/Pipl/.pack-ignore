@@ -1,0 +1,5 @@
+[file:Pipl.yml]
+ignore=IN144,IN145
+
+[file:Pipl_image.png]
+ignore=IM111

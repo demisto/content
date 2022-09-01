@@ -9,3 +9,9 @@ ignore=auto-test
 
 [file:playbook-GCS_Object_Policy_(ACL)_Test.yml]
 ignore=auto-test
+
+[file:GoogleCloudStorage.yml]
+ignore=IN145
+
+[file:GoogleCloudStorage_image.png]
+ignore=IM111

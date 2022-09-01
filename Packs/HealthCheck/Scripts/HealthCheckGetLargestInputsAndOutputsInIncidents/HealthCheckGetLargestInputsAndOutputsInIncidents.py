@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 THRESHOLDS = {
     'numberofincidentsIObiggerthan10mb': 1,
     'numberofincidentsIObiggerthan1mb': 10,
@@ -118,8 +119,9 @@ def format_table(incidentsList):
     if incidentsList:
         for entry in incidentsList:
             new_entry = {'incidentid': entry['incidentid'],
-                         'details': f"TaskID: {entry['taskid']}\nTaskName: {entry['taskname']}\nArgument: {entry['name']}",
-                         'size': str(round(entry['size'], 2)) + " MB", 'inputoroutput': entry['inputoroutput']}
+                         'details': f"- TaskID: {entry['taskid']}\n- TaskName: {entry['taskname']}\n \
+                         - Argument: {entry['name']}\n- {entry['inputoroutput']} ",
+                         'size': str(round(entry['size'], 2)) + " MB"}
             new_table.append(new_entry)
         return new_table
 
@@ -128,7 +130,7 @@ def main():
     try:
         args = demisto.args()
         incident_thresholds = args.get('Thresholds', THRESHOLDS)
-
+        append = args.get('Append', False)
         daysAgo = datetime.today() - timedelta(days=30)
         is_table_result = argToBoolean(args.get('table_result', True))
 
@@ -137,6 +139,7 @@ def main():
                                          'from': args.get('from', str(daysAgo.strftime("%Y-%m-%d"))),
                                          'to': args.get('to'),
                                          'table_result': 'true',
+                                         'ignore_deprecated': 'true'
                                      })
         investigations = raw_output.get('data')
         data = get_extra_data_from_investigations(investigations, is_table_result)
@@ -155,17 +158,22 @@ def main():
             numIncidentsList = len(incidentsList)
             numIncidentsListBiggerThan10 = len(incidentsListBiggerThan10)
             analyzeFields = {
-                "healthcheckinvestigationsinputoutputbiggerthan1mb": format_table(incidentsList),
-                "healthcheckinvestigationsinputoutputbiggerthan10mb": format_table(incidentsListBiggerThan10),
-                "healthchecknumberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
-                "healthchecknumberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10,
+                "healthcheckinvestigationswithlargeinputoutput": format_table(incidentsList)
             }
-            demisto.executeCommand('setIncident', analyzeFields)
+
+            if append == 'False':
+                demisto.executeCommand('setIncident', analyzeFields)
+            else:
+                incident = demisto.incidents()
+                prevData = incident[0].get('CustomFields', {}).get('healthcheckinvestigationswithlargeinputoutput')
+                if analyzeFields["healthcheckinvestigationswithlargeinputoutput"]:
+                    analyzeFields["healthcheckinvestigationswithlargeinputoutput"].extend(prevData)
+                    demisto.executeCommand('setIncident', analyzeFields)
 
             # Add actionable items
             DESCRIPTION = [
-                "incidents were found with large and input and output, improve your task configuration",
-                "incidents were found with large and input and output bigger than 10 MB, improve your task configuration"
+                "incidents were found with large input and output, improve your task configuration",
+                "incidents were found with very large input and output bigger than 10 MB, improve your task configuration"
             ]
             RESOLUTION = [
                 "Extending Context and Ignore Outputs: https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context",
@@ -184,7 +192,6 @@ def main():
                                         'resolution': RESOLUTION[0]
                                         })
             results = CommandResults(
-                readable_output="HealthCheckFileSysLog Done",
                 outputs_prefix="dbstatactionableitems",
                 outputs=actionableItems)
 

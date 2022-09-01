@@ -1,0 +1,21 @@
+{
+    "name": "InvertEveryTwoItems",
+    "description": "This transformer will invert every two items in an array.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rod Gonzalez",
+    "url": "",
+    "email": "",
+    "created": "2021-10-27T23:50:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "rgleza"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

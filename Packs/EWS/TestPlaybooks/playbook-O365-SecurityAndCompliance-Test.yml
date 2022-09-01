@@ -629,6 +629,10 @@ tasks:
           root: inputs.kql
       preview:
         simple: "false"
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
     separatecontext: true
     loop:
       iscommand: false
@@ -674,6 +678,10 @@ tasks:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
     separatecontext: true
     loop:
       iscommand: false

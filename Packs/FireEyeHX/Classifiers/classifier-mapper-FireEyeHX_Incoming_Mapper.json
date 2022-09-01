@@ -1,0 +1,60 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "FireEye HX - Incoming Mapper",
+    "mapping": {
+        "FireEye HX Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Agents ID": {
+                    "simple": "agent._id"
+                },
+                "Alert Action": {
+                    "simple": "resolution"
+                },
+                "Alert Category": {
+                    "simple": "event_type"
+                },
+                "Alert Source": {
+                    "simple": "source"
+                },
+                "Appliance ID": {
+                    "simple": "appliance._id"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "File MD5": {
+                    "complex": {
+                        "filters": [],
+                        "root": "md5values",
+                        "transformers": []
+                    }
+                },
+                "FireEye HX Agent Containment State": {
+                    "simple": "agent.containment_state"
+                },
+                "FireEye Match Count": {
+                    "simple": "_id"
+                },
+                "FireEye Matched Time": {
+                    "simple": "matched_at"
+                },
+                "FireEye HX Event Info": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_values",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "simple": "event_at"
+                }
+            }
+        }
+    },
+    "name": "FireEye HX - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

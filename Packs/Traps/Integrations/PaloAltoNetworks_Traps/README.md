@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p><span>Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the whitelist and blacklist.</span></p>
+<p><span>Deprecated. Use CortexXDR instead. Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the allow list and block list.</span></p>
 <h2>Traps Playbooks</h2>
 <ul>
 <li>Traps Retrieve And Download Files</li>
@@ -40,9 +40,9 @@
 <li><a href="#h_c4951f1a-5b1b-4012-8f27-373ee83cd8e0" target="_self">Scan an endpoint: traps-endpoint-scan</a></li>
 <li><a href="#h_aff0ef39-1af6-4777-a375-f946e5e295f1" target="_self">Modify details for an event: traps-event-update</a></li>
 <li><a href="#h_4e113a1b-d46a-4b84-8083-98b4b54626f3" target="_self">Modify details for multiple events: traps-event-bulk-update-status</a></li>
-<li><a href="#h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae" target="_self">Add a file hash to the blacklist: traps-hash-blacklist</a></li>
-<li><a href="#h_3c467ab9-13ec-46d4-8d51-5d207d462c92" target="_self">Remove a file hash from the blacklist: traps-hash-blacklist-remove</a></li>
-<li><a href="#h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c" target="_self">Return a file hash to the blacklist: traps-hashes-blacklist-status</a></li>
+<li><a href="#h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae" target="_self">Add a file hash to the block list: traps-hash-blacklist</a></li>
+<li><a href="#h_3c467ab9-13ec-46d4-8d51-5d207d462c92" target="_self">Remove a file hash from the block list: traps-hash-blacklist-remove</a></li>
+<li><a href="#h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c" target="_self">Return a file hash to the block list: traps-hashes-blacklist-status</a></li>
 <li><a href="#h_2b3c9090-99ed-473a-9818-9f7f28046e54" target="_self">Quarantine an event: traps-event-quarantine</a></li>
 <li><a href="#h_a469746d-6210-4d13-b7cd-7e79b37fce4b" target="_self">Isolate an endpoint: traps-endpoint-isolate</a></li>
 <li><a href="#h_e26af638-bd84-416d-9642-aaae647dab5a" target="_self">Get the result of a quarantine operation: traps-event-quarantine-result</a></li>
@@ -488,9 +488,9 @@
 </tr>
 </tbody>
 </table>
-<h3 id="h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae">6. Add a file hash to the blacklist</h3>
+<h3 id="h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae">6. Add a file hash to the block list</h3>
 <hr>
-<p>Adds the specified file hash to the blacklist.</p>
+<p>Adds the specified file hash to the block list.</p>
 <h5>Base Command</h5>
 <p><code>traps-hash-blacklist</code></p>
 <h5>Input</h5>
@@ -505,7 +505,7 @@
 <tbody>
 <tr>
 <td style="width: 192px;">hash_id</td>
-<td style="width: 409px;">The SHA256 hash to add to the blacklist.</td>
+<td style="width: 409px;">The SHA256 hash to add to the block list.</td>
 <td style="width: 107px;">Required</td>
 </tr>
 </tbody>
@@ -546,9 +546,9 @@
 </pre>
 <h5>Human Readable Output</h5>
 <h4>Successfully blacklisted: 1111111111111111111111111111111111111111111111111111111111111111</h4>
-<h3 id="h_3c467ab9-13ec-46d4-8d51-5d207d462c92">7. Remove a file hash from the blacklist</h3>
+<h3 id="h_3c467ab9-13ec-46d4-8d51-5d207d462c92">7. Remove a file hash from the block list</h3>
 <hr>
-<p>Removes the specified file hash from the blacklist.</p>
+<p>Removes the specified file hash from the block list.</p>
 <h5>Base Command</h5>
 <p><code>traps-hash-blacklist-remove</code></p>
 <h5>Input</h5>
@@ -563,7 +563,7 @@
 <tbody>
 <tr>
 <td style="width: 173px;">hash_id</td>
-<td style="width: 438px;">The SHA256 hash to remove from the blacklist.</td>
+<td style="width: 438px;">The SHA256 hash to remove from the block list.</td>
 <td style="width: 97px;">Required</td>
 </tr>
 </tbody>
@@ -604,10 +604,10 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<h4>Successfully removed 1111111111111111111111111111111111111111111111111111111111111111 from blacklist</h4>
-<h3 id="h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c">8. Return a file hash to the blacklist</h3>
+<h4>Successfully removed 1111111111111111111111111111111111111111111111111111111111111111 from block list</h4>
+<h3 id="h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c">8. Return a file hash to the block list</h3>
 <hr>
-<p>Returns the blacklist status of the specified file hashes.</p>
+<p>Returns the block list status of the specified file hashes.</p>
 <h5>Base Command</h5>
 <p><code>traps-hashes-blacklist-status</code></p>
 <h5>Input</h5>
@@ -622,7 +622,7 @@
 <tbody>
 <tr>
 <td style="width: 140px;">hash_ids</td>
-<td style="width: 497px;">A comma-separated list of SHA256 file hashes for which to return the blacklist status.</td>
+<td style="width: 497px;">A comma-separated list of SHA256 file hashes for which to return the block list status.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 </tbody>
@@ -641,7 +641,7 @@
 <tr>
 <td style="width: 182px;">Traps.File.BlacklistStatus</td>
 <td style="width: 41px;">String</td>
-<td style="width: 485px;">The blacklist status of the file hash. Can be "blacklisted" or "none".</td>
+<td style="width: 485px;">The block list status of the file hash. Can be "blacklisted" or "none".</td>
 </tr>
 <tr>
 <td style="width: 182px;">Traps.File.SHA256</td>

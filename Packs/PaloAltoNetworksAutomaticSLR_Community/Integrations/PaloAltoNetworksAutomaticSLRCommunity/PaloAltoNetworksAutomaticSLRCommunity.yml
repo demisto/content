@@ -302,7 +302,7 @@ script:
     description: This command will dump all the non-sensitive parameters to the context,
       useful for debugging purposes
     execution: true
-  dockerimage: demisto/xml-feed:1.0.0.15261
+  dockerimage: demisto/xml-feed:1.0.0.29458
   runonce: false
   subtype: python3
 fromversion: 5.0.0

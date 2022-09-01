@@ -2,13 +2,14 @@ import sys
 import pytest
 from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, \
     ONE_ARTICLE_STRING_FORMATTED, TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
-    ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES, TWO_ARTICLES_STRING_REVERSED
+    ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES, ONE_ARTICLE_HTML, ONE_ARTICLE_HTML_RES
 from RSSWidget import collect_entries_data_from_response, create_widget_content, main
 import demistomock as demisto
 
 
 @pytest.mark.parametrize('parsed_response, limit, expected_result', [
     (NO_ARTICLE, sys.maxsize, NO_ARTICLE_RES),
+    (ONE_ARTICLE_HTML, True, ONE_ARTICLE_HTML_RES),
     (ONE_ARTICLE, sys.maxsize, ONE_ARTICLE_RES),
     (TWO_ARTICLES, sys.maxsize, TWO_ARTICLES_RES),
     (ONE_ARTICLE_NOT_PUBLISHED, sys.maxsize, ONE_ARTICLE_NOT_PUBLISHED_RES),
@@ -52,7 +53,7 @@ def test_create_widget_content(mocker, data, is_version_ge_65, text_output):
 
 
 @pytest.mark.parametrize('limit, exepcted_result', [
-    ('', TWO_ARTICLES_STRING_REVERSED),
+    ('', TWO_ARTICLES_STRING),
     ('1', ONE_ARTICLE_STRING),
 ]
 )

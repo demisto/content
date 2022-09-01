@@ -1,0 +1,6 @@
+[file:HashiCorpVault.yml]
+ignore=IN145
+
+[known_words]
+HashiCorp
+namespace

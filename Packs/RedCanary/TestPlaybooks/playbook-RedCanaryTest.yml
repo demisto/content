@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 84663d49-6b0a-4045-86ac-b2e95609f379
+    taskid: 56ce193f-cc49-48a8-8d0c-15c99b2a8797
     type: start
     task:
-      id: 84663d49-6b0a-4045-86ac-b2e95609f379
+      id: 56ce193f-cc49-48a8-8d0c-15c99b2a8797
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -25,12 +26,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e2cdcf98-7063-4f06-83ae-944ec284022e
+    taskid: 4b70fb53-8c22-457c-8f34-0d09bad555fd
     type: regular
     task:
-      id: e2cdcf98-7063-4f06-83ae-944ec284022e
+      id: 4b70fb53-8c22-457c-8f34-0d09bad555fd
       version: -1
       name: Start Fresh
       scriptName: DeleteContext
@@ -43,10 +50,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -56,12 +59,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1f545044-33cd-458a-8cf5-23fb4bcbf469
+    taskid: bf7d9470-f512-41c3-82a9-840f875f386a
     type: regular
     task:
-      id: 1f545044-33cd-458a-8cf5-23fb4bcbf469
+      id: bf7d9470-f512-41c3-82a9-840f875f386a
       version: -1
       name: List Detections
       script: RedCanary|||redcanary-list-detections
@@ -85,12 +94,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7b4458cc-e287-457e-8e92-a38f8f29cf6f
+    taskid: f0c9a0f2-d575-4b5c-8cda-c58db73b8a98
     type: condition
     task:
-      id: 7b4458cc-e287-457e-8e92-a38f8f29cf6f
+      id: f0c9a0f2-d575-4b5c-8cda-c58db73b8a98
       version: -1
       name: Verify Context
       type: condition
@@ -123,12 +138,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c58859e5-adcf-4050-8e3a-292d2dca02d2
+    taskid: 40cf342a-dc5d-4721-84d3-902e008e15d0
     type: regular
     task:
-      id: c58859e5-adcf-4050-8e3a-292d2dca02d2
+      id: 40cf342a-dc5d-4721-84d3-902e008e15d0
       version: -1
       name: List EndPoints
       script: RedCanary|||redcanary-list-endpoints
@@ -138,9 +159,6 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    scriptarguments:
-      page: {}
-      per-page: {}
     separatecontext: false
     view: |-
       {
@@ -150,12 +168,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 03692221-f098-4b9e-81b9-9e863663c369
+    taskid: 09975196-271a-4bb6-88ed-3d01c344c2ca
     type: condition
     task:
-      id: 03692221-f098-4b9e-81b9-9e863663c369
+      id: 09975196-271a-4bb6-88ed-3d01c344c2ca
       version: -1
       name: Verify Context
       type: condition
@@ -182,12 +206,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3cce8e88-0c5a-4b23-891e-3b49f5828cd4
+    taskid: 02345a94-7b7d-49f0-8d98-ce657ffdcd76
     type: regular
     task:
-      id: 3cce8e88-0c5a-4b23-891e-3b49f5828cd4
+      id: 02345a94-7b7d-49f0-8d98-ce657ffdcd76
       version: -1
       name: Acknowledge detection
       script: RedCanary|||redcanary-acknowledge-detection
@@ -210,7 +240,7 @@ tasks:
                 iscontext: true
           accessor: Detection
           transformers:
-          - operator: GetFirstObject
+          - operator: FirstArrayElement
           - operator: getField
             args:
               field:
@@ -225,12 +255,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 617f35e5-b284-495b-8e58-0b116ed4a5bc
+    taskid: 60e2a772-d8a4-4ac6-8c51-c82e48797f2c
     type: regular
     task:
-      id: 617f35e5-b284-495b-8e58-0b116ed4a5bc
+      id: 60e2a772-d8a4-4ac6-8c51-c82e48797f2c
       version: -1
       name: Execute test playbook on detection using ID
       script: RedCanary|||redcanary-execute-playbook
@@ -242,14 +278,9 @@ tasks:
       - "8"
     scriptarguments:
       detection-id:
-        complex:
-          root: RedCanary
-          accessor: Detection.ID
-          transformers:
-          - operator: GetFirstObject
+        simple: "6090000000002"
       playbook-id:
         simple: "3001"
-      playbook-name: {}
     separatecontext: false
     view: |-
       {
@@ -259,12 +290,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 293aa7eb-6b43-4663-8e46-12de5f7ba286
+    taskid: 7e5e677b-7a10-423c-806d-e2f72b79f16c
     type: regular
     task:
-      id: 293aa7eb-6b43-4663-8e46-12de5f7ba286
+      id: 7e5e677b-7a10-423c-806d-e2f72b79f16c
       version: -1
       name: Remediate detection
       script: RedCanary|||redcanary-update-remediation-state
@@ -288,7 +325,7 @@ tasks:
                 iscontext: true
           accessor: Detection
           transformers:
-          - operator: GetFirstObject
+          - operator: FirstArrayElement
           - operator: getField
             args:
               field:
@@ -305,12 +342,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a9a7aed8-f254-4b1b-8b4b-98a1a3cdfe8c
+    taskid: 2bd8396f-60cf-41b8-8d73-7c668c871b81
     type: regular
     task:
-      id: a9a7aed8-f254-4b1b-8b4b-98a1a3cdfe8c
+      id: 2bd8396f-60cf-41b8-8d73-7c668c871b81
       version: -1
       name: Execute test playbook on detection using name
       script: RedCanary|||redcanary-execute-playbook
@@ -322,12 +365,7 @@ tasks:
       - "8"
     scriptarguments:
       detection-id:
-        complex:
-          root: RedCanary
-          accessor: Detection.ID
-          transformers:
-          - operator: GetFirstObject
-      playbook-id: {}
+        simple: "6090000000002"
       playbook-name:
         simple: TestPlaybook
     separatecontext: false
@@ -339,12 +377,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 32479535-4ee6-4e48-82d2-bfcd5fd7b2ff
+    taskid: 8f15e33d-3dbf-4d6c-8a7b-c73b3eaeda8c
     type: regular
     task:
-      id: 32479535-4ee6-4e48-82d2-bfcd5fd7b2ff
+      id: 8f15e33d-3dbf-4d6c-8a7b-c73b3eaeda8c
       version: -1
       name: Get specific detection
       script: RedCanary|||redcanary-get-detection
@@ -366,12 +410,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 77726f63-9154-468b-8fad-1d694727a5f4
+    taskid: e33070b4-8561-4f4a-8f0d-d67f1a389bc4
     type: regular
     task:
-      id: 77726f63-9154-468b-8fad-1d694727a5f4
+      id: e33070b4-8561-4f4a-8f0d-d67f1a389bc4
       version: -1
       name: Get endpoint detections
       script: RedCanary|||redcanary-get-endpoint-detections
@@ -393,12 +443,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 0c6607ff-5319-4ec3-865e-bfaee1ec343b
+    taskid: bc576a37-781d-468b-8e42-c0c1de7f0c9c
     type: regular
     task:
-      id: 0c6607ff-5319-4ec3-865e-bfaee1ec343b
+      id: bc576a37-781d-468b-8e42-c0c1de7f0c9c
       version: -1
       name: Get specific endpoint
       script: RedCanary|||redcanary-get-endpoint
@@ -419,6 +475,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -434,3 +496,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
+

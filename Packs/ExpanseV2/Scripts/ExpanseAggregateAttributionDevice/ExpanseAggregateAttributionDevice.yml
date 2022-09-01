@@ -29,9 +29,8 @@ args:
   defaultValue: src,src_ip
   isArray: true
 - name: internal_ip_networks
-  description: Comma separated list of IPv4 Networks to be considered internal (default
-    to RFC private networks).
-  defaultValue: ""
+  description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
+  defaultValue: ''
   isArray: true
 outputs:
 - contextPath: Expanse.AttributionDevice.serial
@@ -58,7 +57,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.10.4.30607
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

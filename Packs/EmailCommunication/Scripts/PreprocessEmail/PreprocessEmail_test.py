@@ -1,6 +1,7 @@
 import json
 import demistomock as demisto
 import pytest
+from datetime import datetime
 
 
 def util_open_file(path):
@@ -11,6 +12,45 @@ def util_open_file(path):
 def util_load_json(path):
     with open(path, mode='r') as f:
         return json.loads(f.read())
+
+
+@pytest.mark.parametrize(
+    "list_response, expected_result",
+    [
+        (util_load_json('test_data/getList_querywindow_success.json'), 'success'),
+        (util_load_json('test_data/getList_querywindow_error.json'), 'fail')
+    ]
+)
+def test_get_query_window(list_response, expected_result, mocker):
+    """
+    Unit Test Scenario 1 - List exists
+        Given
+        - Query window value stored in XSOAR List
+        When
+        - List content is returned successfully
+        Then
+        - Validate that the function returns the correct window based on the list response
+    Unit Test Scenario 2 - List retrieval fails
+        Given
+        - Query window value stored in XSOAR List
+        When
+        - List retrieval results in an error
+        Then
+        - Validate that the function returns the default '60 days' window
+        - Validate that a debug message is saved indicating the list couldn't be fetched
+    """
+    from PreprocessEmail import get_query_window
+    mocker.patch.object(demisto, 'executeCommand', return_value=list_response)
+    debug_mocker = mocker.patch.object(demisto, 'debug')
+    result = get_query_window()
+    debug_mocker_call_args = debug_mocker.call_args
+    if expected_result == 'success':
+        assert result == '90 days'
+    elif expected_result == 'fail':
+        assert result == '60 days'
+        assert debug_mocker_call_args.args[0] == 'Error occurred while trying to load the `XSOAR - Email ' \
+                                                 'Communication Days To Query` list. Using the default query time - ' \
+                                                 '60 days'
 
 
 def test_set_email_reply():
@@ -37,6 +77,29 @@ EMAIL_HTML = """
 <a href="mailto:avishai@demistodev.onmicrosoft.com">avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>
 <blockquote class="gmail_quote" style="margin: 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>
 <p>please add multiple inline images</p></div></blockquote></div></body></html>"""
+
+EMAIL_HTML_NO_ALT = """
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
+
+<!–
+
+p
+
+    {margin-top:0;
+
+    margin-bottom:0}
+
+–>
+
+</style></head>
+<body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="178792" data-outlook-trace="F:1|T:1" src="cid:89593b98-b18d-46aa-ba4f-26773138c3f7" style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="8023" data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
+</div></body></html>"""
+
 EXPECTED_RESULT_1 = """
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
 <div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:
@@ -55,12 +118,36 @@ EXPECTED_RESULT_3 = """
 </div><div><div><img src=entry/download/38@120 alt="image_2.png" width="225" height="224"><br></div></div></div><br>
 </body></html>"""
 
+EXPECTED_RESULT_NO_ALT = """
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
+
+<!–
+
+p
+
+    {margin-top:0;
+
+    margin-bottom:0}
+
+–>
+
+</style></head>
+<body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="178792" data-outlook-trace="F:1|T:1" src=entry/download/37@119 style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="8023" data-outlook-trace="F:1|T:1" src=entry/download/38@120 style="max-width:100%">
+</div></body></html>"""
+
 
 @pytest.mark.parametrize(
     "email_html,entry_id_list,expected",
     [(EMAIL_HTML, [('image_1.png', '37@119')], EXPECTED_RESULT_1),
      (EMAIL_HTML, [], EXPECTED_RESULT_2),
-     (EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_3)]
+     (EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_3),
+     (EMAIL_HTML_NO_ALT, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_NO_ALT),
+     ]
 )
 def test_create_email_html(email_html, entry_id_list, expected):
     """
@@ -197,15 +284,121 @@ FILES = [
 ]
 
 
-def test_main(mocker):
+EMAIL_THREADS = [{"Contents": {"context": {
+    "id": "3",
+    "EmailThreads": [
+        {
+            "EmailBCC": "",
+            "EmailBody": "Outbound test message from XSOAR to User.",
+            "EmailCC": "",
+            "EmailCommsThreadId": "69433507",
+            "EmailCommsThreadNumber": "0",
+            "EmailFrom": "soc_sender@company.com",
+            "EmailHTML": "Outbound test message from XSOAR to User.",
+            "EmailReceived": "",
+            "EmailReplyTo": "soc_sender@company.com",
+            "EmailSubject": "<69433507> Test Email 2",
+            "EmailTo": "end_user@company.com",
+            'EmailAttachments': "['None']",
+            "MessageDirection": "outbound",
+            "MessageID": "",
+            "MessageTime": "2022-02-04T20:56:53UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailCC": "",
+            "EmailCommsThreadId": "69433507",
+            "EmailCommsThreadNumber": "0",
+            "EmailFrom": "end_user@company.com",
+            "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailReceived": "soc_sender@company.com",
+            "EmailReplyTo": "BY5PR09ME5460A9F1D8E34A12904AE86EB6199@BY5VR02MB5660.namprd09.prod.outlook.com",
+            "EmailSubject": "Re: <69433507> Test Email 2",
+            "EmailTo": "soc_sender@company.com",
+            'EmailAttachments': "['None']",
+            "MessageDirection": "inbound",
+            "MessageID": "AAMkAGRmOGZlZTEzLTkyZGDtNGJkNy1iOTMxLYM0NTAwODZhZjlmNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
+                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJXBb0fRJWC0zdXEMqsAAApcWVYAAA=",
+            "MessageTime": "2022-02-04T20:58:20UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Outbound test message from XSOAR to User.",
+            "EmailCC": "",
+            "EmailCommsThreadId": "87692312",
+            "EmailCommsThreadNumber": "1",
+            "EmailFrom": "soc_sender@company.com",
+            "EmailHTML": "Outbound test message from XSOAR to User.",
+            "EmailReceived": "",
+            "EmailReplyTo": "soc_sender@company.com",
+            "EmailSubject": "<87692312> Test Email 4",
+            "EmailTo": "end_user@company.com",
+            'EmailAttachments': "['None']",
+            "MessageDirection": "outbound",
+            "MessageID": "",
+            "MessageTime": "2022-02-04T20:56:53UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailCC": "",
+            "EmailCommsThreadId": "87692312",
+            "EmailCommsThreadNumber": "1",
+            "EmailFrom": "end_user@company.com",
+            "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailReceived": "soc_sender@company.com",
+            "EmailReplyTo": "BY5PR03ME5460A9F1D8E34A12904AE86EB6191@BY5VR12MB5660.namprd09.prod.outlook.com",
+            "EmailSubject": "Re: <87692312> Test Email 4",
+            "EmailTo": "soc_sender@company.com",
+            'EmailAttachments': "['None']",
+            "MessageDirection": "inbound",
+            "MessageID": "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
+                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
+            "MessageTime": "2022-02-04T20:58:20UTC"
+        }
+
+    ]
+}}}]
+
+
+@pytest.mark.parametrize(
+    "return_incident_path,expected_return,create_context_called",
+    [('test_data/email_related_incident_response.json', False, False),
+     ('test_data/email_related_incident_response_2.json', False, True)]
+)
+def test_main(return_incident_path, expected_return, create_context_called, mocker):
     """
+    Unit Test Scenario 1 - Email Communication Incident
         Given
         - A new incident of type Email Communication
         When
         - An email reply to an existing incident was sent
+        - The related incident the email is in response to is an Email Communication incident
         Then
-        - Return False to drop the newly created incident and attach the relevant data to the existing
+        - Validate script returns False to drop the newly created incident and attach the relevant data to the existing
         email related incident.
+    Unit Test Scenario 2 - Ransomware Incident
+        Given
+        - A new incident of type Email Communication
+        When
+        - An email reply to an existing incident was sent
+        - The related incident the email is in response to is a Ransomware incident using the 'Email Threads' layout
+        Then
+        - Validate script returns False to drop the newly created incident and attach the relevant data to the existing
+        email related incident's context
     """
     import PreprocessEmail
     from PreprocessEmail import main
@@ -213,15 +406,74 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'incident', return_value=incident)
     mocker.patch.object(PreprocessEmail, 'get_email_related_incident_id', return_value='123')
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
-                        return_value=[util_load_json('test_data/email_related_incident_response.json')])
+                        return_value=[util_load_json(return_incident_path)])
     mocker.patch.object(PreprocessEmail, 'get_attachments_using_instance')
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=FILES)
+    mocker.patch.object(demisto, 'debug')
+    create_thread_context_mocker = mocker.patch('PreprocessEmail.create_thread_context')
     mocker.patch.object(demisto, 'results')
     main()
-    assert not demisto.results.call_args[0][0]
+    assert create_thread_context_mocker.called == create_context_called
+    assert demisto.results.call_args[0][0] == expected_return
 
 
-def test_get_email_related_incident_id(mocker):
+@pytest.mark.parametrize(
+    "email_code, scenario",
+    [
+        ('87692312', 'thread_found'),
+        ('123', 'thread_notfound')
+    ]
+)
+def test_create_thread_context(email_code, scenario, mocker):
+    """Unit test
+        Given:
+        - all required function arguments are provided
+        When:
+        - creating new context entry to store email thread data
+        Then
+        - validate that function calls demisto.executeCommand() with all arguments and data needed to properly create
+          the required context entry
+    """
+    # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
+    def side_effect_function(command, args):
+        if command == "getContext":
+            return EMAIL_THREADS
+        elif command == "executeCommandAt":
+            return True
+
+    from PreprocessEmail import create_thread_context
+
+    # Mock function to get current time string to match the expected result
+    mocker.patch('PreprocessEmail.get_utc_now',
+                 return_value=datetime.strptime('2022-02-04T20:58:20UTC', "%Y-%m-%dT%H:%M:%SUTC"))
+
+    execute_command_mocker = mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_function)
+    create_thread_context(email_code, 'cc_user@company.com', 'bcc_user@company.com',
+                          'Email body.', 'soc_sender@company.com', '<html>body><Email body.</body></html>',
+                          '10', 'soc_sender@company.com', 'soc_sender@company.com',
+                          'Email Subject', 'end_user@company.com', '123', '')
+    call_args = execute_command_mocker.call_args
+    if scenario == 'thread_found':
+        expected = {'EmailCommsThreadId': '87692312', 'EmailCommsThreadNumber': '1', 'EmailCC': 'cc_user@company.com',
+                    'EmailBCC': 'bcc_user@company.com', 'EmailBody': 'Email body.',
+                    'EmailFrom': 'soc_sender@company.com', 'EmailHTML': '<html>body><Email body.</body></html>',
+                    'MessageID': '10', 'EmailReceived': 'soc_sender@company.com',
+                    'EmailReplyTo': 'soc_sender@company.com', 'EmailSubject': 'Email Subject',
+                    'EmailTo': 'end_user@company.com', 'EmailAttachments': "['None']",
+                    'MessageDirection': 'inbound', 'MessageTime': '2022-02-04T20:58:20UTC'}
+        assert call_args.args[1]['arguments']['value'] == expected
+    elif scenario == 'thread_notfound':
+        expected = {'EmailCommsThreadId': '123', 'EmailCommsThreadNumber': '2', 'EmailCC': 'cc_user@company.com',
+                    'EmailBCC': 'bcc_user@company.com', 'EmailBody': 'Email body.',
+                    'EmailFrom': 'soc_sender@company.com', 'EmailHTML': '<html>body><Email body.</body></html>',
+                    'MessageID': '10', 'EmailReceived': 'soc_sender@company.com',
+                    'EmailReplyTo': 'soc_sender@company.com', 'EmailSubject': 'Email Subject',
+                    'EmailTo': 'end_user@company.com', 'EmailAttachments': "['None']", 'MessageDirection': 'inbound',
+                    'MessageTime': '2022-02-04T20:58:20UTC'}
+        assert call_args.args[1]['arguments']['value'] == expected
+
+
+def test_get_email_related_incident_id_email_in_fields(mocker):
     """
         Given
         - Multiple incidents with the same identifying code
@@ -237,3 +489,21 @@ def test_get_email_related_incident_id(mocker):
                                       {'emailsubject': 'subject 2', 'id': '2'}])
     id = get_email_related_incident_id('12345678', 'subject 2')
     assert id == '2'
+
+
+def test_get_email_related_incident_id_email_in_context(mocker):
+    """
+        Given
+        - An incident with the matching identifying code
+        When
+        - The incident does not have a value for 'emailsubject'
+        - The incident contains email threads stored in context
+        Then
+        - Validate that the incident ID is returned after searching email threads
+    """
+    import PreprocessEmail
+    from PreprocessEmail import get_email_related_incident_id
+    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': '', 'id': '3'}])
+    mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_THREADS)
+    id = get_email_related_incident_id('69433507', 'Test Email 2')
+    assert id == '3'

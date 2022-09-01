@@ -1,0 +1,224 @@
+id: Cisco ISE - Block MAC Address
+version: -1
+fromversion: 6.0.0
+name: Cisco ISE - Block MAC Address
+description: This Playbook Expects MAC Address and Policy Name
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7dcea484-4535-4a53-8cb0-afcf16bf36cb
+    type: start
+    task:
+      id: 7dcea484-4535-4a53-8cb0-afcf16bf36cb
+      version: -1
+      name: ""
+      description: Playbook start.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 443a3d69-1527-4a1f-8863-29a8b6735c0a
+    type: regular
+    task:
+      id: 443a3d69-1527-4a1f-8863-29a8b6735c0a
+      version: -1
+      name: Block Mac Address
+      description: Assign an adaptive network control policy to an endpoint MAC address.
+      script: '|||cisco-ise-assign-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mac_address:
+        simple: ${inputs.MACAddress}
+      policy_name:
+        simple: ${inputs.PolicyName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1a9adbce-9acc-4310-8781-14db793f3d68
+    type: condition
+    task:
+      id: 1a9adbce-9acc-4310-8781-14db793f3d68
+      version: -1
+      name: Check if Cisco ISE Integration Enabled
+      description: Check if Cisco ISE Integration is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cisco ISE
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d1ea642e-a699-4bc3-8a89-fc4c795413ab
+    type: title
+    task:
+      id: d1ea642e-a699-4bc3-8a89-fc4c795413ab
+      version: -1
+      name: Done
+      description: Playbook End.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b9a2565d-8186-43b6-86d8-f265093cc4c2
+    type: condition
+    task:
+      id: b9a2565d-8186-43b6-86d8-f265093cc4c2
+      version: -1
+      name: Any MAC Address to Block
+      description: Check if there is a MAC address to block
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MACAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 595,
+        "x": 50,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: MACAddress
+  value: {}
+  required: false
+  description: MAC address to block
+  playbookInputQuery:
+- key: PolicyName
+  value: {}
+  required: false
+  description: The policy name to use to block the MAC address
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)

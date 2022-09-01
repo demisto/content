@@ -925,7 +925,7 @@ outputs:
   description: The size of the submission
   type: number
 - contextPath: Joe.Analysis
-  description: Thee Analysis object
+  description: The Analysis object
   type: unknown
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -1192,6 +1192,221 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+- contextPath: VMRay.Job
+  description: ''
+  type: unknown
+- contextPath: VMRay.Job.JobID
+  description: The ID of a new job.
+  type: number
+- contextPath: VMRay.Job.SampleID
+  description: The ID of sample.
+  type: number
+- contextPath: VMRay.Job.Created
+  description: The timestamp of the created job.
+  type: date
+- contextPath: VMRay.Job.VMName
+  description: The name of virtual machine.
+  type: string
+- contextPath: VMRay.Job.VMID
+  description: The ID of virtual machine.
+  type: number
+- contextPath: VMRay.Sample
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.SampleID
+  description: The sample ID of the task.
+  type: number
+- contextPath: VMRay.Sample.Created
+  description: The timestamp of the created sample.
+  type: date
+- contextPath: VMRay.Sample.FileName
+  description: The file name of the sample.
+  type: string
+- contextPath: VMRay.Sample.MD5
+  description: The MD5 hash of the sample.
+  type: string
+- contextPath: VMRay.Sample.SHA1
+  description: The SHA1 hash of the sample.
+  type: string
+- contextPath: VMRay.Sample.SHA256
+  description: The SHA256 hash of the sample.
+  type: string
+- contextPath: VMRay.Sample.SSDeep
+  description: The SSDeep of the sample.
+  type: string
+- contextPath: VMRay.Sample.Verdict
+  description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+  type: String
+- contextPath: VMRay.Sample.VerdictReason
+  description: Description of the Verdict Reason.
+  type: String
+- contextPath: VMRay.Sample.Severity
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
+  type: string
+- contextPath: VMRay.Sample.Type
+  description: The file type.
+  type: string
+- contextPath: VMRay.Sample.Classifications
+  description: The classifications of the sample.
+  type: string
+- contextPath: VMRay.Submission
+  description: ''
+  type: unknown
+- contextPath: VMRay.Submission.SubmissionID
+  description: The submission ID.
+  type: number
+- contextPath: VMRay.Submission.HadErrors
+  description: Whether there are any errors in the submission.
+  type: boolean
+- contextPath: VMRay.Submission.IsFinished
+  description: The status of submission. Can be, "true" or "false".
+  type: boolean
+- contextPath: VMRay.Submission.MD5
+  description: The MD5 hash of the sample in submission.
+  type: string
+- contextPath: VMRay.Submission.SHA1
+  description: The SHA1 hash of the sample in submission.
+  type: string
+- contextPath: VMRay.Submission.SHA256
+  description: The SHA256 hash of the sample in submission.
+  type: string
+- contextPath: VMRay.Submission.Verdict
+  description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+  type: String
+- contextPath: VMRay.Submission.VerdictReason
+  description: Description of the Verdict Reason.
+  type: String
+- contextPath: VMRay.Submission.Severity
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
+  type: string
+- contextPath: VMRay.Submission.SSDeep
+  description: The SSDeep hash of the sample in submission.
+  type: string
+- contextPath: VMRay.Submission.SampleID
+  description: The ID of the sample in submission.
+  type: number
+- contextPath: VMRay.Sample.IOC.File
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.File.AnalysisID
+  description: The IDs of other analyses that contain the given file.
+  type: number
+- contextPath: VMRay.Sample.IOC.File.Name
+  description: The name of the file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.Operation
+  description: The operation of the given file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.ID
+  description: The ID of the file.
+  type: number
+- contextPath: VMRay.Sample.IOC.File.Type
+  description: The type of the file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.Hashes
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.File.Hashes.MD5
+  description: The MD5 hash of the given file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
+  description: The SSDeep hash of the given file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
+  description: The SHA256 hash of the given file.
+  type: string
+- contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
+  description: The SHA1 hash of the given file.
+  type: string
+- contextPath: VMRay.Sample.IOC.URL
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.URL.AnalysisID
+  description: The IDs of the other analyses that contain the given URL.
+  type: number
+- contextPath: VMRay.Sample.IOC.URL.URL
+  description: The URL.
+  type: string
+- contextPath: VMRay.Sample.IOC.URL.Operation
+  description: The operation of the specified URL.
+  type: string
+- contextPath: VMRay.Sample.IOC.URL.ID
+  description: The ID of the URL.
+  type: number
+- contextPath: VMRay.Sample.IOC.URL.Type
+  description: The type of the URL.
+  type: string
+- contextPath: VMRay.Sample.IOC.Domain
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.Domain.AnalysisID
+  description: The IDs of the other analyses that contain the given domain.
+  type: number
+- contextPath: VMRay.Sample.IOC.Domain.Domain
+  description: The domain.
+  type: string
+- contextPath: VMRay.Sample.IOC.Domain.ID
+  description: The ID of the domain.
+  type: number
+- contextPath: VMRay.Sample.IOC.Domain.Type
+  description: The type of the domain.
+  type: string
+- contextPath: VMRay.Sample.IOC.IP
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.IP.AnalysisID
+  description: The IDs of the other analyses that contain the given IP address.
+  type: number
+- contextPath: VMRay.Sample.IOC.IP.IP
+  description: The IP address.
+  type: string
+- contextPath: VMRay.Sample.IOC.IP.Operation
+  description: The operation of the given IP address.
+  type: string
+- contextPath: VMRay.Sample.IOC.IP.ID
+  description: The ID of the IP address.
+  type: number
+- contextPath: VMRay.Sample.IOC.IP.Type
+  description: The type of the IP address.
+  type: string
+- contextPath: VMRay.Sample.IOC.Mutex
+  description: ''
+  type: unknown
+- contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
+  description: The IDs of other analyses that contain the given IP address.
+  type: number
+- contextPath: VMRay.Sample.IOC.Mutex.Name
+  description: The name of the mutex.
+  type: string
+- contextPath: VMRay.Sample.IOC.Mutex.Operation
+  description: The operation of the given mutex
+  type: string
+- contextPath: VMRay.Sample.IOC.Mutex.ID
+  description: The ID of the mutex.
+  type: number
+- contextPath: VMRay.Sample.IOC.Mutex.Type
+  description: The type of the mutex.
+  type: string
+- contextPath: VMRay.ThreatIndicator
+  description: ''
+  type: unknown
+- contextPath: VMRay.ThreatIndicator.AnalysisID
+  description: The list of connected analysis IDs.
+  type: number
+- contextPath: VMRay.ThreatIndicator.Category
+  description: The category of threat indicators.
+  type: string
+- contextPath: VMRay.ThreatIndicator.Classification
+  description: The classifications of threat indicators.
+  type: string
+- contextPath: VMRay.ThreatIndicator.ID
+  description: The ID of the threat indicator.
+  type: number
+- contextPath: VMRay.ThreatIndicator.Operation
+  description: The operation that caused the indicators.
+  type: string
 fromversion: 5.0.0
 tests:
 - Detonate File - Generic Test

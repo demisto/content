@@ -1,0 +1,13 @@
+{
+    "Status": {
+        "Result": "Error",
+        "Message": "Authentication Error"
+    },
+    "Result": {
+        "IncomingUrl": "",
+        "TargetHostname": "",
+        "IsRouted": false,
+        "PhishUpStatus": "",
+        "PhishUpScore": ""
+    }
+}

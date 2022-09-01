@@ -20,8 +20,7 @@ class Client:
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
     def create_users_info_url(self, usernames):
-        USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,\
-        created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
+        USER_FIELDS = "user.fields=description,pinned_tweet_id,protected,created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"  # noqa: E501
         TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
         url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
         return url

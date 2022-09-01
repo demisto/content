@@ -5,19 +5,6 @@ from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxlmarclient import MarClient, ProjectionConstants, ConditionConstants, OperatorConstants
 
-broker_ca_bundle = './brokercerts.crt'
-with open(broker_ca_bundle, "w") as text_file:
-    text_file.write(demisto.params()['broker_ca_bundle'])
-
-cert_file = './cert_file.crt'
-with open(cert_file, "w") as text_file:
-    text_file.write(demisto.params()['cert_file'])
-
-private_key = './private_key.key'
-with open(private_key, "w") as text_file:
-    text_file.write(demisto.params()['private_key'])
-
-broker_urls = demisto.params()['broker_urls'].split(',')
 
 FILTER_OPERATORS = {
     'GreaterEqualThan': OperatorConstants.GREATER_EQUAL_THAN,
@@ -71,6 +58,11 @@ MAR_COLLECTORS = {
                      'accountname', 'sid', 'passwordexpires'],
     'WinRegistry': ['keypath', 'keyvalue', 'valuedata', 'valuetype']
 }
+
+broker_ca_bundle = './brokercerts.crt'
+cert_file = './cert_file.crt'
+private_key = './private_key.key'
+broker_urls = []  # type: List[Broker]
 
 
 def create_error_entry(contents):
@@ -281,130 +273,172 @@ def mar_collectors_list():
     return create_entry('Collectors', collectors_table, collectors_table, {}, ['Name', 'Outputs'])
 
 
-args = demisto.args()
-if demisto.command() == 'test-module':
-    demisto.info('######## executing test command ########')
-    test()
-    demisto.results('ok')
-    sys.exit(0)
-elif demisto.command() == 'mar-search':
-    results = search_wrapper(
-        args.get('collector'),
-        args.get('projection-collector', args.get('collector')),
-        args.get('outputs'),
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value')
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-multiple':
-    results = search_multiple_wrapper(
-        args.get('collectors').split(','),
-        args.get('filter_collector'),
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value')
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-collectors-list':
-    results = mar_collectors_list()
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-processes':
-    results = search_wrapper(
-        'Processes',
-        'Processes',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-services':
-    results = search_wrapper(
-        'Services',
-        'Services',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-win-registry':
-    results = search_wrapper(
-        'WinRegistry',
-        'WinRegistry',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-files':
-    results = search_wrapper(
-        'Files',
-        'Files',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-usb-connected-storage-devices':
-    results = search_wrapper(
-        'UsbConnectedStorageDevices',
-        'UsbConnectedStorageDevices',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-user-profiles':
-    results = search_wrapper(
-        'UserProfiles',
-        'UserProfiles',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-scheduled-tasks':
-    results = search_wrapper(
-        'ScheduledTasks',
-        'ScheduledTasks',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'mar-search-host-info':
-    results = search_wrapper(
-        'HostInfo',
-        'HostInfo',
-        '',
-        args.get('filter-by'),
-        args.get('filter-operator'),
-        args.get('filter-value'),
-        True
-    )
-    demisto.results(results)
-    sys.exit(0)
+def validate_certificates_format():
+    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:  # guardrails-disable-line
+        return_error(
+            "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
+    if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
+        return_error(
+            "The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['cert_file']:
+        return_error("The client certificates content seem to be "
+                     "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+    if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
+        return_error(
+            "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
+    if not demisto.params()['broker_ca_bundle'].lstrip(" ").startswith('-----BEGIN CERTIFICATE-----'):
+        return_error(
+            "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+    if not demisto.params()['broker_ca_bundle'].rstrip(" ").endswith('-----END CERTIFICATE-----'):
+        return_error(
+            "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
+
+
+def main():
+    with open(broker_ca_bundle, "w") as text_file:
+        text_file.write(demisto.params()['broker_ca_bundle'])
+
+    with open(cert_file, "w") as text_file:
+        text_file.write(demisto.params()['cert_file'])  # lgtm [py/clear-text-storage-sensitive-data]
+
+    with open(private_key, "w") as text_file:
+        text_file.write(demisto.params()['private_key'])
+
+    global broker_urls
+    broker_urls = demisto.params()['broker_urls'].split(',')
+
+    try:
+        args = demisto.args()
+        if demisto.command() == 'test-module':
+            demisto.info('######## executing test command ########')
+            test()
+            demisto.results('ok')
+            sys.exit(0)
+        elif demisto.command() == 'mar-search':
+            results = search_wrapper(
+                args.get('collector'),
+                args.get('projection-collector', args.get('collector')),
+                args.get('outputs'),
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value')
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-multiple':
+            results = search_multiple_wrapper(
+                args.get('collectors').split(','),
+                args.get('filter_collector'),
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value')
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-collectors-list':
+            results = mar_collectors_list()
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-processes':
+            results = search_wrapper(
+                'Processes',
+                'Processes',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-services':
+            results = search_wrapper(
+                'Services',
+                'Services',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-win-registry':
+            results = search_wrapper(
+                'WinRegistry',
+                'WinRegistry',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-files':
+            results = search_wrapper(
+                'Files',
+                'Files',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-usb-connected-storage-devices':
+            results = search_wrapper(
+                'UsbConnectedStorageDevices',
+                'UsbConnectedStorageDevices',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-user-profiles':
+            results = search_wrapper(
+                'UserProfiles',
+                'UserProfiles',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-scheduled-tasks':
+            results = search_wrapper(
+                'ScheduledTasks',
+                'ScheduledTasks',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-host-info':
+            results = search_wrapper(
+                'HostInfo',
+                'HostInfo',
+                '',
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value'),
+                True
+            )
+            demisto.results(results)
+            sys.exit(0)
+    except Exception as error:
+        validate_certificates_format()
+        return_error(str(error))
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()

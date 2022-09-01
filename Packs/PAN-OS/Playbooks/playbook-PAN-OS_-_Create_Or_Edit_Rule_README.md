@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-edit-rule
-* panorama-list-rules
-* panorama-move-rule
-* panorama-create-rule
+* pan-os-edit-rule
+* pan-os-list-rules
+* pan-os-move-rule
+* pan-os-create-rule
 
 ## Playbook Inputs
 ---

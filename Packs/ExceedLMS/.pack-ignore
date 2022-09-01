@@ -1,0 +1,5 @@
+[file:IAMExceedLMS.yml]
+ignore=IN145
+
+[file:IAMExceedLMS_image.png]
+ignore=IM111

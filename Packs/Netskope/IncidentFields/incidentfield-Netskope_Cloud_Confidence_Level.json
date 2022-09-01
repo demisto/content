@@ -1,0 +1,32 @@
+{
+    "id": "incident_netskopecloudconfidencelevel",
+    "version": -1,
+    "modified": "2022-03-23T16:15:25.349334567+02:00",
+    "name": "Netskope Cloud Confidence Level",
+    "ownerOnly": false,
+    "cliName": "netskopecloudconfidencelevel",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netskope DLP",
+        "Netskope Compromised Credentials",
+        "Netskope Behavior Analytics"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

@@ -1,0 +1,29 @@
+commonfields:
+  id: DemistoUploadFile
+  version: -1
+name: DemistoUploadFile
+deprecated: true
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Deprecated. Use DemistoUploadFileV2 instead.
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: File entry ID
+- name: incidentID
+  required: true
+  description: Incident ID to upload the file to
+- name: body
+  description: Request body
+scripttarget: 0
+dependson:
+  must:
+  - demisto-api-multipart
+runonce: false
+runas: DBotWeakRole
+tests:
+- DemistoUploadFileToIncident Test
+fromversion: 5.0.0

@@ -1,0 +1,25 @@
+commonfields:
+  id: CybersixgillActionableAlertStatusUpdate
+  version: -1
+name: CybersixgillActionableAlertStatusUpdate
+script: ''
+type: python
+tags:
+- field-change-triggered
+- Cybersixgill
+comment: Updates the Actionable alert status.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
+  should:
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
+timeout: 180ns
+runonce: false
+dockerimage: demisto/sixgill:1.0.0.28665
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

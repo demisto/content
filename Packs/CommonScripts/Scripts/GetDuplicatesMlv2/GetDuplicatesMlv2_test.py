@@ -37,7 +37,17 @@ def test_main(mocker):
     assert results.startswith('Did not find any')
 
 
-def test_extract_domain_from_url():
+def test_extract_domain_from_url(mocker):
+    import requests
+
+    class MySession(requests.Session):
+        def merge_environment_settings(self, *args, **kwargs):
+            config = super(MySession, self).merge_environment_settings(*args, **kwargs)
+            config['verify'] = False
+            return config
+
+    mocker.patch('requests.Session', MySession)
+
     res = Utils.extract_domain_from_url("https://www.google.com")  # disable-secrets-detection
     assert res == 'google.com'
     res = Utils.extract_domain_from_url("https://www.google.co.il")  # disable-secrets-detection

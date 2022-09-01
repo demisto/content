@@ -9,7 +9,7 @@ tags:
 - Utility
 - file
 comment: |-
-  UnPack a file using fileName or entryID to specify a file. Files unpacked will be pushed to the war room and names will be pushed to the context.
+  Deprecated. Use the UnzipFile script instead. UnPack a file using fileName or entryID to specify a file. Files unpacked will be pushed to the war room and names will be pushed to the context.
   supported types are:
   7z (.7z), ACE (.ace), ALZIP (.alz), AR (.a), ARC (.arc), ARJ (.arj), BZIP2 (.bz2), CAB (.cab), compress (.Z), CPIO (.cpio), DEB (.deb), DMS (.dms), GZIP (.gz), LRZIP (.lrz), LZH (.lha, .lzh), LZIP (.lz), LZMA (.lzma), LZOP (.lzo), RPM (.rpm), RAR (.rar), RZIP (.rz), TAR (.tar), XZ (.xz), ZIP (.zip, .jar) and ZOO (.zoo)
 enabled: true
@@ -29,5 +29,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/unrar:1.4
 fromversion: 5.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)

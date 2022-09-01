@@ -23,7 +23,8 @@ configuration:
   name: safe
   required: true
   type: 0
-- display: A comma-separated list of credential names in the safe
+- display: A comma-separated list of credential names in the safe.
+  additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
   hidden: false
   name: credential_names
   required: false
@@ -68,7 +69,7 @@ name: CyberArkAIM v2
 script:
   commands:
   - deprecated: false
-    description: Lists all available credentials.
+    description: Lists all available credentials according to the list of credential names configured.
     execution: false
     name: cyberark-aim-list-credentials
     outputs:
@@ -87,7 +88,7 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.17343
+  dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

@@ -13,6 +13,7 @@
     },
     "id": "2b449e56-f6e8-5306-980a-447a8c026b77",
     "name": "Command Line Execution with Suspicious URL and AppData Strings",
+    "SumoUrl":"https://test.us2.sumologic.com/sec/signal/2b449e56-f6e8-5306-980a-447a8c026b77",
     "recordCount": 1,
     "recordTypes": [],
     "ruleId": "MATCH-U01342",

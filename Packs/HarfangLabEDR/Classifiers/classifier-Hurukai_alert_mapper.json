@@ -1,0 +1,126 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Hurukai alert mapper",
+    "mapping": {
+        "Hurukai alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agent ID": {
+                    "complex": {
+                        "accessor": "agentid",
+                        "filters": [],
+                        "root": "agent",
+                        "transformers": []
+                    }
+                },
+                "Agent Version": {
+                    "simple": "agent.version"
+                },
+                "Alert Category": {
+                    "simple": "alert_type"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "rule_name"
+                },
+                "Alert Source": {
+                    "simple": "detection_origin"
+                },
+                "Alert Type ID": {
+                    "simple": "alert_type"
+                },
+                "Categories": {
+                    "simple": "alert_type"
+                },
+                "Command Line": {
+                    "simple": "process.commandline"
+                },
+                "Description": {
+                    "simple": "msg"
+                },
+                "Device Name": {
+                    "simple": "agent.hostname"
+                },
+                "Domain Name": {
+                    "simple": "agent.domainname"
+                },
+                "Endpoint": {
+                    "simple": "agent.hostname"
+                },
+                "Event ID": {
+                    "simple": "eventlog.event_id"
+                },
+                "Event Type": {
+                    "simple": "eventlog.type"
+                },
+                "Incident Link": {
+                    "simple": "incident_link"
+                },
+                "Log Source": {
+                    "simple": "eventlog.source_name"
+                },
+                "MD5": {
+                    "simple": "process.hashes.md5"
+                },
+                "OS": {
+                    "simple": "agent.osproducttype"
+                },
+                "OS Type": {
+                    "simple": "agent.ostype"
+                },
+                "OS Version": {
+                    "simple": "agent.osversion"
+                },
+                "PID": {
+                    "simple": "process.pid"
+                },
+                "Parent CMD line": {
+                    "simple": "process.parent_commandline"
+                },
+                "Parent Process File Path": {
+                    "simple": "process.parent_image"
+                },
+                "Process Creation Time": {
+                    "simple": "process.create_time"
+                },
+                "Process Name": {
+                    "simple": "process.process_name"
+                },
+                "Process Path": {
+                    "simple": "process.image_name"
+                },
+                "Registry Key": {
+                    "simple": "details_registry.target_object"
+                },
+                "Rule Name": {
+                    "simple": "rule_name"
+                },
+                "SHA1": {
+                    "simple": "process.hashes.sha1"
+                },
+                "SHA256": {
+                    "simple": "process.hashes.sha256"
+                },
+                "Sub Category": {
+                    "simple": "alert_subtype"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Tenant Name": {
+                    "simple": "tenant"
+                },
+                "User SID": {
+                    "simple": "process.usersid"
+                }
+            }
+        }
+    },
+    "name": "Hurukai alert mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

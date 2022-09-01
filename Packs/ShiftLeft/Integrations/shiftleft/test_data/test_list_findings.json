@@ -1,0 +1,85 @@
+{
+    "ok": true,
+    "response": {
+      "scan": {
+        "id": "13",
+        "internal_id": "sl/2c089ac1-3378-44d5-94da-9507e84351c3/shiftleft-java-example/ab1fee748e4e1318b0d9e09143b4300cf136033a/27e4cc3826a241c55ba7e4362ec7a4ce9d303c6501a4f026d6da6369dc2e6143/1",
+        "app": "shiftleft-java-example",
+        "version": "ab1fee748e4e1318b0d9e09143b4300cf136033a",
+        "successful": true,
+        "started_at": "2021-08-13T14:27:56.11527Z",
+        "completed_at": "2021-08-13T14:28:46.968777Z",
+        "language": "java",
+        "number_of_expressions": 1244
+      },
+      "findings": [
+        {
+          "id": "299",
+          "app": "shiftleft-java-example",
+          "type": "vuln",
+          "title": "Remote Code Execution: Code Injection through attacker-controlled data via `foo` in `SearchController.doGetSearch2`",
+          "description": "Attacker-controlled data is used in a code execution context without undergoing escaping or validation. This could allow an attacker to execute code on the server. Injection flaws occur when untrusted data is sent to an interpreter as part of a query. By injecting hostile data, an attacker may trick the interpreter into executing unintended commands or accessing data without authorization which can result in data loss, corruption, or disclosure to unauthorized parties, loss of accountability, denial of access or even a complete host takeover.\n\n\n## Countermeasures\n\nThis vulnerability can be prevented by using library calls instead of external processes when possible, or otherwise through proper escaping or validation of the commands and arguments.\n\n## Additional information\n\n**[CWE-77](https://cwe.mitre.org/data/definitions/77.html)**\n\n**[CWE-78](https://cwe.mitre.org/data/definitions/78.html)**\n\n**[CWE-917](https://cwe.mitre.org/data/definitions/917.html)**\n\n**[OWASP-A1](https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A1-Injection)**",
+          "internal_id": "code-injection-attacker-controlled/fbd26b7ee3fafe98e85d4e4cedbbc532",
+          "severity": "critical",
+          "owasp_category": "a1-injection",
+          "category": "Remote Code Execution",
+          "version_first_seen": "cccc6a0ee36153e816c6fa05064820ca8a2d41d5",
+          "scan_first_seen": "11",
+          "created_at": "2021-08-11T20:13:15.240973Z",
+          "details": {
+            "Link": "https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A1-Injection",
+            "name": "code-injection-attacker-controlled",
+            "tags": "",
+            "sink_method": "org.springframework.expression.spel.standard.SpelExpressionParser.parseExpression:org.springframework.expression.Expression(java.lang.String)",
+            "source_method": "io.shiftleft.controller.SearchController.doGetSearch2:java.lang.String(java.lang.String,javax.servlet.http.HttpServletResponse,javax.servlet.http.HttpServletRequest)",
+            "file_locations": [
+              "io/shiftleft/controller/SearchController.java:34",
+              "io/shiftleft/controller/SearchController.java:38"
+            ]
+          },
+          "tags": [
+            {
+              "key": "category",
+              "value": "Remote Code Execution",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "cvss_score",
+              "value": 9,
+              "shiftleft_managed": true
+            },
+            {
+              "key": "cwe_category",
+              "value": "none",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "language",
+              "value": "java",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "owasp_category",
+              "value": "a1-injection",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "severity",
+              "value": "critical",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "sink_method",
+              "value": "org.springframework.expression.spel.standard.SpelExpressionParser.parseExpression:org.springframework.expression.Expression(java.lang.String)",
+              "shiftleft_managed": true
+            },
+            {
+              "key": "source_method",
+              "value": "io.shiftleft.controller.SearchController.doGetSearch2:java.lang.String(java.lang.String,javax.servlet.http.HttpServletResponse,javax.servlet.http.HttpServletRequest)",
+              "shiftleft_managed": true
+            }
+          ]
+        }
+      ]
+  }
+}

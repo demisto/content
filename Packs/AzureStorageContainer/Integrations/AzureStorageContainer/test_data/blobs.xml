@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://test.blob.core.windows.net/" ContainerName="test">
+    <Prefix>t</Prefix>
+    <Blobs>
+        <Blob>
+            <Name>xsoar.txt</Name>
+            <Properties>
+                <Creation-Time>Thu, 05 Aug 2021 09:11:57 GMT</Creation-Time>
+                <Last-Modified>Thu, 19 Aug 2021 07:08:54 GMT</Last-Modified>
+                <Etag>0x8D962E034659137</Etag>
+                <Content-Length>52575</Content-Length>
+                <Content-Type>application/octet-stream</Content-Type>
+                <Content-Encoding/>
+                <Content-Language/>
+                <Content-CRC64/>
+                <Content-MD5>CFGmmHR2Ia+dj3xmrlw2Hw==</Content-MD5>
+                <Cache-Control/>
+                <Content-Disposition/>
+                <BlobType>BlockBlob</BlobType>
+                <AccessTier>Hot</AccessTier>
+                <AccessTierInferred>true</AccessTierInferred>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <ServerEncrypted>true</ServerEncrypted>
+            </Properties>
+            <OrMetadata/>
+        </Blob>
+        <Blob>
+            <Name>test.pdf</Name>
+            <Properties>
+                <Creation-Time>Thu, 19 Aug 2021 07:01:58 GMT</Creation-Time>
+                <Last-Modified>Thu, 19 Aug 2021 07:08:05 GMT</Last-Modified>
+                <Etag>0x8D962E0172FA712</Etag>
+                <Content-Length>52575</Content-Length>
+                <Content-Type>application/octet-stream</Content-Type>
+                <Content-Encoding/>
+                <Content-Language/>
+                <Content-CRC64/>
+                <Content-MD5>CFGmmHR2Ia+dj3xmrlw2Hw==</Content-MD5>
+                <Cache-Control/>
+                <Content-Disposition/>
+                <BlobType>BlockBlob</BlobType>
+                <AccessTier>Hot</AccessTier>
+                <AccessTierInferred>true</AccessTierInferred>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <ServerEncrypted>true</ServerEncrypted>
+            </Properties>
+            <OrMetadata/>
+        </Blob>
+    </Blobs>
+    <NextMarker/>
+</EnumerationResults>

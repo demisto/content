@@ -14,6 +14,8 @@ from google.oauth2 import service_account
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google_auth_httplib2 import AuthorizedHttp
+from google.auth import aws
+from google.auth import identity_pool
 
 """ CONSTANTS """
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -100,6 +102,8 @@ COMMON_STRING: Dict[str, str] = {
     "CREATE_TIME": "Create Time (In UTC)"
 }
 
+AWS_SUBJECT_TOKEN_TYPE = "urn:ietf:params:aws:token-type:aws4_request"
+AZURE_SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt"
 """ HELPER CLASSES """
 
 
@@ -205,7 +209,7 @@ class BaseGoogleClient:
     """
 
     def __init__(self, service_name: str, service_version: str, service_account_json: str, scopes: list, proxy: bool,
-                 **kwargs):
+                 insecure: bool, **kwargs):
         """
         :param service_name: The name of the service. You can find this and the service  here
          https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
@@ -217,9 +221,14 @@ class BaseGoogleClient:
         """
         service_account_json = safe_load_non_strict_json(service_account_json)  # type: ignore
         try:
-            credentials = service_account.Credentials.from_service_account_info(info=service_account_json,
-                                                                                scopes=scopes)
-            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy))
+            if service_account_json.get('subject_token_type') == AWS_SUBJECT_TOKEN_TYPE:
+                credentials = aws.Credentials.from_info(info=service_account_json, scopes=scopes)
+            elif service_account_json.get('subject_token_type') == AZURE_SUBJECT_TOKEN_TYPE:
+                credentials = identity_pool.Credentials.from_info(service_account_json, scopes=scopes)
+            else:
+                credentials = service_account.Credentials.from_service_account_info(info=service_account_json,
+                                                                                    scopes=scopes)
+            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy, insecure))
             self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
@@ -235,10 +244,11 @@ class BaseGoogleClient:
             raise ValueError(error_message)
 
     @staticmethod
-    def get_http_client_with_proxy(proxy: bool) -> httplib2.Http:
+    def get_http_client_with_proxy(proxy: bool, insecure: bool) -> httplib2.Http:
         """
         Create an http client with proxy with whom to use when using a proxy.
         :param proxy: Whether to use a proxy.
+        :param insecure: Whether to perform a ssl validation.
 
         :return: ProxyInfo object.
         """
@@ -260,7 +270,12 @@ class BaseGoogleClient:
                     proxy_user=parsed_proxy.username,
                     proxy_pass=parsed_proxy.password,
                 )
-        return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME)
+        return httplib2.Http(
+            proxy_info=proxy_info,
+            timeout=TIMEOUT_TIME,
+            disable_ssl_certificate_validation=insecure,
+            ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE'),
+        )
 
     @staticmethod
     def execute_request(request) -> Dict[str, Any]:
@@ -385,6 +400,24 @@ class GoogleSccClient(BaseGoogleClient):
         update_mask = get_update_mask_for_update_finding(body, update_mask)  # type: ignore
         request = self.service.organizations().sources().findings().patch(  # pylint: disable=E1101
             name=name, updateMask=update_mask, body=body)
+        result = self.execute_request(request)
+        return result
+
+    def update_state(self, name: str, event_time: Optional[str], state: str, ) -> Dict[str, Any]:
+        """
+        Updates a state.
+
+        :param name: The resource name of this finding.
+        :param event_time: event time of finding
+        :param state: state of finding
+
+
+        :return: updated response
+        """
+        body = assign_params(startTime=event_time, state=state)
+
+        request = self.service.organizations().sources().findings().setState(  # pylint: disable=E1101
+            name=name, body=body)
         result = self.execute_request(request)
         return result
 
@@ -812,12 +845,13 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
             "Name": get_markdown_link(finding.get("name", ""), finding_url),
             "Category": finding.get("category", ""),
             COMMON_STRING["RESOURCE_NAME"]: finding.get("resourceName", ""),
+            "Finding Class": finding.get("findingClass", ""),
             COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(finding.get("eventTime", "")),
             COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(finding.get("createTime", "")),
             COMMON_STRING["SECURITY_MARKS"]: finding.get("securityMarks", {}).get("marks", {})
         })
 
-    headers = ["Name", "Category", COMMON_STRING["RESOURCE_NAME"], COMMON_STRING["EVENT_TIME"],
+    headers = ["Name", "Category", COMMON_STRING["RESOURCE_NAME"], "Finding Class", COMMON_STRING["EVENT_TIME"],
                COMMON_STRING["CREATE_TIME"], COMMON_STRING["SECURITY_MARKS"]]
     readable_output = tableToMarkdown(GET_OUTPUT_MESSAGE["HEADER_MESSAGE"].format("finding(s)", total_size),
                                       t=hr_finding_list, headers=headers, removeNull=True)
@@ -860,6 +894,24 @@ def get_and_validate_args_finding_update(args: Dict[str, Any]) -> Tuple:
         raise ValueError(ERROR_MESSAGES["INVALID_SOURCE_PROPERTIES"])
 
     return name, event_time, severity, external_uri, source_properties, update_mask
+
+
+def get_and_validate_args_finding_state_update(args: Dict[str, Any]) -> Tuple:
+    """
+    Get and validate arguments of finding state update command.
+
+    :param args: arguments of finding state update command.
+    :return: name, event_time, state
+    """
+    # Get command args
+    name = args.get("name", None)
+    event_time = datetime.now().strftime(ISO_DATE_FORMAT)
+    state = args.get("state", "").upper()
+
+    if state and state.strip().upper() not in STATE_LIST:
+        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"])
+
+    return name, event_time, state
 
 
 def prepare_hr_and_ec_for_update_finding(result: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
@@ -1249,6 +1301,28 @@ def finding_update_command(client: GoogleSccClient, args: Dict) -> CommandResult
 
 
 @logger
+def finding_state_update_command(client: GoogleSccClient, args: Dict) -> CommandResults:
+    """
+    Update the state of organization's or source's finding.
+
+    :param client: SccClient Object.
+    :param args: Command argument(s).
+    :return: The updated state.
+    """
+
+    # Get validated command args
+    arguments = get_and_validate_args_finding_state_update(args)
+
+    # Get response
+    result = client.update_state(*arguments)
+
+    readable_output, context = prepare_hr_and_ec_for_update_finding(result)
+
+    return CommandResults(readable_output=readable_output, outputs_key_field="name",
+                          outputs_prefix=OUTPUT_PREFIX['FINDING'], outputs=context, raw_response=result)
+
+
+@logger
 def cloud_asset_list_command(client: GoogleCloudAssetClient, args: Dict) -> CommandResults:
     """
     Lists assets with time and resource types.
@@ -1342,7 +1416,8 @@ def main() -> None:
     commands: Dict[str, Callable] = {
         "google-cloud-scc-asset-list": asset_list_command,
         "google-cloud-scc-finding-list": finding_list_command,
-        "google-cloud-scc-finding-update": finding_update_command
+        "google-cloud-scc-finding-update": finding_update_command,
+        "google-cloud-scc-finding-state-update": finding_state_update_command
     }
     params = demisto.params()
     command = demisto.command()

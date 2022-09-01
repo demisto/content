@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from datetime import datetime
 
 DESCRIPTION = '{} busy workers has reached {} of total workers'
 
@@ -26,6 +26,39 @@ def analyze_data(res):
     return []
 
 
+def nano_to_secs(table):
+    for entry in table:
+        secs = int(entry['Duration'] / 1000000000)
+        if secs < 60:
+            entry['Duration'] = str(secs) + " Seconds"
+        else:
+            minutes = int(secs / 60)
+            mod_sec = secs % 60
+            entry['Duration'] = "{} Minutes and {} seconds".format(str(minutes), mod_sec)
+
+
+def format_time(table):
+    for entry in table:
+        startedAt = datetime.strptime(entry['StartedAt'][:-4], '%Y-%m-%dT%H:%M:%S.%f')
+        entry['StartTime'] = startedAt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def format_details(table):
+    for entry in table:
+        details = entry['Details']
+        getdetails = re.compile(
+            r'task \[(?P<taskid>[\d]+)\]\s\[(?P<taskname>[\w\d\s!@#$%^&*()_+-={}]+)], playbook\s \
+            \[(?P<pbname>[\w\d\s!@#$%^&*()_+-={}]+)],\sinvestigation\s\[(?P<investigationid>[\d]+)\]')
+        all_images = [m.groups() for m in getdetails.finditer(details)]
+        for item in all_images:
+            newdetails = {"TaskID": item[0], "TaskName": item[1], 'PlaybookName': item[2],
+                          'InvestigationID': item[3]}
+        entry['TaskID'] = newdetails['TaskID']
+        entry['TaskName'] = newdetails['TaskName']
+        entry['PlaybookName'] = newdetails['PlaybookName']
+        entry['InvestigationID'] = newdetails['InvestigationID']
+
+
 def main(args):
     incident = demisto.incident()
     account_name = incident.get('account')
@@ -39,8 +72,11 @@ def main(args):
             table = [{'Details': '-', 'Duration': '-', 'StartedAt': '-'}]
         else:
             table = workers['response']['ProcessInfo']
-
-        md = tableToMarkdown('Workers Status', table, headers=['Details', 'Duration', 'StartedAt'])
+            nano_to_secs(table)
+            format_time(table)
+            format_details(table)
+        md = tableToMarkdown('Workers Status', table, headers=[
+                             'InvestigationID', 'PlaybookName', 'TaskID', 'TaskName', 'StartTime', 'Duration'])
 
         dmst_entry = {'Type': entryTypes['note'],
                       'Contents': md,

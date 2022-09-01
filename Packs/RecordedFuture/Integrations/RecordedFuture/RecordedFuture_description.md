@@ -25,8 +25,10 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 * Alert actions
     * Fetch alerting rules defined at Recorded Future.
     * Fetch alert summaries from one or more alerting rules.
+    * Set alert status in Recorded Future
+    * Add note to alert in Recorded Future
 * Threat assessment action
     * Takes a context, such as phishing or malware and one or more IOC as input.
     * Outputs a verdict (true/false) and related evidence (risk rules) for this context.
 
-Copyright 2020 Recorded Future, Inc.
+Copyright 2021 Recorded Future, Inc.

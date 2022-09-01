@@ -1,0 +1,10 @@
+[file:playbook-ACTI_Create_Report-Indicator_Associations.yml]
+ignore=PB110
+
+[known_words]
+FormatACTIURL
+uuid
+CustomCVE
+acti
+getThreatIntelReport
+get-fundamentals-by-uuid

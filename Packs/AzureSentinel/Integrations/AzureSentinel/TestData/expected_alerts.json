@@ -1,0 +1,54 @@
+[
+  {
+    "IncidentId": "test_incident_id",
+    "ID": "test_alert_id_1",
+    "Kind": "SecurityAlert",
+    "Tactic": [
+      "InitialAccess",
+      "Persistence",
+      "PrivilegeEscalation",
+      "DefenseEvasion",
+      "CredentialAccess",
+      "Discovery",
+      "LateralMovement",
+      "Execution",
+      "Collection",
+      "Exfiltration",
+      "CommandAndControl",
+      "Impact"
+    ],
+    "DisplayName": "Test alert 1",
+    "Description": "Test description",
+    "ConfidenceLevel": "Unknown",
+    "Severity": "Medium",
+    "VendorName": "Microsoft",
+    "ProductName": "Azure Sentinel",
+    "ProductComponentName": "Scheduled Alerts"
+  },
+  {
+    "IncidentId": "test_incident_id",
+    "ID": "test_alert_id_2",
+    "Kind": "SecurityAlert",
+    "Tactic": [
+      "InitialAccess",
+      "Persistence",
+      "PrivilegeEscalation",
+      "DefenseEvasion",
+      "CredentialAccess",
+      "Discovery",
+      "LateralMovement",
+      "Execution",
+      "Collection",
+      "Exfiltration",
+      "CommandAndControl",
+      "Impact"
+    ],
+    "DisplayName": "Test alert 2",
+    "Description": "Test description",
+    "ConfidenceLevel": "Unknown",
+    "Severity": "Medium",
+    "VendorName": "Microsoft",
+    "ProductName": "Azure Sentinel",
+    "ProductComponentName": "Scheduled Alerts"
+  }
+]

@@ -2,7 +2,7 @@
     "name": "ConcentricAI",
     "description": "Plugin for Concentric.ai Concentric\u2019s Semantic Intelligence\u2122 solution discovers and protects business critical, unstructured data.\nWe use deep learning to identify risky sharing, inappropriate third party access, assets in the wrong location, \nmis-classified documents, or lateral movement of data \u2013 all without rules or complex upfront configuration.",
     "support": "partner",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.4",
     "author": "Shams Hasan Rizvi",
     "url": "https://concentric.ai",
     "email": "shams@concentric.ai",
@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

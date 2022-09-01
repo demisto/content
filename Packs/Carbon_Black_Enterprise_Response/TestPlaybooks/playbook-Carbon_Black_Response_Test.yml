@@ -70,7 +70,7 @@ tasks:
     task:
       id: 3ac8640f-44c6-4d1b-890a-904ab9fdfff7
       version: -1
-      name: Add hash to blacklist
+      name: Add hash to block list
       description: ''
       type: title
       iscommand: false
@@ -318,9 +318,9 @@ tasks:
     task:
       id: c968aecf-b653-4f86-8290-794cd7e4332c
       version: -1
-      name: Get hash blacklist and choose an item to unblock and block
-      description: Returns a list of blacklisted hashes, with each list entry describing
-        one blacklisted hash
+      name: Get hash block list and choose an item to unblock and block
+      description: Returns a list of hashes on block list, with each list entry describing
+        one hash on block list.
       script: '|||cb-get-hash-blacklist'
       type: regular
       iscommand: true

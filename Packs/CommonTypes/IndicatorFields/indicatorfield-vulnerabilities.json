@@ -11,10 +11,7 @@
  "required": false,
  "neverSetAsRequired": false,
  "isReadOnly": false,
- "selectValues": [
-  "",
-  ""
- ],
+ "selectValues": [],
  "useAsKpi": false,
  "locked": false,
  "system": false,
@@ -27,5 +24,6 @@
  "caseInsensitive": true,
  "sla": 0,
  "threshold": 72,
- "fromVersion": "5.0.0"
+ "fromVersion": "5.0.0",
+ "openEnded": true
 }

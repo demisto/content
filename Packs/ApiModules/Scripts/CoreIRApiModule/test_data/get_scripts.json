@@ -1,0 +1,19 @@
+{
+  "reply": {
+    "result_count": 1,
+    "scripts": [
+      {
+        "created_by": "Palo Alto Networks",
+        "description": "Get running processes (CPU and Memory) from endpoint\n",
+        "is_high_risk": false,
+        "linux_supported": true,
+        "macos_supported": true,
+        "modification_date": 1587466892238,
+        "name": "process_get",
+        "script_id": 5,
+        "script_uid": "956e8989f67ebcb2c71c4635311e47e4",
+        "windows_supported": true
+      }
+    ]
+  }
+}

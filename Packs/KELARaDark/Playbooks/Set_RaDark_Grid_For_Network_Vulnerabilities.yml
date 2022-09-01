@@ -1,0 +1,663 @@
+description: Set grid for RaDark - Network Vulnerabilities incidents.
+id: Set RaDark Grid For Network Vulnerabilities
+inputs: []
+name: Set RaDark Grid For Network Vulnerabilities
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook triggered.
+      id: 872271fc-3e8c-4df5-8d88-c03e7d687047
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 872271fc-3e8c-4df5-8d88-c03e7d687047
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done.
+      id: a294ebf6-32e4-42c2-8d06-64c6c7ddc3da
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: a294ebf6-32e4-42c2-8d06-64c6c7ddc3da
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 1460
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesfilesharing
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 5cd381cf-8b46-41ee-8a5b-2a6d395bfdcb
+      iscommand: false
+      name: Set Grid - Vulnerable Services - File Sharing
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 5cd381cf-8b46-41ee-8a5b-2a6d395bfdcb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 1160
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesremotecontrol
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: ef8642dc-3969-4a36-8690-e31b72f7dec7
+      iscommand: false
+      name: Set Grid - Vulnerable Services - Remote Control
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: ef8642dc-3969-4a36-8690-e31b72f7dec7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1050
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesmessagebroker
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 5f927e83-d66d-4b4c-8343-a89dbe85ad7d
+      iscommand: false
+      name: Set Grid - Vulnerable Services - Message Broker
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 5f927e83-d66d-4b4c-8343-a89dbe85ad7d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 940
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesdatabase
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: d73c7f06-e13b-4273-846d-9b69263143b8
+      iscommand: false
+      name: Set Grid - Vulnerable Services - Database
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: d73c7f06-e13b-4273-846d-9b69263143b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 830
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "4"
+      label: "4"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "5"
+      label: "5"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "6"
+      label: "6"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "7"
+      label: "7"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "8"
+      label: "8"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "9"
+      label: "9"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "10"
+      label: "10"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "11"
+      label: "11"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "14"
+      label: "14"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "20"
+      label: "20"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      "4":
+      - "12"
+      "5":
+      - "11"
+      "6":
+      - "8"
+      "7":
+      - "7"
+      "8":
+      - "27"
+      "9":
+      - "28"
+      "10":
+      - "29"
+      "11":
+      - "30"
+      "14":
+      - "31"
+      "20":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the sub type of the incident in order to set the proper
+        grid table.
+      id: a4eb2df3-8ed5-49de-8ebb-e1a3603846d3
+      iscommand: false
+      name: RaDark - Extract Network Vulnerabilities Grid Type
+      type: condition
+      version: -1
+    taskid: a4eb2df3-8ed5-49de-8ebb-e1a3603846d3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 650
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: No action required.
+      id: fd7a978f-5c65-4b67-8062-843bcd301e3f
+      iscommand: false
+      name: No Grid Type Incident
+      type: title
+      version: -1
+    taskid: fd7a978f-5c65-4b67-8062-843bcd301e3f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 830
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesscada
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: fbb5c75a-0feb-4003-8173-f450792953dc
+      iscommand: false
+      name: Set Grid - Vulnerable Services - SCADA
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: fbb5c75a-0feb-4003-8173-f450792953dc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 1270
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Hostname, Technology, CVE Details
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerabletechnologies
+      keys:
+        simple: item_id, hostname, technology, cve_details
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: c351aa52-24e5-4bfc-8fa7-df12b6dd27c7
+      iscommand: false
+      name: Set Grid - Vulnerable Technologies
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: c351aa52-24e5-4bfc-8fa7-df12b6dd27c7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1820,
+          "y": 1270
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Hostname, Type, Details
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablewebapplicationsvulnerabilities
+      keys:
+        simple: item_id, hostname, type, details
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 1077f274-0fe3-409d-820e-c8b2f5f39cc1
+      iscommand: false
+      name: Set Grid - Web Applications Vulnerabilities
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 1077f274-0fe3-409d-820e-c8b2f5f39cc1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2030,
+          "y": 1160
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Hostname, Type, Details
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktableinformationdisclosure
+      keys:
+        simple: item_id, hostname, type, details
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: b46dfccb-e38c-4457-836c-a3e1a0c6f437
+      iscommand: false
+      name: Set Grid - Information Disclosure
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: b46dfccb-e38c-4457-836c-a3e1a0c6f437
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2240,
+          "y": 1050
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, IP, Hostname, Port, Service, ISP
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablevulnerableservicesinsecurenetworkservices
+      keys:
+        simple: item_id, ip, hostname, port, service, isp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 90add905-9031-4cb0-8430-1d6db027f024
+      iscommand: false
+      name: Set Grid - Vulnerable Services - Insecure Network Services
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 90add905-9031-4cb0-8430-1d6db027f024
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2450,
+          "y": 940
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Hostname, IP, ISP, Details
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablesensitivehosts
+      keys:
+        simple: item_id, hostname, ip, isp, description
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: ba9acc1f-cecb-4b27-86cf-5288abba7aad
+      iscommand: false
+      name: Set Grid - Sensitive Hosts
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: ba9acc1f-cecb-4b27-86cf-5288abba7aad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 830
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_12_4": 0.76
+    },
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 3000,
+        "x": -3210,
+        "y": 540
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointkeywordtext",
+    "version": -1,
+    "modified": "2021-07-17T08:41:33.882155011+05:30",
+    "name": "Flashpoint Keyword Text",
+    "description": "The value of the keyword.",
+    "ownerOnly": false,
+    "cliName": "flashpointkeywordtext",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

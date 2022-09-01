@@ -1,0 +1,47 @@
+[
+    {
+        "id": 2,
+        "name": "test1",
+        "description": "test1 description",
+        "indicatorCount": 0,
+        "signalCount": 0,
+        "createdAt": "2019-07-31T18:46:28.629Z",
+        "updatedAt": "2019-07-31T18:46:28.629Z"
+    },
+    {
+        "id": 5,
+        "name": "test2",
+        "description": "test2 description",
+        "indicatorCount": 0,
+        "signalCount": 0,
+        "createdAt": "2019-07-31T18:46:28.644Z",
+        "updatedAt": "2019-07-31T18:46:28.644Z"
+    },
+    {
+        "id": 8,
+        "name": "test3",
+        "description": "test3 description",
+        "indicatorCount": 0,
+        "signalCount": 0,
+        "createdAt": "2019-07-31T18:46:28.660Z",
+        "updatedAt": "2019-07-31T18:46:28.660Z"
+    },
+    {
+        "id": 9,
+        "name": "test4",
+        "description": "test4 description",
+        "indicatorCount": 0,
+        "signalCount": 0,
+        "createdAt": "2019-07-31T18:46:28.660Z",
+        "updatedAt": "2019-07-31T18:46:28.660Z"
+    },
+    {
+        "id": 16,
+        "name": "test5",
+        "description": "test5 description",
+        "indicatorCount": 0,
+        "signalCount": 0,
+        "createdAt": "2020-01-14T21:37:30.528Z",
+        "updatedAt": "2020-01-14T21:37:30.528Z"
+    }
+]

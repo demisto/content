@@ -1,4 +1,4 @@
-Note: Support for this pack will be moving to the partner around September 28, 2021.
+Note: Support for this pack moved to the partner on Oct 1, 2021. Please contact the partner directly via the support link on the right.
 
 VirusTotal inspects submitted hashes, URLs, domains, and IP addresses for suspicious behavior.
 

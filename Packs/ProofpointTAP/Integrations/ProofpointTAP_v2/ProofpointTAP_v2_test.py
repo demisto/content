@@ -324,6 +324,60 @@ def test_fetch_limit(requests_mock, mocker):
     assert not remained
 
 
+def test_fetch_incidents_with_encoding(requests_mock, mocker):
+    """
+    Given:
+        - Message with latin chars in its subject
+        - Raw JSON encoding param set to latin-1
+
+    When:
+        - Running fetch incidents
+
+    Then:
+        - Ensure subject is returned properly in the raw JSON
+    """
+    mocker.patch(
+        'ProofpointTAP_v2.get_now',
+        return_value=get_mocked_time()
+    )
+    mocker.patch(
+        'ProofpointTAP_v2.parse_date_range',
+        return_value=("2010-01-01T00:00:00Z", 'never mind')
+    )
+    requests_mock.get(
+        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
+        json={
+            "messagesDelivered": [
+                {
+                    'subject': 'p\u00c3\u00a9rdida',
+                    'messageTime': '2010-01-30T00:00:59.000Z',
+                },
+            ],
+        },
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version='v2',
+        service_principal='user1',
+        secret='123',
+        verify=False,
+        proxies=None,
+    )
+
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time='3 month',
+        event_type_filter=ALL_EVENTS,
+        threat_status='',
+        threat_type='',
+        raw_json_encoding='latin-1',
+    )
+
+    assert json.loads(incidents[0]['rawJSON'])['subject'] == 'pérdida'
+
+
 FETCH_TIMES_MOCK = [
     ("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 5),
     ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 2)

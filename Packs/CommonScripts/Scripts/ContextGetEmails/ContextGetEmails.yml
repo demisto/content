@@ -1,0 +1,17 @@
+commonfields:
+  id: ContextGetEmails
+  version: -1
+name: ContextGetEmails
+script: ''
+type: javascript
+tags: []
+comment: Gets all email addresses in context, excluding ones given.
+enabled: true
+args:
+- name: excludedEmails
+  description: Email addresses to exclude (separated by commas)
+  isArray: true
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

@@ -1,0 +1,8 @@
+[file:CyrenInboxSecurity.yml]
+ignore=IN145
+
+[file:CyrenInboxSecurity_image.png]
+ignore=IM111
+
+[file:classifier-Cyren_Inbox_Security_Classifier.json]
+ignore=BA101

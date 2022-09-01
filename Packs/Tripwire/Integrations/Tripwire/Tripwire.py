@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import traceback
 from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
@@ -247,32 +246,6 @@ def filter_nodes(args: dict) -> str:
     return filters
 
 
-def prepare_fetch(params: dict, first_fetch: str):
-    """
-    :param params: (dict) args of the command .
-    :param first_fetch: (dict) args of the command .
-    :return: (str) combination of all filter for the command.
-    """
-    # check that either ruleid exist or node id for fetch to run
-    if not params.get('rule_oids') and not params.get('node_oids'):
-        raise DemistoException(
-            'Test failed, missing both rule ids and node ids. \n At least one of the above is needed.')
-
-    # set last run
-    last_run = demisto.getLastRun().get('lastRun', '')
-    if last_run:
-        last_fetch = last_run
-    else:
-        last_fetch = parse_date_range(first_fetch, date_format=DATE_FORMAT)[0]
-
-    # set filter for fetch
-    time_now = datetime.utcnow().strftime(DATE_FORMAT)
-    params['time_detected_range'] = f'{last_fetch},{time_now}'
-    fetch_filter = filter_versions(params)
-
-    return params, fetch_filter, last_fetch
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -289,7 +262,10 @@ def test_module(client: Client, params: dict) -> str:
     :rtype: ``str``
     """
     if params.get('isFetch'):
-        params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch', ''))
+        # check that either ruleid exist or node id for fetch to run
+        if not params.get('rule_oids') and not params.get('node_oids'):
+            raise DemistoException(
+                'Test failed, missing both rule ids and node ids. \n At least one of the above is needed.')
         fetch_incidents(client=client, params=params, max_results=1)
 
     client.get_nodes("")
@@ -404,7 +380,7 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dict[str, str], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dict[str, Any], List[dict]]:
     """
     :type client: ``Client``
     :param client: Tripwire client to use
@@ -424,39 +400,64 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
-    params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch', ''))
+    last_run_obj = demisto.getLastRun()
+    start_detected_time = get_fetch_start_time(params, last_run_obj)
+
+    page_start = int(last_run_obj.get('page_start', 0))
+    fetch_args = {
+        'start_detected_time': start_detected_time,
+        'limit': max_results,
+        'start': page_start,
+        **params
+    }
+    fetch_filter = filter_versions(fetch_args)
 
     incidents: List[Dict[str, Any]] = []
-    last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+
     # This is necessary for making sure there are no duplicate incidents. The reason for it is as the api returns
     # the versions that occurred from the given time including and this causes duplicates.
-    last_fetched_ids = demisto.getLastRun().get('fetched_ids', [])
-    alerts = client.get_versions(fetch_filter)
-    alerts = alerts[:int(max_results)]
-    fetched_ids = []
+    last_fetched_ids: List[str] = last_run_obj.get('fetched_ids', [])
+    current_fetched_ids: List[str] = []
+
+    max_incident_created_time: datetime = datetime.strptime(start_detected_time, DATE_FORMAT)
+
+    versions = client.get_versions(fetch_filter)
+    alerts = [alert for alert in versions if alert.get('id') not in last_fetched_ids]
     for alert in alerts:
-        incident_created_time = datetime.strptime(alert.get('timeDetected'), '%Y-%m-%dT%H:%M:%S.000Z')
+        incident_created_time: datetime = datetime.strptime(alert.get('timeDetected'), '%Y-%m-%dT%H:%M:%S.000Z')
 
-        if incident_created_time < last_fetch:
-            continue
+        if max_incident_created_time < incident_created_time:
+            max_incident_created_time = incident_created_time
 
-        incident_name = alert.get('id')
-
-        if incident_name in last_fetched_ids:
-            continue
-        last_fetch = incident_created_time
-
-        incident = {
-            'name': f"Element {alert.get('elementName')} version has been changed to: {incident_name}",
+        alert_id = alert.get('id')
+        incidents.append({
+            'name': f"Element {alert.get('elementName')} version has been changed to: {alert_id}",
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(alert),
-        }
-        incidents.append(incident)
-        fetched_ids.extend([alert.get('id')])
+        })
+        current_fetched_ids.append(alert_id)
 
-    next_run = {'lastRun': last_fetch.strftime(DATE_FORMAT),
-                'fetched_ids': fetched_ids if fetched_ids else last_fetched_ids}
+    # the fetch will progress by either the detected time or by the page_start
+    # if the max_incident_created_time is different then start_detected_time - the progress will be by detected time
+    # if the max_incident_created_time are equal to start_detected_time - it's mean we might get partial paging results
+    # and the progress will be by the paging index
+    next_start_detected_time = max_incident_created_time.strftime(DATE_FORMAT)
+    page_start = page_start + len(versions) if next_start_detected_time == start_detected_time else 0
+    next_run = {
+        'lastRun': next_start_detected_time,
+        'page_start': page_start,
+        'fetched_ids': current_fetched_ids or last_fetched_ids
+    }
+    demisto.debug(f'{next_run=}')
+    demisto.debug(f'fetched {len(incidents)} incidents')
     return next_run, incidents
+
+
+def get_fetch_start_time(params, last_run_obj):
+    start_detected_time = last_run_obj.get('lastRun', '')
+    if not start_detected_time:
+        start_detected_time = parse_date_range(params.get('first_fetch', ''), date_format=DATE_FORMAT)[0]
+    return start_detected_time
 
 
 ''' MAIN FUNCTION '''
@@ -505,7 +506,6 @@ def main() -> None:
         else:
             raise NotImplementedError(f'{command} is not an existing Tripwire command')
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

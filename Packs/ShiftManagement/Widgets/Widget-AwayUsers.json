@@ -1,0 +1,25 @@
+{
+    "dataType": "scripts",
+    "id": "AwayUsers",
+    "query": "GetAwayUsers",
+    "modified": "2022-01-03T16:17:41.678746592Z",
+    "name": "AwayUsers",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "",
+            "toValue": null,
+            "fromValue": null,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "widgetType": "text",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "description": "Details of the users that are currently away"
+}

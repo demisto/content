@@ -14,9 +14,11 @@ certifi = "==2017.7.27.1"
 chardet = "==3.0.4"
 idna = "==2.6"
 requests = "==2.18.4"
-splunk-sdk = "==1.6.2"
+splunk-sdk = "==1.6.16"
 urllib3 = "==1.22"
 virtualenv = "==15.0.3"
+pytz = "*"
+dateparser = "*"
 
 [requires]
 python_version = "2.7"

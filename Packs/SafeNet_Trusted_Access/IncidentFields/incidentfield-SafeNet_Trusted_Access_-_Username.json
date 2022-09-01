@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "SafeNet Trusted Access Alert"
+        "SafeNet Trusted Access Push Reject Alert",
+        "SafeNet Trusted Access Account Lockout Alert"
     ],
     "caseInsensitive": true,
     "cliName": "safenettrustedaccessusername",
@@ -26,5 +27,8 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
 }

@@ -47,7 +47,7 @@ tasks:
       incidentId:
         simple: ${incident.id}
       name:
-        simple: test_MsGraphFiles
+        simple: test_MsGraphFiles prod
     separatecontext: false
     view: |-
       {

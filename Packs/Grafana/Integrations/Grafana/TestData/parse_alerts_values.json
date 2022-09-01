@@ -1,0 +1,352 @@
+{
+  "after_one_alert_was_fetched_high_limit": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "after_one_alert_was_fetched_low_limit": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "first_fetch_high_limit": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "first_fetch_low_limit": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "limit_to_one_first_fetch": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "limit_to_one_second_fetch": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-29T14:03:20Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-06-09T15:20:01Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ],
+  "same_time_at_fetch_bigger_id": [
+    {
+      "id": 2,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 5,
+      "name": "Adi's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    },
+    {
+      "id": 1,
+      "dashboardId": 1,
+      "dashboardUid": "TXSTREZ",
+      "dashboardSlug": "simple-streaming-example",
+      "panelId": 4,
+      "name": "Arseny's Alert",
+      "state": "no_data",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/TXSTREZ/simple-streaming-example"
+    },
+    {
+      "id": 3,
+      "dashboardId": 2,
+      "dashboardUid": "yzDQUOR7z",
+      "dashboardSlug": "simple-streaming-example-adis-copy",
+      "panelId": 6,
+      "name": "TryAlert",
+      "state": "alerting",
+      "newStateDate": "2021-07-08T12:08:40Z",
+      "evalDate": "0001-01-01T00:00:00Z",
+      "evalData": {
+        "noData": true
+      },
+      "executionError": "",
+      "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+    }
+  ]
+}

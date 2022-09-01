@@ -16,9 +16,11 @@ WHOIS_CURRENT_SUB_CONTEXT = 'WHOISCurrent'
 MALWARE_SUB_CONTEXT = 'MalwareSamples'
 HASH_IP_SUB_CONTEXT = 'HASH-IP'
 HASH_DOMAIN_SUB_CONTEXT = 'HASH-DOMAIN'
+C2_ATTRIBUTION_SUB_CONTEXT = "C2_Attribution"
 
 # HYAS API BASE URL
 HYAS_API_BASE_URL = 'https://insight.hyas.com/api/ext/'
+WHOIS_CURRENT_BASE_URL = "https://api.hyas.com/"
 TIMEOUT = 60
 
 # HYAS API endpoints
@@ -26,18 +28,22 @@ PASSIVE_DNS_ENDPOINT = 'passivedns'
 DYNAMIC_DNS_ENDPOINT = 'dynamicdns'
 WHOIS_ENDPOINT = 'whois'
 MALWARE_ENDPOINT = 'sample'
+WHOIS_CURRENT_ENDPOINT = 'whois/v1'
+C2_ATTRIBUTION_ENDPOINT = "c2attribution"
 
 # HYAS API INPUT PARAMETERS
 PASSIVE_DNS_QUERY_PARAMS = ['domain', 'ipv4']
 DYNAMIC_DNS_QUERY_PARAMS = ['ip', 'domain', 'email']
 WHOIS_QUERY_PARAMS = ['domain', 'email', 'phone']
 MALWARE_QUERY_PARAMS = ['domain', 'ipv4', 'md5']
+C2_ATTRIBUTION_QUERY_PARAMS = ['domain', 'ip', 'email', 'sha256']
 DOMAIN_PARAM = 'domain'
 MD5_PARAM = 'md5'
 IP_PARAM = 'ip'
 IPV4_PARAM = 'ipv4'
 EMAIL_PARAM = 'email'
 PHONE_PARAM = 'phone'
+SHA256 = 'sha256'
 
 
 class Client(BaseClient):
@@ -55,7 +61,8 @@ class Client(BaseClient):
         )
         self.apikey = apikey
 
-    def fetch_data_from_hyas_api(self, end_point: str, ind_type: str, ind_value: str, current: bool,
+    def fetch_data_from_hyas_api(self, end_point: str, ind_type: str,
+                                 ind_value: str, current: bool,
                                  req_method: str, limit=0) -> List[Dict]:
         """
 
@@ -67,10 +74,11 @@ class Client(BaseClient):
         :param req_method: request method POST,GET
         :return: return the raw api response from HYAS API.
         """
-        return self.query(end_point, ind_type, ind_value, current, req_method, limit)
+        return self.query(end_point, ind_type, ind_value, current, req_method,
+                          limit)
 
-    def query(self, end_point: str, ind_type: str, ind_value: str, current: bool, method: str, limit: int) -> List[
-            Dict]:
+    def query(self, end_point: str, ind_type: str, ind_value: str,
+              current: bool, method: str, limit: int) -> List[Dict]:
         """
 
         :param limit: "limit the number of records returned, default to 50"
@@ -162,7 +170,8 @@ def flatten_json(y: Dict) -> Dict[str, Any]:
     return out
 
 
-def check_valid_indicator_type(indicator_type: str, api_query_params: list) -> bool:
+def check_valid_indicator_type(indicator_type: str,
+                               api_query_params: list) -> bool:
     """
     :param indicator_type: indicator type provided in the command
     :param api_query_params: HYAS API Endpoint query params constant defined
@@ -175,7 +184,8 @@ def check_valid_indicator_type(indicator_type: str, api_query_params: list) -> b
     return True
 
 
-def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bool:
+def check_valid_indicator_value(indicator_type: str,
+                                indicator_value: str) -> bool:
     """
 
     :param indicator_type: Indicator type provided in the command
@@ -221,11 +231,16 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
         if not re.match(phone_regex, indicator_value):
             raise ValueError(
                 f'Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}')
+    elif indicator_type == SHA256:
+        if not re.match(sha256Regex, indicator_value):
+            raise ValueError(
+                f'Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}')
 
     return True
 
 
-def get_command_title_string(sub_context: str, indicator_type: str, indicator_value: str) -> str:
+def get_command_title_string(sub_context: str, indicator_type: str,
+                             indicator_value: str) -> str:
     """
 
     :param sub_context: Commands sub_context
@@ -551,10 +566,97 @@ def associated_domains_build_result_context(results: Dict) -> Dict:
 
 
 @logger
-def associated_domains_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def associated_domains_lookup_to_markdown(results: List[Dict],
+                                          title: str) -> str:
     headers = 'Associated Domains'
     out = results
     return tableToMarkdown(title, out, headers=headers, removeNull=True)
+
+
+@logger
+def c2_attribution_build_result_context(results: Dict) -> Dict:
+    ctx = {}
+    for ckey, rkey, f in (
+            ('actor_ipv4', 'actor_ipv4', str),
+            ('c2_domain', 'c2_domain', str),
+            ('c2_ip', 'c2_ip', str),
+            ('c2_url', 'c2_url', str),
+            ('datetime', 'datetime', str),
+            ('email', 'email', str),
+            ('email_domain', 'email_domain', str),
+            ('referrer_domain', 'referrer_domain', str),
+            ('referrer_ipv4', 'referrer_ipv4', str),
+            ('referrer_url', 'referrer_url', str),
+            ('sha256', 'sha256', str)
+
+    ):
+        if rkey in results:
+            ctx[ckey] = f(results[rkey])  # type: ignore[operator]
+    return ctx
+
+
+@logger
+def c2_attribution_lookup_to_markdown(results: List[Dict], title: str) -> str:
+    out = []
+
+    keys = [
+        ('Actor IPv4', 'actor_ipv4', str),
+        ('C2 Domain', 'c2_domain', str),
+        ('C2 IP', 'c2_ip', str),
+        ('C2 URL', 'c2_url', str),
+        ('Datetime', 'datetime', str),
+        ('Email', 'email', str),
+        ('Email Domain', 'email_domain', str),
+        ('Referrer Domain', 'referrer_domain', str),
+        ('Referrer IPv4', 'referrer_ipv4', str),
+        ('Referrer URL', 'referrer_url', str),
+        ('SHA256', 'sha256', str)
+
+    ]  # type: List[Tuple[str, str, Callable]]
+
+    headers = [k[0] for k in keys]
+    for result in results:
+        row = dict()  # type: Dict[str, Any]
+        for ckey, rkey, f in keys:
+            if rkey in result:
+                row[ckey] = f(result[rkey])
+        out.append(row)
+
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
+
+
+@logger
+def get_c2_attribution_record_by_indicator(client, args):
+    flatten_json_response = []
+    indicator_type = args.get('indicator_type')
+    indicator_value = args.get('indicator_value')
+    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
+    check_valid_indicator_type(indicator_type, C2_ATTRIBUTION_QUERY_PARAMS)
+    check_valid_indicator_value(indicator_type, indicator_value)
+    title = get_command_title_string(C2_ATTRIBUTION_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
+    end_point = C2_ATTRIBUTION_ENDPOINT
+    raw_api_response = client.fetch_data_from_hyas_api(end_point,
+                                                       indicator_type,
+                                                       indicator_value, False,
+                                                       'POST', limit)
+    if raw_api_response:
+        flatten_json_response = get_flatten_json_response(raw_api_response)
+    outputs_key_field = {
+        "ip": "actor_ipv4",
+        "domain": "c2_domain",
+        "email": "email",
+        "sha256": "sha256"
+    }
+
+    return CommandResults(
+        readable_output=c2_attribution_lookup_to_markdown(flatten_json_response,
+                                                          title),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{C2_ATTRIBUTION_SUB_CONTEXT}',
+        outputs_key_field=outputs_key_field.get(indicator_type),
+        outputs=[c2_attribution_build_result_context(r) for r in
+                 raw_api_response],
+    )
 
 
 @logger
@@ -562,21 +664,23 @@ def get_passive_dns_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-    limit = 0
-    if args.get('limit'):
-        limit = int(args.get('limit'))
-
+    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
     check_valid_indicator_type(indicator_type, PASSIVE_DNS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(PASSIVE_DNS_SUB_CONTEXT, indicator_type, indicator_value)
+    title = get_command_title_string(PASSIVE_DNS_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
 
     end_point = PASSIVE_DNS_ENDPOINT
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
+    raw_api_response = client.fetch_data_from_hyas_api(end_point,
+                                                       indicator_type,
+                                                       indicator_value, False,
+                                                       'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
     return CommandResults(
-        readable_output=passive_dns_lookup_to_markdown(flatten_json_response, title),
+        readable_output=passive_dns_lookup_to_markdown(flatten_json_response,
+                                                       title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{PASSIVE_DNS_SUB_CONTEXT}',
         outputs_key_field='',
         outputs=[passive_dns_build_result_context(r) for r in raw_api_response],
@@ -588,20 +692,22 @@ def get_dynamic_dns_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-    limit = 0
-    if args.get('limit'):
-        limit = int(args.get('limit'))
-
+    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
     check_valid_indicator_type(indicator_type, DYNAMIC_DNS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(DYNAMIC_DNS_SUB_CONTEXT, indicator_type, indicator_value)
+    title = get_command_title_string(DYNAMIC_DNS_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
     end_point = DYNAMIC_DNS_ENDPOINT
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
+    raw_api_response = client.fetch_data_from_hyas_api(end_point,
+                                                       indicator_type,
+                                                       indicator_value, False,
+                                                       'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
     return CommandResults(
-        readable_output=dynamic_dns_lookup_to_markdown(flatten_json_response, title),
+        readable_output=dynamic_dns_lookup_to_markdown(flatten_json_response,
+                                                       title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{DYNAMIC_DNS_SUB_CONTEXT}',
         outputs_key_field='',
         outputs=[dynamic_dns_build_result_context(r) for r in raw_api_response],
@@ -613,23 +719,27 @@ def get_whois_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-    limit = 0
-    if args.get('limit'):
-        limit = int(args.get('limit'))
+    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
     check_valid_indicator_type(indicator_type, WHOIS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(WHOIS_SUB_CONTEXT, indicator_type, indicator_value)
+    title = get_command_title_string(WHOIS_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
     end_point = WHOIS_ENDPOINT
 
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
+    raw_api_response = client.fetch_data_from_hyas_api(end_point,
+                                                       indicator_type,
+                                                       indicator_value, False,
+                                                       'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
     return CommandResults(
-        readable_output=whois_historic_lookup_to_markdown(flatten_json_response, title),
+        readable_output=whois_historic_lookup_to_markdown(flatten_json_response,
+                                                          title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_SUB_CONTEXT}',
         outputs_key_field='',
-        outputs=[whois_historic_build_result_context(r) for r in raw_api_response],
+        outputs=[whois_historic_build_result_context(r) for r in
+                 raw_api_response],
     )
 
 
@@ -639,18 +749,24 @@ def get_whois_current_records_by_domain(client, args):
     indicator_type = DOMAIN_PARAM
     indicator_value = args.get('domain')
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(WHOIS_CURRENT_SUB_CONTEXT, indicator_type, indicator_value)
-    end_point = WHOIS_ENDPOINT
+    title = get_command_title_string(WHOIS_CURRENT_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
+    end_point = WHOIS_CURRENT_ENDPOINT
 
-    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, True, 'POST')
+    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type,
+                                                   indicator_value, True,
+                                                   'POST')
     if api_response:
-        whois_current_record = api_response["items"] if api_response["items"] else []
+        whois_current_record = api_response["items"] if api_response[
+            "items"] else []
 
     return CommandResults(
-        readable_output=whois_current_lookup_to_markdown(whois_current_record, title),
+        readable_output=whois_current_lookup_to_markdown(whois_current_record,
+                                                         title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_CURRENT_SUB_CONTEXT}',
         outputs_key_field='domain',
-        outputs=[whois_current_build_result_context(r) for r in whois_current_record],
+        outputs=[whois_current_build_result_context(r) for r in
+                 whois_current_record],
     )
 
 
@@ -658,15 +774,16 @@ def get_whois_current_records_by_domain(client, args):
 def get_malware_samples_records_by_indicator(client, args):
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-    limit = 0
-    if args.get('limit'):
-        limit = int(args.get('limit'))
+    limit = arg_to_number(args.get('limit', 0), arg_name='limit')
     check_valid_indicator_type(indicator_type, MALWARE_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(MALWARE_SUB_CONTEXT, indicator_type, indicator_value)
+    title = get_command_title_string(MALWARE_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
     end_point = MALWARE_ENDPOINT
 
-    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
+    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type,
+                                                   indicator_value, False,
+                                                   'POST', limit)
 
     return CommandResults(
         readable_output=malware_samples_lookup_to_markdown(api_response, title),
@@ -680,17 +797,19 @@ def get_malware_samples_records_by_indicator(client, args):
 def get_associated_ips_by_hash(client, args):
     indicator_type = MD5_PARAM
     indicator_value = args.get('md5')
-
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(HASH_IP_SUB_CONTEXT, indicator_type, indicator_value)
+    title = get_command_title_string(HASH_IP_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
     end_point = MALWARE_ENDPOINT
-
-    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
+    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type,
+                                                   indicator_value, False,
+                                                   'POST')
 
     associated_ips = [str(obj['ipv4']) for obj in api_response if obj['ipv4']]
     outputs = {'md5': indicator_value, 'ips': associated_ips}
     return CommandResults(
-        readable_output=associated_ips_lookup_to_markdown(associated_ips, title),
+        readable_output=associated_ips_lookup_to_markdown(associated_ips,
+                                                          title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_IP_SUB_CONTEXT}',
         outputs_key_field='md5',
         outputs=outputs,
@@ -703,14 +822,18 @@ def get_associated_domains_by_hash(client, args):
     indicator_value = args.get('md5')
 
     check_valid_indicator_value(indicator_type, indicator_value)
-    title = get_command_title_string(HASH_DOMAIN_SUB_CONTEXT, indicator_type, indicator_value)
-
+    title = get_command_title_string(HASH_DOMAIN_SUB_CONTEXT, indicator_type,
+                                     indicator_value)
     end_point = MALWARE_ENDPOINT
-    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
-    associated_domains = [str(obj['domain']) for obj in api_response if obj['domain']]
+    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type,
+                                                   indicator_value, False,
+                                                   'POST')
+    associated_domains = [str(obj['domain']) for obj in api_response if
+                          obj['domain']]
     outputs = {'md5': indicator_value, 'domains': associated_domains}
     return CommandResults(
-        readable_output=associated_domains_lookup_to_markdown(associated_domains, title),
+        readable_output=associated_domains_lookup_to_markdown(
+            associated_domains, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_DOMAIN_SUB_CONTEXT}',
         outputs_key_field='md5',
         outputs=outputs,
@@ -732,31 +855,43 @@ def main():
     proxy = demisto.params().get('proxy', False)
 
     try:
+        command = demisto.command()
+        if command == f'{INTEGRATION_COMMAND_NAME}-get-whois-current-records-by-domain':
+            base_url = WHOIS_CURRENT_BASE_URL
+        else:
+            base_url = HYAS_API_BASE_URL
         client = Client(
-            HYAS_API_BASE_URL,
+            base_url,
             apikey,
             verify=verify_certificate,
             proxy=proxy)
-
-        command = demisto.command()
         LOG(f'Command being called is {command}')
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-passive-dns-records-by-indicator':
-            return_results(get_passive_dns_records_by_indicator(client, demisto.args()))
+            return_results(
+                get_passive_dns_records_by_indicator(client, demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-dynamic-dns-records-by-indicator':
-            return_results(get_dynamic_dns_records_by_indicator(client, demisto.args()))
+            return_results(
+                get_dynamic_dns_records_by_indicator(client, demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-whois-records-by-indicator':
-            return_results(get_whois_records_by_indicator(client, demisto.args()))
+            return_results(
+                get_whois_records_by_indicator(client, demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-whois-current-records-by-domain':
-            return_results(get_whois_current_records_by_domain(client, demisto.args()))
+            return_results(
+                get_whois_current_records_by_domain(client, demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-malware-samples-records-by-indicator':
-            return_results(get_malware_samples_records_by_indicator(client, demisto.args()))
+            return_results(get_malware_samples_records_by_indicator(client,
+                                                                    demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-associated-ips-by-hash':
             return_results(get_associated_ips_by_hash(client, demisto.args()))
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-associated-domains-by-hash':
-            return_results(get_associated_domains_by_hash(client, demisto.args()))
+            return_results(
+                get_associated_domains_by_hash(client, demisto.args()))
+        elif command == f'{INTEGRATION_COMMAND_NAME}-get-c2attribution-records-by-indicator':
+            return_results(
+                get_c2_attribution_record_by_indicator(client, demisto.args()))
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

@@ -1,6 +1,7 @@
 [
-  {
-    "indicator": "http://demisto.com/4712",
-    "type": "URL"
-  }
+    {
+        "indicator": "http://demisto.com/4712",
+        "indicator_ref": "example:Observable-ee59c28e-d922-480e-9b7b-a79502696505",
+        "type": "URL"
+    }
 ]

@@ -2,7 +2,13 @@
 
 import gitlab
 from github import Github
-from .github_workflow_scripts.utils import timestamped_print, get_env_var
+from Utils.github_workflow_scripts.utils import timestamped_print, get_env_var
+
+
+# ANSI Colors
+RED = '\033[0;31m'
+GREEN = '\033[0;32m'
+RESET = '\033[0m'
 
 
 GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
@@ -43,9 +49,12 @@ def main():
 
     # delete gitlab branches
     for gitlab_branch in gitlab_branches:
-        if gitlab_branch_name := gitlab_branch.name not in github_branch_names:
-            gitlab_branch.delete()
-            print(f'deleted "{gitlab_branch_name}"')
+        if (gitlab_branch_name := gitlab_branch.name) not in github_branch_names:
+            try:
+                gitlab_branch.delete()
+                print(f'{GREEN}deleted "{gitlab_branch_name}"{RESET}')
+            except gitlab.exceptions.GitlabError as e:
+                print(f'{RED}Deletion of {gitlab_branch_name} encountered an issue: {str(e)}{RESET}')
 
 
 if __name__ == "__main__":

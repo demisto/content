@@ -2,6 +2,7 @@
 <h2>Overview</h2>
 <hr>
 <p>Use the McAfee Advanced Threat Defense integration to enhance protection from network edge to endpoint and enable investigation.</p>
+<p>This integration was integrated and tested with MATD Version 4.2.2.16.</p>
 <h2>McAfee Advanced Threat Defense Playbooks</h2>
 <hr>
 <p>This integration is used in the following Cortex XSOAR playbooks.</p>
@@ -589,7 +590,7 @@
 <tr>
 <td style="width: 288px;">ATD.ListAnalyzerProfiles.LocalBlackList</td>
 <td style="width: 62px;">boolean</td>
-<td style="width: 358px;">Whether the Analyzer's profile has access to the local black list</td>
+<td style="width: 358px;">Whether the Analyzer's profile has access to the local block list</td>
 </tr>
 </tbody>
 </table>

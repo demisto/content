@@ -1,0 +1,137 @@
+{
+  "Flashpoint.Alerts(val.alert_id == obj.alert_id && val.fpid == obj.fpid)": [
+    {
+      "alert_id": "2983ad0b-b03d-4202-bea7-65dd94697b5b",
+      "fpid": "fa952cac-8432-5876-85d3-a928e9546d3d",
+      "keyword": {
+        "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+        "keyword_text": "\"user manager\""
+      },
+      "highlights": [
+        "The <x-fp-highlight>user</x-fp-highlight> <x-fp-highlight>manager</x-fp-highlight> shows a path for librewolf in that exact directory, but it's not actually there."
+      ],
+      "basetypes": [
+        "chan",
+        "comment",
+        "conversation",
+        "message",
+        "web"
+      ],
+      "ts": 1623810166.258678,
+      "tags": {
+        "archived": false,
+        "flagged": false
+      },
+      "source": {
+        "basetypes": [
+          "conversation",
+          "chan",
+          "web",
+          "comment",
+          "message"
+        ],
+        "body": {
+          "text/plain": "&gt;&gt;82092804  Yeah. It's not in /home/user/ like Mozilla's is, and I have all my hidden folders showing.  The user manager shows a path for librewolf in that exact directory, but it's not actually there."
+        },
+        "container": {
+          "basetypes": [
+            "conversation",
+            "chan",
+            "web",
+            "container",
+            "thread"
+          ],
+          "container": {
+            "title": "/g/ - Technology"
+          },
+          "fpid": "TVj8d6F0WXuJ7TelL5e2dA"
+        },
+        "created_at": {
+          "date-time": "2021-06-15T23:44:14+00:00",
+          "raw": "2021-06-15 23:44:14+00:00",
+          "timestamp": 1623800654
+        },
+        "first_observed_at": {
+          "date-time": "2021-06-16T02:22:14+00:00",
+          "raw": "1623810134.903289",
+          "timestamp": 1623810134
+        },
+        "fpid": "-pUsrIQyWHaF06ko6VRtPQ",
+        "last_observed_at": {
+          "date-time": "2021-06-19T04:50:24+00:00",
+          "raw": "1624078224.069707",
+          "timestamp": 1624078224
+        },
+        "native_id": "82092833",
+        "parent_message": {
+          "basetypes": [
+            "conversation",
+            "chan",
+            "web",
+            "comment",
+            "message"
+          ],
+          "fpid": "j9hzsT-nUoix6YU8N8etGQ",
+          "native_id": "82092804",
+          "type": "parent_comment"
+        },
+        "site": {
+          "title": "4chan"
+        },
+        "site_actor": {
+          "names": {
+            "aliases": [
+              "Anonymous (None)"
+            ],
+            "handle": "Anonymous (None)"
+          }
+        },
+        "sort_date": "2021-06-15T23:44:14Z"
+      }
+    },
+    {
+      "alert_id": "a31a9f81-988b-47c0-9739-1300e1855f6b",
+      "basetypes": [
+        "code",
+        "file",
+        "github",
+        "repository"
+      ],
+      "fpid": "479091c7-0e3c-5e93-883a-95aff86f646d",
+      "highlights": [
+        "Contribute to <x-fp-highlight>onelogin</x-fp-highlight>/<x-fp-highlight>onelogin</x-fp-highlight>-java-sdk development by creating an account on GitHub."
+      ],
+      "keyword": {
+        "keyword_id": "368b3894-1563-4f42-bbff-744e52d0e39f",
+        "keyword_text": "\"onelogin\""
+      },
+      "source": {
+        "basetypes": [
+          "code",
+          "file",
+          "github",
+          "repository"
+        ],
+        "file": "src/main/resources/onelogin.sdk.properties",
+        "fpid": "R5CRxw48XpOIOpWv-G9kbQ",
+        "owner": "onelogin",
+        "repo": "onelogin-java-sdk",
+        "snippet": "Contribute to onelogin/onelogin-java-sdk development by creating an account on GitHub.",
+        "source": "github",
+        "url": "https://github.com/onelogin/onelogin-java-sdk/blob/master/src/main/resources/onelogin.sdk.properties"
+      },
+      "ts": 1627491367.66599,
+      "tags": {
+        "archived": false,
+        "flagged": true
+      }
+    }
+  ],
+  "Flashpoint.PageToken.Alert(val.name == obj.name)": {
+    "since": "2021-06-16T02:22:14Z",
+    "until": "2021-06-16T02:45:00Z",
+    "size": "1",
+    "scroll_id": "f97c16ab5408f3bb7df60e58c5b24a57$1623810166.258678",
+    "name": "flashpoint-alert-list"
+  }
+}

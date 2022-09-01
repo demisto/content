@@ -87,6 +87,6 @@ dependson:
   must:
   - salesforce-push-comment
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)

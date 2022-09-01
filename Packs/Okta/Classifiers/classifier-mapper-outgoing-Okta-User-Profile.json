@@ -40,7 +40,7 @@
 				},
 				"login": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				},
 				"manager": {
 					"complex": null,
@@ -113,7 +113,7 @@
 				},
 				"login": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				},
 				"manager": {
 					"complex": null,

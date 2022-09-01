@@ -1,0 +1,326 @@
+{
+    "description": "Maps incoming Armorblox incident fields.",
+    "feed": false,
+    "id": "Armorblox - Mapper",
+    "mapping": {
+        "Armorblox": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "App": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "app_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Incident Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Policy Names": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policy_names",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Remediation Actions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remediation_actions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Resolution State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "resolution_state",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "details.folder_categories.[0]",
+                        "filters": [],
+                        "root": "CustomFields",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Armorblox Abuse Mailbox Report": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Armorblox Incident Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Policy Names": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policy_names",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Remediation Actions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remediation_actions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Resolution State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "resolution_state",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Armorblox Inbound Threat": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Armorblox Incident Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Policy Names": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policy_names",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Remediation Actions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remediation_actions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Resolution State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "resolution_state",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Armorblox Outbound Threat": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Armorblox Incident Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Policy Names": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policy_names",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Remediation Actions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remediation_actions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Resolution State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "resolution_state",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "App": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "app_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Armorblox Incident Id": {
+                    "complex": null,
+                    "simple": "CustomFields.details.id"
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "details.folder_categories.[0]",
+                        "filters": [],
+                        "root": "CustomFields",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "date",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Armorblox - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

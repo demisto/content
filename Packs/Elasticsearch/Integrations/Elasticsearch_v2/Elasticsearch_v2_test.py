@@ -1,6 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
-from dateutil.parser import parse
+import demistomock as demisto
+import importlib
+import Elasticsearch_v2
+import pytest
 import requests
 import unittest
 from unittest import mock
@@ -26,7 +29,7 @@ ES_V6_RESPONSE = {
                 '_id': '123',
                 '_score': 1.3862944,
                 '_source': {
-                    'Date': '2019-08-29T14:45:00Z'
+                    'Date': '2019-08-29T14:45:00.123Z'
                 }
             }, {
                 '_index': 'users',
@@ -34,7 +37,7 @@ ES_V6_RESPONSE = {
                 '_id': '456',
                 '_score': 0.9517491,
                 '_source': {
-                    'Date': '2019-08-29T14:46:00Z'
+                    'Date': '2019-08-29T14:46:00.123456Z'
                 }
             }
         ]
@@ -71,7 +74,7 @@ ES_V7_RESPONSE = {
                 '_id': '456',
                 '_score': 0.6814878,
                 '_source': {
-                    'Date': '2019-08-27T18:01:00Z'
+                    'Date': '2019-08-27T18:01:25.343212Z'
                 }
             }
         ]
@@ -104,7 +107,7 @@ MOCK_ES7_SEARCH_CONTEXT = str({
             '_type': 'doc',
             '_id': '456',
             '_score': 0.6814878,
-            '_source': {'Date': '2019-08-27T18:01:00Z'}
+            '_source': {'Date': '2019-08-27T18:01:25.343212Z'}
         }
     ]
 })
@@ -122,7 +125,7 @@ MOCK_ES7_HIT_CONTEXT = str([
         '_id': '456',
         '_type': 'doc',
         '_score': 0.6814878,
-        'Date': '2019-08-27T18:01:00Z'
+        'Date': '2019-08-27T18:01:25.343212Z'
     }
 ])
 
@@ -144,14 +147,14 @@ MOCK_ES6_SEARCH_CONTEXT = str({
             '_type': '_doc',
             '_id': '123',
             '_score': 1.3862944,
-            '_source': {'Date': '2019-08-29T14:45:00Z'}
+            '_source': {'Date': '2019-08-29T14:45:00.123Z'}
         },
         {
             '_index': 'users',
             '_type': '_doc',
             '_id': '456',
             '_score': 0.9517491,
-            '_source': {'Date': '2019-08-29T14:46:00Z'}
+            '_source': {'Date': '2019-08-29T14:46:00.123456Z'}
         }
     ]
 })
@@ -162,14 +165,14 @@ MOCK_ES6_HIT_CONTEXT = str([
         '_id': '123',
         '_type': '_doc',
         '_score': 1.3862944,
-        'Date': '2019-08-29T14:45:00Z'
+        'Date': '2019-08-29T14:45:00.123Z'
     },
     {
         '_index': 'users',
         '_id': '456',
         '_type': '_doc',
         '_score': 0.9517491,
-        'Date': '2019-08-29T14:46:00Z'
+        'Date': '2019-08-29T14:46:00.123456Z'
     }
 ])
 
@@ -183,13 +186,14 @@ MOCK_ES7_INCIDENTS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
+        'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
                 'value': '2019-08-27T18:00:00Z'
             }
-        ],
-        'occurred': '2019-08-27T18:00:00Z'
+        ]
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -197,15 +201,42 @@ MOCK_ES7_INCIDENTS = str([
                    '"_type": "doc", '
                    '"_id": "456", '
                    '"_score": 0.6814878, '
-                   '"_source": {"Date": "2019-08-27T18:01:00Z"}'
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
                    '}',
+        'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
-                'value': '2019-08-27T18:01:00Z'
+                'value': '2019-08-27T18:01:25.343212Z'
             }
-        ],
-        'occurred': '2019-08-27T18:01:00Z'
+        ]
+    }
+])
+
+MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: customer, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "123", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:00:00Z"}'
+                   '}',
+        'occurred': '2019-08-27T18:00:00Z',
+        'dbotMirrorId': '123'
+    }, {
+        'name': 'Elasticsearch: Index: customer, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "456", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:01:25.343212Z"}'
+                   '}',
+        'occurred': '2019-08-27T18:01:25Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -217,16 +248,17 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "123", '
                    '"_score": 1.3862944, '
-                   '"_source": {"Date": "2019-08-29T14:45:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
                    '}',
+        'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:45:00Z'
+                    'value': '2019-08-29T14:45:00.123Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:45:00Z'
+            ]
     }, {
         'name': 'Elasticsearch: Index: users, ID: 456',
         'rawJSON': '{'
@@ -234,16 +266,43 @@ MOCK_ES6_INCIDETNS = str([
                    '"_type": "_doc", '
                    '"_id": "456", '
                    '"_score": 0.9517491, '
-                   '"_source": {"Date": "2019-08-29T14:46:00Z"}'
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
                    '}',
+        'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456',
         'labels':
             [
                 {
                     'type': 'Date',
-                    'value': '2019-08-29T14:46:00Z'
+                    'value': '2019-08-29T14:46:00.123456Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:46:00Z'
+            ]
+    }
+])
+
+MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: users, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "123", '
+                   '"_score": 1.3862944, '
+                   '"_source": {"Date": "2019-08-29T14:45:00.123Z"}'
+                   '}',
+        'occurred': '2019-08-29T14:45:00Z',
+        'dbotMirrorId': '123'
+    }, {
+        'name': 'Elasticsearch: Index: users, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "456", '
+                   '"_score": 0.9517491, '
+                   '"_source": {"Date": "2019-08-29T14:46:00.123456Z"}'
+                   '}',
+        'occurred': '2019-08-29T14:46:00Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -294,13 +353,14 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502634"}'
                    '}',
+        'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502634'
             }
-        ],
-        'occurred': '2019-10-31T06:17:14Z'
+        ]
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -310,13 +370,40 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502640"}'
                    '}',
+        'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502640'
             }
-        ],
-        'occurred': '2019-10-31T06:17:20Z'
+        ]
+    }
+])
+
+MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str([
+    {
+        'name': 'Elasticsearch: Index: customer, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "123", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "1572502634"}'
+                   '}',
+        'occurred': '2019-10-31T06:17:14Z',
+        'dbotMirrorId': '123'
+    }, {
+        'name': 'Elasticsearch: Index: customer, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "456", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "1572502640"}'
+                   '}',
+        'occurred': '2019-10-31T06:17:20Z',
+        'dbotMirrorId': '456'
     }
 ])
 
@@ -491,8 +578,47 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
+MOCK_PARAMS = [
+    {
+        'client_type': 'Elasticsearch',
+        'fetch_index': 'customer',
+        'fetch_time_field': 'Date',
+        'time_method': 'Simple-Date',
+        'map_labels': True,
+        'credentials': {
+            'identifier': 'mock',
+            'password': 'demisto',
+        }
+    },
+    {
+        'client_type': 'Elasticsearch',
+        'fetch_index': 'customer',
+        'fetch_time_field': 'Date',
+        'time_method': 'Simple-Date',
+        'map_labels': False,
+        'credentials': {
+            'identifier': 'mock',
+            'password': 'demisto',
+        }
+    },
+    {
+        'client_type': 'OpenSearch',
+        'fetch_index': 'customer',
+        'fetch_time_field': 'Date',
+        'time_method': 'Simple-Date',
+        'map_labels': True,
+        'credentials': {
+            'identifier': 'mock',
+            'password': 'demisto',
+        }
+    }
+]
 
-def test_context_creation_es7():
+
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_context_creation_es7(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_context, get_total_results
 
     base_page = 0
@@ -509,7 +635,10 @@ def test_context_creation_es7():
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
 
-def test_context_creation_es6():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_context_creation_es6(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_context, get_total_results
 
     base_page = 0
@@ -526,56 +655,77 @@ def test_context_creation_es6():
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "users")
-def test_incident_creation_e6():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_incident_creation_e6(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-29T14:44:00Z')
+    last_fetch = '2019-08-29T14:44:00Z'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
-    assert str(incidents) == MOCK_ES6_INCIDETNS
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-29T14:46:00.123456+00:00'
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES6_INCIDETNS
+    else:
+        assert str(incidents) == MOCK_ES6_INCIDETNS_WITHOUT_LABELS
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
-def test_incident_creation_e7():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_incident_creation_e7(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = parse('2019-08-27T17:59:00')
+    last_fetch = '2019-08-27T17:59:00'
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
-    assert str(incidents) == MOCK_ES7_INCIDENTS
+    # last fetch should not truncate the milliseconds
+    assert str(last_fetch2) == '2019-08-27T18:01:25.343212+00:00'
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES7_INCIDENTS
+    else:
+        assert str(incidents) == MOCK_ES7_INCIDENTS_WITHOUT_LABELS
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
-def test_timestamp_to_date_converter_seconds():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_timestamp_to_date_converter_seconds(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    mocker.patch('Elasticsearch_v2.TIME_METHOD', 'Timestamp-Seconds')
     from Elasticsearch_v2 import timestamp_to_date
     seconds_since_epoch = "1572164838"
     assert str(timestamp_to_date(seconds_since_epoch)) == "2019-10-27 08:27:18"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Milliseconds')
-def test_timestamp_to_date_converter_milliseconds():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_timestamp_to_date_converter_milliseconds(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    mocker.patch('Elasticsearch_v2.TIME_METHOD', 'Timestamp-Milliseconds')
     from Elasticsearch_v2 import timestamp_to_date
     milliseconds_since_epoch = "1572164838123"
     assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
-def test_incident_creation_with_timestamp_e7():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_incident_creation_with_timestamp_e7(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    mocker.patch('Elasticsearch_v2.TIME_METHOD', 'Timestamp-Seconds')
     from Elasticsearch_v2 import results_to_incidents_timestamp
     lastfetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
-    assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+    if params.get('map_labels'):
+        assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+    else:
+        assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS
 
 
-def test_format_to_iso():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_format_to_iso(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import format_to_iso
     date_string_1 = "2020-02-03T10:00:00"
     date_string_2 = "2020-02-03T10:00:00+02:00"
@@ -587,28 +737,34 @@ def test_format_to_iso():
     assert format_to_iso(iso_format) == iso_format
 
 
-@patch("Elasticsearch_v2.USERNAME", "mock")
-@patch("Elasticsearch_v2.PASSWORD", "demisto")
-@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
-def test_elasticsearch_builder_called_with_username_password(mocker):
-    from elasticsearch import Elasticsearch
-    from Elasticsearch_v2 import elasticsearch_builder
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_elasticsearch_builder_called_with_username_password(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    from Elasticsearch_v2 import Elasticsearch, elasticsearch_builder
     es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
     elasticsearch_builder(None)
     assert es_mock.call_args[1].get('http_auth') == ('mock', 'demisto')
     assert es_mock.call_args[1].get('api_key') is None
 
 
-def test_elasticsearch_builder_called_with_no_creds(mocker):
-    from elasticsearch import Elasticsearch
-    from Elasticsearch_v2 import elasticsearch_builder
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_elasticsearch_builder_called_with_no_creds(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    mocker.patch('Elasticsearch_v2.USERNAME', None)
+    mocker.patch('Elasticsearch_v2.PASSWORD', None)
+    from Elasticsearch_v2 import Elasticsearch, elasticsearch_builder
     es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
     elasticsearch_builder(None)
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
 
 
-def test_elasticsearch_parse_subtree():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_elasticsearch_parse_subtree(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import parse_subtree
     sub_tree = parse_subtree(MOCK_ES7_SCHEMA_INPUT)
     assert str(sub_tree) == str(MOCK_ES7_SCHEMA_OUTPUT)
@@ -704,3 +860,31 @@ class TestIncidentLabelMaker(unittest.TestCase):
 
         labels = incident_label_maker(sources)
         self.assertEqual(labels, expected_labels)
+
+
+@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
+                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          (946728000000, '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          ('', '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'lt': 949406400000}}}),
+                          ])
+def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
+    from Elasticsearch_v2 import get_time_range
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
+
+
+def test_build_eql_body():
+    from Elasticsearch_v2 import build_eql_body
+    assert build_eql_body(None, None, None, None, None, None, None) == {}
+    assert build_eql_body("query", "fields", "size", "tiebreaker_field",
+                          "timestamp_field", "event_category_field", "filter") == {
+        "query": "query",
+        "fields": "fields",
+        "size": "size",
+        "tiebreaker_field": "tiebreaker_field",
+        "timestamp_field": "timestamp_field",
+        "event_category_field": "event_category_field",
+        "filter": "filter"
+    }

@@ -1,6 +1,9 @@
 commonfields:
   id: RegexExtractAll
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: RegexExtractAll
 script: ''
 type: python
@@ -27,7 +30,8 @@ args:
   predefined:
   - "false"
   - "true"
-  description: Process value in multiline mode.  See more information on re.MULTILINE, see https://docs.python.org/3/library/re.html.
+  description: Process value in multiline mode.  See more information on re.MULTILINE,
+    see https://docs.python.org/3/library/re.html.
   defaultValue: "false"
 - name: ignore_case
   auto: PREDEFINED
@@ -41,14 +45,22 @@ args:
   predefined:
   - "false"
   - "true"
-  description: Whether to make the '.' character also match a new line. Default is "false".
+  description: Whether to make the '.' character also match a new line. Default is
+    "false".
   defaultValue: "false"
 - name: error_if_no_match
   auto: PREDEFINED
   predefined:
   - "false"
   - "true"
-  description: Only set to 'true' if using in a playbook task and you want a failure. to return an error
+  description: Only set to 'true' if used in a playbook task and you want that failure will return an error.
+  defaultValue: "false"
+- name: unpack_matches
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Whether to unpack the tuple values of results. Default is "false".
   defaultValue: "false"
 scripttarget: 0
 subtype: python3

@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Brand Protection Domain",
+        "GIB Compromised Account",
+        "GIB Compromised Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibperson",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibperson",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Person",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

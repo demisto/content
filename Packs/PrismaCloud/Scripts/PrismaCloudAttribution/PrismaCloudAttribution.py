@@ -7,7 +7,6 @@ from CommonServerUserPython import *  # noqa
 
 
 from typing import Dict, List, Any, Iterable, Union
-import traceback
 
 IPADDRESS_KEYS = ['publicIpAddress', 'natIP', 'publicIp', 'inboundIpAddress', 'ipAddress', 'IPAddress']
 FQDN_KEYS = ['publicDnsName', 'dnsname', 'domainName', 'name', 'dnsName', 'hostName', 'properties.hostName', 'fqdn',
@@ -82,7 +81,6 @@ def main():
     try:
         return_results(attribution_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute PrismaCloudAttribution. Error: {str(ex)}')
 
 

@@ -17,6 +17,7 @@ PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
+SEARCH_LOOP_LIMIT: int = 10
 
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
@@ -186,24 +187,23 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(
         query=request_args.query,
-        size=PAGE_SIZE
+        size=PAGE_SIZE,
+        limit=limit
     )
-    while True:
-        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
-        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+    loop_counter = 0
+    while not indicator_searcher.is_search_done() and loop_counter < SEARCH_LOOP_LIMIT:
+        new_iocs = find_indicators_with_limit(indicator_searcher)
         if not new_iocs:
             break
         iocs += new_iocs
         iocs = sort_iocs(request_args, iocs)
         # reformat the output
-        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs[request_args.offset:], request_args)
         if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
-        if actual_indicator_amount >= len(iocs) or (indicator_searcher.total and indicator_searcher.total <= limit):
-            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-            break
         # advance search window with gap size
-        limit += (limit - actual_indicator_amount)
+        indicator_searcher.limit += request_args.limit - actual_indicator_amount
+        loop_counter += 1
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -779,9 +779,6 @@ def test_module(args, params):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
-        query = params.get('indicators_query')  # validate indicators_query isn't empty
-        if not query:
-            raise ValueError('"Indicator Query" is required. Provide a valid query.')
         cache_refresh_rate = params.get('cache_refresh_rate', '')
         if not cache_refresh_rate:
             raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)

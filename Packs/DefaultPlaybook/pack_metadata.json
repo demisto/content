@@ -24,5 +24,9 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

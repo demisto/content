@@ -1,3 +1,4 @@
+# type: ignore[attr-defined]
 """
 This is a simplified example script which demonstrates the concept of how the XSOAR Server executes python integrations/scripts.
 
@@ -19,7 +20,7 @@ import json
 import traceback
 
 if sys.version_info[0] < 3:
-    import Queue as queue
+    import Queue as queue  # pylint: disable=E0401
 else:
     import queue
 
@@ -442,13 +443,13 @@ def do_ping_pong():
 
 
 backup_env_vars = {}
-for key in os.environ.keys():
+for key in os.environ:
     backup_env_vars[key] = os.environ[key]
 
 
 def rollback_system():
     os.environ = {}
-    for key in backup_env_vars.keys():
+    for key in backup_env_vars:
         os.environ[key] = backup_env_vars[key]
 
 
@@ -479,7 +480,7 @@ while True:
             'win': win
         }
 
-        exec(code, sub_globals, sub_globals)  # guardrails-disable-line
+        exec(code, sub_globals, sub_globals)  # guardrails-disable-line  # pylint: disable=W0122
 
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()

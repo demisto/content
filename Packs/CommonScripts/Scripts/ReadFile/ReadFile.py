@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import chardet
+import chardet  # type: ignore
 
 
 def get_file_encoding(filepath):

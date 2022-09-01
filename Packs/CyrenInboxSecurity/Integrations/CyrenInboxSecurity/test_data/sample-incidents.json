@@ -1,0 +1,165 @@
+{
+    "data": [
+        {
+            "incident_id": "incidentID",
+            "case_id": "caseID",
+            "tx_id": "txID",
+            "threat_type": "phishing",
+            "application": "office365",
+            "connection_id": "connectionID",
+            "connection_name": "ConnectionName",
+            "org_id": 1,
+            "tenant_id": "tenantID",
+            "remediation_data": {
+                "remediation_type": "auto_remediation",
+                "remediation": "remediated",
+                "policy_action": [
+                    {
+                        "performed_date": 1625484377,
+                        "messages": null,
+                        "action_type": "ADD_BANNER",
+                        "action_status": "success"
+                    },
+                    {
+                        "performed_date": 1625484378,
+                        "messages": null,
+                        "action_type": "MOVE_TO_SPAM",
+                        "action_status": "success"
+                    },
+                    {
+                        "performed_date": 1625484378,
+                        "messages": null,
+                        "action_type": "INCIDENT",
+                        "action_status": "success"
+                    }
+                ],
+                "policy_condition": [
+                    {
+                        "condition_type": "ORIGIN",
+                        "condition_value": "ALL"
+                    },
+                    {
+                        "condition_type": "EMAIL_STATE",
+                        "condition_value": "ALL"
+                    },
+                    {
+                        "condition_type": "REPORTED_BY",
+                        "condition_value": "ALL"
+                    }
+                ],
+                "policy_name": "Default Rule",
+                "resolution": "pending"
+            },
+            "message_details": {
+                "internet_message_id": "internetMessageID",
+                "targeted_employee": {
+                    "name": "user1",
+                    "address": "user1@sample.com"
+                },
+                "other_recipients": [],
+                "sender": {
+                    "name": "user2",
+                    "address": "user2@sample.com"
+                },
+                "from": {
+                    "name": "user2",
+                    "address": "user2@sample.com"
+                },
+                "to_recipients": [
+                    {
+                        "name": "user1",
+                        "address": "user1@sample.com"
+                    }
+                ],
+                "to_cc_recipients": [],
+                "to_bcc_recipients": [],
+                "reply_to": [],
+                "email_subject": "subject",
+                "email_body": "",
+                "received_datetime": "2021-07-05T11:23:27Z",
+                "sent_datetime": "2021-07-05T11:23:22Z",
+                "created_datetime": "2021-07-05T11:23:26Z",
+                "last_modified_datetime": "2021-07-05T11:23:28Z",
+                "is_read": false,
+                "is_external_from": false,
+                "is_external_reply_to": false,
+                "is_external_sender": false,
+                "is_user_subscribed": true,
+                "urls_classification": [
+                    {
+                        "url": "http://phishing.com",
+                        "classification_type": "malicious",
+                        "is_phishing": true,
+                        "classification": "malicious"
+                    }
+                ],
+                "user_id": "userID",
+                "message_id": "messageID",
+                "attachments": [
+                    {
+                        "file_size": 158,
+                        "file_name": "attachment.html",
+                        "file_hash": "hash",
+                        "file_category": "PHISHING",
+                        "aws_key": "key.zip",
+                        "aws_bucket": "bucket"
+                    }
+                ],
+                "folder": "inbox"
+            },
+            "threat_indicators": [
+                {
+                    "type": "url",
+                    "subType": "malicious_url",
+                    "value": "http://phishing.com",
+                    "details": {
+                        "categories": [
+                            ""
+                        ],
+                        "family_names": [
+                            "Generic"
+                        ],
+                        "industries": [
+                            ""
+                        ],
+                        "screenshot": "screenshot.png"
+                    }
+                },
+                {
+                    "type": "attachment",
+                    "subType": "attachment_hash",
+                    "value": "hash",
+                    "details": {
+                        "categories": null,
+                        "family_names": null,
+                        "industries": null,
+                        "screenshot": ""
+                    },
+                    "attachment": {
+                        "file_size": 158,
+                        "file_name": "attachment.html",
+                        "file_hash": "hash",
+                        "file_category": "PHISHING",
+                        "aws_key": "key.zip",
+                        "aws_bucket": "screenshot"
+                    }
+                }
+            ],
+            "feedback": [
+                {
+                    "details": "phishing url",
+                    "tx_id": "txID",
+                    "feedback_type": "phishing",
+                    "created_at": 1625653814,
+                    "threat_indicators_type": [
+                        "url"
+                    ]
+                }
+            ],
+            "reported_by": "System",
+            "confidence": 3,
+            "created_at": 1612951078,
+            "updated_at": 1612951078
+        }
+    ]
+}

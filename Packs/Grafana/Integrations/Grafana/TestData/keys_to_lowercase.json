@@ -1,0 +1,148 @@
+{
+  "dict_input": {
+    "Id": 1,
+    "Version": 0,
+    "OrgId": 1,
+    "DashboardId": 1,
+    "PanelId": 4,
+    "Name": "Arseny's Alert",
+    "Message": "man down!",
+    "Severity": "",
+    "State": "no_data",
+    "Handler": 1,
+    "Silenced": false,
+    "ExecutionError": " ",
+    "Frequency": 600,
+    "For": 60000000000,
+    "EvalData": {
+      "noData": true
+    },
+    "NewStateDate": "2021-06-09T15:20:01Z",
+    "StateChanges": 1,
+    "Created": "2021-06-09T15:13:45Z",
+    "Updated": "2021-06-09T15:14:51Z",
+    "Settings": {
+      "alertRuleTags": {
+        "moshe": "2"
+      },
+      "conditions": [
+        {
+          "evaluator": {
+            "params": [
+              10
+            ],
+            "type": "gt"
+          },
+          "operator": {
+            "type": "and"
+          },
+          "query": {
+            "datasourceId": 1,
+            "model": {
+              "refId": "A",
+              "scenarioId": "streaming_client",
+              "stream": {
+                "noise": 2.2,
+                "speed": 100,
+                "spread": 3.5,
+                "type": "signal"
+              },
+              "stringInput": ""
+            },
+            "params": [
+              "A",
+              "5m",
+              "now"
+            ]
+          },
+          "reducer": {
+            "params": [],
+            "type": "avg"
+          },
+          "type": "query"
+        }
+      ],
+      "executionErrorState": "alerting",
+      "for": "1m",
+      "frequency": "10m",
+      "handler": 1,
+      "message": "man down!",
+      "name": "Arseny's Alert",
+      "noDataState": "no_data",
+      "notifications": []
+    }
+  },
+  "expected_result": {
+    "id": 1,
+    "version": 0,
+    "orgId": 1,
+    "dashboardId": 1,
+    "panelId": 4,
+    "name": "Arseny's Alert",
+    "message": "man down!",
+    "severity": "",
+    "state": "no_data",
+    "handler": 1,
+    "silenced": false,
+    "executionError": " ",
+    "frequency": 600,
+    "for": 60000000000,
+    "evalData": {
+      "noData": true
+    },
+    "newStateDate": "2021-06-09T15:20:01Z",
+    "stateChanges": 1,
+    "created": "2021-06-09T15:13:45Z",
+    "updated": "2021-06-09T15:14:51Z",
+    "settings": {
+      "alertRuleTags": {
+        "moshe": "2"
+      },
+      "conditions": [
+        {
+          "evaluator": {
+            "params": [
+              10
+            ],
+            "type": "gt"
+          },
+          "operator": {
+            "type": "and"
+          },
+          "query": {
+            "datasourceId": 1,
+            "model": {
+              "refId": "A",
+              "scenarioId": "streaming_client",
+              "stream": {
+                "noise": 2.2,
+                "speed": 100,
+                "spread": 3.5,
+                "type": "signal"
+              },
+              "stringInput": ""
+            },
+            "params": [
+              "A",
+              "5m",
+              "now"
+            ]
+          },
+          "reducer": {
+            "params": [],
+            "type": "avg"
+          },
+          "type": "query"
+        }
+      ],
+      "executionErrorState": "alerting",
+      "for": "1m",
+      "frequency": "10m",
+      "handler": 1,
+      "message": "man down!",
+      "name": "Arseny's Alert",
+      "noDataState": "no_data",
+      "notifications": []
+    }
+  }
+}

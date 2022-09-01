@@ -59,7 +59,7 @@ tasks:
         complex:
           root: inputs.InstanceName
       dt:
-        simple: ServiceNow.Ticket(val.State != '6' && val.State != '7').Number
+        simple: ServiceNow.Ticket(State != '6' || State != '7').Number
       ids:
         complex:
           root: inputs.TicketNumber
@@ -259,7 +259,7 @@ inputs:
   required: false
   description: |-
     Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. 
-    If so, please add "Using" to the value. 
+    If so, please add "using" to the value.
     The polling command will then take the instance name as the instance to use. 
   playbookInputQuery:
 outputs: []

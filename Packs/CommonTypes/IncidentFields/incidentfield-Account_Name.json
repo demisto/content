@@ -1,6 +1,10 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
+		"SysAid Change",
+		"SysAid Incident",
+		"SysAid Problem",
+		"SysAid Request",
 		"Prisma Cloud",
 		"GCP Compute Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
@@ -41,6 +45,9 @@
 	"useAsKpi": false,
 	"validationRegex": "",
 	"version": -1,
-	"fromVersion": "5.0.0"
+	"fromVersion": "5.0.0",
+	"marketplaces": [
+       "xsoar"
+	]
 }
 

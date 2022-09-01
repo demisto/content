@@ -143,10 +143,13 @@ class Client(BaseClient):
         if start_date:
             api_params['start_date'] = start_date
 
-        suffix = f'/company/{self.socradar_company_id}/incidents/latest'
+        suffix = f'/company/{self.socradar_company_id}/incidents/v2'
         response = self._http_request(method='GET', url_suffix=suffix, params=api_params, timeout=60,
                                       error_handler=self.handle_error_response)
-        return response
+        if not response.get('is_success'):
+            message = f"Error while getting API response. SOCRadar API Response: {response.get('message', '')}"
+            raise DemistoException(message=message)
+        return response.get('data') if response else []
 
     def mark_incident_as_false_positive(self, incident_id: int, comments: Optional[str]):
         """Sends a request that marks incident as false positive in SOCRadar platform
@@ -321,8 +324,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for alert in alerts:
-        incident_created_time = int(date_to_timestamp(alert.get('insert_date', '').split('.')[0]))
-
+        insert_date_str = alert.get('insert_date', '').split('.')[0]
+        insert_date = datetime.strptime(insert_date_str, '%Y-%m-%dT%H:%M:%S')
+        insert_date_utc = insert_date.replace(tzinfo=timezone.utc)
+        incident_created_time = int(insert_date_utc.timestamp())
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time <= last_fetch:
@@ -357,7 +362,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
         incident = {
             'name': incident_name,
-            'occurred': timestamp_to_datestring(incident_created_time, is_utc=True),
+            'occurred': timestamp_to_datestring(incident_created_time * 1000, is_utc=True),
             'rawJSON': json.dumps(alert),
             'severity': convert_to_demisto_severity(alert.get('alarm_risk_level', 'UNKNOWN')),
             'CustomFields': {

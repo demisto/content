@@ -18,6 +18,7 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
     | Threat status | A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive". | False |
     | Events to fetch |  | False |
     | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
+    | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
 
@@ -228,6 +229,7 @@ Fetches events for all clicks and messages relating to known threats within the 
 >|clicksBlocked|clicksPermitted|messagesBlocked|messagesDelivered|queryEndTime|
 >|---|---|---|---|---|
 >|  |  | {'spamScore': 100, 'phishScore': 100, 'threatsInfoMap': [{'threatID': '9a53601a616eb78609e525c0f73356c3d9ff80f00e782105ff08c53ee5a3cfca', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com', 'threatTime': '2021-06-07T00:47:12.000Z', 'threat': 'storage.libertychurch9848737878.io/login/verify', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/b72f9ac2cec86c5f2fb795ea47f2aea23d402fe46c5c64e2565363464b1b0eb2', 'threatTime': '2021-06-07T00:47:23.000Z', 'threat': 'libertychurch9848737878.io', 'campaignID': None, 'threatType': 'url'}, {'threatID': 'da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatStatus': 'active', 'classification': 'phish', 'threatUrl': 'https://threatinsight.proofpoint.com/1c863185-589c-ad2d-49cb-0020fe555aae/threat/email/da0ba8d6a9d5111900f5927eb4554e49fd30e6c5c4ad5b0c975feeb19c3bfc5b', 'threatTime': '2021-06-07T00:47:22.000Z', 'threat': 'storage.libertychurch9848737878.io/login/', 'campaignID': None, 'threatType': 'url'}], 'messageTime': '2021-06-07T01:50:00.000Z', 'impostorScore': 0.0, 'malwareScore': 0, 'cluster': 'hosted', 'subject': 'Your mailbox is full......', 'quarantineFolder': 'Phish', 'quarantineRule': 'inbound_spam_phish', 'policyRoutes': ['default_inbound'], 'modulesRun': ['av', 'spf', 'dkimv', 'spam', 'dmarc', 'pdr', 'urldefense'], 'messageSize': 3684, 'headerFrom': '"xxxx@xxx.com" <xxxx@xxx.com>', 'headerReplyTo': None, 'fromAddress': ['xxxx@xxx.com'], 'ccAddresses': [], 'replyToAddress': [], 'toAddresses': ['xxxx@xxx.com'], 'xmailer': None, 'messageParts': [{'disposition': 'inline', 'sha256': '99e2546be00c1c2a763a51861f6b29818710dsfsdf51843dc18542ba1417b0b464c00f', 'md5': 'af671999d59182d8e66e100d4140b577', 'filename': 'text.html', 'sandboxStatus': None, 'oContentType': 'text/html', 'contentType': 'text/html'}], 'completelyRewritten': False, 'id': '867899c4-bbde-9948-f0a2-740c13aafb98', 'QID': '3901vhsdvf0q5d-1', 'GUID': '9JRzwqisvsdvZEzBenEM48ItsowO9ZJ1jmBbo', 'sender': 'xxxx@xxx.com', 'recipient': ['xxxx@xxx.com'], 'senderIP': '000.000.000.000', 'messageID': '<xxxx@xxx.com>'}
+
 ### proofpoint-get-forensics
 ***
 Returns forensics evidence.
@@ -257,7 +259,7 @@ Returns forensics evidence.
 | Proofpoint.Report.Attachment.Display | String | A friendly display string. | 
 | Proofpoint.Report.Attachment.SHA256 | String | The SHA256 hash of the attachment's contents. | 
 | Proofpoint.Report.Attachment.MD5 | String | The MD5 hash of the attachment's contents. | 
-| Proofpoint.Report.Attachment.Blacklisted | Number | Optional. Whether the file was blacklisted. | 
+| Proofpoint.Report.Attachment.Blacklisted | Number | Optional. Whether the file was block listed. | 
 | Proofpoint.Report.Attachment.Offset | Number | Optional. The offset in bytes where the malicious content was found. | 
 | Proofpoint.Report.Attachment.Size | Number | Optional. The size in bytes of the attachment's contents. | 
 | Proofpoint.Report.Attachment.Platform.Name | String | The name of the platform. | 
@@ -353,7 +355,7 @@ Returns forensics evidence.
 | Proofpoint.Report.URL.Malicious | String | Whether the evidence was used to reach a malicious verdict. | 
 | Proofpoint.Report.URL.Display | String | A friendly display string. | 
 | Proofpoint.Report.URL.URL | String | The URL which was observed. | 
-| Proofpoint.Report.URL.Blacklisted | Boolean | Optional. Whether the URL appeared on a blacklist. | 
+| Proofpoint.Report.URL.Blacklisted | Boolean | Optional. Whether the URL appeared on a block list. | 
 | Proofpoint.Report.URL.SHA256 | String | Optional. The SHA256 hash of the file downloaded from the URL. | 
 | Proofpoint.Report.URL.MD5 | String | Optional. The MD5 hash of the file downloaded from the URL. | 
 | Proofpoint.Report.URL.Size | Number | Optional. The size in bytes of the file retrieved from the URL. | 

@@ -41,7 +41,7 @@ def test_verify_is_email(address, valid):
 
 ARGS = {
     'input': 'Xsoar@test.org.de,Xsoar@test.eml, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'}
-EXPECTED_RESULTS = ['Xsoar@test.org.de', 'Xsoar@test.uk', 'Xsoar@xsoar.co.il']
+EXPECTED_RESULTS = ['Xsoar@test.org.de', '', 'Xsoar@test.uk', '', 'Xsoar@xsoar.co.il']
 
 
 def test_main(mocker):

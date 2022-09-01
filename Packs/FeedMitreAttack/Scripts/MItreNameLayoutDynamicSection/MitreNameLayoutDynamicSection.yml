@@ -2,7 +2,7 @@ commonfields:
   id: MitreNameLayoutDynamicSection
   version: -1
 name: MitreNameLayoutDynamicSection
-comment: Populates the MITRE ATT&CK name for the MITRE ATT&CK indicator layout
+comment: Deprecated. Use FeedMitreAttackv2 instead.
 script: '-'
 type: python
 tags:
@@ -11,8 +11,9 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.5.0
+deprecated: true
 tests:
 - No test

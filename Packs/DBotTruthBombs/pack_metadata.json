@@ -1,13 +1,19 @@
 {
     "name": "DBot Truth Bombs",
-    "description": "Nefarious attackers coming in at you from all fronts. Don’t you wish you could just go Texas Ranger on them?",
+    "description": "Nefarious attackers coming in at you from all fronts. Don't you wish you could just go Texas Ranger on them?",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -2763,8 +2763,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.os_build | String | The mobile device operating system build. | 
 | JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
 | JAMF.MobileDevice.udid | String | The mobile device UDID. | 
-| JAMF.MobileDevice.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch format. | 
-| JAMF.MobileDevice.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC format. | 
+| JAMF.MobileDevice.initial_entry_date_epoch | Date | The mobile device initial entry date in epoch format. | 
+| JAMF.MobileDevice.initial_entry_date_utc | Date | The mobile device initial entry date in UTC format. | 
 | JAMF.MobileDevice.phone_number | String | The mobile device phone number. | 
 | JAMF.MobileDevice.ip_address | String | The mobile device IP address. | 
 | JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI MAC address. | 
@@ -3530,7 +3530,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.network.current_mobile_network_code | String | The mobile device current mobile network code. | 
 | JAMF.MobileDeviceSubset.network.home_mobile_country_code | String | The mobile device home mobile country code. | 
 | JAMF.MobileDeviceSubset.network.home_mobile_network_code | String | The mobile device home mobile network code. | 
-| JAMF.MobileDeviceSubset.network.data_roaming_enabled | Boolean | Whether the the mobile device has data roaming enabled. | 
+| JAMF.MobileDeviceSubset.network.data_roaming_enabled | Boolean | Whether the mobile device has data roaming enabled. | 
 | JAMF.MobileDeviceSubset.network.roaming | Boolean | Whether the mobile device has network roaming. | 
 | JAMF.MobileDeviceSubset.network.phone_number | String | The mobile device network phone number. | 
 

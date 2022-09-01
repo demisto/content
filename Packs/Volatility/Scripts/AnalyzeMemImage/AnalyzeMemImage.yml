@@ -1,0 +1,25 @@
+commonfields:
+  id: AnalyzeMemImage
+  version: -1
+name: AnalyzeMemImage
+script: ''
+type: javascript
+tags:
+- memory
+- forensics
+- volatility
+- server
+comment: Use Volatility to run common memory image analysis commands
+system: true
+args:
+- name: memdump
+  required: true
+  default: true
+  description: Path to memory dump file on the system being used
+- name: system
+  required: true
+  description: System with Volatility installed to be used for the analysis
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

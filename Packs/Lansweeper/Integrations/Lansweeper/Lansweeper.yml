@@ -1,0 +1,289 @@
+category: IT Services
+commonfields:
+  id: Lansweeper
+  version: -1
+configuration:
+- additionalinfo: Identity code generated for the specific application.
+  display: Application Identity Code
+  name: identity_code
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: The Lansweeper integration allows users to retrieve the asset details.
+display: Lansweeper
+name: Lansweeper
+script:
+  commands:
+  - deprecated: false
+    description: Retrieve a list of all sites to which an application has access.
+    execution: false
+    name: ls-site-list
+    outputs:
+    - contextPath: Lansweeper.Site.id
+      description: Site ID.
+      type: String
+    - contextPath: Lansweeper.Site.name
+      description: Site name.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the site ID to retrieve the assets.
+
+        Note: To get site ID, execute ls-site-list command.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the IP address to retrieve the specific asset. \n\nNote:\
+        \ Supports multiple comma separated values."
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Number of records to retrieve in the response.
+
+        Note: The minimum value supported is 1 and maximum value supported is 500.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return a list of all assets associated with a given site and IP address.
+    execution: false
+    name: ls-ip-hunt
+    outputs:
+    - contextPath: Lansweeper.IP.assetId
+      description: Asset ID.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.name
+      description: Asset name.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.domain
+      description: Domain the asset belongs to.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.description
+      description: Description of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.firstSeen
+      description: Date and time at which the asset was first scanned.
+      type: Date
+    - contextPath: Lansweeper.IP.assetBasicInfo.fqdn
+      description: FQDN of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.ipAddress
+      description: IP address associated with the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.lastSeen
+      description: Date and time at which the asset was last scanned.
+      type: Date
+    - contextPath: Lansweeper.IP.assetBasicInfo.mac
+      description: Asset's main MAC address.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.userName
+      description: Name of the last logged on user.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.type
+      description: Type of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetBasicInfo.userDomain
+      description: Domain of the last logged on user.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.sku
+      description: Asset's SKU.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.model
+      description: Model of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.firmwareVersion
+      description: Firmware version, retrieved from plug and play devices via the
+        UPnP, DNS-SD or SSDP protocol.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.purchaseDate
+      description: When the asset was purchased.
+      type: Date
+    - contextPath: Lansweeper.IP.assetCustom.warrantyDate
+      description: When the asset's warranty expires.
+      type: Date
+    - contextPath: Lansweeper.IP.assetCustom.comment
+      description: Comment on the asset..
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.location
+      description: Location of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.contact
+      description: Contact person of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.manufacturer
+      description: Manufacturer of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.serialNumber
+      description: Serial number of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.dnsName
+      description: DNS name of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.assetCustom.stateName
+      description: State name of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.operatingSystem.caption
+      description: Short description of the object. The string includes the operating
+        system version.
+      type: String
+    - contextPath: Lansweeper.IP.operatingSystem.productType
+      description: Type of the operating system.
+      type: String
+    - contextPath: Lansweeper.IP.url
+      description: URL to the summary of the asset.
+      type: String
+    - contextPath: Lansweeper.IP.siteId
+      description: The ID of the site to which the asset belongs.
+      type: String
+    - contextPath: Lansweeper.IP.siteName
+      description: The name of the site to which the asset belongs.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the site ID to retrieve the assets.
+
+        Note: To get site ID, execute ls-site-list command.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the MAC address to retrieve the specific asset. \n\nNote:\
+        \ Supports multiple comma separated values."
+      isArray: true
+      name: mac_address
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Number of records to retrieve in the response.
+
+        Note: The minimum value supported is 1 and maximum value supported is 500.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return a list of all assets associated with a given site and MAC
+      address.
+    execution: false
+    name: ls-mac-hunt
+    outputs:
+    - contextPath: Lansweeper.Mac.assetId
+      description: Asset ID.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.name
+      description: Asset name.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.domain
+      description: Domain the asset belongs to.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.description
+      description: Description of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.firstSeen
+      description: Date and time at which the asset was first scanned.
+      type: Date
+    - contextPath: Lansweeper.Mac.assetBasicInfo.fqdn
+      description: FQDN of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.ipAddress
+      description: IP address associated with the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.lastSeen
+      description: Date and time at which the asset was last scanned.
+      type: Date
+    - contextPath: Lansweeper.Mac.assetBasicInfo.mac
+      description: Asset's main MAC address.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.userName
+      description: Name of the last logged on user.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.type
+      description: Type of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetBasicInfo.userDomain
+      description: Domain of the last logged on user.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.sku
+      description: Asset's SKU.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.model
+      description: Model of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.firmwareVersion
+      description: Firmware version, retrieved from plug and play devices via the
+        UPnP, DNS-SD or SSDP protocol.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.purchaseDate
+      description: When the asset was purchased.
+      type: Date
+    - contextPath: Lansweeper.Mac.assetCustom.warrantyDate
+      description: When the asset's warranty expires.
+      type: Date
+    - contextPath: Lansweeper.Mac.assetCustom.comment
+      description: Comment on the asset..
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.location
+      description: Location of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.contact
+      description: Contact person of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.manufacturer
+      description: Manufacturer of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.serialNumber
+      description: Serial number of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.dnsName
+      description: DNS name of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.assetCustom.stateName
+      description: State name of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.operatingSystem.caption
+      description: Short description of the object. The string includes the operating
+        system version.
+      type: String
+    - contextPath: Lansweeper.Mac.operatingSystem.productType
+      description: Type of the operating system.
+      type: String
+    - contextPath: Lansweeper.Mac.url
+      description: URL to the summary of the asset.
+      type: String
+    - contextPath: Lansweeper.Mac.siteId
+      description: The ID of the site to which the asset belongs.
+      type: String
+    - contextPath: Lansweeper.Mac.siteName
+      description: The name of the site to which the asset belongs.
+      type: String
+  dockerimage: demisto/python3:3.9.9.25564
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Lansweeper-Test
+fromversion: 6.0.0

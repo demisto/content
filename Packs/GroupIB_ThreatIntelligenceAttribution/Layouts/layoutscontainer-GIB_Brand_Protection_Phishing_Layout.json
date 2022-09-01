@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Brand Protection Phishing",
     "detailsV2": {
         "tabs": [
             {
@@ -80,6 +81,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -90,6 +92,7 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -102,6 +105,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
@@ -115,6 +119,7 @@
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxW": 3,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -127,6 +132,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Child Incidents",
                         "static": false,
@@ -139,6 +145,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
@@ -152,6 +159,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
@@ -164,6 +172,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -225,6 +234,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
@@ -266,6 +276,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
@@ -289,6 +300,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
@@ -338,7 +350,7 @@
                                 "fieldId": "gibseverity",
                                 "height": 22,
                                 "id": "ccadc250-72c7-11eb-9bde-efbce7414b24",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -349,7 +361,7 @@
                                 "fieldId": "gibtargetbrand",
                                 "height": 22,
                                 "id": "34252190-7362-11eb-8aef-c39e29f029fe",
-                                "index": 5,
+                                "index": 4,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -360,7 +372,7 @@
                                 "fieldId": "gibtargetcategory",
                                 "height": 22,
                                 "id": "379cbc20-7362-11eb-8aef-c39e29f029fe",
-                                "index": 6,
+                                "index": 5,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -370,6 +382,15 @@
                                 "fieldId": "gibtargetdomain",
                                 "height": 22,
                                 "id": "386d5290-7362-11eb-8aef-c39e29f029fe",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibtitle",
+                                "height": 22,
+                                "id": "dbb7e350-30dd-11ec-bc63-2be9e447c87d",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -379,7 +400,7 @@
                                 "fieldId": "gibid",
                                 "height": 22,
                                 "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
-                                "index": 8,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -389,7 +410,7 @@
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
-                                "index": 9,
+                                "index": 10,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -399,7 +420,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB TI\u0026A",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -440,6 +461,5 @@
     "name": "GIB Brand Protection Phishing Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

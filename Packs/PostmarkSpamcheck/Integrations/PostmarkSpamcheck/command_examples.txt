@@ -1,0 +1,2 @@
+!postmark-spamcheck entryid="654@731f1b54-bdea-4d4a-860f-328527df0cd7"
+!postmark-spamcheck entryid="654@731f1b54-bdea-4d4a-860f-328527df0cd7" short=True

@@ -26,10 +26,25 @@ args:
   name: body
   required: false
   secret: false
-comment: Copies a file from this incident to the specified incident. The file is recorded
-  as an entry in the specified incident’s War Room.
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'war room entry'
+  description: |-
+    Where to upload the file
+    - Available options are:
+    - `war room entry`: the file will be uploaded as war room entry.
+    - `incident attachment`: the file will be uploaded as incident attachment.
+    - default are `war room entry`
+  isArray: false
+  name: target
+  predefined:
+  - 'war room entry'
+  - 'incident attachment'
+  required: false
+  secret: false
+comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.10.1.26972
 system: false
 tags:
 - DemistoAPI
@@ -39,3 +54,5 @@ runonce: false
 dependson:
   must:
   - demisto-api-multipart
+tests:
+- No tests (auto formatted)

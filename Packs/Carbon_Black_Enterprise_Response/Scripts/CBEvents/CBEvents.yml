@@ -1,0 +1,26 @@
+commonfields:
+  id: CBEvents
+  version: -1
+name: CBEvents
+script: ''
+type: javascript
+tags:
+- carbon-black
+- endpoint
+- enhancement
+comment: Returns all events associated with a process query
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Query to match against events
+scripttarget: 0
+dependson:
+  must:
+  - cb-process
+  - process-events
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

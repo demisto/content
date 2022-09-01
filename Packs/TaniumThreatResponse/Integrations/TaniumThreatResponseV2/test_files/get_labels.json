@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "Alpha",
+        "description": "Alpha label.",
+        "indicatorCount": 1,
+        "signalCount": 1,
+        "createdAt": "2019-07-31T18:46:28.629Z",
+        "updatedAt": "2019-07-31T18:46:28.629Z"
+    },
+    {
+        "id": 2,
+        "name": "Beta",
+        "description": "Beta label.",
+        "indicatorCount": 1,
+        "signalCount": 1,
+        "createdAt": "2019-07-31T18:46:28.629Z",
+        "updatedAt": "2019-07-31T18:46:28.629Z"
+    }
+]

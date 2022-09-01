@@ -1,2 +1,8 @@
 [file:playbook-Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.yml]
 ignore=PB114,PB115
+
+[file:PrismaAccess.yml]
+ignore=IN145
+
+[file:PrismaAccessEgressIPFeed.yml]
+ignore=IN145,IN124

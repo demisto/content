@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportreporterusername",
+    "version": -1,
+    "modified": "2021-08-25T18:09:28.260330585+05:30",
+    "name": "HackerOne Report Reporter Username",
+    "ownerOnly": false,
+    "description": "The username of the reporter.",
+    "cliName": "hackeronereportreporterusername",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

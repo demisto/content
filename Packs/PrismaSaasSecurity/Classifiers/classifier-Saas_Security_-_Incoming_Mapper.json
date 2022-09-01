@@ -1,80 +1,167 @@
 {
-  "description": "Maps incoming Saas Security incidents fields.",
-  "feed": false,
-  "id": "Saas Security - Incoming Mapper",
-  "mapping": {
-    "Saas Security Incident": {
-      "dontMapEventToLabels": true,
-      "internalMapping": {
-        "Policy URI": {
-          "complex": null,
-          "simple": "policy_page_uri"
+    "description": "Maps incoming Saas Security incidents fields.",
+    "feed": false,
+    "id": "Saas Security - Incoming Mapper",
+    "mapping": {
+        "Saas Security Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Saas Security Asset Name": {
+                    "complex": null,
+                    "simple": "asset_name"
+                },
+                "Saas Security Asset URL": {
+                    "complex": null,
+                    "simple": "asset_page_uri"
+                },
+                "Saas Security Incident Id": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Saas Security Incident Severity Level": {
+                    "complex": null,
+                    "simple": "severity_level"
+                },
+                "Policy URI": {
+                    "complex": null,
+                    "simple": "policy_page_uri"
+                },
+                "App": {
+                    "complex": null,
+                    "simple": "app_name"
+                },
+                "Close Time": {
+                    "complex": null,
+                    "simple": "resolution_date"
+                },
+                "Exposure Level": {
+                    "complex": null,
+                    "simple": "exposure_level"
+                },
+                "Item Owner": {
+                    "complex": null,
+                    "simple": "asset_owner_name"
+                },
+                "Item Owner Email": {
+                    "complex": null,
+                    "simple": "asset_owner_email"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "updated_at"
+                },
+                "Policy Details": {
+                    "complex": null,
+                    "simple": "policy_name"
+                },
+                "Policy ID": {
+                    "complex": null,
+                    "simple": "policy_id"
+                },
+                "SHA256": {
+                    "complex": null,
+                    "simple": "asset_sha256"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "Tenant Name": {
+                    "complex": null,
+                    "simple": "tenant"
+                },
+                "category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Saas Security State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "Saas Security Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Saas Security Assigned To": {
+                    "complex": null,
+                    "simple": "assigned_to"
+                },
+                "Saas Security Resolved By": {
+                    "complex": null,
+                    "simple": "resolved_by"
+                },
+                "Saas Security Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Saas Security Asset ID": {
+                    "complex": null,
+                    "simple": "asset_id"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "asset_name"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "created_at"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity_level"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "IncomingMirrorError": {
+                    "complex": null,
+                    "simple": "in_mirror_error"
+                },
+                "Saas Security Asset Owner": {
+                    "complex": null,
+                    "simple": "asset_owner_name"
+                },
+                "Saas Security Asset Owner Email": {
+                    "complex": null,
+                    "simple": "asset_owner_email"
+                }
+            }
         },
-        "App": {
-          "complex": null,
-          "simple": "app_name"
-        },
-        "Close Time": {
-          "complex": null,
-          "simple": "resolution_date"
-        },
-        "Exposure Level": {
-          "complex": null,
-          "simple": "exposure_level"
-        },
-        "Item Owner": {
-          "complex": null,
-          "simple": "asset_owner_name"
-        },
-        "Item Owner Email": {
-          "complex": null,
-          "simple": "asset_owner_email"
-        },
-        "Last Update Time": {
-          "complex": null,
-          "simple": "updated_at"
-        },
-        "Policy Details": {
-          "complex": null,
-          "simple": "policy_name"
-        },
-        "Policy ID": {
-          "complex": null,
-          "simple": "policy_id"
-        },
-        "SHA256": {
-          "complex": null,
-          "simple": "asset_sha256"
-        },
-        "State": {
-          "complex": null,
-          "simple": "state"
-        },
-        "Tenant Name": {
-          "complex": null,
-          "simple": "tenant"
-        },
-        "category": {
-          "complex": null,
-          "simple": "category"
-        },
-        "name": {
-          "complex": null,
-          "simple": "asset_name"
-        },
-        "occurred": {
-          "complex": null,
-          "simple": "created_at"
-        },
-        "severity": {
-          "complex": null,
-          "simple": "severity"
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Saas Security Incident Severity Level": {
+                    "complex": null,
+                    "simple": "severity_level"
+                }
+            }
         }
-      }
-    }
-  },
-  "name": "Saas Security - Incoming Mapper",
-  "type": "mapping-incoming",
-  "version": -1,
-  "fromVersion": "6.0.0"
+    },
+    "name": "Saas Security - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

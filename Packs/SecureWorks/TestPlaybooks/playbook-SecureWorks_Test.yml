@@ -1,485 +1,1052 @@
-id: secureworks_test
+id: SecureWorks
+name: SecureWorks
 version: -1
-name: Secureworks test
-description: Secureworks test playbook
-starttaskid: "0"
+fromversion: 5.0.0
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: dd28c72d-f5ef-4ff9-8249-1b1bc812e15e
+  '0':
+    id: '0'
+    taskid: 'eb5ae06d-a140-4710-91f3-5f3669d85f8b'
     type: start
     task:
-      id: dd28c72d-f5ef-4ff9-8249-1b1bc812e15e
+      id: 'eb5ae06d-a140-4710-91f3-5f3669d85f8b'
       version: -1
-      name: ""
-      description: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
-  "1":
-    id: "1"
-    taskid: 264a8856-3c4f-4708-82b6-6c720bf20eb9
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '7b9228d5-5a42-4bb1-b25b-3d6f69036635'
     type: regular
     task:
-      id: 264a8856-3c4f-4708-82b6-6c720bf20eb9
+      id: '7b9228d5-5a42-4bb1-b25b-3d6f69036635'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '6cd93025-87b8-4dd1-826b-9bfd34578f6e'
+    type: regular
+    task:
+      id: '6cd93025-87b8-4dd1-826b-9bfd34578f6e'
       version: -1
       name: secure-works-create-ticket
-      description: Create a new ticket
+      description: ''
       script: Dell Secureworks|||secure-works-create-ticket
       type: regular
       iscommand: true
-      brand: Dell Secureworks
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
-    scriptarguments:
-      assignedGroupId: {}
-      assignedTicket2: {}
-      attachments: {}
-      categorizationCategory: {}
-      categorizationClass: {}
-      categorizationItem: {}
-      categorizationType: {}
-      changeSlo: {}
-      changeWindowEnd: {}
-      changeWindowStart: {}
-      clientLocationRef:
-        simple: https://prov.core.ctp.secureworks.net/prov/clientlocations/752373
-      clientRef:
-        simple: https://prov.core.ctp.secureworks.net/prov/clients/3016296
-      customerMiscellaneous1: {}
-      customerMiscellaneous2: {}
-      customerMiscellaneous3: {}
-      customerMiscellaneous4: {}
-      detail:
-        simple: This is a test ticket for API testing
-      deviceRef: {}
-      externalTicket: {}
-      impact: {}
-      partner: {}
-      pocContactRef:
-        simple: https://prov.core.ctp.secureworks.net/prov/contacts/2215505
-      priority: {}
-      requestType:
-        simple: SCWX API support
-      riskAssessment: {}
-      source: {}
-      title:
-        simple: Testing API Ticket Creation 2
-      urgency: {}
-      vendor: {}
-      watchers: {}
+      - '3'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
+    view: '{"position": {"x": 50, "y": 400}}'
     note: false
-  "2":
-    id: "2"
-    taskid: 527601f0-98c8-4d46-83b5-239642d04ecd
-    type: regular
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '616eda51-2a27-49f2-a640-2b5f070ff12b'
+    type: condition
     task:
-      id: 527601f0-98c8-4d46-83b5-239642d04ecd
+      id: '616eda51-2a27-49f2-a640-2b5f070ff12b'
       version: -1
-      name: secure-works-get-ticket
-      description: Get the details of a specific ticket, by ID
-      script: Dell Secureworks|||secure-works-get-ticket
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
     nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      id:
-        simple: ${SecureWorks.Ticket.ticketId}
-      includeWorklogs: {}
+      yes:
+      - '4'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.CreationStatusCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
     note: false
-  "3":
-    id: "3"
-    taskid: ab28006b-f70c-40b1-8a98-322ba326b548
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '26b13554-efd0-400c-9500-7ae994dc05dc'
     type: regular
     task:
-      id: ab28006b-f70c-40b1-8a98-322ba326b548
+      id: '26b13554-efd0-400c-9500-7ae994dc05dc'
       version: -1
       name: secure-works-update-ticket
-      description: Update an existing ticket
+      description: ''
       script: Dell Secureworks|||secure-works-update-ticket
       type: regular
       iscommand: true
-      brand: Dell Secureworks
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
-    scriptarguments:
-      customerMiscellaneous1:
-        simple: test
-      customerMiscellaneous2: {}
-      customerMiscellaneous3: {}
-      customerMiscellaneous4: {}
-      externalGroupName: {}
-      externalTicketNum: {}
-      externalTicketNum2: {}
-      id:
-        simple: ${SecureWorks.Ticket.ticketId}
-      vendor: {}
-      watchers: {}
+      - '5'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
+    view: '{"position": {"x": 50, "y": 800}}'
     note: false
-  "4":
-    id: "4"
-    taskid: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
-    type: regular
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '952fb562-f615-4426-bd8f-8fb8dbbd5f53'
+    type: condition
     task:
-      id: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
+      id: '952fb562-f615-4426-bd8f-8fb8dbbd5f53'
       version: -1
-      name: Verify ticket updated
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: Verify Outputs
+      type: condition
       iscommand: false
-      brand: ""
+      description: ''
+      brand: ''
     nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue:
-        simple: test
-      fields:
-        simple: customerMiscellaneous1
-      path:
-        simple: SecureWorks.Ticket
+      yes:
+      - '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.UpdateStatusCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
     note: false
-  "5":
-    id: "5"
-    taskid: 7aa37d61-c369-4e91-8a42-f537d8f9509b
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '7525e17b-90ec-4422-b9f7-7970e76f43f0'
     type: regular
     task:
-      id: 7aa37d61-c369-4e91-8a42-f537d8f9509b
-      version: -1
-      name: secure-works-get-tickets-updates
-      description: Retrieves tickets from 24 hours prior to when the updates command is executed. If a limit is specified, it will retrieve up to that many tickets (max is 500 tickets). Tickets must be updated within the last 24 hours to be visible in the command results. When executing this command you also receive the ticket worklogs. In order to view the attachment information of a specific ticket, you must use the get-ticket command. This command will return the list of attachments available for that particular ticket. Use acknowledge to confirm the updates.
-      script: Dell Secureworks|||secure-works-get-tickets-updates
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      acknowledge:
-        simple: "true"
-      groupingType: {}
-      limit: {}
-      ticketType: {}
-      worklogs: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
-    type: regular
-    task:
-      id: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
-      version: -1
-      name: secure-works-get-tickets-ids
-      description: Get a list of ticket IDs in the same order as the tickets returned by the GET /tickets/updates command.
-      script: Dell Secureworks|||secure-works-get-tickets-ids
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      groupingType: {}
-      limit: {}
-      ticketType:
-        simple: SERVICE_REQUEST
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
-    type: regular
-    task:
-      id: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
-      version: -1
-      name: secure-works-get-ticket-count
-      description: Retrieve a count of tickets that have been updated and not yet acknowledged
-      script: Dell Secureworks|||secure-works-get-ticket-count
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      ticketType: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: f620940a-69cd-4ef6-830c-74bc2ab605d8
-    type: regular
-    task:
-      id: f620940a-69cd-4ef6-830c-74bc2ab605d8
-      version: -1
-      name: Verify Ticket ID
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      expectedValue:
-        simple: ${SecureWorks.Ticket.ticketId}
-      fields: {}
-      path:
-        simple: SecureWorks.ticketIds
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 258ee162-cd24-422f-82ba-778529f8834e
-    type: regular
-    task:
-      id: 258ee162-cd24-422f-82ba-778529f8834e
+      id: '7525e17b-90ec-4422-b9f7-7970e76f43f0'
       version: -1
       name: secure-works-close-ticket
-      description: Close a ticket
+      description: ''
       script: Dell Secureworks|||secure-works-close-ticket
       type: regular
       iscommand: true
-      brand: Dell Secureworks
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
-    scriptarguments:
-      closeCode:
-        simple: Work Completed
-      id:
-        simple: ${SecureWorks.Ticket.ticketId}
-      worklogContent: {}
+      - '7'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
+    view: '{"position": {"x": 50, "y": 1200}}'
     note: false
-  "10":
-    id: "10"
-    taskid: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: 'af0003c2-1bc2-4612-ad09-24e101ceb8d3'
+    type: condition
+    task:
+      id: 'af0003c2-1bc2-4612-ad09-24e101ceb8d3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ClosureStatusCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '27f67155-4314-4ca0-9cb0-cfe2c1585e71'
     type: regular
     task:
-      id: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
+      id: '27f67155-4314-4ca0-9cb0-cfe2c1585e71'
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: secure-works-add-worklogs-ticket
+      description: ''
+      script: Dell Secureworks|||secure-works-add-worklogs-ticket
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      - '9'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
+    view: '{"position": {"x": 50, "y": 1600}}'
     note: false
-  "11":
-    id: "11"
-    taskid: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
-    type: title
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '1d3859be-7396-45bf-b6fe-48fb54f97453'
+    type: condition
     task:
-      id: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
+      id: '1d3859be-7396-45bf-b6fe-48fb54f97453'
       version: -1
-      name: Done
-      description: ""
-      type: title
+      name: Verify Outputs
+      type: condition
       iscommand: false
-      brand: ""
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.WorklogAdditionStatusCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
     note: false
-  "12":
-    id: "12"
-    taskid: f43b21f0-5059-4115-8264-c79de699e822
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '38dca0c5-8bfb-4733-b0d5-bf3b4c16d3a1'
     type: regular
     task:
-      id: f43b21f0-5059-4115-8264-c79de699e822
+      id: '38dca0c5-8bfb-4733-b0d5-bf3b4c16d3a1'
       version: -1
-      name: secure-works-get-ticket with attachments
-      description: Get the details of a specific ticket, by ID
+      name: secure-works-get-ticket
+      description: ''
       script: Dell Secureworks|||secure-works-get-ticket
       type: regular
       iscommand: true
-      brand: Dell Secureworks
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
-    scriptarguments:
-      getAttachments:
-        simple: "true"
-      id:
-        simple: ${SecureWorks.Ticket.ticketId}
-      includeWorklogs: {}
+      - '11'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
+    view: '{"position": {"x": 50, "y": 2000}}'
     note: false
-  "13":
-    id: "13"
-    taskid: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: 'bc687841-fd77-4c9d-97b4-b7d61fc1f23d'
+    type: condition
+    task:
+      id: 'bc687841-fd77-4c9d-97b4-b7d61fc1f23d'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeApproval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.attachmentInfo.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeSlo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeWindowStart
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeWindowEnd
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.client.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.client.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.contact.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.contact.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateClosed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateModified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.detailedDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.devices.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.devices.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.clientLocation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.partner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.requestType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.riskAssessment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.symptomDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.urgency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.watchers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryClass
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryItem
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.attachmentInfo.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.clientLocation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.closeCodes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '1db70a11-f998-47cb-b719-36aae2608c0f'
     type: regular
     task:
-      id: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+      id: '1db70a11-f998-47cb-b719-36aae2608c0f'
       version: -1
-      name: Verify File
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      name: secure-works-assign-ticket
+      description: ''
+      script: Dell Secureworks|||secure-works-assign-ticket
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: File
+      - '13'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
+    view: '{"position": {"x": 50, "y": 2400}}'
     note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2310,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '9f7dde52-5761-4dc0-a65c-aa10b296b09f'
+    type: condition
+    task:
+      id: '9f7dde52-5761-4dc0-a65c-aa10b296b09f'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.AssignStatusCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '92801cc9-9012-44cf-bfa0-64520de40b32'
+    type: regular
+    task:
+      id: '92801cc9-9012-44cf-bfa0-64520de40b32'
+      version: -1
+      name: secure-works-get-tickets-updates
+      description: ''
+      script: Dell Secureworks|||secure-works-get-tickets-updates
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '6ee1b359-0dd7-44f3-9f87-229bb7d3b974'
+    type: condition
+    task:
+      id: '6ee1b359-0dd7-44f3-9f87-229bb7d3b974'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeApproval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.attachmentInfo.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeSlo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeWindowStart
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.changeWindowEnd
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.client.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.client.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.contact.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.contact.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateClosed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.dateModified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.detailedDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.devices.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.devices.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.clientLocation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.partner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.requestType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.riskAssessment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.symptomDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.urgency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.watchers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryClass
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.categoryItem
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.attachmentInfo.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.clientLocation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.worklogs.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.closeCodes
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '4c96b60e-a63d-490e-bebf-17f793d03fdb'
+    type: regular
+    task:
+      id: '4c96b60e-a63d-490e-bebf-17f793d03fdb'
+      version: -1
+      name: secure-works-get-close-codes
+      description: ''
+      script: Dell Secureworks|||secure-works-get-close-codes
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '7340eb8e-966f-4e26-8fec-b8293e8885e5'
+    type: condition
+    task:
+      id: '7340eb8e-966f-4e26-8fec-b8293e8885e5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.ticketID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.Ticket.closeCodes
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'b26bf180-09c9-470e-9a87-728410b8dfe1'
+    type: regular
+    task:
+      id: 'b26bf180-09c9-470e-9a87-728410b8dfe1'
+      version: -1
+      name: secure-works-get-tickets-ids
+      description: ''
+      script: Dell Secureworks|||secure-works-get-tickets-ids
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '5fdcd244-a84e-4a29-810c-4ce9f11263ac'
+    type: condition
+    task:
+      id: '5fdcd244-a84e-4a29-810c-4ce9f11263ac'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.IDs
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '45182c0f-099e-4ba5-a8fd-f7636ec4569d'
+    type: regular
+    task:
+      id: '45182c0f-099e-4ba5-a8fd-f7636ec4569d'
+      version: -1
+      name: secure-works-get-ticket-count
+      description: ''
+      script: Dell Secureworks|||secure-works-get-ticket-count
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '53b9f149-13bc-464d-ac9f-327e0515eae8'
+    type: condition
+    task:
+      id: '53b9f149-13bc-464d-ac9f-327e0515eae8'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SecureWorks.TicketCount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: '22'
+    taskid: '6fbef5b8-b290-4513-81bd-97635bbb2202'
+    type: title
+    task:
+      id: '6fbef5b8-b290-4513-81bd-97635bbb2202'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
-fromversion: 5.0.0

@@ -1,0 +1,32 @@
+commonfields:
+  id: impossibleTravelerGetDistance
+  version: -1
+name: impossibleTravelerGetDistance
+script: ''
+type: python
+tags:
+- Utilities
+comment: Computes the distance between two sets of coordinates, in miles.
+enabled: true
+args:
+- name: src_coords
+  required: true
+  description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56
+  isArray: true
+- name: dest_coords
+  required: false
+  description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56
+  isArray: true
+outputs:
+- contextPath: GeoEvents
+  description: The calculated events for each input
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/py3-tools:0.0.1.30715
+runas: DBotWeakRole
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2

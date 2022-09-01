@@ -1,0 +1,930 @@
+id: Test-AnsibleCiscoNXOS
+version: -1
+name: Test-AnsibleCiscoNXOS
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5beac53-e9ec-4d0c-8d53-da90e723661c
+    type: start
+    task:
+      id: c5beac53-e9ec-4d0c-8d53-da90e723661c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+    type: regular
+    task:
+      id: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+      - "34"
+      - "35"
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 420a1805-664f-42b7-8103-e2eb487295e7
+    type: title
+    task:
+      id: 420a1805-664f-42b7-8103-e2eb487295e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d911811f-b1c7-463e-8efc-1384b706fccc
+    type: regular
+    task:
+      id: d911811f-b1c7-463e-8efc-1384b706fccc
+      version: -1
+      name: nxos-facts
+      description: |-
+        Gets facts about NX-OS switches
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html
+      script: '|||nxos-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      gather_network_resources: {}
+      gather_subset: {}
+      host:
+        simple: ${inputs.host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: ff1553b2-548c-49c3-88f4-04bce2e349c3
+    type: condition
+    task:
+      id: ff1553b2-548c-49c3-88f4-04bce2e349c3
+      version: -1
+      name: check nxos-facts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoNXOS.NxosFacts.net_serialnum
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: d1f683de-a0a5-402b-8601-aa0c36e7e817
+    type: regular
+    task:
+      id: d1f683de-a0a5-402b-8601-aa0c36e7e817
+      version: -1
+      name: nxos-banner
+      description: |-
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      banner:
+        simple: motd
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: present
+      text:
+        simple: Test Playbook Banner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 089d1e0d-639e-4f78-8e71-cce67ae8bfab
+    type: regular
+    task:
+      id: 089d1e0d-639e-4f78-8e71-cce67ae8bfab
+      version: -1
+      name: nxos-command
+      description: |-
+        Run arbitrary command on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html
+      script: '|||nxos-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      commands:
+        simple: show version
+      host:
+        simple: ${inputs.host}
+      interval: {}
+      match: {}
+      retries: {}
+      wait_for: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 071e092e-4270-49da-8a73-f6f8e71b86ae
+    type: regular
+    task:
+      id: 071e092e-4270-49da-8a73-f6f8e71b86ae
+      version: -1
+      name: Generate random password
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "12"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "True"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: c99aa6f3-d911-47ca-827c-36c7f618f738
+    type: regular
+    task:
+      id: c99aa6f3-d911-47ca-827c-36c7f618f738
+      version: -1
+      name: nxos-user
+      description: |-
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      aggregate: {}
+      configured_password:
+        simple: ${RandomString}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      purge: {}
+      role: {}
+      sshkey: {}
+      state:
+        simple: present
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 8aeac540-974d-4f65-8114-683b8e8e7e07
+    type: title
+    task:
+      id: 8aeac540-974d-4f65-8114-683b8e8e7e07
+      version: -1
+      name: interfaces
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 0aed2c31-074e-4988-8f43-c7814d7830b8
+    type: title
+    task:
+      id: 0aed2c31-074e-4988-8f43-c7814d7830b8
+      version: -1
+      name: info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 0436af67-7399-4dbc-8609-dd7ce07bf831
+    type: title
+    task:
+      id: 0436af67-7399-4dbc-8609-dd7ce07bf831
+      version: -1
+      name: banner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 84d3e5f9-0d5a-439b-85d5-7a70e09d06a1
+    type: title
+    task:
+      id: 84d3e5f9-0d5a-439b-85d5-7a70e09d06a1
+      version: -1
+      name: command
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 985f8f5b-b41b-4a9d-8f0e-6121d36c3c37
+    type: title
+    task:
+      id: 985f8f5b-b41b-4a9d-8f0e-6121d36c3c37
+      version: -1
+      name: user
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 0103f46b-405f-4a41-8152-30a4cb6b4492
+    type: regular
+    task:
+      id: 0103f46b-405f-4a41-8152-30a4cb6b4492
+      version: -1
+      name: nxos-interfaces
+      description: |-
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
+      host:
+        simple: ${inputs.host}
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 82283776-ebf3-4b05-8e47-b95c93abfebd
+    type: condition
+    task:
+      id: 82283776-ebf3-4b05-8e47-b95c93abfebd
+      version: -1
+      name: check nxos-banner
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoNXOS.NxosBanner.status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 13f69cec-5ec8-4f44-8d99-0fa33680e3f6
+    type: condition
+    task:
+      id: 13f69cec-5ec8-4f44-8d99-0fa33680e3f6
+      version: -1
+      name: check nxos-command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoNXOS.NxosCommand.stdout
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 768c21a2-f999-4e67-8fb2-f20250788b7e
+    type: condition
+    task:
+      id: 768c21a2-f999-4e67-8fb2-f20250788b7e
+      version: -1
+      name: check nxos-user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoNXOS.NxosUser.commands.[0]
+            iscontext: true
+          right:
+            value:
+              simple: username testplaybook
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 75226279-70ce-4119-86a5-4e8718c3b753
+    type: regular
+    task:
+      id: 75226279-70ce-4119-86a5-4e8718c3b753
+      version: -1
+      name: nxos-user (absent)
+      description: |-
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      aggregate: {}
+      configured_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      purge: {}
+      role: {}
+      sshkey: {}
+      state:
+        simple: absent
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: f7e8b59b-c303-4122-8ddf-ee28aa099075
+    type: condition
+    task:
+      id: f7e8b59b-c303-4122-8ddf-ee28aa099075
+      version: -1
+      name: check nxos-interfaces
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoNXOS.NxosInterfaces.after.[0].description
+            iscontext: true
+          right:
+            value:
+              simple: Configured by Ansible
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 91fdf88e-330e-4d9b-8cce-d0f994411eda
+    type: regular
+    task:
+      id: 91fdf88e-330e-4d9b-8cce-d0f994411eda
+      version: -1
+      name: nxos-interfaces (deleted)
+      description: |-
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: deleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: bb5caac6-9da6-442e-86e7-3da49416121f
+    type: regular
+    task:
+      id: bb5caac6-9da6-442e-86e7-3da49416121f
+      version: -1
+      name: nxos-banner (absent)
+      description: |-
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      banner:
+        simple: motd
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: absent
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: ebc5d286-a751-4205-8725-edf9b7fd9f24
+    type: regular
+    task:
+      id: ebc5d286-a751-4205-8725-edf9b7fd9f24
+      version: -1
+      name: nxos-banner (absent)
+      description: |-
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      banner:
+        simple: motd
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: absent
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: db2ff8a2-9f89-4761-80b7-fa85b1ab64a3
+    type: regular
+    task:
+      id: db2ff8a2-9f89-4761-80b7-fa85b1ab64a3
+      version: -1
+      name: nxos-user (absent)
+      description: |-
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      aggregate: {}
+      configured_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      purge: {}
+      role: {}
+      sshkey: {}
+      state:
+        simple: absent
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 26817094-a908-44a3-8e0c-120376592e26
+    type: regular
+    task:
+      id: 26817094-a908-44a3-8e0c-120376592e26
+      version: -1
+      name: nxos-interfaces (deleted)
+      description: |-
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: deleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1925,
+        "width": 2260,
+        "x": -430,
+        "y": -490
+      }
+    }
+  }
+inputs:
+- key: host
+  value:
+    simple: 192.168.1.19
+  required: true
+  description: Host to run tests against
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
+fromversion: 6.0.0
+description: Test playbook for Ansible Cisco NXOS

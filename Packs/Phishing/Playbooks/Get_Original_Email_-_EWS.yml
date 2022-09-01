@@ -2,9 +2,8 @@ id: get_original_email_-_ews
 version: -1
 name: Get Original Email - EWS
 description: |-
-  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
-
-  You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+  This playbook retrieves the original email in a thread, including headers and attachments, when the reporting user forwarded the original email not as an attachment.
+  Note:\ You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +40,7 @@ tasks:
       version: -1
       name: Is EWS v2 enabled?
       description: |
-        Verifies that there is an active instance of the EWS v2 integration enabled.
+        Verifies an active instance of the EWS v2 integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -121,7 +120,7 @@ tasks:
       id: b2617aaf-5e54-43f5-89fe-82fc78cd099b
       version: -1
       name: Verify required inputs
-      description: Verify that the required input values for retrieving the original email exists.
+      description: Verifies the required input values for retrieving the original email exist.
       type: condition
       iscommand: false
       brand: ""
@@ -170,7 +169,7 @@ tasks:
       id: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
       version: -1
       name: Search for messages by Thread-Topic
-      description: Retrieve all messages found in the thread of the forwarded email.
+      description: Retrieves all messages found in the forwarded email thread.
       script: EWS v2|||ews-search-mailbox
       type: regular
       iscommand: true
@@ -209,7 +208,7 @@ tasks:
       id: 25f6439f-778f-45a5-841a-53efe77d590c
       version: -1
       name: Was a matching email found?
-      description: Verify that an email object with a Message-Id that matches the InReplayTo ID of the forwarded email was found.
+      description: Verifies that an email object with a Message-Id matching the InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -257,7 +256,7 @@ tasks:
       id: c729f95f-bc75-477e-8000-14c99346873d
       version: -1
       name: Set context
-      description: Set email object to context.
+      description: Sets the email object to context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -293,7 +292,7 @@ tasks:
       id: 6f28ff90-80ff-414e-819b-310a51183da4
       version: -1
       name: Get original email
-      description: Get the original email from the EWS server.
+      description: Gets the original email from the EWS server.
       script: EWS v2|||ews-get-items
       type: regular
       iscommand: true
@@ -339,7 +338,7 @@ tasks:
       id: 8764cbb0-dd56-4095-8df2-e77035713e2e
       version: -1
       name: Delete old context
-      description: Delete the email objects from context.
+      description: Deletes the email object from context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -375,7 +374,7 @@ tasks:
       id: 91028b3f-61f2-4383-8bfd-eff9dd01af96
       version: -1
       name: Set output
-      description: Set the playbook outputs to context.
+      description: Sets the playbook outputs to context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -411,7 +410,7 @@ tasks:
       id: 75ab61a9-a6cf-4d74-842f-67436507b8f4
       version: -1
       name: Was the original email found?
-      description: Verifies that the original email is in context.
+      description: Verifies the original email is in context.
       type: condition
       iscommand: false
       brand: ""
@@ -450,7 +449,7 @@ tasks:
       id: 427d5e37-2e56-4522-8e69-caabe8fd70d9
       version: -1
       name: Get attachments of the original email
-      description: Retrieve the attachments of the original email from EWS, including file attachments and item attachments (other email, calendar item, etc.).
+      description: Retrieves the attachments of the original email from EWS, including file attachments and item attachments (such as other emails and calendar items).
       script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
@@ -518,28 +517,28 @@ outputs:
   description: The email object
   type: unknown
 - contextPath: Email.To
-  description: The recipient of the email
+  description: The email recipient.
   type: string
 - contextPath: Email.From
-  description: The sender of the email
+  description: The email sender.
   type: string
 - contextPath: Email.HTML
-  description: The email HTML
+  description: The email HTML.
   type: string
 - contextPath: Email.Body
-  description: The email text body
+  description: The email text body.
   type: string
 - contextPath: Email.Headers
-  description: The email headers
+  description: The email headers.
   type: unknown
 - contextPath: Email.Subject
-  description: The email subject
+  description: The email subject.
   type: string
 - contextPath: File
-  description: Original attachments
+  description: The original attachments.
   type: unknown
 - contextPath: Email.HeadersMap
-  description: The headers of the email.
+  description: The email headers map.
 fromversion: 5.0.0
 tests:
 - No test (no test was ever created for this playbook)

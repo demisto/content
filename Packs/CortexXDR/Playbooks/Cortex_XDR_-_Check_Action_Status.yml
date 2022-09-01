@@ -1,7 +1,5 @@
 id: Cortex XDR - Check Action Status
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR - Check Action Status
 description: Checks the action status of an action ID. \nEnter the action ID of the
   action whose status you want to know.
@@ -20,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -130
         }
       }
     note: false
@@ -222,16 +220,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: fa7b2e15-29c3-487b-8141-b7650e5161db
+    type: regular
+    task:
+      id: fa7b2e15-29c3-487b-8141-b7650e5161db
+      version: -1
+      name: Sleep 2 Seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1090,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": -130
       }
     }
   }

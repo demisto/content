@@ -1,0 +1,14 @@
+{
+  "sessionId": "123456",
+  "cid": "1234567",
+  "path": "C:\\file1.txt",
+  "info": {
+    "type": "FILE",
+    "name": "C:\\file1.txt",
+    "permissions": 438,
+    "size": 100000,
+    "createdDate": 1567533100000,
+    "modifiedDate": 1631175859000,
+    "canonicalPath": "C:\\file1.txt"
+  }
+}

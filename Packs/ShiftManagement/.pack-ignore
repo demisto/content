@@ -7,3 +7,9 @@ ignore=BA113,BA112
 
 [file:incidentfield-Shift_manager_briefing.json]
 ignore=BA113
+
+[file:ManageOOOusers.yml]
+ignore=CJ105
+
+[file:README.md]
+ignore=RM106

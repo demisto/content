@@ -1,0 +1,36 @@
+commonfields:
+  id: QRadarFullSearch
+  version: -1
+name: QRadarFullSearch
+script: ''
+type: javascript
+tags:
+- QRadar
+comment: Deprecated. No available replacement. This Script runs a QRadar query and
+  return its results to the war-room.
+system: true
+deprecated: true
+args:
+- name: query_expression
+  required: true
+  default: true
+  description: The query expressions in AQL
+- name: fields
+  description: Fields to filter in
+- name: timeout
+  description: Timeout in seconds. Default is 10 minutes.
+- name: interval
+  description: Interval to poll for results. Default is 10 seconds.
+- name: range
+  description: Number of results in return
+- name: headers
+  description: Table headers
+scripttarget: 0
+dependson:
+  must:
+  - qradar-searches
+  - qradar-get-search
+  - qradar-get-search-results
+tests:
+- No test
+fromversion: 5.0.0

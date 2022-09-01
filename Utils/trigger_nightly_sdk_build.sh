@@ -35,7 +35,6 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -g|--gitlab) _gitlab=true
-    shift
     shift;;
 
   *)    # unknown option.

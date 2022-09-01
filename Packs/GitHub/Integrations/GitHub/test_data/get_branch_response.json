@@ -1,0 +1,66 @@
+{
+   "name":"my_branch",
+   "commit":{
+      "sha":"dsfsdf",
+      "node_id":"45678=",
+      "commit":{
+         "author":{
+            "name":"auth",
+            "email":"g12k34ppp",
+            "date":"2021-09-09T10:19:40Z"
+         },
+         "committer":{
+            "name":"committer",
+            "email":"g12k34ppp",
+            "date":"2021-09-09T10:19:40Z"
+         },
+         "message":"Merge branch ‘master’ into my_branch",
+         "tree":{
+            "sha":"234567",
+            "url":"https://api.github.com/"
+         },
+         "url":"https://api.github.com/r",
+         "comment_count":0,
+         "verification":{
+            "verified":false,
+            "reason":"unsigned",
+            "signature":null,
+            "payload":null
+         }
+      },
+      "url":"https://api.github.com",
+      "html_url":"https://github.com/",
+      "comments_url":"https://api.github.com/",
+      "author":null,
+      "committer":null,
+      "parents":[
+         {
+            "sha":"dfg",
+            "url":"https://api.github.com/",
+            "html_url":"https://github.com/"
+         },
+         {
+            "sha":"srdtfy",
+            "url":"https://api.github.com/",
+            "html_url":"https://github.com/"
+         }
+      ]
+   },
+   "_links":{
+      "self":"https://api.github.com/",
+      "html":"https://github.com/"
+   },
+   "protected":false,
+   "protection":{
+      "enabled":false,
+      "required_status_checks":{
+         "enforcement_level":"off",
+         "contexts":[
+         ]
+      }
+   },
+   "protection_url":"https://api.github.com/"
+}
+
+
+

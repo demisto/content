@@ -119,6 +119,37 @@
       "project_id": "3"
     }
   },
+  "trigger_pipeline": {
+    "method": "post",
+    "mock_response": {
+        "id": 1,
+        "project_id": 3,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "Pipeline 1",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+      },
+    "expected_outputs": {
+        "id": 1,
+        "project_id": 3,
+        "sha": "skd5h31245ljkasl4kj45l324",
+        "ref": "Pipeline 1",
+        "status": "running",
+        "created_at": "2021-06-15T14:31:29.607Z",
+        "updated_at": "2021-06-15T14:31:32.964Z",
+        "web_url": "https://server_url/project/-/pipelines/1"
+      },
+    "expected_prefix": "GitLab.Pipeline",
+    "expected_url_mock_suffix": "projects/3/trigger/pipeline",
+    "expected_key_field": "id",
+    "args": {
+      "ref_branch": "base_test",
+      "trigger_variables":"{}",
+      "project_id": "3"
+    }
+  },
   "jobs": {
     "mock_response": [
       {

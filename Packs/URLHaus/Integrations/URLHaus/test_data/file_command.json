@@ -1,0 +1,39 @@
+{
+  "query_status": "query_status",
+  "md5_hash": "1585ad28f7d1e0ca696e6c6c2f1d008a",
+  "sha256_hash": "35e304d10d53834e3e41035d12122773c9a4d183a24e03f980ad3e6b2ecde7fa",
+  "file_type": "exe",
+  "file_size": "241664",
+  "signature": "test_sig",
+  "firstseen": "2019-01-19 13:59:06",
+  "lastseen": "2019-01-19 14:48:08",
+  "urlhaus_download": "test",
+  "virustotal": {
+    "result": "17 \/ 69",
+    "percent": "24.64",
+    "link": "test"
+  },
+  "imphash": "3b91ed9563d0f99f26b86bd20539306b",
+  "ssdeep": "ssdeep",
+  "tlsh": "7934BF47B4F1C871E4B30D311831D9A05A2F7D715F659E6B2778222A8E342D09E35FAB",
+  "urls": [
+    {
+      "url_id": "105243",
+      "url": "test_url",
+      "url_status": "offline",
+      "urlhaus_reference": "https:\/\/urlhaus.abuse.ch\/url\/105243\/",
+      "filename": "PAY2632216543098764.doc",
+      "firstseen": "2019-01-19",
+      "lastseen": ""
+    },
+    {
+      "url_id": "105214",
+      "url": "http:\/\/demo.trydaps.com\/gzVv-22Omv_aIQZybVK-aJ\/En\/Question\/",
+      "url_status": "offline",
+      "urlhaus_reference": "https:\/\/urlhaus.abuse.ch\/url\/105214\/",
+      "filename": "5518475554292.doc",
+      "firstseen": "2019-01-19",
+      "lastseen": ""
+    }
+  ]
+}

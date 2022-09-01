@@ -1,0 +1,10 @@
+{
+    "result": [
+        {
+            "id": "firewall_rule_id"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

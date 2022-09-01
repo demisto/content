@@ -51,6 +51,24 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 ![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
 
+## Required Scopes
+| Function | API to Authorize |
+| -------- | ---------------- |
+| Authorize the next APIs for the service account | [https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly) |
+| Fetch user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly) |
+| Revoke user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement) |
+| Search user mailboxes | [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) |
+| Delete emails from user mailbox | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify) |
+| Fetch user security tokens | [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security) |
+| Block email addresses | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Get auto-replay messages from a user | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify), [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Set auto-replay messages | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Hide users from the global directory | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Delegate a user to a mailbox or remove a delegated mail from a mailbox | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
+| Set a user's password | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Send mails or reply to a mail | [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send) |
+| Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
+| Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 ## Configure Gmail on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -61,7 +79,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
     | --- | --- | --- |
     | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
     | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
-    | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | query | Events search query \(e.g. "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
     | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
     | isFetch | Fetch incidents | False |
     | insecure | Trust any certificate \(not secure\) | False |
@@ -109,6 +127,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Search a user's Gmail records: **gmail-search**
 - Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
 - List all Google users: **gmail-list-users**
+- List all Labels for a given user: **gmail-list-labels**
 - Revoke a Google user's role: **gmail-revoke-user-role**
 - Create a new user: **gmail-create-user**
 - Delete mail from a mailbox: **gmail-delete-mail**
@@ -1255,6 +1274,13 @@ Searches for Gmail records of a specified Google user.
 ***
 Searches the Gmail records for all Google users.
 
+#### Troubleshooting
+The command iterates over all available **accounts**, and downloads **messages** matching the query for each account. For organizations with many accounts, this can take longer than the default 5 minutes. To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 to a higher value.
+To determine what value should be used, take a look at the logs after a failed execution of the command. The command prints to the logs *info* messages detailing the status of the search for every 100 accounts it successfully searched.
+```
+2022-06-27 09:56:05.1588 info (Gmail_instance_Gmail_gmail-search-all-mailboxes) Still searching. Searched 40% of total accounts (400 / 1000), and found 30 results so far (source: /Users/darbel/dev/go/src/github.com/demisto/server/services/automation/dockercoderunner.go:955)
+```
+Inspecting these messages should allow you to determine what percent the search was able to finish before timing out. Take the given timeout and divide it with the last percent you see in the logs - the new timeout value should be greater than this. Fine tune the correct **execution-timeout**.
 
 #### Base Command
 
@@ -1277,6 +1303,7 @@ Searches the Gmail records for all Google users.
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: false) | Optional | 
 
 
 #### Context Output
@@ -3455,6 +3482,62 @@ Lists all Google users in a domain.
 >| Google | 113493660192005193453 | user | user test | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
 
 
+### gmail-list-labels
+***
+Lists all lables in a Users Gmail.
+
+
+#### Base Command
+
+`gmail-list-labels`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-id | The user's email address. The special value '*me*' can be used to indicate the authenticated user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GmailLabel.Name | String | The label name. | 
+| GmailLabel.ID | String | The label ID. | 
+| GmailLabel.UserID | String | The User ID the label belongs to. | 
+| GmailLabel.Type | String | The label type. | 
+| GmailLabel.LabelListVisibility | String | The label list visibility. | 
+| GmailLabel.MessageListVisibility | String | The label message list visibility. | 
+
+
+#### Command Example
+```!gmail-list-labels user-id=me```
+
+#### Context Example
+```
+{
+"GmailLabel":
+  [
+       {
+            "ID": "INBOX",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility:: "hide",
+            "Name": "INBOX",
+            "Type": "system",
+            "UserID": "user@domain.io"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Labels for UserID me:
+>|Name|ID|Type|MessageListVisibility|LabelListVisibility|
+>|---|---|---|---|---|
+>| INBOX | INBOX | system | | |
+>| SPAM | SPAM | system | hide | labelShowIfUnread |
+
+
 ### gmail-revoke-user-role
 ***
 Revokes a role for a specified Google user.
@@ -4496,7 +4579,7 @@ Sends mail using Gmail.
 | transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | additionalHeader | A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/> Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
 
 
 #### Context Output
@@ -4579,7 +4662,7 @@ The *subject* argument should be the same as the subject of the email you are re
 | transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/> Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
 
 
 #### Context Output

@@ -1,0 +1,82 @@
+{
+    "name": "Data Loss Prevention",
+    "type": "mapping-incoming",
+    "id": "Data Loss Prevention",
+    "description": "A mapper that maps raw DLP incident fields into Cortex XSOAR incident fields",
+    "defaultIncidentType": "Data Loss Prevention",
+    "mapping": {
+		"Data Loss Prevention": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"App": {
+					"complex": null,
+					"simple": "incidentDetails.app_details.name"
+				},
+				"File Name": {
+					"complex": null,
+					"simple": "filename"
+				},
+				"File SHA256": {
+					"complex": null,
+					"simple": "checksum"
+				},
+				"PAN DLP Action": {
+					"complex": null,
+					"simple": "action"
+				},
+				"PAN DLP Channel": {
+					"complex": null,
+					"simple": "channel"
+				},
+				"PAN DLP Incident ID": {
+					"complex": null,
+					"simple": "incidentId"
+				},
+				"PAN DLP Incident Region": {
+					"complex": null,
+					"simple": "region"
+				},
+				"PAN DLP Previous Feedback": {
+					"complex": null,
+					"simple": "previousNotification.feedback_status"
+				},
+				"PAN DLP Tenant ID": {
+					"complex": null,
+					"simple": "tenantId"
+				},
+				"PAN DLP Report ID": {
+					"complex": null,
+					"simple": "reportId"
+				},
+				"PAN DLP Data Profile Name": {
+					"complex": null,
+					"simple": "dataProfileName"
+				},
+				"Source Username": {
+					"complex": null,
+					"simple": "userId"
+				},
+				"app channel name": {
+					"complex": null,
+					"simple": "channel"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"File Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "file_name",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -8,7 +8,8 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
-		"Trend Micro CAS Event"
+		"Trend Micro CAS Event",
+		"Netwitness Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

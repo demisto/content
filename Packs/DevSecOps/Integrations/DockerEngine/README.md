@@ -1,20 +1,53 @@
 The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
-This integration was integrated and tested with version 20.10.1 of Docker Engine API
+This integration was integrated and tested with version 20.10.17 ([API Version 1.41](https://docs.docker.com/engine/api/v1.41/)) of Docker Engine API
 ## Configure Docker Engine API on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Docker Engine API.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL \(e.g. https://www.example.com:1000\) | True |
-    | client_certificate | Docker Client Certificate | True |
-    | client_key | Docker Client Private Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g. https://www.example.com:1000) | True |
+    | Docker Client Certificate | True |
+    | Docker Client Private Key | True |
+    | CA Certificate | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Registry Identity Token | False |
+    | Registry Username | False |
+    | Registry Password | False |
+    | Registry Server Address (e.g. docker.io) | False |
+
+Note: The Docker private key must be first stored into XSOAR as a credential attribute of a [saved credential](https://xsoar.pan.dev/docs/reference/articles/managing-credentials#configure-cortex-xsoar-credentials), and this credential must be selected as the auth key.
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Docker Engine
+Docker Engine is an open source containerization technology for building and containerizing your applications. Docker Engine acts as a client-server application with:
+
+- A server with a long-running daemon process dockerd.
+- APIs which specify interfaces that programs can use to talk to and instruct the Docker daemon.
+- A command line interface (CLI) client docker.
+
+The CLI uses Docker APIs to control or interact with the Docker daemon through scripting or direct CLI commands. Many other Docker applications use the underlying API and CLI. The daemon creates and manage Docker objects, such as images, containers, networks, and volumes.
+
+## Requirements
+By default, Docker runs through a non-networked UNIX socket. It can also optionally communicate using an HTTP socket. This integration manages a Docker Server that has had it's Docker daemon API interface exposed over HTTPS.
+
+Refer to the [Docker documentation](https://docs.docker.com/engine/security/protect-access/#use-tls-https-to-protect-the-docker-daemon-socket) for how to configure Docker server to securely accept HTTPS connections.
+
+To use this integration you need:
+1. The Docker server to be running in TLS (HTTPS) mode
+2. Have generated a certificate for this integration to act as a Docker Client authorised to manage this server
+
+The integration takes the client certificate, private key, and CA's certificate as paramaters. These three are expected in the PEM format.
+
+If a CA cert is not provided, the Docker server certificate will be validated using the public CA's included in [Python Requests](https://pypi.org/project/requests/). Or not validated at all if `Trust any certificate (not secure)` is selected.
+
+
+### Docker Registry Authentication
+Authentication for registries is handled by the integration not the Docker Server. This is configured as a integration parameter. This can be in the form of either a identitytoken or Username/Password/Serveraddress. These four parameters are optional and if none authentication credentials are provided the integration will function in "Anonymous mode". Some Commands may not function as a result.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -378,6 +411,47 @@ There is no context output for this command.
 >|---|
 >| Conflict. The container name "/hello-docker" is already in use by container "7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41". You have to remove (or rename) that container to be able to reuse that name. |
 
+### docker-container-delete
+***
+Remove a container
+
+
+#### Base Command
+
+`docker-container-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID or name of the container. | Required | 
+| v | Remove anonymous volumes associated with the container. Possible values are: false, true. Default is false. | Optional | 
+| force | If the container is running, kill it before removing it. Possible values are: false, true. Default is false. | Optional | 
+| link | Remove the specified link associated with the container. Possible values are: false, true. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Docker.ContainerDelete.Status Code | String | Image Tag Result | 
+
+#### Command example
+```!docker-container-delete id="hello-docker"```
+#### Context Example
+```json
+{
+    "Docker": {
+        "Status Code": 204
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|Status Code|
+>|---|
+>| 204 |
 
 ### docker-container-inspect
 ***
@@ -2117,6 +2191,102 @@ List processes running inside a container
 >| ['root', '3830', '3780', '0', '11:10', '?', '00:00:01', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'],<br/>['root', '6188', '3830', '0', '11:10', '?', '00:00:00', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'],<br/>['root', '6190', '3830', '0', '11:10', '?', '00:00:00', '/venv/bin/python3 /venv/bin/gunicorn opentaxii.http:app --workers=2 --log-level=info --log-file=- --timeout=300 --config=python:opentaxii.http --bind=0.0.0.0:9000'] | UID,<br/>PID,<br/>PPID,<br/>C,<br/>STIME,<br/>TTY,<br/>TIME,<br/>CMD |
 
 
+### docker-image-create
+***
+Create an image by either pulling it from a registry or importing it.
+
+
+#### Base Command
+
+`docker-image-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_image | Name of the image to pull. The name may include a tag or digest. This parameter may only be used when pulling an image. The pull is cancelled if the HTTP connection is closed. | Optional | 
+| from_src | Source to import. The value may be a URL from which the image can be retrieved or - to read the image from the request body. This parameter may only be used when importing an image. | Optional | 
+| repo | Repository name given to an image when it is imported. The repo may include a tag. This parameter may only be used when importing an image. | Optional | 
+| tag | Tag or digest. If empty when pulling an image, this causes all tags for the given image to be pulled. | Optional | 
+| message | Set commit message for imported image. | Optional | 
+| platform | Platform in the format os[/arch[/variant]]. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Docker.ImageCreate.Status | String | Image Create result | 
+
+#### Command example
+```!docker-image-create from_image="alpine:latest"```
+#### Context Example
+```json
+{
+    "Docker": {
+        "ImageCreate": {
+            "status": "Status: Downloaded newer image for alpine:latest"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|status|
+>|---|
+>| Status: Downloaded newer image for alpine:latest |
+
+### docker-image-delete
+***
+Remove an image, along with any untagged parent images that were referenced by that image. Images can't be removed if they have descendant images, are being used by a running container or are being used by a build.
+
+
+#### Base Command
+
+`docker-image-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Image name or ID. | Required | 
+| force | Remove the image even if it is being used by stopped containers or has other tags. Possible values are: false, true. Default is false. | Optional | 
+| noprune | Do not delete untagged parent images. Possible values are: false, true. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Docker.ImageDeleteResponseItem | string | Deletion Response | 
+
+#### Command example
+```!docker-image-delete name="alpine:latest"```
+#### Context Example
+```json
+{
+    "Docker": {
+        "ImageDeleteResponseItem": [
+            {
+                "Untagged": "alpine:latest"
+            },
+            {
+                "Untagged": "alpine@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|Untagged|
+>|---|
+>| alpine:latest |
+>| alpine@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c |
+
+
 ### docker-image-history
 ***
 Get the history of an image
@@ -3084,6 +3254,53 @@ Delete unused images
 >|---|---|
 >|  | 0 |
 
+### docker-image-push
+***
+Push an image to a registry. If you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, registry.example.com/myimage:latest. The push is cancelled if the HTTP connection is closed.
+
+
+#### Base Command
+
+`docker-image-push`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Image name or ID. | Required | 
+| tag | The tag to associate with the image on the registry. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Docker.ImagePush | String | Image Push Result | 
+
+#### Command example
+```!docker-image-push name="example/alpine:test"```
+#### Context Example
+```json
+{
+    "Docker": {
+        "ImagePush": {
+            "aux": {
+                "Digest": "sha256:4ff3ca91275773af45cb4b0834e12b7eb47d1c18f770a0b151381cd227f4c253",
+                "Size": 528,
+                "Tag": "test"
+            },
+            "progressDetail": {}
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|aux|progressDetail|
+>|---|---|
+>| Tag: test<br/>Digest: sha256:4ff3ca91275773af45cb4b0834e12b7eb47d1c18f770a0b151381cd227f4c253<br/>Size: 528 |  |
+
 
 ### docker-image-search
 ***
@@ -3331,6 +3548,50 @@ Search images
 >| Latest CentOS image with the JRE pre-installed. | true | false | nathonfowlie/centos-jre | 8 |
 >| MariaDB 10.1 SQL database server<br/> | false | false | centos/mariadb-101-centos7 | 12 |
 >| PostgreSQL is an advanced Object-Relational database management system<br/> | false | false | centos/postgresql-96-centos7 | 45 |
+
+
+### docker-image-tag
+***
+Tag an image so that it becomes part of a repository.
+
+
+#### Base Command
+
+`docker-image-tag`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Image name or ID to tag. | Required | 
+| repo | The repository to tag in. For example, someuser/someimage. | Optional | 
+| tag | The name of the new tag. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Docker.ImageTag.Status Code | String | Image Tag Result | 
+
+#### Command example
+```!docker-image-tag name="alpine:latest" repo="example/alpine" tag="test"```
+#### Context Example
+```json
+{
+    "Docker": {
+        "ImageTag": {
+            "Status Code": 201
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|Status Code|
+>|---|
+>| 201 |
 
 
 ### docker-network-create
@@ -6213,13 +6474,13 @@ There are no input arguments for this command.
 | Docker.SystemInfo.KernelVersion | String | Kernel version of the host.  On Linux, this information obtained from \`uname\`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\ /kbd  registry value, for example _"10.0 14393 \(14393.1198.amd64fre.rs1_release_sec.170427-1353\)"_.  | 
 | Docker.SystemInfo.OperatingSystem | String | Name of the host's operating system, for example: "Ubuntu 16.04.2 LTS" or "Windows Server 2016 Datacenter"  | 
 | Docker.SystemInfo.OSVersion | String | Version of the host's operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice.  | 
-| Docker.SystemInfo.OSType | String | Generic type of the operating system of the host, as returned by the Go runtime \(\`GOOS\`\).  Currently returned values are "linux" and "windows". A full list of possible values can be found in the \[Go documentation\]\(https://golang.org/doc/install/source\#environment\).  | 
-| Docker.SystemInfo.Architecture | String | Hardware architecture of the host, as returned by the Go runtime \(\`GOARCH\`\).  A full list of possible values can be found in the \[Go documentation\]\(https://golang.org/doc/install/source\#environment\).  | 
+| Docker.SystemInfo.OSType | String | Generic type of the operating system of the host, as returned by the Go runtime \(\`GOOS\`\).  Currently returned values are "linux" and "windows". A full list of possible values can be found in the \[Go documentation\]\(https://golang.org/doc/install/source#environment\).  | 
+| Docker.SystemInfo.Architecture | String | Hardware architecture of the host, as returned by the Go runtime \(\`GOARCH\`\).  A full list of possible values can be found in the \[Go documentation\]\(https://golang.org/doc/install/source#environment\).  | 
 | Docker.SystemInfo.NCPU | Number | The number of logical CPUs usable by the daemon.  The number of available CPUs is checked by querying the operating system when the daemon starts. Changes to operating system CPU allocation after the daemon is started are not reflected.  | 
 | Docker.SystemInfo.MemTotal | Number | Total amount of physical memory available on the host, in bytes.  | 
 | Docker.SystemInfo.IndexServerAddress | String | Address / URL of the index server that is used for image search, and as a default for user authentication for Docker Hub and Docker Cloud.  | 
-| Docker.SystemInfo.HttpProxy | String | HTTP-proxy configured for the daemon. This value is obtained from the \[\`HTTP_PROXY\`\]\(https://www.gnu.org/software/wget/manual/html_node/Proxies.html\) environment variable. Credentials \(\[user info component\]\(https://tools.ietf.org/html/rfc3986\#section-3.2.1\)\) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration.  | 
-| Docker.SystemInfo.HttpsProxy | String | HTTPS-proxy configured for the daemon. This value is obtained from the \[\`HTTPS_PROXY\`\]\(https://www.gnu.org/software/wget/manual/html_node/Proxies.html\) environment variable. Credentials \(\[user info component\]\(https://tools.ietf.org/html/rfc3986\#section-3.2.1\)\) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration.  | 
+| Docker.SystemInfo.HttpProxy | String | HTTP-proxy configured for the daemon. This value is obtained from the \[\`HTTP_PROXY\`\]\(https://www.gnu.org/software/wget/manual/html_node/Proxies.html\) environment variable. Credentials \(\[user info component\]\(https://tools.ietf.org/html/rfc3986#section-3.2.1\)\) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration.  | 
+| Docker.SystemInfo.HttpsProxy | String | HTTPS-proxy configured for the daemon. This value is obtained from the \[\`HTTPS_PROXY\`\]\(https://www.gnu.org/software/wget/manual/html_node/Proxies.html\) environment variable. Credentials \(\[user info component\]\(https://tools.ietf.org/html/rfc3986#section-3.2.1\)\) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration.  | 
 | Docker.SystemInfo.NoProxy | String | Comma-se ted list of domain extensions for which no proxy should be used. This value is obtained from the \[\`NO_PROXY\`\]\(https://www.gnu.org/software/wget/manual/html_node/Proxies.html\) environment variable.  Containers do not automatically inherit this configuration.  | 
 | Docker.SystemInfo.Name | String | Hostname of the host. | 
 | Docker.SystemInfo.ExperimentalBuild | Boolean | Indicates if experimental features are enabled on the daemon.  | 

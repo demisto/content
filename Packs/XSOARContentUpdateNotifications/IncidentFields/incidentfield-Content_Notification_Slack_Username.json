@@ -1,32 +1,32 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Content Update Check"
-    ],
-    "caseInsensitive": true,
-    "cliName": "contentnotificationslackusername",
-    "closeForm": false,
-    "content": true,
-    "editForm": true,
-    "group": 0,
-    "hidden": false,
-    "id": "incident_contentnotificationslackusername",
-    "isReadOnly": false,
-    "locked": false,
-    "name": "Content Notification Slack Username",
-    "neverSetAsRequired": false,
-    "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
-    "required": false,
-    "sla": 0,
-    "system": false,
-    "threshold": 72,
-    "type": "shortText",
-    "unmapped": false,
-    "unsearchable": false,
-    "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.0.0"
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Content Update Check"
+ ],
+ "caseInsensitive": true,
+ "cliName": "contentnotificationslackusername",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_contentnotificationslackusername",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Content Notification Slack Username",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "propagationLabels": [
+  "all"
+ ],
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

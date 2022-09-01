@@ -27,8 +27,8 @@ Anyone interested in trying the MobileIron platform and this integration can req
 - Custom layout and incident mapper to better show the relevant data when using fetch incidents.
 
 More information on the different ways to query the API can be found inside the platform specific API documentation:
-- [Documentation for MobileIron Core](https://help.mobileiron.com/s/mil-productdoclistpage?Label=Core&Id=a1s3400000240gaAAA&Name=MobileIron+Core)
-- [Documentation for MobileIron Cloud](https://help.mobileiron.com/s/mil-productdoclistpage?Label=Cloud&Id=a1s3400000240gfAAA&Name=MobileIron+Cloud)
+- [Documentation for MobileIron Core](https://forums.ivanti.com/s/mobileiron-core)
+- [Documentation for MobileIron Cloud](https://forums.ivanti.com/s/mobileiron-cloud)
 
 This integration also focuses on providing a very similar set of functionalities between Core and Cloud 
 as to ease the work needed when the customer moves from one MobileIron UEM platform to the other.  

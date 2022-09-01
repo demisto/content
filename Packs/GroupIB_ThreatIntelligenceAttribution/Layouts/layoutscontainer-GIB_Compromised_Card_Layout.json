@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised Card",
     "detailsV2": {
         "tabs": [
             {
@@ -80,6 +81,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -90,6 +92,7 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -102,6 +105,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
@@ -115,18 +119,20 @@
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxW": 3,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Child Incidents",
                         "static": false,
@@ -139,6 +145,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
@@ -152,6 +159,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
@@ -164,6 +172,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -172,7 +181,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -225,12 +234,13 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -266,12 +276,13 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -289,12 +300,13 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 6
                     },
                     {
                         "description": "",
@@ -441,11 +453,66 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB TI&A",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-355fb360-30de-11ec-bc63-2be9e447c87d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibperson",
+                                "height": 22,
+                                "id": "458b1ae0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibaddress",
+                                "height": 22,
+                                "id": "4395b380-30de-11ec-bc63-2be9e447c87d",
+                                "index": 1,
+                                "listId": "caseinfoid-355fb360-30de-11ec-bc63-2be9e447c87d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "phonenumber",
+                                "height": 22,
+                                "id": "4c2db6a0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibemail",
+                                "height": 22,
+                                "id": "489a56b0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Person Information from GIB TIA",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -482,6 +549,5 @@
     "name": "GIB Compromised Card Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

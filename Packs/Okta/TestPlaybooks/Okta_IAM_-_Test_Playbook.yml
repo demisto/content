@@ -607,7 +607,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: update
+                        simple: enable
                 root: IAM.Vendor
                 transformers:
                 - args:
@@ -631,7 +631,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: update
+                        simple: enable
                 root: IAM.Vendor
                 transformers:
                 - args:

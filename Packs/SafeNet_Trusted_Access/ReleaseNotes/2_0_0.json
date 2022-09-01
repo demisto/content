@@ -1,0 +1,1 @@
+{"breakingChanges": true, "breakingChangesNotes": "Updated name of incident type and playbook input parameters. Deprecated old classifiers and mapper and created new."}

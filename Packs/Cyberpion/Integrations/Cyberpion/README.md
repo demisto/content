@@ -11,7 +11,7 @@ This integration was integrated and tested with version 1.0 of Cyberpion
     | Server URL (e.g. https://api.example.com/security/api) |  | True |
     | API Key |  | True |
     | Maximum number of incidents per fetch |  | False |
-    | Action items category to fetch as incidents. | Allowed values: "DNS", "PKI", "Cloud", "Vulnerabilities". | True |
+    | Action items category to fetch as incidents. | Allowed values: "Network", "Web", "Cloud", "DNS", "PKI", "Vulnerabilities", "TLS", "Email Server", "Mobile". | True |
     | Minimum Action items severity level to fetch incidents from. | Allowed values are integers between 1 to 10.<br/>1 will fetch all incidents. | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents |  | False |

@@ -26,7 +26,7 @@ args:
   predefined:
   - "false"
   - "true"
-  description: If true will whitelist the deleted indicator
+  description: If true will deleted indicator to allow list
   defaultValue: "false"
 scripttarget: 0
 runonce: false

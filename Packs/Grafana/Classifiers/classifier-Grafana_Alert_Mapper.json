@@ -1,0 +1,40 @@
+{
+    "description": "Maps Grafana's alert fields",
+    "feed": false,
+    "id": "Grafana Alert Mapper",
+    "mapping": {
+        "Grafana Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Grafana Dashboard Link": {
+                    "complex": null,
+                    "simple": "url"
+                },
+                "Grafana Dashboard Uid": {
+                    "complex": null,
+                    "simple": "dashboardUid"
+                },
+                "Grafana Panel Id": {
+                    "complex": null,
+                    "simple": "panelId"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "newStateDate"
+                }
+            }
+        }
+    },
+    "name": "Grafana Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

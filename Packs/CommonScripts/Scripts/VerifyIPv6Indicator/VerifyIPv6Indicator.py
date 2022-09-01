@@ -21,7 +21,7 @@ def main():
         if is_valid_ipv6_address(item):
             entries_list.append(item)
         else:
-            continue
+            entries_list.append('')
 
     if entries_list:
         return_results(entries_list)

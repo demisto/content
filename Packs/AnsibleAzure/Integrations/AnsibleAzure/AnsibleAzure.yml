@@ -3336,10 +3336,10 @@ script:
       description: List of zone dicts, which share the same layout as azure_rm_dnszone
         module parameter.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleAzure

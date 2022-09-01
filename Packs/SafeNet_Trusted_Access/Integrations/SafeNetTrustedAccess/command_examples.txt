@@ -15,3 +15,8 @@
 !sta-remove-user-group groupName="TestGroup1" userName="hellouser"
 !sta-get-logs userName="demouser" since="2021-07-21T12:22:16.718Z"
 !sta-validate-tenant
+!sta-get-application-list
+!sta-get-application-info applicationName="Salesforce"
+!sta-get-user-applications userName="hellouser"
+!sta-get-user-sessions userName="hellouser"
+!sta-delete-user-sessions userName="hellouser"

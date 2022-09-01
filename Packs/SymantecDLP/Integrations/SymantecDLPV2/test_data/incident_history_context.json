@@ -1,0 +1,85 @@
+[
+  {
+    "ID": 3536,
+    "incidentHistory": [
+      {
+        "incidentHistoryDate": "2022-03-02T11:44:21.895",
+        "dlpUserName": "demistoapi",
+        "incidentHistoryAction": "ATTRIBUTES_SET",
+        "incidentHistoryDetail": "bla=blabla\nkjv=blabla4\n",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T11:44:21.833",
+        "dlpUserName": "demistoapi",
+        "incidentHistoryAction": "SET_DATAOWNER_EMAIL",
+        "incidentHistoryDetail": "test123@gmail.com",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T11:44:21.817",
+        "dlpUserName": "demistoapi",
+        "incidentHistoryAction": "SET_STATUS",
+        "incidentHistoryDetail": "Escalated",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T11:44:21.817",
+        "dlpUserName": "demistoapi",
+        "incidentHistoryAction": "SET_SEVERITY",
+        "incidentHistoryDetail": "incident.severity.Low",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T09:23:41.397",
+        "dlpUserName": "Administrator",
+        "incidentHistoryAction": "SET_STATUS",
+        "incidentHistoryDetail": "incident.status.New",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T09:23:37.845",
+        "dlpUserName": "Administrator",
+        "incidentHistoryAction": "MESSAGE_NOT_RETAINED",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T09:23:37.845",
+        "dlpUserName": "Administrator",
+        "incidentHistoryAction": "SET_SEVERITY",
+        "incidentHistoryDetail": "incident.severity.High",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      },
+      {
+        "incidentHistoryDate": "2022-03-02T09:23:37.845",
+        "dlpUserName": "Administrator",
+        "incidentHistoryAction": "DETECTED",
+        "policyGroupId": 1,
+        "detectionServerName": "Detection - Network monitor",
+        "messageSource": "NETWORK",
+        "messageDate": "2022-03-02T09:23:37.845"
+      }
+    ]
+  }
+]

@@ -47,7 +47,7 @@ class PackStatisticsHandler:
             if dep_pack_name not in packs_dependencies_sorted:
                 packs_dependencies_sorted.append(dep_pack_name)
 
-        logging.info(f'{self.pack_name} pack sorted deps: {packs_dependencies_sorted}')
+        logging.info(f'{self.pack_name} pack sorted dependencies: {packs_dependencies_sorted}')
         return packs_dependencies_sorted
 
     def _get_pack_downloads_count(self):

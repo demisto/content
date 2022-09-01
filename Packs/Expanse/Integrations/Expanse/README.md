@@ -100,8 +100,8 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
     },
     "riskRule": {
         "id": "02b6c647-65f4-4b69-b4b0-64af34fd1b29",
-        "name": "Connections to and from Blacklisted Countries",
-        "description": "Connections to and from Blacklisted Countries (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
+        "name": "Connections to and from countries on block list",
+        "description": "Connections to and from countries on block list (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
         "additionalDataFields": "[]"
     },
     "internalAddress": "184.174.38.51",

@@ -1,0 +1,1956 @@
+{
+  "requestId": "56705f31-1398-4c2e-a439-145a88f5e401",
+  "deviceChanges": [
+    {
+      "deviceId": 9,
+      "ruleChanges": [
+        {
+          "ndChangeLogs": [],
+          "deviceId": 9,
+          "deviceName": "testDevice",
+          "deviceType": "FIREWALL",
+          "devicePackGroupId": "test.grp",
+          "devicePackArtifactId": "test-artifact",
+          "deviceSupportedTypes": [
+            "USERS",
+            "ZONES"
+          ],
+          "summary": "No action needed, referenced rule matches some or all of the access requested",
+          "type": "RECOMMENDED",
+          "requirementType": "NONE",
+          "changeType": "RULE",
+          "implementationStatus": "PENDING",
+          "automatable": false,
+          "action": "NONE",
+          "policyName": "Policy",
+          "policyDisplayName": "Policy",
+          "policyUUID": "dde64513-c3fe-47d0-ac23-3b19e9f7878e",
+          "testedRule": {
+            "apps": [],
+            "destinations": [
+              {
+                "name": "any",
+                "role": "DESTINATION",
+                "objectType": "NETWORK"
+              }
+            ],
+            "services": [
+              {
+                "name": "tcp/8090",
+                "role": "SERVICE",
+                "objectType": "SERVICE"
+              }
+            ],
+            "sources": [
+              {
+                "name": "10.1.1.1",
+                "role": "SOURCE",
+                "objectType": "NETWORK"
+              }
+            ],
+            "users": [],
+            "sourceZones": [
+              {
+                "name": "port1",
+                "role": "SOURCE_ZONE",
+                "objectType": "ZONE",
+                "object": {
+                  "id": 5572,
+                  "type": "ZONE",
+                  "matchId": "ef25d52b-7f6e-4fdb-8226-7a63d1b5a66d",
+                  "device": {
+                    "id": 9,
+                    "name": "testDevice",
+                    "managementIp": "any",
+                    "parents": [],
+                    "children": [],
+                    "securityConcernIndex": 2.41,
+                    "devicePack": {
+                      "type": "DEVICE_PACK",
+                      "id": 47,
+                      "artifactId": "test-artifact",
+                      "groupId": "test.grp",
+                      "version": "0.0.0",
+                      "artifacts": [
+                        {
+                          "name": "dc.zip",
+                          "checksum": "439fd2e191d744cb5161e68803ea410f"
+                        }
+                      ],
+                      "buildDate": "2021-02-19T16:07:59+0000",
+                      "deviceName": "testDevice Firewall",
+                      "deviceType": "FIREWALL",
+                      "vendor": "vendor",
+                      "collectionConfig": {
+                        "id": 22,
+                        "name": "default",
+                        "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                        "changeCriterion": [
+                          {
+                            "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                            "timeoutSeconds": 45,
+                            "continueMatch": false,
+                            "parentUserName": "test-parent",
+                            "retrieveOnMatch": true
+                          }
+                        ],
+                        "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                        "usageCriterion": [
+                          {
+                            "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                            "fields": [],
+                            "dynamicFields": []
+                          }
+                        ],
+                        "createdDate": "2021-04-26T07:03:55+0000",
+                        "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                        "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "usageKeys": [
+                          "RULE_NUMBER"
+                        ],
+                        "activatedForDevicePack": false
+                      },
+                      "behaviorTranslator": "translator",
+                      "normalization": true,
+                      "usage": true,
+                      "change": true,
+                      "usageSyslog": true,
+                      "changeSyslog": true,
+                      "active": false,
+                      "supportsDiff": true,
+                      "supportsManualRetrieval": true,
+                      "implicitDrop": false,
+                      "diffDynamicRoutes": false,
+                      "automation": false,
+                      "lookupNoIntfRoutes": true,
+                      "automationCli": false,
+                      "ssh": true,
+                      "sharedNetworks": false,
+                      "sharedServices": false,
+                      "supportedTypes": [
+                        "USERS",
+                        "ZONES"
+                      ],
+                      "diffIgnorePatterns": [
+                        "^\\s*set\\s+((auth-)?password|passwd).*$",
+                        "^\\s*[+/=[[:alnum:]]+\\s*$",
+                        "^\\s*#.*$",
+                        "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                        "^\\s*DEK-Info.*$"
+                      ],
+                      "convertableTo": []
+                    },
+                    "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                    "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                    "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                    "state": "ACTIVE",
+                    "managedType": "MANAGED",
+                    "gpcStatus": "NOT_IMPORTED",
+                    "updateMemberRuleDoc": false
+                  },
+                  "lastChangeConfigRevId": 36,
+                  "createDate": "1970-01-01T00:00:00+0000",
+                  "lastUpdated": "2021-05-24T12:14:10+0000"
+                }
+              }
+            ],
+            "destinationZones": [
+              {
+                "name": "Any",
+                "role": "DEST_ZONE",
+                "objectType": "ZONE",
+                "object": {
+                  "id": 5571,
+                  "type": "ZONE",
+                  "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                  "device": {
+                    "id": 9,
+                    "name": "testDevice",
+                    "managementIp": "any",
+                    "parents": [],
+                    "children": [],
+                    "securityConcernIndex": 2.41,
+                    "devicePack": {
+                      "type": "DEVICE_PACK",
+                      "id": 47,
+                      "artifactId": "test-artifact",
+                      "groupId": "test.grp",
+                      "version": "0.0.0",
+                      "artifacts": [
+                        {
+                          "name": "dc.zip",
+                          "checksum": "439fd2e191d744cb5161e68803ea410f"
+                        }
+                      ],
+                      "buildDate": "2021-02-19T16:07:59+0000",
+                      "deviceName": "testDevice Firewall",
+                      "deviceType": "FIREWALL",
+                      "vendor": "vendor",
+                      "collectionConfig": {
+                        "id": 22,
+                        "name": "default",
+                        "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                        "changeCriterion": [
+                          {
+                            "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                            "timeoutSeconds": 45,
+                            "continueMatch": false,
+                            "parentUserName": "test-parent",
+                            "retrieveOnMatch": true
+                          }
+                        ],
+                        "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                        "usageCriterion": [
+                          {
+                            "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                            "fields": [],
+                            "dynamicFields": []
+                          }
+                        ],
+                        "createdDate": "2021-04-26T07:03:55+0000",
+                        "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                        "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "usageKeys": [
+                          "RULE_NUMBER"
+                        ],
+                        "activatedForDevicePack": false
+                      },
+                      "behaviorTranslator": "translator",
+                      "normalization": true,
+                      "usage": true,
+                      "change": true,
+                      "usageSyslog": true,
+                      "changeSyslog": true,
+                      "active": false,
+                      "supportsDiff": true,
+                      "supportsManualRetrieval": true,
+                      "implicitDrop": false,
+                      "diffDynamicRoutes": false,
+                      "automation": false,
+                      "lookupNoIntfRoutes": true,
+                      "automationCli": false,
+                      "ssh": true,
+                      "sharedNetworks": false,
+                      "sharedServices": false,
+                      "supportedTypes": [
+                        "USERS",
+                        "ZONES"
+                      ],
+                      "diffIgnorePatterns": [
+                        "^\\s*set\\s+((auth-)?password|passwd).*$",
+                        "^\\s*[+/=[[:alnum:]]+\\s*$",
+                        "^\\s*#.*$",
+                        "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                        "^\\s*DEK-Info.*$"
+                      ],
+                      "convertableTo": []
+                    },
+                    "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                    "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                    "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                    "state": "ACTIVE",
+                    "managedType": "MANAGED",
+                    "gpcStatus": "NOT_IMPORTED",
+                    "updateMemberRuleDoc": false
+                  },
+                  "lastChangeConfigRevId": 36,
+                  "createDate": "1970-01-01T00:00:00+0000",
+                  "lastUpdated": "2021-05-24T12:14:10+0000"
+                }
+              }
+            ],
+            "profiles": [],
+            "schedules": [],
+            "ruleAction": "ACCEPT",
+            "log": false
+          },
+          "referencedRules": [
+            {
+              "ruleName": "\"hello world\"",
+              "ruleNumber": 1,
+              "ruleNumberStr": "1",
+              "ruleUUID": "e1310897-358d-4ab2-9ed7-9448cf34d518",
+              "apps": [],
+              "destinations": [
+                {
+                  "name": "Any",
+                  "role": "DESTINATION",
+                  "objectType": "NETWORK",
+                  "object": {
+                    "id": 5397,
+                    "type": "NETWORK",
+                    "matchId": "caee3ad2-4473-45e1-ba57-f85045205fb9",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "layout.json",
+                            "checksum": "04015dc7764daf5ec08b200a335fe400"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "services": [
+                {
+                  "name": "Any",
+                  "role": "SERVICE",
+                  "objectType": "SERVICE",
+                  "object": {
+                    "id": 5559,
+                    "type": "SERVICE",
+                    "matchId": "9d1e655d-7568-46f8-abaf-223d43839a99",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "layout.json",
+                            "checksum": "04015dc7764daf5ec08b200a335fe400"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "sources": [
+                {
+                  "name": "Any",
+                  "role": "SOURCE",
+                  "objectType": "NETWORK",
+                  "object": {
+                    "id": 5397,
+                    "type": "NETWORK",
+                    "matchId": "caee3ad2-4473-45e1-ba57-f85045205fb9",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "layout.json",
+                            "checksum": "04015dc7764daf5ec08b200a335fe400"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "users": [],
+              "sourceZones": [
+                {
+                  "name": "Any",
+                  "role": "SOURCE_ZONE",
+                  "objectType": "ZONE",
+                  "object": {
+                    "id": 5571,
+                    "type": "ZONE",
+                    "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "layout.json",
+                            "checksum": "04015dc7764daf5ec08b200a335fe400"
+                          },
+                          {
+                            "name": "layout-modify-networkobj.json",
+                            "checksum": "f54002584bc1832a3ff430a2cf8a0508"
+                          },
+                          {
+                            "name": "layout-modify-secrule.json",
+                            "checksum": "b719e6d8eb2e45856a0952344203dd14"
+                          },
+                          {
+                            "name": "plugin.jar",
+                            "checksum": "94e60c64bd6e0087ba239d097c074110"
+                          },
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "destinationZones": [
+                {
+                  "name": "Any",
+                  "role": "DEST_ZONE",
+                  "objectType": "ZONE",
+                  "object": {
+                    "id": 5571,
+                    "type": "ZONE",
+                    "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "profiles": [],
+              "schedules": [
+                {
+                  "name": "always",
+                  "role": "SCHEDULE",
+                  "objectType": "SCHEDULE",
+                  "object": {
+                    "id": 5429,
+                    "type": "SCHEDULE",
+                    "matchId": "b09349c4-12de-4bac-a09d-81f024c815ce",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "ruleAction": "ACCEPT",
+              "log": true
+            }
+          ]
+        },
+        {
+          "ndChangeLogs": [],
+          "deviceId": 9,
+          "deviceName": "testDevice",
+          "deviceType": "FIREWALL",
+          "devicePackGroupId": "test.grp",
+          "devicePackArtifactId": "test-artifact",
+          "deviceSupportedTypes": [
+            "USERS",
+            "ZONES"
+          ],
+          "summary": "Recommend creating a rule above the referenced rule because the referenced rule is too broad",
+          "type": "RECOMMENDED",
+          "requirementType": "NONE",
+          "changeType": "RULE",
+          "implementationStatus": "PENDING",
+          "automatable": false,
+          "action": "CREATE",
+          "location": "ABOVE",
+          "policyName": "Policy",
+          "policyDisplayName": "Policy",
+          "policyUUID": "dde64513-c3fe-47d0-ac23-3b19e9f7878e",
+          "testedRule": {
+            "ruleName": "fmplanner_20210825093210001",
+            "apps": [],
+            "destinations": [
+              {
+                "name": "any",
+                "role": "DESTINATION",
+                "objectType": "NETWORK"
+              }
+            ],
+            "services": [
+              {
+                "name": "tcp/8090",
+                "role": "SERVICE",
+                "objectType": "SERVICE"
+              }
+            ],
+            "sources": [
+              {
+                "name": "10.1.1.1",
+                "role": "SOURCE",
+                "objectType": "NETWORK"
+              }
+            ],
+            "users": [],
+            "sourceZones": [
+              {
+                "name": "port1",
+                "role": "SOURCE_ZONE",
+                "objectType": "ZONE",
+                "object": {
+                  "id": 5572,
+                  "type": "ZONE",
+                  "matchId": "ef25d52b-7f6e-4fdb-8226-7a63d1b5a66d",
+                  "device": {
+                    "id": 9,
+                    "name": "testDevice",
+                    "managementIp": "any",
+                    "parents": [],
+                    "children": [],
+                    "securityConcernIndex": 2.41,
+                    "devicePack": {
+                      "type": "DEVICE_PACK",
+                      "id": 47,
+                      "artifactId": "test-artifact",
+                      "groupId": "test.grp",
+                      "version": "0.0.0",
+                      "artifacts": [
+                        {
+                          "name": "layout.json",
+                          "checksum": "04015dc7764daf5ec08b200a335fe400"
+                        }
+                      ],
+                      "buildDate": "2021-02-19T16:07:59+0000",
+                      "deviceName": "testDevice Firewall",
+                      "deviceType": "FIREWALL",
+                      "vendor": "vendor",
+                      "collectionConfig": {
+                        "id": 22,
+                        "name": "default",
+                        "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                        "changeCriterion": [
+                          {
+                            "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                            "timeoutSeconds": 45,
+                            "continueMatch": false,
+                            "parentUserName": "test-parent",
+                            "retrieveOnMatch": true
+                          }
+                        ],
+                        "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                        "usageCriterion": [
+                          {
+                            "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                            "fields": [],
+                            "dynamicFields": []
+                          }
+                        ],
+                        "createdDate": "2021-04-26T07:03:55+0000",
+                        "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                        "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "usageKeys": [
+                          "RULE_NUMBER"
+                        ],
+                        "activatedForDevicePack": false
+                      },
+                      "behaviorTranslator": "translator",
+                      "normalization": true,
+                      "usage": true,
+                      "change": true,
+                      "usageSyslog": true,
+                      "changeSyslog": true,
+                      "active": false,
+                      "supportsDiff": true,
+                      "supportsManualRetrieval": true,
+                      "implicitDrop": false,
+                      "diffDynamicRoutes": false,
+                      "automation": false,
+                      "lookupNoIntfRoutes": true,
+                      "automationCli": false,
+                      "ssh": true,
+                      "sharedNetworks": false,
+                      "sharedServices": false,
+                      "supportedTypes": [
+                        "USERS",
+                        "ZONES"
+                      ],
+                      "diffIgnorePatterns": [
+                        "^\\s*set\\s+((auth-)?password|passwd).*$",
+                        "^\\s*[+/=[[:alnum:]]+\\s*$",
+                        "^\\s*#.*$",
+                        "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                        "^\\s*DEK-Info.*$"
+                      ],
+                      "convertableTo": []
+                    },
+                    "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                    "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                    "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                    "state": "ACTIVE",
+                    "managedType": "MANAGED",
+                    "gpcStatus": "NOT_IMPORTED",
+                    "updateMemberRuleDoc": false
+                  },
+                  "lastChangeConfigRevId": 36,
+                  "createDate": "1970-01-01T00:00:00+0000",
+                  "lastUpdated": "2021-05-24T12:14:10+0000"
+                }
+              }
+            ],
+            "destinationZones": [
+              {
+                "name": "Any",
+                "role": "DEST_ZONE",
+                "objectType": "ZONE",
+                "object": {
+                  "id": 5571,
+                  "type": "ZONE",
+                  "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                  "device": {
+                    "id": 9,
+                    "name": "testDevice",
+                    "managementIp": "any",
+                    "parents": [],
+                    "children": [],
+                    "securityConcernIndex": 2.41,
+                    "devicePack": {
+                      "type": "DEVICE_PACK",
+                      "id": 47,
+                      "artifactId": "test-artifact",
+                      "groupId": "test.grp",
+                      "version": "0.0.0",
+                      "artifacts": [
+                        {
+                          "name": "dc.zip",
+                          "checksum": "439fd2e191d744cb5161e68803ea410f"
+                        }
+                      ],
+                      "buildDate": "2021-02-19T16:07:59+0000",
+                      "deviceName": "testDevice Firewall",
+                      "deviceType": "FIREWALL",
+                      "vendor": "vendor",
+                      "collectionConfig": {
+                        "id": 22,
+                        "name": "default",
+                        "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                        "changeCriterion": [
+                          {
+                            "pattern": "msg=\\\"User\\s+(?<userName>\\S+)\\s+(?:changed|added|deleted).*?from\\s+(?<hostName>\\S+)\\\"",
+                            "timeoutSeconds": 20,
+                            "continueMatch": false,
+                            "parentUserName": "test-parent",
+                            "retrieveOnMatch": true
+                          }
+                        ],
+                        "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                        "usageCriterion": [
+                          {
+                            "pattern": "type=traffic (?:\\S+=.+? )src=(?<src>\\S+) (?:\\S+=.+? )dst=(?<dst>\\S+).*?dst_port=(?<dstPort>\\d+) (?:\\S+=.+? )proto=(?<proto>\\d+) (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                          }
+                        ],
+                        "createdDate": "2021-04-26T07:03:55+0000",
+                        "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                        "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                        "usageKeys": [
+                          "RULE_NUMBER"
+                        ],
+                        "activatedForDevicePack": false
+                      },
+                      "behaviorTranslator": "translator",
+                      "normalization": true,
+                      "usage": true,
+                      "change": true,
+                      "usageSyslog": true,
+                      "changeSyslog": true,
+                      "active": false,
+                      "supportsDiff": true,
+                      "supportsManualRetrieval": true,
+                      "implicitDrop": false,
+                      "diffDynamicRoutes": false,
+                      "automation": false,
+                      "lookupNoIntfRoutes": true,
+                      "automationCli": false,
+                      "ssh": true,
+                      "sharedNetworks": false,
+                      "sharedServices": false,
+                      "supportedTypes": [
+                        "USERS",
+                        "ZONES"
+                      ],
+                      "diffIgnorePatterns": [
+                        "^\\s*set\\s+((auth-)?password|passwd).*$",
+                        "^\\s*[+/=[[:alnum:]]+\\s*$",
+                        "^\\s*#.*$",
+                        "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                        "^\\s*DEK-Info.*$"
+                      ],
+                      "convertableTo": []
+                    },
+                    "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                    "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                    "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                    "state": "ACTIVE",
+                    "managedType": "MANAGED",
+                    "gpcStatus": "NOT_IMPORTED",
+                    "updateMemberRuleDoc": false
+                  },
+                  "lastChangeConfigRevId": 36,
+                  "createDate": "1970-01-01T00:00:00+0000",
+                  "lastUpdated": "2021-05-24T12:14:10+0000"
+                }
+              }
+            ],
+            "profiles": [],
+            "schedules": [],
+            "ruleAction": "ACCEPT",
+            "log": false
+          },
+          "referencedRules": [
+            {
+              "ruleName": "\"hello world\"",
+              "ruleNumber": 1,
+              "ruleNumberStr": "1",
+              "ruleUUID": "e1310897-358d-4ab2-9ed7-9448cf34d518",
+              "apps": [],
+              "destinations": [
+                {
+                  "name": "Any",
+                  "role": "DESTINATION",
+                  "objectType": "NETWORK",
+                  "object": {
+                    "id": 5397,
+                    "type": "NETWORK",
+                    "matchId": "caee3ad2-4473-45e1-ba57-f85045205fb9",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "services": [
+                {
+                  "name": "Any",
+                  "role": "SERVICE",
+                  "objectType": "SERVICE",
+                  "object": {
+                    "id": 5559,
+                    "type": "SERVICE",
+                    "matchId": "9d1e655d-7568-46f8-abaf-223d43839a99",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "sources": [
+                {
+                  "name": "Any",
+                  "role": "SOURCE",
+                  "objectType": "NETWORK",
+                  "object": {
+                    "id": 5397,
+                    "type": "NETWORK",
+                    "matchId": "caee3ad2-4473-45e1-ba57-f85045205fb9",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "layout.json",
+                            "checksum": "04015dc7764daf5ec08b200a335fe400"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "users": [],
+              "sourceZones": [
+                {
+                  "name": "Any",
+                  "role": "SOURCE_ZONE",
+                  "objectType": "ZONE",
+                  "object": {
+                    "id": 5571,
+                    "type": "ZONE",
+                    "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "msg=\\\"User\\s+(?<userName>\\S+)\\s+(?:changed|added|deleted).*?from\\s+(?<hostName>\\S+)\\\"",
+                              "timeoutSeconds": 20,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "destinationZones": [
+                {
+                  "name": "Any",
+                  "role": "DEST_ZONE",
+                  "objectType": "ZONE",
+                  "object": {
+                    "id": 5571,
+                    "type": "ZONE",
+                    "matchId": "0f4c2f5f-82e1-44cf-b845-69b494070b9b",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "profiles": [],
+              "schedules": [
+                {
+                  "name": "always",
+                  "role": "SCHEDULE",
+                  "objectType": "SCHEDULE",
+                  "object": {
+                    "id": 5429,
+                    "type": "SCHEDULE",
+                    "matchId": "b09349c4-12de-4bac-a09d-81f024c815ce",
+                    "device": {
+                      "id": 9,
+                      "name": "testDevice",
+                      "managementIp": "any",
+                      "parents": [],
+                      "children": [],
+                      "securityConcernIndex": 2.41,
+                      "devicePack": {
+                        "type": "DEVICE_PACK",
+                        "id": 47,
+                        "artifactId": "test-artifact",
+                        "groupId": "test.grp",
+                        "version": "0.0.0",
+                        "artifacts": [
+                          {
+                            "name": "dc.zip",
+                            "checksum": "439fd2e191d744cb5161e68803ea410f"
+                          }
+                        ],
+                        "buildDate": "2021-02-19T16:07:59+0000",
+                        "deviceName": "testDevice Firewall",
+                        "deviceType": "FIREWALL",
+                        "vendor": "vendor",
+                        "collectionConfig": {
+                          "id": 22,
+                          "name": "default",
+                          "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                          "changeCriterion": [
+                            {
+                              "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                              "timeoutSeconds": 45,
+                              "continueMatch": false,
+                              "parentUserName": "test-parent",
+                              "retrieveOnMatch": true
+                            }
+                          ],
+                          "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                          "usageCriterion": [
+                            {
+                              "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                              "fields": [],
+                              "dynamicFields": []
+                            }
+                          ],
+                          "createdDate": "2021-04-26T07:03:55+0000",
+                          "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                          "createdBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "lastModifiedBy": "com.fm.platform.domain.User@7fcaf6df",
+                          "usageKeys": [
+                            "RULE_NUMBER"
+                          ],
+                          "activatedForDevicePack": false
+                        },
+                        "behaviorTranslator": "translator",
+                        "normalization": true,
+                        "usage": true,
+                        "change": true,
+                        "usageSyslog": true,
+                        "changeSyslog": true,
+                        "active": false,
+                        "supportsDiff": true,
+                        "supportsManualRetrieval": true,
+                        "implicitDrop": false,
+                        "diffDynamicRoutes": false,
+                        "automation": false,
+                        "lookupNoIntfRoutes": true,
+                        "automationCli": false,
+                        "ssh": true,
+                        "sharedNetworks": false,
+                        "sharedServices": false,
+                        "supportedTypes": [
+                          "USERS",
+                          "ZONES"
+                        ],
+                        "diffIgnorePatterns": [
+                          "^\\s*set\\s+((auth-)?password|passwd).*$",
+                          "^\\s*[+/=[[:alnum:]]+\\s*$",
+                          "^\\s*#.*$",
+                          "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                          "^\\s*DEK-Info.*$"
+                        ],
+                        "convertableTo": []
+                      },
+                      "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+                      "gpcComputeDate": "1970-01-01T00:00:00+0000",
+                      "gpcImplementDate": "1970-01-01T00:00:00+0000",
+                      "state": "ACTIVE",
+                      "managedType": "MANAGED",
+                      "gpcStatus": "NOT_IMPORTED",
+                      "updateMemberRuleDoc": false
+                    },
+                    "lastChangeConfigRevId": 36,
+                    "createDate": "1970-01-01T00:00:00+0000",
+                    "lastUpdated": "2021-05-24T12:14:10+0000"
+                  }
+                }
+              ],
+              "ruleAction": "ACCEPT",
+              "log": true
+            }
+          ]
+        }
+      ],
+      "objectChanges": [
+        {
+          "ndChangeLogs": [],
+          "deviceId": 9,
+          "deviceName": "testDevice",
+          "deviceType": "FIREWALL",
+          "devicePackGroupId": "test.grp",
+          "devicePackArtifactId": "test-artifact",
+          "deviceSupportedTypes": [
+            "USERS",
+            "ZONES"
+          ],
+          "summary": "Add new host object: 10.1.1.1",
+          "type": "RECOMMENDED",
+          "requirementType": "NONE",
+          "changeType": "OBJECT",
+          "implementationStatus": "PENDING",
+          "automatable": false,
+          "action": "CREATE",
+          "testedObject": {
+            "name": "10.1.1.1",
+            "original": false,
+            "members": [],
+            "objectType": "NETWORK",
+            "type": "SINGLE",
+            "ipStackType": "IPV4",
+            "addresses": [
+              {
+                "address": "10.1.1.1",
+                "type": "IPV4",
+                "objectType": "HOST"
+              }
+            ]
+          }
+        },
+        {
+          "ndChangeLogs": [],
+          "deviceId": 9,
+          "deviceName": "testDevice",
+          "deviceType": "FIREWALL",
+          "devicePackGroupId": "test.grp",
+          "devicePackArtifactId": "test-artifact",
+          "deviceSupportedTypes": [
+            "USERS",
+            "ZONES"
+          ],
+          "summary": "Add new service object: tcp/8090",
+          "type": "RECOMMENDED",
+          "requirementType": "NONE",
+          "changeType": "OBJECT",
+          "implementationStatus": "PENDING",
+          "automatable": false,
+          "action": "CREATE",
+          "testedObject": {
+            "name": "tcp_8090",
+            "original": false,
+            "members": [],
+            "objectType": "SERVICE",
+            "type": "SINGLE",
+            "services": [
+              {
+                "type": "TCP",
+                "protocol": 6,
+                "startPort": 8090,
+                "endPort": 8090
+              }
+            ]
+          }
+        },
+        {
+          "ndChangeLogs": [],
+          "deviceId": 9,
+          "deviceName": "testDevice",
+          "deviceType": "FIREWALL",
+          "devicePackGroupId": "test.grp",
+          "devicePackArtifactId": "test-artifact",
+          "deviceSupportedTypes": [
+            "USERS",
+            "ZONES"
+          ],
+          "summary": "Add new host object: any",
+          "type": "RECOMMENDED",
+          "requirementType": "NONE",
+          "changeType": "OBJECT",
+          "implementationStatus": "PENDING",
+          "automatable": false,
+          "action": "CREATE",
+          "testedObject": {
+            "name": "any",
+            "original": false,
+            "members": [],
+            "objectType": "NETWORK",
+            "type": "SINGLE",
+            "ipStackType": "IPV4",
+            "addresses": [
+              {
+                "address": "any",
+                "type": "IPV4",
+                "objectType": "HOST"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

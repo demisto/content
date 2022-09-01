@@ -1,35 +1,40 @@
 {
- "id": "incident_jiratransitions",
- "version": -1,
- "modified": "2021-03-01T12:07:50.094236+02:00",
- "name": "Jira Transitions",
- "ownerOnly": false,
- "cliName": "jiratransitions",
- "type": "singleSelect",
- "closeForm": false,
- "editForm": true,
- "required": false,
- "script": "script-JiraChangeTransition",
- "fieldCalcScript": "script-JiraListTransition",
- "neverSetAsRequired": false,
- "isReadOnly": false,
- "selectValues": [
-  "Select"
- ],
- "useAsKpi": false,
- "locked": false,
- "system": false,
- "content": true,
- "group": 0,
- "hidden": false,
- "associatedTypes": [
-  "Jira Incident"
- ],
- "associatedToAll": false,
- "unmapped": false,
- "unsearchable": false,
- "caseInsensitive": true,
- "sla": 0,
- "threshold": 72,
- "fromVersion": "5.0.0"
+    "id": "incident_jiratransitions",
+    "version": -1,
+    "modified": "2021-03-01T12:07:50.094236+02:00",
+    "name": "Jira Transitions",
+    "ownerOnly": false,
+    "cliName": "jiratransitions",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "script-JiraChangeTransition",
+    "fieldCalcScript": "script-JiraListTransition",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Select"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "systemAssociatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
 }

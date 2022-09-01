@@ -423,7 +423,9 @@ def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
 def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None):
     incidents = []
 
-    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    first_fetch = first_fetch_date.strftime(DATE_FORMAT)
     last_run_time = last_run.get('last_run_time', first_fetch)
     next_run_time = last_run_time
 
@@ -439,7 +441,9 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
         results = client.list_incidents(None, None, None, query_filter).get('results')
 
     for result in results:
-        incident_time = dateparser.parse(result.get('timestamp')).strftime(DATE_FORMAT)
+        timestamp_date = dateparser.parse(result.get('timestamp'))
+        assert timestamp_date is not None
+        incident_time = timestamp_date.strftime(DATE_FORMAT)
 
         # This condition is temporal
         if incident_time > last_run_time:

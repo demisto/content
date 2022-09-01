@@ -208,7 +208,7 @@ Creates a user.
 | secondary_email_address | The user's secondary email address. | Optional | 
 | secondary_email_type | The type of the secondary email account. | Optional | 
 | gender | User's gender. | Optional | 
-| is_ip_white_listed | If true, the user's IP address is white listed. | Optional | 
+| is_ip_white_listed | If true, the user's IP address is added to allow list. | Optional | 
 | notes_content_type | Content type of note, either plain text or HTML. If not provided, considered as plain text. | Optional | 
 | notes_value | Contents of notes. | Optional | 
 | phone_number | A human-readable phone number. It may be in any telephone number format. | Optional | 
@@ -247,7 +247,7 @@ Creates a user.
 | GSuite.User.addresses.primary | Boolean | If this is the user's primary address. | 
 | GSuite.User.emails.address | String | The user's secondary email. | 
 | GSuite.User.emails.type | String | The secondary email type. | 
-| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is white listed. | 
+| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is added to allow list. | 
 | GSuite.User.recoveryEmail | String | Recovery email of the user. | 
 | GSuite.User.isDelegatedAdmin | Boolean | Indicates if the user is a delegated administrator. | 
 | GSuite.User.recoveryPhone | String | Recovery phone of the user. | 
@@ -988,7 +988,7 @@ Updates a user.
 | secondary_email_address | The user's secondary email address. | Optional | 
 | secondary_email_type | The type of the secondary email account. | Optional | 
 | gender | User's gender. | Optional | 
-| is_ip_white_listed | If true, the user's IP address is white listed. | Optional | 
+| is_ip_white_listed | If true, the user's IP address is added to allow list. | Optional | 
 | notes_content_type | Content type of note, either plain text or HTML. If not provided, considered as plain text. | Optional | 
 | notes_value | Contents of notes. | Optional | 
 | phone_number | A human-readable phone number. It may be in any telephone number format. | Optional | 
@@ -1039,7 +1039,7 @@ Updates a user.
 | GSuite.User.emails.type | String | The secondary email type. | 
 | GSuite.User.emails.customType | String | If the value of type is custom, this property contains the custom type string. | 
 | GSuite.User.emails.primary | Boolean | Indicates if this is the user's primary email. Only one entry can be marked as primary. | 
-| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is white listed. | 
+| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is added. | 
 | GSuite.User.recoveryEmail | String | Recovery email of the user. | 
 | GSuite.User.isDelegatedAdmin | Boolean | Indicates if the user is a delegated administrator. | 
 | GSuite.User.recoveryPhone | String | Recovery phone of the user. | 

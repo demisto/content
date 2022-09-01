@@ -447,6 +447,9 @@ def get_ip_reputation(client: Client, ip, threshold=None, status="active,inactiv
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, ip)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=ip,
+                                                                      indicator_type=DBotScoreType.IP,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -487,6 +490,9 @@ def get_domain_reputation(client: Client, domain, threshold=None, status="active
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, domain)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                      indicator_type=DBotScoreType.DOMAIN,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -527,6 +533,9 @@ def get_file_reputation(client: Client, file, threshold=None, status="active,ina
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, file)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=file,
+                                                                      indicator_type=DBotScoreType.FILE,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -579,6 +588,9 @@ def get_url_reputation(client: Client, url, threshold=None, status="active,inact
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, url)
     if not indicator:
+        return_results(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                      indicator_type=DBotScoreType.URL,
+                                                                      reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -932,7 +944,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
     if str(res.get('success', '')).lower() == 'true':
         report_info = res['reports'][report_platform]
         report_id = report_info['id']
-        report_status, _ = get_submission_status(report_id, False)
+        report_status, _ = get_submission_status(client, report_id, False)
 
         report_outputs = {'ReportID': report_id, 'Status': report_status, 'Platform': report_platform}
         ec = {'ThreatStream.Analysis': report_outputs}
@@ -993,7 +1005,6 @@ def get_indicators(client: Client, **kwargs):
     if limit > 1000:
         while len(iocs_context) < limit:
             offset += len(iocs_list)
-            limit -= len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)

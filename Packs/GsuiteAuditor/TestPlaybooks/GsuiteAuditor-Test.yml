@@ -1,0 +1,178 @@
+id: GSuiteAuditor-Test
+version: -1
+name: GsuiteAuditor-Test
+description: This playbook uses the G Suite Auditor integration and tests it's single
+  command - 'gsuite-activity-search'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 705ba63d-79c1-474f-8f2a-ab5ade1c83bb
+    type: start
+    task:
+      id: 705ba63d-79c1-474f-8f2a-ab5ade1c83bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 57f478df-a338-4cdd-80d4-df0eba8b8930
+    type: regular
+    task:
+      id: 57f478df-a338-4cdd-80d4-df0eba8b8930
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1819387d-df57-4c41-8218-226d201e984b
+    type: regular
+    task:
+      id: 1819387d-df57-4c41-8218-226d201e984b
+      version: -1
+      name: gsuite-activity-search
+      script: '|||gsuite-activity-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      application_name:
+        simple: admin
+      max_results:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d3c07bef-705e-4b2e-88cb-14a6960c35e6
+    type: condition
+    task:
+      id: d3c07bef-705e-4b2e-88cb-14a6960c35e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.ActivitySearch.id.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.ActivitySearch.id.uniqueQualifier
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 745ff365-8cfd-4594-8b49-2aa143933ce6
+    type: title
+    task:
+      id: 745ff365-8cfd-4594-8b49-2aa143933ce6
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

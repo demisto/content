@@ -243,7 +243,7 @@ script:
       is a specific event derived from a cybersecurity telemetry. Escalations are
       compiled together to form Incidents in Respond.
     name: mad-get-escalations
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   ismappable: false
   isremotesyncin: true

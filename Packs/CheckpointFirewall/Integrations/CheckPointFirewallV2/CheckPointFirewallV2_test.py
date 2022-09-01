@@ -2,7 +2,6 @@ import io
 import json
 import pytest
 
-
 import CheckPointFirewallV2
 
 
@@ -482,6 +481,22 @@ def test_publish_command(mocker):
     assert result.get('task-id') == "01234567"
 
 
+def test_add_batch_command(mocker):
+    from CheckPointFirewallV2 import checkpoint_add_objects_batch_command
+    mocked_client = mocker.Mock()
+
+    def validate_add_list(object_type, add_list):
+        assert type(add_list) == list
+        for obj in add_list:
+            assert len(obj) == 2
+            assert 'name' in obj and 'ip-address' in obj
+
+        return {}
+
+    mocked_client.add_objects_batch.side_effect = validate_add_list
+    checkpoint_add_objects_batch_command(mocked_client, '01234567', '1.1.1.1', 'test')
+
+
 def test_show_task_command(mocker):
     from CheckPointFirewallV2 import checkpoint_show_task_command
     mocked_client = mocker.Mock()
@@ -533,3 +548,69 @@ def test_checkpoint_server_sanitization(mocker, server: str):
         request_mocker.post(f'{web_api_address}/logout', json={})
 
         main()
+
+
+def get_treat_protection_response():
+    with io.open('./test_data/threat_protection_response.json', mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_checkpoint_show_threat_protection(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.show_threat_protection.return_value = response
+    results = CheckPointFirewallV2.checkpoint_show_threat_protection_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for show threat protection' in results.readable_output
+
+
+def test_ip_settings():
+    keys = ['exclude-protection-with-performance-impact',
+            'exclude-protection-with-performance-impact-mode',
+            'exclude-protection-with-severity',
+            'exclude-protection-with-severity-mode',
+            'newly-updated-protections'
+            ]
+    for item in keys:
+        assert CheckPointFirewallV2.ip_settings({item: ''}).get('ips-settings', {}).get(item) == ''
+
+
+def test_checkpoint_add_threat_profile(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.add_threat_profile.return_value = response
+    results = CheckPointFirewallV2.checkpoint_add_threat_profile_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for add threat profile command' in results.readable_output
+
+
+def test_checkpoint_delete_threat_protections(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.delete_threat_protections.return_value = response
+    results = CheckPointFirewallV2.checkpoint_delete_threat_protections_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for delete threat protections' in results.readable_output
+
+
+def test_checkpoint_set_threat_protections(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.set_threat_protection.return_value = response
+    results = CheckPointFirewallV2.checkpoint_set_threat_protections_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'heckPoint data for set threat protection' in results.readable_output
+
+
+def test_create_override_data():
+    args = {'profiles': 'profile1, profile2',
+            'action': 'action1',
+            'track': 'track1',
+            'capturePackets': 'capturePackets1'
+            }
+    results = CheckPointFirewallV2.create_override_data(args)
+    assert results['overrides'] == [{'profile': 'profile1', 'action': 'action1', 'track': 'track1',
+                                     'capture-packets': None},
+                                    {'profile': ' profile2', 'action': 'action1', 'track': 'track1',
+                                     'capture-packets': None}
+                                    ]

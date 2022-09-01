@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "seen": false,
+            "id": "b7da6303-0da4-43e2-8e21-9e22faedc594-163775608092676",
+            "tinyId": "16323",
+            "alias": "b7da6303-0da4-43e2-8e21-9e22faedc594-163775608092676",
+            "message": "123456",
+            "status": "open",
+            "acknowledged": false,
+            "isSeen": false,
+            "tags": [],
+            "snoozed": false,
+            "count": 1,
+            "lastOccurredAt": "2021-11-24T12:14:40.926Z",
+            "createdAt": "2021-11-24T12:14:40.926Z",
+            "updatedAt": "2021-11-24T12:14:41.03Z",
+            "source": "192.168.x.x",
+            "owner": "",
+            "priority": "P1",
+            "teams": [],
+            "responders": [],
+            "integration": {
+                "id": "3cc69931-167f-411c-a331-768997c29d2e",
+                "name": "API",
+                "type": "API"
+            },
+            "ownerTeamId": ""
+        }
+    ],
+    "paging": {
+        "first": "https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=0&order=desc",
+        "last": "https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=142&order=desc"
+    },
+    "took": 0.012,
+    "requestId": "d81a7214-1922-4969-88c7-f9e00a8eeae7"
+}

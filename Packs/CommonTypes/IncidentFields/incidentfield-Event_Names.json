@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "CrowdStrike Falcon Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -14,7 +15,6 @@
     "editForm": true,
     "extractIndicatorTypesIDs": [],
     "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_eventnames",
@@ -31,9 +31,7 @@
     ],
     "required": false,
     "script": "",
-    "selectValues": [
-        ""
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": null,
@@ -45,5 +43,6 @@
     "useAsKpi": false,
     "validationRegex": "",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "openEnded": true
 }

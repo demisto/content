@@ -4,3 +4,6 @@ This API key is used in the *API Key* field in the integration configuration.
 2. Next, log in to your *WildFire* account.
 3. Select the *Account* tab from the menu.
 4. Lastly, copy the API key.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/wild-fire-v2)

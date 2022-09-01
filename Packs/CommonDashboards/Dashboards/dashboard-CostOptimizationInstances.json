@@ -597,7 +597,7 @@
                             "position": 5
                         }
                     ],
-                    "valuesFormat": "percentage"
+                    "valuesFormat": "regular"
                 },
                 "prevName": "Command execution type",
                 "primaryTerm": 5,

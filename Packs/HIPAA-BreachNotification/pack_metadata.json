@@ -23,5 +23,9 @@
             "mandatory": true,
             "display_name": "Compliance"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

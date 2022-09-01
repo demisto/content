@@ -1,0 +1,2146 @@
+id: ACTI Create Report-Indicator Associations
+version: -1
+name: ACTI Create Report-Indicator Associations
+description: Deprecated. No available replacement.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 23e9bd83-6fae-445a-8295-be86a302f41a
+    type: start
+    task:
+      id: 23e9bd83-6fae-445a-8295-be86a302f41a
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+      - '11'
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: ddb30ddd-7fd1-4c62-8ee0-c49d8989bafd
+    type: regular
+    task:
+      id: ddb30ddd-7fd1-4c62-8ee0-c49d8989bafd
+      version: -1
+      name: IP for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3010,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 44648829-d0db-4427-8cab-dc11d85e7b9a
+    type: regular
+    task:
+      id: 44648829-d0db-4427-8cab-dc11d85e7b9a
+      version: -1
+      name: Domain for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: e12cebab-36fa-4a91-8cae-200c3bab4233
+    type: regular
+    task:
+      id: e12cebab-36fa-4a91-8cae-200c3bab4233
+      version: -1
+      name: URL for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 1b803980-e920-45e9-8d4f-b7af0c754d1a
+    type: title
+    task:
+      id: 1b803980-e920-45e9-8d4f-b7af0c754d1a
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 6d6f8f32-2d35-4ffd-8fb0-7958e1768e84
+    type: condition
+    task:
+      id: 6d6f8f32-2d35-4ffd-8fb0-7958e1768e84
+      version: -1
+      name: Is ACTI URL Indicator?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      URL:
+      - '21'
+      - '22'
+      - '33'
+      - '34'
+      - '35'
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: URL
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: url
+          right:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 342bf397-02a3-46c4-855a-8d22e16343cf
+    type: regular
+    task:
+      id: 342bf397-02a3-46c4-855a-8d22e16343cf
+      version: -1
+      name: GetIPDBotScore
+      description: Add into the incident's context the system internal DBot score for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      indicator:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 60e1dae0-f5cb-42f1-89f1-e0465f768ef8
+    type: regular
+    task:
+      id: 60e1dae0-f5cb-42f1-89f1-e0465f768ef8
+      version: -1
+      name: GetDomainDBotScore
+      description: Add into the incident's context the system internal DBot score for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      indicator:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: fcc3dce8-eb3c-4f8a-8982-e696594acfb2
+    type: regular
+    task:
+      id: fcc3dce8-eb3c-4f8a-8982-e696594acfb2
+      version: -1
+      name: GetURLDBotScore
+      description: Add into the incident's context the system internal DBot score for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      indicator:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 34c936c5-e0c3-453f-8d59-c5e73b77ccea
+    type: condition
+    task:
+      id: 34c936c5-e0c3-453f-8d59-c5e73b77ccea
+      version: -1
+      name: IP Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '6'
+    scriptarguments:
+      value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: ad707a83-13fe-4c2f-85bb-5d56575a03bb
+    type: condition
+    task:
+      id: ad707a83-13fe-4c2f-85bb-5d56575a03bb
+      version: -1
+      name: Domain Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '7'
+    scriptarguments:
+      value:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: d701dbf8-bf4d-40fe-8a02-ee2ca2ede04a
+    type: condition
+    task:
+      id: d701dbf8-bf4d-40fe-8a02-ee2ca2ede04a
+      version: -1
+      name: URL Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '8'
+    scriptarguments:
+      value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: b74ebcea-8e59-4adf-869b-a54c926afe32
+    type: condition
+    task:
+      id: b74ebcea-8e59-4adf-869b-a54c926afe32
+      version: -1
+      name: Is ACTI IP Indicator?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether it is an IP Indicator enriched using ACTI Indicator Query integration.
+    nexttasks:
+      '#default#':
+      - '4'
+      IP:
+      - '23'
+      - '24'
+      - '25'
+      - '26'
+      - '27'
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: IP
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: ip
+          right:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: a2ba3fbe-5868-4419-8cb0-7852886c24c6
+    type: condition
+    task:
+      id: a2ba3fbe-5868-4419-8cb0-7852886c24c6
+      version: -1
+      name: Is ACTI domain Indicator?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether it is a Domain Indicator enriched using ACTI Indicator Query integration.
+    nexttasks:
+      '#default#':
+      - '4'
+      Domain:
+      - '19'
+      - '20'
+      - '41'
+      - '42'
+      - '43'
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: domain
+          right:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 3b97422c-4bab-40f6-814f-b016e7b04dd1
+    type: regular
+    task:
+      id: 3b97422c-4bab-40f6-814f-b016e7b04dd1
+      version: -1
+      name: IP for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2610,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: f1f311d9-fb3b-4f86-808f-7ebf55b1135b
+    type: regular
+    task:
+      id: f1f311d9-fb3b-4f86-808f-7ebf55b1135b
+      version: -1
+      name: URL for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1212.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: a68886b4-2d15-4e16-8266-cef93a0e9582
+    type: regular
+    task:
+      id: a68886b4-2d15-4e16-8266-cef93a0e9582
+      version: -1
+      name: Domain for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: e10af4f7-e0d5-4cb2-8a0a-8821d19f30ef
+    type: condition
+    task:
+      id: e10af4f7-e0d5-4cb2-8a0a-8821d19f30ef
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: a240faf0-2ad4-4f6c-8938-b3619854fd49
+    type: condition
+    task:
+      id: a240faf0-2ad4-4f6c-8938-b3619854fd49
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 79377267-6448-4c59-860b-85fce47fd859
+    type: condition
+    task:
+      id: 79377267-6448-4c59-860b-85fce47fd859
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1212.5,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: ab5a9c14-8bf3-4338-8f85-e969a10ea350
+    type: condition
+    task:
+      id: ab5a9c14-8bf3-4338-8f85-e969a10ea350
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: b833fca2-61a8-4a79-8ed3-6d2030bcd258
+    type: condition
+    task:
+      id: b833fca2-61a8-4a79-8ed3-6d2030bcd258
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3010,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 27b9c747-b883-4878-8b60-7f352098a63c
+    type: condition
+    task:
+      id: 27b9c747-b883-4878-8b60-7f352098a63c
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2610,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: bb5a5fb8-1e32-4c41-849d-d6fbee7bf6a1
+    type: condition
+    task:
+      id: bb5a5fb8-1e32-4c41-849d-d6fbee7bf6a1
+      version: -1
+      name: Malware Family present?
+      description: Checks whether there is a Malware Family present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MFam
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2210,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 331b14f8-6720-4a88-8b07-3696e5b239cd
+    type: condition
+    task:
+      id: 331b14f8-6720-4a88-8b07-3696e5b239cd
+      version: -1
+      name: Threat Group present?
+      description: Checks whether there is a Threat Group present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1810,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 424aa4ca-6158-41a2-85e9-65341d662c26
+    type: condition
+    task:
+      id: 424aa4ca-6158-41a2-85e9-65341d662c26
+      version: -1
+      name: Threat Actor present?
+      description: Checks whether there is a Threat Actor present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1410,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: 20767cee-6854-430a-82ae-c5252951f1fd
+    type: condition
+    task:
+      id: 20767cee-6854-430a-82ae-c5252951f1fd
+      version: -1
+      name: Threat Campaign present?
+      description: Checks whether there is a Threat Campaign present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TC
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: ccff0502-c928-4d57-805f-7b862d8d3d19
+    type: regular
+    task:
+      id: ccff0502-c928-4d57-805f-7b862d8d3d19
+      version: -1
+      name: IP for Malware Family
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.MFam}
+      entity_b_type:
+        simple: Malware Family
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2210,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 2be59370-2625-4b3b-8867-cf5684bdd52d
+    type: regular
+    task:
+      id: 2be59370-2625-4b3b-8867-cf5684bdd52d
+      version: -1
+      name: IP for Threat Group
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.TG}
+      entity_b_type:
+        simple: Threat Group
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1810,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: 15fa609c-6c6f-4a81-847b-7670a7a04d77
+    type: regular
+    task:
+      id: 15fa609c-6c6f-4a81-847b-7670a7a04d77
+      version: -1
+      name: IP for Threat Actor
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.TA}
+      entity_b_type:
+        simple: Threat Actor
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1410,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: e6d78809-4328-478a-8651-a3d815491927
+    type: regular
+    task:
+      id: e6d78809-4328-478a-8651-a3d815491927
+      version: -1
+      name: IP for Threat Campaign
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.TC}
+      entity_b_type:
+        simple: Threat Campaign
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: 072c8b4f-0e84-4bea-8461-08354f88e087
+    type: condition
+    task:
+      id: 072c8b4f-0e84-4bea-8461-08354f88e087
+      version: -1
+      name: Malware Family present?
+      description: Checks whether there is a Malware Family present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MFam
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '34':
+    id: '34'
+    taskid: 55a4799c-13c6-4704-89c0-7a82e863c50c
+    type: condition
+    task:
+      id: 55a4799c-13c6-4704-89c0-7a82e863c50c
+      version: -1
+      name: Threat Group present?
+      description: Checks whether there is a Threat Group present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: b3a85a20-10bb-48e5-8d8d-5b6add8a7790
+    type: condition
+    task:
+      id: b3a85a20-10bb-48e5-8d8d-5b6add8a7790
+      version: -1
+      name: Threat Actor present?
+      description: Checks whether there is a Threat Actor present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -32.5,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 1474f6f8-7b74-4c89-8ec1-fd38846f5506
+    type: condition
+    task:
+      id: 1474f6f8-7b74-4c89-8ec1-fd38846f5506
+      version: -1
+      name: Threat Campaign present?
+      description: Checks whether there is a Threat Campaign present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TC
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: c70ab55c-bf08-45c9-8eac-77c6c9d35be8
+    type: regular
+    task:
+      id: c70ab55c-bf08-45c9-8eac-77c6c9d35be8
+      version: -1
+      name: URL for Malware Family
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.MFam}
+      entity_b_type:
+        simple: Malware Family
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: b1288aa1-c82e-437d-8265-51d0674f8c6d
+    type: regular
+    task:
+      id: b1288aa1-c82e-437d-8265-51d0674f8c6d
+      version: -1
+      name: URL for Threat Group
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.TG}
+      entity_b_type:
+        simple: Threat Group
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '39':
+    id: '39'
+    taskid: aefef170-60f4-4786-88fa-d7bc76f45482
+    type: regular
+    task:
+      id: aefef170-60f4-4786-88fa-d7bc76f45482
+      version: -1
+      name: URL for Threat Actor
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.TA}
+      entity_b_type:
+        simple: Threat Actor
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -32.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '40':
+    id: '40'
+    taskid: e51d8e48-e67d-440c-82d5-3f6e69f44d38
+    type: regular
+    task:
+      id: e51d8e48-e67d-440c-82d5-3f6e69f44d38
+      version: -1
+      name: URL for Threat Campaign
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.TC}
+      entity_b_type:
+        simple: Threat Campaign
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 69f5aa46-eeef-4df2-82c2-9727ef877abc
+    type: condition
+    task:
+      id: 69f5aa46-eeef-4df2-82c2-9727ef877abc
+      version: -1
+      name: Malware Family present?
+      description: Checks whether there is a Malware Family present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MFam
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '42':
+    id: '42'
+    taskid: 71af77c0-0dc8-487b-8a4a-018373ad9f5c
+    type: condition
+    task:
+      id: 71af77c0-0dc8-487b-8a4a-018373ad9f5c
+      version: -1
+      name: Threat Group present?
+      description: Checks whether there is a Threat Group present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: bfba471a-ef6b-42a1-8d8c-d848eb3a61e0
+    type: condition
+    task:
+      id: bfba471a-ef6b-42a1-8d8c-d848eb3a61e0
+      version: -1
+      name: Threat Actor present?
+      description: Checks whether there is a Threat Actor present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '47'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: 3e2ba028-4586-4178-8d2b-e29b26e8924f
+    type: condition
+    task:
+      id: 3e2ba028-4586-4178-8d2b-e29b26e8924f
+      version: -1
+      name: Threat Campaign present?
+      description: Checks whether there is a Threat Campaign present for the given indicator.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '48'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TC
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: 8aeca143-9191-47d6-87e5-24ee9df83384
+    type: regular
+    task:
+      id: 8aeca143-9191-47d6-87e5-24ee9df83384
+      version: -1
+      name: Domain for Malware Family
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.MFam}
+      entity_b_type:
+        simple: Malware Family
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: b3f96f83-6feb-4c14-8d6a-2bedccea136d
+    type: regular
+    task:
+      id: b3f96f83-6feb-4c14-8d6a-2bedccea136d
+      version: -1
+      name: Domain for Threat Group
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.TG}
+      entity_b_type:
+        simple: Threat Group
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: 8dbd19c2-799a-4ece-8fbe-475dbb29e725
+    type: regular
+    task:
+      id: 8dbd19c2-799a-4ece-8fbe-475dbb29e725
+      version: -1
+      name: Domain for Threat Actor
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.TA}
+      entity_b_type:
+        simple: Threat Actor
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 669db080-6f15-4dd5-873e-ae5c538c180b
+    type: regular
+    task:
+      id: 669db080-6f15-4dd5-873e-ae5c538c180b
+      version: -1
+      name: Domain for Threat Campaign
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      create_indicator:
+        simple: 'true'
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.TC}
+      entity_b_type:
+        simple: Threat Campaign
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_4_no": 0.12,
+      "11_4_no": 0.12,
+      "12_23_IP": 0.9,
+      "12_24_IP": 0.9,
+      "12_25_IP": 0.9,
+      "12_26_IP": 0.9,
+      "12_27_IP": 0.89,
+      "12_28_IP": 0.9,
+      "12_4_#default#": 0.13,
+      "13_4_#default#": 0.16,
+      "19_4_#default#": 0.1,
+      "20_4_#default#": 0.1,
+      "21_4_#default#": 0.14,
+      "22_4_#default#": 0.21,
+      "23_4_#default#": 0.1,
+      "24_4_#default#": 0.1,
+      "25_4_#default#": 0.1,
+      "34_4_#default#": 0.63,
+      "35_4_#default#": 0.39,
+      "36_4_#default#": 0.14,
+      "41_4_#default#": 0.1,
+      "42_4_#default#": 0.1,
+      "43_4_#default#": 0.1,
+      "44_4_#default#": 0.1,
+      "5_4_#default#": 0.14,
+      "9_4_no": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1875,
+        "width": 6350,
+        "x": -3010,
+        "y": 290
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: ${IP
+      accessor: Address}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: IA
+  value:
+    complex:
+      root: ${intelligence_alerts}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: IR
+  value:
+    complex:
+      root: ${intelligence_reports}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: ${URL
+      accessor: Data}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Domain
+  value:
+    complex:
+      root: ${Domain
+      accessor: Name}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: MFam
+  value:
+    complex:
+      root: acti_malware_family_uuid
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: TA
+  value:
+    complex:
+      root: acti_threat_actors_uuid
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: TG
+  value:
+    complex:
+      root: acti_threat_groups_uuid
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: TC
+  value:
+    complex:
+      root: acti_threat_campaigns_uuid
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (deprecated)
+fromversion: 6.0.0
+deprecated: true

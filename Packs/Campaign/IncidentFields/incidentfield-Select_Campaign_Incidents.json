@@ -18,9 +18,7 @@
     "placeholder": "Select one or more Incidents",
     "required": false,
     "script": "CollectCampaignRecipients",
-    "selectValues": [
-        ""
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -29,5 +27,6 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "openEnded": true
 }

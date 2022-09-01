@@ -17,7 +17,7 @@ test_data = [
     (
         b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
         'Zaæó³ę gź¶l± ja¼ń',
-        note_msg,
+        '',
         ''
     ),
     (
@@ -28,7 +28,7 @@ test_data = [
     ),
     (b'\xe3\x81\x8c\xe3\x81\x84\xe3\x83\xa2',
      'がいモ',
-     note_msg,
+     '',
      ''
      ),
     (b'\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d',

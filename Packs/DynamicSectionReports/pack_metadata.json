@@ -1,0 +1,21 @@
+{
+    "name": "Dynamic Section Reports",
+    "description": "Dynamic section automation scripts to display indicator and incident information easily on custom layouts",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Nicholas Ericksen",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

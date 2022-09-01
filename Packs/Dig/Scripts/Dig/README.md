@@ -7,6 +7,7 @@ DNS lookup utility to provide 'A' and 'PTR' record
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

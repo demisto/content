@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Show Current Device Version
       description: Shows firewall device software version
-      script: Panorama|||panorama-show-device-version
+      script: Panorama|||pan-os-show-device-version
       type: regular
       iscommand: true
       brand: Panorama

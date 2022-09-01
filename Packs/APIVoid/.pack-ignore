@@ -1,0 +1,5 @@
+[file:APIVoid.yml]
+ignore=IN145,IN154
+
+[known_words]
+APIVoid

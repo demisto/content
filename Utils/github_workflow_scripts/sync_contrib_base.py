@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import argparse
 import os
 import sys
 import urllib3
@@ -25,6 +25,18 @@ def get_master_commit_sha(repo: Repository) -> str:  # noqa: E999
     return commit_sha
 
 
+def arguments_handler() -> argparse.Namespace:
+    """
+    Validates and parses script arguments.
+    Returns:
+        Namespace: Parsed arguments object.
+
+     """
+    parser = argparse.ArgumentParser(description='Run update for base branch of the external PR.')
+    parser.add_argument('-b', '--branch_name', help='The branch name.')
+    return parser.parse_args()
+
+
 def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
     '''Return the list of branches that have the prefix of "contrib/" and that are base branches of open PRs
 
@@ -44,7 +56,15 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
     return branch_names
 
 
+def update_branch(content_repo, branch_name, master_sha):
+    git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
+    print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
+    git_ref.edit(master_sha, force=True)
+
+
 def main():
+    args = arguments_handler()
+    ref_branch = args.branch_name
     debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
     if debug_mode:
         enable_console_debug_logging()
@@ -54,14 +74,16 @@ def main():
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
     master_sha = get_master_commit_sha(content_repo)
-    contrib_base_branches = get_branch_names_with_contrib(content_repo)
-    for branch_name in contrib_base_branches:
-        git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-        print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
-        git_ref.edit(master_sha, force=True)
+    if ref_branch:
+        # Case this flow was triggered on a specific branch
+        contrib_base_branches = [ref_branch]
+    else:
+        # Case we are running scheduled job - detect all contrib/ base branches.
+        contrib_base_branches = get_branch_names_with_contrib(content_repo)
 
-    if debug_mode:
-        print(f'{contrib_base_branches=}')
+    print(f'Updating {contrib_base_branches=}')
+    for branch_name in contrib_base_branches:
+        update_branch(content_repo, branch_name, master_sha)
 
 
 if __name__ == "__main__":

@@ -1,10 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
-from tld import get_tld, get_fld
-from validate_email import validate_email
+from tld import get_tld
 from urllib.parse import urlparse, parse_qs, unquote
 import re
-
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
                        "https://urldefense.com/v3/__"]
@@ -42,7 +40,7 @@ def proofpoint_get_original_url(safe_url):
 
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
+    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&') \
         .replace('http:\\\\', 'http://')
     # Normalize the URL with http prefix
     if url.find('http:') == 0 and url.find('http://') == -1:
@@ -53,56 +51,35 @@ def unescape_url(escaped_url):
 
 
 def get_fqdn(the_input):
-    fqdn = None
-    domain = get_tld(the_input, fail_silently=True, as_object=True)
+    fqdn = ''
+    fixed = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
+    domain = fixed or get_tld(the_input, fail_silently=True, as_object=True)
 
-    # handle fqdn if needed
-    if domain:
+    if domain and domain.tld != 'zip':
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
             fqdn = "{}.{}".format(subdomain, domain.fld)
+        else:
+            fqdn = domain.fld
 
     return fqdn
 
 
-def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
-    is_url = None
-    domain_from_mail = None
-    is_email = validate_email(the_input)
-    if is_email:
-        # Take the entire part after the @ of the email
-        domain_from_mail = the_input.split('@')[1]
-    else:
-        # Test if URL, else proceed as domain
+def extract_fqdn(the_input):
+    # Check if it is a Microsoft ATP Safe Link
+    if re.match(ATP_LINK_REG, the_input):
+        the_input = atp_get_original_url(the_input)
+    # Check if it is a Proofpoint URL
+    elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
+            the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
+        the_input = proofpoint_get_original_url(the_input)
 
-        # Check if it is a Microsoft ATP Safe Link
-        if re.match(ATP_LINK_REG, the_input):
-            the_input = atp_get_original_url(the_input)
-        # Check if it is a Proofpoint URL
-        elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
-                the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
-            the_input = proofpoint_get_original_url(the_input)
-        # Not ATP Link or Proofpoint URL so just unescape
-        else:
-            the_input = unescape_url(the_input)
-        if is_fqdn:
-            is_url = indicator = get_fqdn(the_input)
-        if is_domain:
-            is_url = indicator = get_fld(the_input, fail_silently=True)
+    # Not ATP Link or Proofpoint URL so just unescape
+    the_input = unquote(the_input)
+    the_input = unescape_url(the_input)
 
-    # Extract domain itself from a potential subdomain
-    if domain_from_mail or not is_url:
-        full_domain = 'https://'
-        full_domain += domain_from_mail if domain_from_mail else the_input
-        # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        if is_fqdn:
-            indicator = get_fqdn(full_domain)
-        if is_domain:
-            indicator = get_fld(full_domain, fail_silently=True)
-
-    # convert None to empty string if needed
-    indicator = '' if not indicator else indicator
+    indicator = get_fqdn(the_input)
     return indicator
 
 
@@ -117,9 +94,9 @@ def main():
         input_entry = {
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
-            "Contents": [extract_fqdn_or_domain(item, is_fqdn=True), extract_fqdn_or_domain(item, is_domain=True)]
+            "Contents": [extract_fqdn(item)]
         }
-        if input_entry.get("Contents") == ['', '']:
+        if input_entry.get("Contents") == ['']:
             input_entry['Contents'] = []
         entries_list.append(input_entry)
     if entries_list:

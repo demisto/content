@@ -1,8 +1,10 @@
 id: Traps Blacklist File
 version: -1
 name: Traps Blacklist File
+hidden: true
+deprecated: true
 fromversion: 5.0.0
-description: This playbook accepts a file SHA256 and adds it to a blacklist using Traps integration.
+description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -115,7 +117,7 @@ tasks:
     task:
       id: c98ef076-0bae-46a3-8a52-32a96299c94b
       version: -1
-      name: Is there a file to blacklist?
+      name: Is there a file to add to block list?
       description: ""
       type: condition
       iscommand: false
@@ -153,7 +155,7 @@ tasks:
       id: a69e5150-8a07-47ee-8bfb-36ccd79095a7
       version: -1
       name: Traps - Blacklist file
-      description: Adds the specified file hash to the blacklist.
+      description: Adds the specified file hash to the block list.
       script: '|||traps-hash-blacklist'
       type: regular
       iscommand: true

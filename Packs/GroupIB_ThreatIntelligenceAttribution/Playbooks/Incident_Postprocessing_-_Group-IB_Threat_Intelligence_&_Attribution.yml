@@ -11,26 +11,26 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: ca9dc26f-55ca-4aa3-85f7-3a6db57989cc
+      id: 1d32cf24-8b99-4950-8ae2-bc8f618bf169
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: ca9dc26f-55ca-4aa3-85f7-3a6db57989cc
+    taskid: 1d32cf24-8b99-4950-8ae2-bc8f618bf169
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 40
+          "x": 680,
+          "y": -180
         }
       }
   "7":
@@ -42,20 +42,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 05de087a-3453-4f39-86a4-669dc48a6a67
+      id: 696afe4a-65dc-4d73-8daf-93b39716a156
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 05de087a-3453-4f39-86a4-669dc48a6a67
+    taskid: 696afe4a-65dc-4d73-8daf-93b39716a156
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 1380
+          "x": 680,
+          "y": 1070
         }
       }
   "9":
@@ -70,7 +70,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: GIB OSI Git Leak
+              simple: GIB Compromised Account
         - left:
             iscontext: true
             value:
@@ -80,7 +80,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: GIB OSI Public Leak
+              simple: GIB Compromised Card
         - left:
             iscontext: true
             value:
@@ -90,15 +90,15 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: GIB Data Breach
-      label: Doesn't need
+              simple: GIB Targeted Malware
+      label: "Yes"
     id: "9"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "19"
-      Doesn't need:
       - "7"
+      "Yes":
+      - "19"
     note: false
     quietmode: 0
     separatecontext: false
@@ -106,19 +106,19 @@ tasks:
     task:
       brand: ""
       description: Checks if this incident type needs postprocessing.
-      id: 20cd311f-83fc-4928-8ff9-4c85213a2201
+      id: f4a2738a-e405-4a4a-8ec4-d44619413cce
       iscommand: false
       name: Does this incident type need postprocessing?
       type: condition
       version: -1
-    taskid: 20cd311f-83fc-4928-8ff9-4c85213a2201
+    taskid: f4a2738a-e405-4a4a-8ec4-d44619413cce
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 200
+          "x": 890,
+          "y": 140
         }
       }
   "10":
@@ -142,23 +142,23 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: Group-IB Threat Intelligence & Attribution
+      brand: ""
       description: Command performs Group IB event lookup in hi/threat_actor (or in
         apt/threat_actor if the APT flag is true) collection with provided ID.
-      id: dca7f32d-426f-44ad-89a0-bb05da088f71
+      id: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
       iscommand: true
       name: gibtia-get-threat-actor-info
-      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-actor-info
+      script: '|||gibtia-get-threat-actor-info'
       type: regular
       version: -1
-    taskid: dca7f32d-426f-44ad-89a0-bb05da088f71
+    taskid: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 610
+          "x": 1090,
+          "y": 510
         }
       }
   "11":
@@ -182,23 +182,23 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: Group-IB Threat Intelligence & Attribution
+      brand: ""
       description: Command performs Group IB event lookup in hi/threat (or in apt/threat
         if the APT flag is true) collection with provided ID.
-      id: fcfa158d-ffe9-4dd0-8309-253e6b5ba6cf
+      id: 5701ade1-4390-4c6f-859e-e9a8a70758ae
       iscommand: true
       name: gibtia-get-threat-info
-      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-info
+      script: '|||gibtia-get-threat-info'
       type: regular
       version: -1
-    taskid: fcfa158d-ffe9-4dd0-8309-253e6b5ba6cf
+    taskid: 5701ade1-4390-4c6f-859e-e9a8a70758ae
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 1035
+          "x": 1090,
+          "y": 860
         }
       }
   "16":
@@ -226,19 +226,19 @@ tasks:
     task:
       brand: ""
       description: Checks if there is a threat report in the threat actor info.
-      id: 09877942-acdb-491a-8c43-6a1cef56fbd7
+      id: b9d8b836-178a-4278-8b1b-d6b4ed606345
       iscommand: false
       name: Is there a report?
       type: condition
       version: -1
-    taskid: 09877942-acdb-491a-8c43-6a1cef56fbd7
+    taskid: b9d8b836-178a-4278-8b1b-d6b4ed606345
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 790
+          "x": 1090,
+          "y": 680
         }
       }
   "19":
@@ -266,34 +266,93 @@ tasks:
     task:
       brand: ""
       description: Checks if there is a threat actor in the incident.
-      id: a53043e1-1f77-443c-8f72-3e6af3f7d004
+      id: c606d45e-1d1c-40cc-8b1e-e382f9587455
       iscommand: false
       name: Is there a threat actor?
       type: condition
       version: -1
-    taskid: a53043e1-1f77-443c-8f72-3e6af3f7d004
+    taskid: c606d45e-1d1c-40cc-8b1e-e382f9587455
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 410
+          "x": 1000,
+          "y": 340
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Group-IB Threat Intelligence & Attribution
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the integration is available.
+      id: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
+      iscommand: false
+      name: Is Group-IB Threat Intelligence & Attribution enabled?
+      type: condition
+      version: -1
+    taskid: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -40
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "19_7_#default#": 0.38,
-      "9_7_Doesn't need": 0.78
+      "16_7_#default#": 0.35,
+      "19_7_#default#": 0.18,
+      "20_7_#default#": 0.22,
+      "9_7_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 1405,
-        "width": 380,
-        "x": 550,
-        "y": 40
+        "height": 1315,
+        "width": 790,
+        "x": 680,
+        "y": -180
       }
     }
   }

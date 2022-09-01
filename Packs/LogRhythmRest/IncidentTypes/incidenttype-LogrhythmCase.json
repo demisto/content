@@ -1,0 +1,23 @@
+{
+    "id": "Logrhythm Case",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Logrhythm Case",
+    "prevName": "Logrhythm Case",
+    "color": "#7C71F5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "LogRhythm Case Incident"
+}

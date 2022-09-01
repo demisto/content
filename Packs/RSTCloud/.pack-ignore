@@ -1,0 +1,6 @@
+[file:RSTCloudThreatFeedAPI.yml]
+ignore=IN145
+
+[known_words]
+RST
+

@@ -1,5 +1,22 @@
-[file:integration-VirusTotal_5.5.yml]
-ignore=IN135
+[file:VirusTotal.yml]
+ignore=IN135,IN144,IN145
 
 [file:VirusTotal_V3_Premium.yml]
 ignore=BA108,BA109
+
+[file:FeedLivehunt_image.png]
+ignore=IM111
+
+[file:VirusTotal_image.png]
+ignore=IM111
+
+[file:VirusTotalV3_image.png]
+ignore=IM111
+
+[file:VirusTotal_V3_Premium_image.png]
+ignore=IM111
+
+[known_words]
+VirusTotal
+Livehunt
+Retrohunt

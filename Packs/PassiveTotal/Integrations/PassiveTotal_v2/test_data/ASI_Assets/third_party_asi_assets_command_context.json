@@ -1,0 +1,34 @@
+{
+  "PassiveTotal.ThirdParty(val.id == obj.id)": {
+    "id": 45998,
+    "InsightAsset": {
+      "insightId": 123,
+      "segmentBy": "savedfilter_metric_29644",
+      "asset": [
+        {
+          "type": "HOST",
+          "name": "nephos.riskiq.net",
+          "firstSeen": "2018-02-12 04:25:09",
+          "lastSeen": "2021-09-16 22:05:44"
+        },
+        {
+          "type": "HOST",
+          "name": "mail.malvertisingdb.org",
+          "firstSeen": "2015-12-03 13:35:49",
+          "lastSeen": "2021-09-16 10:56:30"
+        },
+        {
+          "type": "HOST",
+          "name": "mail.risk-iq.org",
+          "firstSeen": "2017-06-20 05:19:11",
+          "lastSeen": "2021-09-16 13:21:06"
+        }
+      ]
+    }
+  },
+  "PassiveTotal.Summary.ThirdPartyInsightAsset(val.name == obj.name)": {
+    "name": "pt-list-third-party-attack-surface-assets",
+    "totalCount": 28,
+    "totalPages": 2
+  }
+}

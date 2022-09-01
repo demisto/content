@@ -1,0 +1,45 @@
+<response status="success">
+    <result>
+        <system>
+            <hostname>Panorama</hostname>
+            <ip-address>1.1.1.1</ip-address>
+            <public-ip-address>unknown</public-ip-address>
+            <netmask>255.255.255.0</netmask>
+            <default-gateway>1.1.1.1</default-gateway>
+            <ipv6-address>unknown</ipv6-address>
+            <ipv6-link-local-address>fe80::20c:29ff:fe31:bf8b/64</ipv6-link-local-address>
+            <mac-address>00:0c:29:31:bf:8b</mac-address>
+            <time>Wed Mar  9 05:10:06 2022
+</time>
+            <uptime>3 days, 5:35:41</uptime>
+            <devicename>Panorama</devicename>
+            <family>pc</family>
+            <model>Panorama</model>
+            <serial>111111111111111</serial>
+            <cloud-mode>non-cloud</cloud-mode>
+            <vm-uuid>564D6BC3-1EC0-9848-0457-C4A4F031BF8B</vm-uuid>
+            <vm-cpuid>ESX:C3060300FFFBAB1F</vm-cpuid>
+            <vm-mode>VMware ESXi</vm-mode>
+            <sw-version>10.0.9</sw-version>
+            <device-dictionary-version>44-316</device-dictionary-version>
+            <device-dictionary-release-date>2022/03/03 17:51:48 PST</device-dictionary-release-date>
+            <app-version>8496-7089</app-version>
+            <app-release-date>2021/12/06 18:49:44 PST</app-release-date>
+            <av-version>0</av-version>
+            <wf-private-version>0</wf-private-version>
+            <wf-private-release-date>unknown</wf-private-release-date>
+            <url-db>paloaltonetworks</url-db>
+            <wildfire-version>0</wildfire-version>
+            <wildfire-rt>Disabled</wildfire-rt>
+            <logdb-version>10.0.3</logdb-version>
+            <platform-family>pc</platform-family>
+            <system-mode>management-only</system-mode>
+            <operational-mode>normal</operational-mode>
+            <num-cpus>4</num-cpus>
+            <ram-in-gb>8</ram-in-gb>
+            <panlogs-partition-in-gb>31</panlogs-partition-in-gb>
+            <licensed-device-capacity>25</licensed-device-capacity>
+            <device-certificate-status>None</device-certificate-status>
+        </system>
+    </result>
+</response>

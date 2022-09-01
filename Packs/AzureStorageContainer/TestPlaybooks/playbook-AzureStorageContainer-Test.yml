@@ -1,0 +1,358 @@
+id: playbook-AzureStorageContainer-Test
+version: -1
+name: playbook-AzureStorageContainer-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fb89b0d6-239d-4c0e-8de5-b2079860e309
+    type: start
+    task:
+      id: fb89b0d6-239d-4c0e-8de5-b2079860e309
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5b38f8a6-6e7a-4b33-8427-1a925eff9af5
+    type: regular
+    task:
+      id: 5b38f8a6-6e7a-4b33-8427-1a925eff9af5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1eba8782-a078-4ea9-8fc9-ced99af2ee66
+    type: regular
+    task:
+      id: 1eba8782-a078-4ea9-8fc9-ced99af2ee66
+      version: -1
+      name: azure-storage-container-list
+      script: '|||azure-storage-container-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 695851b0-87a0-49bd-87f4-0b63930a959c
+    type: condition
+    task:
+      id: 695851b0-87a0-49bd-87f4-0b63930a959c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5f26f1b6-d142-4927-8b3d-7aa26116c9d7
+    type: regular
+    task:
+      id: 5f26f1b6-d142-4927-8b3d-7aa26116c9d7
+      version: -1
+      name: azure-storage-container-create
+      script: '|||azure-storage-container-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      container_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7a013dcb-aeb6-4fa7-8be9-cbd2ad14b993
+    type: regular
+    task:
+      id: 7a013dcb-aeb6-4fa7-8be9-cbd2ad14b993
+      version: -1
+      name: azure-storage-container-property-get
+      script: '|||azure-storage-container-property-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      container_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 30dde8b0-7ae2-429b-8606-acd5c5b5a4d3
+    type: condition
+    task:
+      id: 30dde8b0-7ae2-429b-8606-acd5c5b5a4d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.last_modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.lease_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.lease_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.has_immutability_policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.Property.has_legal_hold
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageContainer.Container.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5d6f2872-99e0-451a-810c-7b5bbe5236ac
+    type: regular
+    task:
+      id: 5d6f2872-99e0-451a-810c-7b5bbe5236ac
+      version: -1
+      name: azure-storage-container-delete
+      script: '|||azure-storage-container-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      container_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: ad1975cf-b41a-4f74-85f0-3e683022d396
+    type: regular
+    task:
+      id: ad1975cf-b41a-4f74-85f0-3e683022d396
+      version: -1
+      name: azure-storage-container-blob-list
+      script: '|||azure-storage-container-blob-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      container_name:
+        simple: xsoar
+      limit: {}
+      page: {}
+      prefix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: ef990744-e0e3-46a8-83ec-e320efc1a4c9
+    type: title
+    task:
+      id: ef990744-e0e3-46a8-83ec-e320efc1a4c9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1945,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

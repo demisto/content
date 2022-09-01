@@ -1,0 +1,23 @@
+commonfields:
+  id: ContextGetHashes
+  version: -1
+name: ContextGetHashes
+script: ''
+type: javascript
+tags: []
+comment: Gets hashes (MD5,SHA1,SHA256) from context.
+enabled: true
+args:
+- name: hash
+  auto: PREDEFINED
+  predefined:
+  - MD5
+  - SHA1
+  - SHA256
+  - all
+  description: Type of hash to get (MD5,SHA1,SHA256,all)
+  defaultValue: all
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

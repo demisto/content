@@ -1,0 +1,121 @@
+{
+    "id": "incident_gracaseanomalydetails",
+    "fromVersion": "5.5.0",
+    "version": -1,
+    "modified": "2021-09-14T10:59:41.585572774+05:30",
+    "name": "GRA Case Anomaly Details",
+    "ownerOnly": false,
+    "description": "GRA Case Anomaly Details",
+    "cliName": "gracaseanomalydetails",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GRACase"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "anomalyname",
+            "displayName": "Anomaly Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 400,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "assignee",
+            "displayName": "Assignee",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "assigneetype",
+            "displayName": "Assignee Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 189,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "resourcename",
+            "displayName": "Resource Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 300,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "riskaccepteddate",
+            "displayName": "Risk Accepted Date",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "riskscore",
+            "displayName": "Risk Score",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "status",
+            "displayName": "Status",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

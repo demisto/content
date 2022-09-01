@@ -1,11 +1,33 @@
 import pytest
 import requests_mock
 
-from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command
+from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command, build_region_or_category_list, \
+    ALL_REGIONS_LIST, ALL_CATEGORY_LIST
 from test_data.feed_data import RESPONSE_DATA
 
 
-def test_fetch_indicators_command():
+@pytest.mark.parametrize('category_list, expected_indicators', [
+    (ALL_CATEGORY_LIST, 10),
+    (['Optimize'], 6),
+    (['Allow'], 0)
+])
+def test_fetch_indicators_command(category_list, expected_indicators):
+    """
+    Given:
+    - Global feed url and category list.
+    (A) - Full category list.
+    (B) - Category list containing only Optimize.
+    (C) - Category list containing only Allow.
+
+    When:
+     - Fetching incidents.
+
+    Then:
+     - Ensure that the incidents returned are as expected.
+     (A) - all incidents from response are handled and returned.
+     (B) - only incidents with 'Optimize' category are returned.
+    (C) - Empty list as there aren't any indicators with 'Allow' category.
+    """
     with requests_mock.Mocker() as mock:
         url_dict = {
             "FeedURL": 'https://endpoints.office.com/endpoints/worldwide',
@@ -13,9 +35,9 @@ def test_fetch_indicators_command():
             "Service": 'Any'
         }
         mock.get(url_dict.get('FeedURL'), json=RESPONSE_DATA)
-        client = Client([url_dict])
+        client = Client([url_dict], category_list)
         indicators = fetch_indicators_command(client)
-        assert len(indicators) == 10
+        assert len(indicators) == expected_indicators
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -29,7 +51,7 @@ def test_commands(command, args, response, length, mocker):
         "Region": 'Worldwide',
         "Service": 'Any'
     }
-    client = Client(urls_list=[url_dict], insecure=False)
+    client = Client(urls_list=[url_dict], category_list=ALL_CATEGORY_LIST, insecure=False)
     mocker.patch.object(client, 'build_iterator', return_value=response)
     human_readable, indicators_ec, raw_json = command(client, args)
     indicators = raw_json.get('raw_response')
@@ -63,7 +85,32 @@ class TestFeedTags:
         Then:
         - Validate the tags supplied exists in the indicators
         """
-        client = Client(self.urls, False, tags)
+        client = Client(self.urls, ALL_CATEGORY_LIST, False, tags)
         mocker.patch.object(client, 'build_iterator', return_value=RESPONSE_DATA)
         _, _, raw_json = get_indicators_command(client, {'limit': 2, 'indicator_type': 'IPs'})
         assert tags == raw_json.get('raw_response')[0]['fields']['tags']
+
+
+@pytest.mark.parametrize('param_list, all_config_list, response', [
+    (['All'], ALL_REGIONS_LIST, ALL_REGIONS_LIST),
+    (['All', 'my_region'], ALL_REGIONS_LIST, ALL_REGIONS_LIST + ['my_region']),
+    (['my_region'], ALL_REGIONS_LIST, ['my_region']),
+    (['All'], ALL_CATEGORY_LIST, ALL_CATEGORY_LIST),
+    (['All', 'Optimize', 'my_category'], ALL_CATEGORY_LIST, ALL_CATEGORY_LIST + ['my_category']),
+    (['my_category'], ALL_CATEGORY_LIST, ['my_category']),
+])  # noqa: E124
+def test_build_region_or_category_list(param_list, all_config_list, response):
+    """
+    Given:
+    - region or category lists provided by configurations
+    When:
+    - building the region or category list with build_region_or_category_list()
+    Then:
+    - Formatted list will be returned:
+        in cases 'All' item is in the config list,
+        the returned list will include all_config_list, and 'All' will be removed.
+    """
+    region_list = build_region_or_category_list(param_list, all_config_list)
+    region_list.sort()
+    response.sort()
+    assert region_list == response

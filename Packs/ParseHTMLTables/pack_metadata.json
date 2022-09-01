@@ -1,0 +1,21 @@
+{
+    "name": "ParseHTMLTables",
+    "description": "Find tables inside HTML and extract the contents into objects.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-11-11T05:05:52Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

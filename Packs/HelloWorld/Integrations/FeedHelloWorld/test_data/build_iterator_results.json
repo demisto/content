@@ -2,25 +2,61 @@
   {
     "value": "https://url1.com",
     "type": "URL",
-    "FeedURL": "https://openphish.com/feed.txt"
+    "FeedURL": "https://openphish.com/feed.txt",
+    "relations": [
+      {
+        "value": "url1.com",
+        "type": "Domain",
+        "relationType": "hosted-on"
+      }
+    ]
   },
   {
     "value": "https://url2.com",
     "type": "URL",
-    "FeedURL": "https://openphish.com/feed.txt"
+    "FeedURL": "https://openphish.com/feed.txt",
+    "relations": [
+      {
+        "value": "url2.com",
+        "type": "Domain",
+        "relationType": "hosted-on"
+      }
+    ]
   },
   {
     "value": "https://url3.com",
     "type": "URL",
-    "FeedURL": "https://openphish.com/feed.txt"
+    "FeedURL": "https://openphish.com/feed.txt",
+    "relations": [
+      {
+        "value": "url3.com",
+        "type": "Domain",
+        "relationType": "hosted-on"
+      }
+    ]
   },
   {
     "value": "https://url4.com",
     "type": "URL",
-    "FeedURL": "https://openphish.com/feed.txt"
+    "FeedURL": "https://openphish.com/feed.txt",
+    "relations": [
+      {
+        "value": "url4.com",
+        "type": "Domain",
+        "relationType": "hosted-on"
+      }
+    ]
   },
   {
     "value": "https://url5.com",
     "type": "URL",
-    "FeedURL": "https://openphish.com/feed.txt"
-  }]
+    "FeedURL": "https://openphish.com/feed.txt",
+    "relations": [
+      {
+        "value": "url5.com",
+        "type": "Domain",
+        "relationType": "hosted-on"
+      }
+    ]
+  }
+]

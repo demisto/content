@@ -1,0 +1,34 @@
+{
+    "name": "Phishing URL",
+    "description": "Phishing URL is a project with the goal of detecting phishing URLs using machine learning",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Machine Learning"
+    ],
+    "useCases": [],
+    "keywords": [
+        "ml",
+        "machine learning"
+    ],
+    "dependencies": {
+        "rasterize": {
+            "mandatory": true,
+            "display_name": "Rasterize"
+        },
+        "Whois": {
+            "mandatory": true,
+            "display_name": "WHOIS"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

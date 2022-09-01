@@ -65,7 +65,7 @@ tasks:
       version: -1
       name: List Rules
       description: "List all rules"
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -98,7 +98,7 @@ tasks:
       version: -1
       name: 'Add log forwarding profile to all rules '
       description: Edit the rule and add a log forwarding profile. This overrides existing profiles.
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -264,7 +264,7 @@ tasks:
       version: -1
       name: Add log forwarding profile to rules that don't have it
       description: Edit the rule and add a log forwarding profile. Update only rules that don't have a profile already defined.
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""

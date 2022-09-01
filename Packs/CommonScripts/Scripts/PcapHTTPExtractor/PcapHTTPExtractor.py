@@ -9,7 +9,7 @@ import traceback
 try:
     from StringIO import StringIO  # for Python 2
 except ImportError:
-    from io import StringIO  # for Python 3
+    from io import StringIO  # type: ignore #for Python 3
 
 serr = sys.stderr
 sys.stderr = StringIO()
@@ -18,7 +18,7 @@ sys.stderr = StringIO()
 LIMIT = ""
 START = ""
 LIMIT_DATA = 0
-ALLOWED_CONTENT_TYPES: tuple = ()
+ALLOWED_CONTENT_TYPES = ()
 
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
@@ -124,7 +124,7 @@ def get_entry_from_args():
     res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
     if len(res) > 0 and res[0]['Type'] == entryTypes['error']:
-        return_error(f'Failed to get the file path for entry: {entry_id}')
+        return_error('Failed to get the file path for entry: {}'.format(entry_id))
 
     return res, entry_id
 
@@ -390,7 +390,7 @@ def main():
         START = demisto.args().get("start")
         LIMIT_DATA = int(demisto.args().get("limitData"))
         if "allowedContentTypes" not in demisto.args():
-            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
+            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",  # type: ignore
                                      "application/xml", "application/xhtml+xml",
                                      "application/ld+json", "application/javascript",
                                      "multipart/alternative", "application/x-www-form-urlencoded")
@@ -422,7 +422,7 @@ def main():
                          "EntryContext": {"PcapHTTPFlows": context_output}})
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+        return_error('Failed to execute PcapHTTPExtractor Script. Error: {}'.format(str(e)))
     finally:
         sys.stderr = serr
 

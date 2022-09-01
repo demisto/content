@@ -12,14 +12,15 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 
 ---
 
-1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Cortex™ XSOAR` app
-2. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
-3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
-4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order  
+1. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
+2. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
+3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and login using your **Palo Alto Networks** credentials. 
+4. Under the `Cortex™ XSOAR` app select the relevant instance. If you don't have an active `Cortex™ XSOAR` app check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
+5. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order  
 to get the __Authentication Token__  __Registration ID__ __Encryption Key__
-5. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-6. Search for Palo Alto Networks Cortex v2.
-7. Click __Add instance__ to create and configure a new integration instance.
+6. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+7. Search for Palo Alto Networks Cortex v2.
+8. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: From the authentication process
     * __Registration ID__: From the authentication process
@@ -30,7 +31,7 @@ to get the __Authentication Token__  __Registration ID__ __Encryption Key__
     * __first_fetch_timestamp__: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
     * __Severity of events to fetch (Firewall)__: Select from all,Critical,High,Medium,Low,Informational,Unused
     * __Subtype of events to fetch (Firewall)__: Select from all,attack,url,virus,spyware,vulnerability,file,scan,flood,packet,resource,data,url-content,wildfire,extpcap,wildfire-virus,http-hdr-insert,http-hdr,email-hdr,spyware-dns,spyware-wildfire-dns,spyware-wpc-dns,spyware-custom-dns,spyware-cloud-dns,spyware-raven,spyware-wildfire-raven,spyware-wpc-raven,wpc-virus,sctp
-8. Click __Test__ to validate the URLs, token, and connection.
+9. Click __Test__ to validate the URLs, token, and connection.
 
 ## CDL Server - API Calls Caching Mechanism
 The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.

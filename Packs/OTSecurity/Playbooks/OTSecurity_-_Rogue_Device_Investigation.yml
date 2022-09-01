@@ -1,0 +1,749 @@
+id: OTSecurity - Rogue Device Investigation
+version: -1
+fromversion: 6.0.0
+name: OTSecurity - Rogue Device Investigation
+description: OT Security playbook  to investigate rogue device incidents
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1d077e42-6337-4fe9-8f72-d9e4f8da45c5
+    type: start
+    task:
+      id: 1d077e42-6337-4fe9-8f72-d9e4f8da45c5
+      version: -1
+      name: ""
+      description: Playbook start.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: df9b0208-80e0-4911-824e-889ff09a6292
+    type: title
+    task:
+      id: df9b0208-80e0-4911-824e-889ff09a6292
+      version: -1
+      name: Engage with the Owner
+      description: Engage with the Owner.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 66ccdef9-1bfc-4385-8bf5-ede5ef2714f4
+    type: title
+    task:
+      id: 66ccdef9-1bfc-4385-8bf5-ede5ef2714f4
+      version: -1
+      name: Get Device Details
+      description: Get Device Details.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0cf546e8-f5c2-45ad-8d9e-700eaad639d4
+    type: title
+    task:
+      id: 0cf546e8-f5c2-45ad-8d9e-700eaad639d4
+      version: -1
+      name: Done
+      description: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d6d5efb4-f6db-4ae2-80ed-3f88ff5b9981
+    type: condition
+    task:
+      id: d6d5efb4-f6db-4ae2-80ed-3f88ff5b9981
+      version: -1
+      name: Owner Acknowledges
+      description: Check if the owner acknowledges the rouge device
+      tags:
+      - AccessQ1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: A new Device Found
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 23059882-476c-4a7c-80d3-fbf563d7271e
+    type: regular
+    task:
+      id: 23059882-476c-4a7c-80d3-fbf563d7271e
+      version: -1
+      name: Set severity to low
+      description: Set the incident severity to low.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      severity:
+        simple: low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: fc366045-a5c2-4e20-8d58-5e6a1e59336b
+    type: regular
+    task:
+      id: fc366045-a5c2-4e20-8d58-5e6a1e59336b
+      version: -1
+      name: Close Investigation
+      description: Close the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeReason:
+        simple: 'User is the source of the suspicious activity '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3ccd7262-cff7-400e-895c-47a746fd74ce
+    type: regular
+    task:
+      id: 3ccd7262-cff7-400e-895c-47a746fd74ce
+      version: -1
+      name: Set severity to high
+      description: Set the incident severity to high.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      severity:
+        simple: high
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 209dc21b-d70f-41e7-874a-42f106aaed3c
+    type: regular
+    task:
+      id: 209dc21b-d70f-41e7-874a-42f106aaed3c
+      version: -1
+      name: Confirm Before Closing
+      description: Manually incident review
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c9b63d8c-3e84-472a-8e62-e3a3f536a800
+    type: regular
+    task:
+      id: c9b63d8c-3e84-472a-8e62-e3a3f536a800
+      version: -1
+      name: Update the Incident with Device Details
+      description: Update the Incident with Device Details
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      os:
+        complex:
+          root: Nozomi.Query.Result.os
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Nozomi.Query.Result.os
+                iscontext: true
+      otprotocols:
+        complex:
+          root: Nozomi.Query.Result
+          accessor: protocols
+      sourceip:
+        complex:
+          root: Nozomi.Query.Result.ip
+          accessor: '[0]'
+      vendorid:
+        complex:
+          root: Nozomi.Query.Result.vendor
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Nozomi.Query.Result.vendor
+                iscontext: true
+      vendorname:
+        simple: ${MACVendors.Vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b95b267f-8801-441e-8e6a-1d53f72d30b2
+    type: regular
+    task:
+      id: b95b267f-8801-441e-8e6a-1d53f72d30b2
+      version: -1
+      name: Search Nozomi for the IP of the Device MAC
+      description: Search Nozomi for the IP of the Device MAC
+      script: '|||nozomi-find-ip-by-mac'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      mac:
+        simple: ${incident.macaddress}
+      only_nodes_confirmed:
+        simple: "False"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: eab0c8ec-fb60-48c6-8999-e944e564a62d
+    type: regular
+    task:
+      id: eab0c8ec-fb60-48c6-8999-e944e564a62d
+      version: -1
+      name: Get The Device Details
+      description: Get device details by the MAC address
+      script: '|||nozomi-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: macaddress
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'assets | where mac_address match '
+              suffix: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 90df22b3-a550-4c61-8f1f-bd29a229b9ab
+    type: collection
+    task:
+      id: 90df22b3-a550-4c61-8f1f-bd29a229b9ab
+      version: -1
+      name: Request Owner to Confirm Device Activity
+      description: Request Owner to Confirm Device Activity
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: admin@domain.local
+      subject:
+        simple: A New Device Discover in Substation ${incident.otsecuritysubstationname}
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Are you aware about a device with Following Information connected\
+            \ to Substation ${incident.otsecuritysubstationname}:\n\n- MAC Address:\
+            \ ${incident.macaddress}\n- IP Address: ${Nozomi.Query.Result.[0].ip.[0]}\n\
+            \ "
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: A new Device Found
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2d8f8b51-ed33-4808-8cf5-9aa4d1cdfe66
+    type: title
+    task:
+      id: 2d8f8b51-ed33-4808-8cf5-9aa4d1cdfe66
+      version: -1
+      name: Remediation
+      description: Remediation Section
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 988fd89c-fbf9-47fe-8e86-4f87f283b7d3
+    type: playbook
+    task:
+      id: 988fd89c-fbf9-47fe-8e86-4f87f283b7d3
+      version: -1
+      name: PAN-OS - Block IP - Static Address Group
+      description: |-
+        This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
+        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+        ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      AddressGroupName:
+        simple: XSOAR-Block-IP
+      AutoCommit:
+        simple: "YES"
+      IP:
+        simple: ${Nozomi.Query.Result.[0].ip.[0]}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3d2326e0-9fb3-48ad-84b2-8bc9e0dbda7a
+    type: playbook
+    task:
+      id: 3d2326e0-9fb3-48ad-84b2-8bc9e0dbda7a
+      version: -1
+      name: Cisco ISE - Block MAC Address
+      description: This Playbook Expects MAC Address and Policy Name
+      playbookName: Cisco ISE - Block MAC Address
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      MACAddress:
+        simple: ${incident.macaddress}
+      PolicyName:
+        simple: ANCQuarantine
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 60c593ce-01ef-4d10-8bca-eda853a80d43
+    type: regular
+    task:
+      id: 60c593ce-01ef-4d10-8bca-eda853a80d43
+      version: -1
+      name: Create a  MAC Indicator
+      description: Create a new  MAC indicator with rouge device MAC address
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      type:
+        simple: MAC Address
+      value:
+        simple: ${incident.macaddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2275,
+        "width": 1040,
+        "x": 380,
+        "y": -590
+      }
+    }
+  }
+inputs:
+- key: SubStationsList
+  value: {}
+  required: false
+  description: Sub-Stations List
+  playbookInputQuery:
+outputs:
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account
+  type: string
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score
+  type: number
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+tests:
+- No tests (auto formatted)

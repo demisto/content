@@ -1,0 +1,26 @@
+commonfields:
+  id: DemistoSendInvite
+  version: -1
+name: DemistoSendInvite
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Send invitation to join Demisto
+enabled: true
+args:
+- name: email
+  required: true
+  default: true
+  description: Email of user being invited
+- name: roles
+  required: true
+  description: Roles of invited user
+scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+  - demisto-api-get
+fromversion: 5.0.0
+tests:
+- no test

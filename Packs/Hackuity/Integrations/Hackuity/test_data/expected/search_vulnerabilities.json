@@ -1,0 +1,20 @@
+[
+  {
+    "Attributes": [],
+    "Score": { "CVSS": 9.4, "TRS": 999 },
+    "Description": "Duis mollis aliquet velit, eu.",
+    "ID": "ro6jTF10fy6uECqy4j7gQ3",
+    "Seen": { "First": "2020-06-18T12:49:44Z" },
+    "Findings": { "Total": 4, "Open": 2, "Closed": 2, "Ignored": 0 },
+    "VulnTypes": [{ "ID": "123", "Name": "Lorem ipsum" }]
+  },
+  {
+    "Attributes": [{ "key": "cve_id", "value": "CVE-2019-10098" }],
+    "Score": { "CVSS": 5.2, "TRS": 437 },
+    "Description": "Duis rhoncus massa ac velit.",
+    "ID": "4zHJBJtipvheIADodIJ3fU",
+    "Seen": { "First": "2020-11-18T14:05:16Z" },
+    "Findings": { "Total": 20, "Open": 10, "Closed": 0, "Ignored": 10 },
+    "VulnTypes": [{ "ID": "456", "Name": "Dolor amet" }]
+  }
+]

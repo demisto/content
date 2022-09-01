@@ -1,0 +1,2 @@
+Error 0 :
+Command was not found: ERROR

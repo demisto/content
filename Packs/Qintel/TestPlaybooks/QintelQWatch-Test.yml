@@ -1,0 +1,125 @@
+id: QintelQWatch-Test
+name: QintelQWatch-Test
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '8ba464d3-c166-4eff-ab36-26c94c8ace1d'
+    type: start
+    task:
+      id: '8ba464d3-c166-4eff-ab36-26c94c8ace1d'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'f18c8d51-1c05-428e-bc1c-67d4a70270d9'
+    type: regular
+    task:
+      id: 'f18c8d51-1c05-428e-bc1c-67d4a70270d9'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '9fb12a59-61f7-4acc-b589-b57ebdfa7900'
+    type: regular
+    task:
+      id: '9fb12a59-61f7-4acc-b589-b57ebdfa7900'
+      version: -1
+      name: qintel-qwatch-exposures
+      description: ''
+      script: '|||qintel-qwatch-exposures'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '17aadde4-e606-4450-98d9-da4f7fa7b50b'
+    type: condition
+    task:
+      id: '17aadde4-e606-4450-98d9-da4f7fa7b50b'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qintel.QWatch.Exposures
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: 'd534c7bd-ecba-49ab-9c19-34c7b3f93332'
+    type: title
+    task:
+      id: 'd534c7bd-ecba-49ab-9c19-34c7b3f93332'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: ''

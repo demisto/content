@@ -1,7 +1,7 @@
 Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity.
 
-For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication).
+For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/defender-cloud-apps/api-tokens-legacy).
 
 For more information about which permissions are required for the token owner in Microsoft Cloud App Security, see [Microsoft Cloud App Security - Manage admin access](https://docs.microsoft.com/en-us/cloud-app-security/manage-admins).
 
@@ -9,7 +9,7 @@ For more information about which permissions are required for the token owner in
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for MicrosoftCloudAppSecurity.
-3. Click **Add instance** to create and configure a new integration instance.
+ Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
@@ -23,9 +23,18 @@ For more information about which permissions are required for the token owner in
     | Maximum alerts to fetch |  | False |
     | First fetch time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incident resolution status |  | False |
-    | Custom Filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: \{"severity":\{"eq":2\}\}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: \{"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"\}" please query on \{"entity.policy":\{"eq":1234\}\}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts\#filters. | False |
+    | Custom Filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: \{"severity":\{"eq":2\}\}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: \{"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"\}" please query on \{"entity.policy":\{"eq":1234\}\}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters. | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents to ensure collecting all incidents. | False
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+5. Click **Test** to validate the URLs, token, and connection.
+
+
+
+## Look-back parameter note
+In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+the look back to a number that is greater than the previous value, then in the next fetch there might be incidents duplications.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

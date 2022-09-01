@@ -14,3 +14,25 @@ ignore=IF100
 
 [file:incidentfield-Expanse_Issue_Type.json]
 ignore=IF100
+
+[file:ExpanseV2.yml]
+ignore=IN145
+
+[file:FeedExpanse.yml]
+ignore=IN145
+
+[file:ExpanseV2_image.png]
+ignore=IM111
+
+[file:FeedExpanse_image.png]
+ignore=IM111
+
+[file:README.md]
+ignore=RM108
+
+[known_words]
+Xpanse
+domainStatuses
+
+[file:classifier-ExpanseV2.json]
+ignore=BA101

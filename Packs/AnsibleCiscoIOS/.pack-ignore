@@ -1,0 +1,5 @@
+[file:AnsibleCiscoIOS.yml]
+ignore=IN145
+
+[file:README.md]
+ignore=RM113

@@ -66,3 +66,21 @@ def test_get_access_token(mocker):
         client.get_access_token()
     except Exception as e:
         assert 'Could not create an access token' in e.args[0]
+
+
+def test_separate_client_id_and_refresh_token():
+    """Unit test
+    Given
+    - Integration parameters and a client_id parameter which contains a '@' characters that separates between the 'real'
+      client id and the refresh token.
+    When
+    - Calling the ServiceNowClient constructor while using OAuth 2.0 authorization.
+    Then
+    - Verify that the client_id field of the client contains only the 'real' client id.
+    """
+    client_id_with_strudel = 'client_id@refresh_token'
+    client = ServiceNowClient(credentials=PARAMS.get('credentials', {}), use_oauth=True,
+                              client_id=client_id_with_strudel, client_secret=PARAMS.get('client_secret', ''),
+                              url=PARAMS.get('url', ''), verify=PARAMS.get('insecure', False),
+                              proxy=PARAMS.get('proxy', False), headers=PARAMS.get('headers', ''))
+    assert client.client_id == 'client_id'

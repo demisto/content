@@ -1,0 +1,31 @@
+commonfields:
+  id: EPOFindSystem
+  version: -1
+name: EPOFindSystem
+script: ''
+type: python
+subtype: python2
+tags:
+- epo
+comment: |-
+  Deprecated. Use the "McAfe ePO v2 integration command epo-find-system" instead.
+  
+  Return system info
+system: true
+args:
+- name: searchText
+  required: true
+  description: Free text on which to search. Could be a hostname, agent guid, etc.
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Hostname.
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - epo-command
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
+deprecated: true
+tests:
+- No test

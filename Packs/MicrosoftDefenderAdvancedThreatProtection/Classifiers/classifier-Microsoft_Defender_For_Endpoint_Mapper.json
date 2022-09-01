@@ -1,0 +1,580 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Defender For Endpoint Mapper",
+    "mapping": {
+		"Malware Investigation and Response": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Data": {
+					"simple": "evidence"
+				},
+				"Agents ID": {
+					"simple": "machineId"
+				},
+				"Alert Category": {
+					"simple": "category"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"CMD line": {
+					"simple": "evidence.processCommandLine"
+				},
+				"Categories": {
+					"simple": "category"
+				},
+				"Classification": {
+					"simple": "classification"
+				},
+				"Cloud Instance ID": {
+					"simple": "aadTenantId"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"Detected IPs": {
+					"simple": "evidence.ipAddress"
+				},
+				"Detected User": {
+					"simple": "relatedUser.userName"
+				},
+				"Detection URL": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://security.microsoft.com/alerts/"
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Device Id": {
+					"simple": "machineId"
+				},
+				"Device OS Name": {
+					"simple": "computerDnsName"
+				},
+				"Domain Name": {
+					"simple": "evidence.domainName"
+				},
+				"External Category Name": {
+					"simple": "category"
+				},
+				"External End Time": {
+					"simple": "lastEventTime"
+				},
+				"External Link": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://security.microsoft.com/alerts/"
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"External Severity": {
+					"simple": "severity"
+				},
+				"External Start Time": {
+					"simple": "firstEventTime"
+				},
+				"External Status": {
+					"simple": "status"
+				},
+				"External System ID": {
+					"simple": "id"
+				},
+				"File Names": {
+					"simple": "evidence.fileName"
+				},
+				"File Paths": {
+					"simple": "evidence.filePath"
+				},
+				"File SHA1": {
+					"simple": "evidence.sha1"
+				},
+				"File SHA256": {
+					"simple": "evidence.sha256"
+				},
+				"Hostnames": {
+					"simple": "computerDnsName"
+				},
+				"Investigation Stage": {
+					"simple": "investigationState"
+				},
+				"Last Update Time": {
+					"simple": "lastUpdateTime"
+				},
+				"MITRE Technique ID": {
+					"simple": "mitreTechniques"
+				},
+				"Microsoft Defender for Endpoint Evidence Creation Time": {
+					"simple": "evidence.evidenceCreationTime"
+				},
+				"Microsoft Defender for Endpoint Evidence Type": {
+					"simple": "evidence.entityType"
+				},
+				"Parent Process": {
+					"simple": "evidence.parentProcessFileName"
+				},
+				"Parent Process File Path": {
+					"simple": "evidence.parentProcessFilePath"
+				},
+				"Parent Process IDs": {
+					"simple": "evidence.parentProcessId"
+				},
+				"Parent Process Name": {
+					"simple": "evidence.parentProcessFileName"
+				},
+				"Parent Process Path": {
+					"simple": "evidence.parentProcessFilePath"
+				},
+				"Process CMD": {
+					"simple": "evidence.processCommandLine"
+				},
+				"Process Creation Time": {
+					"simple": "evidence.processCreationTime"
+				},
+				"Process ID": {
+					"simple": "evidence.processId"
+				},
+				"Process Names": {
+					"simple": "evidence.fileName"
+				},
+				"Process Paths": {
+					"simple": "evidence.filePath"
+				},
+				"Process SHA256": {
+					"simple": "evidence.sha256"
+				},
+				"Registry Key": {
+					"simple": "evidence.registryKey"
+				},
+				"Registry Value": {
+					"simple": "evidence.registryValue"
+				},
+				"Registry Value Type": {
+					"simple": "evidence.registryValueType"
+				},
+				"Start Time": {
+					"simple": "firstEventTime"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Sub Category": {
+					"simple": "detectionSource"
+				},
+				"Technique": {
+					"simple": "mitreTechniques"
+				},
+				"Technique ID": {
+					"simple": "mitreTechniques"
+				},
+				"Tenant Name": {
+					"simple": "aadTenantId"
+				},
+				"Threat Family Name": {
+					"simple": "threatFamilyName"
+				},
+				"Threat Name": {
+					"simple": "threatName"
+				},
+				"Ticket Number": {
+					"simple": "incidentId"
+				},
+				"URLs": {
+					"simple": "evidence.url"
+				},
+				"User SID": {
+					"simple": "evidence.userSid"
+				},
+				"Users": {
+					"simple": "evidence.accountName"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "title",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": " Microsoft Defender ATP Alert - "
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"severity": {
+					"simple": "severity"
+				}
+			}
+		},
+		"Microsoft Defender For Endpoint": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agents ID": {
+					"simple": "machineId"
+				},
+				"Alert Category": {
+					"simple": "category"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"CMD line": {
+					"simple": "evidence.processCommandLine"
+				},
+				"Categories": {
+					"simple": "category"
+				},
+				"Classification": {
+					"simple": "classification"
+				},
+				"Cloud Instance ID": {
+					"simple": "aadTenantId"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"Detected IPs": {
+					"simple": "evidence.ipAddress"
+				},
+				"Detected User": {
+					"simple": "relatedUser.userName"
+				},
+				"Detection URL": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://security.microsoft.com/alerts/"
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Device Id": {
+					"simple": "machineId"
+				},
+				"Domain Name": {
+					"simple": "evidence.domainName"
+				},
+				"File Names": {
+					"simple": "evidence.fileName"
+				},
+				"File Paths": {
+					"simple": "evidence.filePath"
+				},
+				"File SHA1": {
+					"simple": "evidence.sha1"
+				},
+				"File SHA256": {
+					"simple": "evidence.sha256"
+				},
+				"Hostnames": {
+					"simple": "computerDnsName"
+				},
+				"Investigation Stage": {
+					"simple": "investigationState"
+				},
+				"Last Update Time": {
+					"simple": "lastUpdateTime"
+				},
+				"Microsoft Defender for Endpoint Evidence Creation Time": {
+					"simple": "evidence.evidenceCreationTime"
+				},
+				"Microsoft Defender for Endpoint Evidence Type": {
+					"simple": "evidence.entityType"
+				},
+				"Parent Process": {
+					"simple": "evidence.parentProcessFileName"
+				},
+				"Parent Process File Path": {
+					"simple": "evidence.parentProcessFilePath"
+				},
+				"Parent Process IDs": {
+					"simple": "evidence.parentProcessId"
+				},
+				"Process Creation Time": {
+					"simple": "evidence.processCreationTime"
+				},
+				"Process ID": {
+					"simple": "evidence.processId"
+				},
+				"Registry Key": {
+					"simple": "evidence.registryKey"
+				},
+				"Registry Value": {
+					"simple": "evidence.registryValue"
+				},
+				"Registry Value Type": {
+					"simple": "evidence.registryValueType"
+				},
+				"Start Time": {
+					"simple": "firstEventTime"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Sub Category": {
+					"simple": "detectionSource"
+				},
+				"Technique": {
+					"simple": "mitreTechniques"
+				},
+				"Technique ID": {
+					"simple": "mitreTechniques"
+				},
+				"Threat Family Name": {
+					"simple": "threatFamilyName"
+				},
+				"Threat Name": {
+					"simple": "threatName"
+				},
+				"Ticket Number": {
+					"simple": "incidentId"
+				},
+				"URLs": {
+					"simple": "evidence.url"
+				},
+				"User SID": {
+					"simple": "evidence.userSid"
+				},
+				"Users": {
+					"simple": "evidence.accountName"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "title",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": " Microsoft Defender ATP Alert - "
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"severity": {
+					"simple": "severity"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Data": {
+					"simple": "evidence"
+				},
+				"Agents ID": {
+					"simple": "machineId"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"App": {
+					"complex": {
+						"filters": [],
+						"root": "behaviors",
+						"transformers": []
+					}
+				},
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"CMD line": {
+					"simple": "evidence.processCommandLine"
+				},
+				"Categories": {
+					"simple": "category"
+				},
+				"Classification": {
+					"simple": "classification"
+				},
+				"Cloud Instance ID": {
+					"simple": "aadTenantId"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"Detected User": {
+					"simple": "relatedUser.userName"
+				},
+				"Device Id": {
+					"simple": "machineId"
+				},
+				"External Category Name": {
+					"simple": "category"
+				},
+				"External End Time": {
+					"simple": "lastUpdateTime"
+				},
+				"External Link": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://security.microsoft.com/alerts/"
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"External Severity": {
+					"simple": "severity"
+				},
+				"External Start Time": {
+					"simple": "firstEventTime"
+				},
+				"External Status": {
+					"simple": "status"
+				},
+				"External System ID": {
+					"simple": "id"
+				},
+				"File Names": {
+					"simple": "evidence.fileName"
+				},
+				"File Paths": {
+					"simple": "evidence.filePath"
+				},
+				"File SHA256": {
+					"simple": "evidence.sha256"
+				},
+				"Hostnames": {
+					"simple": "computerDnsName"
+				},
+				"MITRE Technique ID": {
+					"simple": "mitreTechniques"
+				},
+				"Parent Process File Path": {
+					"simple": "evidence.parentProcessFilePath"
+				},
+				"Process CMD": {
+					"simple": "evidence.processCommandLine"
+				},
+				"Process ID": {
+					"simple": "evidence.processId"
+				},
+				"Process SHA256": {
+					"simple": "evidence.sha256"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Sub Category": {
+					"simple": "detectionSource"
+				},
+				"Technique": {
+					"simple": "mitreTechniques"
+				},
+				"Threat Family Name": {
+					"simple": "threatFamilyName"
+				},
+				"Threat Name": {
+					"simple": "threatName"
+				},
+				"Ticket Number": {
+					"simple": "incidentId"
+				},
+				"User SID": {
+					"simple": "evidence.userSid"
+				},
+				"Users": {
+					"simple": "relatedUser.userName"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "title",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": " Microsoft Defender ATP Alert - "
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"severity": {
+					"simple": "severity"
+				}
+			}
+		}
+	},
+    "name": "Microsoft Defender For Endpoint Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

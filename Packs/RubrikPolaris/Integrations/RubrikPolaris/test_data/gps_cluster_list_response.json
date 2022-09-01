@@ -1,0 +1,181 @@
+{
+  "raw_response": {
+    "data": {
+      "clusterConnection": {
+        "edges": [
+          {
+            "node": {
+              "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+              "name": "sand1-rbk01",
+              "type": "OnPrem",
+              "status": "Connected",
+              "version": "7.0.0-EA1-14307",
+              "defaultAddress": "sand1-rbk01.rubrikdemo.com",
+              "cdmUpgradeInfo": {
+                "clusterStatus": {
+                  "message": "demo_message",
+                  "status": "UpgradeRecommended"
+                },
+                "overallProgress": 0,
+                "scheduleUpgradeAt": null,
+                "downloadedVersion": null,
+                "version": "7.0.0-EA1-14307"
+              },
+              "productType": "CDM",
+              "estimatedRunway": 1826,
+              "snapshotCount": 14142,
+              "geoLocation": {
+                "address": "San Francisco, CA, USA"
+              },
+              "lastConnectionTime": "2021-11-23T07:21:58.000Z",
+              "metric": {
+                "totalCapacity": 52605821063168,
+                "availableCapacity": 45484602130432
+              },
+              "snappableConnection": {
+                "count": 205
+              },
+              "state": {
+                "connectedState": "Connected",
+                "clusterRemovalState": "REGISTERED"
+              },
+              "clusterNodeConnection": {
+                "nodes": [
+                  {
+                    "id": "RVM16CS014306",
+                    "status": "PRE_MAINTENANCE",
+                    "ipAddress": "172.24.97.11"
+                  },
+                  {
+                    "id": "RVM16CS014476",
+                    "status": "OK",
+                    "ipAddress": "172.24.97.12"
+                  }
+                ]
+              },
+              "passesConnectivityCheck": true,
+              "globalManagerConnectivityStatus": {
+                "urls": [
+                  {
+                    "url": "https://accounts.google.com",
+                    "isReachable": true
+                  },
+                  {
+                    "url": "https://storage.googleapis.com",
+                    "isReachable": true
+                  },
+                  {
+                    "url": "https://container.googleapis.com/",
+                    "isReachable": true
+                  },
+                  {
+                    "url": "https://www.googleapis.com",
+                    "isReachable": true
+                  },
+                  {
+                    "url": "https://oauth2.googleapis.com",
+                    "isReachable": true
+                  }
+                ]
+              },
+              "connectivityLastUpdated": "2021-11-22T13:08:07.000Z",
+              "lambdaFeatureHistory": {
+                "wasRadarEverEnabled": true,
+                "wasSonarEverEnabled": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "empty_response": {
+    "data": {
+      "clusterConnection": {
+        "edges": []
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+      "name": "sand1-rbk01",
+      "type": "OnPrem",
+      "status": "Connected",
+      "version": "7.0.0-EA1-14307",
+      "defaultAddress": "sand1-rbk01.rubrikdemo.com",
+      "cdmUpgradeInfo": {
+        "clusterStatus": {
+          "message": "demo_message",
+          "status": "UpgradeRecommended"
+        },
+        "overallProgress": 0,
+        "scheduleUpgradeAt": null,
+        "downloadedVersion": null,
+        "version": "7.0.0-EA1-14307"
+      },
+      "productType": "CDM",
+      "estimatedRunway": 1826,
+      "snapshotCount": 14142,
+      "geoLocation": {
+        "address": "San Francisco, CA, USA"
+      },
+      "lastConnectionTime": "2021-11-23T07:21:58.000Z",
+      "metric": {
+        "totalCapacity": 52605821063168,
+        "availableCapacity": 45484602130432
+      },
+      "snappableConnection": {
+        "count": 205
+      },
+      "state": {
+        "connectedState": "Connected",
+        "clusterRemovalState": "REGISTERED"
+      },
+      "clusterNodeConnection": {
+        "nodes": [
+          {
+            "id": "RVM16CS014306",
+            "status": "PRE_MAINTENANCE",
+            "ipAddress": "172.24.97.11"
+          },
+          {
+            "id": "RVM16CS014476",
+            "status": "OK",
+            "ipAddress": "172.24.97.12"
+          }
+        ]
+      },
+      "passesConnectivityCheck": true,
+      "globalManagerConnectivityStatus": {
+        "urls": [
+          {
+            "url": "https://accounts.google.com",
+            "isReachable": true
+          },
+          {
+            "url": "https://storage.googleapis.com",
+            "isReachable": true
+          },
+          {
+            "url": "https://container.googleapis.com/",
+            "isReachable": true
+          },
+          {
+            "url": "https://www.googleapis.com",
+            "isReachable": true
+          },
+          {
+            "url": "https://oauth2.googleapis.com",
+            "isReachable": true
+          }
+        ]
+      },
+      "connectivityLastUpdated": "2021-11-22T13:08:07.000Z",
+      "lambdaFeatureHistory": {
+        "wasRadarEverEnabled": true,
+        "wasSonarEverEnabled": true
+      }
+    }
+  ]
+}

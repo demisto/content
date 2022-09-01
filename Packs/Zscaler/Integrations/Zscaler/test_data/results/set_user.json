@@ -1,0 +1,44 @@
+{
+  "Type": 1,
+  "Contents": {
+    "status_code": 200,
+    "adminUser": false,
+    "deleted": false,
+    "department": {
+      "id": 12,
+      "name": "\"user test\""
+    },
+    "email": "user@test.com",
+    "groups": [
+      {
+        "id": 13,
+        "name": "name_test"
+      }
+    ],
+    "id": 11,
+    "name": "name.test.com"
+  },
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "Successfully updated the user (id: 11 name: name.test.com)",
+  "EntryContext": {
+    "Zscaler.Users": {
+      "status_code": 200,
+      "adminUser": false,
+      "deleted": false,
+      "department": {
+        "id": 12,
+        "name": "\"user test\""
+      },
+      "email": "user@test.com",
+      "groups": [
+        {
+          "id": 13,
+          "name": "name_test"
+        }
+      ],
+      "id": 11,
+      "name": "name.test.com"
+    }
+  }
+}

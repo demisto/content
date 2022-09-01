@@ -91,10 +91,12 @@ configuration:
   name: adv_params
   required: false
   type: 12
-description: 'Fetch offenses from QRadar using Cortex XSOAR. Supports API versions
+description: 'Deprecated. Use the IBM QRadar v3 integration instead. 
+  Fetch offenses from QRadar using Cortex XSOAR. Supports API versions
   until 10.0. You can fetch the offenses with their related events and assets by creating
   a comma-separated list of event fields.'
-display: IBM QRadar v2
+display: IBM QRadar v2 (Deprecated)
+deprecated: true
 name: QRadar_v2
 script:
   commands:
@@ -1392,7 +1394,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: true

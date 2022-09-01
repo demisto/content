@@ -1,4 +1,6 @@
-from XSOARmirroring import get_mapping_fields_command
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, XSOAR_DATE_FORMAT
+from datetime import datetime, timedelta
+import dateparser
 
 
 def generate_dummy_client():
@@ -72,3 +74,42 @@ def test_mirroring(mocker):
     assert response['Something'] == {
         'cliName1': 'field1 - type1'
     }
+
+
+INCIDENTS = [
+    {
+        "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 2,
+        "created": (datetime.now() - timedelta(minutes=8)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 3,
+        "created": (datetime.now() - timedelta(minutes=5)).strftime(XSOAR_DATE_FORMAT)
+    }
+]
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - List of incidents.
+
+    When:
+        - Running the fetch_incidents and getting these incidents.
+
+    Then:
+        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[])
+
+    assert len(incidents_result) == 3
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(microseconds=1)

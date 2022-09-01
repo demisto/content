@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Cohesity Helios Ransomware Incident",
+    "description": "",
+    "feed": false,
+    "id": "CohesityHelios Incident Classifier",
+    "keyTypeMap": {
+        "CE01516011": "Cohesity Helios Ransomware Incident"
+    },
+    "name": "CohesityHelios Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "alertCode"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -4,8 +4,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
-
 BRAND = "XSOAR"
 PAGE_SIZE = 2000
 
@@ -24,18 +22,11 @@ def find_indicators_by_query(query: str) -> List[dict]:
     :rtype: ``list``
     """
     indicators: List[dict] = []
-    search_indicators = IndicatorsSearcher()
-
-    # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
-    fetched_indicators = search_indicators.search_indicators_by_version(query=query, size=PAGE_SIZE).get('iocs')
-    while fetched_indicators:
-        # In case the result from searchIndicators includes the key `iocs` but it's value is None
-        fetched_indicators = fetched_indicators or []
-
-        # save only the value and type of each indicator
+    search_indicators = IndicatorsSearcher(query=query, size=PAGE_SIZE)
+    for ioc_res in search_indicators:
+        fetched_indicators = ioc_res.get('iocs') or []
         indicators.extend({'entity_b': ioc.get('value'), 'entity_b_type': ioc.get('indicator_type')}
                           for ioc in fetched_indicators)
-        fetched_indicators = search_indicators.search_indicators_by_version(query=query, size=PAGE_SIZE).get('iocs')
 
     return indicators
 
@@ -142,7 +133,8 @@ def validate_arguments(args: dict) -> Dict[str, str]:
         raise Exception("Missing entity_b_type in the create relationships")
 
     args['entity_a_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_a_type'))
-    args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_b_type'))
+    if entity_b_type := args.get('entity_b_type'):
+        args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(entity_b_type)
     return args
 
 
@@ -214,7 +206,6 @@ def main():
         relationships, human_readable = create_relationships(args)
         return_results(CommandResults(readable_output=human_readable, relationships=relationships))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute CreateIndicatorRelationships automation. Error: {str(e)}')
 
 

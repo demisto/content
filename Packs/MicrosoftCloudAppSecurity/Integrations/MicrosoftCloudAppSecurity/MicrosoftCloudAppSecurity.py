@@ -1,10 +1,12 @@
 from dateparser import parse
+from datetime import datetime
 from pytz import utc
+import urllib3
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -576,16 +578,10 @@ def list_users_accounts_command(client: Client, args: dict):
     )
 
 
-def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str]):
-    if last_fetch is None:
-        if not first_fetch:
-            first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
-        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
-        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
-        return first_fetch_time
-    else:
-        return int(last_fetch)
+def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
+    first_fetch_dt = parse(fetch_start_time).replace(tzinfo=utc)  # type:ignore
+    # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
+    return int(first_fetch_dt.timestamp()) * 1000
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -616,42 +612,68 @@ def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_tim
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
         incident_occurred = incident_created_datetime.split('.')
+        occurred = incident_occurred[0]
+        demisto.debug("------ Alert occurred time is: " + occurred)
         incident = {
             'name': alert['title'],
-            'occurred': incident_occurred[0] + 'Z',
+            'occurred': occurred + 'Z',
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
+        alert['timestamp'] = occurred
         if incident_created_time > fetch_start_time:
-            fetch_start_time = incident_created_time
             current_last_incident_fetched = str(alert.get('_id', ''))
 
     if not current_last_incident_fetched:
         current_last_incident_fetched = str(last_run.get('last_fetch_id', ''))
 
-    return incidents, fetch_start_time, current_last_incident_fetched
+    return incidents, current_last_incident_fetched, alerts
 
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
-                    filters: dict):
+                    filters: dict, look_back: int):
+    date_format = '%Y-%m-%dT%H:%M:%S'
+    if not first_fetch:
+        first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
-    last_fetch = last_run.get('last_fetch')
-    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
-    filters["date"] = {"gte": fetch_start_time}
+
+    if not last_run.get("time") and last_run.get("last_fetch"):
+        demisto.debug(f"last fetch from old version is: {str(last_run.get('last_fetch'))}")
+        last_fetch_time = datetime.fromtimestamp(last_run.get("last_fetch", 0) / 1000.0).isoformat()
+        last_run.update({"time": last_fetch_time})
+
+    fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
+                                                                look_back=look_back)
+
+    formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
+    filters["date"] = {"gte": formatted_fetch_start_time}
 
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
-        alerts, str(fetch_start_time), last_run)
+    alerts_to_incident = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=max_results, id_field='_id'
+    )
 
-    if incidents:
-        # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
-        fetch_start_time += 1
-    next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
+    incidents, last_fetch_id, alerts_to_incident = alerts_to_incidents_and_fetch_start_from(
+        alerts_to_incident, str(formatted_fetch_start_time), last_run)
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=alerts_to_incident,
+        fetch_limit=max_results,
+        start_fetch_time=fetch_start_time,
+        end_fetch_time=fetch_end_time,
+        look_back=look_back,
+        created_time_field='timestamp',
+        id_field='_id',
+        date_format=date_format,
+        increase_last_run_time=True
+    )
+    last_run.update({'last_fetch_id': last_fetch_id})
     demisto.debug(f'setting last run to: {last_run}')
-    return next_run, incidents
+    return last_run, incidents
 
 
 def params_to_filter(severity: List[str], resolution_status: str):
@@ -802,6 +824,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
+    look_back = arg_to_number(params.get('look_back')) or 0
     LOG(f'Command being called is {command}')
     try:
         client = Client(
@@ -824,7 +847,8 @@ def main():  # pragma: no cover
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
-                filters=filters)
+                filters=filters,
+                look_back=look_back)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

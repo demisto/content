@@ -3,10 +3,10 @@ The Netscout Arbor Edge Defense (AED) integration enables you to block and allow
 ## What does this pack do?
 Using the Netscout AED integration you can:
 
-- Get, add, and remove hosts, countries, domains, and URLs from the inbound blacklist.
-- Get, add, and remove hosts from the inbound whitelist.
-- Get, add, and remove hosts and countries from the outbound blacklist.
-- Get, add, and remove hosts from the outbound whitelist.
+- Get, add, and remove hosts, countries, domains, and URLs from the inbound block list.
+- Get, add, and remove hosts from the inbound allow list.
+- Get, add, and remove hosts and countries from the outbound blaock list.
+- Get, add, and remove hosts from the outbound all.
 - Get and update the protection group (the IPv4 or IPv6 hosts that you need to protect).
 
 ## Configure NetscoutAED on Cortex XSOAR
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### na-ed-outbound-blacklisted-countries-list
 ***
-Gets the countries on the outbound blacklist. By default, 10 blacklisted countries are returned.
+Gets the countries on the outbound block list. By default, 10 block listed countries are returned.
 
 
 #### Base Command
@@ -119,7 +119,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound blacklist. | 
+| NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound block list. | 
 | NetscoutAED.OutboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.OutboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
@@ -158,7 +158,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 ### na-ed-outbound-blacklisted-countries-add
 ***
-Adds one or more countries to the outbound blacklist.
+Adds one or more countries to the outbound block list.
 
 
 #### Base Command
@@ -169,14 +169,14 @@ Adds one or more countries to the outbound blacklist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | country | An ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
-| annotation | A message to associate with each country that you add to the outbound blacklist. | Optional | 
+| annotation | A message to associate with each country that you add to the outbound block list. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound blacklist. | 
+| NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound block list. | 
 | NetscoutAED.OutboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.OutboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
@@ -199,7 +199,7 @@ Adds one or more countries to the outbound blacklist.
 
 #### Human Readable Output
 
->Countries were successfully added to the outbound blacklisted list
+>Countries were successfully added to the outbound block listed list
 >### Added Countries
 >|Country|Update Time|
 >|---|---|
@@ -208,7 +208,7 @@ Adds one or more countries to the outbound blacklist.
 
 ### na-ed-outbound-blacklisted-countries-remove
 ***
-Removes one or more countries from the outbound blacklist.
+Removes one or more countries from the outbound block list.
 
 
 #### Base Command
@@ -230,11 +230,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Countries were successfully removed from the outbound blacklisted list
+>Countries were successfully removed from the outbound block listed list
 
 ### na-ed-inbound-blacklisted-countries-list
 ***
-Gets the inbound blacklisted countries. By default, 10 blacklisted countries are returned. To return blacklisted countries for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects countries that are globally blacklisted.
+Gets the inbound block listed countries. By default, 10 block listed countries are returned. To return block listed countries for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects countries that are globally block listed.
 
 
 #### Base Command
@@ -256,7 +256,7 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the inbound block list. | 
 | NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.InboundBlacklistCountry.pgid | Unknown | List of protection group ID. | 
@@ -295,7 +295,7 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 
 ### na-ed-inbound-blacklisted-countries-add
 ***
-Adds one or more countries to the inbound blacklist by pgid or cid.
+Adds one or more countries to the inbound block list by pgid or cid.
 
 
 #### Base Command
@@ -307,7 +307,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 | --- | --- | --- |
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
-| annotation | A message to associate with each country that you add to the blacklist. | Optional | 
+| annotation | A message to associate with each country that you add to the block list. | Optional | 
 | country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
 
 
@@ -315,7 +315,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the outbound blacklist. | 
+| NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the outbound block list. | 
 | NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.InboundBlacklistCountry.pgid | Unknown | List of protection group ID. | 
@@ -346,7 +346,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 
 #### Human Readable Output
 
->Countries were successfully added to the inbound blacklisted list
+>Countries were successfully added to the inbound block listed list
 >### Added Countries
 >|Country|Cid|Pgid|Update Time|
 >|---|---|---|---|
@@ -355,7 +355,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 
 ### na-ed-inbound-blacklisted-countries-remove
 ***
-Removes one or more countries from the blacklist for a specific protection group or for all protection groups.
+Removes one or more countries from the block list for a specific protection group or for all protection groups.
 
 
 #### Base Command
@@ -379,11 +379,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Countries were successfully removed from the inbound blacklisted list
+>Countries were successfully removed from the inbound block listed list
 
 ### na-ed-outbound-blacklisted-hosts-list
 ***
-Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are returned.
+Gets the outbound block listed hosts. By default, 10 block listed hosts are returned.
 
 
 #### Base Command
@@ -442,7 +442,7 @@ Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are return
 
 ### na-ed-outbound-blacklisted-hosts-add
 ***
-Adds one or more hosts to the outbound blacklist.
+Adds one or more hosts to the outbound block list.
 
 
 #### Base Command
@@ -483,7 +483,7 @@ Adds one or more hosts to the outbound blacklist.
 
 #### Human Readable Output
 
->Hosts were successfully added to the outbound blacklist list
+>Hosts were successfully added to the outbound block list list
 >### New Hosts
 >|Host Address|Update Time|
 >|---|---|
@@ -492,7 +492,7 @@ Adds one or more hosts to the outbound blacklist.
 
 ### na-ed-outbound-blacklisted-hosts-replace
 ***
-Replaces all the hosts on the outbound blacklisted list.
+Replaces all the hosts on the outbound block listed list.
 
 
 #### Base Command
@@ -533,7 +533,7 @@ Replaces all the hosts on the outbound blacklisted list.
 
 #### Human Readable Output
 
->Hosts were successfully replaced in the outbound blacklist list
+>Hosts were successfully replaced in the outbound block list list
 >### New Hosts
 >|Host Address|Update Time|
 >|---|---|
@@ -542,7 +542,7 @@ Replaces all the hosts on the outbound blacklisted list.
 
 ### na-ed-outbound-blacklisted-hosts-remove
 ***
-Removes one or more hosts or CIDRS from the outbound blacklist.
+Removes one or more hosts or CIDRS from the outbound block list.
 
 
 #### Base Command
@@ -564,11 +564,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Hosts were successfully removed from the outbound blacklist list
+>Hosts were successfully removed from the outbound block list list
 
 ### na-ed-outbound-whitelisted-hosts-list
 ***
-Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are returned.
+Gets the outbound allow listed hosts. By default, 10 hosts on allow list are returned.
 
 
 #### Base Command
@@ -619,7 +619,7 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 
 ### na-ed-outbound-whitelisted-hosts-add
 ***
-Adds one or more hosts to the outbound whitelisted list.
+Adds one or more hosts to the outbound allow listed list.
 
 
 #### Base Command
@@ -660,7 +660,7 @@ Adds one or more hosts to the outbound whitelisted list.
 
 #### Human Readable Output
 
->Hosts were successfully added to the outbound whitelist list
+>Hosts were successfully added to the outbound allow list list
 >### New Hosts
 >|Host Address|Update Time|
 >|---|---|
@@ -669,7 +669,7 @@ Adds one or more hosts to the outbound whitelisted list.
 
 ### na-ed-outbound-whitelisted-hosts-replace
 ***
-Replaces all the hosts on the outbound whitelisted list.
+Replaces all the hosts on the outbound allow listed list.
 
 
 #### Base Command
@@ -717,7 +717,7 @@ Replaces all the hosts on the outbound whitelisted list.
 
 #### Human Readable Output
 
->Hosts were successfully replaced in the outbound whitelist list
+>Hosts were successfully replaced in the outbound allow list list
 >### New Hosts
 >|Host Address|Update Time|
 >|---|---|
@@ -903,7 +903,7 @@ Gets a list of the protection groups.
 
 ### na-ed-inbound-blacklisted-hosts-list
 ***
-Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returned. To return blacklisted hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally blacklisted.
+Gets the inbound block listed hosts. By default, 10 block listed hosts are returned. To return block listed hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally block listed.
 
 
 #### Base Command
@@ -923,7 +923,7 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound block list. | 
 | NetscoutAED.InboundBlacklistHost.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundBlacklistHost.pgid | Unknown | List of protection group ID. | 
@@ -963,7 +963,7 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 
 ### na-ed-inbound-blacklisted-hosts-add
 ***
-Adds one or more hosts to the inbound blacklisted list.
+Adds one or more hosts to the inbound block listed list.
 
 
 #### Base Command
@@ -981,7 +981,7 @@ Adds one or more hosts to the inbound blacklisted list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound block list. | 
 | NetscoutAED.InboundBlacklistHost.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundBlacklistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundBlacklistHost.pgid | Unknown | List of protection group ID. | 
@@ -1014,7 +1014,7 @@ Adds one or more hosts to the inbound blacklisted list.
 
 #### Human Readable Output
 
->Hosts were successfully added to the inbound blacklist list
+>Hosts were successfully added to the inbound block list list
 >### New Hosts
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
@@ -1023,7 +1023,7 @@ Adds one or more hosts to the inbound blacklisted list.
 
 ### na-ed-inbound-blacklisted-hosts-replace
 ***
-Replaces all the hosts on the inbound blacklist.
+Replaces all the hosts on the inbound block list.
 
 
 #### Base Command
@@ -1041,7 +1041,7 @@ Replaces all the hosts on the inbound blacklist.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound block list. | 
 | NetscoutAED.InboundBlacklistHost.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundBlacklistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundBlacklistHost.pgid | Unknown | List of protection group ID. | 
@@ -1074,7 +1074,7 @@ Replaces all the hosts on the inbound blacklist.
 
 #### Human Readable Output
 
->Hosts were successfully replaced in the inbound blacklist list
+>Hosts were successfully replaced in the inbound block list list
 >### New Hosts
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
@@ -1083,7 +1083,7 @@ Replaces all the hosts on the inbound blacklist.
 
 ### na-ed-inbound-blacklisted-hosts-remove
 ***
-Removes one or more hosts or CIDRs from the blacklist for a specific protection group or for all protection groups.
+Removes one or more hosts or CIDRs from the block list for a specific protection group or for all protection groups.
 
 
 #### Base Command
@@ -1105,11 +1105,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Hosts were successfully removed from the inbound blacklist list
+>Hosts were successfully removed from the inbound block list list
 
 ### na-ed-inbound-whitelisted-hosts-list
 ***
-Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To return whitelisted hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally whitelisted.
+Get the hosts on allow list. By default, 10 hosts on allow list are returned. To return hosts on allow list for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally on allow list.
 
 
 #### Base Command
@@ -1129,7 +1129,7 @@ Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To ret
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound whitelisted list. | 
+| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound allow listed list. | 
 | NetscoutAED.InboundWhitelistHost.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundWhitelistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundWhitelistHost.pgid | Unknown | List of protection group ID. | 
@@ -1169,7 +1169,7 @@ Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To ret
 
 ### na-ed-inbound-whitelisted-hosts-add
 ***
-Adds one or more hosts to the inbound whitelisted list.
+Adds one or more hosts to the inbound allow listed list.
 
 
 #### Base Command
@@ -1187,7 +1187,7 @@ Adds one or more hosts to the inbound whitelisted list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound whitelisted list. | 
+| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound allow listed list. | 
 | NetscoutAED.InboundWhitelistHost.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundWhitelistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundWhitelistHost.pgid | Unknown | List of protection group ID. | 
@@ -1220,7 +1220,7 @@ Adds one or more hosts to the inbound whitelisted list.
 
 #### Human Readable Output
 
->Hosts were successfully added to the inbound whitelist list
+>Hosts were successfully added to the inbound allow list list
 >### New Hosts
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
@@ -1229,7 +1229,7 @@ Adds one or more hosts to the inbound whitelisted list.
 
 ### na-ed-inbound-whitelisted-hosts-replace
 ***
-Replaces all the hosts on the inbound whitelist.
+Replaces all the hosts on the inbound allow list.
 
 
 #### Base Command
@@ -1247,7 +1247,7 @@ Replaces all the hosts on the inbound whitelist.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound whitelisted list. | 
+| NetscoutAED.InboundWhitelistHost.annotation | Unknown | List of messages associated with each host in the inbound allow listed list. | 
 | NetscoutAED.InboundWhitelistHost.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundWhitelistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundWhitelistHost.pgid | Unknown | List of protection group ID. | 
@@ -1280,7 +1280,7 @@ Replaces all the hosts on the inbound whitelist.
 
 #### Human Readable Output
 
->Hosts were successfully replaced in the inbound whitelist list
+>Hosts were successfully replaced in the inbound allow list list
 >### New Hosts
 >|Host Address|Pgid|Cid|Update Time|Annotation|
 >|---|---|---|---|---|
@@ -1289,7 +1289,7 @@ Replaces all the hosts on the inbound whitelist.
 
 ### na-ed-inbound-whitelisted-hosts-remove
 ***
-Removes one or more hosts or CIDRs from the whitelist for a specific protection group or for all protection groups.
+Removes one or more hosts or CIDRs from the allow list for a specific protection group or for all protection groups.
 
 
 #### Base Command
@@ -1315,7 +1315,7 @@ There is no context output for this command.
 
 ### na-ed-inbound-blacklisted-domains-list
 ***
-Gets the blacklisted domains. By default, 10 blacklisted domains are returned. To return blacklisted domains for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects domains that are globally blacklisted.
+Gets the block listed domains. By default, 10 block listed domains are returned. To return block listed domains for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects domains that are globally block listed.
 
 
 #### Base Command
@@ -1337,7 +1337,7 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound block list. | 
 | NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistDomain.domain | String | Domain name. | 
 | NetscoutAED.InboundBlacklistDomain.pgid | Unknown | List of protection group ID. | 
@@ -1404,7 +1404,7 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 
 ### na-ed-inbound-blacklisted-domains-add
 ***
-Adds one or more domains to the blacklist by pgid or cid.
+Adds one or more domains to the block list by pgid or cid.
 
 
 #### Base Command
@@ -1417,14 +1417,14 @@ Adds one or more domains to the blacklist by pgid or cid.
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
 | domain | Domain name or a comma-separated list of domain names. | Required | 
-| annotation | A message to associate with each domain that you add to the blacklist. | Optional | 
+| annotation | A message to associate with each domain that you add to the block list. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound blaok list. | 
 | NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistDomain.domain | String | Domain name. | 
 | NetscoutAED.InboundBlacklistDomain.pgid | Unknown | List of protection group ID. | 
@@ -1455,7 +1455,7 @@ Adds one or more domains to the blacklist by pgid or cid.
 
 #### Human Readable Output
 
->Domains were successfully added to the inbound blacklisted list
+>Domains were successfully added to the inbound block listed list
 >### Added Domains
 >|Domain|Pgid|Cid|Update Time|
 >|---|---|---|---|
@@ -1464,7 +1464,7 @@ Adds one or more domains to the blacklist by pgid or cid.
 
 ### na-ed-inbound-blacklisted-domains-remove
 ***
-Removes one or more domains from the blacklist for a specific protection group or for all protection groups.
+Removes one or more domains from the block list for a specific protection group or for all protection groups.
 
 
 #### Base Command
@@ -1486,11 +1486,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Domains were successfully removed from the inbound blacklisted list
+>Domains were successfully removed from the inbound block listed list
 
 ### na-ed-inbound-blacklisted-urls-list
 ***
-Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To return blacklisted URLs for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects URLs that are globally blacklisted.
+Gets the block listed URLs. By default, 10 block listed URLs are returned. To return block listed URLs for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects URLs that are globally block listed.
 
 
 #### Base Command
@@ -1512,7 +1512,7 @@ Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To retu
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each URL in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each URL in the inbound block list. | 
 | NetscoutAED.InboundBlacklistUrl.cid | Unknown | List of central configuration ID.s | 
 | NetscoutAED.InboundBlacklistUrl.url | String | URL address. | 
 | NetscoutAED.InboundBlacklistUrl.pgid | Unknown | List of protection group ID. | 
@@ -1581,7 +1581,7 @@ Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To retu
 
 ### na-ed-inbound-blacklisted-urls-add
 ***
-Adds one or more URLs to the blacklist by pgid or cid.
+Adds one or more URLs to the block list by pgid or cid.
 
 
 #### Base Command
@@ -1594,14 +1594,14 @@ Adds one or more URLs to the blacklist by pgid or cid.
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
 | url | URL or a comma-separated list of URLs to add. | Required | 
-| annotation | A message to associate with each URL that you add to the blacklist. | Optional | 
+| annotation | A message to associate with each URL that you add to the block list. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each url in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each url in the inbound block list. | 
 | NetscoutAED.InboundBlacklistUrl.cid | Unknown | List of central configuration IDs | 
 | NetscoutAED.InboundBlacklistUrl.url | String | URL address. | 
 | NetscoutAED.InboundBlacklistUrl.pgid | Unknown | List of protection group ID. | 
@@ -1632,7 +1632,7 @@ Adds one or more URLs to the blacklist by pgid or cid.
 
 #### Human Readable Output
 
->Urls were successfully added to the inbound blacklisted list
+>Urls were successfully added to the inbound block listed list
 >### Added Urls
 >|Url|Pgid|Cid|Update Time|
 >|---|---|---|---|
@@ -1641,7 +1641,7 @@ Adds one or more URLs to the blacklist by pgid or cid.
 
 ### na-ed-inbound-blacklisted-urls-remove
 ***
-Removes one or more URLs from the blacklist for a specific protection group or for all protection groups.
+Removes one or more URLs from the block list for a specific protection group or for all protection groups.
 
 
 #### Base Command
@@ -1663,11 +1663,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Urls were successfully removed from the inbound blacklisted list
+>Urls were successfully removed from the inbound block listed list
 
 ### na-ed-outbound-whitelisted-hosts-remove
 ***
-Removes one or more hosts or CIDRs from the outbound whitelist.
+Removes one or more hosts or CIDRs from the outbound allow list.
 
 
 #### Base Command
@@ -1689,4 +1689,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Hosts were successfully removed from the outbound whitelist list
+>Hosts were successfully removed from the outbound allow list list

@@ -1,4 +1,4 @@
-Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
+Use the Cofense Intelligence integration to check the reputation of domains, URLs, IP addresses, file hashes, and email addresses.
 This integration was integrated and tested with version 2 of Cofense Intelligence
 
 Some changes have been made that might affect your existing content. For more information, see [Breaking Changes](#Breaking-changes-from-previous-versions-of-this-integration).
@@ -32,7 +32,10 @@ Threshold = Major (Default value)
     | File Threshold | Threshold for file related threats' severity. | False |
     | URL Threshold | Threshold for URL related threats' severity. | False |
     | Email Threshold | Threshold for email related threats' severity. | False |
+    | Domain Threshold | Threshold for domain related threats' severity. | False |
     | Time limit for collecting data | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. |
+    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | Score Mapping | Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score standard rating.<br/>For Example-: None:0, Minor:1, Moderate:2, Major:3<br/><br/>Note: Cofense Indicator ratings are Major, Minor, Moderate, None. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -54,7 +57,7 @@ Checks the reputation of an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
-| days_back | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. | Optional | 
+| days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -66,6 +69,11 @@ Checks the reputation of an IP address.
 | IP.GEO.Country | unknown | The country in which the IP address is located. | 
 | IP.Address | unknown | IP address. | 
 | IP.MalwareFamily | unknown | The malware family associated with the IP address. | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -244,14 +252,14 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >### Cofense IP Reputation for IP 8.8.8.8
->|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|ASN|Country|Threat Report|
->|---|---|---|---|---|---|---|---|---|
->| 125002 | type | Suspicious | summary |  Campaign | 2021-03-22 15:56:10 | ASN |country | link
+>|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|ASN|Country|Threat Report|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 125002 | type | Suspicious | summary |  Campaign | Family Description | 2021-03-22 15:56:10 | ASN |country | link
 
 
 ### cofense-search
 ***
-Searches for extracted strings identified within malware campaigns.
+Retrieves a specific threat or a list of threats based on the filter values provided in the command arguments.
 
 
 #### Base Command
@@ -261,10 +269,13 @@ Searches for extracted strings identified within malware campaigns.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| str | String to search. | Required | 
+| str | String to search. | Optional | 
 | limit | Maximum number of strings to search. Default is 10. | Optional | 
 | days_back | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
-
+| malware_family | The malware family associated with a malware campaign. | Optional | 
+| malware_file | The filename associated with a phishing or malware campaign. | Optional | 
+| malware_subject | Search the message subject associated with malware campaigns. | Optional | 
+| url | A specific url to search for.<br/><br/>Note: This supports exact and partial matching of urls. | Optional | 
 
 #### Context Output
 
@@ -411,9 +422,9 @@ Searches for extracted strings identified within malware campaigns.
 
 >### There are 1 threats regarding your string search
 >
->|Threat ID|Threat Types|Executive Summary|Campaign|Last Published|Threat Report|
->|---|---|---|---|---|---|
->| 178991 | summary | Refund - Credential Phishing | 2021-04-15 14:53:11 | Link |
+>|Threat ID|Threat Type|Executive Summary|Campaign|Malware Family|Malware File|Malware Subject|Malware Family Description|Last Published|Threat Report|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 178991 | type | summary | Refund - Credential Phishing | Family | File | Subject | Family Description | 2021-04-15 14:53:11 | Link |
 
 
 ### file
@@ -429,7 +440,7 @@ Checks the reputation of a file hash.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | The MD5 hash of the file to check. | Required | 
-| days_back | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. | Optional | 
+| days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -442,6 +453,11 @@ Checks the reputation of a file hash.
 | File.Malicious.Vendor | unknown | The vendor who reported the file as malicious. | 
 | File.MalwareFamily | unknown | The malware family associated with the file. | 
 | File.Name | unknown | The full file name. | 
+| File.Relationships.EntityA | String | The source of the relationship. | 
+| File.Relationships.EntityB | String | The destination of the relationship. | 
+| File.Relationships.Relationship | String | The name of the relationship. | 
+| File.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -627,9 +643,9 @@ Checks the reputation of a file hash.
 #### Human Readable Output
 
 >### Cofense file Reputation for file 9798ba6199168e6d2cf205760ea683d1
->|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
->|---|---|---|---|---|---|---|
->| 158959 |type | Malicious |  summary | campaign name | 2021-03-18 19:47:48 | Link |
+>|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
+>|---|---|---|---|---|---|---|---|
+>| 158959 |type | Malicious |  summary | campaign name | Family Description | 2021-03-18 19:47:48 | Link |
 
 
 ### email
@@ -645,7 +661,7 @@ Checks the reputation of an email address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | Sender email address to check. | Required | 
-| days_back | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. | Optional | 
+| days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -657,6 +673,11 @@ Checks the reputation of an email address.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Reliability | string | The actual score. | 
+| Email.Relationships.EntityA | String | The source of the relationship. | 
+| Email.Relationships.EntityB | String | The destination of the relationship. | 
+| Email.Relationships.Relationship | String | The name of the relationship. | 
+| Email.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| Email.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | CofenseIntelligence.Email.Data | String | The email address. | 
 | CofenseIntelligence.Email.Threats.id | Number | Threat ID. | 
 | CofenseIntelligence.Email.Threats.feeds.id | Number | Integer identifier for this feed. | 
@@ -812,9 +833,9 @@ Checks the reputation of an email address.
 #### Human Readable Output
 
 >### Cofense email Reputation for email email@email.com
->|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
->|---|---|---|---|---|---|---|
->| 158959 | Type | Malicious | Summary | Campaign name | 2021-03-18 19:47:48 | link |
+>|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
+>|---|---|---|---|---|---|---|---|
+>| 158959 | Type | Malicious | Summary | Campaign name | Family Description | 2021-03-18 19:47:48 | link |
 
 
 ### url
@@ -830,7 +851,7 @@ Checks the reputation of a URL.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to check. | Required | 
-| days_back | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. | Optional | 
+| days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -845,6 +866,11 @@ Checks the reputation of a URL.
 | URL.Data | string | The URL | 
 | URL.Malicious.Description | string | A description of the malicious URL. | 
 | URL.Malicious.Vendor | string | The vendor who reported the URL as malicious. | 
+| URL.Relationships.EntityA | String | The source of the relationship. | 
+| URL.Relationships.EntityB | String | The destination of the relationship. | 
+| URL.Relationships.Relationship | String | The name of the relationship. | 
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | CofenseIntelligence.URL.Data | String | The URL. | 
 | CofenseIntelligence.URL.Threats.id | Number | Threat ID. | 
 | CofenseIntelligence.URL.Threats.feeds.id | Number | Integer identifier for this feed. | 
@@ -1011,9 +1037,294 @@ Checks the reputation of a URL.
 #### Human Readable Output
 
 >### Cofense URL Reputation for url url
->|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
->|---|---|---|---|---|---|---|
->| 125002 | threat type | Malicious | summary | 2021-03-22 15:56:10 |Link |
+>|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
+>|---|---|---|---|---|---|---|---|
+>| 125002 | threat type | Malicious | summary | Campaign name | Family Description | 2021-03-22 15:56:10 | Link |
+
+### domain
+***
+Checks the reputation of the domain.
+
+
+#### Base Command
+
+`domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to check. | Required | 
+| days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | The actual score. | 
+| Domain.Name | String | The Domain. | 
+| Domain.Malicious.Description | String | A description of the malicious URL. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the Domain as malicious. | 
+| Domain.Relationships.EntityA | String | The source of the relationship. | 
+| Domain.Relationships.EntityB | String | The destination of the relationship. | 
+| Domain.Relationships.Relationship | String | The name of the relationship. | 
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| CofenseIntelligence.Domain.Data | String | The Domain. | 
+| CofenseIntelligence.Domain.Threats.id | Number | Threat ID. | 
+| CofenseIntelligence.Domain.Threats.feeds.id | Number | Integer identifier for this feed. | 
+| CofenseIntelligence.Domain.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed. | 
+| CofenseIntelligence.Domain.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed. | 
+| CofenseIntelligence.Domain.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed. | 
+| CofenseIntelligence.Domain.Threats.feeds.displayName | String | Human readable name for this feed. | 
+| CofenseIntelligence.Domain.Threats.blockSet.malwareFamily.familyName | String | The name of the malware family. | 
+| CofenseIntelligence.Domain.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works. | 
+| CofenseIntelligence.Domain.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0. | 
+| CofenseIntelligence.Domain.Threats.blockSet.confidence | Number | The level of confidence in the threats block. | 
+| CofenseIntelligence.Domain.Threats.blockSet.blockType | String | Data type of the watchlist item. | 
+| CofenseIntelligence.Domain.Threats.blockSet.roleDescription | String | Description of the infrastructure type. | 
+| CofenseIntelligence.Domain.Threats.blockSet.role | String | Infrastructure type. | 
+| CofenseIntelligence.Domain.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of the infrastructure type being used. | 
+| CofenseIntelligence.Domain.Threats.blockSet.data | String | Domain name or an IP address. | 
+| CofenseIntelligence.Domain.Threats.blockSet.data_1 | String | Either a domain name or an IP address. | 
+| CofenseIntelligence.Domain.Threats.campaignBrandSet.totalCount | Number | Total number of individual messages associated with this brand. | 
+| CofenseIntelligence.Domain.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand. | 
+| CofenseIntelligence.Domain.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand. | 
+| CofenseIntelligence.Domain.Threats.domainSet.totalCount | Number | Total number of instances of each item named. | 
+| CofenseIntelligence.Domain.Threats.domainSet.domain | String | Sender domain name. | 
+| CofenseIntelligence.Domain.Threats.senderEmailSet.totalCount | Number | Total number of instances of each item named. | 
+| CofenseIntelligence.Domain.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.Domain.Threats.executableSet.malwareFamily.familyName | String | Family name of the malware. | 
+| CofenseIntelligence.Domain.Threats.executableSet.malwareFamily.description | String | The name of the malware family. | 
+| CofenseIntelligence.Domain.Threats.executableSet.vendorDetections.detected | Boolean | Whether an executable was detected. | 
+| CofenseIntelligence.Domain.Threats.executableSet.vendorDetections.threatVendorName | String | Name of the antivirus vendor. | 
+| CofenseIntelligence.Domain.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection. | 
+| CofenseIntelligence.Domain.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection. | 
+| CofenseIntelligence.Domain.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery. | 
+| CofenseIntelligence.Domain.Threats.executableSet.severityLevel | String | The malware infection severity level. | 
+| CofenseIntelligence.Domain.Threats.executableSet.fileNameExtension | String | The file extension. | 
+| CofenseIntelligence.Domain.Threats.executableSet.md5Hex | String | The MD5 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file. | 
+| CofenseIntelligence.Domain.Threats.executableSet.executableSubtype.description | String | The description of the executable file. | 
+| CofenseIntelligence.Domain.Threats.senderIpSet.totalCount | Number | Total number of instances of each item named. | 
+| CofenseIntelligence.Domain.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
+| CofenseIntelligence.Domain.Threats.senderNameSet.totalCount | Number | Total number of instances of each item named. | 
+| CofenseIntelligence.Domain.Threats.senderNameSet.name | String | The friendly name of the sender of the email. | 
+| CofenseIntelligence.Domain.Threats.subjectSet.totalCount | Number | Total number of instances of each item named. | 
+| CofenseIntelligence.Domain.Threats.subjectSet.subject | String | Email subject line. | 
+| CofenseIntelligence.Domain.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated. | 
+| CofenseIntelligence.Domain.Threats.firstPublished | Date | Timestamp of when this campaign was initially published. | 
+| CofenseIntelligence.Domain.Threats.label | String | Human readable name for this campaign. | 
+| CofenseIntelligence.Domain.Threats.executiveSummary | String | Analyst written summary of the campaign. | 
+| CofenseIntelligence.Domain.Threats.hasReport | Boolean | Whether this campaign has a written report associated with it. | 
+| CofenseIntelligence.Domain.Threats.reportDomain | String | Direct URL to human readable report for this campaign. | 
+| CofenseIntelligence.Domain.Threats.apiReportURL | String | URL to human readable report for this campaign. | 
+| CofenseIntelligence.Domain.Threats.threatDetailURL | String | T3 report URL. | 
+| CofenseIntelligence.Domain.Threats.malwareFamilySet.familyName | String | Family name of the malware. | 
+| CofenseIntelligence.Domain.Threats.malwareFamilySet.description | String | Description of the malware family set. | 
+| CofenseIntelligence.Domain.Threats.threatType | String | If malware, will have value 'malware', otherwise it is empty. | 
+
+
+#### Command Example
+```!domain domain=www.sutomoresmestaj.net days_back=20000 using=CofenseIntelligenceV2_instance```
+
+#### Context Example
+```json
+{
+    "CofenseIntelligence": {
+        "Domain": {
+            "Data": "www.sutomoresmestaj.net",
+            "Threats": [
+                {
+                    "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/55110/html",
+                    "blockSet": [
+                        {
+                            "blockType": "URL",
+                            "confidence": 100,
+                            "data": "http://tamymakeup.com/myclassapp/Rt/",
+                            "data_1": {
+                                "domain": "tamymakeup.com",
+                                "host": "tamymakeup.com",
+                                "path": "/myclassapp/Rt/",
+                                "protocol": "http",
+                                "url": "http://tamymakeup.com/myclassapp/Rt/"
+                            },
+                            "deliveryMechanism": {
+                                "description": "Microsoft Office documents with macro scripting for malware delivery",
+                                "mechanismName": "OfficeMacro"
+                            },
+                            "impact": "Major",
+                            "role": "Payload",
+                            "roleDescription": "Location from which a payload is obtained"
+                        },
+                        {
+                            "blockType": "Domain Name",
+                            "confidence": 100,
+                            "data": "www.sutomoresmestaj.net",
+                            "data_1": "www.sutomoresmestaj.net",
+                            "deliveryMechanism": {
+                                "description": "Microsoft Office documents with macro scripting for malware delivery",
+                                "mechanismName": "OfficeMacro"
+                            },
+                            "impact": "Moderate",
+                            "role": "Payload",
+                            "roleDescription": "Location from which a payload is obtained"
+                        }
+                    ],
+                    "campaignBrandSet": [
+                        {
+                            "brand": {
+                                "id": 2051,
+                                "text": "None"
+                            },
+                            "totalCount": 1
+                        }
+                    ],
+                    "campaignLanguageSet": [
+                        {
+                            "languageDefinition": {
+                                "family": "Indo-European",
+                                "isoCode": "en",
+                                "name": "English",
+                                "nativeName": "English"
+                            }
+                        }
+                    ],
+                    "campaignScreenshotSet": [],
+                    "deliveryMechanisms": [
+                        {
+                            "description": "Microsoft Office documents with macro scripting for malware delivery",
+                            "mechanismName": "OfficeMacro"
+                        }
+                    ],
+                    "domainSet": [],
+                    "executableSet": [
+                        {
+                            "dateEntered": 1598576136841,
+                            "deliveryMechanism": {
+                                "description": "Microsoft Office documents with macro scripting for malware delivery",
+                                "mechanismName": "OfficeMacro"
+                            },
+                            "fileName": "000685.doc",
+                            "fileNameExtension": "doc",
+                            "md5Hex": "28c311de9ab487265c0846487e528423",
+                            "severityLevel": "Major",
+                            "sha1Hex": "dcfad03686e029646d6118a5edd18a3b56a2c358",
+                            "sha224Hex": "78c4f0f7f8c90d137fcb633b6c2c24e2a9f6b9c6054e5de1157d1bed",
+                            "sha256Hex": "5eb93964840290b1a5e35577b2e7ed1c0f212ef275113d5ecdb4a85c127ae57a",
+                            "sha384Hex": "9bd5ab8d458cf2bd64e6942dd586b5456f4a37d73ae788e4acbef666332c7ed00672fa4bc714d1f5b1b826f8e32ca6fe",
+                            "sha512Hex": "4be7710c5d25b94861ace0a7ad83459163c6e294a511c41876e0d29a69d715a805bc859ad3f06a100141e245975893719a089c98cdffb60b3432119b66586f03",
+                            "ssdeep": "3072:2vYy0u8YGgjv+ZvchmkHcI/o1/Vb6//////////////////////////////////p:S0uXnWFchmmcI/o1/3Jwnp",
+                            "type": "Attachment",
+                            "vendorDetections": []
+                        }
+                    ],
+                    "executiveSummary": "This report is part of our Emotet/Geodo series. Emotet is a malware family that was initially formed as a banking trojan but today often downloads additional malware payloads. We process very large Emotet campaigns containing thousands of stage one documents and we often find there are a small number of unique URLs and stage two payloads in each campaign. As such, you may notice these lists contain mostly document-specific IOCs, compared with fewer unique URLs and unique stage two payloads.",
+                    "extractedStringSet": [],
+                    "feeds": [
+                        {
+                            "displayName": "Cofense",
+                            "id": 23,
+                            "permissions": {
+                                "OWNER": false,
+                                "READ": true,
+                                "WRITE": false
+                            }
+                        }
+                    ],
+                    "firstPublished": 1598622645803,
+                    "hasReport": true,
+                    "id": 55110,
+                    "label": "Finance or Response Themed - OfficeMacro, Emotet/Geodo",
+                    "lastPublished": 1598622745988,
+                    "malwareFamilySet": [
+                        {
+                            "description": "Adaptable financial crimes botnet trojan with email worm and malware delivery capabilities, also known as Emotet",
+                            "familyName": "Emotet/Geodo"
+                        }
+                    ],
+                    "naicsCodes": [],
+                    "relatedSearchTags": [],
+                    "reportURL": "https://www.threathq.com/api/l/activethreatreport/55110/html",
+                    "senderEmailSet": [],
+                    "senderIpSet": [],
+                    "senderNameSet": [],
+                    "spamUrlSet": [],
+                    "subjectSet": [
+                        {
+                            "subject": "Invoice",
+                            "totalCount": 1
+                        },
+                        {
+                            "subject": "Notice",
+                            "totalCount": 1
+                        },
+                        {
+                            "subject": "Purchase Order",
+                            "totalCount": 1
+                        },
+                        {
+                            "subject": "Report",
+                            "totalCount": 1
+                        },
+                        {
+                            "subject": "Response",
+                            "totalCount": 1
+                        },
+                        {
+                            "subject": "Scanned Document",
+                            "totalCount": 1
+                        }
+                    ],
+                    "threatDetailURL": "https://www.threathq.com/p42/search/default?m=55110",
+                    "threatType": "MALWARE"
+                }
+            ]
+        }
+    },
+    "DBotScore": {
+        "Indicator": "www.sutomoresmestaj.net",
+        "Reliability": "B - Usually reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "CofenseIntelligenceV2"
+    },
+    "Domain": {
+        "Name": "www.sutomoresmestaj.net",
+        "Relationships": [
+            {
+                "EntityA": "www.sutomoresmestaj.net",
+                "EntityAType": "Domain",
+                "EntityB": "http://tamymakeup.com/myclassapp/Rt/",
+                "EntityBType": "URL",
+                "Relationship": "related-to"
+            },
+            {
+                "EntityA": "www.sutomoresmestaj.net",
+                "EntityAType": "Domain",
+                "EntityB": "www.sutomoresmestaj.net",
+                "EntityBType": "Domain Name",
+                "Relationship": "related-to"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cofense Domain Reputation for domain www.sutomoresmestaj.net
+>|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
+>|---|---|---|---|---|---|---|---|
+>| 55110 | MALWARE | Suspicious | This report is part of our Emotet/Geodo series. Emotet is a malware family that was initially formed as a banking trojan but today often downloads additional malware payloads. We process very large Emotet campaigns containing thousands of stage one documents and we often find there are a small number of unique URLs and stage two payloads in each campaign. As such, you may notice these lists contain mostly document-specific IOCs, compared with fewer unique URLs and unique stage two payloads. | Finance or Response Themed - OfficeMacro, Emotet/Geodo | Adaptable financial crimes botnet trojan with email worm and malware delivery capabilities, also known as Emotet | 2020-08-28 13:52:25 | [https://www.threathq.com/api/l/activethreatreport/55110/html](https://www.threathq.com/api/l/activethreatreport/55110/html) |
 
 ## Breaking changes from previous versions of this integration
 The following sections list the changes in this version.

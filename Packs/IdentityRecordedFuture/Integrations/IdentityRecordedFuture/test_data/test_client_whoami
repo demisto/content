@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.26.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: GET
+    uri: https://api.recordedfuture.com/gw/xsoar/info/whoami
+  response:
+    body:
+      string: '{"user": {"name": "roman xsoar + identity user", "uhash": "6tfoC1HHdd",
+        "privileges": ["ListAPI", "LegacyAPITokenAuth", "BfiXsoar", "RiskListAPI",
+        "FusionPublicFileAccess", "CredentialLeaksAPI", "NPSSurvey", "AnalystNoteCrud",
+        "MalwareAPI", "Modules", "AlertAPI", "AnalystNoteAPIWrite", "DarkWeb", "API_V2",
+        "ApiKeys", "EntityListAPI", "SOARAPI", "Enterprise", "SOARAPITriage", "EntityMatchAPI",
+        "ListCreate"], "roles": ["role-darkweb", "any", "group-4966aaef73bc403382eff4f131b99aca",
+        "role-create-customer-notes", "role-module-enterprise", "group-f0268cf74f4949fe9c048670c7602e29",
+        "role-public", "role-list-api", "role-darkweb-crawler-data", "role-paying-customer",
+        "role-module-identity", "role-module-integration-common", "role-cyber-plus",
+        "role-module-integration-identity", "role-dhs-ais-data", "role-cyber-basic",
+        "group-d113ce0c190c4cecba0808d4f61230a8", "group-9d91e096fe25440fb4cdff90d593ad75",
+        "user-acdb1e28b71148afa4110b2f45384fd1", "group-account-c4faf5647cfd4fc1b42cfdee808c5573",
+        "role-module-integration-threat-intelligence", "role-module-threat-intelligence",
+        "group-9e52a77526a14d79b66eb66be4bc8675", "role-bfi-xsoar"], "email": "3c4214a55a254afab98bd8a65d6144d4@integration.recordedfuture.com",
+        "role": false, "username": "user-acdb1e28b71148afa4110b2f45384fd1", "enterprise":
+        false}}'
+    headers:
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1640'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Dec 2021 10:55:41 GMT
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - strict-origin
+      Server:
+      - Werkzeug/2.0.2 Python/3.8.5
+      Strict-Transport-Security:
+      - max-age=2592000;includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-RF-Proxy-BasePath:
+      - /gw/
+      X-RF-Proxy-ServiceId:
+      - xsoar
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

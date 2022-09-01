@@ -12,7 +12,6 @@
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
-  "",
   "Critical",
   "High",
   "Medium",

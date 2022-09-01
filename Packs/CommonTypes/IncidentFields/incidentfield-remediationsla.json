@@ -32,9 +32,7 @@
  "required": false,
  "modified": "2018-12-11T12:53:56.816268002Z",
  "fieldCalcScript": "",
- "selectValues": [
-
- ],
+ "selectValues": [],
  "validationRegex": "",
  "sla": 7200
 }

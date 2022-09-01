@@ -607,7 +607,7 @@ Gets a list of incidents.
 | Securonix.Incidents.Url | String | URL that links to the incident on Securonix. | 
 | Securonix.Incidents.ViolatorText | String | Incident violator text. | 
 | Securonix.Incidents.AssignedUser | String | User assigned to the incident. | 
-| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is whitelisted. | 
+| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is added to allow list. | 
 
 
 ##### Command Example
@@ -653,7 +653,7 @@ Gets details of the specified incident.
 | Securonix.Incidents.Url | String | URL that links to the incident on Securonix. | 
 | Securonix.Incidents.ViolatorText | String | Incident violator text. | 
 | Securonix.Incidents.AssignedUser | String | User assigned to the incident. | 
-| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is whitelisted. | 
+| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is added to allow list. | 
 
 
 ##### Command Example
@@ -1125,7 +1125,7 @@ Creates an incident. For more information about the required arguments, see the 
 | Securonix.Incidents.Url | String | The URL that links to the incident on Securonix. | 
 | Securonix.Incidents.ViolatorText | String | Text of the incident violator. | 
 | Securonix.Incidents.AssignedUser | String | The user assigned to the incident. | 
-| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is whitelisted. | 
+| Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is added to allow list. | 
 
 
 ##### Command Example

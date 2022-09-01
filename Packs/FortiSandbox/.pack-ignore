@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:FortiSandbox_image.png]
+ignore=IM111

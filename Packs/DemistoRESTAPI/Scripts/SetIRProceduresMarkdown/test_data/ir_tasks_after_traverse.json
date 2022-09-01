@@ -1,0 +1,472 @@
+{
+  "Start": {
+    "tasks": [
+      {
+        "id": "74",
+        "name": "Set RapidBreachResponse IR Procedures",
+        "section": "Start",
+        "type": "playbook",
+        "state": "Completed",
+        "startDate": "2021-10-05T12:37:20.571898974Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:29.989023063Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Collect Indicators": {
+    "tasks": [
+      {
+        "id": "2",
+        "name": "Collect indicators from HUNTRESS",
+        "section": "Collect Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "ParseHTMLIndicators",
+        "startDate": "2021-10-05T12:37:31.119620803Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:31.912985437Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "3",
+        "name": "Collect indicators from Picussecurity",
+        "section": "Collect Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "ParseHTMLIndicators",
+        "startDate": "2021-10-05T12:37:31.379645297Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:32.438258327Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "6",
+        "name": "Download Yara Rules",
+        "section": "Collect Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "http",
+        "startDate": "2021-10-05T12:37:30.531414818Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:31.648553865Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "7",
+        "name": "Download Sigma Rules",
+        "section": "Collect Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "http",
+        "startDate": "2021-10-05T12:37:30.861406365Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:32.177464095Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Extract Indicators": {
+    "tasks": [
+      {
+        "id": "5",
+        "name": "Extract Indicators From Data Collected",
+        "section": "Extract Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||extractIndicators",
+        "startDate": "2021-10-05T12:37:33.022566292Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:33.294784101Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Create, Tag and Link Indicators": {
+    "tasks": [
+      {
+        "id": "82",
+        "name": "Create and Tag IP Indicators",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||createNewIndicator",
+        "startDate": "2021-10-05T12:37:34.372641836Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:36.030971919Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "80",
+        "name": "Create and Tag Domain Indicators",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||createNewIndicator",
+        "startDate": "2021-10-05T12:39:16.617647465Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:39:16.625378788Z",
+        "completedBy": "admin"
+      },
+      {
+        "id": "83",
+        "name": "Create and Tag URL Indicators",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||createNewIndicator",
+        "startDate": "2021-10-05T12:37:33.813552923Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:35.754818573Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "84",
+        "name": "Create and Tag File Indicators",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||createNewIndicator",
+        "startDate": "2021-10-05T12:39:19.974618966Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:39:19.982707691Z",
+        "completedBy": "admin"
+      },
+      {
+        "id": "85",
+        "name": "Create and Tag CVE Indicators",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||createNewIndicator",
+        "startDate": "2021-10-05T12:37:35.480997234Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:36.92064789Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "16",
+        "name": "Link Indicators To Incident",
+        "section": "Create, Tag and Link Indicators",
+        "type": "regular",
+        "state": "Completed",
+        "scriptId": "Builtin|||associateIndicatorsToIncident",
+        "startDate": "2021-10-05T12:37:34.68811623Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:37:37.838947786Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Handle Rapid Breach Response Layout": {
+    "tasks": [
+      {
+        "id": "76",
+        "name": "Set RapidBreachResponse IR Procedures",
+        "section": "Handle Rapid Breach Response Layout",
+        "type": "playbook",
+        "state": "Completed",
+        "startDate": "2021-10-05T12:39:20.807098772Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:39:34.659604283Z",
+        "completedBy": "DBot"
+      },
+      {
+        "id": "81",
+        "name": "Set RapidBreachResponse Incident Info",
+        "section": "Handle Rapid Breach Response Layout",
+        "type": "playbook",
+        "state": "Completed",
+        "startDate": "2021-10-05T12:39:20.536035966Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T12:39:31.455419796Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Threat Hunting": {
+    "Palo Alto Networks Hunting": {
+      "tasks": [
+        {
+          "id": "19",
+          "name": "Palo Alto Networks - Hunting And Threat Detection",
+          "section": "Threat Hunting/Palo Alto Networks Hunting",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:40:55.560118507Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T13:10:30.499162238Z",
+          "completedBy": "DBot"
+        }
+      ]
+    },
+    "Hunting For Endpoint IoCs": {
+      "tasks": [
+        {
+          "id": "22",
+          "name": "Search Endpoints By Hash - Generic V2",
+          "section": "Threat Hunting/Hunting For Endpoint IoCs",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:39:41.817425895Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:41:07.736123916Z",
+          "completedBy": "DBot"
+        },
+        {
+          "id": "39",
+          "name": "Endpoint Enrichment - Generic v2.1",
+          "section": "Threat Hunting/Hunting For Endpoint IoCs",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:41:08.021432607Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:41:14.774196921Z",
+          "completedBy": "DBot"
+        }
+      ]
+    },
+    "SIEM Advanced Hunting": {
+      "tasks": [
+        {
+          "id": "45",
+          "name": "Search for suspicious file creation under INETCACHE",
+          "section": "Threat Hunting/SIEM Advanced Hunting",
+          "type": "regular",
+          "state": "Completed",
+          "scriptId": "|||splunk-search",
+          "startDate": "2021-10-05T12:39:48.187782274Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:40:17.020483522Z",
+          "completedBy": "DBot"
+        },
+        {
+          "id": "46",
+          "name": "Search for suspicious process creation pattern",
+          "section": "Threat Hunting/SIEM Advanced Hunting",
+          "type": "regular",
+          "state": "Completed",
+          "scriptId": "|||splunk-search",
+          "startDate": "2021-10-05T12:40:27.855959455Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:40:41.324511678Z",
+          "completedBy": "DBot"
+        },
+        {
+          "id": "86",
+          "name": "Search for suspicious file creation under INETCACHE",
+          "section": "Threat Hunting/SIEM Advanced Hunting",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:39:57.823537559Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:40:03.189974132Z",
+          "completedBy": "DBot"
+        },
+        {
+          "id": "87",
+          "name": "Search for suspicious process creation pattern",
+          "section": "Threat Hunting/SIEM Advanced Hunting",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:40:03.452893668Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:40:26.890743167Z",
+          "completedBy": "DBot"
+        }
+      ]
+    },
+    "SIEM Hunting": {
+      "tasks": [
+        {
+          "id": "20",
+          "name": "Splunk Indicator Hunting",
+          "section": "Threat Hunting/SIEM Hunting",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:39:56.664121976Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:40:49.998122742Z",
+          "completedBy": "DBot"
+        },
+        {
+          "id": "21",
+          "name": "QRadar Indicator Hunting V2",
+          "section": "Threat Hunting/SIEM Hunting",
+          "type": "playbook",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:59:34.218350618Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T13:35:00.464481662Z",
+          "completedBy": "DBot"
+        }
+      ]
+    },
+    "Hunting Cortex XDR Signatures": {
+      "tasks": [
+        {
+          "id": "24",
+          "name": "Search XDR incidents for CVE-2021-40444 related behavior ",
+          "section": "Threat Hunting/Hunting Cortex XDR Signatures",
+          "type": "regular",
+          "state": "Completed",
+          "scriptId": "SearchIncidentsV2",
+          "startDate": "2021-10-05T12:39:58.355976127Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:39:59.182555096Z",
+          "completedBy": "DBot"
+        }
+      ]
+    },
+    "Hunting Cortex XDR XQL Queries": {
+      "tasks": [
+        {
+          "id": "70",
+          "name": "Look for potential CVE-2021-40444 exploitation attempts",
+          "section": "Threat Hunting/Hunting Cortex XDR XQL Queries",
+          "type": "regular",
+          "state": "Completed",
+          "startDate": "2021-10-05T12:46:11.054894486Z",
+          "dueDate": "Not Started",
+          "completedDate": "2021-10-05T12:46:11.066699689Z",
+          "completedBy": "admin"
+        }
+      ]
+    }
+  },
+  "Remediation": {
+    "tasks": [
+      {
+        "id": "51",
+        "name": "Block indicators manually",
+        "section": "Remediation",
+        "type": "regular",
+        "state": "Completed",
+        "startDate": "2021-10-05T13:02:22.074928032Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T13:02:22.08317105Z",
+        "completedBy": "admin"
+      },
+      {
+        "id": "78",
+        "name": "Set RapidBreachResponse IR Procedures",
+        "section": "Remediation",
+        "type": "playbook",
+        "state": "Completed",
+        "startDate": "2021-10-05T13:00:07.4531892Z",
+        "dueDate": "Not Started",
+        "completedDate": "2021-10-05T13:00:18.405630582Z",
+        "completedBy": "DBot"
+      }
+    ]
+  },
+  "Detections & Workarounds": {
+    "Deploy Microsoft Workarounds": {
+      "tasks": [
+        {
+          "id": "63",
+          "name": "Disable ActiveX controls via Group Policy",
+          "section": "Detections & Workarounds/Deploy Microsoft Workarounds",
+          "type": "regular",
+          "state": "Waiting",
+          "startDate": "2021-10-05T13:02:24.279725327Z",
+          "dueDate": "Not Started",
+          "completedDate": "Not Started"
+        },
+        {
+          "id": "64",
+          "name": "Disable ActiveX controls on an individual system via regkey",
+          "section": "Detections & Workarounds/Deploy Microsoft Workarounds",
+          "type": "regular",
+          "state": "Waiting",
+          "startDate": "2021-10-05T13:02:23.602055255Z",
+          "dueDate": "Not Started",
+          "completedDate": "Not Started"
+        },
+        {
+          "id": "65",
+          "name": "Disable preview in Windows Explore",
+          "section": "Detections & Workarounds/Deploy Microsoft Workarounds",
+          "type": "regular",
+          "state": "Waiting",
+          "startDate": "2021-10-05T13:02:23.899725784Z",
+          "dueDate": "Not Started",
+          "completedDate": "Not Started"
+        }
+      ]
+    },
+    "Deploy Detection Rules": {
+      "tasks": [
+        {
+          "id": "54",
+          "name": "Deploy Sigma rules",
+          "section": "Detections & Workarounds/Deploy Detection Rules",
+          "type": "regular",
+          "state": "Waiting",
+          "startDate": "2021-10-05T13:02:24.562870866Z",
+          "dueDate": "Not Started",
+          "completedDate": "Not Started"
+        },
+        {
+          "id": "53",
+          "name": "Deploy YARA rules",
+          "section": "Detections & Workarounds/Deploy Detection Rules",
+          "type": "regular",
+          "state": "Waiting",
+          "startDate": "2021-10-05T13:02:23.274436781Z",
+          "dueDate": "Not Started",
+          "completedDate": "Not Started"
+        }
+      ]
+    }
+  },
+  "Mitigation": {
+    "tasks": [
+      {
+        "id": "73",
+        "name": "Install Microsoft official patch",
+        "section": "Mitigation",
+        "type": "regular",
+        "state": "Not Started",
+        "startDate": "Not Started",
+        "dueDate": "Not Started",
+        "completedDate": "Not Started"
+      }
+    ]
+  },
+  "Resolution": {
+    "tasks": [
+      {
+        "id": "62",
+        "name": "Close Investigation",
+        "section": "Resolution",
+        "type": "regular",
+        "state": "Not Started",
+        "scriptId": "Builtin|||closeInvestigation",
+        "startDate": "Not Started",
+        "dueDate": "Not Started",
+        "completedDate": "Not Started"
+      },
+      {
+        "id": "61",
+        "name": "Investigate Further",
+        "section": "Resolution",
+        "type": "regular",
+        "state": "Not Started",
+        "startDate": "Not Started",
+        "dueDate": "Not Started",
+        "completedDate": "Not Started"
+      },
+      {
+        "id": "79",
+        "name": "Set RapidBreachResponse IR Procedures",
+        "section": "Resolution",
+        "type": "playbook",
+        "state": "Not Started",
+        "startDate": "Not Started",
+        "dueDate": "Not Started",
+        "completedDate": "Not Started"
+      }
+    ]
+  }
+}

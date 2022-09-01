@@ -56,12 +56,20 @@ class Client(BaseClient):
         params = url_params
         params['limit'] = url_params.get('limit', 20)
         params['skip'] = 0
-        start_time = dateparser.parse('1 hour ago').strftime(DATE_FORMAT)
-        end_time = datetime.utcnow().strftime(DATE_FORMAT)
+        an_hour_ago_date = dateparser.parse('1 hour ago')
+        assert an_hour_ago_date is not None
+        start_time = an_hour_ago_date.strftime(DATE_FORMAT)
+        now_date = datetime.utcnow()
+        assert now_date is not None
+        end_time = now_date.strftime(DATE_FORMAT)
         if url_params.get('start_time') is not None:
-            start_time = dateparser.parse(url_params['start_time']).strftime(DATE_FORMAT)
+            start_time_date = dateparser.parse(url_params['start_time'])
+            assert start_time_date is not None, f'failed parsing {url_params["start_time"]}'
+            start_time = start_time_date.strftime(DATE_FORMAT)
         if url_params.get('end_time') is not None:
-            end_time = dateparser.parse(url_params['end_time']).strftime(DATE_FORMAT)
+            end_time_date = dateparser.parse(url_params['end_time'])
+            assert end_time_date is not None
+            end_time = end_time_date.strftime(DATE_FORMAT)
         params['start_time'] = start_time
         params['end_time'] = end_time
         params['giver_email'] = url_params.get('giver_email', '')
@@ -268,6 +276,7 @@ def fetch_incidents(client, last_run, first_fetch_time, fetch_params):
     items = client.list_incidents(last_fetch_date=last_fetch_date, fetch_params=fetch_params)
     for item in items:
         incident_created_time = dateparser.parse(item['created_at'])
+        assert incident_created_time is not None, f'failed parsing {item["created_at"]}'
         incident = {
             'name': 'New Bonusly - ' + item['reason'],
             'occurred': incident_created_time.strftime(DATE_FORMAT),

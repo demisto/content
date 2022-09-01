@@ -6,17 +6,9 @@
         "cyberpion_action_item": "Cyberpion Security Alert"
     },
     "name": "Cyberpion-Classifier",
-    "propagationLabels": [
-        "all"
-    ],
     "transformer": {
-        "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "alert_type",
-            "transformers": []
-        },
-        "simple": ""
+        "complex": null,
+        "simple": "alert_type"
     },
     "type": "classification",
     "version": -1,

@@ -1,0 +1,293 @@
+commonfields:
+  id: AMP
+  version: -1
+name: AMP
+display: AMP
+category: Endpoint
+description: Uses CISCO AMP Endpoint
+configuration:
+- display: Server URL (e.g. https://api.amp.cisco.com)
+  name: server
+  defaultvalue: https://api.amp.cisco.com
+  type: 0
+  required: true
+- display: Client ID
+  name: credentials
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: amp_get_computers
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: hostname
+      description: Filter results by hostname.
+    - name: internal_ip
+      description: Filter results by internal IP address.
+    - name: external_ip
+      description: Filter results by external IP address.
+    - name: group_guid
+      description: Filter results by group GUID.
+    description: Returns a list of computers on which agents are deployed. You can
+      use filters (arguments) to narrow the search.
+  - name: amp_get_computer_by_connector
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: The connector GUID for which to return information.
+    description: Returns information for the specified computer.
+  - name: amp_get_computer_trajectory
+    arguments:
+    - name: q
+      description: The IP address, SHA256 hash, or URL.
+    - name: limit
+      description: Maximum number of results to return.
+    - name: connector_guid
+      required: true
+      default: true
+      description: The connector GUID.
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+  - name: amp_get_computer_trajctory
+    deprecated: true
+    arguments:
+    - name: q
+      description: The IP address, SHA256 hash, or URL.
+    - name: limit
+      description: Maximum number of results to return.
+    - name: connector_guid
+      required: true
+      default: true
+      description: The connector GUID.
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+  - name: amp_move_computer
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: The connector GUID.
+    - name: group_guid
+      required: true
+      description: The group GUID.
+    description: Moves a computer to a group with the corresponding connector_guid
+      and group_guid, respectively.
+  - name: amp_get_computer_activity
+    arguments:
+    - name: q
+      required: true
+      default: true
+      description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: offset
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+  - name: amp_get_computer_actvity
+    deprecated: true
+    arguments:
+    - name: q
+      required: true
+      default: true
+      description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: offset
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+  - name: amp_get_events
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: connector_guid
+      description: The connector GUID.
+    - name: group_guid
+      description: The group GUID.
+    - name: detection_sha256
+      description: The detected SHA256 hash.
+    - name: application_sha256
+      description: The application SHA256.
+    - name: event_type
+      description: The event type.
+    - name: offset
+      description: The offset.
+    - name: start_date
+      description: The start date for the query, in ISO8601 format.
+    description: A general query interface for events. This is analogous to the Events
+      view on the FireAMP Console.
+  - name: amp_get_event_types
+    arguments: []
+    description: Events are identified and filtered by a unique ID. This endpoint
+      provides a human readable name and short description of each event (by ID).
+  - name: amp_get_application_blocking
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: The offset.
+    - name: name
+      description: Name of the file.
+    description: Returns a list of application blocking file lists. You can filter
+      this list by name
+  - name: amp_get_file_list_by_guid
+    arguments:
+    - name: file_list_guid
+      required: true
+      default: true
+      description: Retrieves information about a particular file_list.
+    description: Returns a particular file list for application blocking or simple
+      custom detection. You need to specify the file_list_guid argument to retrieve
+      information about a particular file_list.
+  - name: amp_get_simple_custom_detections
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: The offset.
+    - name: name
+      description: Name of the detection.
+    description: Returns a list of simple custom detection file lists. You can filter
+      this list by detection name.
+  - name: amp_get_file_list_files
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: The offset.
+    - name: file_list_guid
+      required: true
+      default: true
+      description: Retrieves information about a particular file_list.
+    description: Returns a list of items for a particular file_list. You need to specify
+      the file_list_guid argument to retrieve these items.
+  - name: amp_get_file_list_files_by_sha
+    arguments:
+    - name: file_list_guid
+      required: true
+      default: true
+      description: Retrieves information about a particular file_list.
+    - name: sha256
+      required: true
+      description: SHA256 hash.
+    description: Returns a particular item for a given file_list. You need to specify
+      the sha256 argument and the file_list_guid argument to retrieve an item.
+  - name: amp_set_file_list_files_by_sha
+    arguments:
+    - name: file_list_guid
+      required: true
+      default: true
+      description: Retrieves information about a particular file_list.
+    - name: sha256
+      required: true
+      description: SHA256 hash.
+    - name: description
+      description: Description of the SHA256 hash.
+    description: Adds a SHA256 hash to a file list, using file_list_guid.
+  - name: amp_delete_file_list_files_by_sha
+    arguments:
+    - name: file_list_guid
+      required: true
+      default: true
+      description: The file_list_guid to retrieve information about a particular file_list
+    - name: sha256
+      required: true
+      description: SHA256 hash.
+    description: Deletes an item from a file_list using the SHA256 hash and file_list_guid.
+  - name: amp_get_groups
+    arguments:
+    - name: limit
+      description: amount of results
+    - name: name
+      description: name of the group
+    description: Returns basic information about groups in your organization. You
+      can map group names to GUIDs for filtering on the events endpoint.
+  - name: amp_get_group
+    arguments:
+    - name: group_guid
+      required: true
+      default: true
+      description: The particular group guid
+    description: Returns a particular group
+  - name: amp_set_group_policy
+    arguments:
+    - name: group_guid
+      required: true
+      default: true
+      description: The group GUID.
+    - name: linux_policy_guid
+      description: The Linux policy guide.
+    - name: android_policy_guid
+      description: The Android policy guide.
+    - name: mac_policy_guid
+      description: The Mac policy guide.
+    - name: windows_policy_guid
+      description: The Windows policy guide.
+    description: Sets a security policy to a group of endpoints.
+  - name: amp_get_policies
+    arguments:
+    - name: limit
+      description: Maximum number of results to return.
+    - name: offset
+      description: The offset.
+    - name: name
+      description: The policy name.
+    - name: product
+      description: The policy product.
+    description: Returns a list of policies. You can filter this list by name and
+      product.
+  - name: amp_get_policy
+    arguments:
+    - name: policy_guid
+      required: true
+      default: true
+      description: The policy GUID.
+    description: Retrieves information about a particular policy, based on policy_guid.
+  - name: amp_get_version
+    arguments: []
+    description: Fetches a list of versions.
+  - name: amp_delete_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: Performs a feature availability request on a computer. Can also be
+      used as a course-grained isolation status request.
+  - name: amp_put_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: Request Isolation for a Computer.  If a computer is already isolated
+      a 409 Conflict error status will be sent. Returns the same result of a GET request
+      on the /isolation endpoint.
+  - name: amp_get_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: 'Returns a fine grained isolation status for a computer.  The available
+      flag is set to true if isolation can be performed on the computer.  status will
+      be set to one of:  not_isolated pending_start isolated pending_stop'
+  runonce: false
+fromversion: 5.0.0
+tests:
+- No test - missing instace

@@ -1,0 +1,69 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Azure DevOps Outgoing Mapper",
+    "mapping": {
+        "Azure DevOps": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "project": {
+                    "complex": null,
+                    "simple": "azuredevopsprojectname"
+                },
+                "pull_request_id": {
+                    "complex": null,
+                    "simple": "azuredevopspullrequestid"
+                },
+                "repository_id": {
+                    "complex": null,
+                    "simple": "azuredevopsrepositoryid"
+                },
+                "status": {
+                    "complex": null,
+                    "simple": "azuredevopsstatus"
+                },
+                "title": {
+                    "complex": null,
+                    "simple": "title"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "project": {
+                    "complex": null,
+                    "simple": "azuredevopsprojectname"
+                },
+                "pull_request_id": {
+                    "complex": null,
+                    "simple": "azuredevopspullrequestid"
+                },
+                "repository_id": {
+                    "complex": null,
+                    "simple": "azuredevopsrepositoryid"
+                },
+                "status": {
+                    "complex": null,
+                    "simple": "azuredevopsstatus"
+                },
+                "title": {
+                    "complex": null,
+                    "simple": "title"
+                }
+            }
+        }
+    },
+    "name": "Azure DevOps Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

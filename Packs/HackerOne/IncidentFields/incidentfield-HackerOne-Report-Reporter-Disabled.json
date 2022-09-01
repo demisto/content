@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportreporterdisabled",
+    "version": -1,
+    "modified": "2021-08-26T10:56:11.160097651+05:30",
+    "name": "HackerOne Report Reporter Disabled",
+    "ownerOnly": false,
+    "description": "Indicates if the reporter is disabled.",
+    "cliName": "hackeronereportreporterdisabled",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

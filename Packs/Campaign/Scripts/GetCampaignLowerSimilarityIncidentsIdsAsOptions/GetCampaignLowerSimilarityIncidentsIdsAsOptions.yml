@@ -1,0 +1,18 @@
+commonfields:
+  id: GetCampaignLowerSimilarityIncidentsIdsAsOptions
+  version: -1
+name: GetCampaignLowerSimilarityIncidentsIdsAsOptions
+script: ''
+type: python
+tags:
+- field-display
+comment: Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select "Phishing Campaign Select Campaign Lower Similarity Incidents" incident field.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

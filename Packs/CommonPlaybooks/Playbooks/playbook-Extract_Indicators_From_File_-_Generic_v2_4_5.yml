@@ -1,9 +1,10 @@
 id: Extract Indicators From File - Generic v2
 version: -1
-fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: Extract Indicators From File - Generic v2
 description: |-
-  Extracts indicators from a file.
+  This playbook extracts indicators from a file.
   Supported file types:
   - CSV
   - PDF
@@ -16,28 +17,28 @@ description: |-
   - XLS
   - XLSX
   - XML
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 66ff4520-efa0-4c28-81d4-6d933e7ac182
     type: start
     task:
       id: 66ff4520-efa0-4c28-81d4-6d933e7ac182
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -20
+          "y": -10
         }
       }
     note: false
@@ -45,8 +46,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
     taskid: 01e70914-25f3-495d-81f4-5864bd04340a
     type: condition
     task:
@@ -57,15 +60,15 @@ tasks:
         Checks if there is a file in the playbook input.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "2"
+      - '10'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -78,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 115
+          "y": 150
         }
       }
     note: false
@@ -86,22 +89,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
     taskid: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
     type: regular
     task:
       id: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
       version: -1
       name: Set file to local context
-      description: Set the input file into local context.
+      description: Sets the input file into local context.
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       key:
         simple: File
@@ -124,8 +129,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
     taskid: cd4f63cd-d080-4574-86f2-73b6dd9854d9
     type: title
     task:
@@ -134,14 +141,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 510,
-          "y": 1730
+          "y": 2340
         }
       }
     note: false
@@ -149,8 +156,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
     taskid: 3745ecc5-a6c8-4c53-83ff-25d3dbef7eb1
     type: title
     task:
@@ -159,14 +168,14 @@ tasks:
       name: Extract Indicators From Files
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
-      - "7"
-      - "9"
-      - "15"
+      - '5'
+      - '7'
+      - '9'
+      - '15'
     separatecontext: false
     view: |-
       {
@@ -180,27 +189,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
     taskid: 816708c1-620e-495b-8102-081c06a0146f
     type: condition
     task:
       id: 816708c1-620e-495b-8102-081c06a0146f
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "6"
+      - '10'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -309,6 +319,14 @@ tasks:
                     right:
                       value:
                         simple: message/rfc822
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: p7m
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -325,8 +343,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
     taskid: baa0320d-9647-44bb-8110-99b6d1c618df
     type: regular
     task:
@@ -337,10 +357,10 @@ tasks:
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '19'
     scriptarguments:
       entryID:
         complex:
@@ -464,8 +484,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
     taskid: 60ecb284-7af0-463e-80d7-8f7e36dce929
     type: condition
     task:
@@ -475,15 +497,15 @@ tasks:
       description: Checks if there is a PDF file in context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "8"
+      - '10'
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -525,8 +547,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
     taskid: fa0e5d0b-c66c-4837-8b73-bacf7e890d12
     type: regular
     task:
@@ -537,10 +561,10 @@ tasks:
       scriptName: ReadPDFFileV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '18'
     scriptarguments:
       entryID:
         complex:
@@ -580,26 +604,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 77dcaf0d-5cb9-4f91-812a-695afc8225f1
     type: condition
     task:
-      id: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+      id: 77dcaf0d-5cb9-4f91-812a-695afc8225f1
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "11"
+      - '10'
+      yes:
+      - '11'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -734,10 +760,25 @@ tasks:
                     right:
                       value:
                         simple: xlsb
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsm
                 accessor: EntryID
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -750,8 +791,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
     taskid: c0b4f86a-6063-455f-8bc7-92d09cd519fa
     type: title
     task:
@@ -760,16 +803,16 @@ tasks:
       name: No File To Parse
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '19'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": -320,
           "y": 950
         }
       }
@@ -778,22 +821,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 54ad5a67-0f23-40af-8e77-451ddbc84108
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
     type: regular
     task:
-      id: 54ad5a67-0f23-40af-8e77-451ddbc84108
+      id: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
       scriptName: ExtractIndicatorsFromWordFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '19'
     scriptarguments:
       entryID:
         complex:
@@ -901,6 +946,19 @@ tasks:
               right:
                 value:
                   simple: pptx
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsm
           accessor: EntryID
           transformers:
           - operator: uniq
@@ -918,8 +976,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
     taskid: 1572cbb3-ceff-4d00-8f8a-468ad338953b
     type: condition
     task:
@@ -929,15 +989,15 @@ tasks:
       description: Checks whether images were extracted from PDF files.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "14"
+      - '19'
+      yes:
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -987,8 +1047,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1360
+          "x": 1240,
+          "y": 1740
         }
       }
     note: false
@@ -996,27 +1056,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
     taskid: 92e92794-63db-4875-88c3-89bd5a4ec179
     type: condition
     task:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration
-        enabled.
+      description: Checks whether there is an active instance of the Image OCR integration. enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "12"
+      - '19'
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1036,8 +1097,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1170
+          "x": 930,
+          "y": 1560
         }
       }
     note: false
@@ -1045,23 +1106,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
     taskid: c6d841e4-812f-40e0-8ef4-9203859c9781
     type: regular
     task:
       id: c6d841e4-812f-40e0-8ef4-9203859c9781
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
-        to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '19'
     scriptarguments:
       entryid:
         complex:
@@ -1111,8 +1173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1300,
-          "y": 1540
+          "x": 1480,
+          "y": 1910
         }
       }
     note: false
@@ -1120,8 +1182,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
     taskid: 32dd3613-cac8-4ac6-8b2a-59fd9c2e4233
     type: condition
     task:
@@ -1138,15 +1202,15 @@ tasks:
         - XML
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "16"
+      - '10'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1259,7 +1323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1480,
           "y": 700
         }
       }
@@ -1268,14 +1332,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 787894ac-9cb7-4897-8de5-7ea136e9bebd
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 430b4252-4478-4150-8641-2444119a6005
     type: regular
     task:
-      id: 787894ac-9cb7-4897-8de5-7ea136e9bebd
+      id: 430b4252-4478-4150-8641-2444119a6005
       version: -1
-      name: Convert document to PDF
+      name: Convert a document to PDF
       description: |-
         Converts the following formats to PDF format:
         - PPT
@@ -1287,13 +1353,13 @@ tasks:
       scriptName: ConvertFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       all_files:
-        simple: "yes"
+        simple: yes
       entry_id:
         complex:
           root: File
@@ -1395,8 +1461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 970
+          "x": 1480,
+          "y": 1000
         }
       }
     note: false
@@ -1404,29 +1470,195 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+    type: regular
+    task:
+      id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+      version: -1
+      name: Preview PDF files
+      description: Gets a preview (image) of the PDF files.
+      tags:
+      - PDF_Images
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      file_name:
+        simple: PDF_preview
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: d3466327-cfe5-4364-8b19-187f67320432
+    type: condition
+    task:
+      id: d3466327-cfe5-4364-8b19-187f67320432
+      version: -1
+      name: Is Rasterize enabled?
+      description: Checks if the Rasterize integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '13'
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+    type: regular
+    task:
+      id: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+      version: -1
+      name: Set ExtractedURLsFromFiles
+      description: |-
+        Extracts URLs from files and stores them under the "ExtractedURLsFromFiles" key in the playbook output.
+        Parent playbooks can use this key to indicate which URLs were extracted.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      key:
+        simple: ExtractedURLsFromFiles
+      value:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "12_14_yes": 0.55,
-      "12_3_#default#": 0.34,
       "13_12_yes": 0.55,
-      "13_3_#default#": 0.19,
+      "15_10_#default#": 0.1,
       "15_16_yes": 0.38,
+      "18_13_#default#": 0.41,
+      "18_17_yes": 0.31,
       "1_10_#default#": 0.15,
-      "5_10_#default#": 0.36,
+      "5_10_#default#": 0.19,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
       "7_8_yes": 0.38,
-      "9_10_#default#": 0.21,
+      "9_10_#default#": 0.11,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 2270,
-        "x": -350,
-        "y": -20
+        "height": 2415,
+        "width": 2180,
+        "x": -320,
+        "y": -10
       }
     }
   }
@@ -1436,43 +1668,83 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file from which to extract indicators.
+  description: The file to extract indicators from.
   playbookInputQuery:
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains.
+  description: The extracted domains.
+  type: string
 - contextPath: Account.Email.Address
-  description: Extracted emails addresses.
+  description: The extracted email addresses.
+  type: string
 - contextPath: File.MD5
-  description: Extracted MD5 hash.
+  description: The extracted MD5 hash.
+  type: string
 - contextPath: File.SHA1
-  description: Extracted SHA1 hash.
+  description: The extracted SHA1 hash.
+  type: string
 - contextPath: File.SHA256
-  description: Extracted SHA256 hash.
+  description: The extracted SHA256 hash.
+  type: string
 - contextPath: IP.Address
-  description: Extracted IP addresses.
+  description: The extracted IP addresses.
+  type: string
 - contextPath: File.Text
   description: The text or images extracted from the PDF file.
+  type: string
 - contextPath: File.Producer
   description: The PDF file producer.
+  type: string
 - contextPath: File.Title
   description: The title of the PDF file.
+  type: string
 - contextPath: File.xap
-  description: The xap of the PDF file.
+  description: The XAP of the PDF file.
+  type: string
 - contextPath: File.Author
   description: The author of the file.
+  type: string
 - contextPath: File.dc
-  description: The dc of the file.
+  description: The DC of the file.
+  type: string
 - contextPath: File.xapmm
-  description: The xapmm of the file.
+  description: The XAPMM of the file.
+  type: string
 - contextPath: File.ModDate
-  description: The ModDate of the file.
+  description: The mod date of the file.
+  type: string
 - contextPath: File.CreationDate
-  description: The CreationDate of the file.
+  description: The creation date of the file.
+  type: string
 - contextPath: File.Pages
-  description: Number of pages in file.
+  description: The number of pages in the file.
+  type: string
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the file.
-  type: unknown
+  description: The list of URLs that were extracted from the file.
+  type: string
+- contextPath: ExtractedURLsFromFiles
+  description: The list of URLs that were extracted from the file. This output is a duplicate of the URL.Data output and it enables parent playbooks to identify the URLs generated by this playbook.
+  type: String
 tests:
 - Extract Indicators From File - Generic v2 - Test
+fromversion: 5.0.0

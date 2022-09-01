@@ -2104,7 +2104,7 @@ tasks:
       Hash: {}
       IP:
         complex:
-          root: inputs.IP addresses
+          root: inputs.IPAddresses
           transformers:
           - operator: uniq
           - operator: join

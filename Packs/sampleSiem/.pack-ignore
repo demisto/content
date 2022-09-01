@@ -1,2 +1,2 @@
-[file:integration-sampleSiem.yml]
+[file:SampleIncidentGenerator.yml]
 ignore=IN126

@@ -2,7 +2,7 @@
     "id": "RedLock-mapper",
     "name": "Prisma Cloud - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming Prisma Cloud event fields.",
+    "description": "Maps incoming Prisma Cloud event fields that are created through the 'fetch incidents' command in the Prisma Cloud integration.",
 	"defaultIncidentType": "Prisma Cloud",
 	"mapping": {
 		"AWS CloudTrail Misconfiguration": {
@@ -14,8 +14,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Account Name": {
 					"complex": {
@@ -23,26 +22,21 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -50,8 +44,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -59,22 +52,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -82,8 +71,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -91,8 +79,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -100,8 +87,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -109,8 +95,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -118,8 +103,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -127,8 +111,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -136,58 +119,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -195,8 +166,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -204,8 +174,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -213,8 +182,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -222,8 +190,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -231,8 +198,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -240,8 +206,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -249,8 +214,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -258,8 +222,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -267,8 +230,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -276,8 +238,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -285,8 +246,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -294,8 +254,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -303,8 +262,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -312,8 +270,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -321,8 +278,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -330,8 +286,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -339,8 +294,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -348,8 +302,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -357,8 +310,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -366,11 +318,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -379,8 +329,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -388,8 +337,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -397,11 +345,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}
@@ -415,35 +361,29 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "accountname",
+						"accessor": "account",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -451,8 +391,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -460,22 +399,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -483,8 +418,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -492,8 +426,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -501,8 +434,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -510,8 +442,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -519,8 +450,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -528,8 +458,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -537,58 +466,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -596,8 +513,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -605,8 +521,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -614,8 +529,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -623,8 +537,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -632,8 +545,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -641,8 +553,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -650,8 +561,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -659,8 +569,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -668,8 +577,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -677,8 +585,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -686,8 +593,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -695,8 +601,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -704,8 +609,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -713,8 +617,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -722,8 +625,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -731,8 +633,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -740,8 +641,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -749,8 +649,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -758,8 +657,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -767,11 +665,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -780,8 +676,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -789,8 +684,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -798,11 +692,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}
@@ -816,8 +708,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Account Name": {
 					"complex": {
@@ -825,26 +716,21 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -852,8 +738,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -861,22 +746,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -884,8 +765,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -893,8 +773,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -902,8 +781,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -911,8 +789,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -920,8 +797,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -929,8 +805,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -938,58 +813,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -997,8 +860,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -1006,8 +868,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -1015,8 +876,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -1024,8 +884,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -1033,8 +892,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -1042,8 +900,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -1051,8 +908,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -1060,8 +916,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -1069,8 +924,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -1078,8 +932,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -1087,8 +940,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -1096,8 +948,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -1105,8 +956,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -1114,8 +964,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -1123,8 +972,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -1132,8 +980,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -1141,8 +988,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -1150,8 +996,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -1159,8 +1004,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -1168,11 +1012,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -1181,8 +1023,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -1190,8 +1031,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -1199,11 +1039,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}
@@ -1217,35 +1055,29 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "accountname",
+						"accessor": "account",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -1253,8 +1085,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -1262,22 +1093,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -1285,8 +1112,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -1294,8 +1120,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -1303,8 +1128,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -1312,8 +1136,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -1321,8 +1144,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -1330,8 +1152,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -1339,58 +1160,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -1398,8 +1207,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -1407,8 +1215,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -1416,8 +1223,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -1425,8 +1231,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -1434,8 +1239,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -1443,8 +1247,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -1452,8 +1255,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -1461,8 +1263,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -1470,8 +1271,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -1479,8 +1279,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -1488,8 +1287,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -1497,8 +1295,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -1506,8 +1303,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -1515,8 +1311,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -1524,8 +1319,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -1533,8 +1327,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -1542,8 +1335,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -1551,8 +1343,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -1560,8 +1351,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -1569,11 +1359,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -1582,8 +1370,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -1591,8 +1378,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -1600,16 +1386,14 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}
 		},
-                "GCP Kubernetes Engine Misconfiguration": {
+		"GCP Kubernetes Engine Misconfiguration": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Account ID": {
@@ -1618,8 +1402,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Account Name": {
 					"complex": {
@@ -1627,26 +1410,21 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -1654,8 +1432,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -1663,22 +1440,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -1686,8 +1459,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -1695,8 +1467,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -1704,8 +1475,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -1713,8 +1483,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -1722,8 +1491,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -1731,8 +1499,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -1740,58 +1507,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -1799,8 +1554,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -1808,8 +1562,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -1817,8 +1570,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -1826,8 +1578,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -1835,8 +1586,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -1844,8 +1594,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -1853,8 +1602,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -1862,8 +1610,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -1871,8 +1618,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -1880,8 +1626,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -1889,8 +1634,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -1898,8 +1642,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -1907,8 +1650,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -1916,8 +1658,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -1925,8 +1666,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -1934,8 +1674,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -1943,8 +1682,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -1952,8 +1690,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -1961,8 +1698,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -1970,11 +1706,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -1983,8 +1717,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -1992,8 +1725,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -2001,11 +1733,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}
@@ -2013,36 +1743,30 @@
 		"Prisma Cloud": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Account Name": {
-					"complex": null,
-					"simple": "resource.account"
-				},
 				"Account ID": {
 					"complex": {
 						"accessor": "accountId",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
+				},
+				"Account Name": {
+					"simple": "resource.account"
 				},
 				"Alert ID": {
-					"complex": null,
 					"simple": "id"
 				},
 				"First Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "firstSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified By": {
 					"complex": {
@@ -2050,8 +1774,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Modified On": {
 					"complex": {
@@ -2059,22 +1782,18 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Last Seen": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "lastSeen",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "TimeStampToDate"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Policy Deleted": {
 					"complex": {
@@ -2082,8 +1801,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Description": {
 					"complex": {
@@ -2091,8 +1809,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy ID": {
 					"complex": {
@@ -2100,8 +1817,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -2109,8 +1825,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Remediable": {
 					"complex": {
@@ -2118,8 +1833,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Severity": {
 					"complex": {
@@ -2127,8 +1841,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Policy Type": {
 					"complex": {
@@ -2136,58 +1849,46 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud ID": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "id",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Reason": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "reason",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Rules": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertRules",
 						"transformers": [
 							{
-								"args": {},
 								"operator": "ConvertKeysToTableFieldFormat"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Status": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "status",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Prisma Cloud Time": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "alertTime",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Region": {
 					"complex": {
@@ -2195,8 +1896,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource API Name": {
 					"complex": {
@@ -2204,8 +1904,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Cloud Type": {
 					"complex": {
@@ -2213,8 +1912,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource ID": {
 					"complex": {
@@ -2222,8 +1920,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Name": {
 					"complex": {
@@ -2231,8 +1928,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Resource Type": {
 					"complex": {
@@ -2240,8 +1936,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Rating": {
 					"complex": {
@@ -2249,8 +1944,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Risk Score": {
 					"complex": {
@@ -2258,8 +1952,7 @@
 						"filters": [],
 						"root": "riskDetail",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU Name": {
 					"complex": {
@@ -2267,8 +1960,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"SKU TIER": {
 					"complex": {
@@ -2276,8 +1968,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Assigned By": {
 					"complex": {
@@ -2285,8 +1976,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created By": {
 					"complex": {
@@ -2294,8 +1984,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Created On": {
 					"complex": {
@@ -2303,8 +1992,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Description": {
 					"complex": {
@@ -2312,8 +2000,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription ID": {
 					"complex": {
@@ -2321,8 +2008,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Name": {
 					"complex": {
@@ -2330,8 +2016,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Type": {
 					"complex": {
@@ -2339,8 +2024,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated By": {
 					"complex": {
@@ -2348,8 +2032,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Subscription Updated On": {
 					"complex": {
@@ -2357,8 +2040,7 @@
 						"filters": [],
 						"root": "resource",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"System Default": {
 					"complex": {
@@ -2366,11 +2048,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"Vendor Product": {
-					"complex": null,
 					"simple": "Prisma Cloud"
 				},
 				"details": {
@@ -2379,8 +2059,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"name": {
 					"complex": {
@@ -2388,8 +2067,7 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"severity": {
 					"complex": {
@@ -2397,11 +2075,9 @@
 						"filters": [],
 						"root": "policy",
 						"transformers": []
-					},
-					"simple": ""
+					}
 				},
 				"sourceBrand": {
-					"complex": null,
 					"simple": "\"Prisma Cloud\""
 				}
 			}

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventadriverlicense",
+    "closeForm": false,
+    "content": true,
+    "description": "Driver's license for the PII. Can be used as a constraint.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventadriverlicense",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa Driver License",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

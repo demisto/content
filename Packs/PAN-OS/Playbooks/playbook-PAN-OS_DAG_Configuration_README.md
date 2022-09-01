@@ -20,9 +20,9 @@ This playbook does not use any integrations.
 * AreValuesEqual
 
 ### Commands
-* panorama-list-address-groups
-* panorama-create-address-group
-* panorama-register-ip-tag
+* pan-os-list-address-groups
+* pan-os-create-address-group
+* pan-os-register-ip-tag
 
 ## Playbook Inputs
 ---

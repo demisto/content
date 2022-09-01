@@ -1,0 +1,21 @@
+[
+    {
+      "count": 1,
+      "kind": "DiscoveryAccess",
+      "offset": 0,
+      "results": [
+        {
+          "#id": "f5ac176243062b2b14c208e16e446973636f76657279416363657373",
+          "device_summary": "UNIX Server, Ubuntu Linux, 14.04",
+          "discovery_endtime": "2022-03-14T21:24:54.796335+00:00",
+          "discovery_starttime": "2022-03-14T21:24:26.519405+00:00",
+          "end_state": "GoodAccess",
+          "endpoint": "192.168.11.11",
+          "is_being_held": null,
+          "reason": null,
+          "result": "Success",
+          "state": "Finished"
+        }
+      ]
+    }
+  ]

@@ -1,0 +1,17 @@
+[{
+  "Alert Full Description": "A failed cloud API executed by a penetration testing tool.",
+  "Detection Module": [
+    "Cloud"
+  ],
+  "Vendor": "Amazon",
+  "Provider": "AWS",
+  "Log Name": "cloudtrail",
+  "Event Type": "AwsApiCall",
+  "Caller IP": "1.1.1.1",
+  "Caller IP Geo Location": "US",
+  "Resource Type": "DATA_PROCESSING",
+  "Identity Name": "bob-test",
+  "Operation Name": "GET",
+  "Operation Status": "PERMISSION_DENIED",
+  "User Agent": "Boto3/1.17.110 Python/3.9.2 Linux/5.10.0-kali7-cloud-amd64 Botocore/1.20.110"
+}]

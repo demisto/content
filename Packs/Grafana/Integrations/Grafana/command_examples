@@ -1,0 +1,22 @@
+!grafana-alerts-list
+!grafana-alert-pause alert_id=2
+!grafana-alert-unpause alert_id=2
+!grafana-alert-get-by-id alert_id=1
+!grafana-users-search
+!grafana-user-get-by-id user_id=1
+!grafana-user-teams-get user_id=1
+!grafana-user-orgs-get user_id=1
+!grafana-user-update user_id=3 email=TestUser login=TestUser name=TestUser
+!grafana-annotation-create text="annotate"
+!grafana-teams-search
+!grafana-team-get-by-id team_id=15
+!grafana-team-members-list team_id=15
+!grafana-user-add-to-team team_id=15 user_id=3
+!grafana-user-remove-from-team team_id=15 user_id=3
+!grafana-team-add name="TestTeam4"
+!grafana-team-delete team_id=152
+!grafana-org-create name="Organization"
+!grafana-org-list
+!grafana-org-get-by-name name="Main Org."
+!grafana-org-get-by-id org_id=1
+!grafana-dashboards-search

@@ -1,0 +1,24 @@
+{
+    "description": "Classifies SafeNet Trusted Access alerts.",
+    "feed": false,
+    "id": "SafeNet Trusted Access – Alert Classifier",
+    "keyTypeMap": {
+        "Fwd: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
+        "Re: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
+        "SafeNet Trusted Access Push Notification Rejection Alert": "SafeNet Trusted Access Push Reject Alert",
+        "SafeNet Trusted Access User Lockout Alert": "SafeNet Trusted Access Account Lockout Alert"
+    },
+    "name": "SafeNet Trusted Access – Alert Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "subject",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

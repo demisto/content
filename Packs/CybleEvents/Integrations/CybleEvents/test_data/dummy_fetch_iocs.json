@@ -1,0 +1,14 @@
+{
+  "count": 100,
+  "results": [
+    {
+      "event_title": "some_event_title",
+      "created_at": "2022-02-22T23:55:33.154000",
+      "modified": "2022-02-22T23:55:33.154000",
+      "type": "some_type",
+      "indicator": "some_indicator",
+      "references": "",
+      "last_seen_on": "2022-02-23"
+    }
+  ]
+}

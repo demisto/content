@@ -1,0 +1,42 @@
+commonfields:
+  id: MathUtil
+  version: -1
+name: MathUtil
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |
+  Script will run the provided mathematical action on 2 provided values and produce a result.
+  The result can be stored on the context using the contextKey argument
+enabled: true
+args:
+- name: lh
+  required: true
+  default: true
+  description: Left hand parameter.
+- name: rh
+  required: true
+  description: Right hand parameter.
+- name: action
+  required: true
+  description: Math expression (+, -, >, <, ==, *, /, %).
+- name: rhRegex
+  description: Regex to filter only a specific part of the right hand argument.
+- name: lhRegex
+  description: Regex to filter only a specific part of the left hand argument.
+- name: lhRadix
+  description: Radix for left hand value, defaults to 10.
+- name: rhRadix
+  description: Radix for right hand value, defaults to 10.
+- name: contextKey
+  description: Path where to store result.
+outputs:
+- contextPath: MathResult
+  description: The result of the *last* math action. Might be overriden by contextKey.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

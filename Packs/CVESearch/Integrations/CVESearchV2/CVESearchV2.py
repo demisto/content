@@ -42,9 +42,10 @@ def cve_to_context(cve) -> Dict[str, str]:
     Returns:
         The cve structure.
     """
+    cvss = cve.get('cvss')
     return {
         'ID': cve.get('id', ''),
-        'CVSS': cve.get('cvss', '0'),
+        'CVSS': cvss or 'N\\A',
         'Published': cve.get('Published', '').rstrip('Z'),
         'Modified': cve.get('Modified', '').rstrip('Z'),
         'Description': cve.get('summary', '')
@@ -109,27 +110,26 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     cve_id = args.get('cve_id', '')
     cve_ids = argToList(cve_id)
     command_results: List[CommandResults] = []
-    response = None
 
     for _id in cve_ids:
         if not valid_cve_id_format(_id):
             raise DemistoException(f'"{_id}" is not a valid cve ID')
+
         response = client.cve(_id)
-        data = cve_to_context(response)
-        indicator = generate_indicator(data)
-        command_results.append(
-            CommandResults(
+        if not response:
+            cr = CommandResults(readable_output=f'### No results found for cve {_id}')
+        else:
+            data = cve_to_context(response)
+            indicator = generate_indicator(data)
+            cr = CommandResults(
                 outputs_prefix='CVE',
                 outputs_key_field='ID',
                 outputs=data,
                 raw_response=response,
-                indicator=indicator
+                indicator=indicator,
             )
-        )
-    if not response:
-        return CommandResults(
-            readable_output='No results found'
-        )
+        command_results.append(cr)
+
     return command_results
 
 

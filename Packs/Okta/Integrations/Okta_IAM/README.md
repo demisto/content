@@ -6,7 +6,7 @@ For more information, refer to the [Identity Lifecycle Management article](https
 
 ## Configure Okta IAM on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Okta IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -360,3 +360,103 @@ There are no input arguments for this command.
 |ApplicationID|Instance|Label|Logo|Name|
 |---|---|---|---|---|
 | 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](https://op1static.oktacdn.com/fs/bcg/4/gfskliw1i51ScX6pf0h7) | servicenow |
+
+
+### okta-iam-set-configuration
+***
+Updates IAM configuration data in the integration context.
+
+
+#### Base Command
+
+`okta-iam-set-configuration`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| configuration | IAM configuration data. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### iam-get-group
+***
+Retrieves the group information, including its members.
+
+
+#### Base Command
+
+`iam-get-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scim | Group SCIM Data. | Required | 
+| includeMembers | Field to indicate if members need to be included in the response. . Possible values are: true, false. Default is true. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GetGroup.id | String | ID of the group. | 
+| GetGroup.displayName | String | The display name of the group. | 
+| GetGroup.members.display | String | The display name of the group member. | 
+| GetGroup.members.value | String | ID of the group member. | 
+| GetGroup.success | Boolean | Indicates whether the command succeeded. | 
+| GetGroup.errorCode | Number | HTTP error response code. | 
+| GetGroup.errorMessage | String | Reason why the API failed. | 
+### okta-get-logs
+***
+Gets logs by providing optional filters.
+
+
+#### Base Command
+
+`okta-get-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" -Events that have a specific action; eventType target.id eq ":id" - Events published with a specific target id; actor.id eq ":id"- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+| since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
+| until | Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
+| Okta.Logs.Events.actor.id | String | ID of the actor. | 
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
+| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. | 
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. | 
+| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. | 
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
+| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
+| Okta.Logs.Events.eventType | String | Type of event that was published. | 
+| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". | 
+| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example, INVALID_CREDENTIALS. | 
+| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
+| Okta.Logs.Events.securityContext.domain | String | Specifies whether an event's request is from a known proxy. | 
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
+| Okta.Logs.Events.target.id | String | ID of a target. | 
+| Okta.Logs.Events.target.type | String | Type of a target. | 
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
+| Okta.Logs.Events.target.displayName | String | Display name of a target. | 

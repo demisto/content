@@ -6,7 +6,8 @@ args:
   name: expanse_raw_json_event
   required: true
   secret: false
-comment: Parses incident from Expanse in raw json to readable output
+comment: Deprecated. No available replacement
+deprecated: true
 tags:
 - Expanse
 commonfields:
@@ -90,4 +91,4 @@ system: false
 timeout: '0'
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076

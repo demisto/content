@@ -1,0 +1,36 @@
+{
+    "id": "incident_priority",
+    "version": -1,
+    "modified": "2021-08-20T07:46:40.524003536-04:00",
+    "name": "Priority",
+    "ownerOnly": false,
+    "cliName": "priority",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Low",
+        "Medium",
+        "High"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "FireMon Policy Planner",
+        "FireMon Pre Change Assessment"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

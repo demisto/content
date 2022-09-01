@@ -2,9 +2,10 @@ from datetime import timezone
 from typing import Dict, Tuple, Union
 
 import dateparser
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 ''' IMPORTS '''
 
@@ -32,7 +33,7 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
-API_ENDPOINT = demisto.params().get('api_endpoint', 'rsaarcher/api').lower().replace('rsaarcher', '')
+API_ENDPOINT = demisto.params().get('api_endpoint', 'api')
 
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
@@ -45,18 +46,34 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
     return date_obj.replace(tzinfo=timezone.utc)
 
 
-def get_token_soap_request(user, password, instance):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <userName>{user}</userName>' + \
-           f'            <instanceName>{instance}</instanceName>' + \
-           f'            <password>{password}</password>' + \
-           '        </CreateUserSessionFromInstance>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+def get_token_soap_request(user, password, instance, domain=None):
+
+    if domain:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            f'            <usersDomain>{domain}</usersDomain>' + \
+            '        </CreateDomainUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    else:
+        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
+            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+            '    <soap:Body>' + \
+            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <userName>{user}</userName>' + \
+            f'            <instanceName>{instance}</instanceName>' + \
+            f'            <password>{password}</password>' + \
+            '        </CreateUserSessionFromInstance>' + \
+            '    </soap:Body>' + \
+            '</soap:Envelope>'
+    return return_xml
 
 
 def terminate_session_soap_request(token):
@@ -126,7 +143,7 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10,
+        field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
@@ -163,11 +180,19 @@ def search_records_soap_request(
                             f'        <Value>{search_value}</Value>' + \
                             '</NumericFilterCondition >'
         else:
-            request_body += '<TextFilterCondition>' + \
-                            '        <Operator>Contains</Operator>' + \
-                            f'        <Field name="{field_name}">{field_id}</Field>' + \
-                            f'        <Value>{search_value}</Value>' + \
-                            '</TextFilterCondition >'
+
+            if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
+                request_body += '<ContentFilterCondition>' + \
+                                f'        <Level>{level_id}</Level>' + \
+                                '        <Operator>Equals</Operator>' + \
+                                f'        <Values><Value>{search_value}</Value></Values>' + \
+                                '</ContentFilterCondition>'
+            else:
+                request_body += '<TextFilterCondition>' + \
+                                '        <Operator>Contains</Operator>' + \
+                                f'        <Field name="{field_name}">{field_id}</Field>' + \
+                                f'        <Value>{search_value}</Value>' + \
+                                '</TextFilterCondition >'
 
         request_body += '</Conditions></Filter>'
 
@@ -261,19 +286,19 @@ def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, instance_name, domain, **kwargs):
+    def __init__(self, base_url, username, password, instance_name, domain, timeout, **kwargs):
         self.username = username
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
+        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=20)
+                                 resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
             self.update_session()
@@ -290,7 +315,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=20)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -302,15 +327,23 @@ class Client(BaseClient):
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
     def get_token(self):
-        body = get_token_soap_request(self.username, self.password, self.instance_name)
-        headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
-                   'Content-Type': 'text/xml; charset=utf-8'}
-        res = self._http_request('POST'
-                                 '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+        if self.domain:
+            endpoint = 'CreateDomainUserSessionFromInstance'
+        else:
+            endpoint = 'CreateUserSessionFromInstance'
 
-        return extract_from_xml(res,
-                                'Envelope.Body.CreateUserSessionFromInstanceResponse.'
-                                'CreateUserSessionFromInstanceResult')
+        body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
+        headers = {
+            'SOAPAction': f'http://archer-tech.com/webservices/{endpoint}',
+            'Content-Type': 'text/xml; charset=utf-8',
+        }
+        res = self._http_request('POST', 'ws/general.asmx',
+                                 headers=headers, data=body, resp_type='content')
+        return extract_from_xml(
+            res,
+            f'Envelope.Body.{endpoint}Response.'
+            f'{endpoint}Result'
+        )
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
@@ -456,7 +489,7 @@ class Client(BaseClient):
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
-            numeric_operator='', date_operator='', max_results=10,
+            field_to_search_by_id='', numeric_operator='', date_operator='', max_results=10,
             sort_type: str = 'Ascending'
     ):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
@@ -470,11 +503,13 @@ class Client(BaseClient):
         search_field_name = ''
         search_field_id = ''
         fields_mapping = level_data['mapping']
+        level_id = level_data['level']
         for field in fields_mapping.keys():
             field_name = fields_mapping[field]['Name']
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
-            if field_name == field_to_search:
+            if (field_to_search and field_name.lower() == field_to_search.lower()) or \
+               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
@@ -482,10 +517,11 @@ class Client(BaseClient):
             'archer-search-records',
             app_id=app_id, display_fields=fields_xml,
             field_id=search_field_id, field_name=search_field_name,
-            numeric_operator=numeric_operator,
+            field_to_search_by_id=field_to_search_by_id, numeric_operator=numeric_operator,
             date_operator=date_operator, search_value=search_value,
             max_results=max_results,
             sort_type=sort_type,
+            level_id=level_id
         )
 
         if not res:
@@ -540,6 +576,10 @@ class Client(BaseClient):
             return_error(errors)
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
+
+            if res.get('RequestedObject').get('Type') != 4:
+                raise Exception('The command returns values only for fields of type "Values List".\n')
+
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
@@ -654,11 +694,11 @@ def generate_field_value(client, field_name, field_data, field_val):
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
-            tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
+            tmp_id = next((f for f in field_data['ValuesList'] if f['Name'] == item), None)
             if tmp_id:
                 list_ids.append(tmp_id['Id'])
             else:
-                raise Exception(f'Failed to create field {field_name} with the value {field_data}')
+                raise Exception(f'Failed to create the field: {field_name} with the value: {item}')
         return 'Value', {'ValuesListIds': list_ids}
 
     # when field type is External Links
@@ -734,7 +774,6 @@ def test_module(client: Client, params: dict) -> str:
                 client, {}, params['applicationId'], params['applicationDateField']
             )}
         fetch_incidents_command(client, params, last_run)
-
         return 'ok'
 
     return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
@@ -1033,7 +1072,6 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
     if isinstance(res, dict):
         res = [res]
-
     users = []
     for user in res:
         if user.get('RequestedObject') and user.get('IsSuccessful'):
@@ -1058,6 +1096,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
 def search_records_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     field_to_search = args.get('fieldToSearchOn')
+    field_to_search_by_id = args.get('fieldToSearchById')
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
@@ -1080,7 +1119,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
     records, raw_res = client.search_records(
-        app_id, fields_to_get, field_to_search, search_value,
+        app_id, fields_to_get, field_to_search, search_value, field_to_search_by_id,
         numeric_operator, date_operator, max_results=max_results,
         sort_type=sort_type,
     )
@@ -1260,12 +1299,6 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
 
-    compiled = re.compile(re.escape('rsaarcher'), re.IGNORECASE)
-    base_url = compiled.sub("", base_url)
-    api_endpoint = params.get('api_endpoint', 'rsaarcher/api').lower()
-    if 'rsaarcher' in api_endpoint:
-        base_url = urljoin(base_url, 'rsaarcher')
-
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
@@ -1278,6 +1311,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
+        timeout=int(params.get('timeout', 400))
     )
     commands = {
         'archer-search-applications': search_applications_command,
@@ -1320,8 +1354,8 @@ def main():
             return commands[command](client, demisto.args())
         else:
             return_error('Command not found.')
-    except Exception as e:
-        return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
+    except Exception as exc:
+        return_error(f'Unexpected error: {str(exc)}', error=exc)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

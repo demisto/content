@@ -147,7 +147,9 @@ class Index:
             The list of new packs.
 
         """
-        last_run_datetime = parse(last_run_str).replace(tzinfo=pytz.UTC)
+        last_run_date = parse(last_run_str)
+        assert last_run_date is not None
+        last_run_datetime = last_run_date.replace(tzinfo=pytz.UTC)
         demisto.debug(f'last message time was: {last_run_str}')
 
         for pack in self.packs:

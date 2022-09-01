@@ -528,24 +528,33 @@ Get all data of a given group
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identifier | object uid or name | Required | 
-| session_id | Execute command with a specific session ID | Optional | 
+| session_id | Execute command with a specific session ID | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Group.name | String | object name | 
-| CheckPoint.Group.uid | String | object uid | 
-| CheckPoint.Group.type | String | object type | 
-| CheckPoint.Group.domain-name | String | domain name | 
-| CheckPoint.Group.domain-uid | String | domain uid | 
-| CheckPoint.Group.domain-type | String | domain type | 
-| CheckPoint.Group.creator | String | indicates the creator of the object | 
-| CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
-| CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
-| CheckPoint.Group.members.ipv4-address | String | Group members IPv4 addresses |
-| CheckPoint.Group.members.ipv6-address | String | Group members IPv6 addresses |
+| CheckPoint.Group.name | String | Object name. | 
+| CheckPoint.Group.uid | String | Object UID. | 
+| CheckPoint.Group.type | String | Object type. | 
+| CheckPoint.Group.domain-name | String | Domain name. | 
+| CheckPoint.Group.domain-uid | String | Domain UID. | 
+| CheckPoint.Group.domain-type | String | Domain type. | 
+| CheckPoint.Group.creator | String | The creator of the object. | 
+| CheckPoint.Group.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.Group.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.Group.ipv4-address | string | Group IPv4 addresses. | 
+| CheckPoint.Group.ipv6-address | string | Group IPv6 addresses. | 
+| CheckPoint.Group.groups | Unknown | Collection of group identifiers. | 
+| CheckPoint.Group.members.member-ipv4-address | string | Group members IPv4 addresses. | 
+| CheckPoint.Group.members.member-ipv6-address | string | Group members IPv6 addresses. | 
+| CheckPoint.Group.members.member-domain-name | string | Group members domain name. | 
+| CheckPoint.Group.members.member-domain-uid | string | Group members domain UID. | 
+| CheckPoint.Group.members.member-domain-type | string | Group members domain type. | 
+| CheckPoint.Group.members.member-name | string | Group member name. | 
+| CheckPoint.Group.members.member-uid | string | Group member UID. | 
+| CheckPoint.Group.members.member-type | string | Group member type. | 
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
@@ -1469,9 +1478,17 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AccessRule.name | String | object name | 
-| CheckPoint.AccessRule.uid | String | object uid | 
-
+| CheckPoint.AccessRule.name | String | Object name. | 
+| CheckPoint.AccessRule.uid | String | Object UID. | 
+| CheckPoint.AccessRule.type | String | Object type. | 
+| CheckPoint.AccessRule.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.AccessRule.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.AccessRule.domain-name | String | Domain name. | 
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. | 
+| CheckPoint.AccessRule.creator | String | The creator of the object. | 
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.AccessRule.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.AccessRule.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
 ```!checkpoint-access-rule-list identifier=Network limit=5```
@@ -2704,18 +2721,24 @@ Retrieve data about objects.
 | filter_search | Search expression to filter objects by. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. By default, the search involves both a textual search and a IP search. To use IP search only, set the "ip-only" parameter to true. | Optional | 
 | ip_only | If using "filter", use this field to search objects by their IP address only, without involving the textual search. | Optional | 
 | object_type | he objects' type, e.g.: host, service-tcp, network, address-range. Default value is object | Optional | 
-| session_id | Execute command with a specific session ID | Optional | 
+| session_id | Execute command with a specific session ID | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Object.name | String | object name | 
-| CheckPoint.Object.uid | String | object uid | 
-| CheckPoint.Object.type | String | object type | 
-| CheckPoint.Object.ipv4 | String | IP-v4 address of a spesific object | 
-
+| CheckPoint.Objects.name | String | Object name. | 
+| CheckPoint.Objects.uid | String | Object UID. | 
+| CheckPoint.Objects.type | String | Object type. | 
+| CheckPoint.Objects.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.Objects.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.Objects.domain-name | String | Domain name. | 
+| CheckPoint.Objects.domain-uid | String | Domain UID. | 
+| CheckPoint.Objects.creator | String | The creator of the object. | 
+| CheckPoint.Objects.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.Objects.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.Objects.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
 ```!checkpoint-show-objects limit=3 filter_search=1.2.3.4 ip_only=true```
@@ -2810,3 +2833,184 @@ Get checkpoint-packages details.
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
+### checkpoint-add-objects-batch
+***
+Creates new objects in batch. To achieve optimum performance when adding more than one object, use this API. Note: Errors and warnings are ignored when using this API, operation will apply changes while ignoring errors. It is not possible to publish changes that contain validations errors.
+
+
+#### Base Command
+
+`checkpoint-add-objects-batch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| session_id | Executes the command with the specified session ID. | Required | 
+| object_type | Type of objects to be created. Default is host. | Required | 
+| ipaddress | ip addresses to be added. | Required | 
+| name | names of the ip objects to be added. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AddObjectBatch.task-id | string | Task id of the add-objects-batch command. | 
+
+### checkpoint-delete-objects-batch
+***
+Deletes existing objects in batch using object name or uid. To achieve optimum performance when deleting more than one object, use this API.
+
+
+#### Base Command
+
+`checkpoint-delete-objects-batch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| session_id | Executes the command with the specified session ID. | Required | 
+| name | a comma separated list of names of the ip objects to be deleted. | Required | 
+| object_type | Type of objects to be deleted. Default is host. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.DeleteObjectsBatch.task-id | string | Task id of the delete-objects-batch command. | 
+
+### checkpoint-show-threat-protection
+***
+Shows an existing threat protection using object name or uid
+
+
+#### Base Command
+
+`checkpoint-show-threat-protection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uid | . | Optional | 
+| name | . | Optional | 
+| showProfiles | . Possible values are: true, false. Default is false. | Optional | 
+| additionalProperties | . Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ShowThreatProtection | unknown |  | 
+
+### checkpoint-show-threat-protections
+***
+Shows existing threat protections using a filter
+
+
+#### Base Command
+
+`checkpoint-show-threat-protections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | . | Optional | 
+| limit | . | Optional | 
+| offset | . | Optional | 
+| order | . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ShowThreatProtections | unknown |  | 
+
+### checkpoint-set-threat-protection
+***
+Edit existing object using object name or uid.
+
+
+#### Base Command
+
+`checkpoint-set-threat-protection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uid | . | Optional | 
+| name | . | Optional | 
+| comments | . | Optional | 
+| follow_up | . Possible values are: true, false. | Optional | 
+| action | . | Optional | 
+| track | . Possible values are: None, Log, SNMP-Trap, Mail, Alert, User-Alert, User-Alert-2, User-Alert-3. | Optional | 
+| capturePackets | . | Optional | 
+| profiles | . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.SetThreatProtections | unknown |  | 
+
+### checkpoint-add-threat-profile
+***
+Add a new threat profile
+
+
+#### Base Command
+
+`checkpoint-add-threat-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | . | Required | 
+| active_protections_performance_impact | . | Optional | 
+| active_protections_severity | . | Optional | 
+| confidence_level_high | . | Optional | 
+| confidence_level_low | . | Optional | 
+| confidence_level_medium | . | Optional | 
+| ips_settings | . | Optional | 
+| tags | . | Optional | 
+| use_indicators | . | Optional | 
+| anti_bot | . | Optional | 
+| anti_virus | . | Optional | 
+| ips | . | Optional | 
+| threat_emulation | . | Optional | 
+| exclude_protection_with_performance_impact | . | Optional | 
+| exclude_protection_with_performance_impact_mode | . Possible values are: very low, low or very low, medium or lower, high or lower. | Optional | 
+| exclude_protection_with_severity | . | Optional | 
+| exclude_protection_with_severity_mode | . Possible values are: low or above, medium or above, high or above, critical. | Optional | 
+| newly_updated_protections | . Possible values are: active, inactive, staging. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AddedThreatProfiles | unknown |  | 
+
+### checkpoint-delete-threat-protections
+***
+Deletes threat protections.
+
+
+#### Base Command
+
+`checkpoint-delete-threat-protections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| packageFormat | Valid response is "snort". | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.DeletedThreatProtections | unknown |  | 

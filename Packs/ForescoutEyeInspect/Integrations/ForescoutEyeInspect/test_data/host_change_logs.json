@@ -1,0 +1,26 @@
+{
+    "total_count": 40316,
+    "results": [
+        {
+            "id": 51,
+            "timestamp": "2022-02-03T07:49:53.000+01:00",
+            "event_type_id": "hostcl_new_host",
+            "event_type_name": "New host",
+            "event_category": "PROPERTIES",
+            "host_id": 49,
+            "information_source": "NETWORK",
+            "sensor_id": 9,
+            "username": "",
+            "old_value": "",
+            "new_value": "",
+            "host_address": "192.168.60.192",
+            "host_vlan": "",
+            "host_name": "",
+            "host_ip_reuse_domain_id": 1,
+            "host_mac_addresses": [
+                "B4:2E:99:C9:5E:75",
+                "C4:24:56:A4:86:11"
+            ]
+        }
+    ]
+}

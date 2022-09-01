@@ -9,8 +9,29 @@
     "rawJSON": {
       "value": "https://url1.com",
       "type": "URL",
-      "FeedURL": "https://openphish.com/feed.txt"
-    }
+      "FeedURL": "https://openphish.com/feed.txt",
+      "relations": [
+        {
+          "value": "url1.com",
+          "type": "Domain",
+          "relationType": "hosted-on"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "name": "hosted-on",
+        "reverseName": "hosts",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://url1.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url1.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {}
+      }
+    ]
   },
   {
     "value": "https://url2.com",
@@ -22,8 +43,29 @@
     "rawJSON": {
       "value": "https://url2.com",
       "type": "URL",
-      "FeedURL": "https://openphish.com/feed.txt"
-    }
+      "FeedURL": "https://openphish.com/feed.txt",
+      "relations": [
+        {
+          "value": "url2.com",
+          "type": "Domain",
+          "relationType": "hosted-on"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "name": "hosted-on",
+        "reverseName": "hosts",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://url2.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url2.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {}
+      }
+    ]
   },
   {
     "value": "https://url3.com",
@@ -35,8 +77,29 @@
     "rawJSON": {
       "value": "https://url3.com",
       "type": "URL",
-      "FeedURL": "https://openphish.com/feed.txt"
-    }
+      "FeedURL": "https://openphish.com/feed.txt",
+      "relations": [
+        {
+          "value": "url3.com",
+          "type": "Domain",
+          "relationType": "hosted-on"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "name": "hosted-on",
+        "reverseName": "hosts",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://url3.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url3.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {}
+      }
+    ]
   },
   {
     "value": "https://url4.com",
@@ -48,8 +111,29 @@
     "rawJSON": {
       "value": "https://url4.com",
       "type": "URL",
-      "FeedURL": "https://openphish.com/feed.txt"
-    }
+      "FeedURL": "https://openphish.com/feed.txt",
+      "relations": [
+        {
+          "value": "url4.com",
+          "type": "Domain",
+          "relationType": "hosted-on"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "name": "hosted-on",
+        "reverseName": "hosts",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://url4.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url4.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {}
+      }
+    ]
   },
   {
     "value": "https://url5.com",
@@ -61,6 +145,28 @@
     "rawJSON": {
       "value": "https://url5.com",
       "type": "URL",
-      "FeedURL": "https://openphish.com/feed.txt"
-    }
-  }]
+      "FeedURL": "https://openphish.com/feed.txt",
+      "relations": [
+        {
+          "value": "url5.com",
+          "type": "Domain",
+          "relationType": "hosted-on"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "name": "hosted-on",
+        "reverseName": "hosts",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://url5.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url5.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {}
+      }
+    ]
+  }
+]
