@@ -2146,13 +2146,24 @@ script:
       description: The incident score.
       type: Number
   - arguments:
-    - description: The endpoint ID.
+    - default: false
+      description: The endpoint ID.
+      isArray: false
       name: id
+      required: false
+      secret: false
     - default: true
       description: The endpoint IP address.
+      isArray: false
       name: ip
-    - description: The endpoint hostname.
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: false
       name: hostname
+      required: false
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
