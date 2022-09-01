@@ -31,9 +31,8 @@ EPO_SYSTEM_ATTRIBUTE_MAP = {
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, headers: dict, auth: tuple, timeout: int = 120, proxy: bool = False,
+    def __init__(self, base_url: str, headers: dict, auth: tuple, proxy: bool = False,
                  verify: bool = True):
-        self.timeout = timeout
         super().__init__(base_url=base_url, headers=headers, auth=auth, proxy=proxy, verify=verify)
 
     def test_module(self) -> str:
