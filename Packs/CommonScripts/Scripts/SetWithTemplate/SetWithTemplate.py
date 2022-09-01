@@ -207,6 +207,7 @@ def normalize_value(value: Any, stringify: str) -> Any:
 
     return value
 
+
 def main():
     try:
         args = demisto.args()
