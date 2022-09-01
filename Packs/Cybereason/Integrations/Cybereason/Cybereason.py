@@ -65,6 +65,8 @@ DOMAIN_HEADERS = [
     'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
     'SuspicionsCount']
 
+REMEDIATION_HEADERS = ['UniqueId', 'RemediationType', 'TargetName',' TargetId', 'MachineName', 'MalopType', 'MalopId', 'MachineConnected']
+
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
 CONNECTION_INFO = [
@@ -569,20 +571,27 @@ def isolate_machine_command(client: Client, args: dict):
     response, pylum_id = isolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
-        ec = {
+        # ec = {
+        #     'Cybereason(val.Machine && val.Machine === obj.Machine)': {
+        #         'Machine': machine,
+        #         'IsIsolated': True
+        #     },
+        #     'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+        #         'Hostname': machine
+        #     }
+        # }
+        return CommandResults(
+            readable_output='Machine was isolated successfully.',
+            outputs_prefix='Cybereason',
+            outputs_key_field='Machine',
+            outputs=[{
             'Cybereason(val.Machine && val.Machine === obj.Machine)': {
                 'Machine': machine,
                 'IsIsolated': True
             },
             'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
                 'Hostname': machine
-            }
-        }
-        return CommandResults(
-            readable_output='Machine was isolated successfully.',
-            outputs_prefix='Cybereason',
-            outputs_key_field='Machine',
-            outputs=ec)
+            }}])
     else:
         raise Exception('Failed to isolate machine.')
 
@@ -605,20 +614,28 @@ def unisolate_machine_command(client: Client, args: dict):
     response, pylum_id = unisolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
-        ec = {
+        # ec = {
+        #     'Cybereason(val.Machine && val.Machine === obj.Machine)': {
+        #         'Machine': machine,
+        #         'IsIsolated': False
+        #     },
+        #     'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+        #         'Hostname': machine
+        #     }
+        # }
+        return CommandResults(
+            readable_output='Machine was un-isolated successfully.',
+            outputs_prefix='Cybereason',
+            outputs_key_field='Machine',
+            outputs=[{
             'Cybereason(val.Machine && val.Machine === obj.Machine)': {
                 'Machine': machine,
                 'IsIsolated': False
             },
             'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
                 'Hostname': machine
-            }
-        }
-        return CommandResults(
-            readable_output='Machine was un-isolated successfully.',
-            outputs_prefix='Cybereason',
-            outputs_key_field='Machine',
-            outputs=ec)
+            }}
+            ])
     else:
         raise Exception('Failed to un-isolate machine.')
 
@@ -830,7 +847,35 @@ def available_remediation_actions_command(client: Client, args: dict):
     }
 
     response = client.cybereason_api_call('POST', '/rest/detection/custom-remediation', json_body=json_body)
-    return CommandResults(raw_response=response)
+
+    if response:
+        cybereason_outputs = []
+        data_list = dict_safe_get(response, ['data'], default_return_value={}, return_type=list)
+        if data_list:
+            for data in data_list:
+                uniqueId = data["uniqueId"]
+                remediationType = data["remediationType"]
+                targetName = data["targetName"]
+                targetId = data["targetId"]
+                machineName = data["machineName"]
+                malopType = data["malopType"]
+                malopId = data["malopId"]
+                machineConnected = data["machineConnected"]
+
+                cybereason_outputs.append({
+                    'UniqueId': uniqueId,
+                    'RemediationType': remediationType,
+                    'TargetName': targetName,
+                    'TargetId': targetId,
+                    'MachineName': machineName,
+                    'MalopType': malopType,
+                    'MalopId': malopId,
+                    "MachineConnected": machineConnected
+                })
+
+    return CommandResults(readable_output=tableToMarkdown(
+                    f'Cybereason available remediation actions for malop {malop_guid}:',
+                    cybereason_outputs, headers=REMEDIATION_HEADERS))
 
 
 def kill_process_command(client: Client, args: dict):
@@ -853,9 +898,9 @@ def kill_process_command(client: Client, args: dict):
             failure_response = f'''Kill process remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def quarantine_file_command(client: Client, args: dict):
@@ -878,9 +923,9 @@ def quarantine_file_command(client: Client, args: dict):
             failure_response = f'''Quarantine file remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def unquarantine_file_command(client: Client, args: dict):
@@ -903,9 +948,9 @@ def unquarantine_file_command(client: Client, args: dict):
             failure_response = f'''Unquarantine file remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def block_file_command(client: Client, args: dict):
@@ -928,9 +973,9 @@ def block_file_command(client: Client, args: dict):
             failure_response = f'''Block file remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def delete_registry_key_command(client: Client, args: dict):
@@ -953,9 +998,9 @@ def delete_registry_key_command(client: Client, args: dict):
             failure_response = f'''Delete registry key remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def kill_prevent_unsuspend_command(client: Client, args: dict):
@@ -978,9 +1023,9 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
             failure_response = f'''Kill prevent unsuspend remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def unsuspend_process_command(client: Client, args: dict):
@@ -1003,9 +1048,9 @@ def unsuspend_process_command(client: Client, args: dict):
             failure_response = f'''Unsuspend process remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
-            return CommandResults(readable_output=failure_response)
+            raise DemistoException(failure_response)
     else:
-        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
+        raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
 
 def get_remediation_action(client: Client, malop_guid: str, machine_name: str, target_id: str, remediation_action: str) -> dict:
@@ -1169,18 +1214,22 @@ def query_file_command(client: Client, args: dict) -> Any:
                     'Hostname': machine,
                     'OSVersion': os_version
                 })
-            ec = {
-                'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-                'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
+            # ec = {
+            #     'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+            #     'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
 
             return CommandResults(
                 readable_output=tableToMarkdown(
                     f'Cybereason file query results for the file hash: {file_hash}', cybereason_outputs, removeNull=True),
                 outputs_prefix='Cybereason.File',
                 outputs_key_field='Name',
-                outputs=ec)
+                outputs=[
+                    {
+                'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+                'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
+                ])
         else:
-            return CommandResults(readable_output='No results found.')
+            raise DemistoException('No results found.')
 
 
 def query_file(client: Client, filters: list) -> dict:
@@ -1237,7 +1286,6 @@ def query_domain_command(client: Client, args: dict) -> Any:
         }]
 
         data = query_domain(client, filters)
-
         if data:
             cybereason_outputs = []
             domain_outputs = []
@@ -1268,8 +1316,8 @@ def query_domain_command(client: Client, args: dict) -> Any:
                     'Name': domain_input,
                 })
 
-            ec = {
-                'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
+            # ec = {
+            #     'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
 
             return CommandResults(
                 readable_output=tableToMarkdown(
@@ -1277,9 +1325,12 @@ def query_domain_command(client: Client, args: dict) -> Any:
                     cybereason_outputs, headers=DOMAIN_HEADERS),
                 outputs_prefix='Cybereason.Domain',
                 outputs_key_field='Name',
-                outputs=ec)
+                outputs=[
+                    {
+                'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
+                ])
         else:
-            return CommandResults(readable_output='No results found.')
+            raise DemistoException('No results found.')
 
 
 def query_domain(client: Client, filters: list) -> dict:
@@ -1340,7 +1391,7 @@ def query_user_command(client: Client, args: dict):
                 outputs_key_field='Username',
                 outputs=cybereason_outputs)
         else:
-            return CommandResults(readable_output='No results found.')
+            raise DemistoException('No results found.')
 
 
 def query_user(client: Client, filters: list) -> dict:
@@ -1383,11 +1434,11 @@ def archive_sensor_command(client: Client, args: dict):
             output += "Failed Actions: " + str(response_json['globalStats']['stats']['Failed']) + '. '
             output += "Succeeded Actions: " + str(response_json['globalStats']['stats']['Succeeded'])
         except Exception as e:
-            output = "Exception occurred while processing response for Archive action: " + str(e)
+            raise Exception("Exception occurred while processing response for Archive action: " + str(e))
     else:
         try:
             json_response = response.json()
-            output = f"Could not archive Sensor. The received response is {json_response}"
+            raise DemistoException(f"Could not archive Sensor. The received response is {json_response}")
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1414,11 +1465,11 @@ def unarchive_sensor_command(client: Client, args: dict):
             output += "Failed Actions: " + str(response_json['globalStats']['stats']['Failed']) + '. '
             output += "Succeeded Actions: " + str(response_json['globalStats']['stats']['Succeeded'])
         except Exception as e:
-            output = "Exception occurred while processing response for Unarchive action: " + str(e)
+            raise Exception("Exception occurred while processing response for Unarchive action: " + str(e))
     else:
         try:
             json_response = response.json()
-            output = f"Could not unarchive Sensor. The received response is {json_response}"
+            raise DemistoException(f"Could not unarchive Sensor. The received response is {json_response}")
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1442,7 +1493,7 @@ def delete_sensor_command(client: Client, args: dict):
     else:
         try:
             json_response = response.json()
-            output = f"Could not delete Sensor. The received response is {json_response}"
+            raise DemistoException(f"Could not delete Sensor. The received response is {json_response}")
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1713,17 +1764,24 @@ def fetchfile_progress_command(client: Client, args: dict):
             output_message.append('Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message))
         else:
             output_message.append(str(message))
-    ec = {
+    # ec = {
+    #     'fileName': filename,
+    #     'status': status,
+    #     'batchID': message,
+    #     'MalopID': malop_id
+    # }
+    return CommandResults(
+        readable_output=str(output_message),
+        outputs_prefix='Cybereason.Download.Progress',
+        outputs_key_field='fileName',
+        outputs=[
+            {
         'fileName': filename,
         'status': status,
         'batchID': message,
         'MalopID': malop_id
     }
-    return CommandResults(
-        readable_output=str(output_message),
-        outputs_prefix='Cybereason.Download.Progress',
-        outputs_key_field='fileName',
-        outputs=ec)
+        ])
 
 
 def get_batch_id(client: Client, suspect_files_guids: dict, timeout_seconds: int, interval_seconds: int) -> list:
@@ -1758,9 +1816,7 @@ def download_fetchfile_command(client: Client, args: dict):
         file_download = fileResult('download.zip', response.content)
         return file_download
     else:
-        return CommandResults(
-            readable_output='Your request failed with the following error: ' + response
-            .content + '. Response Status code: ' + str(response.status_code))
+        raise DemistoException("request failed with the following error: " + response.content + " Response Status code: " + str(response.status_code))
 
 
 def download_fetchfile(client: Client, batch_id: str) -> Any:
@@ -1793,7 +1849,7 @@ def malware_query_command(client: Client, args: dict):
         filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
         return CommandResults(raw_response=filter_response)
     else:
-        return CommandResults(readable_output="Limit cannot be zero or a negative number.")
+        raise DemistoException("Limit cannot be zero or a negative number.")
 
 
 def malware_query_filter(
@@ -1841,8 +1897,7 @@ def start_host_scan_command(client: Client, args: dict):
     else:
         try:
             json_response = response.json()
-            return CommandResults(
-                readable_output=f'Could not scan the host. The received response is {json_response}')
+            raise DemistoException('Could not scan the host. The received response is' + json_response)
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
@@ -1875,7 +1930,7 @@ def get_sensor_id_command(client: Client, args: dict):
         }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
-        return CommandResults(readable_output=f"Could not find any Sensor ID for the machine '{machine_name}'")
+        raise DemistoException("Could not find any Sensor ID for the machine" + machine_name)
     else:
         output = {}
         for single_sensor in response['sensors']:
