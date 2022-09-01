@@ -285,8 +285,7 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.wakeupAgent',
                                       params=params,
-                                      resp_type='text',
-                                      timeout=60)
+                                      resp_type='text')
 
         # response = response.split('"')[1] if response.startswith('"') else response
         # response = response.replace(r'\n', '\n')
@@ -309,8 +308,7 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.applyTag',
                                       params=params,
-                                      resp_type='text',
-                                      timeout=60)
+                                      resp_type='text')
         return self._parse_response(response)
 
     def clear_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
@@ -330,8 +328,7 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.clearTag',
                                       params=params,
-                                      resp_type='text',
-                                      timeout=60)
+                                      resp_type='text')
         return self._parse_response(response)
 
     def list_tag(self, search_text: str = None) -> Tuple[dict, dict]:
@@ -349,8 +346,7 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.findTag',
                                       params=params,
-                                      resp_type='text',
-                                      timeout=60)
+                                      resp_type='text')
         return self._parse_response(response)
 
     def get_table(self, table_name: str = None) -> Tuple[dict, dict]:
@@ -1744,12 +1740,6 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'****EPO****:Command being called is {demisto.command()}')
-
-    try:
-        timeout = int(demisto.params().get('timeout', 120))
-    except ValueError as e:
-        demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
-        timeout = 120
 
     try:
         headers = {
