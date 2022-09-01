@@ -1069,7 +1069,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths
 
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list):
+    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
         Checks if the pack modification is relevant for the current marketplace.
 
@@ -1098,7 +1098,7 @@ class Pack(object):
                         logging.debug(f"The entity with the path {path} is present in the id set")
                         modified_entities.append(id_set_entity)
                 else:
-                    if entity := get_graph_entity_by_path(Path(path)):
+                    if entity := get_graph_entity_by_path(Path(path), marketplace):
                         logging.debug(f"The entity with the path {path} is present in the content graph")
                         modified_entities.append(entity)
 
@@ -3759,9 +3759,9 @@ def get_last_commit_from_index(service_account):
     return index_json.get('commit')
 
 
-def get_graph_entity_by_path(entity_path: Path):
+def get_graph_entity_by_path(entity_path: Path, marketplace):
     with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.get_node_by_path(entity_path)
+        return content_graph_interface.get_node_by_path(entity_path, marketplace)
 
 
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
