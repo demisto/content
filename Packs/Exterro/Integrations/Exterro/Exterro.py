@@ -58,12 +58,9 @@ def main():
         command = demisto.command()
         args = demisto.args()
         if command == "exterro-ftk-trigger-workflow":
-            return_values = _trigger_workflow(client, **args)
+           return_results(_trigger_workflow(client, **args))
         if command == "test-module":
-            return_values = _test_module(client)
-
-        # return value from called function
-        return_results(return_values)
+            return_results(_test_module(client))
     except Exception as exception:
         demisto.error(format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(exception)}')
