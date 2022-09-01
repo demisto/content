@@ -24,8 +24,8 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressranges_request(self):
-        data = {"request_data": {"search_to": 100}}
+    def getexternalipaddressranges_request(self, search_params):
+        data = {"request_data": {"filters": search_params, "search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
@@ -147,13 +147,29 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ip_address = args.get('ip_address')
+    domain = args.get('domain')
+    asm_type = args.get('type')
+    has_active_external_services = args.get('has_active_external_services')
+    search_params = []
+    if ip_address:
+        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+    if domain:
+        search_params.append({"field": "domain", "operator": "contains", "value": domain})
+    if asm_type:
+        search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
+    if has_active_external_services:
+        search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
+    parsed = response['reply']['assets_internet_exposure']
+    markdown = tableToMarkdown('Asset Internet Exposures', parsed)
     response = client.getassetsinternetexposure_request()
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetsInternetExposure',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_key_field='asm_ids',
+        outputs=parsed,
+        raw_response=parsed,
+        readable_output=parsed
     )
 
     return command_results
