@@ -1488,6 +1488,7 @@ def search_domain_command(domain, reliability, create_relationships):
             domain = Common.Domain(
                 domain=domain_name,
                 dbot_score=dbot_score,
+                # Converting date format from YYYY-MM-DD to DD-MM-YYYY due to a parsing problem on the server later
                 creation_date="-".join(indicator.get("whoisDomainCreationDate").split("-")[::-1]),
                 expiration_date="-".join(indicator.get('whoisDomainExpireDate').split("-")[::-1]),
                 updated_date="-".join(indicator.get('whoisDomainUpdateDate').split("-")[::-1]),
