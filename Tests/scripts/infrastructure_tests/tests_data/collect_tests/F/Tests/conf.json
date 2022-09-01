@@ -3,13 +3,16 @@
     {
       "scripts": "myScript",
       "playbookID": "myTestPlaybook"
-    },{
-        "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myOtherTestPlaybook"
     }
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
-  "nightly_packs" : [],
+  "nightly_packs": [
+    "myPack"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

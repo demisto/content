@@ -9,7 +9,9 @@
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
-  "nightly_packs" : [],
+  "nightly_packs": [
+    "myXSIAMOnlyPack"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

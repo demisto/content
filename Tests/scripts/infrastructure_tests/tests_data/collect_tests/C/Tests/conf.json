@@ -15,7 +15,12 @@
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
-  "nightly_packs" : [],
+  "nightly_packs": [
+    "bothMarketplacesPack",
+    "bothMarketplacesPackOnlyXSIAMIntegration",
+    "myXSIAMOnlyPack",
+    "myXSOAROnlyPack"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

@@ -1,13 +1,24 @@
 {
   "tests": [
-    {"playbookID": "Sanity Test - Playbook with integration"},
-    {"playbookID": "Sanity Test - Playbook with mocked integration"},
-    {"playbookID": "Sanity Test - Playbook with no integration"},
-    {"playbookID": "Sanity Test - Playbook with Unmockable Whois Integration"}
+    {
+      "playbookID": "Sanity Test - Playbook with integration"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with mocked integration"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with no integration"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration"
+    }
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
-  "nightly_packs" : [],
+  "nightly_packs": [
+    "HelloWorld",
+    "Whois"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],
