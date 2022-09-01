@@ -39,7 +39,7 @@ class CollectionReason(str, Enum):
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
-    SANITY_TESTS = 'sanity tests by marketplace value'
+    SANITY_TESTS = 'sanity tests'
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
@@ -207,7 +207,8 @@ class TestCollector(ABC):
                 test=test,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
-                version_range=None, reason_description=str(self.marketplace.value),
+                version_range=None,
+                reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True
@@ -298,9 +299,7 @@ class TestCollector(ABC):
         )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := (
-                (set(tests) - set(self._sanity_test_names)).difference(self.id_set.id_to_test_playbook.keys())
-        ):
+        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -397,7 +396,13 @@ class BranchTestCollector(TestCollector):
             case FileType.INTEGRATION:
 
                 if yml.explicitly_no_tests():
-                    logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
+                    suffix = ''
+
+                    if tests_from_conf := self.conf.integrations_to_tests.get(yml.id_, ()):
+                        tests_str = ', '.join(sorted(tests_from_conf))
+                        suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
+
+                    logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -504,6 +509,9 @@ class BranchTestCollector(TestCollector):
                 content_item_range=content_item.version_range if content_item else None
             )
 
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
+
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
@@ -524,9 +532,6 @@ class BranchTestCollector(TestCollector):
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
-
-        elif file_type in IGNORED_FILE_TYPES:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
@@ -579,7 +584,7 @@ class BranchTestCollector(TestCollector):
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         for line in diff.splitlines():
-            match len(parts := line.split()):
+            match len(parts := line.split('\t')):
                 case 2:
                     git_status, file_path = parts
                 case 3:
@@ -655,9 +660,7 @@ class NightlyTestCollector(TestCollector, ABC):
         """
         default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}'
-            f'{postfix}')
+        logger.info(f'collecting packs by their marketplace field, searching for {self.marketplace.value}{postfix}')
         packs = []
 
         for pack in PACK_MANAGER:
@@ -726,6 +729,20 @@ class NightlyTestCollector(TestCollector, ABC):
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
+        self.trigger_sanity_tests = True
+
+    @property
+    def sanity_tests(self) -> Optional[CollectionResult]:
+        return CollectionResult(
+            test='Sanity Test - Playbook with Unmockable Whois Integration',
+            pack='Whois',
+            reason=CollectionReason.SANITY_TESTS,
+            reason_description='XSIAM Nightly sanity',
+            version_range=None,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+        )
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
