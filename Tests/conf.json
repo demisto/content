@@ -5199,6 +5199,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5344,6 +5349,7 @@
         "Elasticsearch_v2_test-v8": "CRTX-61980"
     },
     "skipped_integrations": {
+        "checkpointdome9" : "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
