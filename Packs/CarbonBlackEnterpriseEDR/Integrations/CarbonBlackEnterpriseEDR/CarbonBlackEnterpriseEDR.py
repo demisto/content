@@ -1167,6 +1167,7 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict, look_back: int) -> Tuple[List, Dict]:
     if last_fetched_alert_create_time := last_run.get('last_fetched_alert_create_time'):
         last_run.update({'time': last_fetched_alert_create_time})
+        del last_run['last_fetched_alert_create_time']
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     latest_alert_id = last_fetched_alert_id
 

@@ -188,7 +188,7 @@ TESTS_FOR_FETCH_INCIDENT = [
         ['101', '102', '103', '104'], ['101', '102', '103'],
      0,
      0,
-     {'time': (datetime.utcnow() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
+     {'last_fetched_alert_create_time': (datetime.utcnow() - timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%S.000Z')},
      False
     ),
     ([{'results': [
