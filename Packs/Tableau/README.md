@@ -1,4 +1,4 @@
-This pack includes XSIAM content.
+This pack includes XSIAM content. 
 
 ## Collect Events from Vendor
 
