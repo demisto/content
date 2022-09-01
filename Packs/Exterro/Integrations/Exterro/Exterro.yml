@@ -63,7 +63,6 @@ script:
       description: The Status of the of workflow trigger.
       type: string
     description: Returns a boolean value.
-
   dockerimage: demisto/accessdata:1.1.0.32812
   runonce: false
   script: '-'
