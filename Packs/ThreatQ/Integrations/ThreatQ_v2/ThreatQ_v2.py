@@ -716,7 +716,6 @@ def aggregate_search_results(indicators, default_indicator_type, generic_context
     entry_context = []
     for i in indicators:
         generic_context = get_generic_context(i, generic_context)
-        demisto.debug(f'GENERIC CONTEXT FOR {i.get("Value")} -> {generic_context}')
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
