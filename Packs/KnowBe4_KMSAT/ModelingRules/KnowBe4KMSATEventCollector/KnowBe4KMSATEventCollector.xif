@@ -8,4 +8,4 @@ XDM.Audit.threat.name=replace(json_extract(event_type, "$.name"),"\"",""),
 XDM.Audit.threat.description=replace(json_extract(event_type, "$.description"),"\"",""),
 XDM.Audit.audited_resource.parent_id=to_string(account_id),
 XDM.Audit.original_event_description=replace(description,"\"",""),
-XDM.Audit.audited_resource.name=replace(source,"\"","");
+XDM.Audit.TriggeredBy.project=replace(source,"\"","");
