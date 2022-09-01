@@ -10,6 +10,7 @@ import http.server
 import time
 import threading
 import pytest
+from unittest.mock import mock_open
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -237,16 +238,7 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
     assert h == expected_height
 
 
-@pytest.mark.parametrize('include_url', [False, True])
-def test_rasterize_include_url(mocker, include_url):
-    """
-        Given:
-            - A parameter that mention whether to include the URL bar in the screenshot.
-        When:
-            - Running the 'rasterize' function.
-        Then:
-            - Verify that it runs as expected.
-    """
+class TestRasterizeIncludeUrl:
 
     class MockChromeOptions:
 
@@ -260,14 +252,73 @@ def test_rasterize_include_url(mocker, include_url):
 
         def __init__(self, options, service_args) -> None:
             self.options = options.options
+            self.page_source = ''
+            self.session_id = 'session_id'
 
-    from selenium import webdriver
-    import pyvirtualdisplay
+        def set_page_load_timeout(self, max_page_load_time):
+            pass
 
-    mocker.patch.object(pyvirtualdisplay, 'Display', return_value=None)
-    mocker.patch.object(webdriver, 'Chrome', side_effect=MockChrome)
-    mocker.patch.object(webdriver, 'ChromeOptions', side_effect=MockChromeOptions)
+        def get(self, path):
+            pass
 
-    driver, dis = init_driver_and_display(width=250, height=250, include_url=include_url)
+        def maximize_window(self):
+            pass
 
-    assert not ('--headless' in driver.options) == include_url
+        def implicitly_wait(self, arg):
+            pass
+
+        def set_window_size(self, width, height):
+            pass
+
+        def get_screenshot_as_png(self):
+            return 'image'
+
+        def quit(self):
+            pass
+
+    @pytest.mark.parametrize('include_url', [False, True])
+    def test_headless_chrome_option(self, mocker, include_url):
+        """
+            Given:
+                - A parameter that mention whether to include the URL bar in the screenshot.
+            When:
+                - Running the 'rasterize' function.
+            Then:
+                - Verify that it runs as expected.
+        """
+
+        from selenium import webdriver
+        from pyvirtualdisplay import Display
+
+        mocker.patch.object(Display, 'start', retuen_value=None)
+        mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
+        mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+
+        driver, _ = init_driver_and_display(width=250, height=250, include_url=include_url)
+
+        assert not ('--headless' in driver.options) == include_url
+
+    @pytest.mark.parametrize('include_url', [False, True])
+    def test_sanity_rasterize_with_include_url(self, mocker, include_url):
+        """
+            Given:
+                - A parameter that mention whether to include the URL bar in the screenshot.
+            When:
+                - Running the 'rasterize' function.
+            Then:
+                - Verify that it runs as expected.
+        """
+
+        from selenium import webdriver
+        from pyvirtualdisplay import Display
+
+        mocker.patch.object(Display, 'start', retuen_value=None)
+        mocker.patch.object(Display, 'stop', retuen_value=None)
+        mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
+        mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+        mocker.patch('builtins.open', mock_open(read_data='image_sha'))
+        mocker.patch('os.remove')
+
+        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG, r_mode=RasterizeMode.WEBDRIVER_ONLY,
+                          include_url=include_url)
+        assert image
