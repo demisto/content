@@ -870,14 +870,14 @@ Returns a list of events.
 `tc-get-events`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| fromDate | The date to retrieve groups from in the yyyy-mm-dd, e.g. 1111-11-11 format. | Optional | 
-| tag | The tag to retrieve groups by. | Optional | 
-| page | The page to take the results from. | Optional | 
-| limit | The maximum number of results that can be returned. The default is 500. | Optional | 
-| id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter (refer to the readme for a basic TQL guide). | Optional | 
+| **Argument Name** | **Description**                                                                                                               | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------| --- |
+| fromDate | The date to retrieve groups from in the yyyy-mm-dd, e.g. 1111-11-11 format.                                                   | Optional | 
+| tag | The tag to retrieve groups by.                                                                                                | Optional | 
+| page | The page to take the results from.                                                                                            | Optional | 
+| limit | The maximum number of results that can be returned. The default is 500.                                                       | Optional | 
+| id | A comma-separated list of IDs to filter the groups by.                                                                        | Optional | 
+| filter | A free text TQL filter (docs can be found [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql)). | Optional | 
 
 
 #### Context Output
@@ -911,7 +911,7 @@ Returns all groups.
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter (refer to the readme for a basic TQL guide). | Optional | 
+| filter | A free text TQL filter (docs can be found [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql)). | Optional | 
 | include_tags | Add group tags metadata to the results. | Optional | 
 | include_security_labels | Add group security labels metadata to the results. | Optional | 
 | include_attributes | Add group attributes metadata to the results. | Optional | 
