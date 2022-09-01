@@ -1,17 +1,17 @@
-ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
+ThreatConnect's integration is a intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 This integration was integrated and tested with version 3 of ThreatConnect v3 REST API
 
 ## ThreatConnect Feed HMAC credentials
 1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
 2. Click the Create API User button on the Membership tab of the Organization Settings screen, and the API User Administration window will be displayed.
-3. Fill up the following parts of the form:
+3. Enter the following information:
     - First Name: Enter the API user’s first name.
     - Last Name: Enter the API user’s last name.
     - Organization Role: Use the dropdown menu to select an Organization role for the user.
     - Include in Observations and False Positives: Check this box to allow data provided by the API user to be included in observation and false-positive counts.
-    - Disabled: Click the checkbox to disable an API user’s account in the event that the Administrator wishes to retain log integrity when the API user no longer requires ThreatConnect access.
+    - Disabled: Click the checkbox to disable an API user’s account in the event that the Administrator wants to retain log integrity when the API user no longer requires ThreatConnect access.
 4. Record the Secret Key, as it will not be accessible after the window is closed.
-5. Click the SAVE button to create the API user account.
+5. Click **SAVE** to create the API user account.
 
 For more information - click [here](https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article) (Section - Creating an API User).
 
@@ -34,8 +34,8 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Incident Metadata | The metadata to collect. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
-    | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
-    | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness, it is necessary to calculate reputation. | False |
+    | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
+    | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness.This is necessary to calculate reputation. | False |
     | Trust any certificate (not secure) | | False |
     | Use system proxy settings | | False |
 
@@ -55,7 +55,7 @@ Searches for an indicator of type IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IPv4 or IPv6 address. | Required | 
+| ip | A comma-separated list of IPv4 or IPv6 addresses. | Required | 
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners. | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
@@ -70,8 +70,8 @@ Searches for an indicator of type IP address.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -111,8 +111,8 @@ Searches for an indicator of type URL.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
@@ -137,7 +137,7 @@ Searches for an indicator of type file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A comma-separated list of the hash of the files. Can be "MD5", "SHA-1", or "SHA-256". | Required | 
+| file | A comma-separated list of the hashes of the files. Can be "MD5", "SHA-1", or "SHA-256". | Required | 
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners. | Optional | 
 | ratingThreshold | A comma-separated list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A comma-separated list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
@@ -152,8 +152,8 @@ Searches for an indicator of type file.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.File.MD5 | string | The MD5 hash of the indicator. | 
@@ -219,8 +219,8 @@ Retrieves a list of all indicators.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -314,18 +314,18 @@ Retrieves information about an indicator.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
 | TC.Indicator.File.MD5 | string | The MD5 hash of the indicator of the file. | 
 | TC.Indicator.File.SHA1 | string | The SHA1 hash of the indicator of the file. | 
 | TC.Indicator.File.SHA256 | string | The SHA256 hash of the indicator of the file. | 
-| TC.Indicator.IndicatorAttributes.dateAdded | date | The SHA256 hash of the indicator of the file. | 
+| TC.Indicator.IndicatorAttributes.dateAdded | date | The date the indicator attribute was added. | 
 | TC.Indicator.IndicatorAttributes.displayed | boolean | Whether to display the indicator attributes on ThreatConnect. | 
 | TC.Indicator.IndicatorAttributes.id | number | The ID of the attribute. | 
-| TC.Indicator.IndicatorAttributes.lastModified | date | The date on which the indicator attribute was last modified. | 
+| TC.Indicator.IndicatorAttributes.lastModified | date | The date the indicator attribute was last modified. | 
 | TC.Indicator.IndicatorAttributes.type | string | The name of the attribute. | 
 | TC.Indicator.IndicatorAttributes.value | string | The contents of the attribute. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -376,8 +376,8 @@ Fetches all indicators that have a tag.
 | TC.Indicator.ID | string | The ID of the tagged indicator. | 
 | TC.Indicator.Description | string | The description of the tagged indicator. | 
 | TC.Indicator.Owner | string | The owner of the tagged indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the tagged indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the tagged indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the tagged indicator was created. | 
+| TC.Indicator.LastModified | date | The date the tagged indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the tagged indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the tagged indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -435,8 +435,8 @@ Adds a new indicator to ThreatConnect.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the added indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the added indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the added indicator was created. | 
+| TC.Indicator.LastModified | date | The date the added indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -514,8 +514,8 @@ Associates an indicator with an existing incident. The indicator must exist befo
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the associated indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the associated indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the associated indicator was created. | 
+| TC.Indicator.LastModified | date | The date the associated indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -565,8 +565,8 @@ Searches for an indicator of type domain.
 | TC.Indicator.ID | string | The ID of the domain. | 
 | TC.Indicator.Description | string | The description of the domain. | 
 | TC.Indicator.Owner | string | The owner of the domain. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator of the domain was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator of the domain was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator of the domain was created. | 
+| TC.Indicator.LastModified | date | The date the indicator of the domain was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the domain. | 
 | TC.Indicator.Confidence | number | The confidence rating of the domain. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -604,8 +604,8 @@ Returns indicators that are related to a specific incident.
 | TC.Indicator.ID | string | The ID of the returned indicator. | 
 | TC.Indicator.Description | string | The description of the returned indicator. | 
 | TC.Indicator.Owner | string | The owner of the returned indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the returned indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the returned indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the returned indicator was created. | 
+| TC.Indicator.LastModified | date | The date the returned indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the returned indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the returned indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -664,8 +664,8 @@ Updates the indicator in ThreatConnect.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -713,8 +713,8 @@ Removes a tag from a specified indicator.
 | TC.Indicator.ID | string | The ID of the indicator. | 
 | TC.Indicator.Description | string | The description of the indicator. | 
 | TC.Indicator.Owner | string | The owner of the indicator. | 
-| TC.Indicator.CreateDate | date | The date on which the indicator was created. | 
-| TC.Indicator.LastModified | date | The date on which the indicator was last modified. | 
+| TC.Indicator.CreateDate | date | The date the indicator was created. | 
+| TC.Indicator.LastModified | date | The date the indicator was last modified. | 
 | TC.Indicator.Rating | number | The threat rating of the indicator. | 
 | TC.Indicator.Confidence | number | The confidence rating of the indicator. | 
 | TC.Indicator.WhoisActive | string | The active indicator \(for domains only\). | 
@@ -768,7 +768,7 @@ Creates a group based on the Campaign type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the campaign group. | Required | 
-| firstSeen | The date on which the campaign was first seen. | Optional | 
+| firstSeen | The date the campaign was first seen. | Optional | 
 | description | The description of the campaign. | Optional | 
 | tag | Comma-separated list of the tags to apply to the campaign. | Optional | 
 | securityLabel | The security label applied to the incident. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
@@ -780,7 +780,7 @@ Creates a group based on the Campaign type.
 | --- | --- | --- |
 | TC.Campaign.Name | string | The name of the campaign. | 
 | TC.Campaign.Owner | string | The owner of the campaign. | 
-| TC.Campaign.FirstSeen | date | The date on which the campaign was first seen. | 
+| TC.Campaign.FirstSeen | date | The date the campaign was first seen. | 
 | TC.Campaign.Tag | string | The tag of the campaign. | 
 | TC.Campaign.SecurityLevel | string | The security label of the campaign. | 
 | TC.Campaign.ID | string | The ID of the campaign. | 
@@ -798,10 +798,10 @@ Creates a group based on the Event type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the event group. | Required | 
-| eventDate | The date on which the event occurred. If the date is not specified, the current date is used. | Optional | 
+| eventDate | The date the event occurred. If the date is not specified, the current date is used. | Optional | 
 | status | The status of the event. Possible values are: Needs Review, False Positive, No Further Action, Escalated. | Optional | 
 | description | The description of the event. | Optional | 
-| tag | A comma-separated list of a The tags of the event. | Optional | 
+| tag | A comma-separated list of the tags of the event. | Optional | 
 
 
 #### Context Output
@@ -829,8 +829,8 @@ Creates a group based on the "Threats" type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the threat group. | Required | 
-| eventDate | The creation time of an threat in the "2017-03-21T00:00:00Z" format. | Optional | 
-| tags | A comma-separated list of The tags applied to the threat. | Optional | 
+| eventDate | The creation time of a threat in the "2017-03-21T00:00:00Z" format. | Optional | 
+| tags | A comma-separated list of the tags applied to the threat. | Optional | 
 | securityLabel | The security label applied to the threat. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | description | The description of the threat. | Optional | 
 
@@ -870,22 +870,22 @@ Returns a list of events.
 `tc-get-events`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                               | **Required** |
-| --- |-------------------------------------------------------------------------------------------------------------------------------| --- |
-| fromDate | The date to retrieve groups from in the yyyy-mm-dd, e.g. 1111-11-11 format.                                                   | Optional | 
-| tag | The tag to retrieve groups by.                                                                                                | Optional | 
-| page | The page to take the results from.                                                                                            | Optional | 
-| limit | The maximum number of results that can be returned. The default is 500.                                                       | Optional | 
-| id | A comma-separated list of IDs to filter the groups by.                                                                        | Optional | 
-| filter | A free text TQL filter (docs can be found [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql)). | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fromDate | The date to retrieve groups from in the format yyyy-mm-dd, e.g., 1111-11-11. | Optional | 
+| tag | The tag to retrieve groups by. | Optional | 
+| page | The page to take the results from. | Optional | 
+| limit | The maximum number of results that can be returned. The default is 500. | Optional | 
+| id | A comma-separated list of IDs to filter the groups by. | Optional | 
+| filter | A free text TQL filter. (Refer [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql) for a basic TQL guide). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TC.Event.DateAdded | Date | The date on which the event was added. | 
-| TC.Event.EventDate | Date | The date on which the event occurred. | 
+| TC.Event.DateAdded | Date | The date the event was added. | 
+| TC.Event.EventDate | Date | The date the event occurred. | 
 | TC.Event.ID | Number | The ID of the event. | 
 | TC.Event.OwnerName | String | The name of the owner of the event. | 
 | TC.Event.Status | String | The status of the event. | 
@@ -906,12 +906,12 @@ Returns all groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_type | The type of the group. Possible values are: Adversary, Attack Pattern, Campaign, Course of Action, Document, E-mail, Event, Incident, Intrusion Set, Malware, Report, Signature, Tactic, Task, Threat, Tool, Vulnerability. | Optional | 
-| fromDate | The date to retrieve groups from in the yyyy-mm-dd format, e.g. 1111-11-11 format. | Optional | 
+| fromDate | The date to retrieve groups from in the yyyy-mm-dd format, e.g., 1111-11-11. | Optional | 
 | tag | The tag to retrieve groups by. | Optional | 
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
 | id | A comma-separated list of IDs to filter the groups by. | Optional | 
-| filter | A free text TQL filter (docs can be found [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql)). | Optional | 
+| filter | A free text TQL filter. (Refer [here](https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql) for a basic TQL guide). | Optional | 
 | include_tags | Add group tags metadata to the results. | Optional | 
 | include_security_labels | Add group security labels metadata to the results. | Optional | 
 | include_attributes | Add group attributes metadata to the results. | Optional | 
@@ -924,8 +924,8 @@ Returns all groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TC.Group.DateAdded | Date | The date on which the group was added. | 
-| TC.Group.EventDate | Date | The date on which the event occurred. | 
+| TC.Group.DateAdded | Date | The date the group was added. | 
+| TC.Group.EventDate | Date | The date the event occurred. | 
 | TC.Group.Name | String | The name of the group. | 
 | TC.Group.OwnerName | String | The name of the owner of the group. | 
 | TC.Group.Status | String | The status of the group. | 
@@ -973,7 +973,7 @@ Returns all indicator types available.
 | TC.IndicatorType.CasePreference | String | The case preference of the indicator. For example, "sensitive", "upper", or "lower". | 
 | TC.IndicatorType.Custom | Boolean | Whether the indicator is a custom indicator. | 
 | TC.IndicatorType.Parsable | Boolean | Whether the indicator can be parsed. | 
-| TC.IndicatorType.Value1Type | String | The name of the indicator. | 
+| TC.IndicatorType.Value1Type | String | The value type of the indicator. | 
 | TC.IndicatorType.Value1Label | String | The value label of the indicator. | 
 
 ### tc-create-document-group
@@ -994,7 +994,7 @@ Creates a document group.
 | password | The password of the ZIP file. | Optional | 
 | security_label | The security label applied to the document. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | description | A description of the group. | Optional | 
-| entry_id | The file of the ID of the entry, as displayed in the War Room. | Required | 
+| entry_id | The ID of the entry, as displayed in the War Room. | Required | 
 
 
 #### Context Output
@@ -1003,7 +1003,7 @@ Creates a document group.
 | --- | --- | --- |
 | TC.Group.Name | String | The name of the group. | 
 | TC.Group.Owner | String | The owner of the group. | 
-| TC.Group.EventDate | Date | The date on which the group was created. | 
+| TC.Group.EventDate | Date | The date the group was created. | 
 | TC.Group.Description | String | The description of the group. | 
 | TC.Group.SecurityLabel | String | The security label of the group. | 
 | TC.Group.ID | Number | The ID of the group to which the attribute was added. | 
@@ -1057,7 +1057,7 @@ Returns groups associated with a specified group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TC.Group.AssociatedGroup.DateAdded | Date | The date on which group was added. | 
+| TC.Group.AssociatedGroup.DateAdded | Date | The date the group was added. | 
 | TC.Group.AssociatedGroup.GroupID | Number | The ID of the group. | 
 | TC.Group.AssociatedGroup.Name | String | The name of the group. | 
 | TC.Group.AssociatedGroup.OwnerName | String | The name of the owner of the group. | 
@@ -1065,7 +1065,7 @@ Returns groups associated with a specified group.
 
 ### tc-get-indicator-owners
 ***
-Get Owner for Indicator
+Get the owner for an indicator.
 
 
 #### Base Command
@@ -1129,7 +1129,7 @@ Updates a group.
 | security_label | The security label applied to the threat. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | associated_group_id | An ID to associate a group by. | Optional | 
 | associated_indicator_id | An ID to associate an indicator by. | Optional | 
-| security_label | The type of update to the group metadata(associated indicators, attributes,tags etc...). Possible values are: append, delete, replace. | Optional | 
+| security_label | The type of update to the group metadata (associated indicators, attributes,tags, etc.). Possible values are: append, delete, replace. | Optional | 
 | attribute_value | The value of the attribute to associate. | Optional | 
 | attribute_type | The type of the attribute to associate. | Optional | 
 
@@ -1144,9 +1144,8 @@ Updates a group.
 | TC.Group.SecurityLevel | string | The security label of the group. | 
 | TC.Group.ID | string | The ID of the group. | 
 
-
-### Arguments
-#### The following arguments were removed in this version:
+### Redundant Arguments
+The following arguments were removed in this version:
 
 In the *tc-tag-indicator* command:
 * *owner* - this argument was redundant.
@@ -1234,4 +1233,4 @@ In the *tc-download-report* command:
 
 ## Additional Considerations for this version
 API version 3 [documentation](https://docs.threatconnect.com/en/latest/rest_api/rest_api.html#v3-api)
-* Using the new REST v3 API instead of the old python module.
+Use the new REST v3 API instead of the old python module.
