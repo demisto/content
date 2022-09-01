@@ -24,8 +24,8 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressranges_request(self, search_params):
-        data = {"request_data": {"filters": search_params, "search_to": 100}}
+    def getexternalipaddressranges_request(self):
+        data = {"request_data": {"search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
@@ -42,8 +42,8 @@ class Client(BaseClient):
 
         return response
 
-    def getassetsinternetexposure_request(self):
-        data = {"request_data": {"search_to": 100}}
+    def getassetsinternetexposure_request(self, search_params):
+        data = {"request_data": {"filters": search_params, "search_to": 100}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
@@ -78,7 +78,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
 
     response = client.getexternalservices_request(search_params)
     parsed = response['reply']['external_services']
-    markdown = tableToMarkdown('External Services', parsed)
+    markdown = tableToMarkdown('External Services', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalServices',
         outputs_key_field='service_id',
@@ -98,7 +98,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     response = client.getexternalservice_request(service_id_list)
     parsed = response['reply']['details']
-    markdown = tableToMarkdown('External Service', parsed)
+    markdown = tableToMarkdown('External Service', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalService',
         outputs_key_field='service_id',
@@ -134,7 +134,7 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
 
     response = client.getexternalipaddressrange_request(range_id_list)
     parsed = response['reply']['details']
-    markdown = tableToMarkdown('External IP Address Range', parsed)
+    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRange',
         outputs_key_field='range_id',
@@ -148,28 +148,28 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
 
 def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ip_address = args.get('ip_address')
-    domain = args.get('domain')
+    name = args.get('name')
     asm_type = args.get('type')
     has_active_external_services = args.get('has_active_external_services')
     search_params = []
     if ip_address:
         search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
-    if domain:
-        search_params.append({"field": "domain", "operator": "contains", "value": domain})
+    if name:
+        search_params.append({"field": "name", "operator": "contains", "value": name})
     if asm_type:
         search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
+    response = client.getassetsinternetexposure_request(search_params)
     parsed = response['reply']['assets_internet_exposure']
-    markdown = tableToMarkdown('Asset Internet Exposures', parsed)
-    response = client.getassetsinternetexposure_request()
+    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetsInternetExposure',
         outputs_key_field='asm_ids',
         outputs=parsed,
         raw_response=parsed,
-        readable_output=parsed
+        readable_output=markdown
     )
 
     return command_results
@@ -183,7 +183,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
 
     response = client.getassetinternetexposure_request(asm_id_list)
     parsed = response['reply']['details']
-    markdown = tableToMarkdown('Asset Internet Exposure', parsed)
+    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetInternetExposure',
         outputs_key_field='asm_ids',
@@ -197,7 +197,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
 
 def test_module(client: Client) -> None:
     try:
-        response = client.getexternalservices_request(None, None, None)
+        response = client.getexternalservices_request()
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
