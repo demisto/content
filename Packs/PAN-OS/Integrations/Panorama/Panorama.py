@@ -3343,7 +3343,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     current_object = result.get(element_to_change, {})
     if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+        raise DemistoException('Please commit the instance prior to editing the rule.')
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
@@ -11119,10 +11119,12 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
-def build_nat_xpath(name: str, pre_post: str):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
     if name:
         _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
@@ -11378,6 +11380,125 @@ def pan_os_delete_nat_rule_command(args):
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Nat rule {rule_name} was deleted successfully.'
+    )
+
+
+def pan_os_edit_nat_rule(
+    rule_name, pre_post, behavior, element_to_change, element_value, json_key_path, is_listable=True
+):
+
+    xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
+    demisto.log(f'{xpath=}')
+
+    if behavior == 'replace':
+        element = add_fields_as_json(json_key_path, element_value, is_list=is_listable)
+    else:  # add or remove is only for listable objects.
+        current_objects_items = panorama_get_current_element(element_to_change=json_key_path, xpath=xpath)
+        if behavior == 'add':
+            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
+        else:  # remove
+            updated_object_items = [item for item in current_objects_items if item not in element_value]
+            if not updated_object_items:
+                raise Exception(f'The object: {element_to_change} must have at least one item.')
+
+        element = add_fields_as_json(json_key_path, updated_object_items, is_list=True)
+
+    demisto.log(f'{json_to_xml(element)=}')
+
+    params = {
+        'xpath': xpath,
+        'element': json_to_xml(element),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def add_fields_as_json(key, value, is_list=True):
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def pan_os_edit_nat_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    un_listable_objects = {
+        'nat_type',
+        'destination_interface',
+        'destination_translation_dynamic_port',
+        'destination_translation_dynamic_ip',
+        'destination_translation_dynamic_distribution_method',
+        'destination_translation_port',
+        'destination_translation_ip',
+        'source_translation_interface',
+        'source_translation_static_ip',
+        'negate_destination',
+        'disabled',
+        'description',
+        'service'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'source_zone': ('from', 'from', True),
+        'destination_zone': ('to', 'to', True),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination', True),
+        'nat_type': ('nat-type', 'nat-type', False),
+        'destination_interface': ('to-interface', 'to-interface', False),
+        'negate_destination': ('target/negate', 'negate', False),
+        'tags': ('tag', 'tag', True),
+        'disabled': ('disabled', 'disabled', False),
+        'service': ('service', 'service', False),
+        'description': ('description', 'description', False),
+        'source_translation_dynamic_ip': (
+            'source-translation/dynamic-ip/translated-address', 'translated-address', True
+        ),
+        'source_translation_static_ip': (
+            'source-translation/static-ip/translated-address', 'translated-address', False
+        ),
+        'source_translation_dynamic_ip_and_port': (
+            'source-translation/dynamic-ip-and-port/translated-address', 'translated-address', True
+        ),
+        'source_translation_interface': (
+            'source-translation/dynamic-ip-and-port/interface-address/interface', 'interface', False
+        ),
+        'destination_translation_dynamic_port': (
+            'dynamic-destination-translation/translated-port', 'translated-port', False
+        ),
+        'destination_translation_dynamic_ip': (
+            'dynamic-destination-translation/translated-address', 'translated-address', False
+        ),
+        'destination_translation_dynamic_distribution_method': (
+            'dynamic-destination-translation/distribution', 'distribution', False
+        ),
+        'destination_translation_port': ('destination-translation/translated-port', 'translated-port', False),
+        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
+    }
+
+    element_to_change, api_path_json_key, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)
+
+    raw_response = pan_os_edit_nat_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        behavior=behavior,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        json_key_path=api_path_json_key,
+        is_listable=is_listable
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was edited successfully.'
     )
 
 
@@ -12037,6 +12158,8 @@ def main():
             return_results(pan_os_create_nat_rule_command(args))
         elif command == 'pan-os-delete-nat-rule':
             return_results(pan_os_delete_nat_rule_command(args))
+        elif command == 'pan-os-edit-nat-rule':
+            return_results(pan_os_edit_nat_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

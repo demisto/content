@@ -7580,3 +7580,31 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Nat rule test was deleted successfully.
+### pan-os-edit-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-edit-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| rulename | The name of the nat-rule to edit. | Required     | 
+| device-group | The device-group in which the nat-rule is part of. Only for Panorama instance. | Optional     | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
+| behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
+| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
+| element_value | The value of the element to change. Can be a list for certain elements. | Required     | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3```
+#### Human Readable Output
+
+>Nat rule test was edited successfully.

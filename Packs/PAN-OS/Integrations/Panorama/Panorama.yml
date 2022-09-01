@@ -8276,7 +8276,7 @@ script:
       predefined:
       - forward
       - reverse
-    description: Creates a new nat-rule in panorama/firewall instance.
+    description: Creates a new nat-rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
     name: pan-os-create-nat-rule
     outputs: []
   - arguments:
@@ -8296,6 +8296,63 @@ script:
       - post-rulebase
     description: Returns a list of nat-rules of either Panorama/firewall instance.
     name: pan-os-delete-nat-rule
+    outputs: []
+  - arguments:
+    - description: The name of the nat-rule to edit.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group in which the nat-rule is part of. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      description: The operation to perform on the rule.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+      defaultValue: 'replace'
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - tags
+      - service
+      - nat_type
+      - description
+      - source_zone
+      - destination_zone
+      - source_address
+      - destination_address
+      - destination_interface
+      - negate_destination
+      - source_translation_dynamic_ip_and_port
+      - source_translation_interface
+      - source_translation_dynamic_ip
+      - source_translation_static_ip
+      - destination_translation_port
+      - destination_translation_ip
+      - destination_translation_dynamic_port
+      - destination_translation_dynamic_ip
+      - destination_translation_dynamic_distribution_method
+      - disabled
+    - description: The value of the element to change. Can be a list for certain elements.
+      isArray: true
+      name: element_value
+      required: true
+    description: Returns a list of nat-rules of either Panorama/firewall instance.
+    name: pan-os-edit-nat-rule
     outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
