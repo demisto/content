@@ -165,7 +165,7 @@ def get_events_command(client: Client, args: Dict, vendor: str, product: str) ->
             # outputs_key_field=['timestamp', 'log_type', 'item_name', 'item_type'],
             outputs_prefix='KMSat.Event'
         )
-    return 'No events were found.'
+    return CommandResults(readable_output='No events were found.')
 
 
 ''' MAIN FUNCTION '''

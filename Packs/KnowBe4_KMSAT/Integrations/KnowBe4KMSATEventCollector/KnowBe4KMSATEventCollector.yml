@@ -59,7 +59,7 @@ script:
       description: Which results page to bring.
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:

@@ -61,13 +61,14 @@ def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, exp
     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run)
     expected_last_run == new_last_run
     assert events == expected_fetched_events
-    assert len(events) == 2
+    assert len(events) == len(expected_fetched_events)
 
 
 @pytest.mark.parametrize('last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements', [
     ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
      [{'occurred_date': "2022-08-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{'occurred_date': "2022-03-09T10:05:13.890Z"}], 0, []),
+    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
+     [{'occurred_date': "2022-03-09T10:05:13.890Z"}], 0, []),
     ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{'occurred_date': "2022-08-09T10:05:13.890Z"},
      {'occurred_date': "2022-03-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
 ])
