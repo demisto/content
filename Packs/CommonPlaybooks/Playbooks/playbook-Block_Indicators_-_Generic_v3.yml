@@ -17,17 +17,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e8ea4401-0637-4de7-833b-8b1bb9207e52
+    taskid: be855f8e-b0d6-4b33-8898-954bf9ba99cc
     type: start
     task:
-      id: e8ea4401-0637-4de7-833b-8b1bb9207e52
+      id: be855f8e-b0d6-4b33-8898-954bf9ba99cc
       version: -1
       name: ""
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "7"
     separatecontext: false
     view: |-
@@ -46,10 +46,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: cc4eb291-54b8-4c52-89da-96e54aab21fb
+    taskid: c155d55d-f7f3-4af2-8739-3cb6143e0e81
     type: title
     task:
-      id: cc4eb291-54b8-4c52-89da-96e54aab21fb
+      id: c155d55d-f7f3-4af2-8739-3cb6143e0e81
       version: -1
       name: Tag Indicators
       type: title
@@ -57,7 +57,7 @@ tasks:
       brand: ""
       description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "15"
     separatecontext: false
     view: |-
@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7bdf583d-b50b-43f0-84a1-ebcf7a96d769
+    taskid: 15d43128-6c48-4deb-8ed0-044d0454fa7b
     type: title
     task:
-      id: 7bdf583d-b50b-43f0-84a1-ebcf7a96d769
+      id: 15d43128-6c48-4deb-8ed0-044d0454fa7b
       version: -1
       name: Block indicators
       type: title
@@ -87,13 +87,13 @@ tasks:
       brand: ""
       description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "10"
+      - "11"
+      - "12"
       - "13"
       - "16"
       - "17"
-      - "18"
-      - "19"
     separatecontext: false
     view: |-
       {
@@ -111,19 +111,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 19190b80-571a-46c9-8216-5ecf70b47443
+    taskid: 2c18351e-9797-4477-8057-62c91993e3bb
     type: playbook
     task:
-      id: 19190b80-571a-46c9-8216-5ecf70b47443
+      id: 2c18351e-9797-4477-8057-62c91993e3bb
       version: -1
       name: Block File - Generic v2
-      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       MD5:
@@ -152,12 +152,103 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 401fbda0-fcdc-47af-8c93-206f62a185e8
+  "11":
+    id: "11"
+    taskid: dc515274-066d-4d6a-81ec-198ff5c818f8
     type: playbook
     task:
-      id: 401fbda0-fcdc-47af-8c93-206f62a185e8
+      id: dc515274-066d-4d6a-81ec-198ff5c818f8
+      version: -1
+      name: Block Email - Generic
+      description: This playbook will block emails at your mail relay integration.
+      playbookName: Block Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      EmailToBlock:
+        complex:
+          root: inputs.EmailToBlock
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: cb167974-0620-4c01-80f2-8e62d9446256
+    type: playbook
+    task:
+      id: cb167974-0620-4c01-80f2-8e62d9446256
+      version: -1
+      name: Block Domain - Generic
+      description: |-
+        This playbook blocks malicious Domains using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+      playbookName: Block Domain - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.DomainToBlock
+      DomainBlackListID:
+        complex:
+          root: inputs.DomainBlackListID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 53c7faa6-ec4b-46c0-8322-71972e65dad0
+    type: playbook
+    task:
+      id: 53c7faa6-ec4b-46c0-8322-71972e65dad0
       version: -1
       name: Block IP - Generic v3
       description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
@@ -166,54 +257,54 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
     scriptarguments:
       AkamaiNetworkListID:
-        - complex:
-              root: inputs.AkamaiNetworkListID}
+        complex:
+          root: inputs.AkamaiNetworkListID
       AutoCommit:
-        - complex:
-            root: inputs.AutoCommit
+        complex:
+          root: inputs.AutoCommit
       CiscoFWSource:
-        - complex:
-            root: inputs.CiscoFWSource
+        complex:
+          root: inputs.CiscoFWSource
       CustomBlockRule:
-        - complex:
-            root: inputs.CustomBlockRule
+        complex:
+          root: inputs.CustomBlockRule
       DAG:
-        - complex:
-            root: inputs.DAG
+        complex:
+          root: inputs.DAG
       IP:
-        - complex:
-            root: inputs.IP
+        complex:
+          root: inputs.IP
       InputEnrichment:
-        - complex:
-            root: inputs.InputEnrichment
+        complex:
+          root: inputs.InputEnrichment
       InternalRange:
-        - complex:
-            root: inputs.InternalRange
+        complex:
+          root: inputs.InternalRange
       LogForwarding:
-        - complex:
-            root: inputs.LogForwarding
+        complex:
+          root: inputs.LogForwarding
       RuleDirection:
-        - complex:
-            root: inputs.RuleDirection
+        complex:
+          root: inputs.RuleDirection
       RuleName:
-        - complex:
-            root: inputs.RuleName
+        complex:
+          root: inputs.RuleName
       SiteName:
-        - complex:
-            root: inputs.SiteName
+        complex:
+          root: inputs.SiteName
       StaticAddressGroup:
-        - complex:
-            root: inputs.StaticAddressGroup
+        complex:
+          root: inputs.StaticAddressGroup
       Tag:
-        - complex:
-            root: inputs.Tag
+        complex:
+          root: inputs.Tag
       UserVerification:
-        - complex:
-            root: inputs.UserVerification
+        complex:
+          root: inputs.UserVerification
     separatecontext: true
     loop:
       iscommand: false
@@ -230,16 +321,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e80448b5-aa76-49e1-8d42-8d64f864f340
+    taskid: 22f0eb38-c4d3-4e67-889b-6abbff216ab8
     type: title
     task:
-      id: e80448b5-aa76-49e1-8d42-8d64f864f340
+      id: 22f0eb38-c4d3-4e67-889b-6abbff216ab8
       version: -1
       name: Done
       type: title
@@ -263,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fe262809-0bda-4f4d-873a-a1b9d441f5cb
+    taskid: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
     type: regular
     task:
-      id: fe262809-0bda-4f4d-873a-a1b9d441f5cb
+      id: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
       version: -1
       name: Tag bad indicators
       description: commands.local.cmd.set.indicators
@@ -275,7 +366,7 @@ tasks:
       iscommand: true
       brand: Builtin
     nexttasks:
-      "#none#":
+      '#none#':
       - "14"
     scriptarguments:
       indicatorsValues:
@@ -325,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 992df1ca-5349-40a5-85b3-69fe869cf9e1
+    taskid: 702afc6d-9569-46aa-86f7-ab82ee32d705
     type: playbook
     task:
-      id: 992df1ca-5349-40a5-85b3-69fe869cf9e1
+      id: 702afc6d-9569-46aa-86f7-ab82ee32d705
       version: -1
       name: Block URL - Generic v2
       description: |-
@@ -337,44 +428,14 @@ tasks:
         Supported integrations for this playbook:
         * Palo Alto Networks PAN-OS
         * Zscaler
-        * Sophos
-        * Forcepoint
-        * Checkpoint
-        * Netcraft
-        * EDL
       playbookName: Block URL - Generic v2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      Tag:
-        complex:
-          root: inputs.device-group
-      URL:
-        complex:
-          root: inputs.URL
-      categories:
-        complex:
-          root: inputs.categories
-      type:
-        complex:
-          root: inputs.CustomURLCategory
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -385,46 +446,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: f99450bc-a454-4f21-8b5f-863160e40614
+    taskid: 67feec12-16ee-4665-8fed-3d9fc9310adb
     type: playbook
     task:
-      id: f99450bc-a454-4f21-8b5f-863160e40614
+      id: 67feec12-16ee-4665-8fed-3d9fc9310adb
       version: -1
       name: Block Account - Generic v2
-      description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
-
-        Supported integrations for this playbook:
-        * Active Directory
-        * PAN-OS - This requires PAN-OS 9.1 or higher.
       playbookName: Block Account - Generic v2
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "2"
-    scriptarguments:
-      NamingConvention:
-        simple: DEM,106
-      Tag:
-        simple: Bad Account
-      UserVerification:
-        simple: "True"
-      Username:
-        simple: DEM359748,DEM531065,DEM185402,cpwquwbs@test.com,b1d4aqjp
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -435,98 +477,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 59090bd8-6c2f-4123-8216-afe142cacd8d
-    type: playbook
-    task:
-      id: 59090bd8-6c2f-4123-8216-afe142cacd8d
-      version: -1
-      name: Block Email - Generic v2
-      description: This playbook will block emails at your mail relay integration.
-      playbookName: Block Email - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "#none#":
-      - "2"
-    scriptarguments:
-      EmailToBlock:
-        simple: ${inputs.EmailToBlock}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 42595972-0440-4450-8ee3-25f0c2265c8b
-    type: playbook
-    task:
-      id: 42595972-0440-4450-8ee3-25f0c2265c8b
-      version: -1
-      name: Block Domain - Generic v2
-      description: |
-        This playbook blocks malicious Domains using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Zscaler
-        * Symantec Messaging Gateway
-        * FireEye EX
-        * Trend Micro Apex One
-        * Proofpoint Threat Response
-        * Cisco Stealthwatch Cloud
-      playbookName: Block Domain - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "#none#":
-      - "2"
-    scriptarguments:
-      Domain:
-        - complex:
-            root: inputs.DomainToBlock
-      DomainBlackListID:
-        - complex:
-            root: inputs.DomainBlackListID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -569,7 +520,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2)."
+  description: 'An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2).'
   playbookInputQuery:
 - key: URL
   value:
@@ -790,7 +741,7 @@ outputs:
 - contextPath: CheckpointFWRule.DestinationNegate
   description: Rule destination negate status (True/False).
 - contextPath: CheckpointFWRule.Action
-  description: "Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info)."
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
 - contextPath: CheckpointFWRule.ActionSetting
