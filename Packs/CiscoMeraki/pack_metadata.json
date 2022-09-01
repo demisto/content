@@ -1,6 +1,6 @@
 
 {
-    "name": " Cisco Meraki ",
+    "name": "Cisco Meraki",
     "description": "Modeling Rules for the Cisco Meraki logs collector",
     "support": "xsoar",
     "currentVersion": "1.0.0",
