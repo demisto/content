@@ -51,7 +51,7 @@ def makehash():
     return collections.defaultdict(makehash)
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no coverage
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -167,7 +167,7 @@ def fetch_incidents_command(client):
     return incidents
 
 
-def main():
+def main():  # pragma: no coverage
     ''' EXECUTION '''
     demisto.info(f'Command being called is {demisto.command()}')
     try:
@@ -192,5 +192,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no coverage
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
