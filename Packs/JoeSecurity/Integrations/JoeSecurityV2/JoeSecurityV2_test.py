@@ -222,7 +222,7 @@ def test_url_command(mocker):
 
     client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=[result])
-    command_res = url_command(client, {'url': 'http://www.test_url.com'})[0]
+    command_res = url_command(client, {'url': 'test_url'})[0]
 
     assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
     assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[-1].get('Score')

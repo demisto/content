@@ -360,7 +360,7 @@ script:
         type: String
   type: python
   subtype: python3
-  dockerimage: devdemisto/joe-security:1.0.0.33070
+  dockerimage: demisto/joe-security:1.0.0.33098
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
