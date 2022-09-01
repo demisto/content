@@ -186,29 +186,26 @@ def normalize_value(value: Any, stringify: str) -> Any:
     elif stringify == 'all':
         if isinstance(value, dict):
             # key should be str for the context
-            return {
+            value = {
                 k if isinstance(k, str) else json.dumps(k): normalize_value(v, stringify)
                 for k, v in value.items()}
         elif isinstance(value, list):
-            return [normalize_value(v, stringify) for v in value]
-        elif isinstance(value, str):
-            return value
-        else:
-            return json.dumps(value)
-    else:
+            value = [normalize_value(v, stringify) for v in value]
+        elif not isinstance(value, str):
+            value = json.dumps(value)
+    elif stringify == 'false':
         if isinstance(value, str):
-            if not argToBoolean(stringify):
-                try:
-                    return json.loads(value)
-                except json.JSONDecodeError:
-                    return value
-        else:
-            if argToBoolean(stringify):
-                return json.dumps(value)
-            else:
-                return value
-    return value
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                pass
+    elif stringify == 'true':
+        if not isinstance(value, str):
+            value = json.dumps(value)
+    else:
+        raise DemistoException(f'Invalid stringify value: {stringify}')
 
+    return value
 
 def main():
     try:
@@ -216,15 +213,10 @@ def main():
         key = args.get('key')
         template = args.get('template')
         append = argToBoolean(args.get('append') or False)
-        stringify = args.get('stringify')
+        stringify = args.get('stringify') or 'noop'
         force = argToBoolean(args.get('force') or False)
         keep_symbol_to_null = argToBoolean(args.get('keep_symbol_to_null') or False)
         variable_markers = argToList(args.get('variable_markers') or '${,}')
-
-        if stringify is None or stringify == '':
-            stringify = 'noop'
-        elif isinstance(stringify, bool):
-            stringify = 'true' if stringify else 'false'
 
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
@@ -233,18 +225,16 @@ def main():
         elif len(variable_markers) == 1:
             variable_markers = variable_markers + ['']
 
+        value = ''
         if template:
             context = args.get('context')
             if context:
-                if isinstance(context, str):
-                    context = json.loads(context)
+                context = json.loads(context) if isinstance(context, str) else context
             else:
                 context = demisto.context()
 
             formatter = Formatter(variable_markers[0], variable_markers[1], keep_symbol_to_null)
             value = formatter.build(template, extract_dt, ContextData(context))
-        else:
-            value = ''
 
         value = normalize_value(value, stringify)
 

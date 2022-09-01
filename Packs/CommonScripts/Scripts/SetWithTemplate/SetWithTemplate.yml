@@ -23,12 +23,12 @@ args:
 - name: stringify
   auto: PREDEFINED
   predefined:
-  - "none"
+  - "noop"
   - "all"
   - "true"
   - "false"
-  description: Whether to save the argument as a string. The default value is "none".
-  defaultValue: "none"
+  description: Whether to save the argument as a string. The default value is "noop".
+  defaultValue: "noop"
 - name: force
   auto: PREDEFINED
   predefined:
