@@ -1,4 +1,4 @@
-This is theUltraMSG integration for getting started made by Trustnet
+This is the UltraMSG integration for getting started made by Trustnet
 ## Configure UltraMSG on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

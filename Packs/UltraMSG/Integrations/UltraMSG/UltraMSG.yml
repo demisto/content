@@ -12,16 +12,7 @@ configuration:
   name: instance
   required: true
   type: 0
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 612e52a9-8c78-4b84-82f0-4d1ce835e44d
-    packName: UltraMSG Contribution Pack
-    propagationLabels: []
-    toServerVersion: ""
-description: This is theUltraMSG integration for getting started made by Trustnet
+description: This is the UltraMSG integration for getting started made by Trustnet
 display: UltraMSG
 name: UltraMSG
 script:
@@ -34,8 +25,11 @@ script:
       name: text
       required: true
     name: send-whatapp
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.6.33415
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
