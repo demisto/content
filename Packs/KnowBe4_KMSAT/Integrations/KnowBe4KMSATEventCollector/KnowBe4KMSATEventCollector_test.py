@@ -2,7 +2,7 @@ import datetime
 import pytest
 import json
 import io
-from CommonServerPython import CommandResults, parse_date_string
+from CommonServerPython import parse_date_string
 from KnowBe4KMSATEventCollector import Client
 
 
