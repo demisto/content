@@ -1,0 +1,22 @@
+{
+    "name": "Carbon Black Common Fields",
+    "description": "Carbon Black common fields concentrates all of the mutual content entities for the Carbon Black integrations.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "itemPrefix": [
+        "Carbon Black"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
