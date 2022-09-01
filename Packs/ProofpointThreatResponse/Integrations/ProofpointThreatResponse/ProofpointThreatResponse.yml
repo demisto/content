@@ -40,9 +40,8 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: '6 hours'
-  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching
-    older incidents. If timeout errors occur, consider changing this value.
+- defaultvalue: 6 hours
+  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
   display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   required: false
@@ -867,25 +866,25 @@ script:
     execution: false
     name: proofpoint-tr-ingest-alert
   - arguments:
-      - description: The message ID of the email.
-        name: message_id
-        isArray: false
-        required: true
-        secret: false
-      - description: The recipient of the email.
-        name: recipient
-        isArray: false
-        required: true
-        secret: false
-      - description: The reception time of the email.
-        name: time
-        isArray: false
-        required: true
-        secret: false
+    - description: The message ID of the email.
+      name: message_id
+      isArray: false
+      required: true
+      secret: false
+    - description: The recipient of the email.
+      name: recipient
+      isArray: false
+      required: true
+      secret: false
+    - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      name: time
+      isArray: false
+      required: true
+      secret: false
     outputs:
-      - contextPath: ProofPointTRAP.Quarantine
-        description: Results of the email quarantine operation.
-        type: String
+    - contextPath: ProofPointTRAP.Quarantine
+      description: Results of the email quarantine operation.
+      type: String
     description: Verify if an email has been quarantined.
     name: proofpoint-tr-verify-quarantine
   feed: false
@@ -896,7 +895,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
 tests:
 - No test - beta_integration
 beta: true
