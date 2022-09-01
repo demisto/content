@@ -39,7 +39,7 @@ class Client(BaseClient):
         self.serverUrl = server_url
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    # TODO: Optional - add a function that prints the errors in a more human readable form
 
     def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
         return self._http_request(method='GET', full_url=full_url, params=params)
@@ -72,6 +72,23 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches/{branch_name}'
 
         return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def branch_create_request(self, name: str, target_branch: str, repo: str = None) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches'
+        body = {
+            "target": {
+                "hash": target_branch
+            },
+            "name": name
+        }
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+
 
 
 ''' HELPER FUNCTIONS '''
@@ -240,6 +257,19 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def branch_create_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    name = args.get('name', None)
+    target_branch = args.get('target_branch', None)
+    response = client.branch_create_request(name, target_branch, repo)
+    return CommandResults(
+        readable_output='The branch was created successfully.',
+        outputs_prefix='Bitbucket.Branch',
+        outputs=response,
+        raw_response=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -281,6 +311,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-branch-get':
             result = branch_get_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-branch-create':
+            result = branch_create_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')

@@ -353,6 +353,99 @@ script:
         - contextPath: Bitbucket.Branch.default_merge_strategy
           description: 'The default merge strategy.'
           type: String
+    - name: bitbucket-branch-create
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: name
+          required: true
+          description: The name of the new branch.
+          isArray: false
+        - name: target_branch
+          required: true
+          description: The name of the branch from which the new branch will be created.
+          isArray: false
+      outputs:
+        - contextPath: Bitbucket.Branch.name
+          description: 'The name of the new branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.type
+          description: 'The type of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.hash
+          description: 'The hash of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.date
+          description: 'The date of the last action in the target branch.'
+          type: Date
+        - contextPath: Bitbucket.Branch.target.author.type
+          description: 'The type of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.raw
+          description: 'The raw information about the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.display_name
+          description: 'The display name of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.links
+          description: 'The links with the information about the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.type
+          description: 'The user  type of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.uuid
+          description: 'The unique id of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.account_id
+          description: 'The account id of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.author.user.nickname
+          description: 'The nickname of the author of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.message
+          description: 'The message in the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.links
+          description: 'The links with the information about the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.type
+          description: 'The type of the parent action of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.hash
+          description: 'The hash of the parent action of the last action in the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.parents.links
+          description: 'The links to the parent action information.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.type
+          description: 'The type of the repository of the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.full_name
+          description: 'The full name of the repository of the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.links
+          description: 'The links with the information about the repository of the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.name
+          description: 'The name of the repository of the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.target.repository.uuid
+          description: 'The unique id of the repository of the target branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.links
+          description: 'The links with the information about the new branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.type
+          description: 'The type of the new branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.merge_strategies
+          description: 'The merge strategies of the new branch.'
+          type: String
+        - contextPath: Bitbucket.Branch.default_merge_strategy
+          description: 'The default merge strategy in the new branch.'
+          type: String
   isfetch: false
   runonce: false
   script: "-"
