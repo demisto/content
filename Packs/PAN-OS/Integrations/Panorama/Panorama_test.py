@@ -3051,7 +3051,7 @@ class TestPanOSListNatRulesCommand:
             )
         ]
     )
-    def test_pan_os_list_rules_main_flow(self, mocker, args, params, expected_url_params):
+    def test_pan_os_list_rules_command_main_flow(self, mocker, args, params, expected_url_params):
         """
         Given:
          - Panorama instance configuration.
@@ -3194,7 +3194,7 @@ class TestCreatePanOSNatRuleCommand:
             ),
         ]
     )
-    def test_create_pan_os_command_main_flow(self, mocker, args, params, expected_url_params):
+    def test_pan_os_create_nat_rule_command_main_flow(self, mocker, args, params, expected_url_params):
         """
         Given:
          - Panorama instance configuration with source_translation_type, source_translated_address and source_translated_address_type
@@ -3220,3 +3220,64 @@ class TestCreatePanOSNatRuleCommand:
 
         main()
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'pre_post': 'pre-rulebase'
+                },
+                {
+                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                    'key': 'thisisabogusAPIKEY!'
+                },
+                {
+                    'action': 'delete',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test'
+                },
+                integration_params,
+                {
+                    'action': 'delete',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                             "[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+                }
+            )
+        ]
+    )
+def test_pan_os_delete_nat_rule_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance configuration with a specific rulename.
+     - Firewall instance configuration with a specific rulename.
+
+    When:
+     - running the pan-os-delete-nat-rule through the main flow.
+
+    Then:
+     - make sure the xpath/element and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-nat-rule')
+
+    main()
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

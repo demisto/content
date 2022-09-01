@@ -11270,7 +11270,7 @@ def create_nat_rule(args):
                             }
                         else:
                             raise DemistoException(
-                                'interface-address can only be set for source_translation_type == dynamic-ip-and-port'
+                                'interface-address can only be set when source_translation_type == dynamic-ip-and-port'
                             )
                     else:
                         raise DemistoException(
@@ -11349,9 +11349,35 @@ def create_nat_rule(args):
 def pan_os_create_nat_rule_command(args):
     rule_name = args.get('rulename')
     raw_response = create_nat_rule(args)
+
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Nat rule {rule_name} was created successfully.'
+    )
+
+
+def pan_os_delete_nat_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    raw_response = pan_os_delete_nat_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was deleted successfully.'
     )
 
 
@@ -12009,6 +12035,8 @@ def main():
             return_results(pan_os_list_nat_rules_command(args))
         elif command == 'pan-os-create-nat-rule':
             return_results(pan_os_create_nat_rule_command(args))
+        elif command == 'pan-os-delete-nat-rule':
+            return_results(pan_os_delete_nat_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

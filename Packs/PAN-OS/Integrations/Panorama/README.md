@@ -7555,3 +7555,28 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Nat rule test was created successfully.
+### pan-os-delete-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-delete-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the nat-rule to delete. | Optional | 
+| device-group | The device-group in which the nat-rule should be deleted from. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>Nat rule test was deleted successfully.
