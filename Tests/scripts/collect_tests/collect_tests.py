@@ -397,7 +397,13 @@ class BranchTestCollector(TestCollector):
             case FileType.INTEGRATION:
 
                 if yml.explicitly_no_tests():
-                    logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
+                    suffix = ''
+
+                    if tests_from_conf := self.conf.integrations_to_tests.get(yml.id_, ()):
+                        tests_str = ', '.join(sorted(tests_from_conf))
+                        suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
+
+                    logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -504,6 +510,9 @@ class BranchTestCollector(TestCollector):
                 content_item_range=content_item.version_range if content_item else None
             )
 
+        elif file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
+
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
@@ -524,9 +533,6 @@ class BranchTestCollector(TestCollector):
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
-
-        elif file_type in IGNORED_FILE_TYPES:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
