@@ -172,10 +172,10 @@ class CollectionResult:
                 raise
 
         if is_nightly:
-            if test and test in conf.non_api_tests:
+            if test and test in conf.non_api_tests:  # type:ignore[union-attr]
                 return
 
-            if pack and pack not in conf.nightly_packs:
+            if pack and pack not in conf.nightly_packs:  # type:ignore[union-attr]
                 raise NonNightlyPackInNightlyBuildException(pack)
 
     @staticmethod
