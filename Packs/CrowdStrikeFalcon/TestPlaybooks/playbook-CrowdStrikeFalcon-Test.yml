@@ -158,7 +158,7 @@ tasks:
       - "5"
     scriptarguments:
       behavior_id:
-        simple: "10197"
+        simple: "82"
     separatecontext: false
     view: |-
       {
@@ -431,7 +431,7 @@ tasks:
       source:
         simple: Demisto playbook
       value:
-        simple: example.com
+        simple: example.co.il
     separatecontext: false
     view: |-
       {
