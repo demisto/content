@@ -507,8 +507,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "c01957aa66f3b923a6a6adf90feb48d4b05d449e"
-resolved_reference = "c01957aa66f3b923a6a6adf90feb48d4b05d449e"
+reference = "1e7527ce5ccd68dc78b3a1efdd862624880430ff"
+resolved_reference = "1e7527ce5ccd68dc78b3a1efdd862624880430ff"
 
 [[package]]
 name = "deprecated"
@@ -1237,7 +1237,7 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pipenv"
-version = "2022.8.30"
+version = "2022.8.31"
 description = "Python Development Workflow for Humans."
 category = "main"
 optional = false
@@ -1791,7 +1791,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "slack-sdk"
-version = "3.18.1"
+version = "3.18.2"
 description = "The Slack API Platform SDK for Python"
 category = "main"
 optional = false
@@ -1799,7 +1799,7 @@ python-versions = ">=3.6.0"
 
 [package.extras]
 optional = ["aiodns (>1.0)", "aiohttp (>=3.7.3,<4)", "boto3 (<=2)", "SQLAlchemy (>=1,<2)", "websockets (>=10,<11)", "websocket-client (>=1,<2)"]
-testing = ["pytest (>=6.2.5,<7)", "pytest-asyncio (<1)", "Flask-Sockets (>=0.2,<1)", "Flask (>=1,<2)", "Werkzeug (<2)", "itsdangerous (==1.1.0)", "Jinja2 (==3.0.3)", "pytest-cov (>=2,<3)", "codecov (>=2,<3)", "flake8 (>=4,<5)", "black (==22.3.0)", "click (==8.0.4)", "psutil (>=5,<6)", "databases (>=0.5)", "boto3 (<=2)", "moto (>=3,<4)"]
+testing = ["pytest (>=6.2.5,<7)", "pytest-asyncio (<1)", "Flask-Sockets (>=0.2,<1)", "Flask (>=1,<2)", "Werkzeug (<2)", "itsdangerous (==1.1.0)", "Jinja2 (==3.0.3)", "pytest-cov (>=2,<3)", "codecov (>=2,<3)", "flake8 (>=5,<6)", "black (==22.8.0)", "click (==8.0.4)", "psutil (>=5,<6)", "databases (>=0.5)", "boto3 (<=2)", "moto (>=3,<4)"]
 
 [[package]]
 name = "slackclient"
@@ -2236,7 +2236,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "37581a078e444923163f1fad6cd069006d19b6d61a55d0994ff63edaebb488bc"
+content-hash = "24b920a9c395017123191a5e2f7543776c0867081427dc1f6a73946cf219a4ab"
 
 [metadata.files]
 aiohttp = [
@@ -3156,8 +3156,8 @@ pexpect = [
     {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
 ]
 pipenv = [
-    {file = "pipenv-2022.8.30-py2.py3-none-any.whl", hash = "sha256:129b688c3de53e4a454346b7a0c45385ab811260faaa3431ae774f0c55e95a9a"},
-    {file = "pipenv-2022.8.30.tar.gz", hash = "sha256:41475adbc5ade17184643bcfdfa99632e7f61513a17ec71c4832031b8862cbab"},
+    {file = "pipenv-2022.8.31-py2.py3-none-any.whl", hash = "sha256:5cb7368143d7fefe58509b10b227cb5f97d5455c21c21d47554cc9e3d74ff51b"},
+    {file = "pipenv-2022.8.31.tar.gz", hash = "sha256:9f26e90e694aa6346f9b09149dc086ea69ea294846e0eccf8191c148c99bf38d"},
 ]
 pkgutil-resolve-name = [
     {file = "pkgutil_resolve_name-1.3.10-py3-none-any.whl", hash = "sha256:ca27cc078d25c5ad71a9de0a7a330146c4e014c2462d9af19c6b828280649c5e"},
@@ -3603,8 +3603,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 slack-sdk = [
-    {file = "slack_sdk-3.18.1-py2.py3-none-any.whl", hash = "sha256:63ce5e6253a31873d6c921c9feaa842a93a2f56e6e009cb7daf406f4bc4df798"},
-    {file = "slack_sdk-3.18.1.tar.gz", hash = "sha256:a25d3d2bf0bf605d54d764d4a463fe7c0659ee24c13d75653e2bec247bd5998b"},
+    {file = "slack_sdk-3.18.2-py2.py3-none-any.whl", hash = "sha256:d895fa191f2288d74cbbf20055be2f39c54397b3288c766fcd31e3f5828ef937"},
+    {file = "slack_sdk-3.18.2.tar.gz", hash = "sha256:69befeadfbfc9238e85d0641c864cd12bfb162fbdf3e8f9eef30180f171ea675"},
 ]
 slackclient = [
     {file = "slackclient-2.9.4-py2.py3-none-any.whl", hash = "sha256:a8cab9146795e23d66a03473b80dd23df8c500829dfa9d06b3e3d5aec0a2b293"},
