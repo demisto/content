@@ -708,21 +708,16 @@ class MsGraphClient:
     @staticmethod
     def get_emails_as_text_and_html(emails_as_html, emails_as_text):
 
-        # sort by message ID to make sure we look over the same emails, it is possible that the api will return them
-        # in a different order.
-        emails_as_html = sorted(emails_as_html, key=lambda email: email['id'])
-        emails_as_text = sorted(emails_as_text, key=lambda email: email['id'])
+        text_emails_ids = {email.get('id'): email for email in emails_as_text}
+        emails_as_html_and_text = []
 
-        emails = []
+        for email_as_html in emails_as_html:
+            body_as_text = text_emails_ids.get(email_as_html.get('id')).get('uniqueBody')
+            if body_as_html := email_as_html.get('uniqueBody'):
+                email_as_html['uniqueBody'] = [body_as_html, body_as_text]
+            emails_as_html_and_text.append(email_as_html)
 
-        for html_email, text_email in zip(emails_as_html, emails_as_text):
-            html_content, text_content = html_email.pop('uniqueBody', {}), text_email.pop('uniqueBody', {})
-            # will get the Body key as html, but uniqueBody with both HTML and text
-            email_with_html_and_text = html_email
-            email_with_html_and_text['uniqueBody'] = [html_content, text_content]
-            emails.append(email_with_html_and_text)
-
-        return emails
+        return emails_as_html_and_text
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
