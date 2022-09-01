@@ -16,15 +16,17 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: "true"
   type: 8
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: "true"
   type: 8
   additionalinfo:
+- name: create_relationships
+  display: Create relationships
+  required: false
+  type: 8
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -161,7 +163,6 @@ script:
       secret: false
     deprecated: false
     description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
-    execution: false
     outputs:
     - contextPath: InfoFile.Name
       description: 'FileName'
@@ -181,6 +182,47 @@ script:
     - contextPath: File.Extension
       description: 'File Extension'
       type: string
+  - name: joe-download-sample
+    arguments:
+    - name: webid
+      default: true
+      description: Web ID
+      isArray: false
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a sample.
+    outputs:
+      - contextPath: File.Size
+        description: File Size
+        type: number
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file
+        type: string
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file
+        type: string
+      - contextPath: File.Name
+        description: The sample name
+        type: string
+      - contextPath: File.SSDeep
+        description: SSDeep hash of the file
+        type: string
+      - contextPath: File.EntryID
+        description: War-Room Entry ID of the file
+        type: string
+      - contextPath: File.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: File.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: File MD5
+        description: MD5 hash of the file
+        type: string
+      - contextPath: File.Extension
+        description: File Extension
+        type: string
   - name: joe-search
     arguments:
       - name: query
@@ -261,6 +303,61 @@ script:
     - contextPath: Joe.Analysis.webid
       description: 'The web id from joe security.'
       type: String
+  - name: file
+    arguments:
+      - name: file
+        description: 'A comma-separated list of file names, SHA1, SHA256 or MD5 hashes.'
+        isArray: false
+        required: true
+        secret: false
+    deprecated: false
+    description: Retrieves files information from Joe Security.
+    execution: false
+    outputs:
+      - contextPath: File.Name
+        description: Name of the file.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file.
+        type: String
+      - contextPath: File.Tags
+        description: Tags of the file.
+        type: String
+      - contextPath: File.Relationships.EntityA
+        description: The source of the relationship.
+        type: String
+      - contextPath: File.Relationships.EntityB
+        description: The destination of the relationship.
+        type: String
+      - contextPath: File.Relationships.Relationship
+        description: The name of the relationship.
+        type: String
+      - contextPath: File.Relationships.EntityAType
+        description: The type of the source of the relationship.
+        type: String
+      - contextPath: File.Relationships.EntityBType
+        description: The type of the destination of the relationship.
+        type: String
+  - name: url
+    arguments:
+      - name: url
+        description: 'A comma-separated list of urls.'
+        isArray: false
+        required: true
+        secret: false
+    deprecated: false
+    description: Retrieves urls information from Joe Security.
+    execution: false
+    outputs:
+      - contextPath: URL.Name
+        description: 'Name of the url.'
+        type: String
   type: python
   subtype: python3
   dockerimage: devdemisto/joe-security:1.0.0.33070

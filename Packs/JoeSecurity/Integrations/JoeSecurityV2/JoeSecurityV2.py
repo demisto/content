@@ -1,6 +1,6 @@
-from typing import Dict, Generator, Tuple
+from typing import Generator, Tuple
 
-from jbxapi import *
+import jbxapi
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -13,38 +13,40 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
-class Client(JoeSandbox):
+class Client(jbxapi.JoeSandbox):
     def __init__(self, apikey: str = '', base_url: str = '', accept_tac: bool = True, verify_ssl: bool = True,
-                 proxy: bool = False, reliability: DBotScoreReliability = DBotScoreReliability.C):
+                 proxy: bool = False, reliability: DBotScoreReliability = DBotScoreReliability.C,
+                 create_relationships: bool = False):
         self.reliability = reliability
+        self.create_relationships = create_relationships
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxy)
 
-    def analysis_info_list(self, webids: List[str]) -> List[Dict[str, str]]:
+    def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, any]]:
         """
              A wrapper function supporting a list of webids to query.
 
              Args:
-                webids: List(str): List of analysis webids to query.
+                web_ids: List(str): List of analysis webids to query.
 
              Returns:
-                 List(Dict(str, str)): List of analysis info result.
+                 result: List(Dict(str, any)): List of analysis info result.
         """
-        return [self.analysis_info(webid=webid) for webid in webids]
+        return [self.analysis_info(webid=web_id) for web_id in web_ids]
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def pagination(args: Dict[str, str], results: Generator) -> List:
+def pagination(args: Dict[str, any], results: Generator) -> List:
     """
          Helper function supporting pagination for results.
 
          Args:
-            args: Dict(str, str): pagination arguments (page, page_size, limit).
-            results (Generator): API results for pagination.
+            args: Dict(str, any): pagination arguments (page, page_size, limit).
+            results: (Generator): API results for pagination.
 
          Returns:
-             List: The requests pages.
+             result: List: The requests pages.
     """
     page = arg_to_number(args.get('page', None))
     page_size = arg_to_number(args.get('page_size', None))
@@ -61,18 +63,18 @@ def pagination(args: Dict[str, str], results: Generator) -> List:
         all_pages = [next(results) for _ in range(0, number_of_entries)]
     except Exception:
         return []
-    return all_pages[-page_size:] if page_size else all_pages
+    return all_pages[(-1) * int(page_size):] if page_size else all_pages
 
 
-def build_analysis_hr(analysis: Dict[str, str]) -> Dict[str, str]:
+def build_analysis_hr(analysis: Dict[str, any]) -> Dict[str, any]:
     """
-         Helper function supporting the building of the human-readable output.
+         Helper function that supports the building of the human-readable output.
 
          Args:
-            analysis: Dict(str, str): Analysis result returned by the API.
+            analysis: Dict(str, any): Analysis result returned by the API.
 
          Returns:
-             Dict[str, str]: The analysis human-readable entry.
+             result: Dict(str, any): The analysis human-readable entry.
     """
     file_name = analysis.get('filename')
     sha1 = analysis.get('sha1')
@@ -96,38 +98,91 @@ def build_analysis_hr(analysis: Dict[str, str]) -> Dict[str, str]:
     return hr_analysis
 
 
-def build_indicator_object(client: Client, analysis: Dict[str, str]) -> Common.Indicator:
+def build_reputation_hr(analysis: Dict[str, any], command: str) -> Dict[str, any]:
     """
-         Helper function that create the Indicator object.
+          Helper function that supports the building of the human-readable output.
+
+          Args:
+             analysis: Dict(str, any): Analysis result returned by the API.
+
+          Returns:
+              result: Dict(str, any): The analysis human-readable entry.
+     """
+    if command == 'file':
+        file_name = analysis.get('filename')
+        sha1 = analysis.get('sha1')
+        sha256 = analysis.get('sha256')
+        md5 = analysis.get('md5')
+        tags = analysis.get('tags')
+        hr_analysis = {
+            'MeaningfulName': file_name,
+            'Sha1': sha1,
+            'Sha256': sha256,
+            'Md5': md5,
+            'Tags': tags
+        }
+        return hr_analysis
+    return {'Url': analysis.get('filename')}
+
+
+def build_relationships(threat_name: str, entity: str,
+                        entity_type: Union[FeedIndicatorType.File, FeedIndicatorType.URL]) -> List[EntityRelationship]:
+    """
+         Helper function that creates the relationships table.
+
+         Args:
+            threat_name (str): The malware from joe security.
+            entity: (str): The main entity value.
+            entity_type: Union(File, URL): The main entity type.
+
+         Returns:
+             result: List(EntityRelationship): The relationship entry.
+    """
+    # todo: create and change entity_b_type to malware.
+    return [EntityRelationship(
+        name=EntityRelationship.Relationships.INDICATOR_OF,
+        entity_a=entity,
+        entity_a_type=entity_type,
+        entity_b=threat_name, entity_b_type=FeedIndicatorType.File,
+        reverse_name=EntityRelationship.Relationships.INDICATED_BY)]
+
+
+def build_indicator_object(client: Client, analysis: Dict[str, any]) -> \
+        Tuple[Common.Indicator, List[EntityRelationship]]:
+    """
+         Helper function that creates the Indicator object.
 
          Args:
             client (Client): The client class.
-            analysis: Dict(str, str): Analysis result returned by the API.
+            analysis: Dict(str, any): Analysis result returned by the API.
 
          Returns:
-             Common.Indicator: The indicator class.
+             result: Tuple[Common.Indicator, List[EntityRelationship]] The indicator class.
     """
-    if analysis.get('sha1'):
+    if analysis.get('sha256'):
         return build_file_object(client, analysis)
     return build_url_object(client, analysis)
 
 
-def build_file_object(client: Client, analysis: Dict[str, str]) -> Common.File:
+def build_file_object(client: Client, analysis: Dict[str, any]) -> Tuple[Common.File, List[EntityRelationship]]:
     """
-         Helper function that create the File object.
+         Helper function that creates the File object.
 
          Args:
             client (Client): The client class.
-            analysis: Dict(str, str): Analysis result returned by the API.
+            analysis: Dict(str, any): Analysis result returned by the API.
 
          Returns:
-             Common.File: The File indicator class.
+             result: Tuple(File, List(EntityRelationship)): Tuple of the File indicator class and the relationship entry.
     """
     file_name = analysis.get('filename')
     sha1 = analysis.get('sha1')
     sha256 = analysis.get('sha256')
     md5 = analysis.get('md5')
     tags = analysis.get('tags')
+    threat_name = analysis.get('threatname')
+    relationships = None
+
     score, description = indicator_calculate_score(analysis.get('detection', ''))
     dbot_score = Common.DBotScore(
         indicator=file_name,
@@ -137,21 +192,28 @@ def build_file_object(client: Client, analysis: Dict[str, str]) -> Common.File:
         score=score,
         malicious_description=description
     )
-    return Common.File(name=file_name, sha1=sha1, sha256=sha256, dbot_score=dbot_score, md5=md5, tags=tags)
+    if client.create_relationships and not threat_name == 'Unknown':
+        relationships = build_relationships(threat_name, sha256, FeedIndicatorType.File)
+
+    return Common.File(name=file_name, sha1=sha1, sha256=sha256, dbot_score=dbot_score, md5=md5, tags=tags,
+                       relationships=relationships), relationships
 
 
-def build_url_object(client: Client, analysis: Dict[str, str]) -> Common.URL:
+def build_url_object(client: Client, analysis: Dict[str, any]) -> Tuple[Common.URL, List[EntityRelationship]]:
     """
-         Helper function that create the URL object.
+         Helper function that creates the URL object.
 
          Args:
             client (Client): The client class.
-            analysis: Dict(str, str): Analysis result returned by the API.
+            analysis: Dict(str, any): Analysis result returned by the API.
 
          Returns:
-             Common.URL: The URL indicator class.
+             result: Tuple(URL, List(EntityRelationship)): Tuple of the URL indicator class and the relationship entry.
     """
     url = analysis.get('filename')
+    threat_name = analysis.get('threatname')
+    relationships = None
+
     score, description = indicator_calculate_score(analysis.get('detection', ''))
     dbot_score = Common.DBotScore(
         indicator=url,
@@ -161,7 +223,11 @@ def build_url_object(client: Client, analysis: Dict[str, str]) -> Common.URL:
         score=score,
         malicious_description=description
     )
-    return Common.URL(url=url, dbot_score=dbot_score)
+
+    if client.create_relationships and not threat_name == 'Unknown':
+        relationships = build_relationships(threat_name, url, FeedIndicatorType.URL)
+
+    return Common.URL(url=url, dbot_score=dbot_score, relationships=relationships), relationships
 
 
 def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
@@ -183,13 +249,13 @@ def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
     return Common.DBotScore.NONE, ''
 
 
-def build_analysis_command_result(client: Client, analyses: List[Dict[str, str]]) -> CommandResults:
+def build_analysis_command_result(client: Client, analyses: List[Dict[str, any]]) -> CommandResults:
     """
-         Helper function parsing the analysis result object.
+         Helper function that parses the analysis result object.
 
          Args:
             client (Client): The client class.
-            analyses: List[Dict(str, str)]: The analyses result returned by the API.
+            analyses: List[Dict(str, any)]: The analyses result returned by the API.
 
          Returns:
              result: (CommandResults) The parsed CommandResults object.
@@ -198,15 +264,67 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, str]]
                   'Comments']
     indicator_ls = []
     hr_analysis_ls = []
-
+    relationships = []
     for analysis in analyses:
         hr_analysis_ls.append(build_analysis_hr(analysis))
-        indicator_ls.append(build_indicator_object(client, analysis))
-
+        indicators, relationship = build_indicator_object(client, analysis)
+        indicator_ls.append(indicators)
+        if relationship:
+            relationships.extend(relationship)
     return CommandResults(outputs=analyses, outputs_prefix='Joe.Analysis',
                           readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, hr_headers),
-                          indicators=indicator_ls
+                          indicators=indicator_ls, relationships=relationships
                           )
+
+
+def build_reputation_command_result(client: Client, analyses: List[Dict[str, any]], command: str) -> CommandResults:
+    """
+         Helper function that parses the file or URL result object.
+
+         Args:
+            client (Client): The client class.
+            analyses: (List[Dict(str, any)]): The analyses file or URL returned by the API.
+            command: (str): The reputation command.
+
+         Returns:
+             result: (CommandResults): The parsed CommandResults object.
+    """
+    hr_headers = ['MeaningfulName', 'Sha1', 'Sha256', 'Md5'] if command == 'file' else ['Url']
+    indicator_ls = []
+    hr_analysis_ls = []
+    relationships = []
+    for analysis in analyses:
+        hr_analysis_ls.append(build_reputation_hr(analysis, command))
+        indicators, relationship = build_indicator_object(client, analysis)
+        indicator_ls.append(indicators)
+        if relationship:
+            relationships.extend(relationship)
+    return CommandResults(readable_output=tableToMarkdown(f'{command} Result:', hr_analysis_ls, hr_headers),
+                          indicators=indicator_ls, relationships=relationships
+                          )
+
+
+def filter_result(analyses: List[Dict[str, any]], filter_by: str) -> List[Dict[str, any]]:
+    """
+         Helper function that filters the duplication from the analyses.
+
+         Args:
+            analyses: (List[Dict[str, any]): The files from Joe Security.
+            filter_by: (str): The unique field from the analysis data.
+         Returns:
+             result: (List[Dict[str, any]]): The filtered analyses.
+     """
+    files = []
+    existing_files = []
+    for analysis in analyses:
+        # In the case of url command (filter by filename), ignore files if they were queried.
+        if filter_by == 'filename' and analysis.get('sha256'):
+            continue
+        unique_field = analysis.get(filter_by)
+        if unique_field and unique_field not in existing_files:
+            existing_files.append(unique_field)
+            files.append(analysis)
+    return files
 
 
 ''' COMMAND FUNCTIONS '''
@@ -245,59 +363,116 @@ def is_online_command(client: Client) -> CommandResults:
     return CommandResults(readable_output=f"Joe server is {status}")
 
 
-def list_analysis_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_analysis_command(client: Client, args: Dict[str, any]) -> CommandResults:
     """
         List all analyses in descending order, starting with the most recent. The result may be sliced by page and page size or by limit. (default 50)
 
          Args:
             client: (Client) The client class.
-            args: (Dict(str, str)) The commands arguments.
+            args: (Dict(str, any)) The commands arguments.
 
          Returns:
              result: (CommandResults) The CommandResults object.
     """
 
     filtered_pages = pagination(args, client.analysis_list_paged())
-    analysis_result_ls = client.analysis_info_list(webids=[entry.get('webid') for entry in filtered_pages])
+    analysis_result_ls = client.analysis_info_list(web_ids=[entry.get('webid') for entry in filtered_pages])
     return build_analysis_command_result(client, analysis_result_ls)
 
 
-def download_report_command(client: Client, args: Dict[str, str]) -> Dict[str, Any]:
+def download_report_command(client: Client, args: Dict[str, any]) -> Dict[str, Any]:
     """
         Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
 
          Args:
-            client: (Client) The client class.
-            args: (Dict(str, str)) The commands arguments.
+            client: (Client): The client class.
+            args: (Dict(str, any)): The commands arguments.
 
          Returns:
-             result: (Dict[str, Any]) The fileResult object.
+             result: (Dict(str, Any)): The fileResult object.
     """
     web_id = args.get('webid')
     report_type = args.get('type')
 
     result = client.analysis_download(webid=web_id, type=report_type)[1]
-    info = client.analysis_info(webid=web_id)
-    return fileResult(f'{info.get("filename", web_id)}_report.{report_type}', result, EntryType.ENTRY_INFO_FILE)
+
+    return fileResult(f'{web_id}_report.{report_type}', result, EntryType.ENTRY_INFO_FILE)
 
 
-def search_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def download_sample_command(client: Client, args: Dict[str, any]) -> Dict[str, Any]:
     """
-        Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+        Download a sample.
+
+         Args:
+            client: (Client): The client class.
+            args: (Dict(str, any)): The commands arguments.
+
+         Returns:
+             result: (Dict(str, Any)): The fileResult object.
+    """
+    web_id = args.get('webid')
+
+    result = client.analysis_download(webid=web_id, type='sample')[1]
+    return fileResult(f'{web_id}.dontrun', result)
+
+
+def search_command(client: Client, args: Dict[str, any]) -> CommandResults:
+    """
+        Search through all analyses.
 
          Args:
             client: (Client) The client class.
-            args: (Dict(str, str)) The commands arguments.
+            args: (Dict(str, any)) The commands arguments.
 
          Returns:
-             result: (Dict[str, Any]) The fileResult object.
+             result: (CommandResults) The CommandResults object.
     """
     query = args.get('query')
-
     result = client.analysis_search(query=query)
     if result:
         return build_analysis_command_result(client, result)
     return CommandResults(readable_output='No Results were found.')
+
+
+def file_command(client: Client, args: Dict[str, any]) -> CommandResults:
+    """
+        The file reputation command.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    analyses = []
+    files = argToList(args.get('file', ''))
+
+    for file in files:
+        response = client.analysis_search(query=file)
+        analyses.extend(response)
+
+    return build_reputation_command_result(client, filter_result(analyses, filter_by='sha256'), command='file')
+
+
+def url_command(client: Client, args: Dict[str, any]) -> CommandResults:
+    """
+        The url reputation command.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    analyses = []
+    urls = argToList(args.get('url', ''))
+
+    for url in urls:
+        response = client.analysis_search(query=url)
+        analyses.extend(response)
+    return build_reputation_command_result(client, filter_result(analyses, filter_by='filename'), command='url')
 
 
 ''' MAIN FUNCTION '''
@@ -314,13 +489,14 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)
+    create_relationships = demisto.params().get('create_relationships', False)
     command = demisto.command()
     args = demisto.args()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(apikey=api_key, base_url=base_url, accept_tac=True, verify_ssl=verify_certificate,
-                        proxy=proxy, reliability=reliability)
+                        proxy=proxy, reliability=reliability, create_relationships=create_relationships)
 
         if command == 'test-module':
             return_results(test_module(client))
@@ -330,8 +506,14 @@ def main() -> None:  # pragma: no cover
             return_results((list_analysis_command(client, args)))
         elif command == 'joe-download-report':
             demisto.results(download_report_command(client, args))
+        elif command == 'joe-download-sample':
+            demisto.results(download_sample_command(client, args))
         elif command == 'joe-search':
             return_results(search_command(client, args))
+        elif command == 'file':
+            return_results(file_command(client, args))
+        elif command == 'url':
+            return_results(url_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

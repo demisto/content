@@ -125,32 +125,50 @@ def test_list_analysis_command(mocker):
     assert response.outputs == excepted.get('Joe').get('Analysis')
 
 
-@pytest.mark.parametrize('file_name,file_type', [('test1', 'html'), ('test2', 'json'), ('test3', 'pcap')])
-def test_download_report_command(mocker, file_name, file_type):
+@pytest.mark.parametrize('web_id,file_type', [('1', 'html'), ('2', 'json'), ('3', 'pcap')])
+def test_download_report_command(mocker, web_id, file_type):
     """
     Given:
-        - An app client object, file name and file type.
+        - An app client object, web id and file type.
     When:
         - download report method has been called.
     Then:
-        - Ensure the corresponding File has been created.
+        - Ensure the corresponding infoFile has been created.
     """
     from JoeSecurityV2 import download_report_command
 
     client = mock_client()
 
     mocker.patch.object(client, 'analysis_download', return_value=('test_report', 'html_test_report'))
-    mocker.patch.object(client, 'analysis_info', return_value={'filename': file_name})
-    response = download_report_command(client, {'web_id': '1', 'type': file_type})
-    assert response.get('File') == f'{file_name}_report.{file_type}'
+    response = download_report_command(client, {'webid': web_id, 'type': file_type})
+    assert response.get('File') == f'{web_id}_report.{file_type}'
+
+
+def test_download_sample_command(mocker):
+    """
+    Given:
+        - An app client object and web ids.
+    When:
+        - download report method has been called.
+    Then:
+        - Ensure the corresponding File has been created.
+    """
+    from JoeSecurityV2 import download_sample_command
+
+    client = mock_client()
+    mocker.patch.object(client, 'analysis_download', return_value=('test_sample', 'test_sample'))
+
+    for web_id in range(0, 3):
+        response = download_sample_command(client, {'webid': web_id})
+        assert response.get('File') == f'{web_id}.dontrun'
 
 
 def test_search_command(mocker):
     """
     Given:
-        - An app client object.
+        - An app client object and fake query.
     When:
-        - search method has been called.
+        - The search method has been called.
     Then:
         - Ensure the corresponding readable output is returned.
     """
@@ -161,3 +179,51 @@ def test_search_command(mocker):
     mocker.patch.object(client, 'analysis_search', return_value=[])
     response = search_command(client, {'query': 'test.com'})
     assert response.readable_output == 'No Results were found.'
+
+
+def test_file_command(mocker):
+    """
+    Given:
+        - An app client object and files for reputation command.
+    When:
+        - The file reputation method has been called.
+    Then:
+        - Ensure the corresponding indicator were created with the right DBscore and duplicates were removed.
+    """
+    from JoeSecurityV2 import file_command
+
+    result = util_load_json('test_data/analysis_info_list.json')[:-1]
+    excepted = util_load_json('test_data/analysis.json')
+
+    client = mock_client()
+    mocker.patch.object(client, 'analysis_search', return_value=result)
+
+    response = file_command(client, {'file': '1.pdf,test_2.jbs,test_3.jbs'})
+    for index, indicator in enumerate(response.indicators):
+        assert indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
+        assert indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
+        if isinstance(indicator, Common.File):
+            assert indicator.sha1 == excepted.get('File')[index].get('SHA1')
+
+
+def test_url_command(mocker):
+    """
+    Given:
+        - An app client object and urls for reputation command.
+    When:
+        - The url reputation method has been called.
+    Then:
+        - Ensure the corresponding indicator were created with the right DBscore and duplicates were removed.
+    """
+    from JoeSecurityV2 import url_command
+
+    result = util_load_json('test_data/analysis_info_list.json')[-1]
+    excepted = util_load_json('test_data/analysis.json')
+
+    client = mock_client()
+    mocker.patch.object(client, 'analysis_search', return_value=[result])
+    res = url_command(client, {'url': 'http://www.test_url.com'})
+
+    assert res.indicators[0].dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
+    assert res.indicators[0].dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
+    assert res.indicators[0].url == excepted.get('URL').get('Data')
