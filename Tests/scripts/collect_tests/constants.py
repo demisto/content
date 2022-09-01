@@ -7,8 +7,10 @@ XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 SANITY_TEST_TO_PACK: dict[str, str] = {
-    # Some sanity tests (rarely) require a pack
     'Sanity Test - Playbook with Unmockable Whois Integration': 'Whois',
+    'Sanity Test - Playbook with integration': 'HelloWorld',
+    'Sanity Test - Playbook with no integration': 'HelloWorld',
+    'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
@@ -24,9 +26,9 @@ ALWAYS_INSTALLED_PACKS = (
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
-SKIPPED_CONTENT_ITEMS: set[str] = {
+SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
-    'playbook-Jask_Test-4.0.0.yml'
+    'playbook-Jask_Test-4.0.0.yml',
     'playbook-Recorded_Future_Test_4_0.yml',
     'playbook-TestCommonPython_4_1.yml',
 }
