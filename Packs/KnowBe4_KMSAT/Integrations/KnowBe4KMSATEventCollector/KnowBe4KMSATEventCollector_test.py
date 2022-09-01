@@ -149,9 +149,9 @@ def test_get_events(requests_mock, mock_item, expected_results, expected_length)
 
     results = get_events_command(Client(base_url=BASE_URL), args=args, vendor='', product='')
 
-    if type(results) == CommandResults:
+    if mock_item:
         assert results.outputs == expected_results
         assert len(results.outputs) == expected_length
     else:
-        assert results == expected_results
-        assert len(results) == expected_length
+        assert results.readable_output == expected_results
+        assert len(results.readable_output) == expected_length
