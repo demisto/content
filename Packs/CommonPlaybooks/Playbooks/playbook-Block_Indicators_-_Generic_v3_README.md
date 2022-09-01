@@ -43,8 +43,8 @@ This playbook does not use any scripts.
 | LogForwarding | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IPs list handling. |  | Optional |
-| URLListName | URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL | Optional |
-| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
+| URLListName | URL list from the instance context with which to override the remote file. | XSOAR Remediation - URL EDL | Optional |
+| CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
