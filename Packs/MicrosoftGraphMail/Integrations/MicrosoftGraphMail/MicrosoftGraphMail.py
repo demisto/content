@@ -693,7 +693,36 @@ class MsGraphClient:
             "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
-        return self.ms_client.http_request('GET', suffix_endpoint, params=params).get('value') or []
+        emails_as_html = self.ms_client.http_request('GET', suffix_endpoint, params=params).get('value') or []
+
+        headers = {
+            "Prefer": "outlook.body-content-type='text'"
+        }
+
+        emails_as_text = self.ms_client.http_request(
+            'GET', suffix_endpoint, params=params, headers=headers
+        ).get('value') or []
+
+        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
+
+    @staticmethod
+    def get_emails_as_text_and_html(emails_as_html, emails_as_text):
+
+        # sort by message ID to make sure we look over the same emails, it is possible that the api will return them
+        # in a different order.
+        emails_as_html = sorted(emails_as_html, key=lambda email: email['id'])
+        emails_as_text = sorted(emails_as_text, key=lambda email: email['id'])
+
+        emails = []
+
+        for html_email, text_email in zip(emails_as_html, emails_as_text):
+            html_content, text_content = html_email.pop('uniqueBody', {}), text_email.pop('uniqueBody', {})
+            # will get the Body key as html, but uniqueBody with both HTML and text
+            email_with_html_and_text = html_email
+            email_with_html_and_text['uniqueBody'] = [html_content, text_content]
+            emails.append(email_with_html_and_text)
+
+        return emails
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
@@ -735,7 +764,17 @@ class MsGraphClient:
         return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
-    def _parse_item_as_dict(email):
+    def get_mail_unique_body(_unique_body, content_type):
+
+        if content_type not in {'text', 'html'}:
+            raise ValueError(f'content-type must be text or html')
+
+        for _email_body_data in _unique_body:
+            if _email_body_data.get('contentType') == content_type:
+                return _email_body_data
+        return {}
+
+    def _parse_item_as_dict(self, email):
         """
         Parses basic data of email.
 
@@ -750,10 +789,12 @@ class MsGraphClient:
         parsed_email = {EMAIL_DATA_MAPPING[k]: v for (k, v) in email.items() if k in EMAIL_DATA_MAPPING}
         parsed_email['Headers'] = email.get('internetMessageHeaders', [])
 
-        email_body = email.get('body', {}) or email.get('uniqueBody', {})
+        email_unique_body = email.get('uniqueBody', [])
+
+        email_body = email.get('body', {}) or self.get_mail_unique_body(email_unique_body, content_type='html')
         email_content_as_html = email_body.get('content', '')
         parsed_email['Body'] = email_content_as_html
-        parsed_email['Text'] = get_text_from_html(email_content_as_html)  # extract the text from the HTML.
+        parsed_email['Text'] = self.get_mail_unique_body(email_unique_body, content_type='text').get('content', '')
         parsed_email['BodyType'] = email_body.get('contentType', '')
 
         parsed_email['Sender'] = MsGraphClient._get_recipient_address(email.get('sender', {}))
@@ -852,7 +893,7 @@ class MsGraphClient:
         :return: Parsed email
         :rtype: ``dict``
         """
-        parsed_email = MsGraphClient._parse_item_as_dict(email)
+        parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
         attachments = self._get_email_attachments(message_id=email.get('id', ''))
@@ -864,7 +905,7 @@ class MsGraphClient:
         body = email.get('bodyPreview', '')
         if not body or self.display_full_email_body:
             # parse HTML into plain-text
-            body = get_text_from_html(parsed_email.get('Body') or '')
+            body = self.get_mail_unique_body(email.get('uniqueBody', []), content_type='text').get('content', '')
 
         incident = {
             'name': parsed_email.get('Subject'),
