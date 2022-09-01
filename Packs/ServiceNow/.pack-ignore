@@ -36,6 +36,7 @@ InfoFile
 params
 README
 ampersand
+concat
 
 [file:classifier-ServiceNow.json]
 ignore=BA101
