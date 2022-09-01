@@ -585,7 +585,7 @@ class BranchTestCollector(TestCollector):
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         for line in diff.splitlines():
-            match len(parts := line.split()):
+            match len(parts := line.split('\t')):
                 case 2:
                     git_status, file_path = parts
                 case 3:
