@@ -358,7 +358,7 @@ def create_user(client: Client, args: Dict[str, Any]) -> CommandResults:
     if isinstance(result, dict):
         if result.get('status') == 400:
             if result.get('errors', {}).get('invalidarguments', [])[0].get('error') == 'User already exists':
-                command_results_args = {
+                command_results_args: Dict[str, Any] = {
                     'readable_output': 'User already exists'
                 }
             else:
@@ -388,7 +388,7 @@ def modify_user(client: Client, args: Dict[str, Any]) -> CommandResults:
     if email or uid:
         result = client.modify_user(email or uid, fields, attributes)
         if isinstance(result, dict):
-            command_results_args = {
+            command_results_args: Dict[str, Any] = {
                 'readable_output': tableToMarkdown(
                     'Modified User',
                     result,
@@ -416,7 +416,7 @@ def delete_user(client: Client, args: Dict[str, Any]) -> CommandResults:
         if isinstance(result, dict):
             if result.get('status') == 404:
                 if result.get('errors', {}).get('invalidarguments', [])[0].get('error') == 'User not found':
-                    command_results_args = {
+                    command_results_args: Dict[str, Any] = {
                         'readable_output': 'User not found'
                     }
                 else:
@@ -450,7 +450,7 @@ def main() -> None:
             'proofpoint-pps-get-user': get_user,
             'proofpoint-pps-create-user': create_user,
             'proofpoint-pps-modify-user': modify_user,
-            'proofpoint-pps-delete-user': delete_user
+            'proofpoint-pps-delete-user': delete_user,
         }
         if command == 'test-module':
             return_results(test_module(client))
