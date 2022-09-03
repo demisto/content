@@ -59,7 +59,7 @@ configuration:
   name: fullResponseGlobal
   required: false
   type: 8
-description: Deprecated. Use VirusTotalV3 or VirusTotal_V3_Premium integrations from VirusTotal pack instead.
+description: Deprecated. Use "VirusTotal (API v3)"  or "VirusTotal - Premium (API v3)" integrations instead.
 display: VirusTotal - Private API (Deprecated)
 name: VirusTotal - Private API
 deprecated: true
