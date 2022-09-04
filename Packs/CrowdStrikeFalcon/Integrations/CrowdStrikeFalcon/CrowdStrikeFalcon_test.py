@@ -3249,6 +3249,29 @@ def test_get_endpint_command(requests_mock, mocker):
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
+    status_res = {
+        "meta": {
+            "query_time": 0.002455124,
+            "powered_by": "device-api",
+            "trace_id": "c876614b-da71-4942-88db-37b939a78eb3"
+        },
+        "resources": [
+            {
+                "id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "cid": "20879a8064904ecfbb62c118a6a19411",
+                "last_seen": "2022-09-03T10:48:12Z",
+                "state": "online"
+            }
+        ],
+        "errors": []
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/online-state/v1',
+        json=status_res,
+        status_code=200,
+    )
+
     requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
         json=response,
