@@ -577,7 +577,8 @@ You can send the message `help` in order to see the supported commands:
 
    <img height="75" src="./doc_files/cache.png" />
 
-   Make sure to remove the bot from the team (only via the Teams app) before clearing the integration cache, and add it back after done.
+   First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
+5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
 
 ## Download Demisto Bot
 
