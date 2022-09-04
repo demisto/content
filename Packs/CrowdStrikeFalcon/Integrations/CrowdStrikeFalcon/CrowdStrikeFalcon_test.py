@@ -3446,7 +3446,7 @@ def test_generate_status_field(endpoint_status, status, is_isolated):
      - Return status and is_isolated
      """
     from CrowdStrikeFalcon import generate_status_fields
-    assert (status, is_isolated) == generate_status_fields(endpoint_status)
+    assert is_isolated == generate_status_fields(endpoint_status)
 
 
 def test_generate_status_field_invalid():

@@ -2465,7 +2465,8 @@ def search_device_by_ip(raw_res, ip_address):
 
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
-    return raw_res.get('resources')[0].get('state', '')
+    state = raw_res.get('resources')[0].get('state', '')
+    return 'Online' if state == 'online' else 'Offline'
 
 
 def generate_status_fields(endpoint_status):
@@ -2488,7 +2489,7 @@ def generate_status_fields(endpoint_status):
 def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
+        is_isolated = generate_status_fields(single_device.get('status'))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
