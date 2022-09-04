@@ -349,8 +349,7 @@ class Build:
                 if self.is_xsiam and not filtered_tests:
                     tests_for_iteration = []
                 else:
-                    tests_for_iteration = [test for test in tests
-                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -714,17 +713,19 @@ class XSIAMBuild(Build):
         super().__init__(options)
         self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
-        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
-
+            self.get_xsiam_configuration(options.xsiam_machine, options.xsiam_servers_path,
+                                         options.xsiam_servers_api_keys)
         self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.xsiam_machine)]
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+    def get_xsiam_configuration(xsiam_machine, xsiam_servers_path, xsiam_servers_api_keys_path):
+        xsiam_servers = get_json_file(xsiam_servers_path)
         conf = xsiam_servers.get(xsiam_machine)
-        return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+        xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
+        api_key = xsiam_servers_api_keys.get(xsiam_machine)
+        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -847,6 +848,7 @@ def options_handler(args=None):
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
