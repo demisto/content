@@ -1,7 +1,7 @@
 ThreatConnect's integration is a intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 This integration was integrated and tested with version 3 of ThreatConnect v3 REST API
 
-## ThreatConnect Feed HMAC credentials
+## ThreatConnect v3 HMAC credentials
 1. On the top navigation bar, hover the cursor over the Settings icon and select Org Settings from the dropdown menu.
 2. Click the Create API User button on the Membership tab of the Organization Settings screen, and the API User Administration window will be displayed.
 3. Enter the following information:
