@@ -1,0 +1,373 @@
+{
+    "id": "Prisma Cloud",
+    "version": -1,
+    "modified": "2022-04-10T11:55:54.250933+03:00",
+    "fromVersion": "6.9.0",
+    "name": "Prisma Cloud",
+    "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment.",
+    "dependency_packs": [
+      {
+        "name": "Cloud Providers - Kubernetes",
+        "min_required": 1,
+        "packs": [
+          {
+            "name": "GCP-Kubernete",
+            "display_name": "GCP-Kubernete"
+          },
+          {
+            "name": "GoogleKubernetesEngine",
+            "display_name": "Google Kubernetes Engine"
+          },
+          {
+            "name": "AzureKubernetesServices",
+            "display_name": "Azure Kubernetes Services"
+          }
+        ]
+      },
+      {
+        "name": "AWS services",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "AWS-S3",
+            "display_name": "AWS - S3"
+          },
+          {
+            "name": "AWS-CloudWatchLogs",
+            "display_name": "AWS - CloudWatchLogs"
+          },
+          {
+            "name": "AWS-CloudTrail",
+            "display_name": "AWS - CloudTrail"
+          },
+          {
+            "name": "AWS-EC2",
+            "display_name": "AWS - EC2"
+          }
+        ]
+      },
+      {
+        "name": "Google Services",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "GoogleCloudCompute",
+            "display_name": "Google Cloud Compute"
+          }
+        ]
+      }
+    ],
+    "wizard": {
+      "fetching_integrations": [
+        {
+          "priority": 1,
+          "name": "GoogleKubernetesEngine",
+          "action": {
+            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'.",
+            "new": "Set up new 'GoogleKubernetesEngine' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'."
+          },
+          "description": "Set up the 'GoogleKubernetesEngine' integration to work with your Phishing use case.",
+          "incident_type": "Prisma Cloud"
+        },
+        {
+          "priority": 2,
+          "name": "Azure Kubernetes Services",
+          "action": {
+            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'.",
+            "new": "Set up new 'Azure Kubernetes Services' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'."
+          },
+          "description": "Set up the 'Azure Kubernetes Services' integration to work with your Prisma Cloud use case.",
+          "incident_type": "Prisma Cloud"
+        }
+      ],
+      "set_playbook": [
+        {
+          "name": ""
+        }
+      ],
+      "supporting_integrations": [
+        {
+          "name": "WildFire-v2",
+          "action": {
+            "existing": "Configure 'Wildfire' to enable file detonation to improve investigation.",
+            "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
+          },
+          "description": "Configure Wildfire to enable file detonation to improve investigation."
+        },
+        {
+          "name": "CrowdStrike Falcon X",
+          "action": {
+            "existing": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation.",
+            "new": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+          },
+          "description": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+        },
+        {
+          "name": "Active Directory Query v2",
+          "action": {
+            "existing": "Configure 'Active Directory Query v2' to open query your organizational Active Directory.",
+            "new": "Configure 'Active Directory Query v2' to open query your organizational Active Directory."
+          },
+          "description": "Configure 'Active Directory Query v2' to open query your organizational Active Directory."
+        },
+        {
+        "name": "FireEye Email Security",
+        "action": {
+          "existing": "Configure 'FireEye Email Security' to block email senders in your organization.",
+          "new": "Configure 'FireEye Email Security' to block email senders in your organization."
+          },
+        "description": "Configure 'FireEye Email Security' to block email senders in your organization."
+        },
+        {
+        "name": "AutoFocus V2",
+        "action": {
+          "existing": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "VirusTotal (API v3)",
+        "action": {
+          "existing": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "MimecastV2",
+        "action": {
+          "existing": "Configure 'Mimecast V2' to block email senders in your organization.",
+          "new": "Configure 'Mimecast V2' to block email senders in your organization."
+          },
+        "description": "Configure 'Mimecast V2' to block email senders in your organization."
+        },
+        {
+        "name": "Proofpoint Protection Server v2",
+        "action": {
+          "existing": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization.",
+          "new": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization."
+          },
+        "description": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization."
+        },
+        {
+        "name": "Group-IB TDS Polygon",
+        "action": {
+          "existing": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation.",
+          "new": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Joe Security",
+        "action": {
+          "existing": "Configure 'Joe Security' to enable file detonation to improve investigation.",
+          "new": "Configure 'Configure 'Joe Security' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Joe Security' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Threat Grid",
+        "action": {
+          "existing": "Configure 'Threat Grid' to enable file detonation to improve investigation",
+          "new": "Configure 'Threat Grid' to enable file detonation to improve investigation"
+          },
+        "description": "Configure 'Threat Grid' to enable file detonation to improve investigation"
+        },
+        {
+        "name": "CrowdStrike Falcon Sandbox V2",
+        "action": {
+          "existing": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation.",
+          "new": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Lastline v2",
+        "action": {
+          "existing": "Configure 'Lastline v2' to enable file detonation to improve investigation.",
+          "new": "Configure 'Lastline v2' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'Lastline v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Cuckoo Sandbox",
+        "action": {
+          "existing": "Configure 'Cuckoo Sandbox' to enable file detonation to improve investigation.",
+          "new": "Configure 'Cuckoo Sandbox' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'MITRE ATT&CK v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Hybrid Analysis",
+        "action": {
+          "existing": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation.",
+          "new": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "fireeye",
+        "action": {
+          "existing": "Configure 'FireEye AX' to enable file detonation to improve investigation.",
+          "new": "Configure 'FireEye AX' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'FireEye AX' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "vmray",
+        "action": {
+          "existing": "Configure 'VMRay' to enable file detonation to improve investigation.",
+          "new": "Configure 'VMRay' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'VMRay' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "McAfee Advanced Threat Defense",
+        "action": {
+          "existing": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation.",
+          "new": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Zscaler",
+        "action": {
+          "existing": "Configure 'Zscaler' to block IOCs as part of the investigation.",
+          "new": "Configure 'Zscaler' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Zscaler' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Symantec Messaging Gateway",
+        "action": {
+          "existing": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation.",
+          "new": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Trend Micro Apex",
+        "action": {
+          "existing": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation.",
+          "new": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Proofpoint Threat Response",
+        "action": {
+          "existing": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation.",
+          "new": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "VMware Carbon Black EDR v2",
+        "action": {
+          "existing": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation.",
+          "new": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cybereason",
+        "action": {
+          "existing": "Configure 'Cybereason' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cybereason' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cybereason' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cylance Protect v2",
+        "action": {
+          "existing": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cortex XDR - IR",
+        "action": {
+          "existing": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "FortiGate",
+        "action": {
+          "existing": "Configure 'FortiGate' to block IOCs as part of the investigation.",
+          "new": "Configure 'FortiGate' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'FortiGate' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Panorama",
+        "action": {
+          "existing": "Configure 'Panorama' to block IOCs as part of the investigation.",
+          "new": "Configure 'Panorama' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Panorama' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Agari Phishing Defense",
+        "action": {
+          "existing": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation.",
+          "new": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "SecurityAndCompliance",
+        "action": {
+          "existing": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search.",
+          "new": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+          },
+        "description": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+        },
+        {
+        "name": "VirusTotal - Private API",
+        "action": {
+          "existing": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "Have I Been Pwned? V2",
+        "action": {
+          "existing": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "PhishTank V2",
+        "action": {
+          "existing": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "IsItPhishing",
+        "action": {
+          "existing": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation."
+        }
+      ],
+      "next": [
+        {
+          "name": "Enable Your Use Case",
+          "action": {
+            "existing": "Enable the fetching integrations to start ingesting data and run the playbook.",
+            "new": "Enable the fetching integrations to start ingesting data and run the playbook."
+          }
+        }
+      ]
+    }
+  }
+  
