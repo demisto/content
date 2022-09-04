@@ -7,6 +7,7 @@ from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
 from intezer_sdk.api import IntezerApi
+from intezer_sdk.endpoint_analysis import EndpointAnalysis
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import FamilyNotFoundError
@@ -74,6 +75,14 @@ def _get_missing_analysis_result(analysis_id: str, sub_analysis_id: str = None) 
         output = f'The Analysis {analysis_id} was not found on Intezer Analyze'
     else:
         output = f'Could not find the analysis \'{analysis_id}\' or the sub analysis \'{sub_analysis_id}\''
+
+    return CommandResults(
+        readable_output=output
+    )
+
+
+def _get_missing_endpoint_analysis_result(analysis_id: str) -> CommandResults:
+    output = f'Could not find the endpoint analysis \'{analysis_id}\''
 
     return CommandResults(
         readable_output=output
@@ -228,8 +237,11 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     for analysis_id in analysis_ids:
         try:
             if analysis_type == 'Endpoint':
-                response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
-                analysis_result = response.json()['result']
+                analysis = EndpointAnalysis.from_analysis_id(analysis_id, intezer_api)
+                if not analysis:
+                    command_results.append(_get_missing_endpoint_analysis_result(analysis_id))
+                    continue
+                analysis_result = analysis.result()
             elif analysis_type == 'Url':
                 analysis = UrlAnalysis.from_analysis_id(analysis_id, api=intezer_api)
                 if not analysis:
@@ -567,7 +579,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
             'Score': dbot_score_by_verdict.get(verdict, 0)
         })
 
-    url = {'URL': submitted_url, 'Metadata': intezer_result, 'ExistsInIntezer': True}
+    url = {'URL': submitted_url, 'Data': submitted_url, 'Metadata': intezer_result, 'ExistsInIntezer': True}
 
     if verdict == 'malicious':
         url['Malicious'] = {'Vendor': 'Intezer'}
@@ -689,11 +701,11 @@ def main():
         use_ssl = not demisto.params().get('insecure', False)
         analyze_base_url = intezer_base_url_param or consts.BASE_URL
 
-        pack_version = get_pack_version()
-        if pack_version:
-            consts.USER_AGENT += f'/{pack_version}'
-
-        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, use_ssl)
+        intezer_api = IntezerApi(consts.API_VERSION,
+                                 intezer_api_key,
+                                 analyze_base_url,
+                                 use_ssl,
+                                 user_agent=get_pack_version())
 
         command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
             'test-module': check_is_available,

@@ -1,3 +1,4 @@
+# Deprecated - D2 agent is deprecated. No available replacement.
 Uses Cortex XSOAR D2 agent to scan a host using Intezer scanner.
 
 Input:

@@ -25,10 +25,7 @@ This playbook does not use any scripts.
 | **Name**     | **Description**                                                  | **Default Value** | **Source** | **Required** |
 |--------------|------------------------------------------------------------------|-------------------|------------|--------------|
 | File         | A file object that represents an email attachment.               |                   | Context    | Optional     |
-| File.SHA256  | The file attachment sha256.                                      |                   | Context    | Optional     |
-| File.EntryId | The file content.                                                |                   | Context    | Optional     |
 | URL          | The URL object.                                                  |                   | Context    | Optional     |
-| URL.Data     | The URL.                                                         |                   | Context    | Optional     |
 | Interval     | How often the polling command should run (in minutes).           | 1                 | -          | Required     |
 | Timeout      | The amount of time to wait before a timeout occurs (in minutes). | 15                | -          | Required     |
 
@@ -40,9 +37,9 @@ This playbook does not use any scripts.
 | File.Malicious.Vendor | For malicious files, the vendor that made the decision                                                                                                                        | string   |
 | File.Metadata         | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | unknown  |
 | File.ExistsInIntezer  | Does the file exists on intezer genome database                                                                                                                               | boolean  |
-| Url.Malicious.Vendor  | For malicious Url, the vendor that made the decision                                                                                                                          | string   | 
-| Url.Metadata          | Metadata returned from Intezer analysis                                                                                                                                       | unknown  | 
-| Url.ExistsInIntezer   | Does the url exists on intezer                                                                                                                                                | boolean  |
+| URL.Malicious.Vendor  | For malicious Url, the vendor that made the decision                                                                                                                          | string   | 
+| URL.Metadata          | Metadata returned from Intezer analysis                                                                                                                                       | unknown  | 
+| URL.ExistsInIntezer   | Does the url exists on intezer                                                                                                                                                | boolean  |
 | DBotScore             | The DBotScore object.                                                                                                                                                         | unknown  |
 | DBotScore.Indicator   | The indicator that was tested.                                                                                                                                                | string   |
 | DBotScore.Type        | The indicator type.                                                                                                                                                           | string   |

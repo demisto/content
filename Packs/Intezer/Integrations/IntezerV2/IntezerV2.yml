@@ -167,13 +167,25 @@ script:
     - contextPath: Url.URL
       description: The submitted Url
       type: string
+    - contextPath: URL.Data
+      description: The submitted Url
+      type: string
     - contextPath: Url.Malicious.Vendor
+      description: For malicious Url, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Vendor
       description: For malicious Url, the vendor that made the decision
       type: string
     - contextPath: Url.Metadata
       description: Metadata returned from Intezer analysis.
       type: Unknown
+    - contextPath: URL.Metadata
+      description: Metadata returned from Intezer analysis.
+      type: Unknown
     - contextPath: Url.ExistsInIntezer
+      description: Does the url exists on intezer
+      type: Boolean
+    - contextPath: URL.ExistsInIntezer
       description: Does the url exists on intezer
       type: Boolean
     - contextPath: File.Malicious.Vendor
@@ -315,7 +327,7 @@ script:
     - contextPath: Intezer.Analysis.IOCs
       description: The Analysis IOCs
       type: Dict
-  dockerimage: demisto/py3-tools:1.0.0.33301
+  dockerimage: demisto/py3-tools:1.0.0.33641
   isfetch: false
   runonce: false
   script: '-'

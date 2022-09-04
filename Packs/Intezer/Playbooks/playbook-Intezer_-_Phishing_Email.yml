@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8d4f55f4-ae0f-45ba-8d8f-8bfc7c9e12d1
+    taskid: 58779620-48f6-4c0e-83f2-907286ebbf05
     type: start
     task:
-      id: 8d4f55f4-ae0f-45ba-8d8f-8bfc7c9e12d1
+      id: 58779620-48f6-4c0e-83f2-907286ebbf05
       version: -1
       name: ""
       description: start
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c14e3293-4a2a-46c7-80cd-e23de800a7ef
+    taskid: c820b329-66a0-4821-8281-e8833b472757
     type: condition
     task:
-      id: c14e3293-4a2a-46c7-80cd-e23de800a7ef
+      id: c820b329-66a0-4821-8281-e8833b472757
       version: -1
       name: Is Intezer Module Enabled
       description: Checks if there is an instance of the Intezer integration enabled.
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0a18714f-edf8-4ad0-8005-2574b2ede356
+    taskid: 821c17cb-f2cc-41e7-8136-6bf210a4ae9c
     type: regular
     task:
-      id: 0a18714f-edf8-4ad0-8005-2574b2ede356
+      id: 821c17cb-f2cc-41e7-8136-6bf210a4ae9c
       version: -1
       name: Intezer - Analyze URL
       description: Checks the URL reputation.
@@ -121,7 +121,7 @@ tasks:
         complex:
           root: inputs.url
       url:
-        simple: ${URL.Data}
+        simple: ${inputs.URL.Data}
     separatecontext: false
     view: |-
       {
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 858c4d05-540a-4d13-8301-77dab2a58057
+    taskid: 99dbc81c-f299-4ab3-8646-acaded7b8e2c
     type: condition
     task:
-      id: 858c4d05-540a-4d13-8301-77dab2a58057
+      id: 99dbc81c-f299-4ab3-8646-acaded7b8e2c
       version: -1
       name: Is there a url to analyze?
       description: Checks if there is a url to analyze.
@@ -158,14 +158,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: URL
+                root: ${inputs
+                accessor: URL}
             iscontext: true
-          right:
-            value: {}
     view: |-
       {
         "position": {
@@ -182,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f08eebad-6826-464d-87ed-3c226199c584
+    taskid: 3a90498c-d4da-42da-87cd-b3fd60160be3
     type: playbook
     task:
-      id: f08eebad-6826-464d-87ed-3c226199c584
+      id: 3a90498c-d4da-42da-87cd-b3fd60160be3
       version: -1
       name: GenericPolling
       description: |-
@@ -246,13 +245,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: bf0f5436-4e5b-4b08-83f8-2b38092e7604
+    taskid: 38f800ba-1f51-4fe7-8950-b54bc68450d8
     type: regular
     task:
-      id: bf0f5436-4e5b-4b08-83f8-2b38092e7604
+      id: 38f800ba-1f51-4fe7-8950-b54bc68450d8
       version: -1
       name: Intezer - get analysis result
-      description: Wait and get analysis results. Supports file analysis, url and endpoint analysis.
+      description: Wait and get analysis results. Supports file analysis, url and
+        endpoint analysis.
       script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
@@ -285,16 +285,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 254f7c86-c4ed-491f-8a41-48d85048c17d
+    taskid: a433505a-4ed0-4094-8197-20d1f5d40bb8
     type: condition
     task:
-      id: 254f7c86-c4ed-491f-8a41-48d85048c17d
+      id: a433505a-4ed0-4094-8197-20d1f5d40bb8
       version: -1
       name: Is there a file to analyze?
+      description: Check if the file exists in Intezer genome database
       type: condition
       iscommand: false
       brand: ""
-      description: "Check if the file exists in Intezer genome database"
     nexttasks:
       '#default#':
       - "25"
@@ -304,14 +304,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: File
+                root: ${inputs
+                accessor: File}
             iscontext: true
-          right:
-            value: {}
     view: |-
       {
         "position": {
@@ -328,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a8a25838-ad66-4b0c-8e33-8a4d0bb65445
+    taskid: ad125c1f-7c95-452c-80f9-a79340a6cf96
     type: regular
     task:
-      id: a8a25838-ad66-4b0c-8e33-8a4d0bb65445
+      id: ad125c1f-7c95-452c-80f9-a79340a6cf96
       version: -1
       name: Intezer - Analyze attachment
       description: Checks file reputation for uploaded file (up to 150MB)
@@ -344,7 +343,7 @@ tasks:
       - "20"
     scriptarguments:
       file_entry_id:
-        simple: ${File.EntryID}
+        simple: ${inputs.File.EntryID}
     separatecontext: false
     view: |-
       {
@@ -362,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 23a6b3e9-0866-4b5b-87c4-ee2bc8d50ae1
+    taskid: 8f788e35-3608-4889-892d-441bf0f0f00b
     type: playbook
     task:
-      id: 23a6b3e9-0866-4b5b-87c4-ee2bc8d50ae1
+      id: 8f788e35-3608-4889-892d-441bf0f0f00b
       version: -1
       name: GenericPolling
       description: |-
@@ -426,13 +425,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 87146bd2-c4db-48c9-8070-ea917aaccdf2
+    taskid: cff5e115-1d1f-420c-8f60-513fbb023032
     type: regular
     task:
-      id: 87146bd2-c4db-48c9-8070-ea917aaccdf2
+      id: cff5e115-1d1f-420c-8f60-513fbb023032
       version: -1
       name: Intezer - get analysis result
-      description: Wait and get analysis results. Supports file analysis, url and endpoint analysis.
+      description: Wait and get analysis results. Supports file analysis, url and
+        endpoint analysis.
       script: Intezer v2|||intezer-get-analysis-result
       type: regular
       iscommand: true
@@ -465,13 +465,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 6552b4dd-ae48-4b95-8db7-4983907db306
+    taskid: 249d5f97-0010-45f9-8364-8e2db0f5e501
     type: regular
     task:
-      id: 6552b4dd-ae48-4b95-8db7-4983907db306
+      id: 249d5f97-0010-45f9-8364-8e2db0f5e501
       version: -1
       name: Get File Analysis
-      description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
+      description: Checks file reputation of the given hash, supports SHA256, SHA1
+        and MD5 by looking at the latest available report
       script: Intezer v2|||intezer-get-latest-report
       type: regular
       iscommand: true
@@ -483,7 +484,7 @@ tasks:
       - "24"
     scriptarguments:
       file_hash:
-        simple: ${File.SHA256}
+        simple: ${inputs.File.SHA256}
     separatecontext: false
     continueonerror: true
     view: |-
@@ -502,16 +503,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8262ffb6-81ea-4676-8a86-e6d5e3f7f484
+    taskid: 002deef5-d969-4af9-8743-6010ad8429f7
     type: condition
     task:
-      id: 8262ffb6-81ea-4676-8a86-e6d5e3f7f484
+      id: 002deef5-d969-4af9-8743-6010ad8429f7
       version: -1
       name: Check If the Analysis exists
+      description: Check if the analysis exists in Intezer genome database
       type: condition
       iscommand: false
       brand: ""
-      description: "Check if the analysis exists in Intezer genome database"
     nexttasks:
       '#default#':
       - "19"
@@ -544,10 +545,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8ff54cef-f6b9-4ef1-84c2-844c1e6a1d35
+    taskid: 0f8a92a6-ced6-438a-846a-52b1cc0dd609
     type: playbook
     task:
-      id: 8ff54cef-f6b9-4ef1-84c2-844c1e6a1d35
+      id: 0f8a92a6-ced6-438a-846a-52b1cc0dd609
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -625,10 +626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 24b87e94-5bdf-4cf9-8585-b42942095b86
+    taskid: b5d58467-15b8-48a2-86af-c387fb947ce6
     type: title
     task:
-      id: 24b87e94-5bdf-4cf9-8585-b42942095b86
+      id: b5d58467-15b8-48a2-86af-c387fb947ce6
       version: -1
       name: Done
       type: title
@@ -683,39 +684,24 @@ inputs:
 - key: File
   value: {}
   required: false
-  description: 'A file object that represents an email attachment'
-  playbookInputQuery: null
-- key: File.SHA256
-  value: {}
-  required: false
-  description: The file attachment sha256
-  playbookInputQuery: null
-- key: File.EntryId
-  value: {}
-  required: false
-  description: The file content
+  description: A file object that represents an email attachment
   playbookInputQuery: null
 - key: URL
   value: {}
   required: false
   description: The URL object
   playbookInputQuery: null
-- key: URL.Data
-  value: {}
-  required: false
-  description: The URL
-  playbookInputQuery: null
 outputs:
-- contextPath: Url.URL
+- contextPath: URL.Data
   description: The submitted Url
   type: string
-- contextPath: Url.Malicious.Vendor
+- contextPath: URL.Malicious.Vendor
   description: For malicious Url, the vendor that made the decision
   type: string
-- contextPath: Url.Metadata
+- contextPath: URL.Metadata
   description: Metadata returned from Intezer analysis.
   type: Unknown
-- contextPath: Url.ExistsInIntezer
+- contextPath: URL.ExistsInIntezer
   description: Does the url exists on Intezer
   type: Boolean
 - contextPath: DBotScore
@@ -734,7 +720,9 @@ outputs:
   description: The actual score.
   type: number
 - contextPath: File.Metadata
-  description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
+  description: Metadata returned from Intezer analysis (analysis id, analysis url,
+    family, family type, sha256, verdict, sub_verdict). Metadata will be returned
+    only for supported files.
 - contextPath: File.ExistsInIntezer
   description: Does the file exists on Intezer genome database
 - contextPath: File.Malicious.Vendor

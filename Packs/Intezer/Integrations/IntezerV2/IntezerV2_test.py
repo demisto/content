@@ -396,17 +396,16 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
 
 def test_check_analysis_status_and_get_results_command_single_success_endpoint(requests_mock):
     # Arrange
-    sha256 = 'sha256'
     analysis_id = 'analysis_id'
     computer_name = 'kfir-pc'
     _setup_access_token(requests_mock)
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
         json={
+            'status': 'succeeded',
             'result': {
                 'analysis_id': analysis_id,
                 'sub_verdict': 'trusted',
-                'sha256': sha256,
                 'verdict': 'trusted',
                 'analysis_url': 'bla',
                 'computer_name': computer_name,
@@ -426,6 +425,24 @@ def test_check_analysis_status_and_get_results_command_single_success_endpoint(r
     first_result = command_results_list[0]
     assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == computer_name
     assert first_result.outputs['Intezer.Analysis(val.ID && val.ID == obj.ID)']['ID'] == analysis_id
+
+
+def test_get_endpoint_analysis_missing(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/endpoint-analyses/{analysis_id}',
+        status_code=HTTPStatus.NOT_FOUND
+    )
+
+    args = dict(analysis_id=analysis_id, analysis_type='Endpoint')
+
+    # Act
+    command_results = check_analysis_status_and_get_results_command(intezer_api, args)
+
+    # Assert
+    assert command_results[0].readable_output == f'Could not find the endpoint analysis \'{analysis_id}\''
 
 
 def test_check_analysis_status_and_get_results_command_multiple_analyses(requests_mock):

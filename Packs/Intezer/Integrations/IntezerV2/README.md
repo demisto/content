@@ -278,10 +278,14 @@ Required** |
 | File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        | 
 | File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | 
 | File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               |
-| Url.URL               | string   | The submitted Url                                                                                                                                                             | 
-| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          | 
-| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       | 
-| Url.ExistsInIntezer   | Boolean  | Does the url exists on intezer                                                                                                                                                |
+| URL.Data              | string   | The submitted Url                                                                                                                                                             | 
+| Url.URL               | string   | The submitted Url (deprecated)                                                                                                                                                | 
+| URL.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          | 
+| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision (deprecated)                                                                                                             | 
+| URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       | 
+| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis (deprecated)                                                                                                                          | 
+| URL.ExistsInIntezer   | Boolean  | Does the url exists on intezer                                                                                                                                                |
+| Url.ExistsInIntezer   | Boolean  | Does the url exists on intezer (deprecated)                                                                                                                                   |
 | Endpoint.Metadata     | Unknown  | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families, verdict, host_name\)                                                         | 
 
 #### Command Example
