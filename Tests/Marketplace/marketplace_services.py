@@ -1973,6 +1973,7 @@ class Pack(object):
                 PackFolders.XSIAM_REPORTS.value: "xsiamreport",
                 PackFolders.TRIGGERS.value: "trigger",
                 PackFolders.WIZARDS.value: "wizard",
+                PackFolders.AGENT_CONFIG.value: "agentconfig",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -2238,6 +2239,15 @@ class Pack(object):
                             'toVersion': content_item.get('toVersion', ''),
                         })
 
+                    elif current_directory == PackFolders.AGENT_CONFIG.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'os_type': content_item.get('os_type', ''),
+                            'profile_type': content_item.get('profile_type', ''),
+                            'yaml': content_item.get('yaml', '')
+                        })
+
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
 
@@ -2303,6 +2313,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
+
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
