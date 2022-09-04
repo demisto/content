@@ -1,5 +1,19 @@
 [known_words]
 xlsm
+Mimecast
+subplaybook
+Zscaler
+Symantec
+Proofpoint
+Stealthwatch
+Sophos
+Forcepoint
+Netcraft
+SailPoint
+PingOne
+Clarizen
+ExceedLMS
+Okta
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101

@@ -1,0 +1,10 @@
+!domain domain=example.com using=vt
+!url url=https://example.com using=vt
+!ip ip=1.1.1.1 using=vt
+!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e using=vt
+!url-scan url=https://example.com using=vt
+!file-scan entryID=VyoASWK4aRCWLS8T3Jc7EL@2c18b8c3-8f96-458e-8849-39fc741e78fa using=vt
+!file-rescan file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e using=vt
+!vt-file-scan-upload-url using=vt
+!vt-comments-add resource=paloaltonetworks.com resource_type=domain comment="this is a comment" using=vt
+!vt-comments-get resource=https://paloaltonetworks.com using=vt
