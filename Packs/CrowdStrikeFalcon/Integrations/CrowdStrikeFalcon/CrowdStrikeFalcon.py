@@ -2470,11 +2470,10 @@ def get_status(device_id):
 
 
 def generate_status_fields(endpoint_status):
-    status = ''
     is_isolated = ''
 
     if endpoint_status.lower() == 'normal':
-        status = 'Online'
+        pass
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
     elif endpoint_status == 'contained':
