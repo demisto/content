@@ -204,7 +204,7 @@ def create_context(indicators, include_dbot_score=False):
 
 def get_indicators(client: Client, args_type: str, type_name: str, args: dict) -> None:  # pragma: no cover
     owners_query = create_or_query(args.get('owners', demisto.params().get('defaultOrg')), 'ownerName')
-    query = create_or_query(args.get(args_type), 'summary')
+    query = create_or_query(args.get(args_type), 'summary')  # type: ignore
     rating_threshold = args.get('ratingThreshold', '')
     confidence_threshold = args.get('confidenceThreshold', '')
 
@@ -261,7 +261,7 @@ def get_file_indicators(client: Client, args: dict):
 
 
 def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no cover
-    group_ids = args.get('groupID').split(',')
+    group_ids = args.get('groupID').split(',')  # type: ignore
     success = []
     fail = []
     for id in group_ids:
@@ -390,7 +390,7 @@ def tc_get_indicator_owners(client: Client, args: dict) -> Any:  # pragma: no co
 def get_group_associated_groups(client: Client, args: dict) -> Any:  # pragma: no cover
     group_id = args.get('group_id')
     response = list_groups(client, args, include_associated_groups='true', return_raw=True,
-                           group_id=group_id)
+                           group_id=group_id)  # type: ignore
     headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
 
     data = response
@@ -449,7 +449,7 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
 
     response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
                            include_attributes='true',
-                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit=500)
+                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit='500')
 
     demisto.incidents(response)
     demisto.setLastRun({'last': get_last_run_time(response)})
@@ -518,11 +518,14 @@ def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
         'TC.Event(val.ID && val.ID === obj.ID)': content
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': json.dumps(response),
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no cover
