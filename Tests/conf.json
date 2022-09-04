@@ -5176,6 +5176,11 @@
             "memory_threshold": 95
         },
         {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "Skyhigh Security",
             "playbookID": "Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
@@ -5324,6 +5329,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "checkpointdome9" : "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
