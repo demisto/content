@@ -32,13 +32,117 @@ INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
 COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
     'Address': FeedIndicatorType.IP,
-    'Host': FeedIndicatorType.Host,
+    'CIDR': FeedIndicatorType.CIDR,
     'EmailAddress': FeedIndicatorType.Email,
     'File': FeedIndicatorType.File,
+    'Host': FeedIndicatorType.Host,
+    'Mutex': FeedIndicatorType.MUTEX,
+    'Registry Key': FeedIndicatorType.Registry,
     'URL': FeedIndicatorType.URL,
-    'CIDR': FeedIndicatorType.CIDR,
+    'Attack Pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    'Campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'Course of Action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    'Intrusion Set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+    'Malware': ThreatIntel.ObjectsNames.MALWARE,
+    'Report': ThreatIntel.ObjectsNames.REPORT,
+    'Tool': ThreatIntel.ObjectsNames.TOOL,
+    'Vulnerability': FeedIndicatorType.CVE,
+    'ASN': FeedIndicatorType.AS,
 }
 
+TC_INDICATOR_TO_XSOAR_INDICATOR = {
+    # indicator_type: {Raw Field: XSOAR Indicator Field}
+    'IP': {'dateAdded': 'firstseenbysource',
+           'lastModified': 'updateddate',
+           'threatAssessRating': 'verdict',
+           'threatAssessConfidence': 'confidence',
+           'description': 'description',
+           'summary': 'shortdescription',
+           'ip': 'address'},
+    'CIDR': {'dateAdded': 'firstseenbysource',
+             'lastModified': 'updateddate',
+             'threatAssessRating': 'verdict',
+             'threatAssessConfidence': 'confidence',
+             'summary': 'name',
+             'threatAssessScore': 'sourceoriginalseverity'},
+    'Email': {'dateAdded': 'firstseenbysource',
+              'lastModified': 'updateddate',
+              'threatAssessRating': 'verdict',
+              'threatAssessConfidence': 'confidence',
+              'description': 'description',
+              'summary': 'name',
+              'address': 'emailaddress'},
+    'File': {'dateAdded': 'firstseenbysource',
+             'lastModified': 'updateddate',
+             'threatAssessConfidence': 'confidence',
+             'threatAssessRating': 'verdict',
+             'description': 'description',
+             'summary': 'name',
+             'sha256': 'sha256'},
+    'Host': {'dateAdded': 'firstseenbysource',
+             'lastModified': 'updateddate',
+             'threatAssessRating': 'verdict',
+             'threatAssessConfidence': 'confidence',
+             'description': 'description',
+             'summary': 'name',
+             'hostname': 'hostname'},
+    'Mutex': {'dateAdded': 'firstseenbysource',
+              'threatAssessRating': 'verdict',
+              'description': 'description',
+              'threatAssessConfidence': 'confidence',
+              'summary': 'name',
+              'Mutex': 'mutex'},
+    'Registry Key': {'dateAdded': 'firstseenbysource',
+                     'lastModified': 'updateddate',
+                     'threatAssessRating': 'verdict',
+                     'threatAssessConfidence': 'confidence',
+                     'description': 'description',
+                     'summary': 'name',
+                     'Key Name': 'keyvalue.name',
+                     'Value Name': 'keyvalue.data',
+                     'Key Type': 'keyvalue.type',
+                     'Key Name': 'namefield'},
+    'URL': {'dateAdded': 'firstseenbysource',
+            'lastModified': 'updateddate',
+            'threatAssessRating': 'verdict',
+            'threatAssessConfidence': 'confidence',
+            'description': 'description',
+            'summary': 'name',
+            'text': 'address'},
+    'ASN': {'dateAdded': 'firstseenbysource',
+            'lastModified': 'updateddate',
+            'threatAssessRating': 'verdict',
+            'description': 'description',
+            'threatAssessConfidence': 'confidence',
+            'AS Number': 'value'},
+    'Attack Pattern': {'dateAdded': 'firstseenbysource',
+                     'lastModified': 'updateddate',
+                     'description': 'description',
+                     'name': 'name'},
+    'Campaign': {'firstSeen': 'firstseenbysource',
+                 'lastModified': 'updateddate',
+                 'name': 'name'},
+    'Course of Action': {'dateAdded': 'firstseenbysource',
+                         'lastModified': 'updateddate',
+                         'name': 'name'},
+    'Intrusion Set': {'dateAdded': 'firstseenbysource',
+                      'lastModified': 'updateddate',
+                      'name': 'name'},
+    'Malware': {'dateAdded': 'firstseenbysource',
+                'lastModified': 'updateddate',
+                'name': 'name'},
+    'Report': {'dateAdded': 'firstseenbysource',
+               'lastModified': 'updateddate',
+               'name': 'name',
+               'publishDate': 'published'},
+    'Tool': {'dateAdded': 'firstseenbysource',
+                'lastModified': 'updateddate',
+                'name': 'name'},
+    'CVE': {'dateAdded': 'firstseenbysource',
+            'lastModified': 'updateddate',
+            'name': 'name',
+            'publishDate': 'published'}
+}
 
 #########
 # Utils #
@@ -54,11 +158,28 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
-def set_fields_query(fields: list) -> str:
-    fields_str = ''
-    for field in fields:
-        fields_str += f'&fields={field}'
+def set_fields_query() -> str:
+    fields_str = '&fields=threatAssess&fields=tags'
+    if demisto.getParam('retrieveRelationships'):
+        fields_str += '&fields=associatedGroups&fields=associatedIndicators'
+    
     return fields_str
+
+def create_types_query() -> str:
+    types = []
+    if 'All' not in demisto.getParam('groupType'):
+        types.extend(argToList(demisto.getParam("groupType")))
+    if 'All' not in demisto.getParam('indicatorType'):
+        types.extend(argToList(demisto.getParam("indicatorType")))
+    if not types:
+     return ''
+
+    query = 'typeName IN ('
+    for item in types:
+        query += f'"{item}",'
+    query = query[:len(query) - 1]
+    query += ')'
+    return query[:len(query) - 3]
 
 
 def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
@@ -81,28 +202,85 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
 
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """ Parsing indicator by indicators demisto convension.
-
     Args:
         indicator: Indicator as raw response.
-
     Returns:
         dict: Parsed indicator.
     """
+    indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
+    fields = add_indicator_fields(indicator, indicator_type)
     indicator_obj = {
         "value": indicator.get('summary'),
-        "type": INDICATOR_MAPPING_NAMES.get(indicator.get('type', '')),
+        "type": indicator_type,
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
-        "fields": {
-            "tags": argToList(demisto.getParam("feedTags")),
-        },
+        "fields": fields
     }
+
+    return indicator_obj
+
+def add_indicator_fields(indicator, indicator_types):
+    indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_types]
+    fields: dict = {}
+    for indicator_key, xsoar_indicator_key in indicator_fields.items():
+        fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
+
+    raw_tags = indicator.get('tags',{}).get('data', [])
+    tags = [tag.get('name','') for tag in raw_tags]
+    fields['tags'] = tags
+    fields['reportedby'] = indicator.get('ownerName','') or indicator.get('source','')
+
+    fields['feedrelatedindicators'] = indicator.get("associatedIndicators", {}).get('data') or []
+    fields['feedrelatedindicators'].extend(indicator.get("associatedGroups", {}).get('data') or [])
+
+    if 'description' not in fields:
+        fields['description'] = indicator.get('attributes', {}).get('description','')
+    fields['action'] = indicator.get('attributes', {}).get('action','')
 
     tlp_color = demisto.getParam('tlp_color')
     if tlp_color:
-        indicator_obj['fields']['trafficlightprotocol'] = tlp_color  # type: ignore
+        fields['trafficlightprotocol'] = tlp_color  # type: ignore
 
-    return indicator_obj
+    if argToBoolean(demisto.getParam('retrieveRelationships')):
+        relationships = create_indicator_relationships(fields)
+        if relationships:
+            fields['relationships'] = relationships
+
+    return fields
+
+def create_indicator_relationships(indicators_list):
+    relationships_list: List[EntityRelationship] = []
+    for indicator in indicators_list:
+        entities_b = indicator.get('feedrelatedindicators',[])
+        for entity_b in entities_b:
+            
+            relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'), 
+                                                           entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
+    
+    return relationships_list
+
+def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str):
+    """
+    Create a list of entityRelationship object from the api result
+    entity_a: (str) - source of the relationship
+    entity_a_type: (str) - type of the source of the relationship
+    relationships_response: (dict) - the relationship response from the api
+    reliability: The reliability of the source.
+
+    Returns a list of EntityRelationship objects.
+    """
+    relationships_list: List[EntityRelationship] = []
+
+    if entity_b and entity_b_type:
+
+        relationships_list.append(
+            EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=EntityRelationship.Relationships.RELATED_TO,
+                                entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam('feedReliability'),
+                                brand=INTEGRATION_NAME))
+    else:
+        demisto.info(
+            f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {EntityRelationship.Relationships.RELATED_TO}")
+    return relationships_list
 
 
 ##########
@@ -144,16 +322,15 @@ class Client(BaseClient):
     def create_header(self, url_suffix: str, method: Method) -> dict:
         timestamp = round(time.time())
         to_sign = f'{url_suffix}:{method}:{timestamp}'
-        hash = base64.b64encode(
+        api_hash = base64.b64encode(
             hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
-        return {'Authorization': f'TC {self.api_id}:{hash}', 'Timestamp': str(timestamp),
+        return {'Authorization': f'TC {self.api_id}:{api_hash}', 'Timestamp': str(timestamp),
                 'Content-Type': 'application/json'}
 
 
 ######################
 # COMMANDS FUNCTIONS #
 ######################
-
 
 def create_or_query(param_name: str, delimiter_str: str) -> str:
     if not delimiter_str:
@@ -164,13 +341,10 @@ def create_or_query(param_name: str, delimiter_str: str) -> str:
         query += f'{param_name}="{item}" OR '
     return query[:len(query) - 3]
 
-
 def module_test_command(client: Client):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
-
     Args:
         client: ThreatConnect client.
-
     Returns:
         str: Human readable - 'ok' if succeed.
         dict: Operation entry context - Empty.
@@ -182,7 +356,7 @@ def module_test_command(client: Client):  # pragma: no cover
         return "ok", {}, {}
     else:
         return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
+                                                           'An error has occurred, if it persist please contact your '
                                                            'local help desk'))
 
 
@@ -195,20 +369,18 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     Returns:
         list: indicator to populate in demisto server.
     """
-    owners = f'AND ({create_or_query("ownerName", demisto.getParam("owners"))}) '
-    tags = f'AND ({create_or_query("tags", demisto.getParam("tags"))}) '
-    status = f'AND ({create_or_query("status", demisto.getParam("status"))}) '
-    fields = set_fields_query(argToList(demisto.getParam("fields")))
     last_run = demisto.getLastRun()
     last_run = last_run.get('from_date')
     demisto.debug('last run get: ' + str(last_run))
     from_date = ''
     if last_run:
         from_date = f'AND (dateAdded > "{last_run}") '
-    tql = f'{owners if owners != "AND () " else ""}' \
-          f'{tags if tags != "AND () " else ""}' \
-          f'{from_date if from_date != "AND () " else ""}' \
-          f'{status if status != "AND () " else ""}'.replace('AND', '', 1)
+
+    fields = set_fields_query()
+    tql = demisto.getParam('indicatorQuery')
+    if not tql:
+        tql = set_tql_query(from_date)
+    
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
@@ -217,54 +389,94 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
     if '?' not in url:
         url = url.replace('&', '?', 1)  # type: ignore
+
     indicators = []
     while True:
         demisto.debug('URL: ' + url)
-        response, status, next = client.make_request(Method.GET, url, get_next=True)
-        if status == 'Success':
-            indicators.extend(response)
-            # Limit the number of results to not get an error from the API
-            if len(indicators) < 15000 and next:
-                url = next.replace(demisto.getParam('tc_api_path'), '')
-            else:
-                break
+        response, _, next_link = client.make_request(Method.GET, url, get_next=True)
+        indicators.extend(response)
+        # Limit the number of results to not get an error from the API
+        if len(indicators) < 15000 and next_link:
+            url = next_link.replace(demisto.getParam('tc_api_path'), '')
+            url = url.replace('+', '%20')
+
+        else:
+            break
 
     return indicators
 
 
+def set_tql_query(from_date):
+    params = demisto.params()
+    owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
+    tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
+    status = f'AND ({create_or_query("status", params.get("status"))}) '
+    active_only = f'AND indicatorActive EQ {params.get("indicatorActive")} ' if params.get("indicatorActive") else ''
+    confidence = f'AND confidence GT {params.get("confidence")} ' if params.get("confidence") else ''
+    threat_score = f'AND threatAssessScore GT {params.get("threatAssessScore")} ' if params.get("threatAssessScore") else ''
+    
+    type_name_query = create_types_query()
+    type_names = f'AND {type_name_query}' if type_name_query else ''
+
+    tql = f'{owners if owners != "AND () " else ""}' \
+          f'{tags if tags != "AND () " else ""}' \
+          f'{from_date if from_date != "AND () " else ""}' \
+          f'{status if status != "AND () " else ""}' + active_only + confidence + threat_score + type_names
+
+    tql = tql.replace('AND ', '', 1)
+    return tql
+
 def get_indicators_command(client: Client):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
-
     Args:
         client: ThreatConnect client.
-
     Returns:
         str: Human readable.
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    limit = demisto.args().get('limit', '50')
-    offset = demisto.args().get('offset', '0')
-    owners = demisto.getArg('owners') or demisto.getParam('owners')
-    owners = create_or_query(owners, "ownerName")
-    owners = urllib.parse.quote(owners.encode('utf8'))  # type: ignore
-    url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
+    args = demisto.args()
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
+
+    owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
+    active_only = f'AND indicatorActive EQ {args.get("indicatorActive")} ' if argToBoolean(args.get("indicatorActive")) else ''
+    confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
+    threat_score = f'AND threatAssessScore GT {args.get("threatAssessScore")} ' if args.get("threatAssessScore") else ''
+
+    types = argToList(demisto.getArg("indicator_type"))
+    query = ''
+    if types and 'All' not in types:
+        query = 'AND typeName IN ('
+        for item in types:
+            query += f'"{item}",'
+        query = query[:len(query) - 1]
+        query += ')'
+
+    print(query)
+
+    tql =  active_only + confidence + threat_score + confidence + owners + query
+    tql = tql.replace('AND ', '', 1)
+    tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
+    tql = f'?tql={tql}'
+
+    url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
+    if '?' not in url:
+        url = url.replace('&', '?', 1)  # type: ignore
 
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
+        t = [parse_indicator(indicator) for indicator in response]
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=[parse_indicator(indicator) for indicator in
-                                                  response])  # type: ignore # noqa
+                                               t=t)  # type: ignore # noqa
 
         return readable_output, {}, list(response)
 
 
 def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
-
     Args:
         client: ThreatConnect client.
-
     Returns:
         str: Human readable.
         dict: Operation entry context.

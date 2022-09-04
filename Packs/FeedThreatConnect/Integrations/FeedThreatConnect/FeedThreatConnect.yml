@@ -105,6 +105,75 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   name: feedTags
+- additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
+  defaultvalue: All
+  display: Indicator types
+  hidden: false
+  name: indicatorType
+  options:
+  - All
+  - EmailAddress
+  - File
+  - Host
+  - URL
+  - ASN
+  - CIDR
+  - EmailSubject
+  - Hashtag
+  - Mutex
+  - Registry Key
+  - User Agent
+  - Address
+  required: false
+  type: 16
+- additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
+  defaultvalue: All
+  display: Group type
+  hidden: false
+  name: groupType
+  options:
+  - All
+  - Attack Pattern
+  - Campaign
+  - Course of Action
+  - Intrusion Set
+  - Malware Report
+  - Tool
+  - Vulnerability
+  required: false
+  type: 16
+- additionalinfo: Fetch active only indicators when true. Default is "True".
+  defaultvalue: 'true'
+  display: Active Indicators Only
+  hidden: false
+  name: indicatorActive
+  required: false
+  type: 8
+- additionalinfo: Fetch related indicators. Default is "False".
+  defaultvalue: 'false'
+  display: Retrieve Relationships
+  hidden: false
+  name: retrieveRelationships
+  required: false
+  type: 8
+- additionalinfo: For more information, use the link https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+  display: Indicator Query
+  hidden: false
+  name: indicatorQuery
+  required: false
+  type: 12
+- additionalinfo: Require an integer that will determine the threshold. i.e. “55” Greater than 55. Relevant for ThreatConnect Indicators only.
+  display: Confidence Threshold
+  hidden: false
+  name: confidence
+  required: false
+  type: 0
+- additionalinfo: Require an an integer that will determine the threshold. i.e. “250” Greater than 250. Relevant for ThreatConnect Indicators only.
+  display: Threat Assess Score Threshold
+  hidden: false
+  name: threatAssessScore
+  required: false
+  type: 0
 description: This integration fetches indicators from ThreatConnect.
 display: ThreatConnect Feed
 name: ThreatConnect Feed
@@ -133,6 +202,55 @@ script:
       name: offset
       predefined:
       - ''
+      required: false
+      secret: false
+    - default: false
+      description: For more information, use the link https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+      isArray: false
+      name: tql_query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Multi-select list that will allow filtering of the retrieved indicators.
+        Comma-seperated list.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - All
+      - EmailAddress
+      - File
+      - Host
+      - URL
+      - ASN
+      - CIDR
+      - Mutex
+      - Registry Key
+      - Address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Fetch active only indicators when true
+      isArray: false
+      name: indicatorActive
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Require an input of an integer, this will fetch indicators with
+        confidence of “greater than” the input
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: Require an an integer that will determine the threshold
+      isArray: false
+      name: threat_asses_score
       required: false
       secret: false
     deprecated: false
