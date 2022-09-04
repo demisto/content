@@ -7,8 +7,8 @@ This is the UltraMSG integration for getting started made by Trustnet
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Token |  | True |
-    | Instance | Example: instance12345 | True |
+    | Token | When you creating an Instamce you'll get an Token Example: ty49xcwlhiogro9x | True |
+    | Instance | When you creating an Instamce you'll get an instance id. Example: instance12345 | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -26,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Phone Number (With Country Code) or Group Id. | Required | 
+| id | Phone Number (With Country Code) or Group Id. Example: +972501234567. | Required | 
 | text | Free text. | Required | 
 
 

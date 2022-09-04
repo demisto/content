@@ -3,11 +3,12 @@ commonfields:
   id: UltraMSG
   version: -1
 configuration:
-- display: Token
+- additionalinfo: 'When you creating an Instamce you''ll get an Token Example: ty49xcwlhiogro9x'
+  display: Token
   name: token
   required: true
   type: 0
-- additionalinfo: 'Example: instance12345'
+- additionalinfo: 'When you creating an Instamce you''ll get an instance id. Example: instance12345'
   display: Instance
   name: instance
   required: true
@@ -18,7 +19,7 @@ name: UltraMSG
 script:
   commands:
   - arguments:
-    - description: Phone Number (With Country Code) or Group Id
+    - description: 'Phone Number (With Country Code) or Group Id. Example: +972501234567'
       name: id
       required: true
     - description: Free text

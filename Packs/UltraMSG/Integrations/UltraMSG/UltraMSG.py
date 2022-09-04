@@ -31,7 +31,7 @@ def test_module(token, instance):
         else:
             return "Instance Status is: '" + status + "' Should be 'connected'.Please check your instance"
     except Exception:
-        demisto.results('Task Failed')
+        return "Please check you'r instance"
 
 
 def main():
