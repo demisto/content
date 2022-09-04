@@ -2490,6 +2490,7 @@ def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
         is_isolated = generate_status_fields(single_device.get('status'))
+        status = get_status(single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
