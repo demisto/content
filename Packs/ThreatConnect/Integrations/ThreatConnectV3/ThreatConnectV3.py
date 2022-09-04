@@ -449,10 +449,10 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
 
     response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
                            include_attributes='true',
-                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
+                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit=500)
 
-    demisto.incidents(response.get('data'))
-    demisto.setLastRun({'last': get_last_run_time(response.get('data'))})
+    demisto.incidents(response)
+    demisto.setLastRun({'last': get_last_run_time(response)})
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -590,7 +590,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
                 group_type: str = '', tql_filter: str = '', include_security_labels: str = '',
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
-                include_all_metadata: str = '', status: str = '', owner: str = '',
+                include_all_metadata: str = '', status: str = '', owner: str = '', limit: str = '100',
                 return_raw=False) -> Any:
     # FIELDS PARAMS
     include_all_metadata = args.get('include_all_metadata', include_all_metadata)
@@ -607,7 +607,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
     group_type = args.get('group_type', group_type)
     tql_filter = args.get('filter', tql_filter)
     # PAGINATION PARAMS
-    limit = args.get('limit', '100')
+    limit = args.get('limit', limit)
     page = args.get('page', '0')
 
     tql_prefix = ''
