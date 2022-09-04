@@ -8100,6 +8100,65 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
+  - arguments:
+    - description: The name of the virtual router to retrieve, if not mentioned will bring all the virtual routers.
+      isArray: false
+      name: virtual_router
+      required: false
+    - description: The template in which the virtual router are part of. Use only for panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed virtual routers or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of virtual routers to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of nat-rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing virtual-routers, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of virtual routers of either Panorama/firewall instance.
+    name: pan-os-list-virtual-routers
+    outputs:
+    - contextPath: Panorama.VirtualRouter.Name
+      description: The name of the virtual Router
+      type: String
+    - contextPath: Panorama.VirtualRouter.Interface
+      description: The interface(s) that the virtual router uses.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.RIP
+      description: Information about the RIP of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.OSPF
+      description: Information about the OSPF of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.OSPFv3
+      description: Information about the OSPFv3 of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.BGP
+      description: Information about the BGP of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.RedistributionProfile
+      description: The redistribution profile(s) that the virtual router uses.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.Multicast
+      description: Information about the Multicast of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.StaticRoute
+      description: The static routes(s) that the virtual router uses.
+      type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

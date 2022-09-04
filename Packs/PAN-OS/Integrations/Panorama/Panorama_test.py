@@ -28,6 +28,7 @@ integration_panorama_params = {
     'device_group': 'Lab-Devices',
     'server': 'https://1.1.1.1',
     'key': 'thisisabogusAPIKEY!',
+    'template': 'test'
 }
 
 
@@ -3426,3 +3427,94 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+class TestPanOSListVirtualRouters:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params, mocked_response_path',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false', 'name': 'test'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/"
+                             "config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='test']"
+                },
+                'test_data/list-virtual-routers-response.json'
+            ),
+            pytest.param(
+                {'show_uncommitted': 'false', 'name': 'test'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response.json'
+            ),
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'name': 'test'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response-un-commited-router.json'
+            ),
+            pytest.param(
+                {'show_uncommitted': 'true', 'name': 'test'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response-un-commited-router.json'
+            )
+        ]
+    )
+    def test_pan_os_list_virtual_routers_command_main_flow(
+        self, mocker, args, params, expected_url_params, mocked_response_path
+    ):
+        """
+        Given:
+         - Panorama instance configuration and name to retrieve a specific virtual router that was committed.
+         - Firewall instance configuration and name to retrieve a specific virtual router that was committed.
+         - Panorama instance configuration and name to retrieve a specific virtual router that was not committed.
+         - Firewall instance configuration and name to retrieve a specific virtual router that was not committed.
+
+        When:
+         - running the pan-os-list-virtual-routers through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly for both un-committed and committed cases.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json(mocked_response_path)
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-virtual-routers')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+            {
+                'Name': 'test', 'Interface': None, 'RIP': {'enable': 'no'},
+                'OSPF': {'enable': 'no'}, 'OSPFv3': {'enable': 'no'},
+                'BGP': {'routing-options': {'graceful-restart': {'enable': 'yes'}}, 'enable': 'no'},
+                'Multicast': {},
+                'StaticRoute': {},
+                'RedistributionProfile': {}
+             }
+        ]
+        assert mock_request.call_args.kwargs['params'] == expected_url_params

@@ -7436,3 +7436,230 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-virtual-routers
+***
+Returns a list of virtual routers of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-virtual-routers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| virtual_router | The name of the virtual router to retrieve, if not mentioned will bring all the virtual routers. | Optional | 
+| template | The template in which the virtual router are part of. Use only for panorama instances. | Optional | 
+| show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of virtual routers to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing virtual-routers, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.VirtualRouter.Name | String | The name of the virtual Router | 
+| Panorama.VirtualRouter.Interface | Unknown | The interface\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.RIP | Unknown | Information about the RIP of the virtual router. | 
+| Panorama.VirtualRouter.OSPF | Unknown | Information about the OSPF of the virtual router. | 
+| Panorama.VirtualRouter.OSPFv3 | Unknown | Information about the OSPFv3 of the virtual router. | 
+| Panorama.VirtualRouter.BGP | Unknown | Information about the BGP of the virtual router. | 
+| Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.Multicast | Unknown | Information about the Multicast of the virtual router. | 
+| Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
+
+#### Command example
+```!pan-os-list-virtual-routers show_uncommitted=true virtual_router=test-guy```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "VirtualRouter": [
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": null,
+                "Multicast": {},
+                "Name": "virtual-router-1",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "enable": "no"
+                },
+                "RedistributionProfile": {},
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": [
+                                {
+                                    "@name": "static_route_ip",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "14",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip2",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "188",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip3",
+                                    "destination": "1.1.1.1/32",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": "loopback",
+                "Multicast": {
+                    "enable": "no",
+                    "rp": {
+                        "local-rp": {
+                            "candidate-rp": {
+                                "interface": "loopback"
+                            }
+                        }
+                    }
+                },
+                "Name": "virtual-router-2",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "auth-profile": {
+                        "entry": {
+                            "@name": "213"
+                        }
+                    },
+                    "enable": "no",
+                    "export-rules": {
+                        "entry": {
+                            "@name": "test1"
+                        }
+                    },
+                    "interface": {
+                        "entry": {
+                            "@name": "loopback",
+                            "bfd": {
+                                "profile": "Inherit-vr-global-setting"
+                            },
+                            "default-route": {
+                                "disable": {}
+                            },
+                            "enable": "yes",
+                            "mode": "normal"
+                        }
+                    }
+                },
+                "RedistributionProfile": {
+                    "entry": [
+                        {
+                            "@name": "test1",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "1"
+                        },
+                        {
+                            "@name": "test-2",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "123"
+                        }
+                    ]
+                },
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": {
+                                "@name": "test",
+                                "bfd": {
+                                    "profile": "None"
+                                },
+                                "destination": "1.1.1.1",
+                                "metric": "10",
+                                "nexthop": {
+                                    "ip-address": "my_shared_address_object_test"
+                                },
+                                "path-monitor": {
+                                    "enable": "no",
+                                    "failure-condition": "any",
+                                    "hold-time": "2"
+                                },
+                                "route-table": {
+                                    "unicast": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Routers:
+>|BGP|Interface|Multicast| Name             |OSPF|OSPFv3|RIP|RedistributionProfile|StaticRoute|
+>|---|---|------------------|---|---|---|---|---|---|
+>| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
+>| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
+

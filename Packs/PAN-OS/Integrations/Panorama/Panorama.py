@@ -11124,6 +11124,144 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def build_virtual_routers_xpath(name: Optional[str] = None):
+    network_xpath, _ = set_xpath_network()
+    _xpath = f'{network_xpath}/virtual-router'
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_virtual_routers_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
+
+    for key in keys_to_remove:
+        try:
+            del dictionary[key]
+        except KeyError:
+            pass
+
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            for k in value.keys():
+                if isinstance(value[k], dict) and (text := (value[k].get('#text'))):
+                    value[k] = text
+            replace_and_remove_keys_from_dict(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    for k in item.keys():
+                        if isinstance(item[k], dict) and (text := (item[k].get('#text'))):
+                            item[k] = text
+                    replace_and_remove_keys_from_dict(item, keys_to_remove)
+
+
+def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
+
+    def extract_info_by_key(_entry, _key):
+
+        if isinstance(_entry, list):
+            return [item.get(_key) for item in _entry]
+
+        key_info = _entry.get(_key)  # api could not return the key
+        if not key_info:
+            return None
+
+        if isinstance(key_info, dict) and (_member := key_info.get('member')):
+            return _member
+        elif isinstance(key_info, str):
+            return key_info
+
+        return None
+
+    if show_uncommitted:
+        for entry in entries:
+            replace_and_remove_keys_from_dict(entry, ['@admin', '@dirtyId', '@time'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        human_readable.append(
+            {
+                'Name': entry.get('@name'),
+                'Interface': extract_info_by_key(entry, 'interface'),
+                'RIP': extract_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
+                'OSPF': extract_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
+                'OSPFv3': extract_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
+                'BGP': extract_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
+                'Multicast': extract_info_by_key(entry.get('multicast', {}), 'enable'),
+                'StaticRoute': extract_info_by_key(
+                    entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
+                        'entry', {}),
+                    '@name'
+                ),
+                'RedistributionProfile': extract_info_by_key(
+                    entry.get('protocol', {}).get('redist-profile', {}).get('entry', {}), '@name'
+                )
+            }
+        )
+        context.append(
+            {
+                'Name': entry.get('@name'),
+                'Interface': extract_info_by_key(entry, 'interface'),
+                'RIP': entry.get('protocol', {}).get('rip', {}),
+                'OSPF': entry.get('protocol', {}).get('ospf', {}),
+                'OSPFv3': entry.get('protocol', {}).get('ospfv3', {}),
+                'BGP': entry.get('protocol', {}).get('bgp', {}),
+                'Multicast': entry.get('multicast', {}),
+                'StaticRoute': entry.get('routing-table', {}),
+                'RedistributionProfile': entry.get('protocol', {}).get('redist-profile', {})
+            }
+        )
+
+    return human_readable, context
+
+
+def pan_os_list_virtual_routers_command(args):
+    name = args.get('name')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = result.get('virtual-router', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # filter the nat-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        if page is not None:
+            if page <= 0:
+                raise DemistoException(f'page {page} must be a positive number')
+            page_size = arg_to_number(args.get('page_size')) or 50
+            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
+        else:
+            limit = arg_to_number(args.get('limit')) or 50
+            entries = entries[:limit]
+
+    table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=context,
+        readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
+        outputs_prefix='Panorama.VirtualRouter',
+        outputs_key_field='Name'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -11774,6 +11912,8 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-virtual-routers':
+            return_results(pan_os_list_virtual_routers_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
