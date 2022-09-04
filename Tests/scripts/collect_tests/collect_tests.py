@@ -268,23 +268,28 @@ class TestCollector(ABC):
         result = []
 
         for test_id in test_ids:
+            logger.debug(f'searching dependencies for {test_id}')
             test_object = self.conf.get_test(test_id)
 
             for integration in test_object.integrations:
+                pack_id = self.id_set.id_to_integration[integration].pack_id
+                logger.debug(f'found that {test_id} depends on {integration} from {pack_id}')
                 result.append(
                     self._collect_test_dependency(
                         dependency=integration,
                         test_id=test_id,
-                        pack_id=self.id_set.id_to_integration[integration].pack_id
+                        pack_id=pack_id,
                     )
                 )
 
             for script in test_object.scripts:
+                pack_id = self.id_set.id_to_script[script].pack_id
+                logger.debug(f'found that {test_id} depends on {script} from {pack_id}')
                 result.append(
                     self._collect_test_dependency(
                         dependency=script,
                         test_id=test_id,
-                        pack_id=self.id_set.id_to_script[script].pack_id
+                        pack_id=pack_id,
                     )
                 )
 
