@@ -8294,7 +8294,7 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    description: Returns a list of nat-rules of either Panorama/firewall instance.
+    description: Deletes a nat rule.
     name: pan-os-delete-nat-rule
     outputs: []
   - arguments:
@@ -8351,7 +8351,7 @@ script:
       isArray: true
       name: element_value
       required: true
-    description: Returns a list of nat-rules of either Panorama/firewall instance.
+    description: Edits a nat-rule.
     name: pan-os-edit-nat-rule
     outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
