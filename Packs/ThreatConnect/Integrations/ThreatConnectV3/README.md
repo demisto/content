@@ -26,7 +26,7 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Base Url | The base URL for the API| True |
     | Access ID | The API credentials | True |
     | Secret key | The API secret key| True |
-    | Default Organization | | False |
+    | Default Organization | The default owner for the integration | False |
     | Tags filter for the fetch | Free text box to add comma-separated tags to filter the fetched incidents by. | False |
     | Group Type filter for the fetch | The group type to filter the fetched incidents by. | False |
     | Status filter for the fetch | The status to filter the fetched incidents by \(if not field will fetch all statuses\). | False |
@@ -36,8 +36,9 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
     | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
     | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness.This is necessary to calculate reputation. | False |
-    | Trust any certificate (not secure) | | False |
-    | Use system proxy settings | | False |
+    | Trust any certificate (not secure) | Whether or not to trust any certificate| False |
+    | Use system proxy settings | Whether or not to use proxy | False |
+    | Maximum number of incidents to fetch | The maximum amount of incident to fetch per run | 200 |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

@@ -439,17 +439,18 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
     tags = params.get('tags', '')
     owners = params.get('owners', '')
     status = params.get('status', '')
+    max_fetch = params.get('max_fetch', '200')
     group_type = params.get('group_type', ['Incident'])
     last_run = demisto.getLastRun()
     last_run = last_run.get('last')
     demisto.debug(f'[ThreatConnect] last run: {last_run}')
     if not last_run:
-        last_run = f"{params.get('first_fetch_time') or '3 days'} ago"
+        last_run = f"{params.get('first_fetch') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
     response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
                            include_attributes='true',
-                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit='500')
+                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit=max_fetch)
 
     demisto.incidents(response)
     demisto.setLastRun({'last': get_last_run_time(response)})
@@ -1122,12 +1123,12 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
 def tc_tag_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     tags = args.get('tag')
     response = tc_update_indicator_command(client, args, mode='append', return_raw=True, tags=tags)
-    ec, indicators = create_context([response.get('data')])
+    ec, indicators = create_context([response])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response.get('data'),
+        'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
             f'Added the tag {args.get("tags")} to indicator {args.get("indicator")} successfully',
@@ -1142,12 +1143,12 @@ def tc_delete_indicator_tag_command(client: Client, args: dict) -> None:  # prag
     indicator_id = args.get('indicator')
     response = tc_update_indicator_command(client, args, mode='delete', return_raw=True, tags=tag,
                                            indicator=indicator_id)
-    ec, indicators = create_context([response.get('data')])
+    ec, indicators = create_context([response])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response.get('data'),
+        'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
             f'removed the tag {tag} from indicator {indicator_id} successfully',
@@ -1294,7 +1295,7 @@ def add_group_security_label(client: Client, args: dict):  # pragma: no cover
     """
     group_id = args.get('group_id')
     security_label_name = args.get("security_label_name")
-    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)  # type: ignore
+    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)  # type: ignore # noqa
     return_results(f'The security label {security_label_name} was added successfully to the group {group_id}')
 
 
@@ -1616,7 +1617,6 @@ def main(params):  # pragma: no cover
             COMMANDS[command](client, args)  # type: ignore
 
     except Exception as e:
-        raise e
         return_error(f'An error has occurred: {str(e)}', error=e)
 
 

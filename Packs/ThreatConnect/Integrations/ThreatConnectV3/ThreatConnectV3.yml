@@ -58,7 +58,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
-  name: first_fetch_time
+  name: first_fetch
   type: 0
   required: true
 - additionalinfo: The metadata to collect.
@@ -104,6 +104,11 @@ configuration:
   name: freshness
   required: false
   type: 0
+- name: max_fetch
+  display: Maximum number of incidents to fetch
+  required: false
+  type: 0
+  defaultvalue: '200'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
