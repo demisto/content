@@ -57,7 +57,7 @@ subtype: python3
 system: false
 timeout: 1.2µs
 type: python
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
 dependson:
