@@ -491,7 +491,7 @@ tasks:
     task:
       id: e0b7f17c-70f7-4330-8f06-c3729e226adb
       version: -1
-      name: Is OKTA v2 Integration Enabled
+      name: Is OKTA v2 integration enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -596,7 +596,7 @@ tasks:
     task:
       id: 0f630de1-9988-461a-883a-6113d3dd6d2a
       version: -1
-      name: Is AWS Integration Enabled?
+      name: Is AWS integration enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -786,7 +786,7 @@ tasks:
     task:
       id: 21d70bb7-8b40-4f49-80ca-b78cb05b24aa
       version: -1
-      name: Is SailPoint IdentityNow Integration Enabled?
+      name: Is SailPoint IdentityNow integration enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -1099,5 +1099,5 @@ outputs:
 - contextPath: SailPointIdentityNow.Account.hasEntitlements
   description: Indicates whether the account has entitlement.
 tests:
-- No tests (auto formatted)
+- Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0
