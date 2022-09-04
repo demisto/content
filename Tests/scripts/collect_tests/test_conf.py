@@ -1,9 +1,9 @@
 from collections import defaultdict
 from pathlib import Path
 
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
-from Tests.scripts.collect_tests.logger import logger
 
 
 class TestConfItem(DictBased):

@@ -74,7 +74,7 @@ class NothingToCollectException(Exception):
         return self.message
 
 
-class NonXSIAMContentException(NothingToCollectException):
+class IncompatibleMarketplaceException(NothingToCollectException):
     def __init__(self, content_path: Path):
         super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
 

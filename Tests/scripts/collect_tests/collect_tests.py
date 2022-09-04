@@ -17,8 +17,8 @@ from Tests.scripts.collect_tests.constants import (
     SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
     XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
-    DeprecatedPackException, InvalidTestException, NonDictException,
-    NonXSIAMContentException, NonXsoarSupportedPackException,
+    DeprecatedPackException, IncompatibleMarketplaceException,
+    InvalidTestException, NonDictException, NonXsoarSupportedPackException,
     NoTestsConfiguredException, NothingToCollectException,
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException)
@@ -304,8 +304,14 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     def _collect_pack(self, pack_id: str, reason: CollectionReason, reason_description: str,
-                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+                      content_item_range: Optional[VersionRange] = None) -> Optional[CollectionResult]:
         pack = PACK_MANAGER[pack_id]
+
+        try:
+            self._validate_marketplace_compatibility(pack)
+        except IncompatibleMarketplaceException as e:
+            logger.warning(f'Pack {pack_id} is not compatible with {self.marketplace.value} marketplace: {e}')
+            return None
 
         version_range = content_item_range \
             if pack.version_range.is_default \
@@ -320,6 +326,24 @@ class TestCollector(ABC):
             conf=self.conf,
             id_set=self.id_set,
         )
+
+    def _validate_marketplace_compatibility(self, content_item: ContentItem):
+        if content_item.marketplaces is None:
+            relative_path = PACK_MANAGER.relative_to_packs(content_item.path)
+            raise ValueError(f'content item {relative_path} has no marketplaces')
+
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                if content_item.marketplaces != (self.marketplace,):
+                    # marketplacev2 must be the only value in order to be collected
+                    raise IncompatibleMarketplaceException(content_item.path)
+
+            case MarketplaceVersions.XSOAR:
+                if self.marketplace not in content_item.marketplaces:
+                    raise IncompatibleMarketplaceException(content_item.path)
+
+            case _:
+                raise RuntimeError(f'Unexpected marketplace version {self.marketplace}')
 
 
 class BranchTestCollector(TestCollector):
@@ -374,7 +398,8 @@ class BranchTestCollector(TestCollector):
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
-        self._validate_xsiam_compatibility(yml)
+
+        self._validate_marketplace_compatibility(yml)
         self._validate_skipped_integration(yml)
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
@@ -461,12 +486,6 @@ class BranchTestCollector(TestCollector):
         if yml.id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(yml.path, 'integration is skipped')
 
-    def _validate_xsiam_compatibility(self, content_item: ContentItem):
-        if self.marketplace == MarketplaceVersions.MarketplaceV2:
-            # tests should be collected only for items whose only marketplace is marketplacev2
-            if content_item.marketplaces != (self.marketplace,):
-                raise NonXSIAMContentException(content_item.path)
-
     def _validate_triggering_sanity_test(self, path):
         if path in PATHS.files_triggering_sanity_tests:
             self.trigger_sanity_tests = True
@@ -489,7 +508,7 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self._validate_xsiam_compatibility(content_item)
+            self._validate_marketplace_compatibility(content_item)
 
         except NonDictException:
             # for `.py`, `.md`, etc: anything not dictionary-based. Suitable logic follows, see collect_yml.
@@ -500,7 +519,7 @@ class BranchTestCollector(TestCollector):
             pack_id = find_pack_folder(path).name
 
             if not content_item:
-                self._validate_xsiam_compatibility(PACK_MANAGER[pack_id])  # checks marketplaces under pack_metadata
+                self._validate_marketplace_compatibility(PACK_MANAGER[pack_id])  # checks pack_metadata
 
             return self._collect_pack(
                 pack_id=pack_id,
