@@ -1809,7 +1809,7 @@ script:
       predefined:
       - ""
     - name: route
-      description: An array of routes to filter by. Possible values are internal, outbound and inbound.
+      description: A comma-separated list of routes to filter by. Possible values are internal, outbound and inbound.
       required: false
       isArray: true
       defaultValue: ""
@@ -1869,7 +1869,7 @@ script:
     deprecated: false
     arguments:
     - name: ids
-      description: The Mimecast ID of the message to load. This is returned by the /api/message-finder/search endpoint. (mimecast-search-message command)
+      description: A comma-separated list of the Mimecast IDs of the messages to load. This is returned by the /api/message-finder/search endpoint. (mimecast-search-message command)
       required: true
       isArray: true
       defaultValue: ""
@@ -2329,7 +2329,7 @@ script:
     deprecated: false
     arguments:
     - name: ids
-      description: "An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message"
+      description: "A comma-separated list of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message"
       required: true
       isArray: true
       defaultValue: ""
