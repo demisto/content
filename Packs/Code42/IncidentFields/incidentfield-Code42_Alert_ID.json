@@ -4,16 +4,16 @@
         "Code42 Security Alert"
     ],
     "caseInsensitive": true,
-    "cliName": "code42severity",
+    "cliName": "code42alertid",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_code42severity",
+    "id": "incident_code42alertid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Code42 Severity",
+    "name": "Code42 Alert ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -25,5 +25,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.5.0"
 }
