@@ -11137,7 +11137,8 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
         'type': 'config',
         'action': 'get' if show_uncommited else 'show',
         'key': API_KEY,
-        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post)  # rulebase is for firewall instance.
+        # rulebase is for firewall instance.
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
     }
 
     return http_request(URL, 'POST', params=params)
@@ -11481,7 +11482,7 @@ def pan_os_edit_nat_rule_command(args):
         'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
     }
 
-    element_to_change, api_path_json_key, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)
+    element_to_change, api_path_json_key, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,

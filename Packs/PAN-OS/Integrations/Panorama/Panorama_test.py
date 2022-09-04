@@ -756,16 +756,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap', 'pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -3036,7 +3036,7 @@ class TestPanOSListNatRulesCommand:
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
                              "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
-                     }
+                }
             ),
             pytest.param(
                 {'show_uncommitted': 'true', 'name': 'test'},
@@ -3197,8 +3197,10 @@ class TestCreatePanOSNatRuleCommand:
     def test_pan_os_create_nat_rule_command_main_flow(self, mocker, args, params, expected_url_params):
         """
         Given:
-         - Panorama instance configuration with source_translation_type, source_translated_address and source_translated_address_type
-         - Firewall instance configuration with source_translation_type, source_translated_address and source_translated_address_type
+         - Panorama instance configuration with source_translation_type, source_translated_address
+            and source_translated_address_type
+         - Firewall instance configuration with source_translation_type, source_translated_address
+            and source_translated_address_type
          - Panorama instance configuration with basic parameter configurations along with dynamic-ip
          - firewall instance configuration with basic parameter configurations along with dynamic-ip
 
@@ -3223,40 +3225,40 @@ class TestCreatePanOSNatRuleCommand:
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'rulename': 'test',
-                    'pre_post': 'pre-rulebase'
-                },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
-                {
-                    'action': 'delete',
-                    'key': 'thisisabogusAPIKEY!',
-                    'type': 'config',
-                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
-                }
-            ),
-            pytest.param(
-                {
-                    'rulename': 'test'
-                },
-                integration_params,
-                {
-                    'action': 'delete',
-                    'key': 'thisisabogusAPIKEY!',
-                    'type': 'config',
-                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
-                             "[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
-                }
-            )
-        ]
-    )
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'rulename': 'test',
+                'pre_post': 'pre-rulebase'
+            },
+            {
+                'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
+                'key': 'thisisabogusAPIKEY!'
+            },
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                         "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+            }
+        ),
+        pytest.param(
+            {
+                'rulename': 'test'
+            },
+            integration_params,
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                         "[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+            }
+        )
+    ]
+)
 def test_pan_os_delete_nat_rule_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
