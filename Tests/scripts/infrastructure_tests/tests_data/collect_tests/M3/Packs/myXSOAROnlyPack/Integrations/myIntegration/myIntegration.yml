@@ -1,6 +1,15 @@
+name: myIntegration
+tests:
+  - myOtherTestPlaybook
+marketplaces:
+- xsoar
+subtype: python3
+type: python
+
+
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ipinfo_v2
+  id: myIntegration
   version: -1
 configuration:
 - name: credentials
@@ -37,9 +46,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the IPinfo.io API to get data about an IP address.
+description: a demo pack.
 display: IPinfo v2
-name: ipinfo_v2
 script:
   commands:
   - arguments:
@@ -50,7 +58,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
+    description: Check IP reputation (when information is available, returns a JSON
+      with details). Uses all configured Threat Intelligence feeds.
     execution: false
     name: ip
     outputs:
@@ -82,19 +91,24 @@ script:
       description: The IP location as <City, Region, Postal Code, Country>.
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Address
-      description: The physical address registered for receiving abuse reports for the IP. (Only available in some IPinfo.io plans).
+      description: The physical address registered for receiving abuse reports for
+        the IP. (Only available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Country
-      description: The country where abuse reports are received for the IP. (Only available in some IPinfo.io plans).
+      description: The country where abuse reports are received for the IP. (Only
+        available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Email
-      description: The email address for abuse reports provided by the IP. (Only available in some IPinfo.io plans).
+      description: The email address for abuse reports provided by the IP. (Only available
+        in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Name
-      description: The name of the abuse report handler received for the IP. (Only available in some IPinfo.io plans).
+      description: The name of the abuse report handler received for the IP. (Only
+        available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Network
-      description: The IP range relevant for abuse inquiries provided for the IP. (Only available in some IPinfo.io plans).
+      description: The IP range relevant for abuse inquiries provided for the IP.
+        (Only available in some IPinfo.io plans).
       type: String
 
     - contextPath: IP.Address
@@ -139,12 +153,6 @@ script:
     - contextPath: IP.Geo.Description
       description: The IP location as <City, Region, Postal Code, Country>.
       type: String
-    - contextPath: IP.Organization.Name
-      description: The organization of the IP.
-      type: String
-    - contextPath: IP.Organization.Type
-      description: The organization type of the IP.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -160,7 +168,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false
@@ -169,6 +177,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- IPInfo_v2Test
 fromversion: 5.5.0
