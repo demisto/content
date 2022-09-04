@@ -502,7 +502,7 @@ def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status', 'Tags', 'AssociatedIndicators',
                'AssociatedGroups']
 
-    for event in response.get('data'):
+    for event in response:
         content.append({
             'ID': event.get('id'),
             'Name': event.get('name'),
@@ -764,7 +764,7 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
 
 def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     indicator = args.get('indicator')
-    response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator)
+    response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator)  # type: ignore
     ec, indicators = create_context(response, include_dbot_score=True)
     include_attributes = response[0].get('attributes')
     include_observations = response[0].get('observations')
@@ -866,8 +866,8 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     name = args.get('name')
     security_label = args.get('security_label')
     description = args.get('description', '')
-    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
-                            description=description)
+    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',  # type: ignore
+                            description=description)  # type: ignore
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
@@ -952,8 +952,8 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
     name = args.get('incidentName')
     tags = args.get('tag')
     security_labels = args.get('securityLabels')
-    response = create_group(client, args, group_type='Incident', tags=tags, name=name,
-                            security_labels=security_labels)
+    response = create_group(client, args, group_type='Incident', tags=tags, name=name,  # type: ignore
+                            security_labels=security_labels)  # type: ignore
 
     ec = {
         'ID': response.get('id'),
@@ -1247,7 +1247,7 @@ def tc_download_report(client: Client, args: dict):  # pragma: no cover
 
 
 def download_document(client: Client, args: dict):  # pragma: no cover
-    document_id = int(args.get('document_id'))
+    document_id = int(args.get('document_id'))  # type: ignore
     url = f'/api/v3/groups/{document_id}/download'
     response = client.make_request(Method.GET, url, parse_json=False, responseType='text')
 
@@ -1294,9 +1294,8 @@ def add_group_security_label(client: Client, args: dict):  # pragma: no cover
     """
     group_id = args.get('group_id')
     security_label_name = args.get("security_label_name")
-    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)
-    return_results(
-        f'The security label {security_label_name} was added successfully to the group {group_id}')
+    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)  # type: ignore
+    return_results(f'The security label {security_label_name} was added successfully to the group {group_id}')
 
 
 def associate_group_to_group(client: Client, args: dict):  # pragma: no cover
@@ -1344,7 +1343,7 @@ def get_group(client: Client, args: dict) -> None:  # pragma: no cover
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, group_id=group_id)
+    response = list_groups(client, args, return_raw=True, group_id=group_id)  # type: ignore
 
     group = response[0]
 
@@ -1410,7 +1409,7 @@ def get_group_tags(client: Client, args: dict) -> None:  # pragma: no cover
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, include_tags='true', group_id=group_id)
+    response = list_groups(client, args, return_raw=True, include_tags='true', group_id=group_id)  # type: ignore
 
     tags = response[0].get('tags', {}).get('data', [])
     contents = []
@@ -1444,8 +1443,8 @@ def get_group_indicators(client: Client, args: dict) -> None:  # pragma: no cove
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, include_associated_indicators='true',
-                           group_id=group_id)
+    response = list_groups(client, args, return_raw=True, include_associated_indicators='true',  # type: ignore
+                           group_id=group_id)  # type: ignore
 
     indicators = response[0].get('associatedIndicators', {}).get('data', [])
     contents = []
@@ -1484,7 +1483,7 @@ def get_group_attributes(client: Client, args: dict) -> None:  # pragma: no cove
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, include_attributes='true', group_id=group_id)
+    response = list_groups(client, args, return_raw=True, include_attributes='true', group_id=group_id)  # type: ignore
 
     attributes = response[0].get('attributes', {}).get('data', [])
     contents = []
@@ -1520,7 +1519,7 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, include_security_labels='true', group_id=group_id)
+    response = list_groups(client, args, return_raw=True, include_security_labels='true', group_id=group_id)  # type: ignore
 
     security_labels = response[0].get('securityLabels', {}).get('data', [])
     contents = []
@@ -1550,7 +1549,7 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
 
 def add_group_tag(client: Client, args: dict):  # pragma: no cover
     group_id = args.get('group_id')
-    tags: str = args.get('tag_name')
+    tags: str = args.get('tag_name')  # type: ignore
     tc_update_group(client, args, raw_data=True, tags=tags, group_id=group_id)  # type: ignore
     return_results(f'The tag {tags.split(",")} was added successfully to group {group_id}')
 
