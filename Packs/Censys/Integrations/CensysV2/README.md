@@ -65,16 +65,16 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | Censys.View.services.observed_at | Date | The UTC timestamp of when Censys scanned the service. | 
 | Censys.View.services.perspective_id | String | The upstream internet service provider Censys peered with to scan the service - NTT Communications, TATA, Telia Carrier, or Hurricane Electric. | 
 | Censys.View.services.port | Number | The port the service was reached at. | 
-| Censys.View.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in case a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
+| Censys.View.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
 | Censys.View.services.source_ip | String | The IP address from which Censys scanned the service. | 
 | Censys.View.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
 | Censys.View.services.banner | String | The banner as a part of the protocol scan. That field will be nested in the protocol-specific data under the service_name field. | 
-| Censys.View.services.tls.certificates | Unknown | A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature | 
+| Censys.View.services.tls.certificates | Unknown | A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature. | 
 | Censys.View.services.tls.session_ticket | Unknown | Details about the session ticket provided by the server at the end of the TLS handshake. | 
 | Censys.View.ct | Unknown | When a certificate was added to a CT log. | 
 | Censys.View.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. | 
 | Censys.View.metadata | Unknown | Whether the certificate was \(ever\) seen during a Censys scan of the internet. | 
-| Censys.View.parent_spki_subject_fingerprint | String | Parent simple public key infrastructure (SPKI) subject fingerprint. | 
+| Censys.View.parent_spki_subject_fingerprint | String | Parent simple public key infrastructure \(SPKI\) subject fingerprint. | 
 | Censys.View.parsed.extensions | Unknown | Additional fields that extend the X.509 spec. | 
 | Censys.View.parsed.fingerprint_md5 | String | The MD5 digest over the DER encoding of the certificate. | 
 | Censys.View.parsed.fingerprint_sha1 | String | The SHA1 digest over the DER encoding of the certificate. | 
@@ -106,7 +106,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. | 
 | Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. | 
 | Censys.View.parsed.validation_level | String | How the certificate is validated - Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
-| Censys.View.parsed.validity.end | Date | Timestamp of when certificate expires. Timezone is UTC. | 
+| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Timezone is UTC. | 
 | Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. | 
 | Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
 | Censys.View.parsed.version | Number | The x.509 certificate version number. | 
@@ -115,11 +115,19 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | Censys.View.tags | String | Tags applied to the certificate. | 
 | Censys.View.validation | Unknown | Whether the certificate is trusted by modern web browsers \(Mozilla NSS, Microsoft, and Apple\). | 
 | Censys.View.zlint | Unknown | Whether the certificate has any zlint errors. | 
+| IP.Address | String | IP address | 
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
+| IP.Geo.Country | String | The country in which the IP address is located. | 
+| IP.Geo.Description | String | Additional information about the location. | 
+| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
-
-#### Command Example
+#### Command example
 ```!cen-view index=ipv4 query=8.8.8.8```
-
 #### Context Example
 ```json
 {
@@ -132,7 +140,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                 "description": "GOOGLE",
                 "name": "GOOGLE"
             },
-            "autonomous_system_updated_at": "2021-12-06T16:40:32.741814Z",
+            "autonomous_system_updated_at": "2022-08-19T04:12:34.865059Z",
             "dns": {
                 "names": [
                     "test.com.",
@@ -162,11 +170,11 @@ Returns detailed information for an IP address or SHA256 within the specified in
                     "names": [
                         "dns.google"
                     ],
-                    "resolved_at": "2021-12-06T20:10:26.799869407Z"
+                    "resolved_at": "2022-08-23T00:07:13.195583925Z"
                 }
             },
             "ip": "8.8.8.8",
-            "last_updated_at": "2021-12-07T10:00:28.435Z",
+            "last_updated_at": "2022-08-30T06:39:12.356Z",
             "location": {
                 "continent": "North America",
                 "coordinates": {
@@ -180,7 +188,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                 "registered_country_code": "US",
                 "timezone": "America/LA"
             },
-            "location_updated_at": "2021-11-26T17:14:23.038540Z",
+            "location_updated_at": "2022-08-24T19:21:03.836386Z",
             "services": [
                 {
                     "_decoded": "dns",
@@ -214,8 +222,8 @@ Returns detailed information for an IP address or SHA256 within the specified in
                         "server_type": "FORWARDING"
                     },
                     "extended_service_name": "DNS",
-                    "observed_at": "2021-12-07T10:00:28.379350407Z",
-                    "perspective_id": "PERSPECTIVE_NTT",
+                    "observed_at": "2022-08-30T06:39:12.150877871Z",
+                    "perspective_id": "PERSPECTIVE_TATA",
                     "port": 53,
                     "service_name": "DNS",
                     "source_ip": "1.2.3.4",
@@ -230,8 +238,8 @@ Returns detailed information for an IP address or SHA256 within the specified in
                         "certificate": "DISPLAY_HEX"
                     },
                     "banner": "banner",
-                    "banner_hex": "485454502f312e312033303220466f756e640a5365727665723a2048545450207365727665722028756e6b6e6f776e290a436f6e74656e742d4c656e6774683a203231360a582d436f6e74656e742d547970652d4f7074696f6e733a206e6f736e6966660a436f6e74656e742d547970653a20746578742f68746d6c3b20636861727365743d5554462d380a446174653a203c52454441435445443e0a582d5873732d50726f74656374696f6e3a20300a4163636573732d436f6e74726f6c2d416c6c6f772d4f726967696e3a202a0a4c6f636174696f6e3a2068747470733a2f2f646e732e676f6f676c652f0a416c742d5376633a2068333d223a343433223b206d613d323539323030302c68332d32393d223a343433223b206d613d323539323030302c68332d513035303d223a343433223b206d613d323539323030302c68332d513034363d223a343433223b206d613d323539323030302c68332d513034333d223a343433223b206d613d323539323030302c717569633d223a343433223b206d613d323539323030303b20763d2234362c3433220a582d4672616d652d4f7074696f6e733a2053414d454f524947494e",
-                    "certificate": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e201234567",
+                    "banner_hex": "485454502f312e312033303220466f756e640d0a582d436f6e74656e742d547970652d4f7074696f6e733a206e6f736e6966660d0a4163636573732d436f6e74726f6c2d416c6c6f772d4f726967696e3a202a0d0a4c6f636174696f6e3a2068747470733a2f2f646e732e676f6f676c652f0d0a446174653a20203c52454441435445443e0a436f6e74656e742d547970653a20746578742f68746d6c3b20636861727365743d5554462d380d0a5365727665723a2048545450207365727665722028756e6b6e6f776e290d0a436f6e74656e742d4c656e6774683a203231360d0a582d5853532d50726f74656374696f6e3a20300d0a582d4672616d652d4f7074696f6e733a2053414d454f524947494e0d0a416c742d5376633a2068333d223a343433223b206d613d323539323030302c68332d32393d223a343433223b206d613d323539323030302c68332d513035303d223a343433223b206d613d323539323030302c68332d513034363d223a343433223b206d613d323539323030302c68332d513034333d223a343433223b206d613d323539323030302c717569633d223a343433223b206d613d323539323030303b20763d2234362c3433220d0a",
+                    "certificate": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd",
                     "extended_service_name": "HTTPS",
                     "http": {
                         "request": {
@@ -257,7 +265,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                 "html_tags": "DISPLAY_UTF8",
                                 "html_title": "DISPLAY_UTF8"
                             },
-                            "body": "<HTML><HEAD><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<TITLE>302 Moved</TITLE></HEAD><BODY>\n<H1>302 Moved</H1>\nThe document has moved\n<A HREF=\"https://dns.google/\">here</A>.\r\n</BODY></HTML>\r\n",
+                            "body": "test",
                             "body_hash": "sha1:1fd84b37b709256752fe1f865f86b5bec0512345",
                             "body_size": 216,
                             "headers": {
@@ -312,14 +320,18 @@ Returns detailed information for an IP address or SHA256 within the specified in
                             "protocol": "HTTP/1.1",
                             "status_code": 302,
                             "status_reason": "Found"
-                        }
+                        },
+                        "supports_http2": true
                     },
-                    "observed_at": "2021-12-07T06:23:41.581346512Z",
-                    "perspective_id": "PERSPECTIVE_TATA",
+                    "observed_at": "2022-08-30T01:58:59.320014077Z",
+                    "perspective_id": "PERSPECTIVE_NTT",
                     "port": 443,
                     "service_name": "HTTP",
                     "source_ip": "1.2.3.4",
                     "tls": {
+                        "_encoding": {
+                            "ja3s": "DISPLAY_HEX"
+                        },
                         "certificates": {
                             "_encoding": {
                                 "chain_fps_sha_256": "DISPLAY_HEX",
@@ -342,7 +354,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                 "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5"
                             ],
                             "leaf_data": {
-                                "fingerprint": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb81234",
+                                "fingerprint": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd",
                                 "issuer": {
                                     "common_name": [
                                         "GTS CA 1C3"
@@ -367,7 +379,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                 "pubkey_algorithm": "RSA",
                                 "pubkey_bit_size": 2048,
                                 "public_key": {
-                                    "fingerprint": "eb975485cb4281ae832fb5ebd210c58be57c57fddab0631b30eec783730a8536",
+                                    "fingerprint": "32aadd47f0a4b82e0937afda8e6bbff0d42cf50b9c022539d733ec557c215d3f",
                                     "key_algorithm": "RSA",
                                     "rsa": {
                                         "_encoding": {
@@ -389,9 +401,9 @@ Returns detailed information for an IP address or SHA256 within the specified in
                                     ]
                                 },
                                 "subject_dn": "CN=dns.google",
-                                "tbs_fingerprint": "7f2e4098c54f11e6d1f1ea679716525852f819b12fdd443f4074f862ff75911e"
+                                "tbs_fingerprint": "35b1bccf3f09b949fd27c9d004bcaef9375956d42f59d17f5c076e18d4910645"
                             },
-                            "leaf_fp_sha_256": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb8103a"
+                            "leaf_fp_sha_256": "5c2d6869e805696c328d7ba5acd7d347b46e1e03d7ed65886bf2df55f41d01fd"
                         },
                         "cipher_selected": "SELECTED_CIPHER",
                         "server_key_exchange": {
@@ -410,6 +422,22 @@ Returns detailed information for an IP address or SHA256 within the specified in
                 }
             ]
         }
+    },
+    "DBotScore": {
+        "Indicator": "8.8.8.8",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "CensysV2"
+    },
+    "IP": {
+        "ASN": 15169,
+        "ASOwner": "GOOGLE",
+        "Address": "8.8.8.8",
+        "Geo": {
+            "Country": "United States",
+            "Description": "US",
+            "Location": "37.751:-97.822"
+        }
     }
 }
 ```
@@ -419,7 +447,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 >### Information for IP 8.8.8.8
 >|ASN|Bgp Prefix|Last Updated|Name|Service|
 >|---|---|---|---|---|
->| 15169 | 8.8.8.0/24 | 2021-12-07T10:00:28.435Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'} |
+>| 15169 | 8.8.8.0/24 | 2022-08-30T06:39:12.356Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'},<br/>{'Port': 853, 'Service Name': 'UNKNOWN'} |
 
 
 ### cen-search
