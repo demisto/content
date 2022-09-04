@@ -720,7 +720,7 @@ class NightlyTestCollector(TestCollector, ABC):
                             pack=pack.pack_id,
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
+                            reason_description=f'{str(relative_path)}, ({item_marketplaces=})',
                             conf=self.conf,
                             id_set=self.id_set,
                         )
@@ -736,7 +736,6 @@ class NightlyTestCollector(TestCollector, ABC):
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
-        self.trigger_sanity_tests = True
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
@@ -755,7 +754,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(only_value=True),
             self._packs_matching_marketplace_value(only_value=True),
-            self._packs_of_content_matching_marketplace_value(only_value=True)
+            self._packs_of_content_matching_marketplace_value(only_value=True),
+            self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
 
 
