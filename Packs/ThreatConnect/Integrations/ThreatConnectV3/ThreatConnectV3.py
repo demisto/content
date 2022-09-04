@@ -202,6 +202,19 @@ def create_context(indicators, include_dbot_score=False):
     return context, context.get(TC_INDICATOR_PATH, [])
 
 
+def detection_to_incident(threatconnect_data: dict, threatconnect_date: str) -> dict:
+    threatconnect_id: str = threatconnect_data.get('id', '')
+    threatconnect_type: str = threatconnect_data.get('riskEventType', '')
+    threatconnect_detail: str = threatconnect_data.get('riskDetail', '')
+    incident = {
+        'name': f'Threatconnect:'
+                f' {threatconnect_id} {threatconnect_type} {threatconnect_detail}',
+        'occurred': f'{threatconnect_date}',
+        'rawJSON': json.dumps(threatconnect_data)
+    }
+    return incident
+
+
 def get_indicators(client: Client, args_type: str, type_name: str, args: dict) -> None:  # pragma: no cover
     owners_query = create_or_query(args.get('owners', demisto.params().get('defaultOrg')), 'ownerName')
     query = create_or_query(args.get(args_type), 'summary')  # type: ignore
@@ -451,8 +464,10 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
     response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
                            include_attributes='true',
                            return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit=max_fetch)
-
-    demisto.incidents(response)
+    incidents = []
+    for incident in response:
+        incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
+    demisto.incidents(incidents)
     demisto.setLastRun({'last': get_last_run_time(response)})
 
 
