@@ -257,15 +257,6 @@ prepare-testing-bucket-mpv2:
       fi
 
     - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b testsuite-playbook --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-
-      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
-      echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
-
-    - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
       fi
