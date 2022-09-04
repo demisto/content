@@ -31,8 +31,9 @@ EPO_SYSTEM_ATTRIBUTE_MAP = {
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, headers: dict, auth: tuple, proxy: bool = False,
+    def __init__(self, base_url: str, headers: dict, auth: tuple, timeout: int = 120, proxy: bool = False,
                  verify: bool = True):
+        self.timeout = timeout
         super().__init__(base_url=base_url, headers=headers, auth=auth, proxy=proxy, verify=verify)
 
     def test_module(self) -> str:
@@ -62,6 +63,7 @@ class Client(BaseClient):
         epo_response = self._http_request(method='GET',
                                           url_suffix='core.help',
                                           params=params,
+                                          timeout=self.timeout,
                                           resp_type='text')
         return self._parse_response(epo_response)
 
@@ -74,7 +76,8 @@ class Client(BaseClient):
         raw_response = self._http_request(
             method=GET,
             full_url=dat_file_url,
-            resp_type='text')
+            resp_type='text',
+            timeout=self.timeout)
         latest_version = raw_response.split('\r\n\r\n')[0].split('CurrentVersion=')[1]
         json_response = {'LatestVersion': latest_version}
 
@@ -91,7 +94,8 @@ class Client(BaseClient):
             ':output': 'json'
         }
         url_suffix = 'repository.findPackages'
-        response = self._http_request(method=GET, url_suffix=url_suffix, params=params, resp_type='text')
+        response = self._http_request(method=GET, url_suffix=url_suffix, params=params, resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def epo_command(self, command: str, params: dict, resp_type: str = 'json') -> Tuple[dict, dict]:
@@ -110,7 +114,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix=command,
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def update_client_dat(self, names: str, product_id: str, task_id: str,
@@ -142,7 +147,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='clienttask.run',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def get_client_task_id_by_name(self, search_text: str) -> Tuple[str, str]:
@@ -159,7 +165,8 @@ class Client(BaseClient):
         raw_response = self._http_request(method=GET,
                                           url_suffix='clienttask.find',
                                           params=params,
-                                          resp_type='text')
+                                          resp_type='text',
+                                          timeout=self.timeout)
 
         json_response, response = self._parse_response(raw_response)
 
@@ -193,7 +200,8 @@ class Client(BaseClient):
         raw_response = self._http_request(method=GET,
                                           url_suffix='repository.pull',
                                           params=params,
-                                          resp_type='text')
+                                          resp_type='text',
+                                          timeout=self.timeout)
         return self._parse_response(raw_response)
 
     def get_system_tree_groups(self, search_text: str = None):
@@ -213,7 +221,8 @@ class Client(BaseClient):
         raw_response = self._http_request(method=GET,
                                           url_suffix='system.findGroups',
                                           params=params,
-                                          resp_type='text')
+                                          resp_type='text',
+                                          timeout=self.timeout)
         return self._parse_response(raw_response)
 
     def get_system_group_path(self, group_id: int) -> str:
@@ -248,7 +257,8 @@ class Client(BaseClient):
         raw_response = self._http_request(method=GET,
                                           url_suffix='epogroup.findSystems',
                                           params=params,
-                                          resp_type='text')
+                                          resp_type='text',
+                                          timeout=self.timeout)
         return self._parse_response(raw_response)
 
     def find_system(self, search_text: str) -> Tuple[dict, dict]:
@@ -266,7 +276,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.find',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def wakeup_agent(self, names: str) -> Tuple[dict, dict]:
@@ -285,7 +296,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.wakeupAgent',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
 
         # response = response.split('"')[1] if response.startswith('"') else response
         # response = response.replace(r'\n', '\n')
@@ -308,7 +320,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.applyTag',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def clear_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
@@ -328,7 +341,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.clearTag',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def list_tag(self, search_text: str = None) -> Tuple[dict, dict]:
@@ -346,7 +360,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.findTag',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def get_table(self, table_name: str = None) -> Tuple[dict, dict]:
@@ -366,7 +381,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='core.listTables',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def query_table(self,
@@ -416,7 +432,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='core.executeQuery',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def get_version(self) -> Tuple[dict, dict]:
@@ -429,7 +446,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='epo.getVersion',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def move_system(self, names: str, parent_group_id: int) -> Tuple[dict, dict]:
@@ -445,8 +463,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='system.move',
                                       params=params,
-                                      resp_type='text'
-                                      )
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def find_client_task(self, search_text: str = None) -> Tuple[dict, dict]:
@@ -463,7 +481,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='clienttask.find',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def find_policy(self, search_text: str = None) -> Tuple[dict, dict]:
@@ -480,7 +499,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='policy.find',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def assign_policy_to_group(self, group_id: int, product_id: str, object_id: int,
@@ -501,7 +521,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='policy.assignToGroup',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def assign_policy_to_system(self, names: str, product_id: str, type_id: int, object_id: int,
@@ -523,7 +544,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='policy.assignToSystem',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def list_issue(self, issue_id: str = '') -> Tuple[dict, dict]:
@@ -543,7 +565,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='issue.listIssues',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def delete_issue(self, issue_id: str) -> Tuple[dict, dict]:
@@ -559,7 +582,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='issue.deleteIssue',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def update_issue(self, issue_id: str,
@@ -620,7 +644,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='issue.updateIssue',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def create_issue(self,
@@ -675,7 +700,8 @@ class Client(BaseClient):
         response = self._http_request(method=GET,
                                       url_suffix='issue.createIssue',
                                       params=params,
-                                      resp_type='text')
+                                      resp_type='text',
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     @staticmethod
@@ -1742,6 +1768,12 @@ def main() -> None:
     demisto.debug(f'****EPO****:Command being called is {demisto.command()}')
 
     try:
+        timeout = int(demisto.params().get('timeout', 120))
+    except ValueError as e:
+        demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
+        timeout = 120
+
+    try:
         headers = {
             'accept': 'application/json'  # To do make sure all quotes are single qoute
         }
@@ -1751,7 +1783,8 @@ def main() -> None:
             headers=headers,
             proxy=proxy,
             auth=(demisto.params().get('authentication', {}).get('identifier', ''),
-                  demisto.params().get('authentication', {}).get('password', ''))
+                  demisto.params().get('authentication', {}).get('password', '')),
+            timeout=timeout
         )
 
         args = demisto.args()
