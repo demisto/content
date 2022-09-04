@@ -1424,7 +1424,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     set_integration_context(integration_context)
 
 
-def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str, headers):
+def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
     """
     Handles a direct message sent to the bot
     :param integration_context: Cached object to retrieve relevant data from
@@ -1619,7 +1619,7 @@ def messages() -> Response:
                 entitlement_handler(integration_context, request_body, value, conversation_id)
             elif conversation_type == 'personal':
                 demisto.info('Got direct message to the bot')
-                direct_message_handler(integration_context, request_body, conversation, formatted_message, headers)
+                direct_message_handler(integration_context, request_body, conversation, formatted_message)
             else:
                 demisto.info('Got message mentioning the bot')
                 message_handler(integration_context, request_body, channel_data, formatted_message)
