@@ -951,8 +951,7 @@
         {
             "integrations": "SNDBOX",
             "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 1000,
-            "nightly": true
+            "timeout": 1000
         },
         {
             "integrations": "Awake Security",
@@ -961,8 +960,7 @@
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-test",
-            "timeout": 240,
-            "nightly": true
+            "timeout": 240
         },
         {
             "integrations": "MimecastV2",
@@ -1085,26 +1083,22 @@
         {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
-            "nightly": true,
             "timeout": 3600
         },
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-scan-test",
-            "nightly": true,
             "timeout": 600
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
-            "nightly": true,
             "timeout": 3600,
             "memory_threshold": 180
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
-            "nightly": true,
             "memory_threshold": 180,
             "timeout": 3600
         },
@@ -1215,14 +1209,12 @@
         {
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
-            "playbookID": "IntSights Test",
-            "nightly": true
+            "playbookID": "IntSights Test"
         },
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Mssp Test",
-            "instance_names": "intsights_mssp_account",
-            "nightly": true
+            "instance_names": "intsights_mssp_account"
         },
         {
             "integrations": "dnstwist",
@@ -1253,8 +1245,7 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest",
-            "nightly": true
+            "playbookID": "RedCanaryTest"
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
@@ -1303,8 +1294,7 @@
         },
         {
             "integrations": "Lastline v2",
-            "playbookID": "Lastline v2 - Test",
-            "nightly": true
+            "playbookID": "Lastline v2 - Test"
         },
         {
             "integrations": "McAfee DXL",
@@ -1323,14 +1313,12 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestDetonation",
-            "timeout": 2000,
-            "nightly": true
+            "timeout": 2000
         },
         {
             "integrations": "WildFire-v2",
@@ -1356,22 +1344,19 @@
         },
         {
             "integrations": "GRR",
-            "playbookID": "GRR Test",
-            "nightly": true
+            "playbookID": "GRR Test"
         },
         {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400,
-            "nightly": true
+            "timeout": 1400
         },
         {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_preferred_vendors",
             "playbookID": "virusTotaI-test-preferred-vendors",
-            "timeout": 1400,
-            "nightly": true
+            "timeout": 1400
         },
         {
             "integrations": "Preempt",
@@ -1541,7 +1526,6 @@
         {
             "integrations": "Okta v2",
             "playbookID": "OktaV2-Test",
-            "nightly": true,
             "timeout": 300
         },
         {
@@ -1751,8 +1735,7 @@
         {
             "integrations": "McAfee NSM",
             "playbookID": "McAfeeNSMTest",
-            "timeout": 400,
-            "nightly": true
+            "timeout": 400
         },
         {
             "integrations": "PhishTank V2",
@@ -1793,8 +1776,7 @@
         {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "GeneratePassword-Test"
@@ -1815,7 +1797,6 @@
         {
             "integrations": "carbonblackliveresponse",
             "playbookID": "Carbon Black Live Response Test",
-            "nightly": true,
             "fromversion": "5.0.0",
             "is_mockable": false
         },
@@ -1869,15 +1850,13 @@
         {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_general",
-            "playbookID": "File Enrichment - Virus Total Private API Test",
-            "nightly": true
+            "playbookID": "File Enrichment - Virus Total Private API Test"
         },
         {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
-            "nightly": true,
             "pid_threshold": 12
         },
         {
@@ -1892,7 +1871,6 @@
             ],
             "timeout": 1400,
             "fromversion": "5.5.0",
-            "nightly": true,
             "is_mockable": false
         },
         {
@@ -1903,8 +1881,7 @@
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
             "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
-            "timeout": 1400,
-            "nightly": true
+            "timeout": 1400
         },
         {
             "integrations": "Cisco Meraki",
@@ -1965,8 +1942,7 @@
         },
         {
             "integrations": "Recorded Future",
-            "playbookID": "Recorded Future Test",
-            "nightly": true
+            "playbookID": "Recorded Future Test"
         },
         {
             "integrations": "Microsoft Graph",
@@ -2242,8 +2218,7 @@
                 "McAfee Advanced Threat Defense"
             ],
             "playbookID": "Detonate File - Generic Test",
-            "timeout": 2400,
-            "nightly": true
+            "timeout": 2400
         },
         {
             "playbookID": "STIXParserTest"
@@ -2263,7 +2238,6 @@
         {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
-            "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "Lastline v2"
@@ -2282,7 +2256,6 @@
         {
             "integrations": "Zscaler",
             "playbookID": "Zscaler Test",
-            "nightly": true,
             "timeout": 500
         },
         {
@@ -2311,7 +2284,6 @@
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
-            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2327,7 +2299,6 @@
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
-            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2426,26 +2397,22 @@
         {
             "integrations": "Google Resource Manager",
             "playbookID": "GoogleResourceManager-Test",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "integrations": "SlashNext Phishing Incident Response",
             "playbookID": "SlashNextPhishingIncidentResponse-Test",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
-            "nightly": true,
             "memory_threshold": 80
         },
         {
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
-            "nightly": true,
             "timeout": 500,
             "fromversion": "5.0.0"
         },
@@ -2461,8 +2428,7 @@
         {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "Autoextract - Test",
@@ -3296,15 +3262,13 @@
             ],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
-            "fromversion": "5.5.0",
-            "nightly": true
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
-            "fromversion": "5.5.0",
-            "nightly": true
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
@@ -3407,8 +3371,7 @@
         {
             "integrations": "CheckPointFirewall_v2",
             "playbookID": "checkpoint-testplaybook",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "FailedInstances - Test",
@@ -3419,8 +3382,7 @@
             "integrations": "F5 ASM",
             "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
-            "fromversion": "5.0.0",
-            "nightly": true
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Hatching Triage - Detonate File",
@@ -3611,8 +3573,7 @@
             "instance_names": [
                 "aws_alloacte_host"
             ],
-            "fromversion": "6.0.0",
-            "nightly": true
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Trend Micro Deep Security",
@@ -4689,8 +4650,7 @@
         {
             "integrations": "CrowdStrike Falcon Sandbox V2",
             "playbookID": "CrowdstrikeFalconSandbox2 Test",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "Send Email To Recipients",
