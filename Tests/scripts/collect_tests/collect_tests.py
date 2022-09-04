@@ -39,7 +39,7 @@ class CollectionReason(str, Enum):
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
-    SANITY_TESTS = 'sanity tests by marketplace value'
+    SANITY_TESTS = 'sanity tests'
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
@@ -50,6 +50,7 @@ class CollectionReason(str, Enum):
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+    NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
 
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
@@ -207,7 +208,8 @@ class TestCollector(ABC):
                 test=test,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
-                version_range=None, reason_description=str(self.marketplace.value),
+                version_range=None,
+                reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True
@@ -298,11 +300,14 @@ class TestCollector(ABC):
         )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := (
-                (set(tests) - set(self._sanity_test_names)).difference(self.id_set.id_to_test_playbook.keys())
-        ):
+        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
+
+    @staticmethod
+    def _validate_support_level_is_xsoar(content_item: ContentItem) -> None:
+        if support_level := PACK_MANAGER.get_support_level(content_item.pack_id) != 'xsoar':
+            raise NonXsoarSupportedPackException(content_item.pack_id, support_level)
 
     def _collect_pack(self, pack_id: str, reason: CollectionReason, reason_description: str,
                       content_item_range: Optional[VersionRange] = None) -> CollectionResult:
@@ -351,13 +356,16 @@ class BranchTestCollector(TestCollector):
 
     def _collect(self) -> Optional[CollectionResult]:
         result = []
-        paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
+        paths = self._get_private_pack_files() \
+            if self.private_pack_path \
+            else self._get_changed_files()
+
         for path in paths:
             try:
                 logger.debug(f'Collecting tests for {path}')
                 result.append(self._collect_single(PATHS.content_path / path))
             except NothingToCollectException as e:
-                logger.warning(e.message)
+                logger.info(e.message)
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {path}', exc_info=True, stack_info=True)
                 raise e
@@ -375,8 +383,10 @@ class BranchTestCollector(TestCollector):
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
+
         self._validate_xsiam_compatibility(yml)
         self._validate_skipped_integration(yml)
+
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
@@ -392,10 +402,9 @@ class BranchTestCollector(TestCollector):
                     tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise ValueError(f'test playbook with id {yml.id_} is missing from conf.test_ids')
+                    raise ValueError(f'test playbook with id {yml.id_} is missing from conf.json tests section')
 
             case FileType.INTEGRATION:
-
                 if yml.explicitly_no_tests():
                     suffix = ''
 
@@ -407,18 +416,14 @@ class BranchTestCollector(TestCollector):
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
-                    if PACK_MANAGER.get_support_level(yml.pack_id) == 'xsoar':
-                        raise ValueError(
-                            f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
-                            f'(1) missing from conf.json, AND'
-                            ' (2) does not explicitly state `tests: no tests` AND'
-                            ' (3) has support level == xsoar. '
-                            'Please change at least one of these to allow test collection.'
-                        )
-                    else:
-                        logger.info(f'{yml.id_} has tests configured, but support level != xsoar. '
-                                    f'The {yml.pack_id} pack will be installed, but no tests will be collected.')
-                        tests = ()
+                    # note, this whole method is always called after validating support level is xsoar
+                    raise ValueError(
+                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                        f'(1) missing from conf.json, AND'
+                        ' (2) does not explicitly state `tests: no tests` AND'
+                        ' (3) has support level == xsoar. '
+                        'Please change at least one of these to allow test collection.'
+                    )
                 else:
                     # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
@@ -487,31 +492,32 @@ class BranchTestCollector(TestCollector):
 
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
         file_type = find_type(str(path))
+        pack_id = find_pack_folder(path).name
 
         try:
             content_item = ContentItem(path)
             self._validate_xsiam_compatibility(content_item)
 
         except NonDictException:
-            # for `.py`, `.md`, etc: anything not dictionary-based. Suitable logic follows, see collect_yml.
-            content_item = None
+            content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
 
-        if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
-            # install pack without collecting tests.
-            pack_id = find_pack_folder(path).name
+        if file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
 
-            if not content_item:
-                self._validate_xsiam_compatibility(PACK_MANAGER[pack_id])  # checks marketplaces under pack_metadata
+        if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
+            return self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                reason_description=support_level,
+            )
 
+        elif file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             return self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
                 content_item_range=content_item.version_range if content_item else None
             )
-
-        elif file_type in IGNORED_FILE_TYPES:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
@@ -661,9 +667,7 @@ class NightlyTestCollector(TestCollector, ABC):
         """
         default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}'
-            f'{postfix}')
+        logger.info(f'collecting packs by their marketplace field, searching for {self.marketplace.value}{postfix}')
         packs = []
 
         for pack in PACK_MANAGER:
@@ -732,6 +736,20 @@ class NightlyTestCollector(TestCollector, ABC):
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
+        self.trigger_sanity_tests = True
+
+    @property
+    def sanity_tests(self) -> Optional[CollectionResult]:
+        return CollectionResult(
+            test='Sanity Test - Playbook with Unmockable Whois Integration',
+            pack='Whois',
+            reason=CollectionReason.SANITY_TESTS,
+            reason_description='XSIAM Nightly sanity',
+            version_range=None,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+        )
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
