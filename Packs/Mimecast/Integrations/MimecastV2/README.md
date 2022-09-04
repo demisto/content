@@ -8,7 +8,7 @@ Please read detailed instructions in order to understand how to set the integrat
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Required** |
-   | --- | --- | --- |
+   | --- | --- |
    | BaseUrl - API url including region, For example https://eu-api.mimecast.com | True |
    | App ID | True |
    | User Email Address (Use for auto token refresh) | False |
@@ -1138,9 +1138,7 @@ Reject a currently held message.
 
 #### Input
 
-| **Argument Name** | **
-Description**                                                                                                                                                                                                                  | **
-Required** |
+| **Argument Name** | **Description**                                                                                                                                                                                                                  | **Required** |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | ids | An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message. Possible values are: .                                                                                                             | Required | 
 | message | Rejection message to be returned to sender. Possible values are: .                                                                                                                                                               | Optional | 
@@ -1170,9 +1168,7 @@ Release a currently held message.
 
 #### Input
 
-| **Argument Name** | **
-Description**                                                                                                     | **
-Required** |
+| **Argument Name** | **Description**                                                                                                     | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------| --- |
 | id | Mimecast secure id: id can be extracted from following command : mimecast-list-held-message. Possible values are: . | Required | 
 

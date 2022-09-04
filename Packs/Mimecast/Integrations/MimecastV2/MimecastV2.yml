@@ -1808,13 +1808,16 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: route
-      description: A comma-separated list of routes to filter by. Possible values are internal, outbound and inbound.
+    - auto: PREDEFINED
+      name: route
+      description: A comma-separated list of routes to filter by.
       required: false
       isArray: true
       defaultValue: ""
       predefined:
-      - ""
+      - internal
+      - outbound
+      - inbound
     outputs:
     - contextPath: Mimecast.SearchMessage.info
       description: Info regarding the message.
