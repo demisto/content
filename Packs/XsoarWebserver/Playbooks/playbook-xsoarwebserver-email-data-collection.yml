@@ -1,0 +1,261 @@
+id: xsoarwebserver-email-data-collection
+version: -1
+name: xsoarwebserver-email-data-collection
+description: |
+  Playbook to demonstrate the features of XSOAR-Web-Server. It sends an html email to a set of users up to 2 times. The email can contain multiple html links, that the users can click and the response will be available in the context
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c5cb449-cde3-4ee1-8a81-0dd24e63ebb2
+    type: start
+    task:
+      id: 1c5cb449-cde3-4ee1-8a81-0dd24e63ebb2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 248ef8ca-113b-42b5-8bb7-81c7d87480da
+    type: regular
+    task:
+      id: 248ef8ca-113b-42b5-8bb7-81c7d87480da
+      version: -1
+      name: Initializing Email Send Counter
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailsendcounter:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 98cbff00-3fcc-41bd-801d-a48804ee1f5c
+    type: regular
+    task:
+      id: 98cbff00-3fcc-41bd-801d-a48804ee1f5c
+      version: -1
+      name: Setup WS Actions
+      description: setup a form submission job that can take multiple values from multiple users
+      script: '|||xsoar-ws-setup-form-submission'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      emailaddresses:
+        simple: ${inputs.useremails}
+      htmltemplate:
+        simple: ${inputs.htmltemplate}
+      userstring:
+        simple: postactionjob
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 102fb6e8-b681-4cb6-8881-77b2b728f98d
+    type: title
+    task:
+      id: 102fb6e8-b681-4cb6-8881-77b2b728f98d
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ef1947cf-7ae7-442a-87c0-6023c6bdb18f
+    type: playbook
+    task:
+      id: ef1947cf-7ae7-442a-87c0-6023c6bdb18f
+      version: -1
+      name: xsoar-data-collection-response-tracking
+      description: This playbook tracks the user responses and  resends the emails to recipients who have not responded
+      playbookName: xsoar-data-collection-response-tracking
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      EmailSubject:
+        simple: test email
+      FileAttachments:
+        simple: ${InfoFile.EntryID}
+      Jobuuid:
+        simple: ${WS-ActionDetails.job_uuid}
+      PollingTimebetweenRuns:
+        simple: "30"
+      PollingTimeout:
+        simple: "180"
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: WS-ActionStatus
+                accessor: completed
+            iscontext: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.emailsendcounter
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ae779448-1c5f-4f10-8b58-176137118fdd
+    type: regular
+    task:
+      id: ae779448-1c5f-4f10-8b58-176137118fdd
+      version: -1
+      name: Stopping SLA timer
+      description: commands.local.cmd.stop.timer
+      script: Builtin|||stopTimer
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      timerField:
+        simple: EmailUserSLA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 530,
+        "y": -180
+      }
+    }
+  }
+inputs:
+- key: useremails
+  value:
+    simple: Replace with user emails
+  required: false
+  description: "Comma separated email addresses for sending the emails"
+  playbookInputQuery:
+- key: htmltemplate
+  value:
+    simple: Paste the template here or select a list which contains the template
+  required: false
+  description: The template for the data collection task supports a form with action marked as "$action1". The program as of now only supports one form with method post.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

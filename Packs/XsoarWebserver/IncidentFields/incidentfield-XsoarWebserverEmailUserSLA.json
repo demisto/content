@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "breachScript": "ae12c0dc-2ee1-48b3-8575-84a195781747",
+    "caseInsensitive": true,
+    "cliName": "xsoarwebserveremailusersla",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xsoarwebserveremailusersla",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Xsoar-web-server Email User SLA",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 3,
+    "system": false,
+    "threshold": 72,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
