@@ -23,7 +23,7 @@
     },
     {
       "Type": "url",
-      "Indicator": "http://www.test_url.com",
+      "Indicator": "test_url",
       "Reliability": "C - Fairly reliable",
       "Score": 3,
       "Vendor": "JoeSecurityV2"
@@ -160,7 +160,7 @@
         "md5": "",
         "sha1": "",
         "sha256": "",
-        "filename": "http://www.test_url.com",
+        "filename": "test_url",
         "scriptname": "test_4.jbs",
         "status": "finished",
         "comments": "()",
@@ -183,6 +183,6 @@
     }
   ],
   "URL": {
-    "Data": "http://www.test_url.com"
+    "Data": "test_url"
   }
 }
