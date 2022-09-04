@@ -882,9 +882,8 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     name = args.get('name')
     security_label = args.get('security_label')
     description = args.get('description', '')
-    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
-                            # type: ignore
-                            description=description)  # type: ignore
+    response = create_group(client, args, security_labels=security_label,  # type: ignore
+                            name=name, group_type='Document', description=description)  # type: ignore
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
