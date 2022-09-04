@@ -1630,7 +1630,6 @@ def main(params):  # pragma: no cover
             COMMANDS[command](client, args)  # type: ignore
 
     except Exception as e:
-        raise e
         return_error(f'An error has occurred: {str(e)}', error=e)
 
 
