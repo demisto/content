@@ -11,11 +11,10 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
-- display: Core Server API Key
+- display: Auth ID
   name: creds_apikey
   type: 9
   required: false
-  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

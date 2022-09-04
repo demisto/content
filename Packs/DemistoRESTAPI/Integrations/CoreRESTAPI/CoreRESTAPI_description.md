@@ -1,1 +1,1 @@
-Creating API keys is done in the Core interface, under Settings -> Integrations -> API Keys
+Creating API keys is done in the Cortex XSIAM interface, under Settings -> Configurations -> API Keys

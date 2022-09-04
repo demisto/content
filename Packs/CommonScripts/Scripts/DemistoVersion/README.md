@@ -1,4 +1,4 @@
-Return the Demisto server version.
+Return the Cortex XSOAR server version.
 
 ## Script Data
 ---
@@ -17,5 +17,5 @@ There are no inputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DemistoVersion.version | The version of the Demisto server. | string |
-| DemistoVersion.buildNumber | The build number of the Demisto server. | string |
+| DemistoVersion.version | The version of the Cortex XSOAR server. | string |
+| DemistoVersion.buildNumber | The build number of the Cortex XSOAR server. | string |

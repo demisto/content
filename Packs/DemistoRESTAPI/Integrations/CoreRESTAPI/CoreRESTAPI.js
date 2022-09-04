@@ -2,6 +2,7 @@ var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
+serverURL = serverURL + '/xsoar'
 
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
@@ -19,12 +20,17 @@ sendMultipart = function (uri, entryID, body) {
     if (key == ''){
         throw 'API Key must be provided.';
     }
+    var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
+        if (auth_id == ''){
+            throw 'Auth ID must be provided.';
+    }
     var res = httpMultipart(
         requestUrl,
         entryID,
         {
             Headers: {
                 'Authorization': key,
+                'x-xdr-auth-id': auth_id,
                 'Content-Type': ['multipart/form-data'],
                 'Accept': ['application/json']
             },
@@ -62,6 +68,10 @@ var sendRequest = function(method, uri, body, raw) {
     if (key == ''){
         throw 'API Key must be provided.';
     }
+    var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
+        if (auth_id == ''){
+            throw 'Auth ID must be provided.';
+    }
     var res = http(
         requestUrl,
         {
@@ -69,7 +79,8 @@ var sendRequest = function(method, uri, body, raw) {
             Headers: {
                 'Accept': ['application/json'],
                 'content-type': ['application/json'],
-                'authorization': key
+                'authorization': key,
+                'x-xdr-auth-id': auth_id
             },
             Body: body,
             SaveToFile: raw
