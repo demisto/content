@@ -11388,7 +11388,6 @@ def pan_os_edit_nat_rule(
 ):
 
     xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
-    demisto.log(f'{xpath=}')
 
     if behavior == 'replace':
         element = add_fields_as_json(json_key_path, element_value, is_list=is_listable)
@@ -11402,8 +11401,6 @@ def pan_os_edit_nat_rule(
                 raise Exception(f'The object: {element_to_change} must have at least one item.')
 
         element = add_fields_as_json(json_key_path, updated_object_items, is_list=True)
-
-    demisto.log(f'{json_to_xml(element)=}')
 
     params = {
         'xpath': xpath,
