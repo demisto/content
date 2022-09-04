@@ -177,6 +177,7 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
     except Exception as e:
+        demisto.info('test')
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
