@@ -8,7 +8,10 @@ from CommonServerPython import *  # noqa: F401
 text = demisto.args()['text']
 hashtype = demisto.args()['type']
 
-if hashtype == "sha256":
+if hashtype == "sha512":
+    h = hashlib.sha512()
+    h.update(text.encode('utf-8'))
+elif hashtype == "sha256":
     h = hashlib.sha256()
     h.update(text.encode('utf-8'))
 elif hashtype == 'sha1':
