@@ -2,7 +2,7 @@ name: myIntegration
 tests:
   - myOtherTestPlaybook
 marketplaces:
-- xsoar
+- marketplacev2
 subtype: python3
 type: python
 
