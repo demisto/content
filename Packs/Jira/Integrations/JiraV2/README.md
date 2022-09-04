@@ -13,7 +13,7 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for jira-v2.
-3. **Authentiction**: As of June 2019, basic authentication using passwords for Jira is no longer supported. Use an API token or OAuth 1.0 instead.
+3. **Authentiction**: As of June 2019, basic authentication using passwords for Jira Cloud is no longer supported. Use an API token or OAuth 1.0 instead. As of this writing, Jira Data Center (unlike Jira Cloud) still supports basic authentication.
 4. Click **Add instance** to create and configure a new integration instance.
     *  ______________ Basic Authentication ________________
     
