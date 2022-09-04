@@ -3,7 +3,7 @@ import pytest
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships, get_ioc_value_from_ioc_name, \
+    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, \
     change_attack_pattern_to_stix_attack_pattern, DemistoException
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
@@ -322,8 +322,8 @@ def test_get_ioc_value_from_ioc_name():
     - run the get_ioc_value
     Validate The IOC value extracted successfully.
     """
-    assert get_ioc_value_from_ioc_name({'name': "([file:name = 'blabla' OR file:name = 'blabla'] AND "
-                                       "[file:hashes.'SHA-256' = '4f75622c2dd839f'])"}) == "4f75622c2dd839f"
+    name = "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '4f75622c2dd839f'])"
+    assert extract_ioc_value(name) == "4f75622c2dd839f"
 
 
 def test_change_attack_pattern_to_stix_attack_pattern():
