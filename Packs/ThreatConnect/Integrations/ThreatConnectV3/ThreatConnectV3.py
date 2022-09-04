@@ -867,7 +867,8 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     name = args.get('name')
     security_label = args.get('security_label')
     description = args.get('description', '')
-    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',  # type: ignore
+    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
+                            # type: ignore
                             description=description)  # type: ignore
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
@@ -1295,7 +1296,8 @@ def add_group_security_label(client: Client, args: dict):  # pragma: no cover
     """
     group_id = args.get('group_id')
     security_label_name = args.get("security_label_name")
-    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id, security_labels=security_label_name)  # type: ignore # noqa
+    tc_update_group(client, args, raw_data=True, mode='appends', group_id=group_id,
+                    security_labels=security_label_name)  # type: ignore # noqa
     return_results(f'The security label {security_label_name} was added successfully to the group {group_id}')
 
 
@@ -1312,10 +1314,15 @@ def associate_group_to_group(client: Client, args: dict):  # pragma: no cover
     context = {
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': context_entries
     }
-    return CommandResults(
-        readable_output='The group {} was associated successfully.'.format(args.get('associated_group_id')),
-        outputs=context,
-        raw_response=updated_group[0].get('data'))
+
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': json.dumps(updated_group),
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'The group {} was associated successfully.'.format(args.get('associated_group_id')),
+        'EntryContext': context
+    })
 
 
 def associate_indicator_to_group(client: Client, args: dict):  # pragma: no cover
@@ -1333,10 +1340,15 @@ def associate_indicator_to_group(client: Client, args: dict):  # pragma: no cove
     context = {
         'TC.Indicator(val.Indicator && val.Indicator === obj.Indicator)': context_entries
     }
-    return CommandResults(
-        readable_output='The indicator {} was associated successfully.'.format(associated_indicator_id),
-        outputs=context,
-        raw_response=updated_group[0].get('data'))
+
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': json.dumps(updated_group),
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'The indicator {} was associated successfully.'.format(associated_indicator_id),
+        'EntryContext': context
+    })
 
 
 def get_group(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1520,7 +1532,8 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
     Command deprecated in v3 integration, replaced by list_groups
     '''
     group_id = args.get('group_id')
-    response = list_groups(client, args, return_raw=True, include_security_labels='true', group_id=group_id)  # type: ignore
+    response = list_groups(client, args, return_raw=True, include_security_labels='true',
+                           group_id=group_id)  # type: ignore
 
     security_labels = response[0].get('securityLabels', {}).get('data', [])
     contents = []
@@ -1617,6 +1630,7 @@ def main(params):  # pragma: no cover
             COMMANDS[command](client, args)  # type: ignore
 
     except Exception as e:
+        raise e
         return_error(f'An error has occurred: {str(e)}', error=e)
 
 
