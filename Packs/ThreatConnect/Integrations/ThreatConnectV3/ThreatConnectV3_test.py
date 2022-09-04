@@ -69,28 +69,28 @@ def test_list_groups(mocker):
     list_groups(client, {})
     assert mock.call_args.args[1] == '/api/v3/groups?resultStart=0&resultLimit=100'
     list_groups(client, {'tag': 'a,b'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=a%2Cbtag%20like%20%22%25a%25%22%20AND%20tag%20like%20%22%25b%25%22&fields=tags&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=a%2Cbtag%20like%20%22%25a%25%22%20AND%20tag%20like%' \
+                                     '20%22%25b%25%22&fields=tags&resultStart=0&resultLimit=100'
     list_groups(client, {'id': 'test'})
     assert mock.call_args.args[1] == '/api/v3/groups?tql=%28id%3Dtest%20%29&resultStart=0&resultLimit=100'
     list_groups(client, {'fromDate': '2022.08.08'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=dateAdded%20%3E%20%222022.08.08%22%20&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=dateAdded%20%3E%20%222022.08.08%22%20&resultStart=' \
+                                     '0&resultLimit=100'
     list_groups(client, {'security_label': 'TLP:AMBER'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=securityLabel%20like%20%22%25TLP%3AAMBER%25%22&fields=securityLabels&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=securityLabel%20like%20%22%25TLP%3AAMBER%25%22&fields=' \
+                                     'securityLabels&resultStart=0&resultLimit=100'
     list_groups(client, {'group_type': 'Incident'})
-    assert mock.call_args.args[1] == '/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=' \
+                                     '0&resultLimit=100'
     list_groups(client, {'filter': 'dateAdded > 2022-03-03'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=dateAdded%20%3E%202022-03-03&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=dateAdded%20%3E%202022-03-03&resultStart=0&resultLimit=100'
     list_groups(client, {'limit': '666'})
     assert mock.call_args.args[1] == '/api/v3/groups?resultStart=0&resultLimit=666'
     list_groups(client, {'page': '777'})
     assert mock.call_args.args[1] == '/api/v3/groups?resultStart=777&resultLimit=100'
     list_groups(client, {'page': '777', 'limit': '666', 'group_type': 'Incident'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=777&resultLimit=666'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=777&resultLimit=666'
     list_groups(client, {'security_label': 'TLP:AMBER', 'tag': 'a,b', 'id': 'test'})
-    assert mock.call_args.args[
-               1] == '/api/v3/groups?tql=%28id%3Dtest%20%29a%2Cb%20AND%20tag%20like%20%22%25a%25%22%20AND%20tag%20like%20%22%25b%25%22%20AND%20securityLabel%20like%20%22%25TLP%3AAMBER%25%22&fields=tags&fields=securityLabels&resultStart=0&resultLimit=100'
+    assert mock.call_args.args[1] == '/api/v3/groups?tql=%28id%3Dtest%20%29a%2Cb%20AND%20tag%20like%20%22%25a%25' \
+                                     '%22%20AND%20tag%20like%20%22%25b%25%22%20AND%20securityLabel%20like%20%22%25TLP' \
+                                     '%3AAMBER%25%22&fields=tags&fields=securityLabels&resultStart=0&resultLimit=100'

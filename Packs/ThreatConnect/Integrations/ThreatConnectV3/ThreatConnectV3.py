@@ -31,11 +31,11 @@ class Client(BaseClient):
         self.verify = verify
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = None, params: dict = None,
-                     parse_json=True, content_type=None):  # pragma: no cover # noqa # type: ignore
+                     parse_json=True, content_type=None, responseType='json'):  # pragma: no cover # noqa # type: ignore
         headers = self.create_header(url_suffix, method)
         if content_type:
             headers['Content-Type'] = content_type
-        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
+        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type=responseType,
                                       params=params,
                                       headers=headers)
         return response
@@ -220,7 +220,7 @@ def get_indicators(client: Client, args_type: str, type_name: str, args: dict) -
 
     response = client.make_request(Method.GET, url)
 
-    indicators = response
+    indicators = response.get('data')
 
     ec, indicators = create_context(indicators, include_dbot_score=True)
     return_results({
@@ -266,8 +266,8 @@ def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no co
     fail = []
     for id in group_ids:
         url = f'/api/v3/groups/{id}'
-        response, status = client.make_request(Method.DELETE, url)
-        if status == 200:
+        response = client.make_request(Method.DELETE, url)
+        if response.get('status') == 'Success':
             success.append(id)
         else:
             fail.append(id)
@@ -335,13 +335,13 @@ def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: 
     response = client.make_request(Method.GET, url)
 
     if return_raw:
-        return response
-    indicators = response
+        return response.get('data')
+    indicators = response.get('data')
     ec, indicators = create_context(indicators, include_dbot_score=True)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Indicators:', indicators, headerTransform=pascalToSpace),
         'EntryContext': ec
@@ -353,9 +353,8 @@ def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cove
 
     response = client.make_request(Method.GET, url)
 
-    raw_owners = response
     owners = []
-    for owner in raw_owners:
+    for owner in response.get('data'):
         owners.append({
             'ID': owner['id'],
             'Type': owner['type'],
@@ -365,7 +364,7 @@ def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cove
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': raw_owners,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Owners:', owners),
         'EntryContext': {'TC.Owner(val.ID && val.ID === obj.ID)': owners}
@@ -373,23 +372,19 @@ def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cove
 
 
 def tc_get_indicator_owners(client: Client, args: dict) -> Any:  # pragma: no cover
-    indicator_type = args.get('indicatorType')
     indicator = args.get('indicator')
-    url = f'/api/v2/indicators/{indicator_type}/{urllib.parse.quote(indicator.encode("utf8"))}/owners'
-    owners = []
+    url = f'/api/v3/indicators/{indicator}'
     owners_raw = client.make_request(Method.GET, url)
-    if 'status' in owners_raw:
-        if owners_raw['status'] == 'Success':
-            if len(owners_raw['data']['owner']) > 0:
-                owners = owners_raw['data']['owner']
+    owner = owners_raw.get('data').get('ownerName')
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': owners_raw,
+        'Contents': owners_raw.get('data'),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ThreatConnect Owners for Indicator:' + args['indicator'], owners),
-        'EntryContext': {'TC.Owners': owners}
+        'HumanReadable': f'ThreatConnect Owner for Indicator: {indicator} is {owner}',
+        'EntryContext': {'TC.Owners': owner}
     })
+    return_results(f'ThreatConnect Owner for Indicator: {indicator} is {owner}')
 
 
 def get_group_associated_groups(client: Client, args: dict) -> Any:  # pragma: no cover
@@ -398,36 +393,33 @@ def get_group_associated_groups(client: Client, args: dict) -> Any:  # pragma: n
                            group_id=group_id)
     headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
 
-    data = response.get('data', [])
+    data = response
     contents = []
-    if response.get('status') == 'Success':
-        # We get the group by a unique id, so we'll always get one result
-        for group in data[0].get('associatedGroups').get('data', []):
-            contents.append({
-                'GroupID': group.get('id'),
-                'Name': group.get('name'),
-                'Type': group.get('type'),
-                'DateAdded': group.get('dateAdded'),
-                'OwnerName': group.get('ownerName')
-            })
-
-    else:
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred if it persist please contact your '
-                                                           'local help desk'))
+    # We get the group by a unique id, so we'll always get one result
+    for group in data[0].get('associatedGroups').get('data', []):
+        contents.append({
+            'GroupID': group.get('id'),
+            'Name': group.get('name'),
+            'Type': group.get('type'),
+            'DateAdded': group.get('dateAdded'),
+            'OwnerName': group.get('ownerName')
+        })
 
     context = {
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
-def test_integration(client: Client, args: dict) -> None:  # pragma: no cover
+def integration_test(client: Client, args: dict) -> None:  # pragma: no cover
     url = '/api/v3/groups?resultLimit=1'
     client.make_request(Method.GET, url)
     return_results('ok')
@@ -459,47 +451,44 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
                            include_attributes='true',
                            return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run)
 
-    demisto.incidents(response)
-    demisto.setLastRun({'last': get_last_run_time(response)})
+    demisto.incidents(response.get('data'))
+    demisto.setLastRun({'last': get_last_run_time(response.get('data'))})
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover
     '''
     Command deprecated in v3 integration, replaced by list_groups
     '''
-    id = args.get('incidentId')
+    id = args.get('incidentId', '')
     response = list_groups(client, args, group_type='Incident', include_tags='true', include_attributes='true',
                            return_raw=True, group_id=id)
-
-    groups = (response)
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': groups,
+        'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Incidents:', groups, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('Incidents:', response, headerTransform=pascalToSpace),
         'EntryContext': {
-            'TC.Incident(val.ID && val.ID === obj.ID)': createContext(groups, removeNull=True),
-            'ThreatConnect.incidents': groups  # backward compatible
+            'TC.Incident(val.ID && val.ID === obj.ID)': createContext(response, removeNull=True),
+            'ThreatConnect.incidents': response  # backward compatible
         }
     })
 
 
 def tc_get_incident_associate_indicators_command(client: Client, args: dict) -> None:  # pragma: no cover
-    incident_id = args.get('incidentId')
+    incident_id = args.get('incidentId', '')
     response = list_groups(client, args, group_type='Incident', include_associated_indicators='true',
                            return_raw=True, group_id=incident_id)
 
-    groups = (response)
-    if not groups:
+    if not response:
         return_error('No incident groups were found for the given arguments')
-    ec, indicators = create_context(groups[0].get('associatedIndicators', {}).get('data', []),
+    ec, indicators = create_context(response[0].get('associatedIndicators', {}).get('data', []),
                                     include_dbot_score=True)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': groups,
+        'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Incident Associated Indicators:', indicators, headerTransform=pascalToSpace),
         'EntryContext': ec
@@ -513,7 +502,7 @@ def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status', 'Tags', 'AssociatedIndicators',
                'AssociatedGroups']
 
-    for event in response:
+    for event in response.get('data'):
         content.append({
             'ID': event.get('id'),
             'Name': event.get('name'),
@@ -562,18 +551,18 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     response = client.make_request(Method.POST, url, payload=payload)  # type: ignore
 
     ec = {
-        'ID': response.get('data', {}).get('id'),
-        'Name': response.get('data', {}).get('name'),
-        'Owner': response.get('data', {}).get('ownerName'),
-        'Date': response.get('data', {}).get('eventDate'),
-        'Tags': response.get('data', {}).get('tags'),
-        'Status': response.get('data', {}).get('status'),
-        'Type': response.get('data', {}).get('type'),
+        'ID': response.get('data').get('id'),
+        'Name': response.get('data').get('name'),
+        'Owner': response.get('data').get('ownerName'),
+        'Date': response.get('data').get('eventDate'),
+        'Tags': response.get('data').get('tags'),
+        'Status': response.get('data').get('status'),
+        'Type': response.get('data').get('type'),
     }
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': json.dumps(response),
+        'Contents': json.dumps(response.get('data')),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': f'Incident {name} with ID {ec.get("ID")} Created Successfully',
         'EntryContext': {
@@ -667,12 +656,12 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
     response = client.make_request(Method.GET, url)
 
     if return_raw:
-        return response
+        return response.get('data')
     content = []
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status', 'Tags', 'AssociatedIndicators',
                'AssociatedGroups', 'securityLabels']
 
-    for group in response:
+    for group in response.get('data'):
         content.append({
             'ID': group.get('id'),
             'Name': group.get('name'),
@@ -689,11 +678,14 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         'TC.Groups(val.ID && val.ID === obj.ID)': content
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Groups', content, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': content,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Groups', content, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def tc_get_tags_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -707,12 +699,12 @@ def tc_get_tags_command(client: Client, args: dict) -> None:  # pragma: no cover
     url = f'/api/v3/tags?{name}resultStart={page}&resultLimit={limit}'
     response = client.make_request(Method.GET, url)
 
-    tags = [t['name'] for t in response]
+    tags = [t['name'] for t in response.get('data')]
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': json.dumps(response),
+        'Contents': json.dumps(response.get('data')),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Tags:', tags, headers='Name'),
         'EntryContext': {'TC.Tags': tags}
@@ -740,11 +732,15 @@ def tc_get_indicator_types(client: Client, args: dict) -> None:  # pragma: no co
     context = {
         'TC.IndicatorType(val.Name && val.Name === obj.Name)': content
     }
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': content,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -867,12 +863,12 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     name = args.get('name')
     security_label = args.get('security_label')
     description = args.get('description', '')
-    response, status = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
-                                    description=description)
+    response = create_group(client, args, security_labels=security_label, name=name, group_type='Document',
+                            description=description)
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
-    url = f'/api/v3/groups/{response.get("data").get("id")}/upload'
+    url = f'/api/v3/groups/{response.get("id")}/upload'
     payload = f"{contents}"  # type: ignore
     client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
 
@@ -887,21 +883,26 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     context = {
         'TC.Group(val.ID && val.ID === obj.ID)': content
     }
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect document group was created successfully', content,
-                                        removeNull=True),
-        outputs=context,
-        raw_response=response)
+
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect document group was created successfully', content,
+                                         removeNull=True),
+        'EntryContext': context
+    })
 
 
 def tc_create_threat_command(client: Client, args: dict) -> None:  # pragma: no cover
     response = create_group(client, args, group_type='Threat')
 
     ec = {
-        'ID': response.get('data', {}).get('id'),
-        'Name': response.get('data', {}).get('name'),
-        'Owner': response.get('data', {}).get('ownerName'),
-        'FirstSeen': response.get('data', {}).get('FirstSeen'),
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Owner': response.get('ownerName'),
+        'FirstSeen': response.get('FirstSeen'),
         'Tag': args.get('tags'),
         'SecurityLabel': args.get('securityLabel'),
     }
@@ -910,7 +911,7 @@ def tc_create_threat_command(client: Client, args: dict) -> None:  # pragma: no 
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Threat {args.get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        'HumanReadable': f'Threat {args.get("name")} Created Successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -923,14 +924,14 @@ def tc_create_campaign_command(client: Client, args: dict) -> None:  # pragma: n
     response = create_group(client, args, group_type='Campaign', tags=tags)
 
     ec = {
-        'ID': response.get('data', {}).get('id'),
-        'Name': response.get('data', {}).get('name'),
-        'Owner': response.get('data', {}).get('ownerName'),
-        'FirstSeen': response.get('data', {}).get('FirstSeen'),
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Owner': response.get('ownerName'),
+        'FirstSeen': response.get('FirstSeen'),
         'Tag': args.get('tags'),
         'SecurityLabel': args.get('securityLabel'),
     }
-    human = f'Campaign {args.get("name")} was created Successfully with id: {response.get("data").get("id")}'
+    human = f'Campaign {args.get("name")} was created Successfully with id: {response.get("id")}'
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -952,19 +953,19 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
                             security_labels=security_labels)
 
     ec = {
-        'ID': response.get('data', {}).get('id'),
-        'Name': response.get('data', {}).get('name'),
-        'Owner': response.get('data', {}).get('ownerName'),
-        'EventDate': response.get('data', {}).get('eventDate'),
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Owner': response.get('ownerName'),
+        'EventDate': response.get('eventDate'),
         'Tag': args.get('tags'),
         'SecurityLabel': args.get('securityLabel'),
     }
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {name} Created Successfully with id: {response.get("data").get("id")}',
+        'HumanReadable': f'Incident {name} Created Successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -1017,7 +1018,7 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
     url = '/api/v3/groups'
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
 
-    return response
+    return response.get('data')
 
 
 def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indicator: str = '', confidence: str = '0',
@@ -1060,11 +1061,11 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
     url = '/api/v3/indicators'
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
 
-    ec, indicators = create_context([response])
+    ec, indicators = create_context([response.get('data')])
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Created new indicator successfully:', indicators,
                                          headerTransform=pascalToSpace),
@@ -1101,13 +1102,13 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
     response, = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
 
     if return_raw:
-        return response,
-    ec, indicators = create_context([response])
+        return response.get('data'),
+    ec, indicators = create_context([response.get('data')])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Updated indicator successfully:', indicators,
                                          headerTransform=pascalToSpace),
@@ -1118,12 +1119,12 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
 def tc_tag_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     tags = args.get('tag')
     response = tc_update_indicator_command(client, args, mode='append', return_raw=True, tags=tags)
-    ec, indicators = create_context([response])
+    ec, indicators = create_context([response.get('data')])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
             f'Added the tag {args.get("tags")} to indicator {args.get("indicator")} successfully',
@@ -1138,12 +1139,12 @@ def tc_delete_indicator_tag_command(client: Client, args: dict) -> None:  # prag
     indicator_id = args.get('indicator')
     response = tc_update_indicator_command(client, args, mode='delete', return_raw=True, tags=tag,
                                            indicator=indicator_id)
-    ec, indicators = create_context([response])
+    ec, indicators = create_context([response.get('data')])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
             f'removed the tag {tag} from indicator {indicator_id} successfully',
@@ -1159,12 +1160,12 @@ def tc_incident_associate_indicator_command(client: Client, args: dict) -> None:
     indicator = args.get('indicator')
     response = tc_update_group(client, args, mode='append', raw_data=True, group_id=group_id,
                                associated_indicator_id=indicator)
-    ec, indicators = create_context([response])
+    ec, indicators = create_context([response.get('data')])
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
             f'Associated the incident {group_id} to indicator {indicator} successfully',
@@ -1213,7 +1214,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
     response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
 
     if raw_data:
-        return response
+        return response.get('data')
     ec = {
         'ID': response.get('data', {}).get('id'),
         'Name': response.get('data', {}).get('name'),
@@ -1225,7 +1226,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
+        'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': f'Group {response.get("data").get("id")} was Successfully updated',
         'EntryContext': {
@@ -1237,7 +1238,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
 def tc_download_report(client: Client, args: dict):  # pragma: no cover
     group_id = args.get('group_id')
     url = f'/api/v3/groups/{group_id}/pdf'
-    response = client.make_request(Method.GET, url, parse_json=False)
+    response = client.make_request(Method.GET, url, parse_json=False, responseType='response')
     file_entry = fileResult(filename=f'report_{group_id}.pdf', data=response.content, file_type=9)
     return_results(file_entry)
 
@@ -1245,9 +1246,9 @@ def tc_download_report(client: Client, args: dict):  # pragma: no cover
 def download_document(client: Client, args: dict):  # pragma: no cover
     document_id = int(args.get('document_id'))
     url = f'/api/v3/groups/{document_id}/download'
-    response = client.make_request(Method.GET, url, parse_json=False)
+    response = client.make_request(Method.GET, url, parse_json=False, responseType='text')
 
-    file_entry = fileResult(filename=f'document_{document_id}.txt', data=response.content)
+    file_entry = fileResult(filename=f'document_{document_id}.txt', data=response)
     return_results(file_entry)
 
 
@@ -1273,13 +1274,15 @@ def add_group_attribute(client: Client, args: dict):  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
-                                        headers,
-                                        removeNull=True),
-        outputs=context,
-        raw_response=attribute
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
+                                         headers=headers),
+        'EntryContext': context
+    })
 
 
 def add_group_security_label(client: Client, args: dict):  # pragma: no cover
@@ -1355,11 +1358,14 @@ def get_group(client: Client, args: dict) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def get_groups(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1368,9 +1374,8 @@ def get_groups(client: Client, args: dict) -> None:  # pragma: no cover
     '''
     response = list_groups(client, args, return_raw=True)
 
-    groups = response
     contents = []
-    for group in groups:
+    for group in response:
         content = {
             'ID': group.get('id'),
             'Name': group.get('name'),
@@ -1386,11 +1391,15 @@ def get_groups(client: Client, args: dict) -> None:  # pragma: no cover
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect groups', contents, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Groups information', contents, headers=headers,
+                                         removeNull=True),
+        'EntryContext': context
+    })
 
 
 def get_group_tags(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1417,11 +1426,14 @@ def get_group_tags(client: Client, args: dict) -> None:  # pragma: no cover
         'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def get_group_indicators(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1454,11 +1466,14 @@ def get_group_indicators(client: Client, args: dict) -> None:  # pragma: no cove
         'obj.IndicatorID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def get_group_attributes(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1487,11 +1502,14 @@ def get_group_attributes(client: Client, args: dict) -> None:  # pragma: no cove
         ' obj.AttributeID)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
-        outputs=context,
-        raw_response=response
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1517,10 +1535,14 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
         'obj.Name)': contents
     }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
-        outputs=context
-    )
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
+        'EntryContext': context
+    })
 
 
 def add_group_tag(client: Client, args: dict):  # pragma: no cover
@@ -1531,7 +1553,7 @@ def add_group_tag(client: Client, args: dict):  # pragma: no cover
 
 
 COMMANDS = {
-    'test-module': test_integration,
+    'test-module': integration_test,
     'ip': get_ip_indicators,
     'url': get_url_indicators,
     'file': get_file_indicators,
@@ -1592,6 +1614,7 @@ def main(params):  # pragma: no cover
             COMMANDS[command](client, args)  # type: ignore
 
     except Exception as e:
+        raise e
         return_error(f'An error has occurred: {str(e)}', error=e)
 
 
