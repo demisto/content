@@ -1,5 +1,4 @@
 Listen to a mailbox, enable incident triggering via e-mail
-This integration was integrated and tested with version xx of MailListener - POP3 Beta
 
 ## Configure MailListener - POP3 on Cortex XSOAR
 
