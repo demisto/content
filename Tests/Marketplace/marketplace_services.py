@@ -8,7 +8,10 @@ import shutil
 import stat
 import subprocess
 import urllib.parse
+import fileinput
 import warnings
+import requests
+
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
@@ -2974,6 +2977,138 @@ class Pack(object):
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
+    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
+        # TODO: check about the copy operation
+        """ Downloads pack readme links to images, and upload them to gcs.
+
+            Searches for image links in pack readme.
+            In case no images links were found does nothing
+
+            Args:
+                storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
+                storage_base_path (str): the path under the bucket to upload to.
+                diff_files_list (list): The list of all modified/added files found in the diff
+                detect_changes (bool): Whether to detect changes or upload the author image in any case.
+
+            Returns:
+                bool: whether the operation succeeded.
+        """
+        task_status = True
+
+        try:
+            pack_readme_path = os.path.join(self._pack_path, Pack.README)  # disable-secrets-detection
+
+            if not os.path.exists(pack_readme_path):
+                return True
+
+            storage_pack_path = os.path.join(storage_base_path, self._pack_name)  # disable-secrets-detection
+
+            if not detect_changes or any(self.is_raedme_file(file.a_path) for file in diff_files_list):
+                # detect added/modified integration readme files
+
+                readme_images_storage_paths = self.collect_images_from_readme_and_replace_with_storage_path(
+                    pack_readme_path, storage_pack_path)
+
+                # no external image urls were found in the readme file
+                if not readme_images_storage_paths:
+                    logging.info(f'no image links were found in {self._pack_name} readme file')
+                    return task_status
+
+                for image_info in readme_images_storage_paths:
+                    readme_original_url = image_info.get('original_read_me_url'),
+                    gcs_storage_path = image_info.get('image_gcp_path'),
+                    image_name = image_info.get('image_name')
+
+                    task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url, gcs_storage_path,
+                                                                          image_name, storage_bucket)
+        except Exception:
+            logging.exception(f"Failed uploading {self._pack_name} pack readme image.")
+            task_status = False
+        finally:
+            return task_status
+
+    @staticmethod
+    def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path):
+        """
+        Replaces inplace all images links in the pack README.md with their new gcs location
+
+        Args:
+            pack_readme_path (str): A path to the pack README file.
+
+        Returns:
+            A list of dicts of all the image urls found in the README.md file with all related data
+            (original_url, new_gcs_path, image_name)
+        """
+        url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
+        urls_list = []
+
+        for line in fileinput.input(pack_readme_path, inplace=True):
+            res = re.search(url_regex, line)
+            # we found a matching url and we want to modify the readme line.
+            if res:
+                url = res.group('url')
+
+                parse_url = urllib.parse.urlparse(url)
+                path = parse_url.path
+                url_path = Path(path)
+                image_name = url_path.name
+
+                image_gcp_path = Path(gcs_pack_path, image_name)
+
+                line = line.replace(url, str(image_gcp_path))
+
+                urls_list.append({
+                    'original_read_me_url': url,
+                    'new_gcs_image_path': image_gcp_path,
+                    'image_name': image_name
+                })
+
+            print(line, end='')
+
+        return urls_list
+
+    @staticmethod
+    def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
+                                                         image_name: str, storage_bucket):
+        """
+        Download the image from the endpoint url and save locally.
+        Upload The image to gcs.
+        Remove the Temp file.
+
+        Args:
+             readme_original_url (str): The original url that was in the readme file
+             gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_and_replace_with_storage_path)
+             image_name(str): The name of the image we want to save
+             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
+
+        """
+        # Open the url image, set stream to True, this will return the stream content.
+        r = requests.get(readme_original_url, stream=True, verify=False)
+
+        # Check if the image was retrieved successfully
+        if r.status_code == 200:
+            # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+            r.raw.decode_content = True
+
+            with open(image_name, 'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+
+            # init the blob with the correct path to save the image on gcs
+            readme_image = storage_bucket.blob(gcs_storage_path)
+
+            # load the file from local memo to the gcs
+            with open(image_name, "rb") as image_file:
+                readme_image.upload_from_file(image_file)
+
+            # remove local saved image
+            os.remove(image_name)
+
+            logging.info(f'Image sucessfully Downloaded: {image_name}')
+            return True
+        else:
+            logging.error(f'Image {image_name} Couldn\'t be retreived')
+            return False
+
     def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
         """
         Upload the images related to the pack.
@@ -3009,6 +3144,12 @@ class Pack(object):
         task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            self.cleanup()
+            return False
+
+        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        if not task_status:
+            self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()
             return False
 
@@ -3069,6 +3210,15 @@ class Pack(object):
             bool: True if the file is an author image or False otherwise
         """
         return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+
+    def is_raedme_file(self, file_path: str):
+        """ Indicates whether a file_path is an pack readme
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is a pack readme or False otherwise
+        """
+        return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.README)
 
     def is_unified_integration(self, file_path: str):
         """ Indicates whether a file_path is a unified integration yml file or not
