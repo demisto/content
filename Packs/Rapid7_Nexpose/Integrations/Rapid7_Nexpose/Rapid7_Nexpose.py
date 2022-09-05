@@ -1,3 +1,6 @@
+import datetime
+import re
+
 import urllib3
 
 import demistomock as demisto
@@ -589,6 +592,54 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def get_site_scan_schedule(self, site_id: str, schedule_id: str) -> dict:
+        """
+        | Retrieve information about a specific scan schedule.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to retrieve scan schedule from.
+            schedule_id (str): ID of the scan schedule to retrieve.
+
+        Returns:
+            dict: A dictionary containing information about the scan schedule.
+        """
+        return self._http_request(
+            url_suffix=f"/https://help.rapid7.com/api/3/sites/{site_id}/scan_schedules/{schedule_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_site_scan_schedules(self, site_id: str, page_size: Union[int, None] = None,
+                                page: Union[int, None] = None, sort: Union[str, None] = None,
+                                limit: Union[int, None] = None) -> list[dict]:
+        """
+        | Retrieve information about scan schedules for a specific site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedules
+
+        Args:
+            site_id (str): ID of the site to retrieve scan schedules from.
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+                Defaults to None.
+        """
+        return self._paged_http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules",
+            method="GET",
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
     def get_sites(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
                   sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
@@ -827,7 +878,7 @@ class Site:
                 raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
 
         else:
-            raise ValueError("Site must have either an ID or a name.")
+            raise ValueError("Either a site ID or a site name must be passed.")
 
         self.name = site_name
         self._client = client
@@ -905,6 +956,78 @@ def convert_datetime_str(time_str: str) -> struct_time:
 
     except ValueError:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def convert_duration_time_minutes(duration_string: str) -> float:
+    """
+    Convert an ISO 8601 Duration string to a float representing the same duration time in minutes.
+
+    Args:
+        duration_string (str): A string representing an ISO 8601 Duration time.
+
+    Returns:
+         float: The same duration in minutes represented as a float.
+    """
+    if duration_string is None:
+        return 0
+
+    if duration_string[0] != "P":
+        raise ValueError(f"{duration_string} is not a valid ISO 8601 Duration string.")
+
+    year_in_minutes = 525600
+    month_in_minutes = 43800
+    week_in_minutes = 10080
+    day_in_minutes = 1440
+    hour_in_minutes = 60
+
+    minutes = 0
+
+    # Split by "T" char
+    for i, item in enumerate(duration_string.split("T")):
+        for number, period in re.findall(r"(?P<number>\d+)(?P<period>[SMHDWY])", item):
+            number = float(number)
+            this = 0
+            if period == "Y":
+                this = number * year_in_minutes  # 365.25
+            elif period == "W":
+                this = number * week_in_minutes
+            elif period == "D":
+                this = number * day_in_minutes
+            elif period == "H":
+                this = number * hour_in_minutes
+            elif period == "M":
+                # Ambiguity between months and minutes
+                if i == 0:
+                    this = number * month_in_minutes  # Assume 30 days
+                else:
+                    this = number
+            elif period == "S":
+                this = number / 60
+            minutes = minutes + this
+    return minutes
+
+
+def convert_duration_time(duration: str) -> str:
+    """
+    Convert an ISO 8601 duration string to a human-readable string format.
+
+    Args:
+        duration (str): An ISO 8601 duration string.
+
+    Returns:
+        str: The duration represented in a human-readable string format.
+    """
+    regex = re.fullmatch(r"P(\d*)DT(\d+)H(\d+)M", duration)
+    days, hours, minutes = regex.groups()
+
+    if int(days) > 0:
+        return f"{days} days, {hours} hours, {minutes} minutes"
+
+    elif int(hours) > 0:
+        return f"{hours} hours, {minutes} minutes"
+
+    else:
+        return f"{minutes} minutes"
 
 
 def dq(obj, path):
@@ -1090,55 +1213,6 @@ def find_site_from_asset(asset_id: str):
     }
 
 
-def iso8601_duration_as_minutes(duration_string: str) -> float:
-    """
-    Convert an ISO 8601 Duration string to a float representing the same duration time.
-
-    Args:
-        duration_string (str): A string representing an ISO 8601 Duration time.
-
-    Returns:
-         float: The same duration represented as a float.
-    """
-    if duration_string is None:
-        return 0
-
-    if duration_string[0] != "P":
-        raise ValueError(f"{duration_string} is not a valid ISO 8601 Duration string.")
-
-    year_in_minutes = 525600
-    month_in_minutes = 43800
-    week_in_minutes = 10080
-    day_in_minutes = 1440
-    hour_in_minutes = 60
-
-    minutes = 0
-
-    # Split by "T" char
-    for i, item in enumerate(duration_string.split("T")):
-        for number, period in re.findall(r"(?P<number>\d+)(?P<period>[SMHDWY])", item):
-            number = float(number)
-            this = 0
-            if period == "Y":
-                this = number * year_in_minutes  # 365.25
-            elif period == "W":
-                this = number * week_in_minutes
-            elif period == "D":
-                this = number * day_in_minutes
-            elif period == "H":
-                this = number * hour_in_minutes
-            elif period == "M":
-                # Ambiguity between months and minutes
-                if i == 0:
-                    this = number * month_in_minutes  # Assume 30 days
-                else:
-                    this = number
-            elif period == "S":
-                this = number / 60
-            minutes = minutes + this
-    return minutes
-
-
 def normalize_scan_data(scan: dict) -> dict:
     """
     Normalizes scan data received from the API to a format that will be displayed in the UI.
@@ -1165,7 +1239,7 @@ def normalize_scan_data(scan: dict) -> dict:
         recursive=False,
     )
 
-    scan_output["TotalTime"] = str(iso8601_duration_as_minutes(scan_output["TotalTime"])) + " minutes"
+    scan_output["TotalTime"] = str(convert_duration_time_minutes(scan_output["TotalTime"])) + " minutes"
 
     return scan_output
 
@@ -1913,7 +1987,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
 
         for i, val in enumerate(solutions_output):
             solutions_output[i]["Estimate"] = str(
-                iso8601_duration_as_minutes(solutions_output[i]["Estimate"])) + " minutes"
+                convert_duration_time_minutes(solutions_output[i]["Estimate"])) + " minutes"
 
     vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
                                          vulnerability_headers, removeNull=True)
@@ -2146,6 +2220,81 @@ def get_sites_command(client: Client, sort: Union[str, None] = None, limit: Unio
         outputs=outputs,
         readable_output=tableToMarkdown("Nexpose sites", outputs, headers, removeNull=True),
         raw_response=sites,
+    )
+
+
+def list_scan_schedule_command(client: Client, site: Site, schedule_id: Union[str, None] = None,
+                               page_size: Union[int, None] = None, page: Union[int, None] = None,
+                               limit: Union[int, None] = None) -> CommandResults:
+    """
+    Retrieve information about scan schedules for a specific site or a specific scan schedule.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to retrieve scan schedules from.
+        schedule_id (str): ID of a specific scan schedule to retrieve.
+            Defaults to None (Results in getting all scan schedules for the site).
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if not schedule_id:
+        scan_schedules = client.get_site_scan_schedules(
+            site_id=site.id,
+            page_size=page_size,
+            page=page,
+            limit=limit,
+        )
+
+    else:
+        scan_schedules = client.get_site_scan_schedule(
+            site_id=site.id,
+            schedule_id=schedule_id,
+        )
+
+        scan_schedules = [scan_schedules]
+
+    if not scan_schedules:
+        return CommandResults(readable_output="No scan schedules were found for the site.")
+
+    for scan_schedule in scan_schedules:
+        if scan_schedule.get("duration"):
+            scan_schedule["duration"] = convert_duration_time(scan_schedule["duration"])
+        if scan_schedule.get("repeat") and scan_schedule["repeat"].get("every"):
+            scan_schedule["repeat"]["every"] = "every " + scan_schedule["repeat"]["every"]
+
+    headers = [
+        "Enable",
+        "StartDate",
+        "Name",
+        "MaxDuration",
+        "Repeat",
+        "NextStart",
+    ]
+
+    outputs = replace_key_names(
+        data=scan_schedules,
+        name_mapping={
+            "id": "Id",
+            "enabled": "Enable",
+            "start": "StartDate",
+            "scanName": "Name",
+            "duration": "MaxDuration",
+            "repeat.every": "Repeat",
+            "nextRuntimes": "NextStart",
+        },
+        recursive=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.ScanSchedule",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Nexpose scan schedules", outputs, headers, removeNull=True),
+        raw_response=scan_schedules,
     )
 
 
@@ -2510,6 +2659,19 @@ def main():
             results = get_sites_command(
                 client=client,
                 sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-list-scan-schedule":
+            results = list_scan_schedule_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                schedule_id=args.get("schedule_id"),
+                page=arg_to_number(args.get("page")),
+                page_size=arg_to_number(args.get("page_size")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-pause-scan":
