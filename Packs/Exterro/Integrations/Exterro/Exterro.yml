@@ -44,12 +44,14 @@ script:
       description: The name of the case.
     - name: case_ids
       required: false
+      isArray: true
       description: Value of caseids.
     - name: evidence_path
       required: false
       description: The filepath of the evidence.
     - name: target_ips
       required: false
+      isArray: true
       description: Targetips for the collection
     - name: search_tag_path
       required: false
