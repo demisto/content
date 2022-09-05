@@ -1502,10 +1502,11 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
     fields_delimiter = args.get('fields_delimiter', ';')
+    fields = get_ticket_fields(args, ticket_type=table_name)
 
-    fields = {}
     if fields_str:
-        fields = split_fields(fields_str, fields_delimiter)
+        additional_fields = split_fields(fields_str, fields_delimiter)
+        fields.update(additional_fields)
     custom_fields = {}
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str, fields_delimiter)
