@@ -3458,7 +3458,7 @@ def test_upload_batch_custom_ioc_command(requests_mock):
                           ('contained', '', 'Yes'),
                           ('lift_containment_pending', '', 'Pending unisolation'),
                           ])
-def test_generate_status_field(endpoint_status, status, is_isolated):
+def test_generate_status_field(requests_mock, endpoint_status, status, is_isolated):
     """
     Test valid call for generate status field
     Given
@@ -3469,7 +3469,31 @@ def test_generate_status_field(endpoint_status, status, is_isolated):
      - Return status and is_isolated
      """
     from CrowdStrikeFalcon import generate_status_fields
-    assert is_isolated == generate_status_fields(endpoint_status)
+
+    status_res = {
+        "meta": {
+            "query_time": 0.002455124,
+            "powered_by": "device-api",
+            "trace_id": "c876614b-da71-4942-88db-37b939a78eb3"
+        },
+        "resources": [
+            {
+                "id": "device_id",
+                "cid": "20879a8064904ecfbb62c118a6a19411",
+                "last_seen": "2022-09-03T10:48:12Z",
+                "state": status
+            }
+        ],
+        "errors": []
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/online-state/v1',
+        json=status_res,
+        status_code=200,
+    )
+
+    assert status, is_isolated == generate_status_fields(endpoint_status, 'device_id')
 
 
 def test_generate_status_field_invalid():

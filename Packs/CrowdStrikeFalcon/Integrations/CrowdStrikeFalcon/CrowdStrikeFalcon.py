@@ -2421,8 +2421,7 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
-        is_isolated = generate_status_fields(single_device.get('status'))
-        status = get_status(single_device.get("device_id"))
+        status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
@@ -2466,30 +2465,27 @@ def search_device_by_ip(raw_res, ip_address):
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
     state = raw_res.get('resources')[0].get('state', '')
-    return 'Online' if state == 'online' else 'Offline'
+    return 'Online' if state == 'online' else ''
 
 
-def generate_status_fields(endpoint_status):
+def generate_status_fields(endpoint_status, device_id):
     is_isolated = ''
 
-    if endpoint_status.lower() == 'normal':
-        pass
-    elif endpoint_status == 'containment_pending':
+    if endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
     elif endpoint_status == 'contained':
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-    else:
+    elif endpoint_status.lower() != 'normal':
         raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
-    return is_isolated
+    return get_status(device_id), is_isolated
 
 
 def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
-        is_isolated = generate_status_fields(single_device.get('status'))
-        status = get_status(single_device.get("device_id"))
+        status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
