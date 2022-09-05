@@ -46,9 +46,9 @@
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Common Packs
-/Packs/CommonTypes/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonPlaybooks/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonDashboards/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonTypes/ @michalgold @idovandijk
+/Packs/CommonPlaybooks/ @michalgold @idovandijk
+/Packs/CommonDashboards/ @michalgold @idovandijk
 
 
 # Build related
