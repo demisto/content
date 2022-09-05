@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 import json
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents
+from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -619,6 +619,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     )
     assert len(fetched_incidents) == 2
     assert last_run['next_page_token'] == 'NEXT_PAGE'
+    assert last_run['step'] == STEP_INIT
     mock_response["next_page_token"] = None  # type: ignore
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_response)
 
@@ -630,6 +631,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
         first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
+    assert last_run['step'] == STEP_FETCH
     assert 'next_page_token' not in last_run
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json={"status": "success", "data": []})
@@ -640,4 +642,5 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
         pull_existing_alerts=True,
         first_fetch_time=None
     )
+    assert last_run['step'] == STEP_FETCH
     assert len(fetched_incidents) == 0
