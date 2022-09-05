@@ -30,6 +30,8 @@ The mirroring instance in the first tenant contains a new incident type, called 
 
 4. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
+## Important note:
+In order to mirror `customFields` please create ***Mapper*** that maps the fields you want to mirror on update. 
 
 ## Important note:
 In order to mirror `customFields` please create ***Mapper*** that maps the fields you want to mirror on update. 
