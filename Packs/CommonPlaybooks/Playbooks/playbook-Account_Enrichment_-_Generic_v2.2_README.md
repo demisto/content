@@ -19,7 +19,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * aws-iam-get-user
@@ -36,7 +36,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Username | The username to enrich. | Account.Username | Optional |
-| Domain | Optional - This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Please provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
+| Domain | This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -44,13 +44,13 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Account | The account object. | unknown |
-| ActiveDirectory.Users.sAMAccountName | The user's samAccountName. | unknown |
+| ActiveDirectory.Users.sAMAccountName | The user's SAM account name. | unknown |
 | ActiveDirectory.Users.userAccountControl | The user's account control flag. | unknown |
 | ActiveDirectory.Users.mail | The user's email address. | unknown |
 | ActiveDirectory.Users.memberOf | Groups the user is a member of. | unknown |
 | IAM | Generic IAM output | unknown |
-| IdentityIQ.Identity | Identity asset from IdentityIQ | unknown |
-| PingOne.Account | Account in PingID | unknown |
+| IdentityIQ.Identity | Identity asset from IdentityIQ. | unknown |
+| PingOne.Account | Account in PingID. | unknown |
 | ActiveDirectory.Users.manager | The manager of the user. | unknown |
 | IAM.Vendor.active | When true, indicates that the employee's status is active in the 3rd-party integration. | unknown |
 | IAM.Vendor.brand | Name of the integration. | unknown |
@@ -62,9 +62,9 @@ This playbook does not use any integrations.
 | IAM.Vendor.instanceName | Name of the integration instance. | unknown |
 | IAM.Vendor.success | When true, indicates that the command was executed successfully. | unknown |
 | IAM.Vendor.username | The employee's username in the app. | unknown |
-| IdentityIQ.Identity.userName | The IdentityIQ username \(primary id\). | unknown |
-| IdentityIQ.Identity.id | The IdentityIQ internal id \(uuid\). | unknown |
-| IdentityIQ.Identity.active | Indicates whether the id is active or inactive in IdentityIQ. | unknown |
+| IdentityIQ.Identity.userName | The IdentityIQ username. \(primary id\). | unknown |
+| IdentityIQ.Identity.id | The IdentityIQ internal ID \(UUID\). | unknown |
+| IdentityIQ.Identity.active | Indicates whether the ID is active or inactive in IdentityIQ. | unknown |
 | IdentityIQ.Identity.lastModified | Timestamp of when the identity was last modified. | unknown |
 | IdentityIQ.Identity.displayName | The display name of the identity. | unknown |
 | IdentityIQ.Identity.emails | Array of email objects. | unknown |
@@ -76,7 +76,7 @@ This playbook does not use any integrations.
 | IdentityIQ.Identity.name.familyName | The last name of the identity. | unknown |
 | IdentityIQ.Identity.name.givenName | The first name of the identity. | unknown |
 | IdentityIQ.Identity.manager | The account's manager returned from IdentityIQ. | unknown |
-| IdentityIQ.Identity.manager.userName | The IdentityIQ username \(primary id\) of the identities manager. | unknown |
+| IdentityIQ.Identity.manager.userName | The IdentityIQ username \(primary ID\) of the identities manager. | unknown |
 | IdentityIQ.Identity.emails.type | Type of the email being returned. | unknown |
 | IdentityIQ.Identity.emails.value | The email address of the identity. | unknown |
 | IdentityIQ.Identity.emails.primary | Indicates if this email address is the identities primary email. | unknown |
@@ -92,7 +92,7 @@ This playbook does not use any integrations.
 | Account.Activated | Timestamp for when the user was activated. | unknown |
 | Account.Created | Timestamp for when the user was created. | unknown |
 | Account.Status | Okta account status. | unknown |
-| Account.Username | The user samAccountName. | unknown |
+| Account.Username | The user SAM account name. | unknown |
 | Account.Email | The user email address. | unknown |
 | Account.ID | The user distinguished name. | unknown |
 | ActiveDirectory.Users.dn | The user distinguished name. | unknown |
@@ -126,11 +126,11 @@ This playbook does not use any integrations.
 | IAM.Vendor.action | The command name. | unknown |
 | IAM.UserProfile | The user profile. | unknown |
 | SailPointIdentityNow.Account | The IdentityNow account object. | unknown |
-| SailPointIdentityNow.Account.id | The IdentityNow internal id \(uuid\). | unknown |
+| SailPointIdentityNow.Account.id | The IdentityNow internal ID \(UUID\). | unknown |
 | SailPointIdentityNow.Account.name | Name of the identity on this account. | unknown |
-| SailPointIdentityNow.Account.identityId | The IdentityNow internal identity id. | unknown |
-| SailPointIdentityNow.Account.nativeIdentity | The IdentityNow internal native identity id. | unknown |
-| SailPointIdentityNow.Account.sourceId | Source id that maps this account. | unknown |
+| SailPointIdentityNow.Account.identityId | The IdentityNow internal identity ID. | unknown |
+| SailPointIdentityNow.Account.nativeIdentity | The IdentityNow internal native identity ID. | unknown |
+| SailPointIdentityNow.Account.sourceId | Source ID that maps this account. | unknown |
 | SailPointIdentityNow.Account.created | Timestamp when the account was created. | unknown |
 | SailPointIdentityNow.Account.modified | Timestamp when the account was last modified. | unknown |
 | SailPointIdentityNow.Account.attributes | Map of variable number of attributes unique to this account. | unknown |
