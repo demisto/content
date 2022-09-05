@@ -76,7 +76,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
@@ -154,6 +154,28 @@ demisto-sdk-nightly:run-commands-against-instance:
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - section_end "Destroy instances"
 
+
+demisto-sdk-nightly:run-end-to-end-tests:
+  tags:
+    - gke # Better when not needing docker-in-docker
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:create-instance"]
+  stage: run-instances
+  script:
+    - !reference [.open-ssh-tunnel]
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - exit $EXIT_CODE
 
 demisto-sdk-nightly:fan-in:
   tags:
