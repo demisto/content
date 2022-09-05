@@ -233,7 +233,7 @@ class PackManager:
 
         self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 
-    def get_pack_metadata(self, pack_id: str):
+    def get_pack_metadata(self, pack_id: str) -> ContentItem:
         return self._pack_id_to_pack_metadata[pack_id]
 
     def iter_pack_metadata(self) -> Iterator[ContentItem]:
