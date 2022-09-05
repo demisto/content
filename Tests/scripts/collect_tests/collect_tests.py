@@ -714,13 +714,14 @@ class NightlyTestCollector(TestCollector, ABC):
                     if not item.path:
                         raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
                     relative_path = PACK_MANAGER.relative_to_packs(item.path)
+                    marketplaces_string = ', '.join(map(str, item.marketplaces))
                     result.append(
                         CollectionResult(
                             test=None,
                             pack=pack.pack_id,
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({item_marketplaces=})',
+                            reason_description=f'{str(relative_path)}, ({marketplaces_string})',
                             conf=self.conf,
                             id_set=self.id_set,
                         )
