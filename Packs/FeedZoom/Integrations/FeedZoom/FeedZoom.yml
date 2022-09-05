@@ -129,4 +129,3 @@ script:
   subtype: python3
 tests:
 - FeedZoom_Test
-- Fetch Indicators Test
