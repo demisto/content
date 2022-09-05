@@ -48,8 +48,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
     # default values
     asn = as_owner = None
     feed_related_indicators: List[Common.FeedRelatedIndicators] = []
-    relationships = []
-
+    relationships: list[EntityRelationship] = []
     if not raw_result:
         return command_results
 
@@ -153,6 +152,8 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         geo_description=description or None,
         geo_country=country,
         tags=','.join(tags),
+        organization_name=organization.get('Name') if organization else None,
+        organization_type=organization.get('Type') if organization else None,
         relationships=relationships)
 
     if lat and lon:
