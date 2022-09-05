@@ -457,7 +457,8 @@ def convert_to_dict(arr: list):
 def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
     params = demisto.params()
     tags = params.get('tags', '')
-    owners = params.get('owners', '')
+    if tags == 'None':
+        tags = ''
     status = params.get('status', '')
     fields = set_fields(convert_to_dict(params.get('fields')))
     max_fetch = params.get('max_fetch', '200')
@@ -469,7 +470,7 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
         last_run = f"{params.get('first_fetch') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
-    response = list_groups(client, {}, group_type=group_type[0], fields=fields, return_raw=True, tag=tags, owner=owners,
+    response = list_groups(client, {}, group_type=group_type, fields=fields, return_raw=True, tag=tags,
                            status=status, from_date=last_run, limit=max_fetch)
     incidents = []
     for incident in response:
@@ -636,7 +637,10 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         from_date = f' AND dateAdded > "{from_date}" '
         tql_prefix = '?tql='
     if group_type:
-        group_type = f' AND typeName EQ "{group_type}"'
+        if type(group_type) == list:
+            group_type = f' AND ({create_or_query(", ".join(group_type), "typeName")})'
+        else:
+            group_type = f' AND typeName EQ "{group_type}"'
         tql_prefix = '?tql='
     if owner:
         group_type = f' AND ownerName EQ "{owner}"'
