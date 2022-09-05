@@ -455,6 +455,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -634,6 +635,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -873,6 +875,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -1081,6 +1084,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
