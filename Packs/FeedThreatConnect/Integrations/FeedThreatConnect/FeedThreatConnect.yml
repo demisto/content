@@ -104,8 +104,8 @@ configuration:
   required: false
   type: 0
   additionalinfo: Supports CSV values.
-  hidden: true
   name: feedTags
+  hidden: true
 - additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
   defaultvalue: All
   display: Indicator types
@@ -213,8 +213,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Multi-select list that will allow filtering of the retrieved indicators.
-        Comma-seperated list.
+      description: Multi-select list that will allow filtering of the retrieved indicators. Comma-seperated list.
       isArray: false
       name: indicator_type
       predefined:
@@ -242,8 +241,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Require an input of an integer, this will fetch indicators with
-        confidence of “greater than” the input
+      description: Require an input of an integer, this will fetch indicators with confidence of “greater than” the input
       isArray: false
       name: confidence
       required: false
@@ -262,7 +260,7 @@ script:
     description: Get available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: true
   isfetch: false
   longRunning: false

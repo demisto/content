@@ -100,8 +100,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                      'summary': 'name',
                      'Key Name': 'keyvalue.name',
                      'Value Name': 'keyvalue.data',
-                     'Key Type': 'keyvalue.type',
-                     'Key Name': 'namefield'},
+                     'Key Type': 'keyvalue.type'},
     'URL': {'dateAdded': 'firstseenbysource',
             'lastModified': 'updateddate',
             'threatAssessRating': 'verdict',
@@ -116,9 +115,9 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
             'threatAssessConfidence': 'confidence',
             'AS Number': 'value'},
     'Attack Pattern': {'dateAdded': 'firstseenbysource',
-                     'lastModified': 'updateddate',
-                     'description': 'description',
-                     'name': 'name'},
+                       'lastModified': 'updateddate',
+                       'description': 'description',
+                       'name': 'name'},
     'Campaign': {'firstSeen': 'firstseenbysource',
                  'lastModified': 'updateddate',
                  'name': 'name'},
@@ -136,8 +135,8 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                'name': 'name',
                'publishDate': 'published'},
     'Tool': {'dateAdded': 'firstseenbysource',
-                'lastModified': 'updateddate',
-                'name': 'name'},
+             'lastModified': 'updateddate',
+             'name': 'name'},
     'CVE': {'dateAdded': 'firstseenbysource',
             'lastModified': 'updateddate',
             'name': 'name',
@@ -147,6 +146,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
 #########
 # Utils #
 #########
+
 
 @contextmanager
 def suppress_stdout():
@@ -162,8 +162,9 @@ def set_fields_query() -> str:
     fields_str = '&fields=threatAssess&fields=tags'
     if demisto.getParam('retrieveRelationships'):
         fields_str += '&fields=associatedGroups&fields=associatedIndicators'
-    
+
     return fields_str
+
 
 def create_types_query() -> str:
     types = []
@@ -209,7 +210,6 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     fields = add_indicator_fields(indicator, indicator_type)
-    remove_nulls_from_dictionary(fields)
 
     indicator_obj = {
         "value": indicator.get('summary'),
@@ -221,46 +221,55 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
     return indicator_obj
 
+
 def add_indicator_fields(indicator, indicator_type):
+    params = demisto.params()
     indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
     fields: dict = {}
+
     for indicator_key, xsoar_indicator_key in indicator_fields.items():
         fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
 
-    raw_tags = indicator.get('tags',{}).get('data', [])
-    tags = [tag.get('name','') for tag in raw_tags]
+    raw_tags = indicator.get('tags', {}).get('data', [])
+    tags = [tag.get('name', '') for tag in raw_tags]
     fields['tags'] = tags
 
-    fields['reportedby'] = [name for name in [indicator.get('ownerName',''), indicator.get('source','')] if name]
+    fields['reportedby'] = [name for name in [indicator.get('ownerName', ''), indicator.get('source', '')] if name]
 
     fields['feedrelatedindicators'] = indicator.get("associatedIndicators", {}).get('data') or []
     fields['feedrelatedindicators'].extend(indicator.get("associatedGroups", {}).get('data') or [])
 
     if 'description' not in fields:
-        fields['description'] = indicator.get('attributes', {}).get('description','')
+        fields['description'] = indicator.get('attributes', {}).get('description', '')
     if indicator_type == 'Course of Action':
-        fields['action'] = indicator.get('attributes', {}).get('action','')
+        fields['action'] = indicator.get('attributes', {}).get('action', '')
+    if indicator_type == 'Registry Key':
+        fields['namefield'] = indicator.get('Key Name', '')
 
-    tlp_color = demisto.getParam('tlp_color')
+    tlp_color = params.get('tlp_color', '')
     if tlp_color:
         fields['trafficlightprotocol'] = tlp_color  # type: ignore
 
-    if argToBoolean(demisto.getParam('retrieveRelationships')):
+    if argToBoolean(params.get('retrieveRelationships')):
         relationships = create_indicator_relationships(fields)
         if relationships:
             fields['relationships'] = relationships
 
+    remove_nulls_from_dictionary(fields)
+
     return fields
+
 
 def create_indicator_relationships(indicator):
     relationships_list: List[EntityRelationship] = []
-    entities_b = indicator.get('feedrelatedindicators',[])
+    entities_b = indicator.get('feedrelatedindicators', [])
     for entity_b in entities_b:
-        
-        relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'), 
-                                                        entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
-    
+
+        relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'),
+                                                       entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
+
     return relationships_list
+
 
 def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str):
     """
@@ -278,8 +287,9 @@ def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entit
 
         relationships_list.append(
             EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=EntityRelationship.Relationships.RELATED_TO,
-                                entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam('feedReliability'),
-                                brand=INTEGRATION_NAME))
+                               entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam(
+                                   'feedReliability'),
+                               brand=INTEGRATION_NAME))
     else:
         demisto.info(
             f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {EntityRelationship.Relationships.RELATED_TO}")
@@ -344,6 +354,7 @@ def create_or_query(param_name: str, delimiter_str: str) -> str:
         query += f'{param_name}="{item}" OR '
     return query[:len(query) - 3]
 
+
 def module_test_command(client: Client):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
     Args:
@@ -383,7 +394,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     tql = demisto.getParam('indicatorQuery')
     if not tql:
         tql = set_tql_query(from_date)
-    
+
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
@@ -417,7 +428,7 @@ def set_tql_query(from_date):
     active_only = f'AND indicatorActive EQ True ' if argToBoolean(params.get("indicatorActive")) else ''
     confidence = f'AND confidence GT {params.get("confidence")} ' if params.get("confidence") else ''
     threat_score = f'AND threatAssessScore GT {params.get("threatAssessScore")} ' if params.get("threatAssessScore") else ''
-    
+
     type_name_query = create_types_query()
     type_names = f'AND {type_name_query}' if type_name_query else ''
 
@@ -428,6 +439,7 @@ def set_tql_query(from_date):
 
     tql = tql.replace('AND ', '', 1)
     return tql
+
 
 def get_indicators_command(client: Client):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
@@ -456,7 +468,7 @@ def get_indicators_command(client: Client):  # pragma: no cover
         query = query[:len(query) - 1]
         query += ')'
 
-    tql =  active_only + confidence + threat_score + confidence + owners + query
+    tql = active_only + confidence + threat_score + confidence + owners + query
     tql = tql.replace('AND ', '', 1)
     tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
     tql = f'?tql={tql}'
@@ -522,7 +534,6 @@ def main():  # pragma: no cover
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
