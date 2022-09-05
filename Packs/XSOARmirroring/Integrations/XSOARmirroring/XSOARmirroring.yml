@@ -62,6 +62,12 @@ configuration:
   name: mirror_tag
   required: false
   type: 0
+- additionalinfo: "Comma separated additional incident fields to copy from the remote incident, leave empty to copy only default incident fields: (name, rawName, severity, occurred, modified, roles, type, rawType, status, reason, created, closed, sla, labels, attachment, details, openDuration, lastOpen, owner, closeReason, rawCloseReason, closeNotes, playbookId, dueDate, reminder, runStatus, notifyTime, phase, rawPhase, CustomFields, category, rawCategory)"
+  defaultvalue: ""
+  display: Additional Custom Incident Fields to Mirror
+  name: custom_mirroring_fields
+  required: false
+  type: 12
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -143,7 +149,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   subtype: python3

@@ -237,7 +237,8 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str]) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], custom_mirroring_fields: List[str]) -> \
+        Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -267,6 +268,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
         The tags that you will mirror out of the incident.
+
+    :type custom_mirroring_fields: ``List[str]``
+    :param custom_mirroring_fields:
+        Incident fields to copy from remote incident
 
     :return:
         A tuple containing two elements:
@@ -311,7 +316,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_result['dbotMirrorId'] = incident['id']
 
         for key, value in incident.items():
-            if key in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
+            if key in custom_mirroring_fields:
                 incident_result[key] = value
 
         incident_result['rawJSON'] = json.dumps(incident)
@@ -757,6 +762,9 @@ def main() -> None:
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
 
+    custom_mirroring_fields = argToList(demisto.params().get('custom_mirroring_fields'))
+    custom_mirroring_fields.extend(FIELDS_TO_COPY_FROM_REMOTE_INCIDENT)
+
     try:
         headers = {
             'Authorization': api_key
@@ -777,7 +785,8 @@ def main() -> None:
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
-                    mirror_tag=list(mirror_tags)
+                    mirror_tag=list(mirror_tags),
+                    custom_mirroring_fields=custom_mirroring_fields
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -790,7 +799,8 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
-                mirror_tag=list(mirror_tags)
+                mirror_tag=list(mirror_tags),
+                custom_mirroring_fields=custom_mirroring_fields
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
