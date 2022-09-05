@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, str2bool
@@ -183,9 +183,7 @@ class CollectionResult:
         return result
 
     @staticmethod
-    def union(collected_tests: Optional[Union[tuple[Optional['CollectionResult'], ...],
-                                              list[Optional['CollectionResult']]]]
-              ) -> Optional['CollectionResult']:
+    def union(collected_tests: Optional[Sequence[Optional['CollectionResult']]]) -> Optional['CollectionResult']:
         non_none = filter(None, collected_tests or (None,))
         return sum(non_none, start=CollectionResult.__empty_result())
 
