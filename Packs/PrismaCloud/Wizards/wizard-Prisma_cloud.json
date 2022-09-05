@@ -8,7 +8,7 @@
     "dependency_packs": [
       {
         "name": "Cloud Providers - Kubernetes",
-        "min_required": 1,
+        "min_required": 0,
         "packs": [
           {
             "name": "GCP-Kubernete",
@@ -61,22 +61,12 @@
       "fetching_integrations": [
         {
           "priority": 1,
-          "name": "GoogleKubernetesEngine",
+          "name": "RedLock",
           "action": {
-            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'.",
-            "new": "Set up new 'GoogleKubernetesEngine' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'."
+            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Prisma cloud. \n3. Set the Mapper field to 'Prisma cloud'.",
+            "new": "Set up new 'RedLock' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Prisma cloud. \n3. Set the Mapper field to 'Prisma cloud'."
           },
-          "description": "Set up the 'GoogleKubernetesEngine' integration to work with your Phishing use case.",
-          "incident_type": "Prisma Cloud"
-        },
-        {
-          "priority": 2,
-          "name": "Azure Kubernetes Services",
-          "action": {
-            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'.",
-            "new": "Set up new 'Azure Kubernetes Services' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'."
-          },
-          "description": "Set up the 'Azure Kubernetes Services' integration to work with your Prisma Cloud use case.",
+          "description": "Set up the 'RedLock' integration to work with your Prisma cloud use case.",
           "incident_type": "Prisma Cloud"
         }
       ],
@@ -86,6 +76,22 @@
         }
       ],
       "supporting_integrations": [
+        {
+          "name": "GoogleKubernetesEngine",
+          "action": {
+            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'.",
+            "new": "Set up new 'GoogleKubernetesEngine' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'."
+          },
+          "description": "Set up the 'GoogleKubernetesEngine' integration to work with your Phishing use case.",
+        },
+        {
+          "name": "Azure Kubernetes Services",
+          "action": {
+            "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'.",
+            "new": "Set up new 'Azure Kubernetes Services' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'."
+          },
+          "description": "Set up the 'Azure Kubernetes Services' integration to work with your Prisma Cloud use case.",
+        },
         {
           "name": "WildFire-v2",
           "action": {
