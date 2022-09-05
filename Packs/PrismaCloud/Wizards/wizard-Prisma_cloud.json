@@ -82,7 +82,7 @@
             "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'.",
             "new": "Set up new 'GoogleKubernetesEngine' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'."
           },
-          "description": "Set up the 'GoogleKubernetesEngine' integration to work with your Phishing use case.",
+          "description": "Set up the 'GoogleKubernetesEngine' integration to work with your Phishing use case."
         },
         {
           "name": "Azure Kubernetes Services",
@@ -90,7 +90,7 @@
             "existing": "Update your current instance to work with the Prisma cloud incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'.",
             "new": "Set up new 'Azure Kubernetes Services' instance to start fetching Prisma cloud incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'."
           },
-          "description": "Set up the 'Azure Kubernetes Services' integration to work with your Prisma Cloud use case.",
+          "description": "Set up the 'Azure Kubernetes Services' integration to work with your Prisma Cloud use case."
         },
         {
           "name": "WildFire-v2",
