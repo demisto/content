@@ -2,7 +2,7 @@ from configparser import ConfigParser, MissingSectionHeaderError
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union, Iterator
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -261,10 +261,13 @@ class PackManager:
 
         self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 
-    def __getitem__(self, pack_id: str) -> ContentItem:
+    def get_pack_metadata(self, pack_id: str):
         return self._pack_id_to_pack_metadata[pack_id]
 
     def __iter__(self):
+        yield from self._pack_id_to_pack_metadata.values()
+
+    def iter_pack_metadata(self) -> Iterator[ContentItem]:
         yield from self._pack_id_to_pack_metadata.values()
 
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
@@ -298,12 +301,14 @@ class PackManager:
         return self[pack_id].get('support', '').lower() or None
 
 
-def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions]) -> Optional[tuple]:
     if value is None:
         return value
     if not value:
         return ()
-    if isinstance(value, str):
+    if isinstance(value, tuple):
+        return value
+    if isinstance(value, (str, int, MarketplaceVersions)):
         return value,
     return tuple(value)
 

@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, str2bool
@@ -29,7 +29,7 @@ from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, VersionRange,
                                                find_pack_folder,
-                                               find_yml_content_type)
+                                               find_yml_content_type, to_tuple)
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -183,7 +183,9 @@ class CollectionResult:
         return result
 
     @staticmethod
-    def union(collected_tests: Optional[tuple[Optional['CollectionResult'], ...]]) -> Optional['CollectionResult']:
+    def union(collected_tests: Optional[Union[tuple[Optional['CollectionResult'], ...],
+                                              list[Optional['CollectionResult'], ...]]]
+              ) -> Optional['CollectionResult']:
         non_none = filter(None, collected_tests or (None,))
         return sum(non_none, start=CollectionResult.__empty_result())
 
@@ -305,23 +307,37 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     @staticmethod
-    def _validate_support_level_is_xsoar(content_item: ContentItem) -> None:
+    def __validate_support_level_is_xsoar(content_item: ContentItem) -> None:
+        # intended to only be called from is_content_item_compatible
         if support_level := PACK_MANAGER.get_support_level(content_item.pack_id) != 'xsoar':
             raise NonXsoarSupportedPackException(content_item.pack_id, support_level)
 
+    def is_content_item_compatible(self, content_item: ContentItem) -> bool:
+        """
+        :param content_item: a content item
+        :return: whether this content item is compatible with the current settings (marketplace, support level, etc.)
+
+        logs to info when something is not compatible.
+        """
+        try:
+            self.__validate_support_level_is_xsoar(content_item)
+            self.__validate_marketplace_compatibility(content_item)
+            return True
+
+        except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
+            logger.info(e)
+            return False
+
     def _collect_pack(self, pack_id: str, reason: CollectionReason, reason_description: str,
                       content_item_range: Optional[VersionRange] = None) -> Optional[CollectionResult]:
-        pack = PACK_MANAGER[pack_id]
+        pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
 
-        try:
-            self._validate_marketplace_compatibility(pack)
-        except IncompatibleMarketplaceException as e:
-            logger.warning(f'Pack {pack_id} is not compatible with {self.marketplace.value} marketplace: {e}')
+        if not self.is_content_item_compatible(pack_metadata):
             return None
 
         version_range = content_item_range \
-            if pack.version_range.is_default \
-            else (pack.version_range | content_item_range)
+            if pack_metadata.version_range.is_default \
+            else (pack_metadata.version_range | content_item_range)
 
         return CollectionResult(
             test=None,
@@ -333,23 +349,25 @@ class TestCollector(ABC):
             id_set=self.id_set,
         )
 
-    def _validate_marketplace_compatibility(self, content_item: ContentItem):
-        if content_item.marketplaces is None:
-            relative_path = PACK_MANAGER.relative_to_packs(content_item.path)
-            raise ValueError(f'content item {relative_path} has no marketplaces')
+    def __validate_marketplace_compatibility(self, content_item: ContentItem) -> None:
+        # intended to only be called from _validate_content_item
+        if not (content_marketplaces := content_item.marketplaces):
+            logger.debug(f'Pack {content_item.pack_id} has no marketplaces listed, '
+                         f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
+            content_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
-                if content_item.marketplaces != (self.marketplace,):
+                if content_marketplaces != (self.marketplace,):
                     # marketplacev2 must be the only value in order to be collected
                     raise IncompatibleMarketplaceException(content_item.path)
 
             case MarketplaceVersions.XSOAR:
-                if self.marketplace not in content_item.marketplaces:
+                if self.marketplace not in content_marketplaces:
                     raise IncompatibleMarketplaceException(content_item.path)
 
             case _:
-                raise RuntimeError(f'Unexpected marketplace version {self.marketplace}')
+                raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
 
 class BranchTestCollector(TestCollector):
@@ -408,8 +426,8 @@ class BranchTestCollector(TestCollector):
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
 
-        self._validate_marketplace_compatibility(yml)
-        self._validate_skipped_integration(yml)
+        if not self.is_content_item_compatible(yml):
+            return None
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
@@ -514,7 +532,7 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self._validate_marketplace_compatibility(content_item)
+            self.__validate_marketplace_compatibility(content_item)
 
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -658,6 +676,13 @@ class NightlyTestCollector(TestCollector, ABC):
         result = []
 
         for playbook in self.id_set.test_playbooks:
+            try:
+                self.__validate_marketplace_compatibility(playbook)
+                self.__validate_support_level_is_xsoar(playbook)
+
+            except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
+                logger.warning(f'Pack {pack_id} is not compatible with {self.marketplace.value} marketplace: {e}')
+                return None
             playbook_marketplaces = playbook.marketplaces or default
 
             if only_value and len(playbook_marketplaces) != 1:
@@ -677,6 +702,19 @@ class NightlyTestCollector(TestCollector, ABC):
             return None
 
         return CollectionResult.union(tuple(result))
+
+    def _collect_all_compatible_packs(self, reason: CollectionReason) -> Optional[CollectionResult]:
+        result = []
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            description = ''
+            if reason == CollectionReason.PACK_MARKETPLACE_VERSION_VALUE:
+                description = self.marketplace.value
+
+            # self._collect_pack does the necessary validations, returning None if incompatible.
+            result.append(
+                self._collect_pack(pack_id=pack_metadata.pack_id, reason=reason, reason_description=description)
+            )
+        return CollectionResult.union(result)
 
     def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
         """
@@ -728,7 +766,7 @@ class NightlyTestCollector(TestCollector, ABC):
             if self.marketplace in item_marketplaces:
                 path = PATHS.content_path / item.file_path_str
                 try:
-                    pack = PACK_MANAGER[find_pack_folder(path).name]
+                    pack = PACK_MANAGER.get_pack_metadata(find_pack_folder(path).name)
                     if not item.path:
                         raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
                     relative_path = PACK_MANAGER.relative_to_packs(item.path)
