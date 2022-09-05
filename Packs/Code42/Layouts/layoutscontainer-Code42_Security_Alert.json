@@ -2,6 +2,7 @@
     "id": "Code42 Security Alert",
     "group": "incident",
     "name": "Code42 Security Alert",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -247,71 +248,52 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "name",
-                                "height": 53,
+                                "height": 55,
                                 "id": "f4316c20-598a-11ea-b904-997d555669cb",
                                 "index": 0,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "startCol": 0,
-                                "sectionItemType": "field"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 106,
+                                "height": 110,
                                 "id": "incident-details-field",
                                 "index": 1,
-                                "startCol": 0,
-                                "sectionItemType": "field"
+                                "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "code42alerttype",
-                                "height": 53,
+                                "height": 55,
                                 "id": "66a7ca60-598b-11ea-b904-997d555669cb",
                                 "index": 2,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "startCol": 0,
-                                "sectionItemType": "field"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "code42alerturl",
-                                "height": 53,
-                                "id": "430da9d0-e8e0-11ec-ab27-b1f8ebe679ab",
+                                "fieldId": "employeedisplayname",
+                                "height": 55,
+                                "id": "9e36d450-5984-11ea-b904-997d555669cb",
                                 "index": 3,
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "code42alertid",
-                                "height": 53,
-                                "id": "2e307610-e69b-11ec-8b31-cfd274a8c016",
-                                "index": 4,
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "code42username",
-                                "height": 53,
+                                "fieldId": "employeeemail",
+                                "height": 55,
                                 "id": "a3608bb0-5984-11ea-b904-997d555669cb",
-                                "index": 5,
-                                "startCol": 0,
-                                "sectionItemType": "field"
+                                "index": 4,
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "code42alertriskseveritysummary",
-                                "height": 53,
-                                "id": "4dadd900-e8e0-11ec-ab27-b1f8ebe679ab",
-                                "index": 6,
-                                "sectionItemType": "field",
+                                "fieldId": "employeemanageremail",
+                                "height": 55,
+                                "id": "a4bc7230-5984-11ea-b904-997d555669cb",
+                                "index": 5,
                                 "startCol": 0
                             }
                         ],
@@ -331,7 +313,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "code42fileevents",
+                                "fieldId": "exfiltratedfiles",
                                 "height": 110,
                                 "id": "d857da20-5985-11ea-b904-997d555669cb",
                                 "index": 0,
@@ -347,8 +329,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 6,
-                        "description": "Up to 25 file event details from the alert will be populated here, if an Alert has more than 25 events, investigate further in the Code42 Console."
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -379,6 +360,5 @@
                 "type": "canvas"
             }
         ]
-    },
-    "description": ""
+    }
 }
