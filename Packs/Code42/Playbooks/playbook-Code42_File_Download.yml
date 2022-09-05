@@ -95,7 +95,8 @@ tasks:
       id: 3d40417b-2a78-4c8d-877c-10fa9b4d9d84
       version: -1
       name: What type of hash was supplied?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -167,7 +168,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: A file that triggered the alert.
+        simple: The file that caused the alert.
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -206,7 +207,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: A file that triggered the alert.
+        simple: The file that caused the alert.
       customfields: {}
     timertriggers: []
     ignoreworker: false
