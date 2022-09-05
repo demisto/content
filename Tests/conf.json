@@ -5427,9 +5427,6 @@
         "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
-        "Laline v2",
-        "TruSTAR",
-        "VulnDB"
     ],
     "nightly_packs": [
         "CommonScripts",
