@@ -46,6 +46,8 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
+DEVICE_GROUP_PARAM_NAME = 'device_group'
+DEVICE_GROUP_ARG_NAME = 'device-group'
 
 XPATH_OBJECTS = ''
 
@@ -1726,7 +1728,7 @@ def panorama_edit_address_group_command(args: dict):
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Address Group was edited successfully.',
+        'HumanReadable': f'Address Group {address_group_name} was edited successfully.',
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
         }
@@ -3219,26 +3221,8 @@ def panorama_move_rule_command(args: dict):
     """
     Move a security rule
     """
+    result = panorama_move_rule(args)
     rulename = args['rulename']
-    params = {
-        'type': 'config',
-        'action': 'move',
-        'key': API_KEY,
-        'where': args['where'],
-    }
-
-    if DEVICE_GROUP:
-        if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
-        else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
-    else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-
-    if 'dst' in args:
-        params['dst'] = args['dst']
-
-    result = http_request(URL, 'POST', body=params)
     rule_output = {'Name': rulename}
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -3255,6 +3239,27 @@ def panorama_move_rule_command(args: dict):
     })
 
 
+def panorama_move_rule(args):
+    rulename = args['rulename']
+    params = {
+        'type': 'config',
+        'action': 'move',
+        'key': API_KEY,
+        'where': args['where'],
+    }
+    if DEVICE_GROUP:
+        if not PRE_POST:
+            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+    else:
+        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+    if 'dst' in args:
+        params['dst'] = args['dst']
+    result = http_request(URL, 'POST', body=params)
+    return result
+
+
 ''' Security Rule Configuration '''
 
 
@@ -3263,7 +3268,7 @@ def panorama_create_rule_command(args: dict):
     """
     Create a security rule
     """
-    rulename = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
+    rulename = args['rulename'] = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(args.get('source'))
     destination = argToList(args.get('destination'))
     source_zone = argToList(args.get('source_zone'))
@@ -3310,6 +3315,12 @@ def panorama_create_rule_command(args: dict):
     rule_output['Name'] = rulename
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
+
+    if where:
+        try:
+            panorama_move_rule(args)
+        except Exception as e:
+            demisto.error(f'Unable to move rule. {e}')
 
     return_results({
         'Type': entryTypes['note'],
@@ -3775,12 +3786,13 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
         'action': 'get',
         'key': API_KEY
     }
-    if predefined:
+    if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
             params['xpath'] = '/config/predefined/application'
     else:
+        # if device-group was provided it will be set in initialize_instance function.
         params['xpath'] = XPATH_OBJECTS + "application/entry"
 
     result = http_request(
@@ -6382,7 +6394,12 @@ def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     return result
 
 
-def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
+def apply_security_profile_command(args):
+    profile_name = args.get('profile_name')
+    profile_type = args.get('profile_type')
+    rule_name = args.get('rule_name')
+    pre_post = args.get('rule_name')
+
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
@@ -7571,10 +7588,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
 
-    if args and args.get('device-group'):
-        DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
-    else:
-        DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
+    DEVICE_GROUP = args.get(DEVICE_GROUP_ARG_NAME) or params.get(DEVICE_GROUP_PARAM_NAME)  # type: ignore[assignment]
 
     if args and args.get('template'):
         TEMPLATE = args.get('template')  # type: ignore[assignment]
@@ -11442,7 +11456,7 @@ def main():
             get_security_profiles_command(args.get('security_profile'))
 
         elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
-            apply_security_profile_command(**args)
+            apply_security_profile_command(args)
 
         elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)
