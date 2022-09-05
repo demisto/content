@@ -697,8 +697,8 @@ class NightlyTestCollector(TestCollector, ABC):
                     conf=self.conf,
                     id_set=self.id_set,
                 ))
-            except NothingToCollectException as e:
-                logger.info(str(e))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
 
         return CollectionResult.union(result)
 
@@ -712,8 +712,8 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
                 ))
-            except NothingToCollectException as e:
-                logger.info(str(e))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
         return CollectionResult.union(result)
 
 
@@ -739,8 +739,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 try:
                     self.validate_id_set_item_compatibility(item)
                 except NonXsoarSupportedPackException as e:
-                    logger.info(f'{str(PACK_MANAGER.relative_to_packs(path))} has non-xsoar support level '
-                                f'({e.support_level}), collecting pack anyway')
+                    logger.info(f'{str(e)} - collecting pack anyway')
                 except NothingToCollectException as e:
                     logger.info(e)
                     continue
