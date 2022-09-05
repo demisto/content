@@ -132,21 +132,11 @@ class Client(BaseClient):
 
 def check_pagination(client: Client, response: Dict, limit: int, params: Dict) -> List:
     arr: List[Dict] = response.get('values', [])
-    results_number = len(arr)
     isNext = response.get('next', None)
-    results = []
-    if limit < results_number:
-        for res in arr:
-            if limit > 0:
-                results.append(res)
-                limit = limit - 1
-            else:
-                return results
-    elif limit == results_number or params.get('page', None) or (not isNext):
-        return arr
-    else:
+    if isNext and limit > response.get('pagelen'):
         return get_paged_results(client, response, limit)
-    return results
+    else:
+        return arr
 
 
 def get_paged_results(client: Client, response: Dict, limit: int) -> List:
@@ -169,13 +159,11 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     return results
 
 
-def check_args(limit: int, page: int, page_size: int):
+def check_args(limit: int, page: int):
     if limit is not None and limit < 1:
         raise Exception('The limit value must be equal to 1 or bigger.')
     if page is not None and page < 1:
         raise Exception('The page value must be equal to 1 or bigger.')
-    if page_size is not None and page_size < 1:
-        raise Exception('The page_size value must be equal to 1 or bigger.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -193,14 +181,14 @@ def test_module(client: Client) -> str:
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 def project_list_command(client: Client, args: Dict) -> CommandResults:
-    params = {'page': arg_to_number(args.get('page')),
-              'pagelen': arg_to_number(args.get('page_size', 50))}
     limit: int = arg_to_number(args.get('limit', 50))
     project_key = args.get('project_key')
-    page: int = params.get('page', None)
-    page_size: int = params.get('page_size', None)
-    check_args(limit, page, page_size)
-
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    params = {
+        'page': page,
+        'pagelen': limit
+    }
     response = client.get_project_list_request(params, project_key)
 
     if project_key:
@@ -236,14 +224,13 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
-    params = {'page': arg_to_number(args.get('page')),
-              'pagelen': arg_to_number(args.get('page_size', 50))}
     limit = arg_to_number(args.get('limit', 50))
     repo = args.get('repo', None)
-    page: int = params.get('page', None)
-    page_size: int = params.get('page_size', None)
-    check_args(limit, page, page_size)
-
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {'page': page,
+              'pagelen': page_size}
     response = client.get_open_branch_list_request(repo, params)
     results = check_pagination(client, response, limit, params)
 

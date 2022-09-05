@@ -55,15 +55,11 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of project.
+          description: The maximum number of projects.
         - name: page
           required: false
           isArray: false
           description: The specific result page to display.
-        - name: page_size
-          required: false
-          isArray: false
-          description: The number of projects in a result page.
       output:
         - contextPath: Bitbucket.Project.type
           description: 'Client value type.'
@@ -158,15 +154,11 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of project.
+          description: The maximum number of projects.
         - name: page
           required: false
           isArray: false
           description: The specific result page to display.
-        - name: page_size
-          required: false
-          isArray: false
-          description: The number of projects in a result page.
       output:
         - contextPath: Bitbucket.Branch.name
           description: 'The branch name.'
