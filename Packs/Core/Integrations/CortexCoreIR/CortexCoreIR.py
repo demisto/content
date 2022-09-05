@@ -324,7 +324,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'core-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
+            return_entry, file_results = retrieve_file_details_command(client, args, False)
             demisto.results(return_entry)
             if file_results:
                 demisto.results(file_results)
@@ -439,6 +439,12 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-dynamic-analysis':
             return_results(get_dynamic_analysis_command(client, args))
+
+        elif command == 'core-add-endpoint-tag':
+            return_results(add_tag_to_endpoints_command(client, args))
+
+        elif command == 'core-remove-endpoint-tag':
+            return_results(remove_tag_from_endpoints_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

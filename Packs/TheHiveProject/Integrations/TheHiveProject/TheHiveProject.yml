@@ -57,6 +57,10 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Fetch closed cases
+  name: fetch_closed
+  type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -1425,7 +1429,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.6.33415
   isfetch: true
   runonce: false
   subtype: python3

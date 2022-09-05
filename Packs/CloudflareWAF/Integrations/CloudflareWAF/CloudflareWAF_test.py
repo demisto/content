@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 from CloudflareWAF import Client
 
@@ -20,7 +21,8 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+
+    with open(os.path.join('test_data', file_name), mode='r', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -62,7 +64,7 @@ def test_cloudflare_waf_firewall_rule_create_command(requests_mock, mock_client)
 
     assert result.outputs_prefix == 'CloudflareWAF.FirewallRule'
     assert len(result.outputs[0]) == 8
-    assert result.outputs[0].get('id') == 'firewall_rule_id'
+    assert result.outputs[0]['id'] == 'firewall_rule_id'
 
 
 def test_cloudflare_waf_firewall_rule_update_command(requests_mock, mock_client):
@@ -85,16 +87,12 @@ def test_cloudflare_waf_firewall_rule_update_command(requests_mock, mock_client)
     url = f'{BASE_URL}zones/{ZONE_ID}/firewall/rules'
     requests_mock.put(url=url, json=mock_response)
 
-    rule_id = 'rule_id'
-    action = 'action'
-    filter_id = 'filter_id'
-
     result = cloudflare_waf_firewall_rule_update_command(
-        mock_client, {'id': rule_id, 'action': action, 'filter_id': filter_id})
+        mock_client, {'id': 'rule_id', 'action': 'action', 'filter_id': 'filter_id'})
 
     assert result.outputs_prefix == 'CloudflareWAF.FirewallRule'
     assert len(result.outputs[0]) == 8
-    assert result.outputs[0].get('id') == 'firewall_rule_id'
+    assert result.outputs[0]['id'] == 'firewall_rule_id'
 
 
 def test_cloudflare_waf_firewall_rule_delete_command(requests_mock, mock_client):
@@ -123,7 +121,8 @@ def test_cloudflare_waf_firewall_rule_delete_command(requests_mock, mock_client)
         mock_client, {'id': rule_id})
 
     assert len(result.raw_response) == 4
-    assert result.raw_response['result'][0].get('id') == 'firewall_rule_id'
+    assert result.raw_response['success'] is True
+    assert result.raw_response['result'][0]['id'] == 'firewall_rule_id'
 
 
 def test_cloudflare_waf_firewall_rule_list_command(requests_mock, mock_client):
@@ -145,11 +144,11 @@ def test_cloudflare_waf_firewall_rule_list_command(requests_mock, mock_client):
     url = f'{BASE_URL}zones/{ZONE_ID}/firewall/rules'
     requests_mock.get(url=url, json=mock_response)
 
-    result = cloudflare_waf_firewall_rule_list_command(mock_client, {'limit': 5})
+    result = cloudflare_waf_firewall_rule_list_command(mock_client, {'page': 1, 'page_size': 5})
 
     assert result.outputs_prefix == 'CloudflareWAF.FirewallRule'
     assert len(result.outputs) == 2
-    assert result.outputs[0].get('id') == 'firewall_rule_id_1'
+    assert result.outputs[0]['id'] == 'firewall_rule_id_1'
 
 
 def test_cloudflare_waf_zone_list_command(requests_mock, mock_client):
@@ -175,7 +174,7 @@ def test_cloudflare_waf_zone_list_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CloudflareWAF.Zone'
     assert len(result.outputs) == 2
-    assert result.outputs[0].get('id') == 'zone_id_1'
+    assert result.outputs[0]['id'] == 'zone_id_1'
 
 
 def test_cloudflare_waf_filter_create_command(requests_mock, mock_client):
@@ -205,7 +204,7 @@ def test_cloudflare_waf_filter_create_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CloudflareWAF.Filter'
     assert len(result.outputs) == 2
-    assert result.outputs[0].get('id') == 'filter_id'
+    assert result.outputs[0]['id'] == 'filter_id'
 
 
 def test_cloudflare_waf_filter_update_command(requests_mock, mock_client):
@@ -236,7 +235,7 @@ def test_cloudflare_waf_filter_update_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CloudflareWAF.Filter'
     assert len(result.outputs) == 1
-    assert result.outputs[0].get('id') == 'filter_id'
+    assert result.outputs[0]['id'] == 'filter_id'
 
 
 def test_cloudflare_waf_filter_delete_command(requests_mock, mock_client):
@@ -264,7 +263,7 @@ def test_cloudflare_waf_filter_delete_command(requests_mock, mock_client):
     result = cloudflare_waf_filter_delete_command(mock_client, {'filter_id': filter_id})
 
     assert len(result.raw_response) == 4
-    assert result.raw_response['result'][0].get('id') == 'filter_id'
+    assert result.raw_response['result'][0]['id'] == 'filter_id'
 
 
 def test_cloudflare_waf_filter_list_command(requests_mock, mock_client):
@@ -290,7 +289,7 @@ def test_cloudflare_waf_filter_list_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CloudflareWAF.Filter'
     assert len(result.outputs) == 2
-    assert result.outputs[0].get('id') == 'filter_id_1'
+    assert result.outputs[0]['id'] == 'filter_id_1'
 
 
 def test_cloudflare_waf_ip_list_create_command(requests_mock, mock_client):
@@ -321,8 +320,8 @@ def test_cloudflare_waf_ip_list_create_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CloudflareWAF.IpList'
     assert len(result.outputs) == 7
-    assert result.outputs.get('id') == 'list_id'
-    assert result.outputs.get('name') == 'list_name'
+    assert result.outputs['id'] == 'list_id'
+    assert result.outputs['name'] == 'list_name'
 
 
 def test_cloudflare_waf_ip_list_delete_command(requests_mock, mock_client):
@@ -352,7 +351,7 @@ def test_cloudflare_waf_ip_list_delete_command(requests_mock, mock_client):
         mock_client, {'id': list_id})
 
     assert len(result.raw_response) == 4
-    assert result.raw_response['result'].get('id') == 'list_id'
+    assert result.raw_response['result']['id'] == 'list_id'
 
 
 def test_cloudflare_waf_ip_lists_list_command(requests_mock, mock_client):
@@ -374,11 +373,38 @@ def test_cloudflare_waf_ip_lists_list_command(requests_mock, mock_client):
     url = f'{BASE_URL}accounts/{ACCOUNT_ID}/rules/lists'
     requests_mock.get(url=url, json=mock_response)
 
-    result = cloudflare_waf_ip_lists_list_command(mock_client, {'limit': 5})
+    result = cloudflare_waf_ip_lists_list_command(
+        mock_client, {'page': 1, 'page_size': 5})
 
     assert result.outputs_prefix == 'CloudflareWAF.IpList'
     assert len(result.outputs) == 2
-    assert result.outputs[0].get('id') == 'list_id_1'
+    assert result.outputs[0]['id'] == 'list_id_1'
+
+
+def test_cloudflare_waf_ip_list_item_list_command(requests_mock, mock_client):
+    """
+    Scenario: List filters.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - cloudflare-waf-filter-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ip_list_item_list_command
+
+    mock_response = load_mock_response('ip_list_item_list.json')
+    url = f'{BASE_URL}accounts/{ACCOUNT_ID}/rules/lists/123/items'
+    requests_mock.get(url=url, json=mock_response)
+
+    result = cloudflare_waf_ip_list_item_list_command(
+        mock_client, {'page': 1, 'page_size': 5, 'list_id': '123', 'item_ip': 'ip1'})
+
+    assert result.outputs_prefix == 'CloudflareWAF.IpListItem'
+    assert result.outputs['list_id'] == '123'
 
 
 def test_cloudflare_waf_ip_list_item_create_command(requests_mock, mock_client):
@@ -407,8 +433,8 @@ def test_cloudflare_waf_ip_list_item_create_command(requests_mock, mock_client):
     requests_mock.post(url=url, json=mock_response)
 
     result = cloudflare_waf_ip_list_item_create_command(mock_client, {'list_id': list_id, 'items': items})
-    output = result.raw_response
-    assert output['operation_id'] == 'operation_id'
+
+    assert result.raw_response['operation_id'] == 'operation_id'
 
 
 def test_cloudflare_waf_ip_list_item_update_command(requests_mock, mock_client):
@@ -437,8 +463,8 @@ def test_cloudflare_waf_ip_list_item_update_command(requests_mock, mock_client):
     requests_mock.put(url=url, json=mock_response)
 
     result = cloudflare_waf_ip_list_item_update_command(mock_client, {'list_id': list_id, 'items': items})
-    output = result.raw_response
-    assert output['operation_id'] == 'operation_id'
+
+    assert result.raw_response['operation_id'] == 'operation_id'
 
 
 def test_cloudflare_waf_ip_list_item_delete_command(requests_mock, mock_client):
@@ -467,5 +493,5 @@ def test_cloudflare_waf_ip_list_item_delete_command(requests_mock, mock_client):
     requests_mock.delete(url=url, json=mock_response)
 
     result = cloudflare_waf_ip_list_item_delete_command(mock_client, {'list_id': list_id, 'items': items})
-    output = result.raw_response
-    assert output['operation_id'] == 'operation_id'
+
+    assert result.raw_response['operation_id'] == 'operation_id'

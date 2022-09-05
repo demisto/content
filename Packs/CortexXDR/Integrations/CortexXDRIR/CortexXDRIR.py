@@ -40,7 +40,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
@@ -744,16 +745,17 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
+                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
-            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
+            closing_entry['Contents']['closeNotes'] = close_notes
+            incident_data['closeNotes'] = close_notes
 
     return closing_entry
 
@@ -990,6 +992,13 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         outputs_key_field='status',
         outputs=ec,
         raw_response=raw_res)
+
+
+def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
+    return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
+    demisto.results(return_entry)
+    if file_results:
+        demisto.results(file_results)
 
 
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
@@ -1290,22 +1299,31 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-retrieve",
-                                               command_function=retrieve_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+            polling = run_polling_command(client=client,
+                                          args=args,
+                                          cmd="xdr-file-retrieve",
+                                          command_function=retrieve_files_command,
+                                          command_decision_field="action_id",
+                                          results_function=action_status_get_command,
+                                          polling_field="status",
+                                          polling_value=["PENDING",
+                                                         "IN_PROGRESS",
+                                                         "PENDING_ABORT"])
+            raw = polling.raw_response
+            # raw is the response returned by the get-action-status
+            if polling.scheduled_command:
+                return_results(polling)
+                return
+            status = raw[0].get('status')  # type: ignore
+            if status == 'COMPLETED_SUCCESSFULLY':
+                file_details_results(client, args, True)
+            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
+                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
+                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
+                return_results(polling)
 
         elif command == 'xdr-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
-            demisto.results(return_entry)
-            if file_results:
-                demisto.results(file_results)
+            file_details_results(client, args, False)
 
         elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
@@ -1321,6 +1339,9 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
+
+        elif command == 'xdr-script-run':  # used with polling = true always
+            return_results(script_run_polling_command(args, client))
 
         elif command == 'xdr-run-script':
             return_results(run_script_command(client, args))
@@ -1440,7 +1461,6 @@ def main():  # pragma: no cover
             return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

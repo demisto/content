@@ -90,7 +90,6 @@ def main():  # pragma: no cover
         formated_results = format_results(indicators, incident_ids)
         execute_command('setIncident', {'campaignmutualindicators': formated_results})
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
 
 

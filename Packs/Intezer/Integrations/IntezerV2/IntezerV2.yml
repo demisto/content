@@ -158,6 +158,12 @@ script:
         - contextPath: File.SHA256
           description: Hash SHA256
           type: string
+        - contextPath: File.MD5
+          description: Hash MD5
+          type: string
+        - contextPath: File.SHA1
+          description: Hash SHA1
+          type: string
         - contextPath: Url.URL
           description: The submitted Url
           type: string
@@ -309,7 +315,7 @@ script:
         - contextPath: Intezer.Analysis.IOCs
           description: The Analysis IOCs
           type: Dict
-  dockerimage: demisto/py3-tools:0.0.1.30291
+  dockerimage: demisto/py3-tools:1.0.0.31193
   isfetch: false
   runonce: false
   script: '-'
