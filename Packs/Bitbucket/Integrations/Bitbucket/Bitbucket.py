@@ -105,6 +105,26 @@ class Client(BaseClient):
             else:
                 return e.message
 
+    def commit_create_request(self, message: str, branch: str, file_name: str, file_content: str, author_name: str, author_email: str, repo: str = None):
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/src'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src'
+        body = {
+            "message": message,
+            "branch": branch,
+            file_name: file_content
+        }
+        if author_name and author_email:
+            body["author"] = f'{author_name} <{author_email}>'
+
+        response = self._http_request(method='POST',
+                                      url_suffix=url_suffix,
+                                      data=body,
+                                      resp_type='response')
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -296,6 +316,34 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
         return CommandResults(readable_output=response)
 
 
+def commit_create_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    message = args.get('message', None)
+    branch = args.get('branch', None)
+    file_name = args.get('file_name', None)
+    file_content = args.get('file_content', None)
+    entry_id = args.get('entry_id', None)
+    author_name = args.get('author_name', None)
+    author_email = args.get('author_email', None)
+
+    if not file_name and not entry_id:
+        raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the file.')
+    elif file_name and entry_id:
+        raise Exception('You must specify the "file_name" and "file_content" or the "entry_id" of the file, not both.')
+    elif entry_id:
+        file_path = demisto.getFilePath(entry_id).get('path')
+        file_name = demisto.getFilePath(entry_id).get('name')
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+
+    response = client.commit_create_request(message, branch, file_name, file_content, author_name, author_email, repo)
+    print(response)
+    if response.status_code == 201:
+        return CommandResults(readable_output=f'The commit was created successfully.')
+    else:
+        return CommandResults(readable_output=response)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -323,7 +371,8 @@ def main() -> None:  # pragma: no cover
             auth=auth,
             proxy=proxy,
             verify=verify_certificate,
-            repository=repository)
+            repository=repository
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -343,6 +392,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-branch-delete':
             result = branch_delete_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-commit-create':
+            result = commit_create_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')

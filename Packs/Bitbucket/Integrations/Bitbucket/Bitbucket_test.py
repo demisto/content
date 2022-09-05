@@ -76,6 +76,7 @@ def test_get_paged_results(mocker):
     assert results == res
 
 
+
 def test_check_pagination():
     """
         Given:

@@ -456,6 +456,40 @@ script:
           required: true
           description: The name of the branch to delete.
           isArray: false
+    - name: bitbucket-commit-create
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: message
+          required: true
+          description: Commit a message with the file.
+          isArray: false
+        - name: branch
+          required: true
+          description: This branch will be associated with the commited file.
+          isArray: false
+        - name: file_name
+          required: false
+          description: The name of the file to commit.
+          isArray: false
+        - name: file_content
+          required: false
+          description: The content of the file to commit.
+          isArray: false
+        - name: entry_id
+          required: false
+          description: The entry_id of the file to commit.
+          isArray: false
+        - name: author_name
+          required: false
+          description: The name of the author of the file.
+          isArray: false
+        - name: author_email
+          required: false
+          description: The email of the author of the file.
+          isArray: false
   isfetch: false
   runonce: false
   script: "-"
