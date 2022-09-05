@@ -1,6 +1,10 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [],
+    "associatedTypes": [
+        "Vectra Account",
+        "Vectra Detection",
+        "Vectra Host"
+    ],
     "caseInsensitive": true,
     "cliName": "vectracertaintyscore",
     "closeForm": false,
