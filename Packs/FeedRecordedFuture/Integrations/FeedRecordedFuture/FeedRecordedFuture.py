@@ -9,11 +9,14 @@ import requests
 import traceback
 import urllib.parse
 from typing import Tuple, Optional, List, Dict
+from multiprocessing.dummy import Pool as ThreadPool
+from collections import namedtuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
 INTEGRATION_NAME = 'Recorded Future'
+INDICATOR_VALUES_SET: Set[str] = set()
 
 # taken from recorded future docs
 RF_CRITICALITY_LABELS = {
@@ -184,7 +187,7 @@ class Client(BaseClient):
                 if not feed_batch:
                     file_stream.close()
                     return
-                yield csv.DictReader(feed_batch, fieldnames=columns)
+                yield csv.DictReader((l.replace('\0', '') for l in feed_batch), fieldnames=columns)
         finally:
             try:
                 os.remove("response.txt")
@@ -378,55 +381,64 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
     Returns:
         list. List of indicators from the feed
     """
-    indicators_value_set: Set[str] = set()
+    services_args: list = []
+    Service = namedtuple("Service", "client indicator_type service risk_rule limit")
     for service in client.services:
-        client.build_iterator(service, indicator_type, risk_rule)
-        feed_batches = client.get_batches_from_file(limit)
-        for feed_dicts in feed_batches:
-            indicators = []
-            for item in feed_dicts:
-                raw_json = dict(item)
-                raw_json['value'] = value = item.get('Name')
-                if value in indicators_value_set:
+        services_args.append(Service(client=client, indicator_type=indicator_type, service=service,
+                                     risk_rule=risk_rule, limit=limit))
+    with ThreadPool(4) as pool:
+        indicators = pool.starmap(process_service, services_args)
+    return indicators
+
+
+def process_service(client, indicator_type, service, risk_rule: Optional[str] = None, limit: Optional[int] = None):
+    client.build_iterator(service, indicator_type, risk_rule)
+    feed_batches = client.get_batches_from_file(limit)
+    for feed_dicts in feed_batches:
+        indicators = []
+        for item in feed_dicts:
+            raw_json = dict(item)
+            raw_json['value'] = value = item.get('Name')
+            if value in INDICATOR_VALUES_SET:
+                continue
+            INDICATOR_VALUES_SET.add(value)
+            raw_json['type'] = get_indicator_type(indicator_type, item)
+            score = 0
+            risk = item.get('Risk')
+            if isinstance(risk, str) and risk.isdigit():
+                raw_json['score'] = score = client.calculate_indicator_score(risk)
+                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
+                # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
+                if not client.check_indicator_risk_score(risk):
                     continue
-                indicators_value_set.add(value)
-                raw_json['type'] = get_indicator_type(indicator_type, item)
-                score = 0
-                risk = item.get('Risk')
-                if isinstance(risk, str) and risk.isdigit():
-                    raw_json['score'] = score = client.calculate_indicator_score(risk)
-                    raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
-                    # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
-                    if not client.check_indicator_risk_score(risk):
-                        continue
-                lower_case_evidence_details_keys = []
-                evidence_details_value = item.get('EvidenceDetails', '{}')
-                if evidence_details_value:
-                    evidence_details = json.loads(evidence_details_value).get('EvidenceDetails', [])
-                    if evidence_details:
-                        raw_json['EvidenceDetails'] = evidence_details
-                        for rule in evidence_details:
-                            rule = dict((key.lower(), value) for key, value in rule.items())
-                            lower_case_evidence_details_keys.append(rule)
-                risk_string = item.get('RiskString')
-                if isinstance(risk_string, str):
-                    raw_json['RiskString'] = format_risk_string(risk_string)
-                indicator_obj = {
-                    'value': value,
-                    'type': raw_json['type'],
-                    'rawJSON': raw_json,
-                    'fields': {
-                        'recordedfutureevidencedetails': lower_case_evidence_details_keys,
-                        'tags': client.tags,
-                    },
-                    'score': score
-                }
-                if client.tlp_color:
-                    indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+            lower_case_evidence_details_keys = []
+            evidence_details_value = item.get('EvidenceDetails', '{}')
+            if evidence_details_value:
+                evidence_details = json.loads(evidence_details_value).get('EvidenceDetails', [])
+                if evidence_details:
+                    raw_json['EvidenceDetails'] = evidence_details
+                    for rule in evidence_details:
+                        rule = dict((key.lower(), value) for key, value in rule.items())
+                        lower_case_evidence_details_keys.append(rule)
+            risk_string = item.get('RiskString')
+            if isinstance(risk_string, str):
+                raw_json['RiskString'] = format_risk_string(risk_string)
+            indicator_obj = {
+                'value': value,
+                'type': raw_json['type'],
+                'rawJSON': raw_json,
+                'fields': {
+                    'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                    'tags': client.tags,
+                },
+                'score': score
+            }
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
-                indicators.append(indicator_obj)
+            indicators.append(indicator_obj)
 
-            yield indicators
+        yield indicators
 
 
 def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
