@@ -32,7 +32,7 @@ The mirroring instance in the first tenant contains a new incident type, called 
 
 
 ## Important note:
-In order to mirror `customFields` please create ***Mapper*** that maps the fields you want to mirror on update. 
+In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
