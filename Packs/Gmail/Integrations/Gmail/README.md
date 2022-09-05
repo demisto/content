@@ -1303,7 +1303,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
-| return-msg-content | Whether to return the content of the messages as well. (Default: false) | Optional | 
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: true) | Optional | 
 
 
 #### Context Output
@@ -1337,7 +1337,7 @@ Inspecting these messages should allow you to determine what percent the search 
 
 
 #### Command Example
-```!gmail-search-all-mailboxes after=2019/04/10 max-results=1 before=2021/04/15 return-msg-content=true```
+```!gmail-search-all-mailboxes after=2019/04/10 max-results=1 before=2021/04/15 show-only-mailboxes=false```
 
 #### Context Example
 ```

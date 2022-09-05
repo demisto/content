@@ -1117,7 +1117,8 @@ def search_all_mailboxes(receive_only_accounts, max_results):
             futures = []
             entries = []
             for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
+                futures.append(executor.submit(search_command, mailbox=user['primaryEmail'],
+                                               receive_only_accounts=receive_only_accounts))
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
                 entry, num_of_messages = future.result()
@@ -1150,7 +1151,7 @@ def search_all_mailboxes(receive_only_accounts, max_results):
         demisto.results(entries)
 
 
-def search_command(mailbox=None):
+def search_command(mailbox=None, receive_only_accounts=False):
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1175,7 +1176,6 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = not argToBoolean(args.get('return-msg-content', 'false'))
 
     if max_results > 500:
         raise ValueError(
@@ -2201,7 +2201,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = not argToBoolean(demisto.args().get('return-msg-content', 'false'))
+                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
                 demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
             if command == 'gmail-search':

@@ -645,9 +645,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return the content of the messages as well. Default
-        is "False".
-      name: return-msg-content
+      description: Whether to return only mailboxes which contain the email. Default
+        is "True".
+      name: show-only-mailboxes
       predefined:
       - "false"
       - "true"
