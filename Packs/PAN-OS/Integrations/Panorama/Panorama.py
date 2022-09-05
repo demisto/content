@@ -3319,7 +3319,7 @@ def panorama_create_rule_command(args: dict):
     if where:
         try:
             panorama_move_rule(args)
-        except Exception e:
+        except Exception as e:
             demisto.error(f'Unable to move rule. {e}')
 
     return_results({
