@@ -231,6 +231,25 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def delete_scan_schedule(self, site_id: str, scheduled_scan_id: str) -> dict:
+        """
+        | Delete a scheduled scan.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to delete the scheduled scan from.
+            scheduled_scan_id (str): ID of the scheduled scan to delete.
+
+        Returns:
+            dict: API response.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules/{scheduled_scan_id}",
+            method="DELETE",
+        )
+
     def delete_site(self, site_id: str) -> dict:
         """
         | Delete a site.
@@ -1600,6 +1619,26 @@ def create_sites_report_command(client: Client, sites: list[Site], template_id: 
     )
 
 
+def delete_scheduled_scan_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
+    """
+    Delete a scheduled scan.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to delete the scheduled scan from.
+        scheduled_scan_id (str): ID of the scheduled scan to delete.
+
+    Returns:
+        dict: API response.
+    """
+    client.delete_scan_schedule(
+        site_id=site.id,
+        scheduled_scan_id=scheduled_scan_id,
+    )
+
+    return CommandResults(readable_output=f"Scheduled scan with ID {scheduled_scan_id} has been deleted.")
+
+
 def delete_site_command(client: Client, site: Site) -> CommandResults:
     """
     Delete a site.
@@ -2648,6 +2687,16 @@ def main():
                 report_name=args.get("name"),
                 report_format=ReportFileFormat(args.get("format").upper()),
                 download_immediately=argToBoolean(args.get("download_immediately")),
+            )
+        elif command == "nexpose-delete-scan-schedule":
+            results = delete_scheduled_scan_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                scheduled_scan_id=args.get("schedule_id"),
             )
         elif command == "nexpose-delete-site":
             results = delete_site_command(

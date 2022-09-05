@@ -514,6 +514,29 @@ script:
     - default: false
       description: Id of the site to delete
       isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site to delete (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scheduled scan to delete.
+      isArray: false
+      name: schedule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a scheduled scan.
+    execution: false
+    name: nexpose-delete-scan-schedule
+  - arguments:
+    - default: false
+      description: Id of the site to delete
+      isArray: false
       name: id
       required: false
       secret: false
