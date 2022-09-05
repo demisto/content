@@ -306,58 +306,31 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    @staticmethod
-    def __validate_support_level_is_xsoar(pack_id: str) -> None:
-        # intended to only be called from is_content_item_compatible
-        if support_level := PACK_MANAGER.get_support_level(pack_id) != 'xsoar':
-            raise NonXsoarSupportedPackException(pack_id, support_level)
+    def validate_content_item_compatibility(self, content_item: ContentItem) -> None:
 
-    def is_content_item_compatible(self, content_item: ContentItem) -> bool:
-        """
-        :param content_item: a content item
-        :return: whether this content item is compatible with the current settings (marketplace, support level, etc.)
+        self.__validate_support_level_is_xsoar(content_item.pack_id)
+        self.__validate_marketplace_compatibility(content_item.marketplaces, content_item.path)
 
-        logs to info when something is not compatible.
-        """
-        try:
-            self.__validate_support_level_is_xsoar(content_item.pack_id)
-            self.__validate_marketplace_compatibility(content_item.marketplaces, content_item.path)
-            return True
+    def validate_id_set_item_compatibility(self, id_set_item: IdSetItem) -> None:
+        # id_set_item objects may not have pack_id or path
+        if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):
+            raise RuntimeError(f'could not find pack of {id_set_item.name}')
+        self.__validate_support_level_is_xsoar(pack_id)
+        self.__validate_marketplace_compatibility(id_set_item.marketplaces, id_set_item.path)
 
-        except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
-            logger.info(e)
-            return False
-
-    def is_id_set_item_compatible(self, id_set_item: IdSetItem) -> bool:
-        """
-        :param id_set_item: an id set item
-        :return: whether this id set item is compatible with the current settings (marketplace, support level, etc.)
-
-        logs to info when an item is not compatible.
-        """
-        try:
-            self.__validate_marketplace_compatibility(id_set_item.marketplaces, id_set_item.path)
-
-            # id_set_item objects may not have pack_id or path
-            if id_set_item.pack_id:
-                self.__validate_support_level_is_xsoar(id_set_item.pack_id)
-            elif id_set_item.path:
-                self.__validate_support_level_is_xsoar(find_pack_folder(id_set_item.path).name)
-            else:
-                raise RuntimeError(f'could not find pack of {id_set_item.name}')
-
-            return True
-
-        except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
-            logger.info(e)
-            return False
-
-    def _collect_pack(self, pack_id: str, reason: CollectionReason, reason_description: str,
-                      content_item_range: Optional[VersionRange] = None) -> Optional[CollectionResult]:
+    def _collect_pack(
+            self,
+            pack_id: str,
+            reason: CollectionReason,
+            reason_description: str,
+            content_item_range: Optional[VersionRange] = None,
+    ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
 
-        if not self.is_content_item_compatible(pack_metadata):
-            return None
+        try:
+            self.validate_content_item_compatibility(pack_metadata)
+        except NonXsoarSupportedPackException:
+            pass  # we do want to install packs in this case (tests are not run)
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
@@ -373,10 +346,16 @@ class TestCollector(ABC):
             id_set=self.id_set,
         )
 
+    @staticmethod
+    def __validate_support_level_is_xsoar(pack_id: str) -> None:
+        # intended to only be called from validate_content_item_compatibility
+        if support_level := (PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
+            raise NonXsoarSupportedPackException(pack_id, support_level)
+
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
                                              content_item_path: Path) -> None:
-        # intended to only be called from is_content_item_compatible
+        # intended to only be called from validate_content_item_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
@@ -452,8 +431,8 @@ class BranchTestCollector(TestCollector):
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
 
-        if not self.is_content_item_compatible(yml):
-            return None
+        self.validate_content_item_compatibility(yml)
+        self._validate_skipped_integration(yml)
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
@@ -552,29 +531,27 @@ class BranchTestCollector(TestCollector):
         self._validate_not_ignored(path)
         self._validate_triggering_sanity_test(path)
 
+        pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
         file_type = find_type(str(path))
-        pack_id = find_pack_folder(path).name
-
-        try:
-            content_item = ContentItem(path)
-            if not self.is_content_item_compatible(content_item):
-                return None
-
-        except NonDictException:
-            content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
 
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
 
-        if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
+        try:
+            content_item = ContentItem(path)
+            self.validate_content_item_compatibility(content_item)
+
+        except NonDictException:
+            content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
+        except NonXsoarSupportedPackException as e:
             return self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.NON_XSOAR_SUPPORTED,
-                reason_description=support_level,
+                reason_description=e.support_level,
             )
 
-        elif file_type in ONLY_INSTALL_PACK_FILE_TYPES:
+        if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             return self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
@@ -702,11 +679,17 @@ class NightlyTestCollector(TestCollector, ABC):
         result = []
 
         for playbook in self.id_set.test_playbooks:
-            if self.is_id_set_item_compatible(playbook):
+            try:
+                self.validate_id_set_item_compatibility(playbook)
+
                 result.append(CollectionResult(
                     test=playbook.id_, pack=playbook.pack_id, reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=self.marketplace.value, version_range=playbook.version_range, conf=self.conf,
                     id_set=self.id_set, ))
+
+            except (NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+                logger.info(str(e))
+                continue
 
         if not result:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
