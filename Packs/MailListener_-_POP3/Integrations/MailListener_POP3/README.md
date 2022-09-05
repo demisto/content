@@ -1,23 +1,21 @@
-## Overview
----
+Listen to a mailbox, enable incident triggering via e-mail
+This integration was integrated and tested with version xx of MailListener - POP3 Beta
 
-Listens to a mailbox with POP3 forwarding enabled.
+## Configure MailListener - POP3 on Cortex XSOAR
 
----
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for MailListener - POP3.
+3. Click **Add instance** to create and configure a new integration instance.
 
-## Configure MailListener - POP3 on XSOAR
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g. example.com) | True |
+    | Port | False |
+    | Email | True |
+    | Password | True |
+    | Use SSL connection | False |
+    | Fetch incidents | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+    | Incident type | False |
 
----
-
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for MailListener - POP3. 
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Fetch incidents__: Whether to fetch incidents or not
-    * __Server URL__: Mail Server Hostname / IP address
-    * __port__: POP3 Port
-    * __credentials__: Username and password
-    * __first_fetch__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)
-    * __Use SSL Connection__: Use SSL connection when connecting to the mail server.
-    * __incidentFetchInterval__: Incidents Fetch Interval
-4. Click __Test__ to validate the connection and the authentication.
+4. Click **Test** to validate the URLs, token, and connection.
