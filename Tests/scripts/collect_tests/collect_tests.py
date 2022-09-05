@@ -273,32 +273,36 @@ class TestCollector(ABC):
             test_object = self.conf.get_test(test_id)
 
             for integration in test_object.integrations:
-                result.append(
-                    self._collect_test_dependency(
-                        dependency=integration,
-                        test_id=test_id,
-                        pack_id=self.id_set.id_to_integration[integration].pack_id
-                    )
-                )
+                if integration_object := self.id_set.id_to_integration.get(integration):
+                    result.append(self._collect_test_dependency(dependency=integration,
+                                                                test_id=test_id,
+                                                                pack_id=integration_object.pack_id,
+                                                                ))
+                else:
+                    logger.warning(f'could not find integration {integration} in id_set'
+                                   f' when searching for integrations the {test_id} test depends on')
 
             for script in test_object.scripts:
-                result.append(
-                    self._collect_test_dependency(
-                        dependency=script,
-                        test_id=test_id,
-                        pack_id=self.id_set.id_to_script[script].pack_id
-                    )
-                )
+                if script_object := self.id_set.id_to_script.get(script):
+                    result.append(self._collect_test_dependency(dependency=script,
+                                                                test_id=test_id,
+                                                                pack_id=script_object.pack_id,
+                                                                ))
+                else:
+                    logger.warning(f'Could not find script {script} in id_set'
+                                   f' when searching for integrations the {test_id} test depends on')
 
         return CollectionResult.union(tuple(result))
 
     def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
-        return (
-            CollectionResult(
-                test=None, pack=pack_id, reason=CollectionReason.PACK_TEST_DEPENDS_ON,
-                version_range=None, reason_description=f'{test_id} depends on {dependency} from {pack_id}',
-                conf=self.conf, id_set=self.id_set,
-            )
+        return CollectionResult(
+            test=None,
+            pack=pack_id,
+            reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+            version_range=None,
+            reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+            conf=self.conf,
+            id_set=self.id_set,
         )
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
