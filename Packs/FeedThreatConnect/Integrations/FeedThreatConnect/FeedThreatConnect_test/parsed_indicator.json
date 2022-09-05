@@ -21,8 +21,6 @@
     "activeLocked": true
   },
   "score": 1,
-  "fields": {
-    "tags": []
-  }
+  "fields": {"firstseenbysource": "2019-06-27T18:37:55Z", "updateddate": "2019-06-27T18:37:55Z", "verdict": 2.06, "confidence": 75.0, "name": "https://google.com", "reportedby": ["xxx"]}
 }
 

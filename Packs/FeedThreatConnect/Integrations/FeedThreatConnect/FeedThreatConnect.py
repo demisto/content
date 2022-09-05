@@ -172,14 +172,14 @@ def create_types_query() -> str:
     if 'All' not in demisto.getParam('indicatorType'):
         types.extend(argToList(demisto.getParam("indicatorType")))
     if not types:
-     return ''
+        return ''
 
     query = 'typeName IN ('
     for item in types:
         query += f'"{item}",'
     query = query[:len(query) - 1]
     query += ')'
-    return query[:len(query) - 3]
+    return query
 
 
 def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
@@ -209,6 +209,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     fields = add_indicator_fields(indicator, indicator_type)
+    remove_nulls_from_dictionary(fields)
+
     indicator_obj = {
         "value": indicator.get('summary'),
         "type": indicator_type,
@@ -219,8 +221,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
     return indicator_obj
 
-def add_indicator_fields(indicator, indicator_types):
-    indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_types]
+def add_indicator_fields(indicator, indicator_type):
+    indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
     fields: dict = {}
     for indicator_key, xsoar_indicator_key in indicator_fields.items():
         fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
@@ -228,14 +230,16 @@ def add_indicator_fields(indicator, indicator_types):
     raw_tags = indicator.get('tags',{}).get('data', [])
     tags = [tag.get('name','') for tag in raw_tags]
     fields['tags'] = tags
-    fields['reportedby'] = indicator.get('ownerName','') or indicator.get('source','')
+
+    fields['reportedby'] = [name for name in [indicator.get('ownerName',''), indicator.get('source','')] if name]
 
     fields['feedrelatedindicators'] = indicator.get("associatedIndicators", {}).get('data') or []
     fields['feedrelatedindicators'].extend(indicator.get("associatedGroups", {}).get('data') or [])
 
     if 'description' not in fields:
         fields['description'] = indicator.get('attributes', {}).get('description','')
-    fields['action'] = indicator.get('attributes', {}).get('action','')
+    if indicator_type == 'Course of Action':
+        fields['action'] = indicator.get('attributes', {}).get('action','')
 
     tlp_color = demisto.getParam('tlp_color')
     if tlp_color:
@@ -248,14 +252,13 @@ def add_indicator_fields(indicator, indicator_types):
 
     return fields
 
-def create_indicator_relationships(indicators_list):
+def create_indicator_relationships(indicator):
     relationships_list: List[EntityRelationship] = []
-    for indicator in indicators_list:
-        entities_b = indicator.get('feedrelatedindicators',[])
-        for entity_b in entities_b:
-            
-            relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'), 
-                                                           entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
+    entities_b = indicator.get('feedrelatedindicators',[])
+    for entity_b in entities_b:
+        
+        relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'), 
+                                                        entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
     
     return relationships_list
 
@@ -411,7 +414,7 @@ def set_tql_query(from_date):
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    active_only = f'AND indicatorActive EQ {params.get("indicatorActive")} ' if params.get("indicatorActive") else ''
+    active_only = f'AND indicatorActive EQ True ' if argToBoolean(params.get("indicatorActive")) else ''
     confidence = f'AND confidence GT {params.get("confidence")} ' if params.get("confidence") else ''
     threat_score = f'AND threatAssessScore GT {params.get("threatAssessScore")} ' if params.get("threatAssessScore") else ''
     
@@ -452,8 +455,6 @@ def get_indicators_command(client: Client):  # pragma: no cover
             query += f'"{item}",'
         query = query[:len(query) - 1]
         query += ')'
-
-    print(query)
 
     tql =  active_only + confidence + threat_score + confidence + owners + query
     tql = tql.replace('AND ', '', 1)
@@ -521,6 +522,7 @@ def main():  # pragma: no cover
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
+
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

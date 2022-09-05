@@ -104,6 +104,7 @@ configuration:
   required: false
   type: 0
   additionalinfo: Supports CSV values.
+  hidden: true
   name: feedTags
 - additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
   defaultvalue: All
