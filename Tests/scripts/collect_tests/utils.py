@@ -270,7 +270,7 @@ class PackManager:
         return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Union[str, int, MarketplaceVersions]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> Optional[tuple]:
     if value is None:
         return value
     if not value:
