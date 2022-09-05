@@ -333,7 +333,7 @@ script:
       - contextPath: File.Tags
         description: Tags of the file.
         type: String
-     - contextPath: File.Relationships.EntityA
+      - contextPath: File.Relationships.EntityA
         description: The source of the relationship.
         type: String
       - contextPath: File.Relationships.EntityB
@@ -385,6 +385,15 @@ script:
     outputs:
       - contextPath: Joe.LIACountry
         description: A list of localized internet anonymization countries.
+        type: String
+  - name: joe-list-lang-locales
+    arguments: []
+    deprecated: false
+    description: Retrieve a list of available language and locale combinations.
+    execution: false
+    outputs:
+      - contextPath: Joe.LangLocale
+        description: A list of available language and locale combinations.
         type: String
   type: python
   subtype: python3

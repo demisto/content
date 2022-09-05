@@ -483,13 +483,12 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return build_reputation_command_result(client, filter_result(analyses, filter_by='filename'))
 
 
-def list_lia_countries(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_lia_countries(client: Client) -> CommandResults:
     """
-        The url reputation command.
+        Retrieve a list of localized internet anonymization countries.
 
          Args:
             client: (Client) The client class.
-            args: (Dict(str, any)) The commands arguments.
 
          Returns:
              result: (CommandResults) The CommandResults object.
@@ -497,8 +496,30 @@ def list_lia_countries(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     res = client.server_lia_countries()
     if res:
+        data = [country.get('name') for country in res]
         return CommandResults(outputs_prefix='Joe.LIACountry',
-                              outputs={'Names': [country.get('name') for country in res]})
+                              outputs=data,
+                              readable_output=tableToMarkdown('Results:', {'Name': data}))
+    return CommandResults(readable_output='No Results were found.')
+
+
+def lis_lang_locales(client: Client) -> CommandResults:
+    """
+        Retrieve a list of available language and locale combinations.
+
+         Args:
+            client: (Client) The client class.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+
+    res = client.server_languages_and_locales()
+    if res:
+        data = [lang.get('name') for lang in res]
+        return CommandResults(outputs_prefix='Joe.LangLocale',
+                              outputs=data,
+                              readable_output=tableToMarkdown('Results:', {'Name': data}))
     return CommandResults(readable_output='No Results were found.')
 
 
@@ -542,7 +563,9 @@ def main() -> None:  # pragma: no cover
         elif command == 'url':
             return_results(url_command(client, args))
         elif command == 'joe-list–lia-countries':
-            return_results(list_lia_countries(client, args))
+            return_results(list_lia_countries(client))
+        elif command == 'joe-list-lang-locales':
+            return_results(lis_lang_locales(client))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
