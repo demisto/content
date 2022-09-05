@@ -1757,6 +1757,7 @@ def impersonation_to_incident(impersonation_log):
     incident['name'] = 'Mimecast malicious impersonation: ' + impersonation_log.get('subject')
     incident['occurred'] = impersonation_log.get('eventTime').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(impersonation_log)
+    incident['dbotMirrorId'] = impersonation_log.get('id')
     return incident
 
 
@@ -1765,6 +1766,7 @@ def held_to_incident(held_message):
     incident['name'] = f'Mimecast held message: {held_message.get("subject")}'
     incident['occurred'] = held_message.get('dateReceived').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(held_message)
+    incident['dbotMirrorId'] = held_message.get('id')
     return incident
 
 
