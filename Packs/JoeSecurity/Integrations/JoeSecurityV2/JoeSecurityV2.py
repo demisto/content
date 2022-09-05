@@ -38,13 +38,13 @@ class Client(jbxapi.JoeSandbox):
 ''' HELPER FUNCTIONS '''
 
 
-def pagination(args: Dict[str, Any], results: Generator) -> List:
+def paginate(args: Dict[str, Any], results: Generator) -> List:
     """
-         Helper function supporting pagination for results.
+         Helper function supporting paginate for results.
 
          Args:
-            args: Dict(str, any): pagination arguments (page, page_size, limit).
-            results: (Generator): API results for pagination.
+            args: Dict(str, any): paginate arguments (page, page_size, limit).
+            results: (Generator): API results for paginate.
 
          Returns:
              result: List: The requests pages.
@@ -53,18 +53,24 @@ def pagination(args: Dict[str, Any], results: Generator) -> List:
     page_size = arg_to_number(args.get('page_size', None))
     limit = arg_to_number(args.get('limit', 50))
 
-    # pagination is available only if supplied page and page size.
+    # paginate is available only if supplied page and page size.
     if (page and not page_size) or (page_size and not page):
-        raise Exception("one of the page or page_size arguments are missing")
-    if (page and page <= 0) or (page_size and page_size <= 0) or (limit and limit < 0):
-        raise Exception("one of the arguments are not having a valid value")
+        raise DemistoException('Either `page` or `page_size` was not provided.')
+    if page and page <= 0:
+        raise ValueError("The 'page' argument value is not valid.")
+    if page_size and page_size <= 0:
+        raise ValueError("The 'page_size' argument value is not valid.")
+    if limit and limit < 0:
+        raise ValueError("The 'limit' argument value is not valid.")
 
     number_of_entries = page * page_size if (page and page_size) else limit if limit else 0
-    try:
-        all_pages = [next(results) for _ in range(0, number_of_entries)]
-    except Exception:
-        return []
-    return all_pages[(-1) * int(page_size):] if page_size else all_pages
+    if page and page_size:
+        try:
+            all_pages = [next(results) for _ in range(0, number_of_entries)]
+            return all_pages[(-1) * int(page_size):]
+        except StopIteration:
+            return []
+    return list(results)[:limit]
 
 
 def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
@@ -117,7 +123,7 @@ def build_reputation_hr(analysis: Dict[str, Any], command: str) -> Dict[str, Any
         md5 = analysis.get('md5')
         tags = analysis.get('tags')
         hr_analysis = {
-            'MeaningfulName': file_name,
+            'File Name': file_name,
             'Sha1': sha1,
             'Sha256': sha256,
             'Md5': md5,
@@ -149,7 +155,8 @@ def build_relationships(threat_name: str, entity: str,
         reverse_name=EntityRelationship.Relationships.INDICATED_BY)
 
 
-def build_indicator_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, Optional[EntityRelationship]]:
+def build_indicator_object(client: Client, analysis: Dict[str, Any]) -> Tuple[
+    CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the Indicator object.
 
@@ -165,7 +172,7 @@ def build_indicator_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Co
     return build_url_object(client, analysis)
 
 
-def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, Optional[EntityRelationship]]:
+def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the File object.
 
@@ -182,7 +189,7 @@ def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Command
     md5 = analysis.get('md5')
     tags = analysis.get('tags')
     threat_name = analysis.get('threatname', '')
-    relationships = None
+    relationships = []
     headers = ['MeaningfulName', 'Sha1', 'Sha256', 'Md5']
 
     hr = {'MeaningfulName': file_name, 'Sha1': sha1, 'Sha256': sha256, 'Md5': md5}
@@ -196,14 +203,14 @@ def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Command
         malicious_description=description
     )
     if client.create_relationships and not threat_name == 'Unknown':
-        relationships = build_relationships(threat_name, sha256, FeedIndicatorType.File)
+        relationships.append(build_relationships(threat_name, sha256, FeedIndicatorType.File))
     indicator = Common.File(name=file_name, sha1=sha1, sha256=sha256, dbot_score=dbot_score, md5=md5, tags=tags,
-                            relationships=[relationships])
-    return CommandResults(indicator=indicator, relationships=[relationships],
+                            relationships=relationships)
+    return CommandResults(indicator=indicator, relationships=relationships,
                           readable_output=tableToMarkdown('File Result:', hr, headers)), relationships
 
 
-def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, Optional[EntityRelationship]]:
+def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the URL object.
 
@@ -216,7 +223,7 @@ def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandR
     """
     url = analysis.get('filename', '')
     threat_name = analysis.get('threatname', '')
-    relationships = None
+    relationships = []
 
     score, description = indicator_calculate_score(analysis.get('detection', ''))
     dbot_score = Common.DBotScore(
@@ -229,9 +236,9 @@ def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandR
     )
 
     if client.create_relationships and not threat_name == 'Unknown':
-        relationships = build_relationships(threat_name, url, FeedIndicatorType.URL)
-    indicator = Common.URL(url=url, dbot_score=dbot_score, relationships=[relationships])
-    return CommandResults(indicator=indicator, relationships=[relationships],
+        relationships.append(build_relationships(threat_name, url, FeedIndicatorType.URL))
+    indicator = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
+    return CommandResults(indicator=indicator, relationships=relationships,
                           readable_output=tableToMarkdown('Url Result:', {'Url': url})), relationships
 
 
@@ -359,7 +366,8 @@ def is_online_command(client: Client) -> CommandResults:
     """
     result = client.server_online()
     status = 'online' if result.get('online') else 'offline'
-    return CommandResults(readable_output=f"Joe server is {status}")
+    return CommandResults(outputs_prefix='Joe.ServerStatus.Online', outputs=result.get('online'),
+                          readable_output=f'Joe server is {status}')
 
 
 def list_analysis_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -375,7 +383,7 @@ def list_analysis_command(client: Client, args: Dict[str, Any]) -> List[CommandR
              result: (CommandResults) The CommandResults object.
     """
 
-    filtered_pages = pagination(args, client.analysis_list_paged())
+    filtered_pages = paginate(args, client.analysis_list_paged())
     analysis_result_ls = client.analysis_info_list(web_ids=[entry.get('webid') for entry in filtered_pages])
     return build_analysis_command_result(client, analysis_result_ls)
 
@@ -475,6 +483,25 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return build_reputation_command_result(client, filter_result(analyses, filter_by='filename'))
 
 
+def list_lia_countries(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+        The url reputation command.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+
+    res = client.server_lia_countries()
+    if res:
+        return CommandResults(outputs_prefix='Joe.LIACountry',
+                              outputs={'Names': [country.get('name') for country in res]})
+    return CommandResults(readable_output='No Results were found.')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -514,6 +541,8 @@ def main() -> None:  # pragma: no cover
             return_results(file_command(client, args))
         elif command == 'url':
             return_results(url_command(client, args))
+        elif command == 'joe-list–lia-countries':
+            return_results(list_lia_countries(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

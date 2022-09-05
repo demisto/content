@@ -37,16 +37,16 @@ PAGINATION_SUCCESS = [
 def test_pagination_success(args, excepted):
     """
     Given:
-        - An pagination arguments such as limit, page and page size.
+        - An paginate arguments such as limit, page and page size.
     When:
         - Pagination method has been called.
     Then:
         - Ensure that the right page were returned.
     """
-    from JoeSecurityV2 import pagination
+    from JoeSecurityV2 import paginate
 
     pages = mock_gen()
-    result = pagination(args, pages)
+    result = paginate(args, pages)
     assert result == excepted
 
 
@@ -62,18 +62,18 @@ PAGINATION_FAILURE = [
 def test_pagination_failure(args, excepted):
     """
     Given:
-        - An invalid pagination arguments values.
+        - An invalid paginate arguments values.
     When:
         - Pagination method has been called.
     Then:
         - Ensure that the right error message raised.
     """
-    from JoeSecurityV2 import pagination
+    from JoeSecurityV2 import paginate
 
     pages = mock_gen()
 
     with pytest.raises(Exception) as e:
-        pagination(args, pages)
+        paginate(args, pages)
     assert e.value.args[0] == excepted
 
 

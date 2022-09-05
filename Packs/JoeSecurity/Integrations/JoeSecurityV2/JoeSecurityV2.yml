@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - name: url
-  display: Your server URL
+  display: Server URL
   required: true
   defaultvalue: https://jbxcloud.joesecurity.org/api
   type: 0
@@ -13,20 +13,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- name: insecure
-  display: Trust any certificate (not secure)
-  required: false
-  type: 8
-  additionalinfo:
-- name: proxy
-  display: Use system proxy settings
-  required: false
-  type: 8
-  additionalinfo:
-- name: create_relationships
-  display: Create relationships
-  required: false
-  type: 8
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -41,6 +27,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- name: create_relationships
+  display: Create relationships
+  required: false
+  type: 8
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  additionalinfo:
 description: Access the full set of possibilities the JoeSandbox Cloud provides via RESTful Web API v2.
 display: Joe Security v2
 name: JoeSecurityV2
@@ -50,9 +51,12 @@ script:
     description: Check if the Joe Sandbox analysis back end is online or in maintenance mode.
     deprecated: false
     arguments: []
-    outputs: []
+    outputs:
+      - contextPath: Joe.ServerStatus.Online
+        description: 'The server status.'
+        type: Boolean
   - name: joe-list-analysis
-    description: List all analyses in descending order, starting with the most recent. Pagination is available by supplying page and page size arguments or by limit. (default 50)
+    description: Lists all analyses.
     deprecated: false
     arguments:
     - name: page
@@ -149,7 +153,7 @@ script:
     - name: type
       default: false
       defaultValue: html
-      description: The resource type to download. Defaults to html.
+      description: The resource type to download.
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -329,7 +333,7 @@ script:
       - contextPath: File.Tags
         description: Tags of the file.
         type: String
-      - contextPath: File.Relationships.EntityA
+     - contextPath: File.Relationships.EntityA
         description: The source of the relationship.
         type: String
       - contextPath: File.Relationships.EntityB
@@ -357,6 +361,30 @@ script:
     outputs:
       - contextPath: URL.Name
         description: 'Name of the url.'
+        type: String
+      - contextPath: URL.Relationships.EntityA
+        description: The source of the relationship.
+        type: String
+      - contextPath: URL.Relationships.EntityB
+        description: The destination of the relationship.
+        type: String
+      - contextPath: URL.Relationships.Relationship
+        description: The name of the relationship.
+        type: String
+      - contextPath: URL.Relationships.EntityAType
+        description: The type of the source of the relationship.
+        type: String
+      - contextPath: URL.Relationships.EntityBType
+        description: The type of the destination of the relationship.
+        type: String
+  - name: joe-list–lia-countries
+    arguments: []
+    deprecated: false
+    description: Retrieve a list of localized internet anonymization countries.
+    execution: false
+    outputs:
+      - contextPath: Joe.LIACountry
+        description: A list of localized internet anonymization countries.
         type: String
   type: python
   subtype: python3
