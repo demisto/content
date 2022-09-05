@@ -38,13 +38,13 @@ configuration:
   display: DBot Score Suspicous Threshold (-100 to 100)
   name: suspicous_threshold
   required: false
-  additionalinfo: Make sure Suspicous threshold is bigger than Malicious threshold
+  additionalinfo: Make sure the Suspicous threshold is greater than the Malicious threshold.
   type: 0  
 - defaultvalue: '-100'
   display: DBot Score Malicious Threshold (-100 to 100)
   name: dboscore_threshold
   required: false
-  additionalinfo: Make sure Malicious threshold is less than Suspicous threshold
+  additionalinfo: Make sure the Malicious threshold is less than the Suspicous threshold.
   type: 0
 description: Cisco Umbrella Investigate
 display: Cisco Umbrella Investigate
