@@ -236,9 +236,6 @@ class PackManager:
     def get_pack_metadata(self, pack_id: str):
         return self._pack_id_to_pack_metadata[pack_id]
 
-    def __iter__(self):
-        yield from self._pack_id_to_pack_metadata.values()
-
     def iter_pack_metadata(self) -> Iterator[ContentItem]:
         yield from self._pack_id_to_pack_metadata.values()
 
