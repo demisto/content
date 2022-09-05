@@ -312,7 +312,7 @@ tasks:
       id: 93b0d852-2215-4504-8179-64a62951fbcc
       version: -1
       name: Is SailPoint IdentityIQ Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -350,7 +350,7 @@ tasks:
       id: 82adaccd-d799-44ae-85ec-ee4ca516aab6
       version: -1
       name: Is PingOne Integration Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -388,7 +388,7 @@ tasks:
       id: c710fdc9-d697-47b3-8413-8f8f2934c701
       version: -1
       name: Get account info from IdentityIQ
-      description: Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
+      description: Search identities by search/filter parameters (ID, email, risk & active) using IdentityIQ SCIM APIs.
       script: '|||identityiq-search-identities'
       type: regular
       iscommand: true
@@ -425,7 +425,7 @@ tasks:
       id: d424680a-a74d-4de6-8478-a1d328d09b5e
       version: -1
       name: Get account info from PingOne
-      description: Returns a PingOne user. One of the following has to be given username or userId.
+      description: Returns a PingOne user. One of the following has to be given - username or userId.
       script: '|||pingone-get-user'
       type: regular
       iscommand: true
@@ -492,7 +492,7 @@ tasks:
       id: e0b7f17c-70f7-4330-8f06-c3729e226adb
       version: -1
       name: Is OKTA v2 integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -597,7 +597,7 @@ tasks:
       id: 0f630de1-9988-461a-883a-6113d3dd6d2a
       version: -1
       name: Is AWS integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -787,7 +787,7 @@ tasks:
       id: 21d70bb7-8b40-4f49-80ca-b78cb05b24aa
       version: -1
       name: Is SailPoint IdentityNow integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -825,7 +825,7 @@ tasks:
       id: 918ad3f9-eb0a-42c0-8c0f-f13cb77b8fe6
       version: -1
       name: Get account info from IdentityNow
-      description: Get accounts by search/filter parameters (id, name, native_identity).
+      description: Get accounts by search/filter parameters (ID, name, native_identity).
       script: '|||identitynow-get-accounts'
       type: regular
       iscommand: true
@@ -897,7 +897,7 @@ outputs:
   description: The account object.
   type: unknown
 - contextPath: ActiveDirectory.Users.sAMAccountName
-  description: The user's samAccountName.
+  description: The user's SAM account name.
 - contextPath: ActiveDirectory.Users.userAccountControl
   description: The user's account control flag.
 - contextPath: ActiveDirectory.Users.mail
@@ -905,13 +905,13 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 - contextPath: IAM
-  description: Generic IAM output
+  description: Generic IAM output.
   type: unknown
 - contextPath: IdentityIQ.Identity
-  description: Identity asset from IdentityIQ
+  description: Identity asset from IdentityIQ.
   type: unknown
 - contextPath: PingOne.Account
-  description: Account in PingID
+  description: Account in PingID.
   type: unknown
 - contextPath: ActiveDirectory.Users.manager
   description: The manager of the user.
@@ -936,11 +936,11 @@ outputs:
 - contextPath: IAM.Vendor.username
   description: The employee's username in the app.
 - contextPath: IdentityIQ.Identity.userName
-  description: The IdentityIQ username (primary id).
+  description: The IdentityIQ username (primary ID).
 - contextPath: IdentityIQ.Identity.id
-  description: The IdentityIQ internal id (uuid).
+  description: The IdentityIQ internal ID (UUID).
 - contextPath: IdentityIQ.Identity.active
-  description: Indicates whether the id is active or inactive in IdentityIQ.
+  description: Indicates whether the ID is active or inactive in IdentityIQ.
 - contextPath: IdentityIQ.Identity.lastModified
   description: Timestamp of when the identity was last modified.
 - contextPath: IdentityIQ.Identity.displayName
@@ -966,7 +966,7 @@ outputs:
   description: The account's manager returned from IdentityIQ.
   type: unknown
 - contextPath: IdentityIQ.Identity.manager.userName
-  description: The IdentityIQ username (primary id) of the identities manager.
+  description: The IdentityIQ username (primary ID) of the identities manager.
 - contextPath: IdentityIQ.Identity.emails.type
   description: Type of the email being returned.
 - contextPath: IdentityIQ.Identity.emails.value
@@ -998,7 +998,7 @@ outputs:
 - contextPath: Account.Status
   description: Okta account status.
 - contextPath: Account.Username
-  description: The user samAccountName.
+  description: The user SAM account name.
 - contextPath: Account.Email
   description: The user email address.
 - contextPath: Account.ID
@@ -1069,15 +1069,15 @@ outputs:
   description: The IdentityNow account object.
   type: unknown
 - contextPath: SailPointIdentityNow.Account.id
-  description: The IdentityNow internal id (uuid).
+  description: The IdentityNow internal ID (UUID).
 - contextPath: SailPointIdentityNow.Account.name
   description: Name of the identity on this account.
 - contextPath: SailPointIdentityNow.Account.identityId
-  description: The IdentityNow internal identity id.
+  description: The IdentityNow internal identity ID.
 - contextPath: SailPointIdentityNow.Account.nativeIdentity
-  description: The IdentityNow internal native identity id.
+  description: The IdentityNow internal native identity ID.
 - contextPath: SailPointIdentityNow.Account.sourceId
-  description: Source id that maps this account.
+  description: Source ID that maps this account.
 - contextPath: SailPointIdentityNow.Account.created
   description: Timestamp when the account was created.
 - contextPath: SailPointIdentityNow.Account.modified
