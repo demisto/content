@@ -17,12 +17,13 @@ When configuring an XDR collector profile, you should use a yml that will be use
 and product. This example demonstrates how to set the configuration file:
 
 ```
-  - type: filestream
+- type: filestream
     enabled: true
     id: tableau
     paths:
-      - /tableau/server/data/data/tabsvc/logs/*/*
-      - /secondarydisk/tableau/server/data/data/tabsvc/logs/*/*
+      - /tableau/server/data/data/tabsvc/logs/vizportal/*
+      - /tableau/server/data/data/tabsvc/logs/apigateway/*
+      - /tableau/server/data/data/tabsvc/logs/httpd/*
     processors:
       - add_fields:
           fields:
