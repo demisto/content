@@ -3433,10 +3433,7 @@ class TestPanOSListNatRulesCommand:
         [
             pytest.param(
                 {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false'},
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']"
@@ -3445,7 +3442,7 @@ class TestPanOSListNatRulesCommand:
             ),
             pytest.param(
                 {'show_uncommitted': 'false'},
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'show',
                     'key': 'thisisabogusAPIKEY!',
@@ -3456,10 +3453,7 @@ class TestPanOSListNatRulesCommand:
             ),
             pytest.param(
                 {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'name': 'test'},
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'action': 'get',
                     'key': 'thisisabogusAPIKEY!',
@@ -3470,7 +3464,7 @@ class TestPanOSListNatRulesCommand:
             ),
             pytest.param(
                 {'show_uncommitted': 'true', 'name': 'test'},
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'get',
                     'key': 'thisisabogusAPIKEY!',
@@ -3540,10 +3534,7 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translated_address': '1.1.1.1',
                     'source_translated_address_type': 'translated-address'
                 },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group"
                              "/entry[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']",
@@ -3560,7 +3551,7 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translated_address': '1.1.1.1',
                     'source_translated_address_type': 'translated-address'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
                              "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']",
@@ -3581,10 +3572,7 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
                 },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'action': 'set',
                     'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
@@ -3608,7 +3596,7 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'set',
                     'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
@@ -3662,10 +3650,7 @@ class TestCreatePanOSNatRuleCommand:
                 'rulename': 'test',
                 'pre_post': 'pre-rulebase'
             },
-            {
-                'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                'key': 'thisisabogusAPIKEY!'
-            },
+            integration_panorama_params,
             {
                 'action': 'delete',
                 'key': 'thisisabogusAPIKEY!',
@@ -3678,7 +3663,7 @@ class TestCreatePanOSNatRuleCommand:
             {
                 'rulename': 'test'
             },
-            integration_params,
+            integration_firewall_params,
             {
                 'action': 'delete',
                 'key': 'thisisabogusAPIKEY!',
@@ -3728,10 +3713,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'replace',
                     'element_value': '1.1.1.1,2.2.2.2'
                 },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'action': 'edit',
                     'element': '<translated-address><member>1.1.1.1</member>'
@@ -3750,7 +3732,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'replace',
                     'element_value': '1.1.1.1'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'edit',
                     'element': '<from><member>1.1.1.1</member></from>',
@@ -3768,14 +3750,15 @@ class TestPanOSEditNatRule:
                     'behavior': 'replace',
                     'element_value': 'Round Robin'
                 },
-                integration_params,
+                integration_panorama_params,
                 {
                     'action': 'edit',
                     'element': '<distribution>Round Robin</distribution>',
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
-                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
-                             "/rulebase/nat/rules/entry[@name='test']/dynamic-destination-translation/distribution"
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']/"
+                             "dynamic-destination-translation/distribution"
                 }
             ),
             pytest.param(
@@ -3785,7 +3768,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'replace',
                     'element_value': '1.1.1.1'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'edit',
                     'element': '<translated-address>1.1.1.1</translated-address>',
@@ -3850,10 +3833,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'add',
                     'element_value': '2.2.2.2,3.3.3.3'
                 },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'action': 'edit',
                     'element': '<from><member>2.2.2.2</member><member>3.3.3.3</member><member>1.1.1.1</member></from>',
@@ -3870,7 +3850,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'add',
                     'element_value': '2.2.2.2,3.3.3.3'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'edit',
                     'element': '<from><member>2.2.2.2/member><member>1.1.1.1/member></from>',
@@ -3927,10 +3907,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'remove',
                     'element_value': '2.2.2.2,3.3.3.3'
                 },
-                {
-                    'port': '443', 'device_group': 'Lab-Devices', 'server': 'https://1.1.1.1',
-                    'key': 'thisisabogusAPIKEY!'
-                },
+                integration_panorama_params,
                 {
                     'action': 'edit',
                     'element': '<from><member>1.1.1.1</member></from>',
@@ -3947,7 +3924,7 @@ class TestPanOSEditNatRule:
                     'behavior': 'remove',
                     'element_value': '2.2.2.2,3.3.3.3'
                 },
-                integration_params,
+                integration_firewall_params,
                 {
                     'action': 'edit',
                     'element': '<from><member>1.1.1.1</member></from>',
