@@ -241,6 +241,11 @@ references:
       command: |
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+          # Checks if the $XSOAR_BOT_TEST_CONTENT exist. for security reasons only non forked pr's have access to it.
+          if [[ -n $XSOAR_BOT_TEST_CONTENT ]]; then
+            echo "Adding unit tests coverage comment to the pr"
+            python3 ./Tests/scripts/add_pr_comment.py
+          fi
         fi
 
   infrastructure_testing: &infrastructure_testing
