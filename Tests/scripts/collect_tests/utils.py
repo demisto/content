@@ -298,7 +298,7 @@ class PackManager:
             raise NonXsoarSupportedPackException(pack, support_level)
 
     def get_support_level(self, pack_id: str) -> Optional[str]:
-        return self[pack_id].get('support', '').lower() or None
+        return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
 def to_tuple(value: Union[str, int, MarketplaceVersions]) -> Optional[tuple]:
