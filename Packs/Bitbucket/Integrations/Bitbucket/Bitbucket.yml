@@ -482,6 +482,120 @@ script:
           required: false
           description: The email of the author of the file.
           isArray: false
+    - name: bitbucket-commit-list
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: file_path
+          required: false
+          description: Will limit the results to commits that affect that path.
+          isArray: false
+        - name: excluded_branches
+          required: false
+          description: Should be comma separated. Will return only commits that are not in the excluded branches list.
+          isArray: false
+        - name: included_branches
+          required: false
+          description: Should be comma separated. Will return only commits that are in the included branches list.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
+      outputs:
+        - contextPath: Bitbucket.Commit.type
+          description: 'The type of the commit.'
+          type: String
+        - contextPath: Bitbucket.Commit.hash
+          description: 'The commit hash.'
+          type: String
+        - contextPath: Bitbucket.Commit.date
+          description: 'The creation date of the commit.'
+          type: Date
+        - contextPath: Bitbucket.Commit.author.type
+          description: 'The type of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.raw
+          description: 'The raw information about the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.display_name
+          description: 'The display name of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.links
+          description: 'Links with information about the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.type
+          description: 'The type of the user of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.uuid
+          description: 'The user unique key of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.account_id
+          description: 'The user account id of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.author.user.nickname
+          description: 'The user nickname of the author.'
+          type: String
+        - contextPath: Bitbucket.Commit.message
+          description: 'The commit message'
+          type: String
+        - contextPath: Bitbucket.Commit.summary.type
+          description: 'The type of the summary.'
+          type: String
+        - contextPath: Bitbucket.Commit.summary.raw
+          description: 'The raw summary of the commit.'
+          type: String
+        - contextPath: Bitbucket.Commit.summary.markup
+          description: 'Text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.Commit.summary.html
+          description: 'The summary in html format.'
+          type: String
+        - contextPath: Bitbucket.Commit.links
+          description: 'Links with information about the commit.'
+          type: String
+        - contextPath: Bitbucket.Commit.parents.type
+          description: 'The type of the commit parents.'
+          type: String
+        - contextPath: Bitbucket.Commit.parents.hash
+          description: 'The hash of the commit parents'
+          type: String
+        - contextPath: Bitbucket.Commit.parents.links
+          description: 'Links with information about the parents.'
+          type: String
+        - contextPath: Bitbucket.Commit.rendered.message.type
+          description: ''
+          type: String
+        - contextPath: Bitbucket.Commit.rendered.message.raw
+          description: ''
+          type: String
+        - contextPath: Bitbucket.Commit.rendered.message.markup
+          description: ''
+          type: String
+        - contextPath: Bitbucket.Commit.rendered.message.html
+          description: ''
+          type: String
+        - contextPath: Bitbucket.Commit.repository.type
+          description: 'The type of the repository.'
+          type: String
+        - contextPath: Bitbucket.Commit.repository.full_name
+          description: 'The full name of the repository.'
+          type: String
+        - contextPath: Bitbucket.Commit.repository.links.self.href
+          description: 'Links with information about the repository.'
+          type: String
+        - contextPath: Bitbucket.Commit.repository.name
+          description: 'The name of the repository.'
+          type: String
+        - contextPath: Bitbucket.Commit.repository.uuid
+          description: 'The unique id of the repository'
+          type: String
   isfetch: false
   runonce: false
   script: "-"

@@ -120,17 +120,38 @@ class Client(BaseClient):
         if author_name and author_email:
             body["author"] = f'{author_name} <{author_email}>'
 
-        response = self._http_request(method='POST',
+        return self._http_request(method='POST',
                                       url_suffix=url_suffix,
                                       data=body,
                                       resp_type='response')
+
+    def add_branches_url(self, action: str, l :list, url: str) -> str:
+        url= url + '?'
+        for branch in l:
+            url = url + f'{action}={branch}&'
+        return url[:-1]
+
+    def commit_list_request(self, repo: str, params: Dict, excluded_list: list, included_list: list) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/rotemamit/{repo}/commits'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/rotemamit/{self.repository}/commits'
+        if excluded_list:
+            url_suffix = self.add_branches_url('exclude', excluded_list, url_suffix)
+        if included_list:
+            url_suffix = self.add_branches_url('include', included_list, url_suffix)
+        response = self._http_request(method='POST',
+                                      url_suffix=url_suffix,
+                                      params=params)
         return response
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def check_pagination(client: Client, response: Dict, limit: int, params: Dict) -> List:
+def check_pagination(client: Client, response: Dict, limit: int) -> List:
     arr: List[Dict] = response.get('values', [])
     isNext = response.get('next', None)
     if isNext and limit > response.get('pagelen'):
@@ -185,9 +206,10 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
     project_key = args.get('project_key')
     page: int = arg_to_number(args.get('page', 1))
     check_args(limit, page)
+    page_size = min(100, limit)
     params = {
         'page': page,
-        'pagelen': limit
+        'pagelen': page_size
     }
     response = client.get_project_list_request(params, project_key)
 
@@ -195,7 +217,7 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
         results = [response]
         readable_name = f'The information about project {project_key.upper()}'
     else:
-        results = check_pagination(client, response, limit, params)
+        results = check_pagination(client, response, limit)
         readable_name = f'List of the projects in {client.workspace}'
 
     human_readable = []
@@ -232,7 +254,7 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     params = {'page': page,
               'pagelen': page_size}
     response = client.get_open_branch_list_request(repo, params)
-    results = check_pagination(client, response, limit, params)
+    results = check_pagination(client, response, limit)
 
     human_readable = []
     for value in results:
@@ -331,6 +353,51 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
         return CommandResults(readable_output=response)
 
 
+def commit_list_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    file_path = args.get('file_path', None)
+    excluded_branches = args.get('excluded_branches', None)
+    included_branches = args.get('included_branches', None)
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'path': file_path,
+        'page': page,
+        'pagelen': page_size
+    }
+    excluded_list = None
+    included_list = None
+    if excluded_branches:
+        excluded_list = excluded_branches.split(',')
+    if included_branches:
+        included_list = included_branches.split(',')
+
+    response = client.commit_list_request(repo, params, excluded_list, included_list)
+    results = check_pagination(client, response, limit)
+    human_readable = []
+    for value in results:
+        d = {'Author': demisto.get(value, 'author.raw'),
+             'Commit': value.get('hash'),
+             'Message': value.get('message'),
+             'CreatedAt': value.get('date')}
+        human_readable.append(d)
+
+    headers = ['Author', 'Commit', 'Message', 'CreatedAt']
+    readable_output = tableToMarkdown(
+        name='The list of commits',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.Commit',
+        outputs=results,
+        raw_response=results
+    )
+
 ''' MAIN FUNCTION '''
 
 
@@ -382,6 +449,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-commit-create':
             result = commit_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-commit-list':
+            result = commit_list_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
