@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
+from Tests.scripts.collect_tests.version_range import VersionRange
+
 
 class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
@@ -21,8 +23,9 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str, support_level: str):
+    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
         self.support_level = support_level
+        self.content_version_range = content_version_range
         super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 

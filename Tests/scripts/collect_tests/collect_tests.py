@@ -27,9 +27,9 @@ from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
-                                               PackManager, VersionRange,
-                                               find_pack_folder,
+                                               PackManager, find_pack_folder,
                                                find_yml_content_type, to_tuple)
+from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -307,15 +307,14 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     def validate_content_item_compatibility(self, content_item: ContentItem) -> None:
-
-        self.__validate_support_level_is_xsoar(content_item.pack_id)
+        self.__validate_support_level_is_xsoar(content_item.pack_id, content_item.version_range)
         self.__validate_marketplace_compatibility(content_item.marketplaces, content_item.path)
 
     def validate_id_set_item_compatibility(self, id_set_item: IdSetItem) -> None:
         # id_set_item objects may not have pack_id or path
         if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
-        self.__validate_support_level_is_xsoar(pack_id)
+        self.__validate_support_level_is_xsoar(pack_id, id_set_item.version_range)
         self.__validate_marketplace_compatibility(id_set_item.marketplaces, id_set_item.path)
 
     def _collect_pack(
@@ -324,13 +323,19 @@ class TestCollector(ABC):
             reason: CollectionReason,
             reason_description: str,
             content_item_range: Optional[VersionRange] = None,
+            allow_incompatible_marketplace: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
 
         try:
             self.validate_content_item_compatibility(pack_metadata)
         except NonXsoarSupportedPackException:
-            pass  # we do want to install packs in this case (tests are not run)
+            pass  # we do want to install packs in this case (tests are not collected in this case anyway)
+        except IncompatibleMarketplaceException:
+            # sometimes, we want to install packs that are not compatible (e.g. both marketplaces)
+            # because they have content that IS compatible.
+            if not allow_incompatible_marketplace:
+                raise
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
@@ -347,10 +352,10 @@ class TestCollector(ABC):
         )
 
     @staticmethod
-    def __validate_support_level_is_xsoar(pack_id: str) -> None:
+    def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
         # intended to only be called from validate_content_item_compatibility
-        if support_level := (PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
-            raise NonXsoarSupportedPackException(pack_id, support_level)
+        if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
+            raise NonXsoarSupportedPackException(pack_id, support_level, content_item_range)
 
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
@@ -407,14 +412,22 @@ class BranchTestCollector(TestCollector):
             if self.private_pack_path \
             else self._get_changed_files()
 
-        for path in paths:
+        for raw_path in paths:
+            path = PATHS.content_path / raw_path
+            logger.debug(f'Collecting tests for {raw_path}')
             try:
-                logger.debug(f'Collecting tests for {path}')
-                result.append(self._collect_single(PATHS.content_path / path))
+                result.append(self._collect_single(path))
+            except NonXsoarSupportedPackException as e:
+                result.append(self._collect_pack(
+                    pack_id=find_pack_folder(path).name,
+                    reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                    reason_description=raw_path,
+                    content_item_range=e.content_version_range,
+                ))
             except NothingToCollectException as e:
                 logger.info(e.message)
             except Exception as e:
-                logger.exception(f'Error while collecting tests for {path}', exc_info=True, stack_info=True)
+                logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
 
         return CollectionResult.union(result)
@@ -666,127 +679,86 @@ class UploadCollector(BranchTestCollector):
 
 
 class NightlyTestCollector(TestCollector, ABC):
-    def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
+    def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
-        :param only_value: whether the value is the only one under the marketplaces field.
         :return: all tests whose marketplace field includes the collector's marketplace value
                     (or is equal to it, if `only_value` is used).
         """
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
-                    f'{postfix}')
-
         result = []
-
         for playbook in self.id_set.test_playbooks:
             try:
                 self.validate_id_set_item_compatibility(playbook)
-
-                result.append(CollectionResult(test=playbook.id_, pack=playbook.pack_id,
-                                               reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                                               reason_description=self.marketplace.value,
-                                               version_range=playbook.version_range, conf=self.conf,
-                                               id_set=self.id_set, ))
-
-            except (NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+                result.append(CollectionResult(
+                    test=playbook.id_,
+                    pack=playbook.pack_id,
+                    reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
+                    reason_description=self.marketplace.value,
+                    version_range=playbook.version_range,
+                    conf=self.conf,
+                    id_set=self.id_set,
+                ))
+            except NothingToCollectException as e:
                 logger.info(str(e))
 
-        if not result:
-            logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
-            return None
-
         return CollectionResult.union(result)
 
-    def _collect_all_compatible_packs(self, reason: CollectionReason) -> Optional[CollectionResult]:
+    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
         result = []
         for pack_metadata in PACK_MANAGER.iter_pack_metadata():
-            description = ''
-            if reason == CollectionReason.PACK_MARKETPLACE_VERSION_VALUE:
-                description = self.marketplace.value
-
-            # self._collect_pack does the necessary validations, returning None if incompatible.
-            result.append(
-                self._collect_pack(pack_id=pack_metadata.pack_id, reason=reason, reason_description=description)
-            )
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                ))
+            except NothingToCollectException as e:
+                logger.info(str(e))
         return CollectionResult.union(result)
-
-    def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
-        """
-        :param only_value: whether the value is the only one under the marketplaces field.
-        :return: all packs whose marketplaces field contains self.marketplaces (or is equal to, if only_value is True).
-        """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(f'collecting packs by their marketplace field, searching for {self.marketplace.value}{postfix}')
-        packs = []
-
-        for pack in PACK_MANAGER:
-            pack_marketplaces = pack.marketplaces or default
-            if only_value and len(pack_marketplaces) != 1:
-                continue
-            if self.marketplace in pack_marketplaces:
-                packs.append(pack.pack_id)
-
-        if not packs:
-            logger.warning(f'no packs matching marketplace {self.marketplace.value} ({only_value=}) were found')
-            return None
-
-        return CollectionResult.union(
-            tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                                   version_range=None, reason_description=self.marketplace.value,
-                                   conf=self.conf, id_set=self.id_set)
-                  for pack in packs)
-        )
-
-    def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
-        """
-        :param only_value: whether the value is the only one under the marketplaces field.
-        :return: all packs whose under which a content item marketplace field contains self.marketplaces
-                (or is equal to, if only_value is True).
-        """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting content items by their marketplace field, searching for {self.marketplace.value} {postfix}')
-
-        result = []
-
-        for item in self.id_set.artifact_iterator:
-            item_marketplaces = item.marketplaces or default
-
-            if only_value and len(item_marketplaces) != 1:
-                continue
-
-            if self.marketplace in item_marketplaces:
-                path = PATHS.content_path / item.file_path_str
-                try:
-                    pack = PACK_MANAGER.get_pack_metadata(find_pack_folder(path).name)
-                    if not item.path:
-                        raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
-                    relative_path = PACK_MANAGER.relative_to_packs(item.path)
-                    marketplaces_string = ', '.join(map(str, item.marketplaces))
-                    result.append(
-                        CollectionResult(
-                            test=None,
-                            pack=pack.pack_id,
-                            reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
-                            version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({marketplaces_string})',
-                            conf=self.conf,
-                            id_set=self.id_set,
-                        )
-                    )
-
-                except NotUnderPackException:
-                    if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
-                        logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
-                        continue
-        return CollectionResult.union(tuple(result))
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
+
+    def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
+        """
+        :return: all packs whose under which a content item marketplace field contains self.marketplaces
+                (or is equal to, if only_value is True).
+        """
+        result = []
+
+        for item in self.id_set.artifact_iterator:
+            if not item.path or not item.file_path_str:
+                raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
+            path = PATHS.content_path / item.file_path_str
+
+            try:
+                pack_id = find_pack_folder(path).name
+                pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+                try:
+                    self.validate_id_set_item_compatibility(item)
+                except NonXsoarSupportedPackException as e:
+                    logger.info(f'{str(PACK_MANAGER.relative_to_packs(path))} has non-xsoar support level '
+                                f'({e.support_level}), collecting pack anyway')
+                except NothingToCollectException as e:
+                    logger.info(e)
+                    continue
+
+                marketplaces_string = ', '.join(map(str, item.marketplaces))
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
+                    reason_description=f'{item.file_path_str} ({marketplaces_string})',
+                    content_item_range=item.version_range,
+                    allow_incompatible_marketplace=True,
+                ))
+
+            except NotUnderPackException:
+                if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                    logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
+                    continue
+        return CollectionResult.union(result)
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
@@ -803,9 +775,9 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value(only_value=True),
-            self._packs_matching_marketplace_value(only_value=True),
-            self._packs_of_content_matching_marketplace_value(only_value=True),
+            self._id_set_tests_matching_marketplace_value(),
+            self._collect_all_marketplace_compatible_packs(),
+            self._collect_packs_of_content_matching_marketplace_value(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
 
@@ -816,8 +788,8 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value(only_value=False),
-            self._packs_matching_marketplace_value(only_value=False),
+            self._id_set_tests_matching_marketplace_value(),
+            self._collect_all_marketplace_compatible_packs(),
         ))
 
 
