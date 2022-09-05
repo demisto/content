@@ -11202,6 +11202,8 @@ def pan_os_list_nat_rules_command(args):
 
     # the 'entry' key could be a single dict as well.
     entries = (result.get('nat', {}).get('rules', {}).get('entry')) or [result.get('entry')]
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
 
     if not name:
         # filter the nat-rules by limit - name means we get only a single entry anyway.
