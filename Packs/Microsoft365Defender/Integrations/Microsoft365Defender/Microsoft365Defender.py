@@ -350,7 +350,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
     odata = args.get('odata')
 
-    if odata is not None:
+    if odata:
         try:
             odata = json.loads(odata)
         except:
