@@ -2241,7 +2241,7 @@ def describe_fleets_command(args, aws_client):
     for i, item in enumerate(response['Fleets']):
 
         data.append({
-            'ActivityStatus': item['ActivityStatus'] if 'ActivityStatus' in item.keys() is not None else "None",
+            'ActivityStatus': item['ActivityStatus'] if 'ActivityStatus' in list(item.keys()) is not None else "None",
             'FleetId': item['FleetId'],
             'FleetState': item['FleetState'],
             'FulfilledCapacity': item['FulfilledCapacity'],
