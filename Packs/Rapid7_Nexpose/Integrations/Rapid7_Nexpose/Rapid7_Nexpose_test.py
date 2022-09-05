@@ -32,19 +32,11 @@ def load_test_data(file_name: str) -> dict:
 
 @pytest.mark.parametrize("test_input, expected_output",
                          [
-                             ("PT2M16.481S", 10.016666666666667),
-                             ("PT2M17.976S", 18.266666666666666),
-                             ("PT59.669S", 11.15),
-                         ])  # TODO: Make test samples more varied?
-def test_convert_duration_time_minutes(test_input: str, expected_output: float):
-    assert convert_duration_time_minutes(test_input) == expected_output
-
-
-@pytest.mark.parametrize("test_input, expected_output",
-                         [
-                             ("P5DT10H30M", "'5 days, 10 hours, 30 minutes'"),
+                             ("PT2M16.481S", "2 minutes, 16.481 seconds"),
+                             ("PT2M17.976S", "2 minutes, 17.976 seconds"),
+                             ("PT51.316S", "51.316 seconds")
                          ])
-def test_convert_duration_time(test_input: str, expected_output: str):
+def test_convert_duration_time(test_input: str, expected_output: float):
     assert convert_duration_time(test_input) == expected_output
 
 

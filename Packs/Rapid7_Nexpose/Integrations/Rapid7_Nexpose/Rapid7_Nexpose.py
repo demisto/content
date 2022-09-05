@@ -1009,7 +1009,9 @@ def convert_duration_time_minutes(duration_string: str) -> float:
 
 def convert_duration_time(duration: str) -> str:
     """
-    Convert an ISO 8601 duration string to a human-readable string format.
+    | Convert an ISO 8601 duration string to a human-readable string format.
+    | More info about format's specification can be found on:
+        https://en.wikipedia.org/wiki/ISO_8601#Durations
 
     Args:
         duration (str): An ISO 8601 duration string.
@@ -1017,17 +1019,66 @@ def convert_duration_time(duration: str) -> str:
     Returns:
         str: The duration represented in a human-readable string format.
     """
-    regex = re.fullmatch(r"P(\d*)DT(\d+)H(\d+)M", duration)
-    days, hours, minutes = regex.groups()
+    # Assure duration is in a valid format
+    if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", duration):
+        raise ValueError(f"\"{duration}\" is not a valid ISO 8601 duration string.")
 
-    if int(days) > 0:
-        return f"{days} days, {hours} hours, {minutes} minutes"
+    p_duration, t_duration = duration.replace("T", ",T").split(",")
+    p_duration = re.findall(r"([\d.]+[A-Z])", p_duration)
+    t_duration = re.findall(r"([\d.]+[A-Z])", t_duration)
+    duration_mapping_p = {
+        "P": "years",
+        "M": "months",
+        "W": "weeks",
+        "D": "days",
+    }
+    duration_mapping_t = {
+        "H": "hours",
+        "M": "minutes",
+        "S": "seconds",
+    }
+    duration_values = {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "hours": 0,
+        "minutes": 0,
+        "seconds": 0,
+    }
 
-    elif int(hours) > 0:
-        return f"{hours} hours, {minutes} minutes"
+    for item in p_duration:
+        designator = item[-1]
+        number = float(item[:-1])
 
-    else:
-        return f"{minutes} minutes"
+        if number.is_integer():
+            number = int(number)
+
+        else:
+            number = round(number)
+
+        duration_values[duration_mapping_p[designator]] = number
+
+    for item in t_duration:
+        designator = item[-1]
+        number = float(item[:-1])
+
+        if number.is_integer():
+            number = int(number)
+
+        duration_values[duration_mapping_t[designator]] = number
+
+    result = []
+    for item in duration_values:
+        zero_up_to_now = True
+
+        if duration_values[item] > 0:
+            zero_up_to_now = False
+
+        if not zero_up_to_now:
+            result += [f"{duration_values[item]} {item}"]
+
+    return ", ".join(result)
 
 
 def dq(obj, path):
@@ -1239,7 +1290,7 @@ def normalize_scan_data(scan: dict) -> dict:
         recursive=False,
     )
 
-    scan_output["TotalTime"] = str(convert_duration_time_minutes(scan_output["TotalTime"])) + " minutes"
+    scan_output["TotalTime"] = convert_duration_time(scan_output["TotalTime"])
 
     return scan_output
 
@@ -1986,8 +2037,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         )
 
         for i, val in enumerate(solutions_output):
-            solutions_output[i]["Estimate"] = str(
-                convert_duration_time_minutes(solutions_output[i]["Estimate"])) + " minutes"
+            solutions_output[i]["Estimate"] = convert_duration_time(solutions_output[i]["Estimate"])
 
     vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
                                          vulnerability_headers, removeNull=True)
