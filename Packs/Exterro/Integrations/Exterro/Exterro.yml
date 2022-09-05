@@ -35,26 +35,26 @@ script:
   commands:    
   - name: exterro-ftk-trigger-workflow
     arguments:
-    - name: Automation ID
+    - name: automation_id
       required: true
       type: number
       description: The Id of the automation workflow.
-    - name: Case Name
+    - name: case_name
       required: false
       description: The name of the case.
-    - name: Case IDs
+    - name: case_ids
       required: false
       description: Value of caseids.
-    - name: Evidence Path
+    - name: evidence_path
       required: false
       description: The filepath of the evidence.
-    - name: Target IPs
+    - name: target_ips
       required: false
       description: Targetips for the collection
-    - name: SearchandTag Path
+    - name: search_tag_path
       required: false
       description: The filepath of the search and tag .
-    - name: Export Path
+    - name: export_path
       required: false
       description: The path to export files.
     outputs:
