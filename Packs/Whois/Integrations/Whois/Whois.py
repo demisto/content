@@ -7248,7 +7248,7 @@ def get_root_server(domain):
             else:
                 return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
                                outputs=context)
-                raise WhoisExceptionWornning('The domain - {} - is not supported by the Whois service'.format(domain))
+                raise WhoisWarnningException('The domain - {} - is not supported by the Whois service'.format(domain))
         return host
 
     else:
@@ -7315,7 +7315,7 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
-class WhoisExceptionWornning(Exception):
+class WhoisWarnningException(Exception):
     pass
 
 def precompile_regexes(source, flags=0):
@@ -8414,7 +8414,7 @@ def domain_command(reliability):
     for domain in argToList(domains):
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
-        except WhoisExceptionWornning:
+        except WhoisWarnningException:
             continue
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
