@@ -70,6 +70,7 @@ configuration:
   - tags
   - securityLabels
   - associatedVictimAssets
+  - attributes
   required: false
   type: 16
 - additionalinfo: Reliability of the source providing the intelligence data.

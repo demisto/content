@@ -452,6 +452,7 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
     tags = params.get('tags', '')
     owners = params.get('owners', '')
     status = params.get('status', '')
+    fields = set_fields(params.get('fields'))
     max_fetch = params.get('max_fetch', '200')
     group_type = params.get('group_type', ['Incident'])
     last_run = demisto.getLastRun()
@@ -461,9 +462,8 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
         last_run = f"{params.get('first_fetch') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
-    response = list_groups(client, {}, group_type=group_type[0], include_tags='true',
-                           include_attributes='true',
-                           return_raw=True, tag=tags, owner=owners, status=status, from_date=last_run, limit=max_fetch)
+    response = list_groups(client, {}, group_type=group_type[0], fields=fields, return_raw=True, tag=tags, owner=owners,
+                           status=status, from_date=last_run, limit=max_fetch)
     incidents = []
     for incident in response:
         incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
@@ -593,7 +593,8 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
 def set_fields(fields) -> str:  # pragma: no cover
     fields_str = ''
     if fields.get('include_all_metadata'):
-        return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels'
+        return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels' \
+               '&fields=attributes&fields=associatedVictimAssets'
     try:
         del fields['include_all_metadata']
     except KeyError:
@@ -609,15 +610,8 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
                 group_type: str = '', tql_filter: str = '', include_security_labels: str = '',
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
-                include_all_metadata: str = '', status: str = '', owner: str = '', limit: str = '100',
+                include_all_metadata: str = '', status: str = '', owner: str = '', limit: str = '100', fields: str = '',
                 return_raw=False) -> Any:
-    # FIELDS PARAMS
-    include_all_metadata = args.get('include_all_metadata', include_all_metadata)
-    include_associated_indicators = args.get('include_associated_indicators', include_associated_indicators)
-    include_associated_groups = args.get('include_associated_groups', include_associated_groups)
-    include_attributes = args.get('include_attributes', include_attributes)
-    include_security_labels = args.get('include_security_labels', include_security_labels)
-    include_tags = args.get('include_tags', include_tags)
     # TQL PARAMS
     group_id = args.get('id', group_id)
     from_date = args.get('fromDate', from_date)
@@ -659,11 +653,19 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
     if group_id:
         group_id = f' AND ({create_or_query(group_id, "id", "")})'
         tql_prefix = '?tql='
-    fields = set_fields({'tags': include_tags, 'securityLabels': include_security_labels,
-                         'attributes': include_attributes,
-                         'associatedGroups': include_associated_groups,
-                         'associatedIndicators': include_associated_indicators,
-                         'include_all_metadata': include_all_metadata})
+    if not fields:
+        # FIELDS PARAMS
+        include_all_metadata = args.get('include_all_metadata', include_all_metadata)
+        include_associated_indicators = args.get('include_associated_indicators', include_associated_indicators)
+        include_associated_groups = args.get('include_associated_groups', include_associated_groups)
+        include_attributes = args.get('include_attributes', include_attributes)
+        include_security_labels = args.get('include_security_labels', include_security_labels)
+        include_tags = args.get('include_tags', include_tags)
+        fields = set_fields({'tags': include_tags, 'securityLabels': include_security_labels,
+                             'attributes': include_attributes,
+                             'associatedGroups': include_associated_groups,
+                             'associatedIndicators': include_associated_indicators,
+                             'include_all_metadata': include_all_metadata})
     if tql_prefix:
         tql = f'{tql_filter}{group_id}{group_type}{from_date}{tag}{security_label}'.replace(' AND ', '', 1)
         tql = urllib.parse.quote(tql.encode('utf8'))
