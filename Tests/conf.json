@@ -5181,7 +5181,7 @@
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "Skyhigh Security",
+            "integrations": "Skyhigh Security SSE",
             "playbookID": "Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
         }
