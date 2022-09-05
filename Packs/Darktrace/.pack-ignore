@@ -12,3 +12,6 @@ ignore=IM111
 
 [file:classifier-Darktrace.json]
 ignore=BA101
+
+[file:playbook-HandleDarktraceModelBreach.yml]
+ignore=PB121

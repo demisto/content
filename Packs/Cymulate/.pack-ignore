@@ -31,3 +31,6 @@ ignore=BA101
 
 [file:classifier-Cymulate_v2.json]
 ignore=BA101
+
+[file:Cymulate_Immediate_Threats_Playbook.yml]
+ignore=PB121
