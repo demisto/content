@@ -41,14 +41,14 @@
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Common Packs
-/Packs/CommonTypes/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonPlaybooks/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonDashboards/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonTypes/ @michalgold @idovandijk
+/Packs/CommonPlaybooks/ @michalgold @idovandijk
+/Packs/CommonDashboards/ @michalgold @idovandijk
 
 
 # Build related
