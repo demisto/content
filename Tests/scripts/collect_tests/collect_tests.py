@@ -689,7 +689,6 @@ class NightlyTestCollector(TestCollector, ABC):
 
             except (NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.info(str(e))
-                continue
 
         if not result:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
