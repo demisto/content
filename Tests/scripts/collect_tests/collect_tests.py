@@ -682,10 +682,11 @@ class NightlyTestCollector(TestCollector, ABC):
             try:
                 self.validate_id_set_item_compatibility(playbook)
 
-                result.append(CollectionResult(
-                    test=playbook.id_, pack=playbook.pack_id, reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                    reason_description=self.marketplace.value, version_range=playbook.version_range, conf=self.conf,
-                    id_set=self.id_set, ))
+                result.append(CollectionResult(test=playbook.id_, pack=playbook.pack_id,
+                                               reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
+                                               reason_description=self.marketplace.value,
+                                               version_range=playbook.version_range, conf=self.conf,
+                                               id_set=self.id_set, ))
 
             except (NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.info(str(e))
