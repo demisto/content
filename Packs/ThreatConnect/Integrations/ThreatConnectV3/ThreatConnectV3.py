@@ -447,12 +447,19 @@ def get_last_run_time(groups: list) -> str:
     return latest_date.isoformat()
 
 
+def convert_to_dict(arr: list):
+    new_dict = {}
+    for item in arr:
+        new_dict[item] = 'true'
+    return new_dict
+
+
 def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
     params = demisto.params()
     tags = params.get('tags', '')
     owners = params.get('owners', '')
     status = params.get('status', '')
-    fields = set_fields(params.get('fields'))
+    fields = set_fields(convert_to_dict(params.get('fields')))
     max_fetch = params.get('max_fetch', '200')
     group_type = params.get('group_type', ['Incident'])
     last_run = demisto.getLastRun()
