@@ -184,7 +184,7 @@ class CollectionResult:
 
     @staticmethod
     def union(collected_tests: Optional[Union[tuple[Optional['CollectionResult'], ...],
-                                              list[Optional['CollectionResult'], ...]]]
+                                              list[Optional['CollectionResult']]]]
               ) -> Optional['CollectionResult']:
         non_none = filter(None, collected_tests or (None,))
         return sum(non_none, start=CollectionResult.__empty_result())
@@ -329,8 +329,10 @@ class TestCollector(ABC):
 
         try:
             self.validate_content_item_compatibility(pack_metadata)
-        except NonXsoarSupportedPackException:
-            pass  # we do want to install packs in this case (tests are not collected in this case anyway)
+        except NonXsoarSupportedPackException as e:
+            # we do want to install packs in this case (tests are not collected in this case anyway)
+            logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
+                        f'collecting to make sure it is installed properly.')
         except IncompatibleMarketplaceException:
             # sometimes, we want to install packs that are not compatible (e.g. both marketplaces)
             # because they have content that IS compatible.
@@ -401,14 +403,14 @@ class BranchTestCollector(TestCollector):
         self.service_account = service_account
         self.private_pack_path: Optional[Path] = private_pack_path
 
-    def _get_private_pack_files(self) -> tuple[Path, ...]:
+    def _get_private_pack_files(self) -> tuple[str, ...]:
         if not self.private_pack_path:
             raise RuntimeError('private_pack_path cannot be empty')
-        return tuple(path for path in self.private_pack_path.rglob('*') if path.is_file())
+        return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectionResult]:
         result = []
-        paths = self._get_private_pack_files() \
+        paths: tuple[str, ...] = self._get_private_pack_files() \
             if self.private_pack_path \
             else self._get_changed_files()
 
