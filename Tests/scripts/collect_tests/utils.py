@@ -2,7 +2,7 @@ from configparser import ConfigParser, MissingSectionHeaderError
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional, Union, Iterator
+from typing import Any, Iterator, Optional, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml

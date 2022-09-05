@@ -22,7 +22,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NoTestsConfiguredException, NothingToCollectException,
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException)
-from Tests.scripts.collect_tests.id_set import IdSet
+from Tests.scripts.collect_tests.id_set import IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
@@ -307,10 +307,10 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     @staticmethod
-    def __validate_support_level_is_xsoar(content_item: ContentItem) -> None:
+    def __validate_support_level_is_xsoar(pack_id: str) -> None:
         # intended to only be called from is_content_item_compatible
-        if support_level := PACK_MANAGER.get_support_level(content_item.pack_id) != 'xsoar':
-            raise NonXsoarSupportedPackException(content_item.pack_id, support_level)
+        if support_level := PACK_MANAGER.get_support_level(pack_id) != 'xsoar':
+            raise NonXsoarSupportedPackException(pack_id, support_level)
 
     def is_content_item_compatible(self, content_item: ContentItem) -> bool:
         """
@@ -320,8 +320,32 @@ class TestCollector(ABC):
         logs to info when something is not compatible.
         """
         try:
-            self.__validate_support_level_is_xsoar(content_item)
-            self.__validate_marketplace_compatibility(content_item)
+            self.__validate_support_level_is_xsoar(content_item.pack_id)
+            self.__validate_marketplace_compatibility(content_item.marketplaces, content_item.path)
+            return True
+
+        except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
+            logger.info(e)
+            return False
+
+    def is_id_set_item_compatible(self, id_set_item: IdSetItem) -> bool:
+        """
+        :param id_set_item: an id set item
+        :return: whether this id set item is compatible with the current settings (marketplace, support level, etc.)
+
+        logs to info when an item is not compatible.
+        """
+        try:
+            self.__validate_marketplace_compatibility(id_set_item.marketplaces, id_set_item.path)
+
+            # id_set_item objects may not have pack_id or path
+            if id_set_item.pack_id:
+                self.__validate_support_level_is_xsoar(id_set_item.pack_id)
+            elif id_set_item.path:
+                self.__validate_support_level_is_xsoar(find_pack_folder(id_set_item.path).name)
+            else:
+                raise RuntimeError(f'could not find pack of {id_set_item.name}')
+
             return True
 
         except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
@@ -349,22 +373,24 @@ class TestCollector(ABC):
             id_set=self.id_set,
         )
 
-    def __validate_marketplace_compatibility(self, content_item: ContentItem) -> None:
-        # intended to only be called from _validate_content_item
-        if not (content_marketplaces := content_item.marketplaces):
-            logger.debug(f'Pack {content_item.pack_id} has no marketplaces listed, '
+    def __validate_marketplace_compatibility(self,
+                                             content_item_marketplaces: tuple[MarketplaceVersions, ...],
+                                             content_item_path: Path) -> None:
+        # intended to only be called from is_content_item_compatible
+        if not content_item_marketplaces:
+            logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
-            content_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
+            content_item_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
-                if content_marketplaces != (self.marketplace,):
+                if content_item_marketplaces != (self.marketplace,):
                     # marketplacev2 must be the only value in order to be collected
-                    raise IncompatibleMarketplaceException(content_item.path)
+                    raise IncompatibleMarketplaceException(content_item_path)
 
             case MarketplaceVersions.XSOAR:
-                if self.marketplace not in content_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item.path)
+                if self.marketplace not in content_item_marketplaces:
+                    raise IncompatibleMarketplaceException(content_item_path)
 
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
@@ -412,7 +438,7 @@ class BranchTestCollector(TestCollector):
                 logger.exception(f'Error while collecting tests for {path}', exc_info=True, stack_info=True)
                 raise e
 
-        return CollectionResult.union(tuple(result))
+        return CollectionResult.union(result)
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
@@ -532,7 +558,8 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self.__validate_marketplace_compatibility(content_item)
+            if not self.is_content_item_compatible(content_item):
+                return None
 
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -668,7 +695,6 @@ class NightlyTestCollector(TestCollector, ABC):
         :return: all tests whose marketplace field includes the collector's marketplace value
                     (or is equal to it, if `only_value` is used).
         """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
         logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
                     f'{postfix}')
@@ -676,32 +702,17 @@ class NightlyTestCollector(TestCollector, ABC):
         result = []
 
         for playbook in self.id_set.test_playbooks:
-            try:
-                self.__validate_marketplace_compatibility(playbook)
-                self.__validate_support_level_is_xsoar(playbook)
-
-            except (IncompatibleMarketplaceException, NonXsoarSupportedPackException) as e:
-                logger.warning(f'Pack {pack_id} is not compatible with {self.marketplace.value} marketplace: {e}')
-                return None
-            playbook_marketplaces = playbook.marketplaces or default
-
-            if only_value and len(playbook_marketplaces) != 1:
-                continue
-
-            if self.marketplace in playbook_marketplaces:
+            if self.is_id_set_item_compatible(playbook):
                 result.append(CollectionResult(
-                    test=playbook.id_, pack=playbook.pack_id,
-                    reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                    reason_description=self.marketplace.value,
-                    version_range=playbook.version_range,
-                    conf=self.conf, id_set=self.id_set)
-                )
+                    test=playbook.id_, pack=playbook.pack_id, reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
+                    reason_description=self.marketplace.value, version_range=playbook.version_range, conf=self.conf,
+                    id_set=self.id_set, ))
 
         if not result:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectionResult.union(tuple(result))
+        return CollectionResult.union(result)
 
     def _collect_all_compatible_packs(self, reason: CollectionReason) -> Optional[CollectionResult]:
         result = []
