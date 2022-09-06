@@ -1,7 +1,7 @@
-id: 773aa78d-ba78-4dbb-8bf7-87e464627d4d
-version: 12
+id: SetDateField-Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: SetDateField-Test.ym
+name: SetDateField-Test
 starttaskid: "0"
 tasks:
   "0":
