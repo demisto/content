@@ -10,7 +10,7 @@ def test_main(mocker):
         'message': 'this is error'
     })
     mocker.patch.object(demisto, 'results')
-    main()
+    PrintErrorEntry .main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert results['Contents'] == 'this is error'
