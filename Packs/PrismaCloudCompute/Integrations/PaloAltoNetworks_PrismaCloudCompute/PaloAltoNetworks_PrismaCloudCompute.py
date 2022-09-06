@@ -275,19 +275,25 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
-    def get_impacted_resources(self, cve: str) -> dict:
+    def get_impacted_resources(self, cve: str, resource_type: str) -> dict:
         """
         Get the impacted resources that are based on a specific CVE.
 
         Args:
             cve (str): The CVE from which impacted resources will be retrieved.
+            resource_type (str): ResourceType is the single resource type to return vulnerability data for.
 
         Returns:
             dict: the impacted resources from the CVE.
         """
+        if resource_type:
+            return self._http_request(
+                method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
+                params={"cve": cve, "resourceType": resource_type}
+            )
         return self._http_request(
-            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources", params={"cve": cve}
-        )
+            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
+            params={"cve": cve})
 
 
 def str_to_bool(s):
@@ -1501,14 +1507,16 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     """
     limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
     cves = argToList(arg=args.get("cve", []))
+    resource_type = args.get("resourceType", "")
 
     context_output, raw_response = [], {}
-    final_impacted_resources = {"images": [], "registryImages": [], "hosts": [], "functions": []}
+    final_impacted_resources = {"images": [], "registryImages": [], "hosts": [], "functions": [], "codeRepos": []}
+    resources_list = ["images", "registryImages", "hosts", "functions", "codeRepos"]
     for cve in cves:
         # api does not support offset/limit
-        if cve_impacted_resources := client.get_impacted_resources(cve=cve):
+        if cve_impacted_resources := client.get_impacted_resources(cve=cve, resource_type=resource_type):
             raw_response[cve] = cve_impacted_resources
-            for resources in ["images", "registryImages", "hosts", "functions"]:
+            for resources in resources_list:
                 if resources in cve_impacted_resources and cve_impacted_resources.get(resources) is not None:
                     cve_impacted_resources[resources] = filter_api_response(
                         api_response=cve_impacted_resources[resources],  # type: ignore[arg-type]
@@ -1517,16 +1525,14 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                     )
 
                     for resource in cve_impacted_resources.get(resources):
-                        for _container in resource.get("containers"):
-                            container_table_details = {
-                                "Cve": cve,
-                                "Image": _container.get("image"),
-                                "Container": _container.get("container"),
-                                "Host": _container.get("host"),
-                                "Namespace": _container.get("namespace")
-                            }
-                            if container_table_details not in final_impacted_resources.get(resources):
-                                final_impacted_resources.get(resources).append(container_table_details)
+                        resource_id_table_details = {
+                            "resourceID": resource.get("resourceID"),
+                        }
+                        if containers := (resource.get('Containers') or []):
+                            resource_id_table_details['Containers'] = [container.get('container') for container in
+                                                                       containers]
+                        if resource_id_table_details not in final_impacted_resources.get(resources):
+                            final_impacted_resources.get(resources).append(resource_id_table_details)
 
             context_output.append(cve_impacted_resources)
 
@@ -1535,15 +1541,17 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         mapping_resources_to_names = {"images": "Impacted Images",
                                       "registryImages": "Impacted Registry Images",
                                       "hosts": "Impacted Hosts",
-                                      "functions": "Impacted Functions"
+                                      "functions": "Impacted Functions",
+                                      "codeRepos": "Impacted CodeRepos"
                                       }
-        for resources in ["images", "registryImages", "hosts", "functions"]:
-            impacted_resources_tables.append(tableToMarkdown(
-                name=mapping_resources_to_names.get(resources),
-                t=final_impacted_resources.get(resources),
-                headers=["Cve", "Image", "Container", "Host", "Namespace"],
-                removeNull=True)
-            )
+        for resources in resources_list:
+            if final_impacted_resources.get(resources):
+                impacted_resources_tables.append(tableToMarkdown(
+                    name=mapping_resources_to_names.get(resources),
+                    t=final_impacted_resources.get(resources),
+                    headers=["resourceID", 'Containers'],
+                    removeNull=True)
+                )
         table = ''.join(impacted_resources_tables)
     else:
         context_output, table = [], "No results found."
