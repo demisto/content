@@ -263,7 +263,7 @@ def create_incident_labels(parsed_msg, headers):
     labels.extend([{'type': 'Email/bcc', 'value': bcc}
                    for bcc in headers.get('Bcc', '').split(',')])
     for key, val in headers.items():
-        labels.append({'type': 'Email/Header/' + key, 'value': val})
+        labels.append({'type': 'Email/Header/' + key, 'value': str(val)})
 
     return labels
 
@@ -370,5 +370,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or True:
     main()
