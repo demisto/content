@@ -4623,7 +4623,7 @@ def main():
             full_err_msg = 'error code: {}\n{}'.format(status_code, err_message)
             return_error(full_err_msg)
         except AttributeError:
-            return_error(e.message)
+            return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
