@@ -98,7 +98,8 @@ def main():
                     for subtable in t:
                         if t[subtable]:
                             behavior_data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
-                            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": behavior_data})
+                            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"],
+                                        "Contents": behavior_data})
             else:
                 data = report[s] if isinstance(report[s], list) else [report[s]]
                 data = [{k: formatCell(row[k]) for k in row} for row in data]
