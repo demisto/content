@@ -102,6 +102,9 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('1.2.3.4/path', '1.2.3.4/path'),
     ('1.2.3.4/path/to/file.html', '1.2.3.4/path/to/file.html'),
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),
+    ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),
+    ('http://142.42.1.1:aaa8080', 'http://142.42.1.1'),
+    ('http://142.42.1.1:aaa', 'http://142.42.1.1'),
     ('http://☺.damowmow.com/', 'http://☺.damowmow.com/'),
     ('http://223.255.255.254', 'http://223.255.255.254'),
     ('ftp://foo.bar/baz', 'ftp://foo.bar/baz'),
@@ -109,6 +112,17 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
     ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
     ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
+    ('https://test.com#fragment3', 'https://test.com#fragment3'),
+    ('https://test.com#fragment3#fragment3', 'https://test.com#fragment3#fragment3'),
+    ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
+    ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]',  # disable-secrets-detection
+     'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
+    ('[2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
+     '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
+     'http://2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
+    ('2001:db8:3333:4444:5555:6666:7777:8888',  # disable-secrets-detection
+     '2001:db8:3333:4444:5555:6666:7777:8888'),  # disable-secrets-detection
 ]
 
 REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
@@ -126,7 +140,7 @@ SINGLE_LETTER_TLD = [
     ('goog.l/', True),
     ('goog.l', True),
     ('google.#/', False),
-    ('ww.goo./com/', True),
+    ('ww.goo./com/', False),    # This is False as "." at the end of the host part is valid
     ('google.com/./', False),
     ('hello////,,,,dfdsf', False),
     ('hello./.com/', True),
@@ -148,21 +162,6 @@ class TestFormatURL:
         """
         from FormatURL import replace_protocol
         assert replace_protocol(non_formatted_url) == expected
-
-    @pytest.mark.parametrize('non_formatted_url, expected', BRACKETS_URL_TO_FORMAT)
-    def test_remove_brackets_from_end_of_url(self, non_formatted_url: str, expected: str):
-        """
-        Given:
-        - non_formatted_url: A URL.
-
-        When:
-        - calling remove_brackets_from_end_of_url
-
-        Then:
-        - Ensure url was formatted properly.
-        """
-        from FormatURL import remove_brackets_from_end_of_url
-        assert remove_brackets_from_end_of_url(non_formatted_url) == expected
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: Union[List[str], str]):
@@ -324,6 +323,32 @@ class TestFormatURL:
         mocker.patch.object(demisto, 'error')
         assert get_redirect_url_from_query(url_, urlparse(url_), 'q') == url_
         assert demisto.error.called
+
+    @pytest.mark.parametrize('url_, expected', [
+        ('[https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$]',
+         'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$'),
+        ('(https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$)',
+         'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
+        ('[someURL].', 'someURL'),
+        ('[https://testURL.com)', 'https://testURL.com'),
+        ('[https://testURL.com', 'https://testURL.com'),
+        ('[(https://testURL.com)]', 'https://testURL.com'),
+        ('{a}', 'a'),
+        ('"{a}"', 'a')
+    ])
+    def test_remove_special_chars_from_start_and_end_of_url(self, url_, expected):
+        """
+        Given:
+        - A URL to format.
+
+        When:
+        - executing remove_special_chars_from_start_and_end_of_url function.
+
+        Then:
+        - Ensure formatted URL is returned.
+        """
+        from FormatURL import remove_special_chars_from_start_and_end_of_url
+        assert remove_special_chars_from_start_and_end_of_url(url_) == expected
 
     def test_get_redirect_url_from_query_duplicate_url_query_param(self, mocker):
         """
