@@ -2465,7 +2465,7 @@ def search_device_by_ip(raw_res, ip_address):
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
     state = raw_res.get('resources')[0].get('state', '')
-    return 'Online' if state == 'online' else ''
+    return 'Online' if state == 'online' or 'Online' else ''
 
 
 def generate_status_fields(endpoint_status, device_id):

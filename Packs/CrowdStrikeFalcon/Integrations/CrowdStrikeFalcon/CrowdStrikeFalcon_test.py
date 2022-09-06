@@ -3451,14 +3451,14 @@ def test_upload_batch_custom_ioc_command(requests_mock):
     assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '4.5.8.6'
 
 
-@pytest.mark.parametrize('endpoint_status, status, is_isolated',
-                         [('Normal', 'Online', ''),
-                          ('normal', 'Online', ''),
-                          ('containment_pending', '', 'Pending isolation'),
-                          ('contained', '', 'Yes'),
-                          ('lift_containment_pending', '', 'Pending unisolation'),
+@pytest.mark.parametrize('endpoint_status, status,expected_status, is_isolated',
+                         [('Normal', 'online', 'Online', ''),
+                          ('normal', 'Online', 'Online', ''),
+                          ('containment_pending', 'Offline', '', 'Pending isolation'),
+                          ('contained', 'Offline', '', 'Yes'),
+                          ('lift_containment_pending', 'Offline', '', 'Pending unisolation'),
                           ])
-def test_generate_status_field(requests_mock, endpoint_status, status, is_isolated):
+def test_generate_status_field(requests_mock, endpoint_status, status, expected_status, is_isolated):
     """
     Test valid call for generate status field
     Given
@@ -3481,7 +3481,7 @@ def test_generate_status_field(requests_mock, endpoint_status, status, is_isolat
                 "id": "device_id",
                 "cid": "20879a8064904ecfbb62c118a6a19411",
                 "last_seen": "2022-09-03T10:48:12Z",
-                "state": status
+                "state": "merit"
             }
         ],
         "errors": []
@@ -3493,7 +3493,7 @@ def test_generate_status_field(requests_mock, endpoint_status, status, is_isolat
         status_code=200,
     )
 
-    assert status, is_isolated == generate_status_fields(endpoint_status, 'device_id')
+    assert (expected_status, is_isolated) == generate_status_fields(endpoint_status, 'device_id')
 
 
 def test_generate_status_field_invalid():
