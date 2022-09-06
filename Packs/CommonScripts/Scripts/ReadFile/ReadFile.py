@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import chardet  # type: ignore
 
 
 def read_file(args):
