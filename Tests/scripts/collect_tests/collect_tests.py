@@ -403,14 +403,14 @@ class TestCollector(ABC):
 
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
-        # intended to only be called from _validate_content_item_compatibility
+        # intended to only be called from __validate_compatibility
         if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
             raise NonXsoarSupportedPackException(pack_id, support_level, content_item_range)
 
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
                                              content_item_path: Path) -> None:
-        # intended to only be called from _validate_content_item_compatibility
+        # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
