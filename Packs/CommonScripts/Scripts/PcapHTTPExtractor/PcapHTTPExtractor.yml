@@ -94,5 +94,5 @@ type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.20132
 tests:
 - PcapHTTPExtractor-Test
-subtype: python2
+subtype: python3
 fromversion: 5.0.0
