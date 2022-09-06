@@ -8,7 +8,7 @@ subtype: python2
 deprecated: true
 tags:
 - GRR
-comment: Deprecated. use grr-set-flows instead.
+comment: Deprecated.Use grr-set-flows instead.
 system: true
 args:
 - name: client_id
