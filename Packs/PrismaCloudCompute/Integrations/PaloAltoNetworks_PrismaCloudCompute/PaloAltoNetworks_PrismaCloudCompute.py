@@ -286,14 +286,14 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             dict: the impacted resources from the CVE.
         """
+        params = {"cve": cve}
+        # When there is no specific resource then images and hosts will be returned if they exist
         if resource_type:
-            return self._http_request(
-                method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
-                params={"cve": cve, "resourceType": resource_type}
-            )
+            params["resourceType"] = resource_type
         return self._http_request(
             method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
-            params={"cve": cve})
+            params=params
+        )
 
 
 def str_to_bool(s):
