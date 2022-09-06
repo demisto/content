@@ -1,7 +1,7 @@
 commonfields:
-  id: EncodeToAscii1
+  id: EncodeToAscii
   version: -1
-name: EncodeToAscii1
+name: EncodeToAscii
 script: ''
 type: python
 subtype: python3
