@@ -14,3 +14,10 @@ The pack includes the **TOPdesk** integration, **TOPdesk** incident, incident fi
 ## How does this pack work?
 
 Create an instance of the **TOPdesk** integration and start fetching and ingesting incidents.
+
+### Pack Contributors:
+
+---
+ - Sander Zumbrink
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
