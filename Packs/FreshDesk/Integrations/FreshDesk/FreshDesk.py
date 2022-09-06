@@ -1550,7 +1550,7 @@ def list_contacts_command():
         # Parse individual contact response in context
         context = format_contact_context(contact)
         contexts.append(context)
-    filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
+    filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.items()])
     title = 'Contacts Filtered by {}'.format(filters_as_strings) if filters else 'All Contacts'
     human_readable = tableToMarkdown(title, contexts, removeNull=False)
     demisto.results({
