@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Check Point Sandblast
 deprecated: true
-display: Check Point Sandblast Cloud Services
+display: Check Point Sandblast Cloud Services (Deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use CheckPointSandblast instead.
 configuration:
