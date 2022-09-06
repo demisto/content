@@ -65,8 +65,6 @@ DOMAIN_HEADERS = [
     'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
     'SuspicionsCount']
 
-REMEDIATION_HEADERS = ['UniqueId', 'RemediationType', 'TargetName',' TargetId', 'MachineName', 'MalopType', 'MalopId', 'MachineConnected']
-
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
 CONNECTION_INFO = [
@@ -571,27 +569,17 @@ def isolate_machine_command(client: Client, args: dict):
     response, pylum_id = isolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
-        # ec = {
-        #     'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-        #         'Machine': machine,
-        #         'IsIsolated': True
-        #     },
-        #     'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-        #         'Hostname': machine
-        #     }
-        # }
-        return CommandResults(
-            readable_output='Machine was isolated successfully.',
-            outputs_prefix='Cybereason',
-            outputs_key_field='Machine',
-            outputs=[{
-            'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-                'Machine': machine,
-                'IsIsolated': True
-            },
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-                'Hostname': machine
-            }}])
+        return [
+            CommandResults(
+                readable_output='Machine was isolated successfully.',
+                outputs_prefix='Cybereason',
+                outputs_key_field='Machine',
+                outputs={
+                    'Machine': machine,
+                    'IsIsolated': True
+                }
+            )
+        ]
     else:
         raise Exception('Failed to isolate machine.')
 
@@ -614,28 +602,17 @@ def unisolate_machine_command(client: Client, args: dict):
     response, pylum_id = unisolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
-        # ec = {
-        #     'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-        #         'Machine': machine,
-        #         'IsIsolated': False
-        #     },
-        #     'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-        #         'Hostname': machine
-        #     }
-        # }
-        return CommandResults(
-            readable_output='Machine was un-isolated successfully.',
-            outputs_prefix='Cybereason',
-            outputs_key_field='Machine',
-            outputs=[{
-            'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-                'Machine': machine,
-                'IsIsolated': False
-            },
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-                'Hostname': machine
-            }}
-            ])
+        return [
+            CommandResults(
+                readable_output='Machine was un-isolated successfully.',
+                outputs_prefix='Cybereason',
+                outputs_key_field='Machine',
+                outputs={
+                    'Machine': machine,
+                    'IsIsolated': False
+                }
+            )
+        ]
     else:
         raise Exception('Failed to un-isolate machine.')
 
@@ -856,26 +833,28 @@ def available_remediation_actions_command(client: Client, args: dict):
                 uniqueId = data["uniqueId"]
                 remediationType = data["remediationType"]
                 targetName = data["targetName"]
-                targetId = data["targetId"]
+                targetID = data["targetId"]
                 machineName = data["machineName"]
                 malopType = data["malopType"]
                 malopId = data["malopId"]
                 machineConnected = data["machineConnected"]
-
                 cybereason_outputs.append({
                     'UniqueId': uniqueId,
                     'RemediationType': remediationType,
                     'TargetName': targetName,
-                    'TargetId': targetId,
+                    'TargetID': targetID,
                     'MachineName': machineName,
                     'MalopType': malopType,
                     'MalopId': malopId,
                     "MachineConnected": machineConnected
                 })
 
-    return CommandResults(readable_output=tableToMarkdown(
-                    f'Cybereason available remediation actions for malop {malop_guid}:',
-                    cybereason_outputs, headers=REMEDIATION_HEADERS))
+    return CommandResults(
+                readable_output=tableToMarkdown(
+                    f'Cybereason available remediation actions for malop {malop_guid}:', cybereason_outputs, removeNull=True),
+                outputs_prefix='Cybereason.Remediation',
+                outputs_key_field='TargetID',
+                outputs=cybereason_outputs)
 
 
 def kill_process_command(client: Client, args: dict):
@@ -1134,7 +1113,6 @@ def query_file_command(client: Client, args: dict) -> Any:
         if data:
             cybereason_outputs = []
             file_outputs = []
-            endpoint_outputs = []
             files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
             for fname, fstat in files.items():
                 raw_machine_details = dict_safe_get(get_file_machine_details(client, fname), ['data', 'resultIdToElementDataMap'],
@@ -1203,31 +1181,12 @@ def query_file_command(client: Client, args: dict) -> Any:
                     'Company': company_name
                 })
 
-                file_outputs.append({
-                    'Name': fname,
-                    'MD5': md5,
-                    'SHA1': sha1,
-                    'Path': path,
-                    'Hostname': machine
-                })
-                endpoint_outputs.append({
-                    'Hostname': machine,
-                    'OSVersion': os_version
-                })
-            # ec = {
-            #     'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-            #     'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
-
             return CommandResults(
                 readable_output=tableToMarkdown(
                     f'Cybereason file query results for the file hash: {file_hash}', cybereason_outputs, removeNull=True),
                 outputs_prefix='Cybereason.File',
                 outputs_key_field='Name',
-                outputs=[
-                    {
-                'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-                'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
-                ])
+                outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
 
@@ -1288,7 +1247,6 @@ def query_domain_command(client: Client, args: dict) -> Any:
         data = query_domain(client, filters)
         if data:
             cybereason_outputs = []
-            domain_outputs = []
             domains = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
             for domain in list(domains.values()):
                 if not isinstance(domain, dict):
@@ -1312,23 +1270,13 @@ def query_domain_command(client: Client, args: dict) -> Any:
                     'WasEverResolvedAsASecondLevelDomain': was_ever_resolved_as
                 })
 
-                domain_outputs.append({
-                    'Name': domain_input,
-                })
-
-            # ec = {
-            #     'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
-
             return CommandResults(
                 readable_output=tableToMarkdown(
                     f'Cybereason domain query results for the domain: {domain_input}',
                     cybereason_outputs, headers=DOMAIN_HEADERS),
                 outputs_prefix='Cybereason.Domain',
                 outputs_key_field='Name',
-                outputs=[
-                    {
-                'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
-                ])
+                outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
 
@@ -1764,24 +1712,17 @@ def fetchfile_progress_command(client: Client, args: dict):
             output_message.append('Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message))
         else:
             output_message.append(str(message))
-    # ec = {
-    #     'fileName': filename,
-    #     'status': status,
-    #     'batchID': message,
-    #     'MalopID': malop_id
-    # }
+
     return CommandResults(
         readable_output=str(output_message),
         outputs_prefix='Cybereason.Download.Progress',
         outputs_key_field='fileName',
-        outputs=[
-            {
-        'fileName': filename,
-        'status': status,
-        'batchID': message,
-        'MalopID': malop_id
-    }
-        ])
+        outputs={
+            'fileName': filename,
+            'status': status,
+            'batchID': message,
+            'MalopID': malop_id
+        })
 
 
 def get_batch_id(client: Client, suspect_files_guids: dict, timeout_seconds: int, interval_seconds: int) -> list:

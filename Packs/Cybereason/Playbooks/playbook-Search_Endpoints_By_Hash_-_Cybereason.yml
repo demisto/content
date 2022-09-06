@@ -298,11 +298,8 @@ inputs:
   required: false
   description: SHA1 Hash
 outputs:
-- contextPath: Endpoint.Hostname
+- contextPath: Cybereason.File.Hostname
   description: Device hostname
   type: string
-- contextPath: Endpoint
-  description: The endpoint
-  type: unknown
 tests:
 - No test

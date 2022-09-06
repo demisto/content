@@ -237,8 +237,6 @@ outputs:
   description: Machine name.
 - contextPath: Cybereason.IsIsolated
   description: Is the machine isolated.
-- contextPath: Endpoint.Hostname
-  description: Machine name.
 tests:
 - no tests
 fromversion: 5.0.0

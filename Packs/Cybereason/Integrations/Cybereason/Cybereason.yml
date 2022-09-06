@@ -355,9 +355,6 @@ script:
     - contextPath: Cybereason.IsIsolated
       description: Is the machine isolated
       type: boolean
-    - contextPath: Endpoint.Hostname
-      description: Machine name
-      type: string
   - arguments:
     - default: true
       description: Machine name to be un-isolated
@@ -376,9 +373,6 @@ script:
     - contextPath: Cybereason.IsIsolated
       description: Is the machine isolated
       type: boolean
-    - contextPath: Endpoint.Hostname
-      description: Machine name
-      type: string
   - arguments:
     - default: false
       description: Filter to filter response by, given in Cybereason API syntax.
@@ -666,27 +660,6 @@ script:
     - contextPath: Cybereason.File.Evidence
       description: File evidences
       type: string
-    - contextPath: Endpoint.Hostname
-      description: Hostname on which file is located
-      type: string
-    - contextPath: Endpoint.OSVersion
-      description: Machine OS version on which file is located
-      type: string
-    - contextPath: File.Hostname
-      description: Hostname on which file is located
-      type: string
-    - contextPath: File.MD5
-      description: File MD5 hash
-      type: string
-    - contextPath: File.SHA1
-      description: File SHA-1 hash
-      type: string
-    - contextPath: File.Name
-      description: File name
-      type: string
-    - contextPath: File.Path
-      description: File path
-      type: string
   - arguments:
     - default: true
       description: Domain to query
@@ -720,9 +693,6 @@ script:
     - contextPath: Cybereason.Domain.WasEverResolvedAsASecondLevelDomain
       description: Was domain ever resolved as a second level domain
       type: boolean
-    - contextPath: Domain.Name
-      description: Domain name
-      type: string
   - arguments:
     - default: true
       description: Username to query
