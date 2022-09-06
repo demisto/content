@@ -3,9 +3,6 @@ from CommonServerUserPython import *
 
 from CommonServerPython import *
 
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=no-member
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -129,10 +126,10 @@ def unicode_to_str_recur(obj):
     if IS_PY3:
         return obj
     if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in list(obj.items())}
     elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
+        obj = list(map(unicode_to_str_recur, obj))
+    elif isinstance(obj, str):
         obj = obj.encode('utf-8', 'ignore')
     return obj
 
@@ -185,7 +182,7 @@ def extract_on_call_now_user_data(users_on_call_now):
     contexts = []  # type: List[Dict]
     oncalls = users_on_call_now.get('oncalls', {})
 
-    for i in xrange(len(oncalls)):
+    for i in range(len(oncalls)):
         output = {}
         context = {}
 
