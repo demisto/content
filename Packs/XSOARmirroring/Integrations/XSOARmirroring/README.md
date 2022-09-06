@@ -31,6 +31,9 @@ The mirroring instance in the first tenant contains a new incident type, called 
 4. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
 
+## Important note:
+In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
