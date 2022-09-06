@@ -18,6 +18,12 @@ class BucketVerifier:
         items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
         self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
 
+    def verify_modified_pack(self, pack_id, pack_items):
+        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])]
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in
+                        pack_items.items()]
+        self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
+
     def verify_new_version(self, pack_id, rn):
         # check: RN, new version exists
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
@@ -53,9 +59,9 @@ class BucketVerifier:
         # verify new version TODO: remove since dup
         pass
 
-    def verify_modified_path(self, pack_id, item_file_name):
+    def verify_modified_path(self, pack_id, item_type, item_file_name, extension):
         # verify the path of the item is modified
-        self.is_valid = self.is_valid and self.gcp.is_item_in_pack(pack_id, self.versions[pack_id], item_file_name)
+        self.is_valid = self.is_valid and self.gcp.is_item_in_pack(pack_id, item_type, item_file_name, extension)
 
     def verify_dependency(self, pack_id, dependency_id):
         # verify the new dependency is in the metadata
@@ -101,9 +107,13 @@ class GCP:
         with open(metadata_path, 'r') as metadata_file:
             return json.load(metadata_file)
 
-    def is_item_in_pack(self, pack_id, item_type, item_file_name):
-        # TODO: handle items that are under a subfolder
-        return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name))
+    def is_item_in_pack(self, pack_id, item_type, item_file_name, extension):
+        """
+        Check if an item is inside the pack. this function is suitable for content items that
+        have a subfolder (for example: Integrations/ObjectName/integration-ObjectName.yml
+        """
+        return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name,
+                                           f'{item_type.to_lower()[:-1]}-{item_file_name}.{extension}'))
 
     def get_index_json(self):
         index_json_path = os.path.join(storage_base_path, 'index.json')
@@ -154,32 +164,16 @@ if __name__ == "__main__":
     storage_base_path = args.storage_base_path
     service_account = args.service_account
     storage_bucket_name = args.bucket_name
-    packs_dict = args.packs_dict  # TODO: verify parsing, should be pack_id: version of the modified pack or RN
-
+    versions_dict = args.version_dict  # TODO: verify parsing, should be pack_id: version of the modified pack or RN
+    items_dict = args.items_dict  # TODO: verify parsing, should be pack_id: {item_type: item_id} of the modified pack or RN
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
-    # New pack - check that pack and all its content items are there
-    # Armis - check its dependency is also the new pack
-    #  ZeroFox - check there is a new version and RN
-    # Box - existing RN was updated
-    # BPA - 1.0.0 rn was added
-    # Microsoft365Defender set as hidden
-    # Maltiverse - readme updated
-    # MISP - update pack ignore
-    # Trello - landing page
-    # Absolute - failing pack
-    # Alexa - modified pack TODO: verify not duplicate with zerofox
-    # AlibabaActionTrail - modify item path
-    # index checks
-    # packs check
-
-    bv = BucketVerifier(gcp, packs_dict)
+    bv = BucketVerifier(gcp, versions_dict)
     # verify new pack - TestUploadFlow
-    pack_items_dict = {} # TODO: fix
-    bv.verify_new_pack('TestUploadFlow', pack_items_dict)
+    bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
 
     # verify dependencies handling
-    bv.verify_dependency('Armis', 'TestUploadFlow') # TODO: verify direction
+    bv.verify_dependency('Armis', 'TestUploadFlow')
 
     # verify new version
     expected_rn = ''  # TODO: add from branch script
@@ -210,6 +204,10 @@ if __name__ == "__main__":
     bv.verify_failed_pack('Absolute')
 
     # verify path modification
-    bv.verify_modified_path('AlibabaActionTrail', )
+    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'yml')
+    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'jsom')
+    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'xif')
 
+    # verify modified pack
+    bv.verify_modified_pack('Alexa', items_dict.get('Alexa'))
 

@@ -151,11 +151,6 @@ def modify_item_path(item: Path, new_name: str):
     return item.parent.parent.parent
 
 
-# create failing pack
-# modify a pack and verify no content items are removed between the two versions
-# modify path of file in pack and verify it is uploaded
-# modify only RNs
-
 @add_changed_pack
 def add_1_0_0_release_notes(pack: Path):
     release_note = pack / 'ReleaseNotes' / '1_0_0.md'
