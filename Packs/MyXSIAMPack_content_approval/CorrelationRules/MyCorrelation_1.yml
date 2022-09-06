@@ -1,0 +1,33 @@
+alert_category: COLLECTION
+alert_description: null
+alert_fields:
+  actor_image: null
+  actor_path: null
+  cmd: null
+  domain: null
+  hash: null
+  hostname: null
+  local_ip: null
+  remote_ip: null
+  remote_port: null
+  username: null
+alert_name: null
+alert_source: null
+crontab: '*/20 * * * *'
+dataset: alerts
+description: Agent disconnection use case for Magnitude software
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 93935c1c-b8c3-11ec-84db-acde48001122
+investigation_query_link: null
+mapping_strategy: AUTO
+mitre_defs: {}
+name: Connection lost on servers
+search_window: 1 hours
+severity: SEV_040_HIGH
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+user_defined_category: null
+user_defined_severity: null
+xql_query: 'dataset = xdr_data | limit 1 | fields event_sub_type'

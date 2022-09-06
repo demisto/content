@@ -1975,6 +1975,7 @@ class Pack(object):
                 PackFolders.XSIAM_REPORTS.value: "xsiamreport",
                 PackFolders.TRIGGERS.value: "trigger",
                 PackFolders.WIZARDS.value: "wizard",
+                PackFolders.AGENT_CONFIG.value: "agentconfig",
             }
 
             items_names_to_display_mapping = {
@@ -2267,6 +2268,15 @@ class Pack(object):
                             'dependency_packs': content_item.get('dependency_packs', {}),
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
+                        })
+
+                    elif current_directory == PackFolders.AGENT_CONFIG.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'os_type': content_item.get('os_type', ''),
+                            'profile_type': content_item.get('profile_type', ''),
+                            'yaml': content_item.get('yaml', '')
                         })
 
                     else:

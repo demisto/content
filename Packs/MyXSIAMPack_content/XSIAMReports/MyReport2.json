@@ -1,0 +1,160 @@
+{
+  "templates_data": [
+    {
+      "report_name": "Export Report 2",
+      "report_description": null,
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "Export Report",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "700066666",
+                "description": "",
+                "customerName": ""
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-4968",
+          "data": [
+            {
+              "key": "xql_1646816725601",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 400,
+                "phrase": "dataset = endpoints ",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+
+                  },
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            },
+            {
+              "key": "xql_1618303947369",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 400,
+                "phrase": "dataset = xdr_data\n",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+
+                  },
+                  "rowHeight": "{\"rowHeight\":100,\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 86400000
+      },
+      "global_id": "3a6a365c1e8b41c38889a49b188d33a6",
+      "time_offset": 7200
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1618303947369",
+      "title": "CUS XQL 222 Testicle Bla bla",
+      "creation_time": 1646921649959,
+      "description": "",
+      "data": {
+        "phrase": "dataset = xdr_data\n",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+
+          },
+          "rowHeight": "{\"rowHeight\":100,\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1646816725601",
+      "title": "Some name",
+      "creation_time": 1646816725601,
+      "description": null,
+      "data": {
+        "phrase": "dataset = endpoints ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+
+          },
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    }
+  ]
+}

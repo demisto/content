@@ -1,0 +1,257 @@
+{
+  "dashboards_data": [
+    {
+      "name": "Dashboard with custom graph widget",
+      "description": "I am a graph template",
+      "status": "ENABLED",
+      "layout": [
+        {
+          "id": "row-9544",
+          "data": [
+            {
+              "key": "xql_1651138671656",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 1114,
+                "phrase": "limit 500\n| view graph type = funnel xaxis = agent_hostname yaxis = causality_actor_process_os_pid valuecolor(\"zoharVM\",\"#511235\") headcolor = \"#eae333\" font = \"Arial\" ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "funnel",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "agent_hostname"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "causality_actor_process_os_pid"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "zoharVM",
+                          "#511235"
+                        ],
+                        "name": "valuecolor"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "headcolor",
+                        "value": "\"#eae333\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "b989e3f085f24074986b81637b37c9fe"
+    },
+    {
+      "name": "export1",
+      "description": "2xcustom widgets, default config",
+      "status": "ENABLED",
+      "layout": [
+        {
+          "id": "row-9754",
+          "data": [
+            {
+              "key": "xql_1650873228590",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 373.5,
+                "phrase": "dataset = xdr_data ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8851",
+          "data": [
+            {
+              "key": "xql_1650873339410",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 373.5,
+                "phrase": "dataset = endpoints | filter (endpoint_status in (ENUM.CONNECTED , ENUM.DISCONNECTED, ENUM.CONNECTION_LOST, ENUM.FORENSICS_OFFLINE, ENUM.UNINSTALLED, ENUM.DELETED))",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "c3ee5b8147394fcb9348ce3e39b68a5f"
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1650873228590",
+      "title": "Dataset= all xdr_data 1M",
+      "creation_time": 1650873228590,
+      "description": null,
+      "data": {
+        "phrase": "dataset = xdr_data ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "abahat@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1650873339410",
+      "title": "Endpoint Status - Last month",
+      "creation_time": 1650873339410,
+      "description": null,
+      "data": {
+        "phrase": "dataset = endpoints | filter (endpoint_status in (ENUM.CONNECTED , ENUM.DISCONNECTED, ENUM.CONNECTION_LOST, ENUM.FORENSICS_OFFLINE, ENUM.UNINSTALLED, ENUM.DELETED))",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "abahat@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1651138671656",
+      "title": "Anna - Fuchsia Funnel",
+      "creation_time": 1651138671656,
+      "description": "view graph type = funnel xaxis = agent_hostname yaxis = causality_actor_process_os_pid valuecolor(\"zoharVM\",\"#511235\") headcolor = \"#eae333\" font = \"Arial\"",
+      "data": {
+        "phrase": "limit 500\n| view graph type = funnel xaxis = agent_hostname yaxis = causality_actor_process_os_pid valuecolor(\"zoharVM\",\"#511235\") headcolor = \"#eae333\" font = \"Arial\" ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "funnel",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "agent_hostname"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "causality_actor_process_os_pid"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "zoharVM",
+                  "#511235"
+                ],
+                "name": "valuecolor"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "headcolor",
+                "value": "\"#eae333\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      },
+      "creator_mail": "avaisman@paloaltonetworks.com"
+    }
+  ]
+}
