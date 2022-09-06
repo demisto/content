@@ -121,7 +121,7 @@ def collect_manual_attachments():
             with open(path) as fp:
                 data = fp.read()
         else:
-            with open(path, 'rb') as fp:
+            with open(path, 'rb') as fp:  # type: ignore
                 data = fp.read()
         attachments.append({
             'name': attachment['FileName'],
@@ -160,7 +160,7 @@ def collect_attachments():
                 with open(path) as fp:
                     data = fp.read()
             else:
-                with open(path, 'rb') as fp:
+                with open(path, 'rb') as fp:  # type: ignore
                     data = fp.read()
             attachments.append({
                 'name': filename,
@@ -182,7 +182,7 @@ def collect_attachments():
     f_cids = args.get('transientFileCID', [])
     f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
 
-    for name, data, cid in map(None, f_names, f_contents, f_cids):
+    for name, data, cid in map(None, f_names, f_contents, f_cids):  # type: ignore
         if name is None or data is None:
             break
         maintype, subtype = guess_type(name)
@@ -392,7 +392,7 @@ def main():
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
-        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.iteritems())
+        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.items())
         return_error_mail_sender("Encountered error: {}".format(error_msg))
     except Exception as e:
         return_error_mail_sender(e)
