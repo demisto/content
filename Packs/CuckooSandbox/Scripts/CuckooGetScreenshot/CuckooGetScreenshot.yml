@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - cuckoo
-comment: Detonate the file in Cuckoo sandbox.
+comment: Deprecated. Use 'cuckoo-task-screenshot' command instead.
 system: true
 args:
 - name: id

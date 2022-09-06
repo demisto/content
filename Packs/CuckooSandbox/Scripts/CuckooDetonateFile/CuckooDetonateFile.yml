@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - cuckoo
-comment: Adds a file to the list of pending tasks. Returns the ID of the newly created task.
+comment: Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
 system: false
 args:
 - name: entryID
