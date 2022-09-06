@@ -16,7 +16,7 @@ def get_indicator_from_value(indicator_value):
         res = demisto.executeCommand("findIndicators", {'value': indicator_value})
         indicator = res[0]['Contents'][0]
         return indicator
-    except:
+    except Exception:
         pass
 
 
@@ -34,7 +34,7 @@ def get_ssdeep_related_indicators(ssdeep_indicator):
             related_indicators.append(get_indicator_from_value(file_obj.get('MD5')))
             related_indicators.append(get_indicator_from_value(file_obj.get('SHA1')))
             related_indicators.append(get_indicator_from_value(file_obj.get('SHA256')))
-        except:
+        except Exception:
             continue
     related_indicators = [x for x in related_indicators if x is not None]
     return related_indicators
@@ -74,18 +74,17 @@ def main():
         entry = {
             'Type': entryTypes['note'],
             'HumanReadable': 'Similarity to %s %s:%s' % (
-            REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
+                REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
             'ReadableContentsFormat': formats['markdown'],
             'Contents': max_score,
             'ContentsFormat': formats['text']
         }
-        ec = {}
-        ec['DBotScore'] = {
+        ec = {'DBotScore': {
             'Indicator': ssdeep_value,
             'Type': 'ssdeep',
             'Vendor': 'DBot',
             'Score': max_score
-        }
+        }}
         entry['EntryContext'] = ec
         demisto.results(entry)
     else:
