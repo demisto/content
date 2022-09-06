@@ -22,7 +22,7 @@ def test_extract_indicators(mocker):
             Validate the right output returns.
         """
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    args = {'maxFileSize': 1024 ** 2}
+    args = {}
     results = extract_indicators_from_file(args)
     assert {'Contents': '1.1.1.1', 'ContentsFormat': 'text', 'HumanReadable': '1.1.1.1', 'Type': 1} == results
 
