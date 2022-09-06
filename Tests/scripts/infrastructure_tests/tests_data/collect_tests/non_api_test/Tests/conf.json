@@ -2,7 +2,8 @@
   "tests": [
     {
       "playbookID": "myTestPlaybook",
-      "non_api": true
+      "integrations": "myIntegration",
+      "is_api": false
     }
   ],
   "skipped_tests": {},

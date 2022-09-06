@@ -16,8 +16,10 @@ class TestConfItem(DictBased):
         return to_tuple(self.get('integrations', (), warn_if_missing=False))
 
     @property
-    def non_api(self):
-        return self.get('non_api', False, warn_if_missing=False)
+    def is_api(self):
+        # if there are no integrations- the test playbook is for a script and by default doesn't use api
+        default_value = bool(self.integrations)
+        return self.get('is_api', default_value, warn_if_missing=False)
 
     @property
     def scripts(self) -> tuple[str, ...]:
@@ -64,7 +66,7 @@ class TestConf(DictFileBased):
             for test in self.tests if test.incoming_mapper
         }
 
-        self.non_api_tests = [test.playbook_id for test in self.tests if test.non_api]
+        self.non_api_tests = [test.playbook_id for test in self.tests if not test.is_api]
 
     def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
         result = defaultdict(list)
