@@ -15,7 +15,8 @@ def test_extract_indicators(mocker):
         """
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {'path': './test_data/test_file.txt'}}])
     results = read_file({})
-    assert results == {'Type': 1, 'ContentsFormat': 'text', 'Contents': {'FileData': 'abcabcabc'}, 'HumanReadable': 'Read 9 bytes from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
+    assert results == {'Type': 1, 'ContentsFormat': 'text', 'Contents': {'FileData': 'abcabcabc'},
+                       'HumanReadable': 'Read 9 bytes from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
 
 
 def test_extract_indicators_empty_file(mocker):
