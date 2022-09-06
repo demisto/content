@@ -1,8 +1,5 @@
-import pytest
-from pytest import raises
 import os
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import DemistoException
 
 os.environ["HTTP_PROXY"] = "test"
 os.environ["HTTPS_PROXY"] = "test"
@@ -50,12 +47,12 @@ def test_get_with_limit_list(mocker):
 
 
 DICT_MOCK = {
-        'Country': 'IL',
-        'event_timestamp': '2022-03-02T10: 06: 09Z',
-        'identity_display_name': 'paanalyticstest',
-        'ip': 'ip',
-        'location': '32.0123, 34.7705'
-    }
+    'Country': 'IL',
+    'event_timestamp': '2022-03-02T10: 06: 09Z',
+    'identity_display_name': 'paanalyticstest',
+    'ip': 'ip',
+    'location': '32.0123, 34.7705'
+}
 
 
 def test_get_with_limit_dict(mocker):

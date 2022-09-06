@@ -1098,7 +1098,7 @@ def get_analysis_process():
 
 def main():
     if demisto.command() == 'test-module':
-        request = req('GET', USER_API + 'session/whoami')
+        req('GET', USER_API + 'session/whoami')
         demisto.results('ok')
     elif demisto.command() == 'threat-grid-download-sample-by-id':
         download_sample()
