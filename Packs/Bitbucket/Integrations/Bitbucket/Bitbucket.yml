@@ -569,18 +569,6 @@ script:
         - contextPath: Bitbucket.Commit.parents.links
           description: 'Links with information about the parents.'
           type: String
-        - contextPath: Bitbucket.Commit.rendered.message.type
-          description: ''
-          type: String
-        - contextPath: Bitbucket.Commit.rendered.message.raw
-          description: ''
-          type: String
-        - contextPath: Bitbucket.Commit.rendered.message.markup
-          description: ''
-          type: String
-        - contextPath: Bitbucket.Commit.rendered.message.html
-          description: ''
-          type: String
         - contextPath: Bitbucket.Commit.repository.type
           description: 'The type of the repository.'
           type: String
@@ -621,6 +609,16 @@ script:
         - name: author_email
           required: false
           description: The email of the author of the file.
+          isArray: false
+    - name: bitbucket-raw-file-get
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: file_path
+          required: true
+          description: The path of the needed file.
           isArray: false
   isfetch: false
   runonce: false

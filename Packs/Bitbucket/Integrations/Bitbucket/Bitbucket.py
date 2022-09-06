@@ -123,7 +123,8 @@ class Client(BaseClient):
             url = url + f'{action}={branch}&'
         return url[:-1]
 
-    def commit_list_request(self, repo: str, params: Dict, excluded_list: list, included_list: list) -> Dict:
+    def commit_list_request(self, repo: str, params: Dict, excluded_list: list = None,
+                            included_list: list = None) -> Dict:
         if repo:
             url_suffix = f'/repositories/rotemamit/{repo}/commits'
         else:
@@ -139,7 +140,7 @@ class Client(BaseClient):
                                       params=params)
         return response
 
-    def file_delete_request(self, body: Dict, repo: str = None):
+    def file_delete_request(self, body: Dict, repo: str = None) -> Dict:
         if repo:
             url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         else:
@@ -150,6 +151,14 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   data=body,
                                   resp_type='response')
+
+    def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
+        else:
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src/{commit_hash}/{file_path}'
+        return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -428,6 +437,26 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
         return CommandResults(readable_output=response)
 
 
+def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    file_path = args.get('file_path', None)
+    params = {
+        'path': file_path
+    }
+    commit_list = client.commit_list_request(repo=repo, params=params)
+
+    if len(commit_list.get('values')) == 0:
+        return CommandResults(readable_output=f'The file {file_path} does not exist')
+
+    commit_hash = commit_list.get('values')[0].get('hash')
+    response = client.raw_file_get_request(repo, file_path, commit_hash)
+
+    if response.status_code == 200:
+        return CommandResults(readable_output=f'The file {file_path} content is: {response.text}')
+    else:
+        return CommandResults(readable_output='The command failed.')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -485,6 +514,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-file-delete':
             result = file_delete_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-raw-file-get':
+            result = raw_file_get_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
