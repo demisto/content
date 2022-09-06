@@ -35,7 +35,7 @@ def main():
         Adding the arguments fields to the issueJson field.
         """
         extraIssueArgs = {key: value for key, value in demisto.args().items() if key not in DEFUALT_ARGS}
-        createIssueArgs.get['issueJson'] = json.dumps(extraIssueArgs)
+        createIssueArgs['issueJson'] = json.dumps(extraIssueArgs)
 
         """
         Executing the command
