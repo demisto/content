@@ -631,7 +631,7 @@ def describe_security_groups_command(args, aws_client):
         output = json.dumps(response['SecurityGroups'], cls=DatetimeEncoder)
         raw = json.loads(output)
         raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)': raw}
     human_readable = tableToMarkdown('AWS EC2 SecurityGroups', data)
@@ -3161,9 +3161,9 @@ def main():
             release_hosts_command(args, aws_client)
 
     except Exception as e:
-        LOG(e.message)
+        LOG(e)
         return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
-            code=type(e), message=e.message))
+            code=type(e), message=e))
 
 
 from AWSApiModule import *  # noqa: E402
