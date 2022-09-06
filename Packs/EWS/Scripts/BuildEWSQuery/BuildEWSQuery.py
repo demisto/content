@@ -1,11 +1,6 @@
 import re
-import sys
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-reload(sys)
-sys.setdefaultencoding("utf-8")    # pylint: disable=E1101
 
 # Regex for removing forward/replay prefixes
 p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
