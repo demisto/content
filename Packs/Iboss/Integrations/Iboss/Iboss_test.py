@@ -214,8 +214,8 @@ def test_add_entity_to_policy_layer_list(requests_mock, mocker):
 
     result = add_entity_to_policy_layer_list_command(client, args=args)
 
-    assert len(result) == 1
-    assert result[0].outputs.get("message") == "domain1.com successfully added to policy layer `Test Policy Layer`."
+    assert len(result.outputs) == 1
+    assert result.outputs[0].get("message") == "domain1.com successfully added to policy layer `Test Policy Layer`."
 
 
 def test_remove_entity_from_policy_layer_list(requests_mock, mocker):
@@ -266,8 +266,8 @@ def test_remove_entity_from_policy_layer_list(requests_mock, mocker):
 
     result = remove_entity_from_policy_layer_list_command(client, args=args)
 
-    assert len(result) == 1
-    assert result[0].outputs.get("message") == "domain1.com removed from policy layer `Test Policy Layer`."
+    assert len(result.outputs) == 1
+    assert result.outputs[0].get("message") == "domain1.com removed from policy layer `Test Policy Layer`."
 
 
 def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):

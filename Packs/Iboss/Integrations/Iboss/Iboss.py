@@ -1693,7 +1693,7 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
         if 'No changes made to list' in message:
             result["message"] = f'{url} is already in policy layer `{policy_layer_name}` and covers ' \
                                 f'the domain entry being added. No changes made to list. '
-        elif "Success" in message:
+        elif "success" in message.lower():
             result["message"] = f'{url} successfully added to policy layer `{policy_layer_name}`.'
 
         # Update entity if upsert is enabled and entity already exists in policy layer
@@ -1774,7 +1774,7 @@ def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str,
 
         # Update with friendlier message when user attempts to remove entry that is not present on list
         message = result.get('message', '')
-        if result.get("errorCode", -1) == 0 and message == "Failed to remove URL.":
+        if result.get("errorCode", -1) == 0 and "failed to remove" in message.lower():
             result["message"] = f"{url} not found in policy layer `{policy_layer_name}`."
         elif "success" in message:
             result["message"] = f"{url} removed from policy layer `{policy_layer_name}`."
