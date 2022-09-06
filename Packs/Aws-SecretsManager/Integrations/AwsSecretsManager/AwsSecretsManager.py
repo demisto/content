@@ -92,12 +92,19 @@ def aws_secrets_manager_secret_value_get_command(client: Client, args: Dict[str,
 
     if args.get('secret_id'):
         kwargs['SecretId'] = args.get('secret_id')
+    else:
+        return_error('Get command cannot be executed without "secret_id" param')
+
     if args.get('version_id'):
         kwargs['VersionId'] = args.get('version_id')
     if args.get('version_stage'):
         kwargs['VersionStage'] = args.get('version_stage')
 
     response = client.get_secret_value(**kwargs)
+
+    if not response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_error(f'Get command encountered an issue, got unexpected result! {response["ResponseMetadata"]}')
+
 
     readable_output = {'Name': secret.get('Name', ''),
                        'ARN': secret.get('ARN', ''),
@@ -196,7 +203,7 @@ def fetch_credentials(client: Client, args: Dict[str, Any]) -> CommandResults:
             demisto.debug(f"Could not fetch credentials: {args.get('secret_id')}. Error: {e}")
     else:
         for secret in client.list_secrets()['SecretList']:
-            creds_dict[args.get('secret_id')] = client.get_secret_value(SecretId=args.get('secret_id'))
+            creds_dict[secret.get('secret_id')] = client.get_secret_value(SecretId=secret.get('secret_id'))
 
     credentials = []
     for cred_key in creds_dict.keys():
