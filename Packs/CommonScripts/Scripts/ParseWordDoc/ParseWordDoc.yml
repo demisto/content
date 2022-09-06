@@ -15,7 +15,7 @@ args:
   default: true
   description: Docx file to parse
 scripttarget: 0
-dockerimage: devdemisto/docxpy:1.0.0.33675
+dockerimage: demisto/docxpy:1.0.0.33689
 fromversion: 5.0.0
 tests:
   - ParseWordDoc-Test
