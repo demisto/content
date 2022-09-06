@@ -11,17 +11,10 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
-# if not demisto.params()['proxy']:
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
-
-BASE_URL = demisto.params().get('url')
-API_KEY = demisto.params().get('apikey')
-API_SECRET = demisto.params().get('apisecret')
-VERIFY_SSL = not demisto.params().get('unsecure', False)
+BASE_URL = None
+API_KEY = None
+API_SECRET = None
+VERIFY_SSL = None
 
 
 def gen_hmac(method, timestamp, api_key, api_secret):
@@ -63,7 +56,7 @@ def http_request(method, url, hmac_url, params={}, data=None):
 
     try:
         res.json()
-    except:
+    except Exception:
         return_error('Response failed, the response body is not json.\nURL: {}\nStatusCode: {}\nResponse: \n{}'.format(
             fullurl, res.status_code, res.text))
 
@@ -91,12 +84,12 @@ def query_infected_host_data(days_ago=None, limit=None, token=None, q_address=No
     return res.json()
 
 
-def query_infected_host_data_command():
-    days_ago = demisto.args().get('days_ago')
-    limit = demisto.args().get('limit')
-    token = demisto.args().get('token')
-    q_address = demisto.args().get('q_address')
-    cc_ipaddress = demisto.args().get('cc_ipaddress')
+def query_infected_host_data_command(args):
+    days_ago = args.get('days_ago')
+    limit = args.get('limit')
+    token = args.get('token')
+    q_address = args.get('q_address')
+    cc_ipaddress = args.get('cc_ipaddress')
 
     infected_hosts = query_infected_host_data(days_ago, limit, token, q_address, cc_ipaddress)
     markdown = tableToMarkdown('Infected hosts', infected_hosts.get('hosts'))
@@ -124,9 +117,9 @@ def query_elasticsearch(max_rows, query):
     return res.json()
 
 
-def query_elasticsearch_command():
-    max_rows = int(demisto.args().get('max_rows', 10))
-    query = demisto.args().get('query')
+def query_elasticsearch_command(args):
+    max_rows = int(args.get('max_rows', 10))
+    query = args.get('query')
 
     results = query_elasticsearch(max_rows, query)
     if len(results.get('results')) == 0:
@@ -161,10 +154,10 @@ def search(query, days_ago, exact_match):
     return res.json()
 
 
-def search_command():
-    days_ago = demisto.args().get('days_ago')
-    query = demisto.args().get('query')
-    exact_match = demisto.args().get('exact_match')
+def search_command(args):
+    days_ago = args.get('days_ago')
+    query = args.get('query')
+    exact_match = args.get('exact_match')
 
     results = search(query, days_ago, exact_match)
     if len(results.get('results')) == 0:
@@ -204,11 +197,11 @@ def get_vulnerable_host_data(limit, q_address, q_mask, q_type, re_token=None):
     return res.json()
 
 
-def get_vulnerable_host_data_command():
-    limit = int(demisto.args().get('limit', 100))
-    q_address = demisto.args().get('q_address')
-    q_mask = demisto.args().get('q_mask')
-    q_type = demisto.args().get('q_type')
+def get_vulnerable_host_data_command(args):
+    limit = int(args.get('limit', 100))
+    q_address = args.get('q_address')
+    q_mask = args.get('q_mask')
+    q_type = args.get('q_type')
 
     raw_host_data = get_vulnerable_host_data(limit, q_address, q_mask, q_type)
     if len(raw_host_data.get('hosts')) == 0:
@@ -252,12 +245,12 @@ def search_leaks(leak_id, days_ago, keyword, limit, token=None):
     return res.json()
 
 
-def search_leaks_command():
-    leak_id = demisto.args().get('leak_id')
-    days_ago = demisto.args().get('days_ago')
-    keyword = demisto.args().get('keyword')
-    limit = int(demisto.args().get('limit', 20))
-    token = demisto.args().get('token')
+def search_leaks_command(args):
+    leak_id = args.get('leak_id')
+    days_ago = args.get('days_ago')
+    keyword = args.get('keyword')
+    limit = int(args.get('limit', 20))
+    token = args.get('token')
 
     raw_list_leaks = search_leaks(leak_id, days_ago, keyword, limit, token)
     markdown = tableToMarkdown('List of leaks', raw_list_leaks.get('leaks'), [
@@ -308,11 +301,11 @@ def get_leak(leak_id, limit, domains, token):
     return res.json()
 
 
-def get_leak_command():
-    leak_id = demisto.args().get('leak_id')
-    domains = demisto.args().get('domains')
-    token = demisto.args().get('token')
-    limit = int(demisto.args().get('limit', 20))
+def get_leak_command(args):
+    leak_id = args.get('leak_id')
+    domains = args.get('domains')
+    token = args.get('token')
+    limit = int(args.get('limit', 20))
 
     leak = get_leak(leak_id, limit, domains, token)
     if not leak and len(leak.get('accounts')) == 0:
@@ -365,12 +358,12 @@ def query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_t
     return res.json()
 
 
-def query_ecrime_intelligence_database_command():
-    query = demisto.args().get('query')
-    q_forum = demisto.args().get('q_forum')
-    q_start_data = demisto.args().get('q_start_data')
-    limit = int(demisto.args().get('limit', 10))
-    re_token = demisto.args().get('re_token')
+def query_ecrime_intelligence_database_command(args):
+    query = args.get('query')
+    q_forum = args.get('q_forum')
+    q_start_data = args.get('q_start_data')
+    limit = int(args.get('limit', 10))
+    re_token = args.get('re_token')
 
     results = query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token)
     posts = results.get('posts')
@@ -423,10 +416,10 @@ def query_accounts(account_identifier, limit, days_ago):
     return res.json()
 
 
-def query_accounts_command():
-    emails = argToList(demisto.args().get('emails'))
-    days_ago = demisto.args().get('days_ago')
-    limit = demisto.args().get('limit')
+def query_accounts_command(args):
+    emails = argToList(args.get('emails'))
+    days_ago = args.get('days_ago')
+    limit = args.get('limit')
 
     results = query_accounts(emails, limit, days_ago)
     accounts = results.get('results')
@@ -460,7 +453,7 @@ def domain_info(domain_identifier, subdomains, days_ago):
     if not domain_info:
         return []
 
-    if isinstance(domain_info) != list:
+    if not isinstance(domain_info, list):
         # if it single object then return an array
         return [domain_info]
 
@@ -480,11 +473,11 @@ def query_domains(domain, days_ago, limit, token=None):
     return domains
 
 
-def query_domains_command():
-    domain = demisto.args().get('domain')
-    limit = int(demisto.args().get('limit', 20))
-    days_ago = demisto.args().get('days_ago')
-    token = demisto.args().get('token')
+def query_domains_command(args):
+    domain = args.get('domain')
+    limit = int(args.get('limit', 20))
+    days_ago = args.get('days_ago')
+    token = args.get('token')
 
     query_results = query_domains(domain, days_ago, limit, token)
     accounts = query_results.get('accounts')
@@ -545,13 +538,13 @@ def watchlist_add_accounts(account_identifiers, _type, tag):
     return result
 
 
-def watchlist_add_accounts_command():
-    account_identifiers = demisto.args().get('account_identifiers')
+def watchlist_add_accounts_command(args):
+    account_identifiers = args.get('account_identifiers')
     if isinstance(account_identifiers, basestring):
         account_identifiers = account_identifiers.split(',')
 
-    _type = demisto.args().get('type')
-    tag = demisto.args().get('tag')
+    _type = args.get('type')
+    tag = args.get('tag')
 
     result = watchlist_add_accounts(account_identifiers, _type, tag)
     markdown = ''
@@ -587,8 +580,8 @@ def watchlist_remove_accounts(account_identifiers):
     return result
 
 
-def watchlist_remove_accounts_command():
-    account_identifiers = demisto.args().get('account_identifiers')
+def watchlist_remove_accounts_command(args):
+    account_identifiers = args.get('account_identifiers')
     if isinstance(account_identifiers, basestring):
         account_identifiers = account_identifiers.split(',')
 
@@ -622,9 +615,9 @@ def get_watchlist_accounts(limit, token=None):
     return reports
 
 
-def get_watchlist_accounts_command():
-    limit = int(demisto.args().get('limit', 20))
-    token = demisto.args().get('token')
+def get_watchlist_accounts_command(args):
+    limit = int(args.get('limit', 20))
+    token = args.get('token')
 
     watchlist = get_watchlist_accounts(limit, token)
     markdown = tableToMarkdown('Watchlist', watchlist.get('identifiers'))
@@ -667,8 +660,20 @@ def main():  # pragma: no coverage
     """
     main function, parses params and runs command functions
     """
+    global BASE_URL, API_KEY, API_SECRET, VERIFY_SSL
 
-    if demisto.command() == 'test-module':
+    command = demisto.command()
+    args = demisto.args()
+    params = demisto.params()
+
+    handle_proxy()
+
+    BASE_URL = params.get('url')
+    API_KEY = params.get('apikey')
+    API_SECRET = params.get('apisecret')
+    VERIFY_SSL = not params.get('unsecure', False)
+
+    if command == 'test-module':
         query_infected_host_data(
             days_ago=0,
             q_address='8.8.8.8',
@@ -679,59 +684,59 @@ def main():  # pragma: no coverage
         demisto.results('ok')
         sys.exit(0)
 
-    if demisto.command() == 'vigilante-query-infected-host-data':
-        query_infected_host_data_command()
+    if command == 'vigilante-query-infected-host-data':
+        query_infected_host_data_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-query-elasticsearch':
-        query_elasticsearch_command()
+    elif command == 'vigilante-query-elasticsearch':
+        query_elasticsearch_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-search':
-        search_command()
+    elif command == 'vigilante-search':
+        search_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-get-vulnerable-host-data':
-        get_vulnerable_host_data_command()
+    elif command == 'vigilante-get-vulnerable-host-data':
+        get_vulnerable_host_data_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-search-leaks':
-        search_leaks_command()
+    elif command == 'vigilante-search-leaks':
+        search_leaks_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-get-leak':
-        get_leak_command()
+    elif command == 'vigilante-get-leak':
+        get_leak_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-query-ecrime-db':
-        query_ecrime_intelligence_database_command()
+    elif command == 'vigilante-query-ecrime-db':
+        query_ecrime_intelligence_database_command(args)
         sys.exit(0)
 
-    # elif demisto.command() == 'vigilante-list-account-credentials':
+    # elif command == 'vigilante-list-account-credentials':
     #     list_account_credentials_command()
     #     sys.exit(0)
 
-    elif demisto.command() == 'vigilante-query-accounts':
-        query_accounts_command()
+    elif command == 'vigilante-query-accounts':
+        query_accounts_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-query-domains':
-        query_domains_command()
+    elif command == 'vigilante-query-domains':
+        query_domains_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-watchlist-add-accounts':
-        watchlist_add_accounts_command()
+    elif command == 'vigilante-watchlist-add-accounts':
+        watchlist_add_accounts_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-watchlist-remove-accounts':
-        watchlist_remove_accounts_command()
+    elif command == 'vigilante-watchlist-remove-accounts':
+        watchlist_remove_accounts_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-get-watchlist':
-        get_watchlist_accounts_command()
+    elif command == 'vigilante-get-watchlist':
+        get_watchlist_accounts_command(args)
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-account-usage-info':
+    elif command == 'vigilante-account-usage-info':
         usage_info_command()
         sys.exit(0)
 

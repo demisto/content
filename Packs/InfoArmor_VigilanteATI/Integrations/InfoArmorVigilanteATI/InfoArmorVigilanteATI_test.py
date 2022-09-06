@@ -41,7 +41,7 @@ def test_query_infected_host_data_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.query_infected_host_data', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    query_infected_host_data_command()
+    query_infected_host_data_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -70,7 +70,7 @@ def test_query_elasticsearch_command(mocker, mock_response, expected_readable_ou
     mocker.patch('InfoArmorVigilanteATI.query_elasticsearch', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    query_elasticsearch_command()
+    query_elasticsearch_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -97,7 +97,7 @@ def test_search_command(mocker, mock_response, expected_readable_output, expecte
     mocker.patch('InfoArmorVigilanteATI.search', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    search_command()
+    search_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -146,9 +146,7 @@ def test_get_vulnerable_host_data_command(mocker):
                 "protocols": "udp",
                 "timestamp": "2018-03-27 08:33:42",
                 "type": "accessible port 53",
-                "url": [
-                  "quad9.net"
-                ]
+                "url": ["quad9.net"]
             }
         ]
     }
@@ -185,7 +183,7 @@ def test_get_vulnerable_host_data_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.get_vulnerable_host_data', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    get_vulnerable_host_data_command()
+    get_vulnerable_host_data_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -262,7 +260,7 @@ def test_search_leaks_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.search_leaks', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    search_leaks_command()
+    search_leaks_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -316,9 +314,8 @@ def test_get_leak_command(mocker):
 
     mocker.patch('InfoArmorVigilanteATI.get_leak', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'args', return_value={'leak_id': 'aa66573902ed4f4bfb2ae08ebac390c3'})
 
-    get_leak_command()
+    get_leak_command({'leak_id': 'aa66573902ed4f4bfb2ae08ebac390c3'})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -369,7 +366,7 @@ def test_query_ecrime_intelligence_database_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.query_ecrime_intelligence_database', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    query_ecrime_intelligence_database_command()
+    query_ecrime_intelligence_database_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -420,7 +417,7 @@ def test_query_accounts_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.query_accounts', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    query_accounts_command()
+    query_accounts_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -475,7 +472,7 @@ def test_query_domains_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.query_domains', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    query_domains_command()
+    query_domains_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -507,7 +504,7 @@ def test_watchlist_add_accounts_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.watchlist_add_accounts', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    watchlist_add_accounts_command()
+    watchlist_add_accounts_command({})
     results = demisto.results
     content = results.call_args[0][0].get('Contents')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -538,7 +535,7 @@ def test_watchlist_remove_accounts_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.watchlist_remove_accounts', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    watchlist_remove_accounts_command()
+    watchlist_remove_accounts_command({})
     results = demisto.results
     content = results.call_args[0][0].get('Contents')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -576,7 +573,7 @@ def test_get_watchlist_accounts_command(mocker):
     mocker.patch('InfoArmorVigilanteATI.get_watchlist_accounts', return_value=mock_response)
     mocker.patch.object(demisto, 'results')
 
-    get_watchlist_accounts_command()
+    get_watchlist_accounts_command({})
     results = demisto.results
     context = results.call_args[0][0].get('EntryContext')
     readable_output = results.call_args[0][0].get('HumanReadable')
@@ -615,6 +612,3 @@ def test_usage_info_command(mocker):
 
     assert expected_content == content
     assert expected_readable_output in readable_output
-
-
-
