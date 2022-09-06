@@ -1811,6 +1811,7 @@ def slack_send():
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
                  or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
+        demisto.debug(f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
