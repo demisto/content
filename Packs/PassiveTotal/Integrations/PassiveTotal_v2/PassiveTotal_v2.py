@@ -1985,8 +1985,7 @@ def ip_reputation_command(client_obj: Client, args: Dict[str, Any]) -> List[Comm
     :return: Standard command result
     """
     # Retrieve arguments
-    ips = args.get('ip', '')
-    ips = argToList(",".join([x.strip() for x in ips.split(",") if x.strip()]))
+    ips = [x.strip() for x in argToList(args.get('ip', '')) if x.strip()]
 
     # argument validation
     if len(ips) == 0:
