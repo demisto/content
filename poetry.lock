@@ -409,7 +409,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.7.3"
+version = "1.7.4"
 description = "\"A Python library for the Demisto SDK\""
 category = "main"
 optional = false
@@ -497,8 +497,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "fb5daad7f1d5011dc24c905c65b7af443e49624f"
-resolved_reference = "fb5daad7f1d5011dc24c905c65b7af443e49624f"
+reference = "85b4251422c9a6f131c0552c1aec2241a31902cb"
+resolved_reference = "85b4251422c9a6f131c0552c1aec2241a31902cb"
 
 [[package]]
 name = "deprecated"
@@ -1756,7 +1756,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "slack-sdk"
-version = "3.18.2"
+version = "3.18.3"
 description = "The Slack API Platform SDK for Python"
 category = "main"
 optional = false
@@ -2201,7 +2201,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "46d69c16fdf7a1afd92860c7a32c70869d136b81246574149f268c529379107a"
+content-hash = "c667b32b3f33a88e1f930b7e5871515b779b2eee612f7c3401c7acb1abf7a8d5"
 
 [metadata.files]
 aiohttp = [
@@ -3554,8 +3554,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 slack-sdk = [
-    {file = "slack_sdk-3.18.2-py2.py3-none-any.whl", hash = "sha256:d895fa191f2288d74cbbf20055be2f39c54397b3288c766fcd31e3f5828ef937"},
-    {file = "slack_sdk-3.18.2.tar.gz", hash = "sha256:69befeadfbfc9238e85d0641c864cd12bfb162fbdf3e8f9eef30180f171ea675"},
+    {file = "slack_sdk-3.18.3-py2.py3-none-any.whl", hash = "sha256:d28a661a7fde37c1763e594be19899a51e76ce7c480172c9cf22e217a72731c3"},
+    {file = "slack_sdk-3.18.3.tar.gz", hash = "sha256:1bac09ed465bf9a0a120afce495b328969af7f032fe38cacbadace3dc1e49709"},
 ]
 slackclient = [
     {file = "slackclient-2.9.4-py2.py3-none-any.whl", hash = "sha256:a8cab9146795e23d66a03473b80dd23df8c500829dfa9d06b3e3d5aec0a2b293"},
