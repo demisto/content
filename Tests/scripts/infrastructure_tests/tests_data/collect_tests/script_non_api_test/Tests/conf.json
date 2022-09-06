@@ -1,19 +1,16 @@
 {
   "tests": [
     {
-      "playbookID": "myTestPlaybook",
-      "integrations": "myIntegration"
+      "playbookID": "myTestPlaybook"
     },
     {
       "playbookID": "myOtherTestPlaybook",
-      "integrations": "myOtherIntegration"
+      "is_api": true
     }
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
-  "nightly_packs": [
-    "myPack"
-  ],
+  "nightly_packs": [],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

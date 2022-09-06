@@ -1,26 +1,6 @@
 {
   "scripts": [],
   "integrations": [
-    {
-      "myIntegration": {
-        "name": "myIntegration",
-        "file_path": "Packs/myPack/Integrations/myIntegration/myIntegration.yml",
-        "pack": "myPack",
-        "tests": [
-          "myTestPlaybook"
-        ]
-      }
-    },
-    {
-      "myOtherIntegration": {
-        "name": "myOtherIntegration",
-        "file_path": "Packs/myOtherPack/Integrations/myOtherIntegration/myOtherIntegration.yml",
-        "pack": "myOtherPack",
-        "tests": [
-          "myOtherTestPlaybook"
-        ]
-      }
-    }
   ],
   "TestPlaybooks": [
     {
