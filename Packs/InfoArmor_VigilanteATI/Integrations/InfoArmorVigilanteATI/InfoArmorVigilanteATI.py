@@ -669,8 +669,8 @@ def main():  # pragma: no coverage
     handle_proxy()
 
     BASE_URL = params.get('url')
-    API_KEY = params.get('apikey')
-    API_SECRET = params.get('apisecret')
+    API_KEY = (params.get('apikey_new') or {}).get('password', '') or params.get('apikey')
+    API_SECRET = (params.get('apisecret_new') or {}).get('password', '') or params.get('apisecret')
     VERIFY_SSL = not params.get('unsecure', False)
 
     if command == 'test-module':
@@ -711,10 +711,6 @@ def main():  # pragma: no coverage
     elif command == 'vigilante-query-ecrime-db':
         query_ecrime_intelligence_database_command(args)
         sys.exit(0)
-
-    # elif command == 'vigilante-list-account-credentials':
-    #     list_account_credentials_command()
-    #     sys.exit(0)
 
     elif command == 'vigilante-query-accounts':
         query_accounts_command(args)
