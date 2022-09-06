@@ -1,0 +1,23 @@
+import pytest
+import demistomock as demisto
+
+
+def test_filter_events(mocker):
+    """
+    Given:
+        - The script args.
+
+    When:
+        - Running the search_incidents function.
+
+    Then:
+        - Validating the outputs as expected.
+        - Validating the filtered args that was sent to the api is as expected.
+    """
+    from SetTime import set_time
+    mocker.patch.object(demisto, 'args', return_value={'fieldName': 'field'})
+    mocker.patch.object(demisto, 'setContext')
+    execute_mock = mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(demisto, 'results')
+    set_time()
+    assert execute_mock.call_count == 1
