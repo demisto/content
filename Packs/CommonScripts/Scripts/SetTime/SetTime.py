@@ -10,7 +10,7 @@ def set_time():
 
     # Example format: '2018-02-02T22:58:21+02:00'
 
-    demisto.log('[*] ' + fieldName + ' <- ' + now)
+    demisto.debug('[*] ' + fieldName + ' <- ' + now)
 
     demisto.setContext(fieldName, now)
 
