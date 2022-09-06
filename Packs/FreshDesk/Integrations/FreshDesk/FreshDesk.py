@@ -395,7 +395,7 @@ def ticket_to_incident(ticket):
     """
     incident = {}
     # Incident Title
-    subject = ticket.get('subject', '').encode('ascii', 'replace')
+    subject = ticket.get('subject', '').encode('ascii', 'replace').decode("utf-8")
     incident['name'] = 'Freshdesk Ticket: "{}"'.format(subject)
     # Incident update time - the ticket's update time - The API does not support filtering tickets by creation time
     # but only by update time. The update time will be the creation time of the incidents and the incident id check will
