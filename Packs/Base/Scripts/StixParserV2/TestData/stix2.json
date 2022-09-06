@@ -1,0 +1,219 @@
+{
+  "id": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031",
+  "type": "bundle",
+  "spec_version": "2.0",
+  "objects": [
+    {
+      "created": "2019-05-26T16:18:51.000Z",
+      "id": "indicator--79ee7269-2c80-4bed-9349-841e8698c5f3",
+      "labels": [
+        "username"
+      ],
+      "modified": "2019-05-26T16:18:51.000Z",
+      "pattern": "[user-account:account_login = 'krbtgt']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.771225Z"
+    },
+    {
+      "created": "2019-05-26T16:18:32.000Z",
+      "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
+      "labels": [
+        "url"
+      ],
+      "modified": "2019-05-26T16:18:32.000Z",
+      "pattern": "[url:value = 'http://demisto.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.837119Z"
+    },
+    {
+      "created": "2019-05-26T16:12:18.000Z",
+      "id": "indicator--8be84046-032a-4556-be39-940a06440d81",
+      "labels": [
+        "file md5"
+      ],
+      "modified": "2019-05-26T16:12:18.000Z",
+      "pattern": "[file:hashes.md5 = '4e0daff2b6a2db421e79fb64228943be']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.83887Z"
+    },
+    {
+      "created": "2019-05-26T16:11:08.000Z",
+      "id": "indicator--7ed80192-4b84-4954-8b41-6268290cd5c7",
+      "labels": [
+        "email"
+      ],
+      "modified": "2019-05-26T16:11:08.000Z",
+      "pattern": "[email-message:sender_ref.value = 'user@example.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.840274Z"
+    },
+    {
+      "created": "2019-05-26T16:10:49.000Z",
+      "id": "indicator--62662049-2a64-4961-b493-4c932633a72f",
+      "labels": [
+        "domain"
+      ],
+      "modified": "2019-05-26T16:10:49.000Z",
+      "pattern": "[domain-name:value = 'demisto.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.841314Z"
+    },
+    {
+      "created": "2019-05-28T16:38:17.845Z",
+      "description": "cve cvss score",
+      "external_references": [
+        {
+          "external_id": "CVE-2019-7312",
+          "source_name": "cve"
+        }
+      ],
+      "id": "vulnerability--5dce91b8-1d56-4f0a-8808-b07b0a3a9813",
+      "labels": [
+        "cve cvss score"
+      ],
+      "modified": "2019-05-28T16:38:17.845Z",
+      "name": "CVE-2019-7312",
+      "type": "vulnerability"
+    },
+    {
+      "created": "2019-05-26T16:18:03.000Z",
+      "id": "indicator--c38d5378-ff87-4412-aa05-9d0c72f5bdcf",
+      "labels": [
+        "ssdeep"
+      ],
+      "modified": "2019-05-26T16:18:03.000Z",
+      "pattern": "[file:hashes.ssdeep = '384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.847309Z"
+    },
+    {
+      "created": "2019-05-26T16:17:43.000Z",
+      "id": "indicator--35372915-0109-406b-9e5b-b375dd843df7",
+      "labels": [
+        "registry path reputation"
+      ],
+      "modified": "2019-05-26T16:17:43.000Z",
+      "pattern": "[windows-registry-key:key = 'HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.848778Z"
+    },
+    {
+      "created": "2019-05-26T16:17:08.000Z",
+      "id": "indicator--cc6f097d-651d-462f-a4cf-a6065cfa2f26",
+      "labels": [
+        "ipv4"
+      ],
+      "modified": "2019-05-26T16:17:08.000Z",
+      "pattern": "[ipv4-addr:value = '9.9.9.9']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.850114Z"
+    },
+    {
+      "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-1337-0000-1337-ce716d3e2ad7",
+      "labels": [
+        "ipv6"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv6:value = '2001:0db8:85a3:0000:0000:8a2e:0370:7334']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    {
+      "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-1337-1337-1337-ce716d3e2ad7",
+      "labels": [
+        "ipv6"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv6-addr:value = '2001:0db8:85a3:1337:0000:8a2e:0370:7334']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    {
+      "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-29c9-4cb1-9ee8-ce716d3e2ad7",
+      "labels": [
+        "ip"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv4-addr:value = '8.3.3.3']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    {
+      "created": "2019-05-26T16:15:44.000Z",
+      "id": "indicator--620f36bc-ab89-484d-8ff0-51dbd4cfe4b9",
+      "labels": [
+        "hostname"
+      ],
+      "modified": "2019-05-26T16:15:44.000Z",
+      "pattern": "[domain-name:value = 'ip-8-8-8-8']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.853086Z"
+    },
+    {
+      "created": "2019-05-26T16:15:14.000Z",
+      "id": "indicator--b484b083-a85e-49e0-84e4-d0ab13edeca5",
+      "labels": [
+        "file sha-256 v2"
+      ],
+      "modified": "2019-05-26T16:15:14.000Z",
+      "pattern": "[file:hashes.sha256 = '115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.854465Z"
+    },
+    {
+      "created": "2019-05-26T16:13:33.000Z",
+      "id": "indicator--af539811-9383-4cdb-9a44-4a8985525302",
+      "labels": [
+        "file sha-256"
+      ],
+      "modified": "2019-05-26T16:13:33.000Z",
+      "pattern": "[file:hashes.sha256 = 'd76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.857271Z"
+    },
+    {
+      "created": "2019-05-26T16:13:00.000Z",
+      "id": "indicator--454c5435-fa71-4cf8-bcba-1336dbc20600",
+      "labels": [
+        "file sha-1"
+      ],
+      "modified": "2019-05-26T16:13:00.000Z",
+      "pattern": "[file:hashes.sha1 = 'd7a10a4b3fd245dc44c1bb143d1a7f12816cdef7']",
+      "score": "Medium",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.858716Z"
+    }
+  ]
+}
