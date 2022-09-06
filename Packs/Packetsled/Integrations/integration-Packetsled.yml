@@ -693,7 +693,7 @@ script:
             if response.status_code == 200:
                 demisto.results(fileResult(query,response.content))
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: packetsled-get-incidents
     arguments:
@@ -1217,7 +1217,7 @@ script:
       description: The respondant of the Events
     description: Get all of the events for a given uid
   isfetch: true
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No test
 fromversion: 5.0.0
