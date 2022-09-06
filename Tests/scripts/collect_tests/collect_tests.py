@@ -269,7 +269,7 @@ class TestCollector(ABC):
 
         for test_id in test_ids:
             if not (test_object := self.conf.get_test(test_id)):
-                # todo prevent this case, see https://jira-hq.paloaltonetworks.local/browse/CIAC-4006
+                # todo prevent this case, see CIAC-4006
                 continue
 
             for integration in test_object.integrations:
@@ -468,7 +468,7 @@ class BranchTestCollector(TestCollector):
                     tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    # todo fix in https://jira-hq.paloaltonetworks.local/browse/CIAC-4006
+                    # todo fix in CIAC-4006
                     logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
                     tests = ()
 

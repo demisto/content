@@ -72,6 +72,6 @@ class TestConf(DictFileBased):
         try:
             return self.test_id_to_test[test_id]
         except KeyError:
-            # todo fix https://jira-hq.paloaltonetworks.local/browse/CIAC-4006
+            # todo fix CIAC-4006
             logger.warning(f'test {test_id} is missing from conf.json, under `tests`')
             return None
