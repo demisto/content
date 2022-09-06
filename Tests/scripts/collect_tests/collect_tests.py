@@ -311,15 +311,20 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     def validate_content_item_compatibility(self, content_item: ContentItem) -> None:
-        self.__validate_support_level_is_xsoar(content_item.pack_id, content_item.version_range)
+        # exception order matters: the marketplace compatibility is more important
+        # than the support level validation (which is sometimes ignored)
         self.__validate_marketplace_compatibility(content_item.marketplaces, content_item.path)
+        self.__validate_support_level_is_xsoar(content_item.pack_id, content_item.version_range)
 
     def validate_id_set_item_compatibility(self, id_set_item: IdSetItem) -> None:
+        # exception order matters: the marketplace compatibility is more important
+        # than the support level validation (which is sometimes ignored)
+
         # id_set_item objects may not have pack_id or path
         if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
-        self.__validate_support_level_is_xsoar(pack_id, id_set_item.version_range)
         self.__validate_marketplace_compatibility(id_set_item.marketplaces, id_set_item.path)
+        self.__validate_support_level_is_xsoar(pack_id, id_set_item.version_range)
 
     def _collect_pack(
             self,
