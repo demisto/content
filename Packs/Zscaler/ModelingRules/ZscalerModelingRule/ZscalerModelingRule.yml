@@ -4,4 +4,4 @@ name: Zscaler Internet Access Modeling Rule
 rules: ''
 schema: ''
 tags: Zscaler Internet Access
-toversion: 6.8.9
+toversion: 6.9.9

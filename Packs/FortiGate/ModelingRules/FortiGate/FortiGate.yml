@@ -4,4 +4,4 @@ name: Fortinet FortiGate Modeling Rule
 rules: ''
 schema: ''
 tags: FortinetFortiGate
-toversion: 6.8.9
+toversion: 6.9.9

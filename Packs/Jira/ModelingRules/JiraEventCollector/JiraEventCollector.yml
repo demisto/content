@@ -3,4 +3,4 @@ id: JiraEventCollector
 name: JiraEventCollector
 rules: ''
 schema: ''
-toversion: 6.8.9
+toversion: 6.9.9
