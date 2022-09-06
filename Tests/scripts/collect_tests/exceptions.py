@@ -21,8 +21,9 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'pack support level is not XSOAR')
+    def __init__(self, pack_name: str, support_level: str):
+        self.support_level = support_level
+        super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 
 class DeprecatedPackException(UnsupportedPackException):
@@ -72,6 +73,11 @@ class NothingToCollectException(Exception):
 
     def __str__(self):
         return self.message
+
+
+class NonXSIAMContentException(NothingToCollectException):
+    def __init__(self, content_path: Path):
+        super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
 
 
 class InvalidTestException(Exception):
