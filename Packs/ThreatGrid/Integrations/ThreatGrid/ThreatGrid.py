@@ -111,7 +111,7 @@ def get_with_limit(obj, path, limit=None):
         if limit:
             if len(res) > limit:
                 if isinstance(res, dict):
-                    return {k: res[k] for k in res.keys()[:limit]}
+                    return {k: res[k] for k in list(res.keys())[:limit]}
                 elif isinstance(res, list):
                     return res[:limit]
     # If res has no len, or if not a list or a dictionary return res
@@ -698,7 +698,7 @@ def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process
         'Stream': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
                                                          full_extraction=False),
         'VT': extract_vt_from_analysis_artifact(demisto.get(analysis_json, 'artifacts')),
-        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.iteritems()]
+        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.items()]
     }
 
 
@@ -809,7 +809,7 @@ def ioc_to_readable(ioc):
     }
     res = {}
     # add ioc_key_to_path_dict values to result
-    for k, v in ioc_key_to_path_dict.iteritems():
+    for k, v in ioc_key_to_path_dict.items():
         val = demisto.get(ioc, v)
         if val:
             res[k] = val
