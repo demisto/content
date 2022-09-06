@@ -107,3 +107,51 @@ def test_text_from_html_success_spanish():
     res = TextFromHTML.text_from_html(args)
 
     assert res == '\nFrase en español para revisión\n'
+
+
+def test_extract_text_from_complex_html():
+    """
+    Given
+    - html string:
+        <!DOCTYPE html>
+        <html>
+        <body>
+
+        <h2>HTML Links</h2>
+        <p>HTML links are defined with the a tag:</p>
+
+        <a href="https://www.w3schools.com">This is a link</a>
+
+        </body>
+        </html>
+
+
+
+    When
+    - extracting text from the html
+
+    Then
+    - ensure we return "This is heading 1"
+    """
+    import TextFromHTML
+
+    html = """
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>HTML Links</h2>
+<p>HTML links are defined with the a tag:</p>
+
+<a href="https://www.w3schools.com">This is a link</a>
+
+</body>
+</html>
+"""
+
+    args = {
+        'html': html
+    }
+    res = TextFromHTML.text_from_html(args)
+
+    assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link\n\n'
