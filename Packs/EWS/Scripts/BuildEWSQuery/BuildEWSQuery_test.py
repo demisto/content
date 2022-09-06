@@ -3,8 +3,11 @@ import pytest
 
 DEMISTO_ARGS: Dict = {"stripSubject": 'True',
                       "escapeColons": 'False',
-                      "searchThisWeek": 'true'}
-EXPECTED_RESULTS = ' AND Received:"this week"'
+                      "searchThisWeek": 'true',
+                      "from": "my_test_mail@test.com",
+                      "subject": "test",
+                      "body": "this is a test"}
+EXPECTED_RESULTS = 'From:"my_test_mail@test.com" AND Subject:"test" AND Body:"this is a test" AND Received:"this week"'
 
 
 @pytest.mark.parametrize('args, expected_results', [
