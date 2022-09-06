@@ -3,7 +3,9 @@ import requests
 import demistomock as demisto
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
@@ -111,7 +113,7 @@ def get_with_limit(obj, path, limit=None):
         if limit:
             if len(res) > limit:
                 if isinstance(res, dict):
-                    return {k: res[k] for k in res.keys()[:limit]}
+                    return {k: res[k] for k in list(res.keys())[:limit]}
                 elif isinstance(res, list):
                     return res[:limit]
     # If res has no len, or if not a list or a dictionary return res
