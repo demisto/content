@@ -9,12 +9,12 @@ else:
     try:
         try:
             lines = respAR[0]['Contents'][2:].decode('utf-16').encode('ascii').split('\r\n')
-        except Exception as ex:
+        except Exception:
             lines = respAR[0]['Contents'].split('\r\n')
         headers = lines[5].replace('\t', '|')
         try:
             hashCol = headers.split('|').index('MD5')
-        except ValueError as ve:
+        except ValueError:
             hashCol = -1
         mdTable = headers + '\n'
         mdTable += '|'.join('---' * len(headers.split('|'))) + '\n'
