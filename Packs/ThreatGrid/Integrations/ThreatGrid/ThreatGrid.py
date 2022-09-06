@@ -1,5 +1,6 @@
 import requests
 
+import demistomock as demisto
 from CommonServerPython import *
 
 requests.packages.urllib3.disable_warnings()
