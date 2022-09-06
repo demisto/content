@@ -29,8 +29,10 @@ DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-SUSPICOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicous_threshold', 0))
+SUSPICIOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicous_threshold', 0))
 MALICIOUS_THRESHOLD = arg_to_number(demisto.params().get('dboscore_threshold', -100))
+MAX_THRESHOLD_VALUE = 100
+MIN_THRESHOLD_VALUE = -100
 
 reliability = demisto.params().get('integrationReliability')
 reliability = reliability if reliability else DBotScoreReliability.B
@@ -106,11 +108,11 @@ IP_DNS_FEATURE_INFO = {
 ''' HELPER FUNCTIONS '''
 
 
-def verify_threshold_params(suspicions_threshold, malicious_threshold):
-    if not (100 >= suspicions_threshold > malicious_threshold >= -100):  # type: ignore
+def verify_threshold_params(suspicious_threshold, malicious_threshold):
+    if not (MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE):  # type: ignore
         return_error(
-            "Please provide valid values for the Suspicouns and Malicious Thresholds, when Suspicouns is greater than "
-            "Malicious and both of them are in range of -100 to 100"
+            "Please provide valid threshold values for the Suspicious and Malicious thresholds when Suspicious is greater than "
+            "Malicious and both are within a range of -100 to 100"
         )
 
 
@@ -193,9 +195,9 @@ def securerank_to_dbotscore(sr):
     # converts cisco umbrella score to dbotscore
     DBotScore = 0
     if sr is not None:
-        if SUSPICOUS_THRESHOLD < sr <= 100:
+        if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
             DBotScore = 1
-        elif MALICIOUS_THRESHOLD < sr <= SUSPICOUS_THRESHOLD:
+        elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD:
             DBotScore = 2
         elif sr <= MALICIOUS_THRESHOLD:
             DBotScore = 3
@@ -1881,7 +1883,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         handle_proxy()
-        verify_threshold_params(SUSPICOUS_THRESHOLD, MALICIOUS_THRESHOLD)
+        verify_threshold_params(SUSPICIOUS_THRESHOLD, MALICIOUS_THRESHOLD)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             http_request('/domains/categorization/google.com?showLabels')

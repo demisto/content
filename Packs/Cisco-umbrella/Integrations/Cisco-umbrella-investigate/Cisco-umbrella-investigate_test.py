@@ -8,8 +8,8 @@ from CommonServerPython import DBotScoreReliability
 Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
 
 
-ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid values for the Suspicouns and Malicious Thresholds, when Suspicouns is ' \
-                                 'greater than Malicious and both of them are in range of -100 to 100'
+ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid threshold values for the Suspicious and Malicious thresholds when ' \
+                                 'Suspicious is greater than Malicious and both are within a range of -100 to 100'
 
 
 @pytest.mark.parametrize('suspicous, malicious, expected_mock_result', [
@@ -21,11 +21,11 @@ ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid values for the Suspicouns
 def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicious, expected_mock_result, mocker):
     """
         Given:
-            - The suspicouns and malicious params
+            - The suspicious and malicious thresholds params
         When:
             - Running the integration
         Then:
-            - Verify suspicouns is bigger then malicious and both of them in range of -100 to 100
+            - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
     """
     mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
     Cisco_umbrella_investigate.verify_threshold_params(suspicous, malicious)

@@ -35,8 +35,8 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '0'
-  display: DBot Score Suspicous Threshold (-100 to 100)
-  name: suspicous_threshold
+  display: DBot Score Suspicious Threshold (-100 to 100)
+  name: suspicious_threshold
   required: false
   additionalinfo: Make sure the Suspicous threshold is greater than the Malicious threshold.
   type: 0  
