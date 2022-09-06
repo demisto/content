@@ -4,7 +4,7 @@ commonfields:
 name: SbQuery
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - sandblast
 comment: Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis
@@ -50,6 +50,6 @@ dependson:
   must:
   - sandblast-query
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
