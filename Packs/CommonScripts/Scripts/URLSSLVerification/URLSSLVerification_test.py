@@ -17,5 +17,5 @@ def test_is_http_should_be_suspicious(arg, expected_result):
     ('["some_url"]', ['some_url']),
     ('https://some_url.com', ['https://some_url.com'])
 ])
-def test_is_http_should_be_suspicious(arg, expected_result):
+def test_arg_to_list_with_regex(arg, expected_result):
     assert arg_to_list_with_regex(arg) == expected_result
