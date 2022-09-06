@@ -497,8 +497,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "fccb93955c870868d98489dbe37eb25ae951a602"
-resolved_reference = "fccb93955c870868d98489dbe37eb25ae951a602"
+reference = "57e0278867e878948f3f0ba2f823dffb9e150a06"
+resolved_reference = "57e0278867e878948f3f0ba2f823dffb9e150a06"
 
 [[package]]
 name = "deprecated"
@@ -734,7 +734,7 @@ tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
 
 [[package]]
 name = "google-cloud-bigquery-storage"
-version = "2.14.2"
+version = "2.15.0"
 description = "BigQuery Storage API API client library"
 category = "main"
 optional = true
@@ -2201,7 +2201,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "e3d733a9ff9cdf57eaaa779061ba3ed95fd37fcfbaf0713223c47e4d6629b156"
+content-hash = "438cb38e85bde78cafb4fa883b80ae8d661ad2bb346f7c0a4b0a7245fdc86be5"
 
 [metadata.files]
 aiohttp = [
@@ -2586,8 +2586,8 @@ google-cloud-bigquery = [
     {file = "google_cloud_bigquery-3.3.2-py2.py3-none-any.whl", hash = "sha256:c39cbd25b611b0a11f959af11164e1241d23b1ed032d2f3e7e428ce4730c20c0"},
 ]
 google-cloud-bigquery-storage = [
-    {file = "google-cloud-bigquery-storage-2.14.2.tar.gz", hash = "sha256:5540904a9ca42eec18af3833dd82263837ac44b76bd4db92ade192857dbea04c"},
-    {file = "google_cloud_bigquery_storage-2.14.2-py2.py3-none-any.whl", hash = "sha256:6f654df1016f99f8b1beb5b5b47e669554c011ce29d095084c0736c52ebb024a"},
+    {file = "google-cloud-bigquery-storage-2.15.0.tar.gz", hash = "sha256:bf483a80ae1c9842c7d5c99197d10325c784396def2a047d192676a072b3ac6d"},
+    {file = "google_cloud_bigquery_storage-2.15.0-py2.py3-none-any.whl", hash = "sha256:2b054d147dc3d7db2620d6d7dc9925dbd647d2d58a6de63fcb0eb12817626294"},
 ]
 google-cloud-core = []
 google-cloud-storage = [
