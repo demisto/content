@@ -28,4 +28,3 @@ def test_is_integration_available(mocker, expected, brand_name):
     is_integration_available(brand_name, all_instances)
     res = results_mock.call_args[0][0]
     assert expected == res
-

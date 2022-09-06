@@ -3,9 +3,10 @@ from CommonServerPython import *  # noqa: F401
 
 
 def is_integration_available(brandName, allInstances):
-    brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower(
-    ) == brandName.lower() and demisto.get(allInstances[instanceName], 'state') and allInstances[instanceName][
-                          'state'] == 'active']
+    brandInstances = [instanceName for instanceName in allInstances
+                      if allInstances[instanceName]['brand'].lower() == brandName.lower()
+                      and demisto.get(allInstances[instanceName], 'state')
+                      and allInstances[instanceName]['state'] == 'active']
     if brandInstances:
         demisto.setContext('brandInstances', brandInstances)
         demisto.results('yes')

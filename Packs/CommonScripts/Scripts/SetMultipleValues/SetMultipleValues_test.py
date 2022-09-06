@@ -21,5 +21,3 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     main()
     assert results_mock.call_args[0][0]['Contents'] == {'Test(true)': {'a': '1', 'b': '2', 'c': '3'}}
-
-

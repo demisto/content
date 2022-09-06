@@ -29,7 +29,7 @@ def test_print_context(mocker, expected_content, fmt, ctx):
 @pytest.mark.parametrize('expected_content, fmt, ctx', [
     ('**Context data**:\n```\n', 'markdown', CONTEXT_DATA),
 ])
-def test_print_context(mocker, expected_content, fmt, ctx):
+def test_print_context_markdown(mocker, expected_content, fmt, ctx):
     """
     Given:
         - The script args.

@@ -24,7 +24,7 @@ def test_mark_as_note(mocker):
         - Validating the outputs as expected.
     """
     mocker.patch.object(MarkAsNoteByTag, 'isError', return_value=False)
-    results_mock = mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getArg', return_value='test1')
     excecute_mocker = mocker.patch.object(demisto, 'executeCommand')
     mark_as_note(ENTRIES)
