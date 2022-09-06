@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 
 
-def test_filter_events(mocker):
+def test_file_reputation(mocker):
     """
     Given:
         - The script args.
