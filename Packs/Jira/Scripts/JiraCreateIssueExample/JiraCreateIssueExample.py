@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+from typing import Tuple, List, Any
 
 """
 This script is used to simplify the process of creating a new Issue in Jira.
@@ -27,21 +28,62 @@ DEFAULT_ARGS = ['summary',
                 ]
 
 
-def main():
+def add_additional_args(known: Dict[str, Any], additional: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Adds the extra arguments to the known arguments.
+    The extra arguments need to be serialized to a JSON string.
+
+    Args:
+        - `known` (`Dict[str, Any]`): A dict holding the known/expected arguments
+
+    Returns:
+        - `Dict[str, Any]` holding the full payload sent to the `jira-create-issue` script
+    """
+
+    if additional:
+        known["issueJSON"] = json.dumps(additional)
+
+    return known
+
+
+def get_known_args_from_input(input) -> Dict[str, Any]:
+    """
+    Creates a dictionary of known arguments passed into script.
+    Args:
+        - `input` (`dict_items[Tuple[str, Any]]`): A view (dict_items) of the command arguments
+    Returns:
+        - `Dict[str, Any]` representing the script arguments
+    """
+
+    return {key: value for key, value in input if key in DEFAULT_ARGS}
+
+
+def get_additional_args_from_input(input) -> Dict[str, Any]:
+    """
+    Creates a dictionary of unknown arguments passed into script.
+    Args:
+        - `input` (`dict_items[Tuple[str, Any]]`): A view (dict_items) of the command arguments
+    Returns:
+        - `Dict[str, Any]` representing the script arguments
+    """
+
+    return {key: value for key, value in input if key not in DEFAULT_ARGS}
+
+
+def main():  # pragma: no cover
     try:
-        createIssueArgs = {key: value for key, value in demisto.args().items() if key in DEFAULT_ARGS}
 
-        """
-        Adding the arguments fields to the issueJson field.
-        """
-        extraIssueArgs = {key: value for key, value in demisto.args().items() if key not in DEFAULT_ARGS}
-        createIssueArgs['issueJson'] = json.dumps(extraIssueArgs)
+        input = demisto.args().items()
 
-        """
-        Executing the command
-        """
-        createIssueResult = demisto.executeCommand("jira-create-issue", createIssueArgs)
-        return_results(createIssueResult)
+        known_args = get_known_args_from_input(input)
+        additional_args = get_additional_args_from_input(input)
+
+        # merge known and unknown into one
+        args = add_additional_args(known=known_args, additional=additional_args)
+
+        create_issue_result = demisto.executeCommand("jira-create-issue", args)
+
+        return_results(create_issue_result)
     except Exception as e:
         return_error(f'Failed to JiraCreateIssueExample command. Error: {str(e)}')
 
