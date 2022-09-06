@@ -4,79 +4,64 @@ import tempfile
 
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_services import *
-if __name__ == "__main__":
-    # New pack - check that pack and all its content items are there
-    # Armis - check its dependency is also the new pack
-    #  ZeroFox - check there is a new version and RN
-    # Box - existing RN was updated
-    # BPA - 1.0.0 rn was added
-    # Microsoft365Defender set as hidden
-    # Maltiverse - readme updated
-    # MISP - update pack ignore
-    # Trello - landing page
-    # Absolute - failing pack
-    # Alexa - modified pack TODO: verify not duplicate with zerofox
-    # AlibabaActionTrail - modify item path
-    # index checks
-    # packs check
-
-    pass
 
 
-def verify_new_pack(gcp, pack_id, pack_items):
-    # verify in index, verify version 1.0.0 exists in packs path
-    version_exists = [gcp.is_in_index(pack_id), gcp.download_and_extract_pack(pack_id, '1.0.0')]
-    items_exists = [gcp.verify_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
-    return all(version_exists) and all(items_exists)
+class BucketVerifier:
+    def __init__(self, gcp, versions_dict):
+        self.gcp = gcp
+        self.versions = versions_dict
+        self.is_valid = True
 
+    def verify_new_pack(self, pack_id, pack_items):
+        # verify in index, verify version 1.0.0 exists in packs path
+        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
+        self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
 
-def verify_new_version(gcp, pack_id, version, rn):
-    # check: RN, new version exists
-    new_version_exists = gcp.download_and_extract_pack(pack_id, version)
-    new_version_exists_in_changelog = gcp.get_changelog_rn_by_version(pack_id, version)
-    new_version_exists_in_metadata = gcp.get_pack_metadata(pack_id)
-    return all([new_version_exists, new_version_exists_in_changelog == rn, new_version_exists_in_metadata])
+    def verify_new_version(self, pack_id, rn):
+        # check: RN, new version exists
+        new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        new_version_exists_in_changelog = self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
+        new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id)
+        self.is_valid = self.is_valid and all([new_version_exists, new_version_exists_in_changelog == rn, new_version_exists_in_metadata])
 
+    def verify_rn(self, pack_id, rn):
+        # verify by version the content of the RN TODO: try to get the changes as input
+        self.is_valid = self.is_valid and self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]) == rn
 
-def verify_rn(gcp, pack_id, version, rn):
-    # verify by version the content of the RN TODO: try to get the changes as input
-    return gcp.get_changelog_rn_by_version(pack_id, version) == rn
+    def verify_hidden(self, pack_id):
+        # verify not in index
+        self.is_valid = self.is_valid and not self.gcp.is_in_index(pack_id)
 
+    def verify_readme(self, pack_id, readme):
+        # verify readme content, no version bump
+        self.is_valid = self.is_valid and gcp.get_max_version(pack_id) and self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md') == readme
 
-def verify_hidden(gcp, pack_id):
-    # verify not in index
-    return not gcp.is_in_index(pack_id)
+    def verify_pack_ignore(self, pack_id):
+        # not sure TODO: verify
+        pass
 
+    def verify_landing_page(self, pack_id):
+        # not sure TODO: verify
+        pass
 
-def verify_readme(gcp, pack_id, version, readme):
-    # verify readme content, no version bump
-    return gcp.get_max_version(pack_id) and gcp.get_pack_item(pack_id, version, '', 'README.md') == readme
+    def verify_failed_pack(self, pack_id):
+        # verify commit hash is not updated
+        self.is_valid = self.is_valid and self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit')
 
-def verify_pack_ignore():
-    # not sure TODO: verify
-    pass
+    def verify_modified_pack(self):
+        # verify new version TODO: remove since dup
+        pass
 
-def verify_landing_page():
-    # not sure TODO: verify
-    pass
+    def verify_modified_path(self, pack_id, item_file_name):
+        # verify the path of the item is modified
+        self.is_valid = self.is_valid and self.gcp.is_item_in_pack(pack_id, self.versions[pack_id], item_file_name)
 
-def verify_failed_pack(gcp, pack_id):
-    return gcp.get_flow_commit_hash() != gcp.get_pack_metadata(pack_id).get('commit')
-    # verify commit hash is not updated
-    pass
+    def verify_dependency(self, pack_id, dependency_id):
+        # verify the new dependency is in the metadata
+        self.is_valid = self.is_valid and dependency_id in \
+                        self.gcp.get_pack_metadata(pack_id).get('dependencies').keys()
 
-def verify_modified_pack():
-    # verify new version TODO: remove since dup
-    pass
-
-def verify_modified_path(gcp, pack_id, pack_version, item_file_name):
-    # verify the path of the item is modified
-    return gcp.verify_item_in_pack(pack_id, pack_version, item_file_name)
-
-def verify_dependency(gcp, pack_id, dependency_id):
-    # verify the new dependency is in the metadata
-    return dependency_id in gcp.get_pack_metadata(pack_id).get('dependencies').keys()
-    pass
 
 class GCP:
     def __init__(self, service_account, storage_bucket_name, storage_base_path):
@@ -136,7 +121,6 @@ class GCP:
         changelog = self.get_changelog(pack_id)
         return str(max([Version(key) for key, value in changelog.items()]))
 
-
     def get_changelog(self, pack_id):
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
         with open(changelog_path, 'r') as changelog_file:
@@ -146,6 +130,7 @@ class GCP:
         item_path = os.path.join(self.extracting_destination, pack_id, item_type, item_file_name)
         with open(item_path, 'r') as f:
             return f.read()
+
 
 def get_args():
     """Validates and parses script arguments.
@@ -164,12 +149,67 @@ def get_args():
     return parser.parse_args()
 
 
-
 if __name__ == "__main__":
     args = get_args()
     storage_base_path = args.storage_base_path
     service_account = args.service_account
     storage_bucket_name = args.bucket_name
-    packs_dict = args.packs_dict  # TODO: verify parsing
+    packs_dict = args.packs_dict  # TODO: verify parsing, should be pack_id: version of the modified pack or RN
 
-    gcp_storage = GCP(service_account, storage_bucket_name, storage_base_path)
+    gcp = GCP(service_account, storage_bucket_name, storage_base_path)
+
+    # New pack - check that pack and all its content items are there
+    # Armis - check its dependency is also the new pack
+    #  ZeroFox - check there is a new version and RN
+    # Box - existing RN was updated
+    # BPA - 1.0.0 rn was added
+    # Microsoft365Defender set as hidden
+    # Maltiverse - readme updated
+    # MISP - update pack ignore
+    # Trello - landing page
+    # Absolute - failing pack
+    # Alexa - modified pack TODO: verify not duplicate with zerofox
+    # AlibabaActionTrail - modify item path
+    # index checks
+    # packs check
+
+    bv = BucketVerifier(gcp, packs_dict)
+    # verify new pack - TestUploadFlow
+    pack_items_dict = {} # TODO: fix
+    bv.verify_new_pack('TestUploadFlow', pack_items_dict)
+
+    # verify dependencies handling
+    bv.verify_dependency('Armis', 'TestUploadFlow') # TODO: verify direction
+
+    # verify new version
+    expected_rn = ''  # TODO: add from branch script
+    bv.verify_new_version('ZeroFox', expected_rn)
+
+    # verify modified existing rn
+    expected_rn = ''  # TODO: add from branch script
+    bv.verify_rn('Box', expected_rn)
+
+    # verify 1.0.0 rn was added
+    expected_rn = ''  # TODO: add from branch script
+    bv.verify_rn('BPA', expected_rn)
+
+    # verify pack is set to hidden
+    bv.verify_hidden('Microsoft365Defender')
+
+    # verify readme
+    expected_readme = '' # TODO: add
+    bv.verify_readme('Maltiverse', expected_readme)
+
+    # verify pack ignore
+    bv.verify_pack_ignore('MISP') # TODO: fix
+
+    # verify landingpage
+    bv.verify_landing_page('Trello') # TODO: fix
+
+    # verify failing pack
+    bv.verify_failed_pack('Absolute')
+
+    # verify path modification
+    bv.verify_modified_path('AlibabaActionTrail', )
+
+
