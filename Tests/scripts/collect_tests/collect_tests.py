@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional, Union, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, str2bool
@@ -268,7 +268,9 @@ class TestCollector(ABC):
         result = []
 
         for test_id in test_ids:
-            test_object = self.conf.get_test(test_id)
+            if not (test_object := self.conf.get_test(test_id)):
+                # todo prevent this case, see https://jira-hq.paloaltonetworks.local/browse/CIAC-4006
+                continue
 
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
@@ -466,7 +468,9 @@ class BranchTestCollector(TestCollector):
                     tests = yml.id_,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise ValueError(f'test playbook with id {yml.id_} is missing from conf.json tests section')
+                    # todo fix in https://jira-hq.paloaltonetworks.local/browse/CIAC-4006
+                    logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
+                    tests = ()
 
             case FileType.INTEGRATION:
                 if yml.explicitly_no_tests():
