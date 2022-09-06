@@ -1491,6 +1491,7 @@ def main():
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
     except Exception as err:
+        demisto.debug('test')
         if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
             raise
         return_error(str(err))
