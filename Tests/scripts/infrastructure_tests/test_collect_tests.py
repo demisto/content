@@ -149,18 +149,20 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+NIGHTLY_EXPECTED_TESTS_XSIAM = NIGHTLY_EXPECTED_TESTS | {'Sanity Test - Playbook with Unmockable Whois Integration'}
 
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
+    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
 
     (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None),
 
-    (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+    (MockerCases.C, XSIAMNightlyTestCollector,
+     {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois'}, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
      (Machine.V6_5, Machine.MASTER)),
