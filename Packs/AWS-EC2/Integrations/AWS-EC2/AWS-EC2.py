@@ -744,7 +744,7 @@ def create_snapshot_command(args, aws_client):
         raw = json.loads(output)
         del raw['ResponseMetadata']
         raw.update({'Region': obj['_user_provided_options']['region_name']})
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Snapshots': raw}
     human_readable = tableToMarkdown('AWS EC2 Snapshots', data)
@@ -1219,7 +1219,7 @@ def run_instances_command(args, aws_client):
         output = json.dumps(response['Instances'], cls=DatetimeEncoder)
         raw = json.loads(output)
         raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Instances': raw}
     human_readable = tableToMarkdown('AWS Instances', data)
@@ -1416,7 +1416,7 @@ def get_latest_ami_command(args, aws_client):
     try:
         raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
         raw.update({'Region': obj['_user_provided_options']['region_name']})
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Images': image}
     human_readable = tableToMarkdown('AWS EC2 Images', data)
@@ -1735,7 +1735,7 @@ def describe_reserved_instances_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.ReservedInstances(val.ReservedInstancesId === obj.ReservedInstancesId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Reserved Instances', data)
@@ -2204,7 +2204,7 @@ def delete_fleet_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.DeletedFleets': raw}
     human_readable = tableToMarkdown('AWS Deleted Fleets', data)
@@ -2266,7 +2266,7 @@ def describe_fleets_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Fleets', data)
@@ -2315,7 +2315,7 @@ def describe_fleet_instances_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw}
     human_readable = tableToMarkdown('AWS EC2 Fleets Instances', data)
@@ -2592,7 +2592,7 @@ def create_launch_template_command(args, aws_client):
         data_json = json.dumps(data, cls=DatetimeEncoder)
         data_hr = json.loads(data_json)  # type: ignore
         raw = json.loads(output)
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.LaunchTemplates': raw}
     human_readable = tableToMarkdown('AWS LaunchTemplates', data_hr)
@@ -2630,7 +2630,7 @@ def delete_launch_template_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.DeletedLaunchTemplates': raw}
     human_readable = tableToMarkdown('AWS Deleted Launch Templates', data)
@@ -2798,7 +2798,7 @@ def describe_internet_gateway_command(args, aws_client):
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
-    except ValueError as e:
+    except ValueError as err_msg:
         return_error(f'Could not decode/encode the raw response - {err_msg}')
     ec = {'AWS.EC2.InternetGateways(val.InternetGatewayId === obj.InternetGatewayId)': raw}
     human_readable = tableToMarkdown('AWS EC2 Internet Gateway Ids', data)
