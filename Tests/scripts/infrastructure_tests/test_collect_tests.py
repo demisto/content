@@ -34,6 +34,7 @@ Test Collection Unit-Test cases
 - `L` has a single pack with a Wizard content item.
 - `M1` has a pack with support level == xsoar, and tests missing from conf.json -- should raise an error.
 - `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
+- `M3` has a pack with support level != xsoar -- should collect pack but not tests.
 """
 
 
@@ -88,6 +89,7 @@ class MockerCases:
     L = CollectTestsMocker(TEST_DATA / 'L_XSIAM')
     M1 = CollectTestsMocker(TEST_DATA / 'M1')
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
+    M3 = CollectTestsMocker(TEST_DATA / 'M3')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -147,18 +149,20 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+NIGHTLY_EXPECTED_TESTS_XSIAM = NIGHTLY_EXPECTED_TESTS | {'Sanity Test - Playbook with Unmockable Whois Integration'}
 
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
-    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
+    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
 
     (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None),
 
-    (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+    (MockerCases.C, XSIAMNightlyTestCollector,
+     {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois'}, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
      (Machine.V6_5, Machine.MASTER)),
@@ -265,6 +269,12 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.M2, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
+     (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
+     (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+     (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',)),
      ))
 def test_branch(
         monkeypatch,
@@ -282,8 +292,8 @@ def test_branch(
           collector_class_args=collector_class_args)
 
 
-def test_branch_non_xsoar_support_level(mocker, monkeypatch):
-    # # Integration with support level != xsoar - should raise an exception
+def test_branch_test_missing_from_conf(mocker, monkeypatch):
+    # Integration with support level == xsoar - should raise an exception
     mocker.patch.object(BranchTestCollector, '_get_changed_files',
                         return_value=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',))
     with pytest.raises(ValueError) as e:
