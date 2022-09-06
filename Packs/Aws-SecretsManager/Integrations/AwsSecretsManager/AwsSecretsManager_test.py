@@ -2,7 +2,6 @@
 from AWSApiModule import *
 import importlib
 import pytest
-import numpy as np
 
 AWS_SECRETSMANAGER = importlib.import_module("AWS-SECRETSMANAGER")
 
@@ -50,7 +49,7 @@ def test_aws_secrets_manager_secret_list_command(mocker):
 
     results = demisto.results.call_args[0][0]
 
-    assert (np.array(list(results.keys())) == np.array(['Name', 'ARN', 'Description', 'LastAccessedDate'])).all()
+    assert list(results.keys()).sort() == ['Name', 'ARN', 'Description', 'LastAccessedDate'].sort()
 
 def validate_kwargs(*args, **kwargs):
     if kwargs == {"secret_id": "123"}:

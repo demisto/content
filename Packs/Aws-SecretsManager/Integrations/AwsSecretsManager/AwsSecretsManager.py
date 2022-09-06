@@ -9,6 +9,7 @@ from typing import Dict, Any
 import botocore.exceptions
 
 
+from AWSApiModule import *  # noqa: E402
 
 SERVICE = 'secretsmanager'
 
@@ -26,14 +27,18 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    aws_client = client.aws_session(service=SERVICE)
+def test_module(client: AWSClient) -> str:
+    aws_client = client.aws_session(
+        service=SERVICE
+    )
+
     response = aws_client.list_secrets(MaxResults=1)
+
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
 
-def aws_secrets_manager_secret_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     aws_client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -64,7 +69,7 @@ def aws_secrets_manager_secret_list_command(client: Client, args: Dict[str, Any]
         filters.append({'Key': 'all', 'Values': general_search})
 
 
-    response = aws_client.list_secrets(filters=filters, sort=sort)
+    response = aws_client.list_secrets(Filters=filters, SortOrder=sort)
 
     readable_output = [{'Name': secret.get('Name', ''),
                         'ARN': secret.get('ARN', ''),
@@ -80,7 +85,7 @@ def aws_secrets_manager_secret_list_command(client: Client, args: Dict[str, Any]
     ))
 
 
-def aws_secrets_manager_secret_value_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -106,11 +111,11 @@ def aws_secrets_manager_secret_value_get_command(client: Client, args: Dict[str,
         return_error(f'Get command encountered an issue, got unexpected result! {response["ResponseMetadata"]}')
 
 
-    readable_output = {'Name': secret.get('Name', ''),
-                       'ARN': secret.get('ARN', ''),
-                       'SecretBinary': secret.get('SecretBinary', ''),
-                       'SecretString': secret.get('SecretString', ''),
-                       'CreatedDate': secret.get('CreatedDate', '') for secret in response}
+    readable_output = {'Name': response.get('Name', ''),
+                       'ARN': response.get('ARN', ''),
+                       'SecretBinary': response.get('SecretBinary', ''),
+                       'SecretString': response.get('SecretString', ''),
+                       'CreatedDate': response.get('CreatedDate', '')}
 
     human_readable = tableToMarkdown('AWS Get Secret', readable_output)
 
@@ -120,7 +125,7 @@ def aws_secrets_manager_secret_value_get_command(client: Client, args: Dict[str,
         readable_output=human_readable
     ))
 
-def aws_secrets_manager_secret_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -144,7 +149,7 @@ def aws_secrets_manager_secret_delete_command(client: Client, args: Dict[str, An
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Secret was Deleted")
 
-def aws_secrets_manager_secret_restore_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -160,7 +165,7 @@ def aws_secrets_manager_secret_restore_command(client: Client, args: Dict[str, A
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("the secret was restored successfully")
 
-def aws_secrets_manager_secret_policy_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -175,9 +180,9 @@ def aws_secrets_manager_secret_policy_get_command(client: Client, args: Dict[str
         SecretId=args.get('secret_id')
     )
 
-    readable_output = {'Name': secret.get('Name', ''),
-                       'ARN': secret.get('ARN', ''),
-                       'Policy': secret.get('ResourcePolicy', '') for secret in response}
+    readable_output = {'Name': response.get('Name', ''),
+                       'ARN': response.get('ARN', ''),
+                       'Policy': response.get('ResourcePolicy', '')}
 
     human_readable = tableToMarkdown('AWS Secret Policy', readable_output)
 
@@ -187,7 +192,7 @@ def aws_secrets_manager_secret_policy_get_command(client: Client, args: Dict[str
         readable_output=human_readable
     )
 
-def fetch_credentials(client: Client, args: Dict[str, Any]) -> CommandResults:
+def fetch_credentials(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -203,7 +208,7 @@ def fetch_credentials(client: Client, args: Dict[str, Any]) -> CommandResults:
             demisto.debug(f"Could not fetch credentials: {args.get('secret_id')}. Error: {e}")
     else:
         for secret in client.list_secrets()['SecretList']:
-            creds_dict[secret.get('secret_id')] = client.get_secret_value(SecretId=secret.get('secret_id'))
+            creds_dict[secret.get('Name')] = client.get_secret_value(SecretId=secret.get('Name'))
 
     credentials = []
     for cred_key in creds_dict.keys():
@@ -254,9 +259,6 @@ def main() -> None:
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
-from AWSApiModule import *  # noqa: E402
-
 
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
