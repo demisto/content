@@ -16,10 +16,9 @@ def main():
 
     # Output the data and add results to war room
     return_results(CommandResults(
-                readable_output='Success: ' + encoded_data,
-                outputs_prefix='asciiencode.encoded',
-                outputs=encoded_data
-            ))
+        readable_output=f'Success: {encoded_data}',
+        outputs_prefix='asciiencode.encoded',
+        outputs=encoded_data))
 
 
 ''' ENTRY POINT '''
