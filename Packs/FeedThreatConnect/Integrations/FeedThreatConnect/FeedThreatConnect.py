@@ -143,6 +143,9 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
             'publishDate': 'published'}
 }
 
+INDICATOR_TYPES = ['EmailAddress', 'File', 'Host', 'URL', 'ASN', 'CIDR', 'Email Subject', 'Hashtag', 'Mutex', 'Registry Key', "User Agent", "Address"]
+INDICATOR_GROUPS = ['Attack Pattern', 'Campaign', 'Course of Action', 'Intrusion Set', 'Malware', 'Report', 'Tool', 'Vulnerability']
+
 #########
 # Utils #
 #########
@@ -168,7 +171,10 @@ def set_fields_query() -> str:
 
 def create_types_query() -> str:
     types = []
-    if 'All' not in demisto.getParam('groupType'):
+    if 'All' in demisto.getParam('groupType') and 'All' in demisto.getParam('indicatorType'):
+        return ''
+    if 'All' in demisto.getParam('groupType'):
+
         types.extend(argToList(demisto.getParam("groupType")))
     if 'All' not in demisto.getParam('indicatorType'):
         types.extend(argToList(demisto.getParam("indicatorType")))
@@ -292,7 +298,8 @@ def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entit
                                brand=INTEGRATION_NAME))
     else:
         demisto.info(
-            f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {EntityRelationship.Relationships.RELATED_TO}")
+            f"WARNING: Relationships will not be created to entity A {entity_a}" \
+            f" with relationship name {EntityRelationship.Relationships.RELATED_TO}")
     return relationships_list
 
 
@@ -425,7 +432,7 @@ def set_tql_query(from_date):
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    active_only = f'AND indicatorActive EQ True ' if argToBoolean(params.get("indicatorActive")) else ''
+    active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicatorActive")) else ''
     confidence = f'AND confidence GT {params.get("confidence")} ' if params.get("confidence") else ''
     threat_score = f'AND threatAssessScore GT {params.get("threatAssessScore")} ' if params.get("threatAssessScore") else ''
 

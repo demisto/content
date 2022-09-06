@@ -1,7 +1,7 @@
 import json
 import demistomock as demisto
 import pytest
-from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, create_indicator_relationships
+from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query
 
 
 def load_json_file(path):
@@ -36,10 +36,21 @@ def test_create_or_query():
 
 
 @pytest.mark.parametrize(argnames="params, expected_result",
-                         argvalues=[({'indicatorActive': False, "groupType": ['All'], "indicatorType": ['All'], 'retrieveRelationships': False}, ''),
-                                    ({'indicatorActive': True, "groupType": ['File'], "indicatorType": ['All'], 'retrieveRelationships': False},
-                                     'indicatorActive EQ True AND typeName IN ("File")')])
+                         argvalues=[({'indicatorActive': False, "groupType": [], "indicatorType": [], 'retrieveRelationships': False},
+                                      ''),
+                                    ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [], 'retrieveRelationships': False},
+                                    'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
+    """
+    Given:
+        - an empty from_date value
+
+    When:
+        - running set_tql_query command
+
+    Then:
+        - validate the tql output
+    """
     from_date = ''
     mocker.patch.object(demisto, 'params', return_value=params)
     output = set_tql_query(from_date)
