@@ -29,7 +29,7 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
-    indicator_type = INDICATOR_TYPES.get(indicator_type, DBotScoreType.CUSTOM).lower()
+    indicator_type = INDICATOR_TYPES.get(indicator_type, DBotScoreType.CUSTOM)
     sources = entry.get('moduleToFeedMap', {})
     if entry.get('manualScore'):
         sources[entry.get('setBy')] = {}
