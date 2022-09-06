@@ -362,7 +362,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
     except Exception as e:
         raise Exception('The other_fields argument is not a valid json. ' + str(e))
 
-    for field_path, field_value in list(other_fields_json.items()):
+    for field_path, field_value in other_fields_json.items():
         field_split = field_path.split(".")
         old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
         if old_value == "Not found":
@@ -1164,7 +1164,7 @@ def main():
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         LOG.print_log()
         raise
 
