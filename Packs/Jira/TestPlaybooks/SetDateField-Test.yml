@@ -23,6 +23,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: c31acac7-09f5-493d-83ea-bca868ed9733
     timertriggers: []
     type: start
@@ -147,3 +148,4 @@ view: |-
       }
     }
   }
+fromversion: 6.5.0
