@@ -1,9 +1,9 @@
 {
-    "id": "Recorded Future ASI Alert",
+    "id": "Recorded Future Attack Surface Intelligence Alert",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Recorded Future ASI Alert",
+    "name": "Recorded Future Attack Surface Intelligence Alert",
     "prevName": "Recorded Future ASI Alert",
     "color": "#0071cf",
     "hours": 0,
