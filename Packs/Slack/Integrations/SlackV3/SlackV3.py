@@ -845,24 +845,23 @@ def check_for_unanswered_questions():
     updated_questions = []
 
     for question in questions:
-        if question.get('last_poll_time'):
-            if question.get('expiry'):
-                # Check if the question expired - if it did, answer it with the default response
-                # and remove it
-                expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
-                if expiry < now:
-                    _ = answer_question(question.get('default_response'), question, email='')
-                    updated_questions.append(question)
-                    continue
-            # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
-            # since the last polling time. if not, continue to the next question until it has.
-            last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
-            delta = now - last_poll_time
-            minutes = delta.total_seconds() / 60
-            sent = question.get('sent', None)
-            poll_time_minutes = get_poll_minutes(now, sent)
-            if minutes < poll_time_minutes:
+        if question.get('expiry'):
+            # Check if the question expired - if it did, answer it with the default response
+            # and remove it
+            expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
+            if expiry < now:
+                _ = answer_question(question.get('default_response'), question, email='')
+                updated_questions.append(question)
                 continue
+        # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+        # since the last polling time. if not, continue to the next question until it has.
+        last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
+        delta = now - last_poll_time
+        minutes = delta.total_seconds() / 60
+        sent = question.get('sent', None)
+        poll_time_minutes = get_poll_minutes(now, sent)
+        if minutes < poll_time_minutes:
+            continue
         entitlement = question.get('entitlement', '')
         demisto.info(f'Slack - polling for an answer for entitlement {entitlement}')
         question['last_poll_time'] = now_string
