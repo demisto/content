@@ -498,7 +498,7 @@ script:
           isArray: false
         - name: included_branches
           required: false
-          description: Should be comma separated. Will return only commits that are in the included branches list.
+          description: Should be comma separated. Will return only commits that are related to the included branches list.
           isArray: false
         - name: limit
           required: false
@@ -596,6 +596,32 @@ script:
         - contextPath: Bitbucket.Commit.repository.uuid
           description: 'The unique id of the repository'
           type: String
+    - name: bitbucket-file-delete
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: message
+          required: true
+          description: Commit a message with the file.
+          isArray: false
+        - name: branch
+          required: true
+          description: This branch will be associated with the commited file.
+          isArray: false
+        - name: file_name
+          required: true
+          description: The name of the file to commit.
+          isArray: false
+        - name: author_name
+          required: false
+          description: The name of the author of the file.
+          isArray: false
+        - name: author_email
+          required: false
+          description: The email of the author of the file.
+          isArray: false
   isfetch: false
   runonce: false
   script: "-"

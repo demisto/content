@@ -105,28 +105,20 @@ class Client(BaseClient):
             else:
                 return e.message
 
-    def commit_create_request(self, message: str, branch: str, file_name: str, file_content: str, author_name: str, author_email: str, repo: str = None):
+    def commit_create_request(self, body: Dict, repo: str = None):
         if repo:
             url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         else:
             if not self.repository:
                 raise Exception("Please provide a repository name")
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/src'
-        body = {
-            "message": message,
-            "branch": branch,
-            file_name: file_content
-        }
-        if author_name and author_email:
-            body["author"] = f'{author_name} <{author_email}>'
-
         return self._http_request(method='POST',
-                                      url_suffix=url_suffix,
-                                      data=body,
-                                      resp_type='response')
+                                  url_suffix=url_suffix,
+                                  data=body,
+                                  resp_type='response')
 
-    def add_branches_url(self, action: str, l :list, url: str) -> str:
-        url= url + '?'
+    def add_branches_url(self, action: str, l: list, url: str) -> str:
+        url = url + '?'
         for branch in l:
             url = url + f'{action}={branch}&'
         return url[:-1]
@@ -147,6 +139,17 @@ class Client(BaseClient):
                                       params=params)
         return response
 
+    def file_delete_request(self, body: Dict, repo: str = None):
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/src'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src'
+        return self._http_request(method='POST',
+                                  url_suffix=url_suffix,
+                                  data=body,
+                                  resp_type='response')
 
 ''' HELPER FUNCTIONS '''
 
@@ -344,9 +347,14 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
         file_name = demisto.getFilePath(entry_id).get('name')
         with open(file_path, 'rb') as f:
             file_content = f.read()
-
-    response = client.commit_create_request(message, branch, file_name, file_content, author_name, author_email, repo)
-    print(response)
+    body = {
+        "message": message,
+        "branch": branch,
+        file_name: file_content
+    }
+    if author_name and author_email:
+        body["author"] = f'{author_name} <{author_email}>'
+    response = client.commit_create_request(body, repo)
     if response.status_code == 201:
         return CommandResults(readable_output=f'The commit was created successfully.')
     else:
@@ -397,6 +405,28 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+def file_delete_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    message = args.get('message', None)
+    branch = args.get('branch', None)
+    file_name = args.get('file_name', None)
+    author_name = args.get('author_name', None)
+    author_email = args.get('author_email', None)
+    body = {
+        'message': message,
+        'branch': branch,
+        'files': file_name
+    }
+    if author_name and author_email:
+        body['author'] = f'{author_name} <{author_email}>'
+    response = client.file_delete_request(body, repo)
+    if response.status_code == 201:
+        return CommandResults(readable_output=f'The file was deleted successfully.')
+    else:
+        return CommandResults(readable_output=response)
+
 
 ''' MAIN FUNCTION '''
 
@@ -452,6 +482,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-commit-list':
             result = commit_list_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-file-delete':
+            result = file_delete_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
