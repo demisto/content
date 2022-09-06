@@ -36,5 +36,5 @@ def main():
         return_error('Failed to run script - {}'.format(str(e)))
 
 
-if __name__ == "builtins" or __name__ == '__main__':
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

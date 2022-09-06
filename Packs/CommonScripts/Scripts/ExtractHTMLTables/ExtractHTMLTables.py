@@ -54,5 +54,5 @@ def main():
     demisto.results(extract_html_table(html, indexes))
 
 
-if __name__ == "builtins" or __name__ == '__main__':
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

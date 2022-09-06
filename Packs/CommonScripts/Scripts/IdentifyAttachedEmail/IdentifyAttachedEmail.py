@@ -48,7 +48,7 @@ def identify_attached_mail(args):
     if entry_ids:
         if isinstance(entry_ids, STRING_TYPES):
             # playbook inputs may be in the form: [\"23@2\",\"24@2\"] if passed as a string and not array
-            entry_ids = entry_ids.strip().replace(r'\"', '"')
+            entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
         entry_ids = argToList(entry_ids)
         entries = []  # type: List[str]
         for ent_id in entry_ids:
@@ -71,5 +71,5 @@ def main():
     return_outputs(result, outputs, result)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
