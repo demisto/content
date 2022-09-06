@@ -116,6 +116,7 @@ args:
 - name: contentId
   description: Archer Content Id
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - archer-update-record
