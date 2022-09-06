@@ -96,7 +96,7 @@ script: >-
 type: python
 subtype: python2
 tags: []
-comment: "This script is used to simplify the process of updating a new record in Archer. You can add fields that you want in the record as script arguments and or in the code and have a newly created record easily.\n\nThis automation fields are currently used for Archer application 75 (Security Incidents) but can be altered to any other application by modifying the fields in the code. \n\nPlease note that if you will change it to work with another application some of the argument defined fields might need to be changed as they belong to application 75.\nAnother option would be to duplicate this script and adjust it to the new application Id"
+comment: Deprecated. No available replacement.
 enabled: true
 args:
 - name: description
