@@ -3,7 +3,7 @@ from CommonServerPython import * # noqa: F401
 
 
 def test_main(mocker):
-    from PrintErrorEntry import main
+    import PrintErrorEntry
 
     # test custom fields with short names
     mocker.patch.object(demisto, 'args', return_value={
