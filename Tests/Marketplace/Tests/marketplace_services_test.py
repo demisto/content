@@ -2837,6 +2837,13 @@ class TestImageClassification:
        """
         assert dummy_pack.is_author_image(file_path) is result
 
+    @pytest.mark.parametrize('file_path, result', [
+        ('Packs/TestPack/README.md', True),
+        ('Packs/TestPack/Integrations/README.md', False)
+    ])
+    def test_is_readme_file(self, file_path, result, dummy_pack):
+        assert dummy_pack.is_raedme_file(file_path) is result
+
 
 def create_rn_config_file(rn_dir: str, version: str, data: Dict):
     with open(f'{rn_dir}/{version}.json', 'w') as f:
