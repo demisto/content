@@ -185,6 +185,7 @@ def set_auth(method):
     expired by the server.) The `_auth()` method is called to establish/re-establish a valid session.
     This wrapper is applied to any functions that interact with the iboss API.
     """
+
     @wraps(method)
     def _impl(self, *method_args, **method_kwargs):
         if not self.expiration or self.expiration < datetime.utcnow().timestamp():
@@ -1719,7 +1720,7 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
         results.append(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']), # result["message"],
+        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']),  # result["message"],
         outputs_prefix="iboss.AddEntityToPolicyLayerList",
         outputs_key_field="message",
         outputs=results,
