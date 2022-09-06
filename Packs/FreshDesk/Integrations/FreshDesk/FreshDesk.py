@@ -1585,7 +1585,7 @@ def get_contact(args):
                       ' email address.'
             return_error(err_msg)
         except Exception as e:
-            return_error(e.message)
+            return_error(e)
     else:
         try:
             filters = {'mobile': args.get('mobile')}
@@ -1598,7 +1598,7 @@ def get_contact(args):
                       'you have a FreshDesk contact with that exact mobile number.'
             return_error(err_msg)
         except Exception as e:
-            return_error(e.message)
+            return_error(e)
 
     endpoint_url = 'contacts/{}'.format(contact_id)
     response = http_request('GET', endpoint_url)
