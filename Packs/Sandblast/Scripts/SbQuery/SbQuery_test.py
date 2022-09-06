@@ -2,10 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def execute_command_mock():
-    test = {'Contents': "ModelDataList", 'Type': 'note'}
-
-
 def test_main_flow_no_results(mocker):
     """
     Given:
