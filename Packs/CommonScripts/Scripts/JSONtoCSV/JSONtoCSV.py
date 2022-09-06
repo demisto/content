@@ -15,7 +15,7 @@ def main():
     dictlist = demisto.executeCommand("getEntry", {"id": entry_id})[0]["Contents"]
     csv_final = json_to_csv(dictlist)
 
-    if "filename" in demisto.args():
+    if "filename" in args:
         # Send CSV as file in War Room
         demisto.results(fileResult(args.get("filename"), csv_final))
 
