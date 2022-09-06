@@ -14,7 +14,8 @@ network_type = "Unknown"
 in_domain = "no"
 
 if len(parts) > 1:
-    if parts[1].lower() in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
+    if parts[1].lower() in domains or include_subdomains and \
+            re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
         in_domain = "yes"
         network_type = "Internal"
     else:
