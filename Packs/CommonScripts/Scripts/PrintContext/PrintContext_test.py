@@ -1,26 +1,44 @@
+import pytest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from PrintContext import print_context
+
+CONTEXT_DATA = [{'data1': 1}]
 
 
-def print_context(fmt, ctx):
-    if ctx:
-        if fmt == 'table':
-            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': [
-                {'Context key': d, 'Value': formatCell(ctx[d])} for d in ctx]})
-        elif fmt == 'json':
-            demisto.results(ctx)
-        else:
-            md = "**Context data**:\n```\n" + json.dumps(ctx, indent=4) + '\n```'
-            demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md})
-    else:
-        demisto.results('Context empty.')
-
-
-def main():  # pragma: no cover
-    fmt = demisto.get(demisto.args(), 'outputformat')
-    ctx = demisto.context()
+@pytest.mark.parametrize('expected_content, fmt, ctx', [
+    (CONTEXT_DATA, 'json', CONTEXT_DATA),
+    ('Context empty.', 'table', [])
+])
+def test_print_context(mocker, expected_content, fmt, ctx):
+    """
+    Given:
+        - The script args.
+    When:
+        - Running the print_context function.
+    Then:
+        - Validating the outputs as expected.
+    """
+    results_mock = mocker.patch.object(demisto, 'results')
     print_context(fmt, ctx)
+    res = results_mock.call_args[0][0]
+    assert expected_content == res
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
-    main()
+@pytest.mark.parametrize('expected_content, fmt, ctx', [
+    ('**Context data**:\n```\n', 'markdown', CONTEXT_DATA),
+])
+def test_print_context(mocker, expected_content, fmt, ctx):
+    """
+    Given:
+        - The script args.
+    When:
+        - Running the print_context function.
+    Then:
+        - Validating the outputs as expected.
+    """
+    results_mock = mocker.patch.object(demisto, 'results')
+    print_context(fmt, ctx)
+    res = results_mock.call_args[0][0]['Contents']
+    assert expected_content in res
