@@ -25,7 +25,7 @@ def ads(html, termlist):
     return results
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     u = demisto.args()['url']
     r = requests.get(u)
     reasy = requests.get(demisto.args()['easylist'] if 'easylist' in demisto.args()
@@ -35,8 +35,8 @@ def main():     # pragma: no cover
     totalAds = reduce(lambda x, y: x + y['Count'], nicerRes, 0)
     demisto.results({'Type': entryTypes['note'], 'Contents': nicerRes, 'ContentsFormat': formats['json'],
                      'HumanReadable': tableToMarkdown('AD URLs', nicerRes) + '\nTotal: ' + str(totalAds),
-                     'EntryContext': {'Ads': nicerRes, 'URL(val.Data == obj.Data)':
-                         {'Data': u, 'AdsCount': totalAds}}})
+                     'EntryContext': {'Ads': nicerRes,
+                                      'URL(val.Data == obj.Data)': {'Data': u, 'AdsCount': totalAds}}})
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
