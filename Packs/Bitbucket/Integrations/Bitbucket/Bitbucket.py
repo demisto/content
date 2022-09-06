@@ -159,6 +159,13 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
+    def issue_create_request(self, repo:str, body: dict) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
+        else:
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues'
+        return self._http_request(method='POST', url_suffix=url_suffix, data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -464,6 +471,44 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
                               outputs=output)
 
 
+def issue_create_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    title = args.get('title', None)
+    state = args.get('state')
+    issue_type = args.get('type', 'bug')
+    priority = args.get('priority', 'major')
+    content = args.get('content', None)
+    assignee_id = args.get('assignee_id', None)
+    assignee_user_name = args.get('assignee_user_name', None)
+    body = {
+        "title": title,
+        "state": state,
+        "kind": issue_type,
+        "priority": priority
+    }
+    if content:
+        body["content"] = {
+            "raw": content
+        }
+    if assignee_id:
+        body["assignee"] = {
+            "account_id": assignee_id,
+            "username": assignee_user_name
+        }
+    response = client.issue_create_request(repo, body)
+    if response.id:
+        return CommandResults(readable_output=f'The issue "{title}" was created successfully',
+                              outputs_prefix='Bitbucket.Issue',
+                              outputs=response,
+                              raw_response=response)
+    else:
+        return CommandResults(readable_output='The command failed.',
+                              outputs_prefix='Bitbucket.RawFile',
+                              outputs=response,
+                              raw_response=response)
+
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -524,6 +569,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-raw-file-get':
             result = raw_file_get_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-create':
+            result = issue_create_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')

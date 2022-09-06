@@ -644,37 +644,37 @@ script:
           description: The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'. The default is 'New'.
           isArray: false
           predefined:
-            - New
-            - Open
-            - Resolved
-            - On Hold
-            - Invalid
-            - Duplicate
-            - Wontfix
-            - Closed
+            - new
+            - open
+            - resolved
+            - on hold
+            - invalid
+            - duplicate
+            - wontfix
+            - closed
           required: false
         - name: type
           auto: PREDEFINED
-          defaultValue: Task
-          description: The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. The default is 'Task'.
+          defaultValue: Bug
+          description: The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. The default is 'Bug'.
           isArray: false
           predefined:
-            - Bug
-            - Enhancement
-            - Proposal
-            - Task
+            - bug
+            - enhancement
+            - proposal
+            - task
           required: false
         - name: priority
           auto: PREDEFINED
-          defaultValue: Trivial
-          description: The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. The default is 'Trivial'.
+          defaultValue: Major
+          description: The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. The default is 'Major'.
           isArray: false
           predefined:
-            - Trivial
-            - Minor
-            - Major
-            - Critical
-            - Blocker
+            - trivial
+            - minor
+            - major
+            - critical
+            - blocker
           required: false
         - name: content
           required: false
