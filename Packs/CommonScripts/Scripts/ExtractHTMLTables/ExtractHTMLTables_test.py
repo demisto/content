@@ -49,4 +49,3 @@ def test_no_html_table():
     html_table = """"""
     res = extract_html_table(html_table, [])
     assert "Did not find tables in HTML." in res
-
