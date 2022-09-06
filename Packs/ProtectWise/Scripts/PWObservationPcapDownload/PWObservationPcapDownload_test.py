@@ -9,46 +9,28 @@ def demisto_get_side_effect(args, key):
 def test_main_flow_succeed(mocker):
     """
     Given:
-     - burstsize, waitms and sensorID
+     - burstsize, waitms and sensorID, and ID(s) arguments
 
     When:
      - executing the main flow.
 
     Then:
-     - make sure no results are found.
+     - make sure that the data is parsed correctly based on the 'protectwise-observation-pcap-download' command output.
+     - make sure the executeCommand function was called with the correct arguments.
     """
     from PWObservationPcapDownload import main
-    args = {'burstsize': 5, 'waitms': 1, 'sensorId': '1'}
+    args = {'burstsize': 5, 'waitms': 1, 'sensorId': '1', 'id': '1,2,3'}
 
     mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'executeCommand', return_value='just a test data')
+    execute_command_mock = mocker.patch.object(demisto, 'executeCommand', return_value=['test'])
     mocker.patch.object(demisto, 'get', side_effect=demisto_get_side_effect)
 
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
     main()
 
-    assert demisto_results_mocker.called
-    assert demisto_results_mocker.call_args.args[0] == 'No results.'
-
-
-def test_main_flow_success(mocker):
-    """
-    Given:
-     - a mocked test data from sandblast-query command.
-    When:
-     - executing the main flow.
-    Then:
-     - validate that the data is flattened to markdown.
-    """
-    from PWObservationPcapDownload import main
-    mocker.patch.object(demisto, 'executeCommand')
-    mocker.patch.object(demisto, 'get', return_value=[])
-    mocker.patch('CommonServerPython.is_error', return_value=False)
-
-    mocker.patch.object(demisto, 'get', return_value=[{'a': {'a': 'b'}}, {'c': {'a': 'b'}}])
-    demisto_results_mocker = mocker.patch.object(demisto, 'results')
-    main()
-
-    assert demisto_results_mocker.call_args.args[0] == {
-        'ContentsFormat': 'table', 'Type': 1, 'Contents': [{'a': 'a: b'}, {'c': 'a: b'}]
+    assert execute_command_mock.call_args.args[0] == 'protectwise-observation-pcap-download'
+    assert execute_command_mock.call_args.args[1] == {
+        'burstsize': 5, 'waitms': 1, 'sensorId': '1', 'id': '3', 'using-brand': 'ProtectWise', 'filename': '3.pcap'
     }
+    assert demisto_results_mocker.called
+    assert demisto_results_mocker.call_args.args[0] == ['test', 'test', 'test']
