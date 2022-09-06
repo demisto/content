@@ -1,6 +1,6 @@
 import pytest
 
-from Packs.D2.Scripts.O365SearchEmails.O365SearchEmails import get_search_results_from_entry
+from O365SearchEmails import get_search_results_from_entry
 
 
 @pytest.mark.parametrize('contents, expected', [
