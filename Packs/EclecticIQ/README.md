@@ -104,6 +104,15 @@ lookup_observable
 | `EclecticIQ.Entity.observables`       | `string`     | EclecticIQ Entity related observables|
 | `EclecticIQ.Entity.threat_start_time`       | `date`     | EclecticIQ Threat start time|
 | `EclecticIQ.Entity.title`       | `string`     | EclecticIQ Entity Title|
+|`EclecticIQ.DBotScore.Created`|`date`|Observable creation date|
+|`EclecticIQ.DBotScore.ID`|`number`|Observable ID|
+|`EclecticIQ.DBotScore.LastUpdated`|`date`|Observable last updated date|
+|`EclecticIQ.DBotScore.Type`|`string`|Indicator type|
+|`EclecticIQ.DBotScore.indicator`|`string`|The indicator that was tested|
+|`EclecticIQ.DBotScore.Score`|`number`|The actual score|
+|`EclecticIQ.IP.Malicious.Description`|`string`|For malicious IPs, the reason that the vendor made the decision|
+|`EclecticIQ.IP.Malicious.Vendor`|`string`|Vendor used to calculate the score|
+
 ### Command example
 ```http
   ip ipv4=172.168.156.115
