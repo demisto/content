@@ -32,6 +32,7 @@ def find_pack_folder(path: Path) -> Path:
     >>> find_pack_folder(Path('Packs/MyPack4')).name
     'MyPack4'
     """
+
     if 'Packs' not in path.parts:
         raise NotUnderPackException(path)
     if path.parent.name == 'Packs':
@@ -163,15 +164,17 @@ class ContentItem(DictFileBased):
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
+        self._is_pack_metadata = self.path.name == 'pack_metadata.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
+        if self._is_pack_metadata:
+            return None
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
     def name(self) -> str:
-        id_ = self.get('id', '', warn_if_missing=False)
-        return self.get('name', default='', warn_if_missing=False, warning_comment=id_)
+        return self.get('name', default='', warn_if_missing=False, warning_comment=self.id_)
 
     @property
     def tests(self) -> list[str]:
