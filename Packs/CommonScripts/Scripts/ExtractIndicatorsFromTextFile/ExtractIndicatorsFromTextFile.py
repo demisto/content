@@ -40,5 +40,5 @@ def main():
         return_error("File was not found")
 
 
-if __name__ == "builtins" or __name__ == '__main__':
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
