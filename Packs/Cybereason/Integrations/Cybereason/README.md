@@ -231,7 +231,6 @@ Isolates a machine that has been infected from the rest of the network
 | --- | --- | --- |
 | Cybereason.Machine | string | Machine name | 
 | Cybereason.IsIsolated | boolean | Is the machine isolated | 
-| Endpoint.Hostname | string | Machine name | 
 
 #### Command example
 ```!cybereason-isolate-machine machine=desktop-vg9ke2u```
@@ -241,9 +240,6 @@ Isolates a machine that has been infected from the rest of the network
     "Cybereason": {
         "IsIsolated": true,
         "Machine": "desktop-vg9ke2u"
-    },
-    "Endpoint": {
-        "Hostname": "desktop-vg9ke2u"
     }
 }
 ```
@@ -273,7 +269,6 @@ Stops isolation of a machine
 | --- | --- | --- |
 | Cybereason.Machine | string | Machine name | 
 | Cybereason.IsIsolated | boolean | Is the machine isolated | 
-| Endpoint.Hostname | string | Machine name | 
 
 #### Command example
 ```!cybereason-unisolate-machine machine=desktop-vg9ke2u```
@@ -283,9 +278,6 @@ Stops isolation of a machine
     "Cybereason": {
         "IsIsolated": false,
         "Machine": "desktop-vg9ke2u"
-    },
-    "Endpoint": {
-        "Hostname": "desktop-vg9ke2u"
     }
 }
 ```
@@ -612,13 +604,6 @@ Query files as part of investigation
 | Cybereason.File.IsConnected | boolean | Is machine connected to Cybereason | 
 | Cybereason.File.Signed | boolean | Is file signed | 
 | Cybereason.File.Evidence | string | File evidences | 
-| Endpoint.Hostname | string | Hostname on which file is located | 
-| Endpoint.OSVersion | string | Machine OS version on which file is located | 
-| File.Hostname | string | Hostname on which file is located | 
-| File.MD5 | string | File MD5 hash | 
-| File.SHA1 | string | File SHA-1 hash | 
-| File.Name | string | File name | 
-| File.Path | string | File path | 
 
 #### Command example
 ```!cybereason-query-file file_hash=<file_hash>```
@@ -643,17 +628,6 @@ Query files as part of investigation
             "Suspicion": {},
             "SuspicionsCount": null
         }
-    },
-    "Endpoint": {
-        "Hostname": "desktop-vg9ke2u",
-        "OSVersion": null
-    },
-    "File": {
-        "Hostname": "desktop-vg9ke2u",
-        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
-        "Name": "-1845090846.-1424333057657783286",
-        "Path": "c:\\users\\prase\\downloads\\winrar-x64-602.pdf.exe",
-        "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23"
     }
 }
 ```
@@ -690,9 +664,7 @@ Query domains as part of investigation
 | Cybereason.Domain.Reputation | string | Domain reputation | 
 | Cybereason.Domain.SuspicionsCount | number | Domain suspicions count | 
 | Cybereason.Domain.WasEverResolved | boolean | Was domain ever resolved | 
-| Cybereason.Domain.WasEverResolvedAsASecondLevelDomain | boolean | Was domain ever resolved as a second level domain | 
-| Domain.Name | string | Domain name | 
-
+| Cybereason.Domain.WasEverResolvedAsASecondLevelDomain | boolean | Was domain ever resolved as a second level domain |
 #### Command example
 ```!cybereason-query-domain domain=www2.bing.com```
 #### Context Example
@@ -708,9 +680,6 @@ Query domains as part of investigation
             "WasEverResolved": false,
             "WasEverResolvedAsASecondLevelDomain": true
         }
-    },
-    "Domain": {
-        "Name": "www2.bing.com"
     }
 }
 ```
