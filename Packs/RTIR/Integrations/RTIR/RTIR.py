@@ -4,7 +4,7 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib
+import urllib.parse
 
 ''' GLOBAL VARS '''
 SERVER = None
@@ -87,7 +87,7 @@ def login():
         'pass': PASSWORD
     }
     res = SESSION.post(SERVER, data=data)  # type: ignore
-    response_text = res.text.encode('utf-8')
+    response_text = res.text
     are_credentials_wrong = 'Your username or password is incorrect' in response_text
     if are_credentials_wrong:
         return_error("Error: login failed. please check your credentials.")
@@ -149,7 +149,7 @@ def create_ticket_attachments_request(encoded, files_data):
 
 def create_ticket():
     args = dict(demisto.args())
-    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
+    args = {arg: value for arg, value in args.items() if isinstance(value, str)}
 
     queue = args.get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
@@ -216,7 +216,7 @@ def create_ticket():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             data += 'Attachment: {}'.format(file_name)
 
-    encoded = "content=" + urllib.quote_plus(data)
+    encoded = "content=" + urllib.parse.quote_plus(data)
     if attachments:
         files_data.update({'content': (None, data)})  # type: ignore
         raw_ticket_res = create_ticket_attachments_request(encoded, files_data)
@@ -268,7 +268,7 @@ def fix_query_suffix(query):
 def build_search_query():
     raw_query = ''
     args = dict(demisto.args())
-    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
+    args = {arg: value for arg, value in args.items() if isinstance(value, str)}
     ticket_id = args.get('ticket-id')
     if ticket_id:
         raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
@@ -405,7 +405,7 @@ def close_ticket_request(ticket_id, encoded):
 def close_ticket():
     ticket_id = demisto.args().get('ticket-id')
     content = '\nStatus: resolved'
-    encoded = "content=" + urllib.quote_plus(content)
+    encoded = "content=" + urllib.parse.quote_plus(content)
     closed_ticket = close_ticket_request(ticket_id, encoded)
     if '200 Ok' in closed_ticket.content:
         ec = {
@@ -485,7 +485,7 @@ def edit_ticket():
             content = content + key + value + '\n'
 
     if arguments_given:
-        encoded = "content=" + urllib.quote_plus(content.encode('utf-8'))
+        encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
         edited_ticket = edit_ticket_request(ticket_id, encoded)
         if "200 Ok" in edited_ticket.content:
             ticket_context = ({
@@ -830,7 +830,7 @@ def add_comment():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             content += 'Attachment: {}\n'.format(file_name)
 
-    encoded = "content=" + urllib.quote_plus(content)
+    encoded = "content=" + urllib.parse.quote_plus(content)
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
@@ -860,7 +860,7 @@ def add_reply():
     if cc:
         content += '\nCc: ' + cc
     try:
-        encoded = "content=" + urllib.quote_plus(content)
+        encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
         if '200' in added_reply.content:
             demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
@@ -965,7 +965,7 @@ def main():
             add_reply()
 
     except Exception as e:
-        LOG(e.message)
+        LOG(e)
         LOG.print_log()
         raise
 
