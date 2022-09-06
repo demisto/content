@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Skyhigh Security Test Play Book
+  id: Skyhigh Security
   version: -1
 configuration:
 - defaultvalue: https://www.myshn.net
@@ -40,8 +40,8 @@ configuration:
   required: false
   type: 8
 description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-display: Skyhigh Security Test Play Book
-name: Skyhigh Security Test Play Book
+display: Skyhigh Security
+name: Skyhigh Security
 script:
   commands:
   - arguments:
