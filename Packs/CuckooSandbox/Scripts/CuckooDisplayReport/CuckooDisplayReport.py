@@ -45,7 +45,7 @@ if not report:
     sys.exit()
 
 if showAllSections:
-    showSections = report.keys()
+    showSections = list(report.keys())
 for s in showSections:
     try:
         if s not in report:
