@@ -8,11 +8,10 @@ def test_email_reputation(mocker):
         - The script args.
 
     When:
-        - Running the search_incidents function.
+        - Running email_reputation function.
 
     Then:
         - Validating the outputs as expected.
-        - Validating the filtered args that was sent to the api is as expected.
     """
     from EmailReputation import email_reputation
     mocker.patch.object(demisto, 'args', return_value={'email': 'email@email.com'})

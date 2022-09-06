@@ -8,11 +8,10 @@ def test_set_time(mocker):
         - The script args.
 
     When:
-        - Running the search_incidents function.
+        - Running the set_time function.
 
     Then:
         - Validating the outputs as expected.
-        - Validating the filtered args that was sent to the api is as expected.
     """
     from SetTime import set_time
     mocker.patch.object(demisto, 'args', return_value={'fieldName': 'field'})

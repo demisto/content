@@ -8,11 +8,10 @@ def test_file_reputation(mocker):
         - The script args.
 
     When:
-        - Running the search_incidents function.
+        - Running the file_reputation function.
 
     Then:
         - Validating the outputs as expected.
-        - Validating the filtered args that was sent to the api is as expected.
     """
     from FileReputation import file_reputation
     mocker.patch.object(demisto, 'args', return_value={'file': 'somefile'})
