@@ -10,23 +10,23 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: apikey
-  required: true
+  name: apikey_new
+  required: false
   type: 9
   hiddenusername: true
 - display: API Secret
-  name: apisecret
-  required: true
+  name: apisecret_new
+  required: false
   type: 9
   hiddenusername: true
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: API Secret
   name: apisecret
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Trust any certificate (not secure)
