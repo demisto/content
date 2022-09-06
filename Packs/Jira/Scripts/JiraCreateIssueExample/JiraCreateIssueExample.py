@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Tuple, List, Any
+from typing import Any, ItemsView
 
 """
 This script is used to simplify the process of creating a new Issue in Jira.
@@ -46,7 +46,7 @@ def add_additional_args(known: Dict[str, Any], additional: Dict[str, Any]) -> Di
     return known
 
 
-def get_known_args_from_input(input) -> Dict[str, Any]:
+def get_known_args_from_input(input: ItemsView) -> Dict[str, Any]:
     """
     Creates a dictionary of known arguments passed into script.
     Args:
@@ -58,7 +58,7 @@ def get_known_args_from_input(input) -> Dict[str, Any]:
     return {key: value for key, value in input if key in DEFAULT_ARGS}
 
 
-def get_additional_args_from_input(input) -> Dict[str, Any]:
+def get_additional_args_from_input(input: ItemsView) -> Dict[str, Any]:
     """
     Creates a dictionary of unknown arguments passed into script.
     Args:
@@ -88,5 +88,5 @@ def main():  # pragma: no cover
         return_error(f'Failed to JiraCreateIssueExample command. Error: {str(e)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
