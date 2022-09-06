@@ -298,7 +298,7 @@ def test_submit_event(requests_mock, mocker):
     )
     from PagerDuty import submit_event_command
     res = submit_event_command(source, summary, severity, action)
-    assert '### Trigger Event' in res.get('HumanReadable') 
+    assert '### Trigger Event' in res.get('HumanReadable')
 
 
 def test_get_all_schedules_command(mocker, requests_mock):
@@ -325,17 +325,17 @@ def test_get_all_schedules_command(mocker, requests_mock):
 
     requests_mock.get(
         'https://api.pagerduty.com/schedules',
-        json={ 
+        json={
             'schedules': [{'id': 'id',
                            'name': 'name',
                            'time_zone': 'time_zone',
-                           'escalation_policies': [{'id': 'id', 'summary': 'summary'}]}] 
+                           'escalation_policies': [{'id': 'id', 'summary': 'summary'}]}]
 
         }
     )
     from PagerDuty import get_all_schedules_command
     res = get_all_schedules_command()
-    assert '### All Schedules' in res.get('HumanReadable') 
+    assert '### All Schedules' in res.get('HumanReadable')
 
 
 def test_get_users_contact_methods_command(mocker, requests_mock):
@@ -364,16 +364,11 @@ def test_get_users_contact_methods_command(mocker, requests_mock):
 
     requests_mock.get(
         f'https://api.pagerduty.com/users/{user_id}/contact_methods',
-        json={ 
-                'contact_methods': [{'id': 'id',
-                                    'address': 'address',
-                                    'country_code': 'country_code'}]
-
-        }
+        json={'contact_methods': [{'id': 'id', 'address': 'address', 'country_code': 'country_code'}]}
     )
     from PagerDuty import get_users_contact_methods_command
     res = get_users_contact_methods_command(user_id)
-    assert '### Contact Methods' in res.get('HumanReadable') 
+    assert '### Contact Methods' in res.get('HumanReadable')
 
 
 def test_get_users_notification_command(mocker, requests_mock):
@@ -402,13 +397,9 @@ def test_get_users_notification_command(mocker, requests_mock):
 
     requests_mock.get(
         f'https://api.pagerduty.com/users/{user_id}/notification_rules',
-        json={ 
-                'notification_rules': [{'id': 'id',
-                                    'urgency': 'urgency',
-                                    'type': 'type'}]
-
-        }
+        json={'notification_rules': [{'id': 'id', 'urgency': 'urgency','type': 'type'}]}
     )
     from PagerDuty import get_users_notification_command
     res = get_users_notification_command(user_id)
-    assert '### User notification rules' in res.get('HumanReadable') 
+    assert '### User notification rules' in res.get('HumanReadable')
+    
