@@ -450,11 +450,18 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
 
     commit_hash = commit_list.get('values')[0].get('hash')
     response = client.raw_file_get_request(repo, file_path, commit_hash)
-
+    output = {
+        'file_path': file_path,
+        'file_content': response.text
+    }
     if response.status_code == 200:
-        return CommandResults(readable_output=f'The file {file_path} content is: {response.text}')
+        return CommandResults(readable_output=f'The file {file_path} content is: {response.text}',
+                              outputs_prefix='Bitbucket.RawFile',
+                              outputs=output)
     else:
-        return CommandResults(readable_output='The command failed.')
+        return CommandResults(readable_output='The command failed.',
+                              outputs_prefix='Bitbucket.RawFile',
+                              outputs=output)
 
 
 ''' MAIN FUNCTION '''

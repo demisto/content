@@ -620,6 +620,74 @@ script:
           required: true
           description: The path of the needed file.
           isArray: false
+      outputs:
+        - contextPath: Bitbucket.RawFile.file_path
+          description: 'The path of the file.'
+          type: String
+        - contextPath: Bitbucket.RawFile.file_content
+          description: 'The content of the file.'
+          type: String
+    - name: bitbucket-issue-create
+      description: Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: title
+          required: true
+          description: The title of the new issue.
+          isArray: false
+        - name: state
+          auto: PREDEFINED
+          defaultValue: New
+          description: The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'. The default is 'New'.
+          isArray: false
+          predefined:
+            - New
+            - Open
+            - Resolved
+            - On Hold
+            - Invalid
+            - Duplicate
+            - Wontfix
+            - Closed
+          required: false
+        - name: type
+          auto: PREDEFINED
+          defaultValue: Task
+          description: The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. The default is 'Task'.
+          isArray: false
+          predefined:
+            - Bug
+            - Enhancement
+            - Proposal
+            - Task
+          required: false
+        - name: priority
+          auto: PREDEFINED
+          defaultValue: Trivial
+          description: The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. The default is 'Trivial'.
+          isArray: false
+          predefined:
+            - Trivial
+            - Minor
+            - Major
+            - Critical
+            - Blocker
+          required: false
+        - name: content
+          required: false
+          description: The content of the issue to create.
+          isArray: false
+        - name: assignee_id
+          required: false
+          description: The id of the assignee of the issue to create.
+          isArray: false
+        - name: assignee_user_name
+          required: false
+          description: The user name of the assignee of the issue to create.
+          isArray: false
   isfetch: false
   runonce: false
   script: "-"
