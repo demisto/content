@@ -1,57 +1,23 @@
 args:
 - default: false
-  description: The job ids to deleting. If set, delete only these jobs.
-  isArray: true
-  name: include_job_ids
+  description: The content items ids to delete in a dict format.
+  isArray: false
+  name: include_ids_dict
   required: false
   secret: false
 - default: false
-  description: The job ids to exclude from deleting. If set, will delete all other jobs.
-  isArray: true
-  name: exclude_job_ids
-  required: false
-  secret: false
-- default: false
-  description: The list ids to deleting. If set, delete only these lists.
-  isArray: true
-  name: include_list_ids
-  required: false
-  secret: false
-- default: false
-  description: The list ids to exclude from deleting. If set, will delete all other lists.
-  isArray: true
-  name: exclude_list_ids
-  required: false
-  secret: false
-- default: false
-  description: The installed pack ids to deleting. If set, delete only lists with these ids.
-  isArray: true
-  name: include_pack_ids
-  required: false
-  secret: false
-- default: false
-  description: The installed pack ids to exclude from deleting. If set, will delete all other installed packs.
-  isArray: true
-  name: exclude_pack_ids
+  description: The content items ids to not delete in a dict format.
+  isArray: false
+  name: exclude_ids_dict
   required: false
   secret: false
 - auto: PREDEFINED
-  description: When set to false, will delete content.
+  default: false
+  description: If true, don't really delete anything.
   isArray: false
   name: dry_run
   required: true
   secret: false
-  defaultValue: 'true'
-  predefined:
-    - 'true'
-    - 'false'
-- auto: PREDEFINED
-  description: If no entity ids were specified (either to include or exclude) and is set to true, will delete all found ids.
-  isArray: false
-  name: delete_unspecified
-  required: true
-  secret: false
-  defaultValue: 'false'
   predefined:
     - 'true'
     - 'false'
