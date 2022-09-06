@@ -731,13 +731,14 @@ class NightlyTestCollector(TestCollector, ABC):
                     if not item.path:
                         raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
                     relative_path = PACK_MANAGER.relative_to_packs(item.path)
+                    marketplaces_string = ', '.join(map(str, item.marketplaces))
                     result.append(
                         CollectionResult(
                             test=None,
                             pack=pack.pack_id,
                             reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                             version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
+                            reason_description=f'{str(relative_path)}, ({marketplaces_string})',
                             conf=self.conf,
                             id_set=self.id_set,
                             is_nightly=True,
@@ -754,7 +755,6 @@ class NightlyTestCollector(TestCollector, ABC):
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
-        self.trigger_sanity_tests = True
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
@@ -773,7 +773,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(only_value=True),
             self._packs_matching_marketplace_value(only_value=True),
-            self._packs_of_content_matching_marketplace_value(only_value=True)
+            self._packs_of_content_matching_marketplace_value(only_value=True),
+            self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
 
 
