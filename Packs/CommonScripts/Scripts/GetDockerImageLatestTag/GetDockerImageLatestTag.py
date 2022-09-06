@@ -156,7 +156,7 @@ def main():
 
         # first try to get the docker image tags using normal http request
         res = requests.get(
-            url='https://hub.docker.com/v2/repositories/{}/tags'.format(image_name),
+            url=f'https://hub.docker.com/v2/repositories/{image_name}/tags',
             verify=verify_ssl,
         )
         if res.status_code == 200:
@@ -186,5 +186,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
