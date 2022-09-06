@@ -12,4 +12,5 @@ def test_main(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert results == 'this is error'
+    assert results['Contents'] == 'this is error'
+    assert results['Type'] == EntryType.ERROR
