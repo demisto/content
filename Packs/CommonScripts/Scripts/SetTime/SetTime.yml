@@ -4,7 +4,7 @@ commonfields:
 name: SetTime
 script: ''
 type: python
-subtype: python3
+subtype: python2
 tags: []
 comment: Fill the current time in a custom incident field
 system: true
@@ -17,6 +17,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)
