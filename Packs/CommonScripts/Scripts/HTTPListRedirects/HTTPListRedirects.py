@@ -5,6 +5,7 @@ import os
 
 requests.packages.urllib3.disable_warnings()
 
+
 if demisto.args().get('use_system_proxy') == 'false':
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
@@ -18,7 +19,7 @@ if not u.lower().startswith('http'):
 if demisto.args()['useHead'] == 'true':
     response = requests.head(u, allow_redirects=True, verify=verify_ssl)
 else:
-    requests.get(u, verify=verify_ssl)
+    response = requests.get(u, verify=verify_ssl)
 urls = []
 if response.history:
     for resp in response.history:
