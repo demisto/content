@@ -2598,9 +2598,16 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(remote_args):
     update_args = remote_args.delta
-    remote_status = remote_args.data.get('status')
-    # we close the XDR incident only if it's not already closed
-    if remote_args.inc_status == 2 and update_args.get('closingUserId') and remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+    current_remote_status = remote_args.data.get('status')
+    
+    # force closing remote incident only if:
+    #   XSOAR incident are closed
+    #   the closingUserId was changed
+    #   remote incident aren't already closed
+    if remote_args.inc_status == 2 and \
+       update_args.get('closingUserId') and \
+       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+
         update_args['resolve_comment'] = update_args.get('closeNotes', '')
         update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
@@ -2608,13 +2615,11 @@ def handle_outgoing_issue_closure(remote_args):
 
 def get_update_args(remote_args):
     """Change the updated field names to fit the update command"""
-    
-    handle_outgoing_issue_closure(remote_args)
 
-    update_args = remote_args.delta
-    handle_outgoing_incident_owner_sync(update_args)
-    handle_user_unassignment(update_args)
-    return update_args
+    handle_outgoing_issue_closure(remote_args)
+    handle_outgoing_incident_owner_sync(remote_args.delta)
+    handle_user_unassignment(remote_args.delta)
+    return remote_args.delta
 
 
 def update_remote_system_command(client, args):
