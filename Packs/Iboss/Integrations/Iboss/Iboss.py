@@ -1639,7 +1639,7 @@ def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
-def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     policy_layer_name = _get_validate_argument(
         "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
@@ -1680,7 +1680,7 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
     custom_category_id = policy_layer.get("customCategoryId", None)
     custom_category_number = policy_layer.get("customCategoryNumber", None)
 
-    command_results = []
+    results = []
     for url in argToList(urls):
         result = client.add_entity_to_policy_layer_list(
             url=url, custom_category_id=custom_category_id, custom_category_number=custom_category_number,
@@ -1693,7 +1693,7 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
         if 'No changes made to list' in message:
             result["message"] = f'{url} is already in policy layer `{policy_layer_name}` and covers ' \
                                 f'the domain entry being added. No changes made to list. '
-        elif "success" in message:
+        elif "Success" in message:
             result["message"] = f'{url} successfully added to policy layer `{policy_layer_name}`.'
 
         # Update entity if upsert is enabled and entity already exists in policy layer
@@ -1715,17 +1715,18 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
 
             if 'Successfully' in result['message']:
                 result['message'] = f'Successfully updated {url} in policy layer `{policy_layer_name}`.'
+        result['entity'] = url
+        results.append(result)
 
-        command_results.append(CommandResults(
-            readable_output=result["message"],
-            outputs_prefix="iboss.AddEntityToPolicyLayerList",
-            outputs_key_field="message",
-            outputs=result,
-        ))
-    return command_results
+    return CommandResults(
+        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']), # result["message"],
+        outputs_prefix="iboss.AddEntityToPolicyLayerList",
+        outputs_key_field="message",
+        outputs=results,
+    )
 
 
-def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     policy_layer_name = _get_validate_argument(
         "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
@@ -1763,7 +1764,7 @@ def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str,
     custom_category_id = policy_layer.get("customCategoryId", None)
     custom_category_number = policy_layer.get("customCategoryNumber", None)
 
-    command_results = []
+    results = []
     for url in argToList(urls):
         result = client.remove_entity_from_policy_layer_list(
             url=url, custom_category_id=custom_category_id, custom_category_number=custom_category_number,
@@ -1778,13 +1779,15 @@ def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str,
         elif "success" in message:
             result["message"] = f"{url} removed from policy layer `{policy_layer_name}`."
 
-        command_results.append(CommandResults(
-            readable_output=result["message"],
-            outputs_prefix="iboss.RemoveEntityFromPolicyLayerList",
-            outputs_key_field="message",
-            outputs=result,
-        ))
-    return command_results
+        result['entity'] = url
+        results.append(result)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']),  # result["message"],
+        outputs_prefix="iboss.AddEntityToPolicyLayerList",
+        outputs_key_field="message",
+        outputs=results,
+    )
 
 
 ''' MAIN FUNCTION '''
