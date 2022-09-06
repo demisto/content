@@ -8,7 +8,7 @@ from functools import reduce
 
 
 def ads(html, termlist):
-    results = {}
+    results: dict = {}
     tags = re.findall("<[^/][^>]*>", html)
     for item in termlist.split('\n'):
         if not item.strip():
