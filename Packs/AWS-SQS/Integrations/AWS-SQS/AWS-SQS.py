@@ -238,7 +238,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch = min(arg_to_number(params.get('max_fetch', 10)), 100)
+    max_fetch = min(arg_to_number(params.get('max_fetch', 10)) or 10, 100)
     parse_body_as_json = params.get('parse_body_as_json', False)
 
     commands = {
