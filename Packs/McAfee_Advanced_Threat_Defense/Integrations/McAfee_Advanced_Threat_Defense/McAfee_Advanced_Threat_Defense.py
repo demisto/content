@@ -318,7 +318,7 @@ def check_task_status_command():
     human_readable = tableToMarkdown(
         'ATD Sandbox Task Status',
         result['tasks'],
-        (result['tasks'][0]).keys()
+        list((result['tasks'][0]).keys())
     )
 
     demisto.results({
@@ -681,7 +681,7 @@ def get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
     json_res_string = json.dumps(json_res)
     if report_type == 'json':
         human_readable = tableToMarkdown(
-            'McAfee ATD Sandbox Report', summary, summary.keys(), None, removeNull=True)
+            'McAfee ATD Sandbox Report', summary, list(summary.keys()), None, removeNull=True)
         return {
             'content': json_res_string,
             'md': human_readable,
