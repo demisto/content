@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import * # noqa: F401
 
 
 def test_main(mocker):
