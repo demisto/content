@@ -2,38 +2,43 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-def main():
+
+def extract_indicators_from_file(args):
     try:
-        maxFileSize = int(demisto.args().get('maxFileSize'))
+        maxFileSize = int(args.get('maxFileSize'))
     except Exception:
         maxFileSize = 1024 ** 2
 
     res = demisto.executeCommand('getFilePath', {
-        'id': demisto.args()['entryID']
+        'id': args.get('entryID')
     })
 
     try:
         filePath = res[0]['Contents']['path']
     except Exception:
-        return_error("File was not found")
+        raise FileNotFoundError
 
     with open(filePath, mode='r') as f:
         data = f.read(maxFileSize)
-        try:
-            data = data.decode('unicode_escape').encode('utf-8')
-        # unicode_escape might throw UnicodeDecodeError for strings that contain \ char followed by ascii characters
-        except UnicodeDecodeError:
-            data = data.decode('iso-8859-1').encode('utf-8')
 
         # Extract indicators (omitting context output, letting auto-extract work)
         indicators_hr = demisto.executeCommand("extractIndicators", {
             'text': data})[0][u'Contents']
-        demisto.results({
+        return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
             'Contents': indicators_hr,
             'HumanReadable': indicators_hr
-        })
+        }
+
+
+def main():
+    try:
+        args = demisto.args()
+        demisto.results(extract_indicators_from_file(args))
+    except FileNotFoundError:
+        return_error("File was not found")
+
 
 if __name__ == "builtins" or __name__ == '__main__':
     main()
