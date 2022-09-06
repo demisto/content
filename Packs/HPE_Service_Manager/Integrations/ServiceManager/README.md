@@ -1,5 +1,4 @@
 Service Manager By Micro Focus (Formerly HPE Software).
-This integration was integrated and tested with version xx of Service Manager
 
 ## Configure Micro Focus Service Manager on Cortex XSOAR
 
