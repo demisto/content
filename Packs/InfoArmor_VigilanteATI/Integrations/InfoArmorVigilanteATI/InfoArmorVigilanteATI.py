@@ -22,8 +22,8 @@ def gen_hmac(method, timestamp, api_key, api_secret):
     Generate HMAC string for VigilanteATI API service. The string is generated as follows:
     hmac('sha1', 'API_KEY' + 'TIMESTAMP' + 'METHOD_NAME', 'API_SECRET')
     """
-    msg = "%s%s%s%s" % (api_key, timestamp, method, api_secret)
-    hm = hmac.new(str(api_secret), str(msg), hashlib.sha1)
+    msg = f"{api_key}{timestamp}{method}{api_secret}".encode()
+    hm = hmac.new(api_secret.encode(), msg, hashlib.sha1)
     return hm.hexdigest()
 
 
@@ -342,7 +342,7 @@ def remove_none_params(params_dict):
     """
     filter only the params that have values
     """
-    return dict((k, v) for k, v in params_dict.iteritems() if v is not None)
+    return dict((k, v) for k, v in params_dict.items() if v is not None)
 
 
 def query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token=None):
@@ -540,7 +540,7 @@ def watchlist_add_accounts(account_identifiers, _type, tag):
 
 def watchlist_add_accounts_command(args):
     account_identifiers = args.get('account_identifiers')
-    if isinstance(account_identifiers, basestring):
+    if isinstance(account_identifiers, str):
         account_identifiers = account_identifiers.split(',')
 
     _type = args.get('type')
@@ -582,7 +582,7 @@ def watchlist_remove_accounts(account_identifiers):
 
 def watchlist_remove_accounts_command(args):
     account_identifiers = args.get('account_identifiers')
-    if isinstance(account_identifiers, basestring):
+    if isinstance(account_identifiers, str):
         account_identifiers = account_identifiers.split(',')
 
     result = watchlist_remove_accounts(account_identifiers)
