@@ -5,6 +5,7 @@ name: SetTime
 type: python
 subtype: python2
 tags: []
+script: ''
 comment: Fill the current time in a custom incident field
 system: true
 args:
