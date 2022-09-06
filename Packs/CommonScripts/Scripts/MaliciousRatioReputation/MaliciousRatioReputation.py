@@ -2,10 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def get_indicator_from_value(indicator_value: object):
-    """
-    :type indicator_value: object
-    """
+def get_indicator_from_value(indicator_value):
     try:
         res = demisto.executeCommand("findIndicators", {'value': indicator_value})
         indicator = res[0]['Contents'][0]
@@ -15,7 +12,6 @@ def get_indicator_from_value(indicator_value: object):
 
 
 def get_indicator_result(indicator):
-
     res = demisto.executeCommand("maliciousRatio", {'value': indicator['value']})
 
     mr_score = res[0]['Contents'][0]['maliciousRatio']
