@@ -26,7 +26,8 @@ def main():
                 if 'reportfilepath' in demisto.args():
                     filePath = demisto.args()['reportfilepath']
                 else:
-                    filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
+                    filePath = demisto.executeCommand('getFilePath',
+                                                      {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
                 with open(filePath, 'rb') as jsonFile:
                     report = json.load(jsonFile)
             except Exception:

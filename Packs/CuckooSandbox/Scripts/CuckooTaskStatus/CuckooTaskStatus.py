@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 def main():
     res = demisto.executeCommand("cuckoo-view-task", {"id": demisto.args()["taskID"]})
     if isError(res[0]):
