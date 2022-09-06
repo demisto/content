@@ -11,7 +11,7 @@ code and have a newly created Issue easily.
 """
 createIssue default argument, we recommend not changing them.
 """
-DEFUALT_ARGS = ['summary',
+DEFAULT_ARGS = ['summary',
                 'projectKey',
                 'issueTypeName',
                 'issueTypeId',
@@ -29,12 +29,12 @@ DEFUALT_ARGS = ['summary',
 
 def main():
     try:
-        createIssueArgs = {key: value for key, value in demisto.args().items() if key in DEFUALT_ARGS}
+        createIssueArgs = {key: value for key, value in demisto.args().items() if key in DEFAULT_ARGS}
 
         """
         Adding the arguments fields to the issueJson field.
         """
-        extraIssueArgs = {key: value for key, value in demisto.args().items() if key not in DEFUALT_ARGS}
+        extraIssueArgs = {key: value for key, value in demisto.args().items() if key not in DEFAULT_ARGS}
         createIssueArgs['issueJson'] = json.dumps(extraIssueArgs)
 
         """
