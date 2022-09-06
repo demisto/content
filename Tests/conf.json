@@ -3302,7 +3302,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -5174,6 +5174,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5319,6 +5324,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "checkpointdome9" : "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
