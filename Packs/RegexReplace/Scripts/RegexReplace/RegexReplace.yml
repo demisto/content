@@ -47,7 +47,7 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
