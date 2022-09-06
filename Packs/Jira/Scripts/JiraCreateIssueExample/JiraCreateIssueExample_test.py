@@ -1,4 +1,3 @@
-from ast import arg
 from JiraCreateIssueExample import add_additional_args, get_known_args_from_input, get_additional_args_from_input, DEFAULT_ARGS
 import pytest
 
