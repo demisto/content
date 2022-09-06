@@ -34,7 +34,7 @@ def is_entry_email(entry):
     Return entry ID if this is an email entry otherwise None
 
     Arguments:
-        entry {dict} -- Entry object as returned from getEtnries or getEntry
+        entry {dict} -- Entry object as returned from getEntries or getEntry
     """
     info = demisto.get(entry, 'FileMetadata.info')
     name = demisto.get(entry, 'File')
@@ -43,8 +43,8 @@ def is_entry_email(entry):
     return None
 
 
-def main():
-    entry_ids = demisto.get(demisto.args(), 'entryid')
+def identify_attached_mail(args):
+    entry_ids = demisto.get(args, 'entryid')
     if entry_ids:
         if isinstance(entry_ids, STRING_TYPES):
             # playbook inputs may be in the form: [\"23@2\",\"24@2\"] if passed as a string and not array
@@ -61,11 +61,15 @@ def main():
         if id:
             # leave the following comment as server used it to detect the additional context path used beyond the condition values
             # demisto.setContext('reportedemailentryid', id)
-            return_outputs('yes', {'reportedemailentryid': id}, 'yes')
-            return
-    demisto.results('no')
+            return 'yes', {'reportedemailentryid': id}
+    return 'no', None
 
 
-# python2 uses __builtin__ python3 uses builtins
+def main():
+    args = demisto.args()
+    result, outputs = identify_attached_mail(args)
+    return_outputs(result, outputs, result)
+
+
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
