@@ -6,10 +6,6 @@
             "playbookID": "IndicatorFormatterFilterTest"
         },
         {
-            "integrations": "Check Point Sandblast",
-            "playbookID": "Sandblast_malicious_test"
-        },
-        {
             "integrations": "FeedURLhaus",
             "playbookID": "playbook-urlhaus-feed_Test"
         },
@@ -2194,6 +2190,10 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "integrations": "Check Point Sandblast",
+            "playbookID": "Sandblast_malicious_test"
         },
         {
             "playbookID": "TestMatchRegexV2"
@@ -5402,6 +5402,7 @@
         "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
         "KafkaV3": "Can not connect to instance from remote",
+        "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
         "ANYRUN": "No instance",
