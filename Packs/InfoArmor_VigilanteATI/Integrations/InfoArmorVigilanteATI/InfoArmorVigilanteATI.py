@@ -663,7 +663,7 @@ def usage_info_command():
     })
 
 
-def main():
+def main():  # pragma: no coverage
     """
     main function, parses params and runs command functions
     """
