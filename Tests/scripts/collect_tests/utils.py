@@ -174,7 +174,7 @@ class ContentItem(DictFileBased):
 
     @property
     def name(self) -> str:
-        return self.get('name', default='', warn_if_missing=False, warning_comment=self.id_)
+        return self.get('name', default='', warn_if_missing=False, warning_comment=self.id_ or '')
 
     @property
     def tests(self) -> list[str]:

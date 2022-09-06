@@ -310,7 +310,7 @@ class TestCollector(ABC):
             id_: str,
             pack_id: str,
             marketplaces: Optional[tuple[MarketplaceVersions, ...]],
-            path: Optional[Path],
+            path: Path,
             version_range: Optional[VersionRange],
             is_integration: bool,
     ):
@@ -318,7 +318,7 @@ class TestCollector(ABC):
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
-        self.__validate_marketplace_compatibility(marketplaces, path)
+        self.__validate_marketplace_compatibility(marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
     def _validate_path(self, path: Path):
