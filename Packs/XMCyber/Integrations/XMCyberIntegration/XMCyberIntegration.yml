@@ -128,7 +128,7 @@ script:
       description: The attack technique which compromised the entity
       type: String
   - deprecated: false
-    description: Check if current XM version supports Demisto integration
+    description: Check if current XM version supports Cortex Xsoar integration
     execution: false
     name: xmcyber-version-supported
     outputs:
@@ -308,7 +308,67 @@ script:
     - contextPath: Host.IP
       description: The IP address of the host.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  - arguments:
+    - default: false
+      description: Comma-separated list of fields to search for the entity
+      isArray: true
+      name: fields
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of values (in the same order than the fields list) used to search for the entity
+      isArray: true
+      name: values
+      required: true
+      secret: false
+    deprecated: false
+    description: Return data on an XM entity
+    execution: false
+    name: xmcyber-enrich-from-fields
+    outputs:
+    - contextPath: XMCyber.Entity.id
+      description: XMCyber Entity ID
+      type: String
+    - contextPath: XMCyber.Entity.name
+      description: Entity Name
+      type: String
+    - contextPath: XMCyber.Entity.isAsset
+      description: Is Entity a Critical Asset
+      type: Boolean
+    - contextPath: XMCyber.Entity.affectedEntities
+      description: Number of unique entities at risk from this entity
+      type: Number
+    - contextPath: XMCyber.Entity.averageComplexity
+      description: Average complexity to compromise this entity
+      type: Number
+    - contextPath: XMCyber.Entity.criticalAssetsAtRisk
+      description: Number of unique critical assets at risk from this entity
+      type: Number
+    - contextPath: XMCyber.Entity.averageComplexityLevel
+      description: Level of the average complexity to compromise this entity
+      type: String
+    - contextPath: XMCyber.Entity.compromisingTechniques.name
+      description: Technique compromising this entity
+      type: String
+    - contextPath: XMCyber.Entity.compromisingTechniques.count
+      description: Number of vectors with this technique compromising this entity
+      type: Number
+    - contextPath: XMCyber.Entity.type
+      description: Entity Type
+      type: String
+    - contextPath: XMCyber.Entity.report
+      description: Link to the Entity Report
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: Host.IP
+      description: The IP address of the host.
+      type: String  
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: true
   longRunning: false

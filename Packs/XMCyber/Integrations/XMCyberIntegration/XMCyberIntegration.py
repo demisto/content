@@ -221,13 +221,18 @@ class XM:
         )
 
     def search_entities(
-        self, search_string: str, field_name: Optional[str] = None
+        self, field_name_to_value: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
-        params = (
-            {"search": f'{{"$regex":"/{search_string}/i"}}'}
-            if field_name == "name"
-            else {"filter": f'{{"{field_name}":{{"$regex":"/{search_string}/i"}}}}'}
-        )
+        params = dict()
+        for field_name, value in field_name_to_value.items():
+            if field_name == "name":
+                params["search"] = f'{{"$regex":"/{value}/i"}}'
+            else:
+                params.setdefault("filter", {}).update({field_name: value})
+
+        if params.get("filter"):
+            params["filter"] = json.dumps(params["filter"])
+
         return self.client.get_paginated(URLS.Entities, params)
 
     def get_techniques(
@@ -714,53 +719,67 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def update_command_results(
+    xm: XM,
+    command_results: List[CommandResults],
+    xm_data_list: List[Dict[str, Any]],
+    readable_output,
+    entity: Dict[str, Any],
+):
+    id_ = entity.get("entityId")
+    try:
+        ip = entity.get("ipv4Str", "")
+        domain = (
+            entity.get("customProperties", {})
+            .get("domainWorkgroup", {})
+            .get("data", "")
+        )
+        os = entity.get("os", {}).get("type", "")
+        os_version = entity.get("os", {}).get("name", "")
+        hostname = entity.get("displayName", "")
+        endpoint_standard_context = Common.Endpoint(
+            id_,
+            ip_address=ip,
+            domain=domain,
+            os=os,
+            os_version=os_version,
+            hostname=hostname,
+        )
+    except (TypeError, AttributeError, KeyError):
+        endpoint_standard_context = Common.Endpoint(id_)
+    command_results.append(
+        CommandResults(
+            indicator=endpoint_standard_context,
+            readable_output=f"Fetched Endpoint {id_} info",
+            raw_response=entity,
+        )
+    )
+    entity_data = entity_obj_to_data(xm, entity)
+    readable_output += pretty_print_entity(entity_data)
+    xm_data_list.append(entity_data)
+    return readable_output
+
+
 def _enrich_from_field(
     xm: XM, field_name: str, field_values: List[str]
 ) -> List[CommandResults]:
     # Context standard for IP class
     command_results: List[CommandResults] = []
     xm_data_list: List[Dict[str, Any]] = []
+    readable_output = ""
 
     for value in field_values:
-        entity_ids = xm.search_entities(value, field_name=field_name)
-        if len(entity_ids) > 0:
+        entities = xm.search_entities(field_name_to_value={field_name: value})
+        if len(entities) > 0:
             readable_output = (
                 f"**Matched the following entities for {field_name} {value}**"
             )
         else:
             readable_output = f"**No entity matches {field_name} {value}"
-        for entity in entity_ids:
-            id_ = entity.get("entityId")
-            try:
-                ip = entity.get("ipv4Str", "")
-                domain = (
-                    entity.get("customProperties", {})
-                    .get("domainWorkgroup", {})
-                    .get("data", "")
-                )
-                os = entity.get("os", {}).get("type", "")
-                os_version = entity.get("os", {}).get("name", "")
-                hostname = entity.get("displayName", "")
-                endpoint_standard_context = Common.Endpoint(
-                    id_,
-                    ip_address=ip,
-                    domain=domain,
-                    os=os,
-                    os_version=os_version,
-                    hostname=hostname,
-                )
-            except (TypeError, AttributeError, KeyError):
-                endpoint_standard_context = Common.Endpoint(id_)
-            command_results.append(
-                CommandResults(
-                    indicator=endpoint_standard_context,
-                    readable_output=f"Fetched Endpoint {id_} info",
-                    raw_response=entity,
-                )
+        for entity in entities:
+            readable_output = update_command_results(
+                xm, command_results, xm_data_list, readable_output, entity
             )
-            entity_data = entity_obj_to_data(xm, entity)
-            readable_output += pretty_print_entity(entity_data)
-            xm_data_list.append(entity_data)
 
     # add general hr and output to the begining of result
     command_results.insert(
@@ -770,7 +789,36 @@ def _enrich_from_field(
             outputs_prefix="XMCyber.Entity",
             outputs_key_field="id",
             outputs=xm_data_list,
-            raw_response=entity_ids,
+            raw_response=entities,
+        ),
+    )
+
+    return command_results
+
+
+def _enrich_from_multiple_fields(xm: XM, field_name_to_value: Dict[str, Any]):
+    command_results: List[CommandResults] = []
+    xm_data_list: List[Dict[str, Any]] = []
+    entities = xm.search_entities(field_name_to_value=field_name_to_value)
+    if len(entities) > 0:
+        readable_output = (
+            f"**Matched the following entities for {field_name_to_value}**"
+        )
+        for entity in entities:
+            readable_output = update_command_results(
+                xm, command_results, xm_data_list, readable_output, entity
+            )
+    else:
+        readable_output = f"**No entity matches {field_name_to_value}**"
+
+    command_results.insert(
+        0,
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="XMCyber.Entity",
+            outputs_key_field="id",
+            outputs=xm_data_list,
+            raw_response=entities,
         ),
     )
 
@@ -783,6 +831,17 @@ def enrich_from_entity_id(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
         raise ValueError("EntityId(s) not specified")
 
     return _enrich_from_field(xm=xm, field_name="entityId", field_values=entity_ids)
+
+
+def enrich_entity_from_fields(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
+    field_names = argToList(args.get("fields"))
+    field_values = argToList(args.get("values"))
+    if not field_names or not field_values or len(field_names) != len(field_values):
+        raise ValueError("Invalid input")
+
+    return _enrich_from_multiple_fields(
+        xm=xm, field_name_to_value=dict(zip(field_names, field_values))
+    )
 
 
 def enrich_from_hostname(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
@@ -820,9 +879,9 @@ def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults
         s_version = system_version.split(".")
         major = int(s_version[0])
         minor = int(s_version[1])
-        if major < 1 or (major == 1 and minor < 37):
+        if major < 1 or (major == 1 and minor < 43):
             raise Exception(
-                f"Instance version not compatible. {system_version} (found) < 1.37 (required)."
+                f"Instance version not compatible. {system_version} (found) < 1.43 (required)."
             )
 
     except DemistoException as e:
@@ -882,6 +941,7 @@ def main() -> None:
             "xmcyber-enrich-from-ip": enrich_from_ip,
             "xmcyber-enrich-from-hostname": enrich_from_hostname,
             "xmcyber-enrich-from-entityId": enrich_from_entity_id,
+            "xmcyber-enrich-from-fields": enrich_entity_from_fields,
         }
 
         if command == "fetch-incidents":
