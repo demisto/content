@@ -17,8 +17,8 @@ def main():
         demisto.results(scanner_result)
 
     context_json = {'Intezer.Analysis': {'ID': endpoint_analysis_id,
-                                        'Type': 'Endpoint',
-                                        'Status': 'Created'}}
+                                         'Type': 'Endpoint',
+                                         'Status': 'Created'}}
 
     return_outputs('Endpoint analysis created', context_json)
 
