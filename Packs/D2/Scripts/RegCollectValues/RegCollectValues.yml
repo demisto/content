@@ -1,0 +1,24 @@
+commonfields:
+  id: RegCollectValues
+  version: -1
+name: RegCollectValues
+script: ''
+type: python
+subtype: python3
+tags:
+- registry
+- enhancement
+comment: Collect values for the given registry path from all Windows systems in this investigation.
+system: true
+args:
+- name: regpath
+  required: true
+  default: true
+  description: The registry path of the key to query
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)
