@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 import io
 import csv
+import sys
 
 
 def main():
@@ -49,10 +50,13 @@ def json_to_csv(data: list):
     result = io.StringIO()
     csv_data = csv.writer(result)
 
-    if not (isinstance(data, list) and data):
-        raise DemistoException("Input JSON data is invalid.")
+    try:
+        keys = list(data[0].keys())
 
-    keys = list(data[0].keys())
+    except KeyError:
+        demisto.debug("The given JSON is not an iterable list.")
+        sys.exit(0)
+
     csv_data.writerow(keys)
 
     for d in data:
