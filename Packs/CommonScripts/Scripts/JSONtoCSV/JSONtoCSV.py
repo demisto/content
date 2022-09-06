@@ -3,32 +3,31 @@ from CommonServerPython import *
 
 import io
 import csv
-import sys
 
 
 def main():
-    entry_id = demisto.args()['entryid']
+    args = demisto.args()
+    entry_id = args.get("entryid")
+
     if isinstance(entry_id, list):
         entry_id = entry_id[0]
 
-    json_ent = demisto.executeCommand('getEntry', {'id': entry_id})
-
-    dictlist = json_ent[0]['Contents']
-
+    dictlist = demisto.executeCommand("getEntry", {"id": entry_id})[0]["Contents"]
     csv_final = json_to_csv(dictlist)
 
-    if 'filename' in demisto.args():
-        # output cvs to file in warroom
-        demisto.results(fileResult(demisto.args()['filename'], csv_final.encode("utf-8")))
+    if "filename" in demisto.args():
+        # Send CSV as file in War Room
+        demisto.results(fileResult(args.get("filename"), csv_final))
+
     else:
-        # output cvs to warrrom
-        demisto.results(csv_final.encode("utf-8"))
+        # Send CSV to War Room
+        demisto.results(csv_final)
 
 
-def json_to_csv(data):
+def json_to_csv(data: list):
     """
-    takes a list of dictionaries and parsing them into csv.
-    json should be only list which contains dictionaries.
+    Takes a list of dictionaries and parses them into CSV format.
+    JSON should be only a list that contains dictionaries.
 
     json:
         [
@@ -47,22 +46,24 @@ def json_to_csv(data):
         "DC=demisto,DC=int" , "activedir"
         "CN=Users,DC=demisto, DC=int" ,"activedir"
     """
-    si = io.BytesIO()
-    cw = csv.writer(si)
-    try:
-        keys = list(data[0].iterkeys())
-    except KeyError:
-        demisto.debug("The given JSON is not an iterable list.")
-        sys.exit(0)
+    result = io.StringIO()
+    csv_data = csv.writer(result)
 
-    cw.writerow(keys)
+    if not (isinstance(data, list) and data):
+        raise DemistoException("Input JSON data is invalid.")
+
+    keys = list(data[0].keys())
+    csv_data.writerow(keys)
+
     for d in data:
         val_lst = []
         for k in keys:
             val_lst.append(d[k])
-        cw.writerow(val_lst)
-    return si.getvalue().strip('\r\n')
+
+        csv_data.writerow(val_lst)
+
+    return result.getvalue().strip()
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
