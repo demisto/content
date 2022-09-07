@@ -208,6 +208,24 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues/{issue_id}/'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
+    def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
+        """ Makes a POST request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
+            :param repo: str - The repository the user entered if he did.
+            :param body: Dict - the params to the api call
+            :param issue_id: str - an id to a specific issue to get.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
+            :rtype Dict[str, Any]
+        """
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/pullrequests'
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -637,6 +655,47 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
                           outputs_prefix='Bitbucket.Issue',
                           outputs=response,
                           raw_response=response)
+
+
+def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    title = args.get('title', None)
+    source_branch = args.get('source_branch')
+    destination_branch = args.get('destination_branch', None)
+    reviewer_id = args.get('reviewer_id', None)
+    description = args.get('description', None)
+    close_source_branch = argToBoolean(args.get('close_source_branch', None))
+    body = {
+        "title": title,
+        "source": {
+            "branch": {
+                "name": source_branch
+            }
+        }
+    }
+    if destination_branch:
+        body["destination"] = {
+            "branch": {
+                "name": destination_branch
+            }
+        }
+    if reviewer_id:
+        body["reviewers"] = [
+            {
+                "account_id": reviewer_id
+            }
+        ]
+    if description:
+        body["description"] = description
+    if close_source_branch:
+        body["close_source_branch"] = close_source_branch
+    response = client.pull_request_create_request(repo, body) # TODO check!!
+    return CommandResults(readable_output=f'The pull request was created successfully',
+                          outputs_prefix='Bitbucket.PullRequest',
+                          outputs=response,
+                          raw_response=response)
+
+
 
 
 ''' MAIN FUNCTION '''
