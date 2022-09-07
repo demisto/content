@@ -21,18 +21,18 @@ class Client(BaseClient):
     def _generate_token(self) -> str:
         if self.provider == "Local Login":
             body = {
-                  "username": self._client_id,
-                  "password": self._client_secret,
-                  "grant_type": "password",
+                "username": self._client_id,
+                "password": self._client_secret,
+                "grant_type": "password",
             }
         else:
             raise Exception('Logon Type not supported')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        return "Bearer "+(self._http_request("POST", "/v1/token",
-                                             headers=headers,
-                                             data=body)).get('accessToken')
+        return "Bearer " + (self._http_request("POST", "/v1/token",
+                            headers=headers,
+                            data=body)).get('accessToken')
 
     def getSecret(self, name: str) -> str:
         return self._http_request("GET", url_suffix="/v1/secrets/" + str(name))
