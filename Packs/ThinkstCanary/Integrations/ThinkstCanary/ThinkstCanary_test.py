@@ -67,9 +67,10 @@ def test_check_whitelist_commands_whitelisted(mocker):
     ThinkstCanary.check_whitelist_command()
     assert demisto.results.call_args_list[1][0][0].get('HumanReadable') == 'The IP address 1.2.3.4:Any is Whitelisted'
 
-@pytest.mark.parametrize('arg_status, return_status, expected_result', 
-                        [('Acknowledge', 'acknowledged', 'The Alert alert_id was acknowledged'),
-                         ('Unacknowledge', 'unacknowledged', 'The Alert alert_id was unacknowledged')])
+
+@pytest.mark.parametrize('arg_status, return_status, expected_result',
+                         [('Acknowledge', 'acknowledged', 'The Alert alert_id was acknowledged'),
+                          ('Unacknowledge', 'unacknowledged', 'The Alert alert_id was unacknowledged')])
 def test_alert_status_command(mocker, arg_status, return_status, expected_result):
     """
     Given: An alert id to check.
@@ -99,14 +100,14 @@ def test_list_canaries_command(mocker):
 
     import ThinkstCanary
     mocker.patch.object(ThinkstCanary, 'http_request', return_value={'devices': [{'description': 'Description',
-                                                                                 'id': 'ID',
-                                                                                 'ip_address': 'Address',
-                                                                                 'last_seen': 'LastSeen',
-                                                                                 'live': 'Status',
-                                                                                 'location': 'Location',
-                                                                                 'name': 'Name',
-                                                                                 'updated_std': 'LastUpdated',
-                                                                                 'version': 'Version'}]})
+                                                                                  'id': 'ID',
+                                                                                  'ip_address': 'Address',
+                                                                                  'last_seen': 'LastSeen',
+                                                                                  'live': 'Status',
+                                                                                  'location': 'Location',
+                                                                                  'name': 'Name',
+                                                                                  'updated_std': 'LastUpdated',
+                                                                                  'version': 'Version'}]})
     ThinkstCanary.list_canaries_command()
     assert 'Canary Devices' in demisto.results.call_args_list[0][0][0].get('HumanReadable')
 
