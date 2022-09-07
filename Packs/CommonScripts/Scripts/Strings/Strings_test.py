@@ -5,7 +5,7 @@ def test_strings(mocker):
     mocker.patch.object(demisto, 'executeCommand',
                         return_value=[{'path': './test_data/text_file.txt', 'name': 'text_file.txt', 'Type': ''}])
     mocker.patch.object(demisto, 'get', return_value='./test_data/text_file.txt')
-    entry = strings({'entry': '123'})
+    entry = strings({'chars': 4, 'size': 1024, 'entry': '123'})
     assert entry == 'abcabc'
 
 
@@ -13,5 +13,5 @@ def test_strings_no_string(mocker):
     mocker.patch.object(demisto, 'executeCommand',
                         return_value=[{'path': './test_data/no_text_file.txt', 'name': 'text_file.txt', 'Type': ''}])
     mocker.patch.object(demisto, 'get', return_value='./test_data/no_text_file.txt')
-    entry = strings({'entry': '123'})
+    entry = strings({'chars': 4, 'size': 1024, 'entry': '123'})
     assert entry == 'No strings were found.'

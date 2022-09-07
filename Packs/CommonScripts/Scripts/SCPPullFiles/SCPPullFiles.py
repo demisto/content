@@ -8,9 +8,9 @@ def scp_pull_files(args):
     if s2f:
         s2f = json.loads(s2f)
         if not isinstance(s2f, dict):
-            res = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+            res = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],  # type: ignore
                              "Contents": "Wrong argument provided. Not a dict. Dump of args: " + json.dumps(
-                                 args, indent=4)}  # type: ignore
+                                 args, indent=4)}
         else:
             for k in s2f:
                 res += demisto.executeCommand("copy-from", {'using': k, 'file': s2f[k]})
