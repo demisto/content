@@ -139,10 +139,10 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str,
         kwargs['SecretId'] = args.get('secret_id')
     if args.get('days_of_recovery'):
         kwargs['RecoveryWindowInDays'] = int(args.get('days_of_recovery'))
-    if args.get('delete_immediately'):
+    if args.get('delete_immediately') is not None:
         if args.get('days_of_recovery'):
             return_error('Delete command cannot be executed with both args: delete_immediately and days_of_recovery')
-        kwargs['ForceDeleteWithoutRecovery'] = args.get('delete_immediately', 'false').lower() == 'true'
+        kwargs['ForceDeleteWithoutRecovery'] = args.get('delete_immediately', False) == True
 
     response = client.delete_secret(**kwargs)
 
@@ -186,11 +186,11 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
 
     human_readable = tableToMarkdown('AWS Secret Policy', readable_output)
 
-    return CommandResults(
+    return_results(CommandResults(
         outputs_prefix='AWS.SecretsManager.Policy',
         outputs=response,
         readable_output=human_readable
-    )
+    ))
 
 def fetch_credentials(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client = client.aws_session(
@@ -228,7 +228,7 @@ def main() -> None:
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
         aws_access_key_id = params.get('access_key')
-        aws_secret_access_key = params.get('secret_key')
+        aws_secret_access_key = params.get('credentials').get('password')
         verify_certificate = not params.get('insecure', True)
         timeout = params.get('timeout')
         retries = int(params.get('retries')) if params.get('retries') else 5
