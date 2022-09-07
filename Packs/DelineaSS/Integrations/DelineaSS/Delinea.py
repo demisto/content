@@ -57,7 +57,7 @@ class Client(BaseClient):
         idSecret = argToList(response)
         search_id = []
 
-        if len(idSecret) != 0:
+        if idSecret :
             for element in idSecret:
                 getID = element.get('id')
                 search_id.append(getID)
@@ -77,11 +77,11 @@ class Client(BaseClient):
         idSecret = list(map(lambda x: x.get('id'), response))
         return idSecret
 
-    def updateSecretPassword(self, secret_id: str, newpassword: str) -> str:
+    def updateSecretPassword(self, secret_id: str, new_password: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
         body = {
             "id": secret_id,
-            "value": newpassword
+            "value": new_password
         }
         return self._http_request("PUT", url_suffix, json_data=body)
 
@@ -101,8 +101,8 @@ class Client(BaseClient):
 
         return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(secret_id) + "/change-password", json_data=body)
 
-    def secretCreate(self, name: str, secretTemplateId: str, **kwargs) -> str:
-        secretJSON = {'name': name, 'secretTemplateId': secretTemplateId, 'items': []}  # type: Dict[str, Any]
+    def secretCreate(self, name: str, secret_template_id: str, **kwargs) -> str:
+        secretJSON = {'name': name, 'secretTemplateId': secret_template_id, 'items': []}  # type: Dict[str, Any]
 
         for key, value in kwargs.items():
             JSON = {}
@@ -162,8 +162,8 @@ class Client(BaseClient):
     def searchFolder(self, search_folder: str) -> list:
         url_suffix = "/api/v1/folders/lookup?filter.searchText=" + search_folder
 
-        responseRecords = self._http_request("GET", url_suffix).get('records')
-        idFolder = list(map(lambda x: x.get('id'), responseRecords))
+        response_records = self._http_request("GET", url_suffix).get('records')
+        idFolder = list(map(lambda x: x.get('id'), response_records))
         return idFolder
 
     def folderDelete(self, folder_id: str) -> str:
@@ -306,11 +306,10 @@ def secret_password_update_command(client, secret_id: str = '', newpassword: str
 
 def secret_checkout_command(client, secret_id: str = ''):
     secret_checkout = client.secret_checkout(secret_id)
-    if len(secret_checkout) == 1 and len(secret_checkout.get('responseCodes')) == 0:
+    if  len(secret_checkout.get('responseCodes')) == 0:
         markdown = 'Checkout Success\n'
     else:
         markdown = tableToMarkdown('Check Out Secret', secret_checkout)
-    
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="Delinea.Secret.Checkout",
@@ -478,13 +477,14 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 
 
 def main():
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    params = demisto.params()
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
 
     # get the service API url
-    url = demisto.params().get('url')
-    proxy = demisto.params().get('proxy', False)
-    verify = not demisto.params().get('insecure', False)
+    url = params.get('url')
+    proxy = params.get('proxy', False)
+    verify = not params.get('insecure', False)
 
     LOG(f'Command being called is {demisto.command()}')
 
@@ -516,17 +516,16 @@ def main():
                         proxy=proxy,
                         verify=verify)
 
-        if demisto.command() in delinea_commands:
+        command = demisto.command()
+        if command in delinea_commands:
             return_results(
-                delinea_commands[demisto.command()](client, **demisto.args())  # type: ignore[operator]
+                delinea_commands[command](client, **demisto.args())  # type: ignore[operator]
             )
-
-        elif demisto.command() == 'test-module':
+        elif command == 'test-module':
             result = test_module(client)
             demisto.results(result)
-
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
