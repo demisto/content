@@ -164,8 +164,21 @@ class Client(BaseClient):
         if repo:
             url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+    def issue_list_request(self, repo:str, params: Dict, issue_id: str) -> Dict:
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/issues/'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues/'
+        if issue_id:
+            url_suffix = f'{url_suffix}{issue_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -503,6 +516,59 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
                           raw_response=response)
 
 
+def issue_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Retrieves issues from Bitbucket.
+        Args:
+            client: A Bitbucket client.
+            args: Demisto args.
+        Returns:
+            A CommandResult object with the array of issues as output.
+        """
+    repo = args.get('repo', None)
+    issue_id = args.get('issue_id', None)
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'page': page,
+        'pagelen': page_size
+    }
+    response = client.issue_list_request(repo, params, issue_id)
+    if issue_id:
+        results = [response]
+        hr_title = f'The information about "{issue_id}"'
+    else:
+        results = check_pagination(client, response, limit)
+        hr_title = f'List of the issues'
+    human_readable = []
+    for value in results:
+        d = {'Title': value.get('title'),
+             'Type': value.get('kind'),
+             'Priority': value.get('priority'),
+             'Status': value.get('state'),
+             'Votes': value.get('votes'),
+             'Assignee': demisto.get(value, 'assignee.display_name'),
+             'CreatedAt': value.get('created_on'),
+             'UpdatedAt': value.get('updated_on')
+             }
+        human_readable.append(d)
+
+    headers = ['Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']
+    readable_output = tableToMarkdown(
+        name=hr_title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.Issue',
+        outputs=results,
+        raw_response=results
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -566,6 +632,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-create':
             result = issue_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-list':
+            result = issue_list_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
