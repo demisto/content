@@ -99,6 +99,7 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
+  - echo $HOME
   - |
     if [ -f "./.venv/bin/activate" ]; then
       echo "found venv"
