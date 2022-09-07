@@ -202,7 +202,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
 
 def test_module(client: Client) -> None:
     try:
-        response = client.getexternalservices_request()
+        response = client.getexternalservices_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -232,9 +232,9 @@ def main() -> None:
         base_url = urljoin(url, url_suffix)
         client = Client(
             base_url=base_url,
-            verify=verify_certificate,
+            verify=True,
             headers=headers,
-            proxy=proxy,
+            proxy=False,
             auth=None)
 
         commands = {
