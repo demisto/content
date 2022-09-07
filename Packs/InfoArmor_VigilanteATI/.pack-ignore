@@ -1,5 +1,5 @@
 [file:integration-InfoArmor_VigilanteATI.yml]
-ignore=IN145
+ignore=IN124
 
 [known_words]
 InfoArmor
