@@ -1234,7 +1234,7 @@ def main():
         elif command == 'fidelis-manage-alert-label':
             manage_alert_label_command()
 
-    except Exception as e:
+    except NotImplementedError as e:
         return_error('error has occurred: {}'.format(str(e)))
 
     finally:

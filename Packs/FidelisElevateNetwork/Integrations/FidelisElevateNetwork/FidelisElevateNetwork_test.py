@@ -1,5 +1,17 @@
+import pytest
+
+import demistomock as demisto
+
 import re
 from datetime import datetime
+import json
+import io
+from FidelisElevateNetwork import main
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_ioc_filter():
@@ -29,3 +41,55 @@ def test_to_fidelis_time_format():
     assert fidelis_time.match(to_fidelis_time_format('2019-12-01T05:40:10')) is not None
     assert fidelis_time.match(to_fidelis_time_format('2019-12-01T05:40:1')) is not None
     assert fidelis_time.match(to_fidelis_time_format('2019-12-01T05:40:10Z')) is not None
+
+
+def test_fidelis_get_alert(mocker):
+
+    expected_response = util_load_json("./test_data/get_alert.json")
+    args = {
+        'alert_id': 1,
+    }
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='fidelis-get-alert')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('FidelisElevateNetwork.CREDENTIALS', return_value='')
+    mocker.patch('FidelisElevateNetwork.login', return_value='123')
+    mocker.patch('FidelisElevateNetwork.http_request', return_value=expected_response)
+    main()
+
+    res = demisto.results
+    assert res.call_args[0][0].get('Contents') == expected_response
+
+
+def test_fidelis_delete_alert(mocker):
+    args = {
+        'alert_id': '1',
+    }
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='fidelis-delete-alert')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('FidelisElevateNetwork.CREDENTIALS', return_value='')
+    mocker.patch('FidelisElevateNetwork.login', return_value='123')
+    mocker.patch('FidelisElevateNetwork.http_request', return_value='')
+    main()
+
+    res = demisto.results
+    assert res.call_args[0][0].get('Contents') == 'Alert (1) deleted successfully!'
+
+
+def test_fidelis_get_malware_data(mocker):
+    args = {
+        'alert_id': '1',
+    }
+    expected_response = util_load_json("./test_data/get_malware_data.json")
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='fidelis-get-malware-data')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('FidelisElevateNetwork.CREDENTIALS', return_value='')
+    mocker.patch('FidelisElevateNetwork.login', return_value='123')
+    mocker.patch('FidelisElevateNetwork.http_request', return_value=expected_response)
+    main()
+
+    res = demisto.results
+    assert res.call_args[0][0].get('Contents') == expected_response

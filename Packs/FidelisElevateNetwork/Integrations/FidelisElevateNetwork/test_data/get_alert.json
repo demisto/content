@@ -1,0 +1,14 @@
+{
+    "alertUUID": "80d0ccf5-5879-11ea-b430-0eb174ee0947",
+    "ticket": {"assignedUserId": 0},
+    "alertId": 1,
+    "policy": "Endpoint Alerts",
+    "protocol": "",
+    "ruleId": 227,
+    "rule": null,
+    "severity": "Medium",
+    "summary": "Endpoint alert on fidelis-endpoint.c.dmst-integrations.internal: , Intel Source: Unknown, Artifact: ",
+    "fidelisScore": 100,
+    "time": "2020-02-26 09:21:02",
+    "alertType": "ENDPOINT"
+}
