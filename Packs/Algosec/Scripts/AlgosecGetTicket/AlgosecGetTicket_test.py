@@ -10,9 +10,9 @@ def test_algosec_get_ticket(mocker):
     Then:
         - Ensure that the results were built correctly.
     """
-    from AlgosecGetTicket import algosec_get_ticket
+    from AlgosecGetTicket import main
     ticket = [{"Type": 3, "Contents": {"getTicketResponse": {"some_info": {"info": "test"}}}}]
     mocker.patch.object(demisto, 'executeCommand', return_value=ticket)
-    res = algosec_get_ticket()
+    res = main()
     content = res.raw_response
     assert {'some_info': 'info: test'} == content
