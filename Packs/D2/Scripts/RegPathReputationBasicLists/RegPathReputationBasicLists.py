@@ -110,27 +110,32 @@ def check_reg_in_list(path, list_to_check):
     return False
 
 
-if check_reg_in_list(reg_path, WHITELIST):
-    score = 1
-elif check_reg_in_list(reg_path, BLACKLIST):
-    score = 3
-elif check_reg_in_list(reg_path, SUSPICIOUS):
-    score = 2
-else:
-    score = 0
+def main():
+    if check_reg_in_list(reg_path, WHITELIST):
+        score = 1
+    elif check_reg_in_list(reg_path, BLACKLIST):
+        score = 3
+    elif check_reg_in_list(reg_path, SUSPICIOUS):
+        score = 2
+    else:
+        score = 0
 
-outputs = {
-    'Path': reg_path,
-    'Score': score
-}
-
-demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['json'],
-    'Contents': score,
-    'ReadableContentsFormat': formats['text'],
-    'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),
-    'EntryContext': {
-        'RegistryKey(val.Path == obj.Path)': outputs
+    outputs = {
+        'Path': reg_path,
+        'Score': score
     }
-})
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': score,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),
+        'EntryContext': {
+            'RegistryKey(val.Path == obj.Path)': outputs
+        }
+    })
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
