@@ -34,7 +34,7 @@ Converts Base64 file in a list to a binary file and upload to warroom
 
 ## Script Examples
 ### Example command
-```!Base64ListToFile_v2 listname="test_list_name" filename="test_file_name.txt" isZipFile="no"```
+```!Base64ListToFile listname="test_list_name" filename="test_file_name.txt" isZipFile="no"```
 ### Context Example
 ```json
 {
