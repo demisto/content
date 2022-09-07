@@ -306,7 +306,7 @@ def test_module(monitor, url):
         if ok is True:
             demisto.results('ok')
     except Exception as e:
-        return_error(e.message)
+        return_error(f'Error:\n{str(e)}')
 
 
 def main():
