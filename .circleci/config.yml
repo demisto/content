@@ -173,6 +173,7 @@ references:
         node --version
         npm --version
         demisto-sdk --version
+        poetry --version
 
   restore_cache: &restore_cache
     restore_cache:
