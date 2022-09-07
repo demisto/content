@@ -3312,7 +3312,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
