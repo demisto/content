@@ -26,7 +26,8 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False,)
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False, auth_code='',
+    auth_type='', redirect_uri='')
 
 
 def atp_mocker(mocker, file_name):
@@ -2332,7 +2333,8 @@ def test_gcc_resource(mocker, is_gcc: bool):
         tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, )
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, auth_code='',
+        auth_type='', redirect_uri='')
     # use requests_mock to catch a get to example.com
     req = mocker.patch.object(client.ms_client, 'http_request')
     with requests_mock.Mocker() as m:
