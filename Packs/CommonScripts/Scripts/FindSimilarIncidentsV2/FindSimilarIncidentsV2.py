@@ -1,7 +1,6 @@
 # type: ignore
 
 from CommonServerPython import *
-import collections
 from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
@@ -58,7 +57,7 @@ def nested_dict_flatted(d, parent_key='', sep='.'):
             new_key = parent_key + sep + k if parent_key else k
             if isinstance(v, list) and len(v) > 0:
                 v = v[0]
-            if isinstance(v, collections.MutableMapping) and len(v) > 0:
+            if isinstance(v, dict) and len(v) > 0:
                 items.extend(list(nested_dict_flatted(v, new_key, sep=sep).items()))
             else:
                 items.append((new_key, v))
@@ -109,8 +108,8 @@ def get_incident_labels_map(labels):
 
 def handle_str_field(key, value):
     value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
-    query = '{}="{}"'.format(key, value.encode('utf-8'))
-    return query.decode('utf-8')
+    query = f'{key}="{value}"'
+    return query
 
 
 def handle_int_field(key, value):
@@ -129,7 +128,6 @@ def handle_list_field(key, value):
 
 handle_field = {
     int: handle_int_field,
-    str: handle_str_field,
     str: handle_str_field,
     list: handle_list_field
 }
