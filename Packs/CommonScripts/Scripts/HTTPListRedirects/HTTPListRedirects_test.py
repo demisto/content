@@ -69,7 +69,7 @@ def test_valid_response_history(params, expected_results):
         - A url and whether to use requests.head or requests.get
 
     When:
-        - Running command get_response_history
+        - Running function get_response_history to retrieve the response's history
 
     Then:
         - Validating the structure of the returned array
