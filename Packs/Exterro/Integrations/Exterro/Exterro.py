@@ -57,6 +57,10 @@ def main():
         # call function with supplied args
         command = demisto.command()
         args = demisto.args()
+        if args.get("case_ids") is not None:
+            args["case_ids"] = argToList(args.get("case_ids"))
+        if args.get("target_ips") is not None:
+            args["target_ips"] = argToList(args.get("target_ips"))
         if command == "exterro-ftk-trigger-workflow":
             return_results(_trigger_workflow(client, **args))
         if command == "test-module":
