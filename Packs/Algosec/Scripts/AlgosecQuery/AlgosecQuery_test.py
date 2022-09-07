@@ -15,5 +15,4 @@ def test_algosec_query(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=ticket)
     results_mock = mocker.patch.object(demisto, 'results')
     algosec_query()
-    t = 1
     assert results_mock.call_args[0][0]['Contents'] == [{'some_info': 'info: test'}]
