@@ -1,6 +1,6 @@
 DUO for admins.
 Must have access to the admin api in order to use this.
-This integration was integrated and tested with version xx of DUO Admin
+This integration was integrated and tested with version 4.4.0 of DUO Admin
 
 ## Configure DUO Admin on Cortex XSOAR
 
