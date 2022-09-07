@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Iterator, Optional, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import json, yaml
+from demisto_sdk.commands.common.tools import find_type, json, yaml
 from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
@@ -155,6 +155,7 @@ class DictFileBased(DictBased):
 
 
 class ContentItem(DictFileBased):
+    TYPES_WITHOUT_ID = frozenset((FileType.METADATA, FileType.MODELING_RULE, ))
     """
     Represents a dict-based content item (yml, json), providing access to common attributes.
     """
@@ -164,11 +165,11 @@ class ContentItem(DictFileBased):
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
-        self._is_pack_metadata = self.path.name == 'pack_metadata.json'
+        self._has_no_id = find_type(str(self.path)) in ContentItem.TYPES_WITHOUT_ID
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
-        if self._is_pack_metadata:
+        if self._has_no_id:
             return None
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
