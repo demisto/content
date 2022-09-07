@@ -113,7 +113,7 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
         raise
 
 
-def translate_severity(sev):  # pragma: no cover
+def translate_severity(sev):
     if sev == 'high':
         return 3
     elif sev == 'Low':
