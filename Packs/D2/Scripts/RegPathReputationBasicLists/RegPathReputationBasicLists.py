@@ -99,9 +99,6 @@ SUSPICIOUS = [r"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\UrlSearch
               r"HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Windows\load",
               r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler"]
 
-# registry keys are case insensative: https://docs.microsoft.com/en-us/windows/desktop/sysinfo/structure-of-the-registry
-reg_path = NormalizeRegistryPath(demisto.args()['input'].upper())
-
 
 def check_reg_in_list(path, list_to_check):
     for key in list_to_check:
@@ -111,6 +108,10 @@ def check_reg_in_list(path, list_to_check):
 
 
 def main():
+    # registry keys are case insensative: https://docs.microsoft.com/en-us/windows/desktop/sysinfo/structure-of-the
+    # -registry
+    reg_path = NormalizeRegistryPath(demisto.args()['input'].upper())
+
     if check_reg_in_list(reg_path, WHITELIST):
         score = 1
     elif check_reg_in_list(reg_path, BLACKLIST):
