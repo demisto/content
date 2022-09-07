@@ -24,9 +24,10 @@ configuration:
   hidden: false
   name: client_secret
   required: true
-  type: 0
+  type: 4
 
-description: Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
+description: Manage credentials for applications, databases, CI/CD tools, and services
+  without causing friction in the development process.
 display: DelineaDSV
 name: DelineaDSV
 script:
@@ -46,7 +47,7 @@ script:
     - contextPath: secret
       description: Received JSON object secret
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   longRunning: false
@@ -57,4 +58,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.0.0

@@ -1,5 +1,5 @@
-Delinea DevOps Secrets Vault is a high velocity vault that centralizes secrets management, enforces access, and provides automated logging trails. DevOps Secrets Vault is an API-as-a-Service, which makes getting up and running easy. No installation of the vault or database is required and Delinea even handles all the updates. This integration was integrated and tested with version 6.0 of DelineaDSV. Supported Cortex XSOAR versions: 5.0.0 and later.
 Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
+This integration was integrated and tested with version xx of DelineaDSV
 
 ## Configure DelineaDSV on Cortex XSOAR
 
