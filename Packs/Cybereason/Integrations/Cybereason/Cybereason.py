@@ -1111,7 +1111,6 @@ def query_file_command(client: Client, args: dict) -> Any:
 
         if data:
             cybereason_outputs = []
-            file_outputs = []
             files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
             for fname, fstat in files.items():
                 raw_machine_details = dict_safe_get(get_file_machine_details(client, fname), ['data', 'resultIdToElementDataMap'],
