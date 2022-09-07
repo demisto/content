@@ -1,5 +1,6 @@
 {
   "id": "incident_sourcecreatetime",
+  "description": "The time of creation for the source.",
   "version": 1,
   "cacheVersn": 0,
   "sequenceNumber": 322896,

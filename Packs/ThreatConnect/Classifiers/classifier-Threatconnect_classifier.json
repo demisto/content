@@ -1,40 +1,23 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "7313892e-210d-482c-856a-00a29f956f84",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Event": "ThreatConnect",
-		"Incident": "ThreatConnect"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
-	"name": "Threatconnect classifier",
-	"nameRaw": "Threatconnect classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"filters": [],
-			"root": "type",
-			"transformers": []
-		}
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Threatconnect classifier",
+    "keyTypeMap": {
+        "Event": "ThreatConnect",
+        "Incident": "ThreatConnect"
+    },
+    "name": "Threatconnect classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
 }
