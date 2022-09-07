@@ -1,9 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-res = []
 
-if demisto.args()['taskID']:
-    res = demisto.executeCommand('scheduleEntry', {'id': demisto.args()['taskID'], 'cancel': 'cancel'})
+def stop_scheduled_task(args):
+    return demisto.executeCommand('scheduleEntry', {'id': args['taskID'], 'cancel': 'cancel'})
 
-demisto.results(res)
+
+def main():
+    res = stop_scheduled_task(demisto.args())
+    return_results(res)
+
+
+if __name__ in ["__builtin__", "builtins"]:
+    main()
