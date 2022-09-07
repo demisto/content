@@ -5,17 +5,16 @@ import traceback
 import os
 import shlex
 import base64
-import random
-import string
 import subprocess
 from pathlib import Path
 import threading
 import time
 import http
+import tempfile
 from http.server import HTTPServer
 
 WORKING_DIR = Path("/app")
-INPUT_FILE_PATH = 'sample.json'
+INPUT_FILE_PATH = '/tmp/sample{id}.json'
 OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
@@ -24,11 +23,6 @@ SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
 TENANT_ACCOUNT_NAME = get_tenant_account_name()
-
-
-def random_string(size=10):
-    return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=size))
 
 
 def find_zombie_processes():
@@ -161,18 +155,13 @@ def main():
             if isTableTextMaxLengthSupported:
                 extra_cmd += f' {tableTextMaxLength}'
 
-        # Generate a random input file so we won't override on concurrent usage
-        input_id = random_string()
-        input_file = INPUT_FILE_PATH.format(id=input_id)
+        input_file = tempfile.NamedTemporaryFile(delete=False)
+        output_file = tempfile.NamedTemporaryFile(delete=False)
 
-        with open(WORKING_DIR / input_file, 'wb') as f:
-            f.write(base64.b64decode(sane_json_b64))
+        input_file.write(base64.b64decode(sane_json_b64))
+        input_file.close()
 
-        # Generate a random output file so we won't override on concurrent usage
-        output_id = random_string()
-        output_file = OUTPUT_FILE_PATH.format(id=output_id)
-
-        cmd = ['./reportsServer', input_file, output_file, 'dist'] + shlex.split(
+        cmd = ['./reportsServer', input_file.name, output_file.name, 'dist'] + shlex.split(
             extra_cmd)
 
         # Logging things for debugging
@@ -195,11 +184,11 @@ def main():
                                       stderr=subprocess.STDOUT)
         LOG(f"Sane-pdf output: {str(out)}")
 
-        abspath_output_file = WORKING_DIR / output_file
-        with open(abspath_output_file, 'rb') as f:
+        with open(output_file.name, 'rb') as f:
             encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
 
-        os.remove(abspath_output_file)
+        os.remove(input_file.name)
+        os.remove(output_file.name)
         return_outputs(readable_output='Successfully generated pdf',
                        outputs={}, raw_response={'data': encoded})
 
