@@ -1,17 +1,25 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 t = []  # type: list
 found = []
-ips = argToList(demisto.args()['ip'])
+args = demisto.args()
+ips = argToList(args.get("ip"))
 for ip in ips:
-    for e in demisto.executeCommand('cb-get-processes', {'query': 'ipaddr:' + ip}):
+    for e in demisto.executeCommand("cb-get-processes", {"query": "ipaddr:" + ip}):
         if isError(e):
-            return_error(e['Contents'])
+            return_error(e.get("Contents"))
         else:
             found.append(ip)
-            t += e['HumanReadable']
+            t += e.get("HumanReadable")
 if t:
-    appendContext("found_ips", ','.join(found), dedup=True)
-    demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': e['HumanReadable'],
-                     'EntryContext': e['EntryContext']})
+    appendContext("found_ips", ",".join(found), dedup=True)
+    return_results(
+        {
+            "ContentsFormat": formats.get("markdown"),
+            "Type": entryTypes.get("note"),
+            "Contents": e.get("HumanReadable"),
+            "EntryContext": e.get("EntryContext"),
+        }
+    )
