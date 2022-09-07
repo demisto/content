@@ -1,20 +1,21 @@
-Gets all sites from Incapsula.
-Each site will be returned through a ssh server (which should not be on the allow list), to ensure that the site is compliant and that the allow list is being enforced. If the site is not compliant , a warning mail will be sent to the domain owner. 
- 
+Get all sites from Incapsula.
+For each site, the script, through a ssh server (one that should NOT be in the allow list), make sure the site is compliant ( allow list is being enforced ).
+ If not, a warning mail will be sent to the domain owner. 
+
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | Incapsula |
-
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* RemoteExec
 * incap-list-sites
+* RemoteExec
 * SendEmail
 * incap-get-domain-approver-email
 
@@ -23,7 +24,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| SSHValidationServer | The name of the non-allow list SSH server instance. |
+| SSHValidationServer | Name of the non-allow list SSH server instance |
 
 ## Outputs
 ---
