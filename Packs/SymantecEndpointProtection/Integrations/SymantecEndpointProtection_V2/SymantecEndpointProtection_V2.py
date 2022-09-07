@@ -3,7 +3,9 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 requests.packages.urllib3.disable_warnings()
 
