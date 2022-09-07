@@ -11,8 +11,6 @@ JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
 JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
-JIRA_GITHUB_INTEGRATION_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
-                                       f"execute/{GENERIC_WEBHOOK_NAME}"
 
 
 def arguments_handler():
@@ -62,11 +60,11 @@ def trigger_generic_webhook(options):
     password = options.password
     instance_url = options.url
 
-    print(f"{pr_title=}, {pr_link=}, {pr_body=}")
+    print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
-    print(issues_in_pr)
+    print(f"found issues in PR: {issues_in_pr}")
 
     body = {
         "name": GENERIC_WEBHOOK_NAME,
