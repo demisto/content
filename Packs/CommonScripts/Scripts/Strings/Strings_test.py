@@ -16,6 +16,7 @@ def test_strings_no_string(mocker):
     entry = strings({'chars': 4, 'size': 1024, 'entry': '123'})
     assert entry == 'No strings were found.'
 
+
 def test_strings_small_buff(mocker):
     mocker.patch.object(demisto, 'executeCommand',
                         return_value=[{'path': './test_data/text_file.txt', 'name': 'text_file.txt', 'Type': ''}])
