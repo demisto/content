@@ -35,6 +35,11 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 script:
   script: ''
   type: javascript
@@ -98,7 +103,7 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2).
+      description: Custom fields for incident creation. Comma separated query (e.g., field1=value1,field2=value2)
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -145,9 +150,11 @@ script:
     arguments:
     - name: query
       description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+    - description: integer value to limit the amount of results returned (default no limit)
+      name: limit
     outputs:
-    - contextPath: Ticket.ID
-      description: Ticket ID
+    - contextPath: Ticket.RequestID
+      description: Ticket request ID
     - contextPath: Ticket.Submitter
       description: Ticket submitter
     - contextPath: Ticket.Status
@@ -157,11 +164,15 @@ script:
     - contextPath: Ticket.Source
       description: Ticket reported source
     - contextPath: Ticket.Impact
-      description: TicketiImpact
+      description: Ticket impact
     - contextPath: Ticket.Urgency
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
+    - contextPath: Ticket.EntryID
+      description: Ticket entry ID
+    - contextPath: Ticket.IncidentNumber
+      description: Ticket number
     description: Fetch all incidents
   - name: remedy-incident-update
     arguments:
@@ -221,6 +232,8 @@ script:
       - Infrastructure Event
       - Infrastructure Restoration
       description: Updated service-type (unchanged if not specified)
+    - description: Custom fields for incident update. Comma separated query (e.g., field1=value1,field2=value2)
+      name: custom_fields
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
