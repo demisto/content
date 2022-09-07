@@ -6,7 +6,10 @@ from datetime import datetime
 import re
 import sys
 import traceback
-from io import StringIO  # type: ignore #for Python 3
+try:
+    from StringIO import StringIO  # for Python 2
+except ImportError:
+    from io import StringIO  # type: ignore #for Python 3
 
 serr = sys.stderr
 sys.stderr = StringIO()
@@ -227,7 +230,7 @@ def get_http_flows(pcap_file_path):
         sanitized_res = res
 
         if req:
-            req_fields = req['HTTP']._all_fields.keys()
+            req_fields = req['HTTP'].__dict__["_all_fields"].keys()
 
             # if the file contains only a response, the response will falsely appear in the 'req' variable
             if 'http.response' in req_fields:
@@ -294,7 +297,7 @@ def create_flow_object(flow, keys_transform_map, trim_file_data_size, allowed_co
         }
 
     # Get the HTTP and TCP, IP and Meta fields.
-    r = flow["HTTP"]._all_fields
+    r = flow["HTTP"].__dict__["_all_fields"]
     flow_info = get_flow_info(flow)
 
     # Map the keys to the conventions
