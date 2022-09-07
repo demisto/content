@@ -19,5 +19,5 @@ def test_mimecast_find_email(mocker):
     main()
     results = demisto.results.call_args[0][0]
 
-    assert results[0].get('Contents') == '### Mailboxes with email(s) matching the query:\n* test1\n* test2\n'
+    assert '### Mailboxes with email(s) matching the query:' in results[0].get('Contents')
     assert results[1].get('Contents') == 'yes'

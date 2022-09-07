@@ -31,10 +31,10 @@ def main() -> None:
 
                 answer = 'yes'
             else:
-                demisto.log("\nNo relevant mails have been found\n")
+                demisto.debug("\nNo relevant mails have been found\n")
                 answer = 'no'
         else:
-            demisto.log("\nNo relevant mails have been found\n")
+            demisto.debug("\nNo relevant mails have been found\n")
             answer = 'no'
 
         res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": answer})
