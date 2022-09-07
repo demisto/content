@@ -36,7 +36,7 @@ def http_request(method, url, verify_certificates, headers):
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': 'error has occured: %s' % (e, ),
+            'Contents': f'error has occured: {e}',
         })
 
 
