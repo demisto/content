@@ -87,7 +87,7 @@ def get_entry_by_file_name(file_name):
     for entry in reversed(entries):
         fn = demisto.get(entry, 'File')
 
-        if type(fn) not in [str, str]:
+        if not isinstance(fn, str):
             continue
 
         if file_name.lower() == fn.lower():
@@ -138,7 +138,7 @@ def main():
             entry = get_entry_by_file_name(file_name)
             entry_id = entry['ID']
         except ValueError as e:
-            return_error(e)
+            return_error(str(e))
 
     res = demisto.getFilePath(entry_id)
     if not res:
