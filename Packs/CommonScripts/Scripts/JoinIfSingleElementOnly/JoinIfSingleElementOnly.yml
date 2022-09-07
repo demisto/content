@@ -2,18 +2,9 @@ commonfields:
   id: JoinIfSingleElementOnly
   version: -1
 name: JoinIfSingleElementOnly
-script: >-
-  value = demisto.args()["value"]
-
-  res = value
-
-  if isinstance(value, list):
-      if len(value)==1:
-          res = value[0]
-
-  demisto.results(res)
+script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - entirelist
 - transformer
@@ -28,6 +19,6 @@ args:
   isArray: true
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
