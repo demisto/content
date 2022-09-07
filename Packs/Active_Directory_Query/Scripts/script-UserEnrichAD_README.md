@@ -1,13 +1,13 @@
-Enriches the user name from Active Directory data. This is an enhancement automation for user type indicator.
+Deprecated. Use ADGetUser instead.
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python2 |
 | Tags | enhancement, active directory, user |
-
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
@@ -19,7 +19,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| name | The name of user. |
+| name | Name of user |
 
 ## Outputs
 ---
