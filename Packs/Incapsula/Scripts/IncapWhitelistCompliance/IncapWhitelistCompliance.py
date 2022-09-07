@@ -32,7 +32,7 @@ def sendMail(to, subject, body="", bcc=""):
 
 def escalation(url, severity, owner_mail):
     if isinstance(owner_mail, list):
-        owner_mail = ''.join(list(map(lambda x: f'{x}, ', owner_mail[:-1])) + [str(owner_mail[-1])])
+        owner_mail = ''.join([str(x)+', ' for x in owner_mail[:-1]]+[str(owner_mail[-1])])
 
     if severity == 0:
         return None
