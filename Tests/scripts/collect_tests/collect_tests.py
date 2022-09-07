@@ -274,8 +274,8 @@ class TestCollector(ABC):
                 continue
 
             for integration in test_object.integrations:
-                logger.debug(f'found that {test_id} depends on {integration} from {pack_id}')
                 if integration_object := self.id_set.id_to_integration.get(integration):
+                    logger.debug(f'found that {test_id} depends on {integration} from {integration_object.pack_id}')
                     result.append(self._collect_test_dependency(dependency=integration,
                                                                 test_id=test_id,
                                                                 pack_id=integration_object.pack_id,
