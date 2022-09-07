@@ -55,17 +55,17 @@ def unicode_dict_reader(csv_data, **kwargs):
                 counter = 0
                 for val in value:
                     col_name = 'NO_NAME_COLUMN_{}'.format(counter)
-                    row_dict[col_name] = str(val, codec_type)
+                    row_dict[col_name] = val
                     counter += 1
 
                 if no_name_columns_counter < counter:
                     no_name_columns_counter = counter
 
             elif value is not None:
-                col_name = remove_non_printable_chars(str(key, codec_type))
-                row_dict[col_name] = str(value, codec_type)
+                col_name = remove_non_printable_chars(key)
+                row_dict[col_name] = value
             else:
-                col_name = remove_non_printable_chars(str(key, codec_type))
+                col_name = remove_non_printable_chars(key)
                 row_dict[col_name] = None
 
         arr.append(row_dict)
