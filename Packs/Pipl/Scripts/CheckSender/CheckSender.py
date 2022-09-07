@@ -13,6 +13,11 @@ def get_sender_from_text(text):
     return ''
 
 
+def format_data(data):
+    data = data if isinstance(data, list) else [data]
+    return [{k: formatCell(row[k]) for k in row} for row in data]
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -30,9 +35,8 @@ def main():
             else:
                 data = demisto.get(resp[0], "Contents")
                 if data:
-                    data = data if isinstance(data, list) else [data]
-                    data = [{k: formatCell(row[k]) for k in row} for row in data]
-                    demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data})
+                    demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"],
+                                     "Contents": format_data(data)})
                 else:
                     demisto.results("No results.")
         else:
