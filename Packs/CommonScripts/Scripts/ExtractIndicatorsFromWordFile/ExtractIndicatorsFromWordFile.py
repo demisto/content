@@ -120,7 +120,7 @@ def main():
 
     # Returning Indicators:
     indicators_hr = demisto.executeCommand("extractIndicators", {
-        'text': parser.all_data})[0]['Contents']
+        'text': parser.all_data})[0][u'Contents']
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
