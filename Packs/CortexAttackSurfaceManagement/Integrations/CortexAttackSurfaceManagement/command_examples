@@ -2,23 +2,5 @@
 !asm-getexternalipaddressrange range_id=1093124c-ce26-33ba-8fb8-937fecb4c7b6
 !asm-getexternalservice service_id=94232f8a-f001-3292-aa65-63fa9d981427
 !asm-getexternalipaddressranges
-!asm-getexternalservices ip_address=3.226.113.19
-!asm-getexternalservices domain=toysrus.com
-!asm-getexternalservices domain=toysrus.com ip_address=52.96.226.168
-!asm-getexternalservices is_active=yes
-!asm-getexternalservices is_active=no domain=toysrus.com
-!asm-getexternalservices ip_address=52.96.226.168 is_active=yes
-!asm-getexternalservices domain=toysrus.com ip_address=52.96.226.168 is_active=yes
-!asm-getexternalservices domain=toysrus.com is_active=yes discovery_type=directly_discovery
-!asm-getexternalservices domain=toysrus.com is_active=no discovery_type=directly_discovery
-!asm-getexternalservices
-!asm-getexternalservices domain=toysrus.com is_active=yes discovery_type=colocated_on_ip
-!asm-getexternalservices is_active=yes discovery_type=colocated_on_ip
-!asm-getexternalservices domain=toysrus.com ip_address=52.96.226.168 is_active=yes discovery_type=directly_discovery
-!asm-getassetsinternetexposure
-!asm-getassetsinternetexposure name="toysrus.com"
-!asm-getassetsinternetexposure ip_address=166.76.0.5
-!asm-getassetsinternetexposure ip_address=166.76.0.5 name=166.76.0.5
-!asm-getassetsinternetexposure name="toysrus.com" type=certificate
-!asm-getassetsinternetexposure name="toysrus.com" type=certificate has_active_external_services=yes
 !asm-getassetsinternetexposure name="toysrus.com" type=certificate has_active_external_services=no
+!asm-getexternalservices domain=toysrus.com is_active=yes discovery_type=directly_discovery
