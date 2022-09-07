@@ -12,7 +12,7 @@ subtype: python2
 tags:
 - OSQuery
 deprecated: true
-comment: "Deprecated. Use OSQueryBasicQuery with query='select * from processes'."
+comment: "Deprecated. Use OSQueryBasicQuery with query='select * from processes' instead."
 system: true
 args:
 - name: system
