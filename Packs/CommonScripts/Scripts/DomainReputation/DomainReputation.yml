@@ -2,17 +2,9 @@ commonfields:
   id: DomainReputation
   version: -1
 name: DomainReputation
-script: >-
-  results = demisto.executeCommand('domain', {'domain': demisto.get(demisto.args(),'domain')})
-
-
-  for item in results:
-      if isError(item):
-          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
-
-  demisto.results(results)
+script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - enhancement
 comment: A context script for Domain entities
@@ -25,6 +17,6 @@ args:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
