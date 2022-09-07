@@ -1,0 +1,282 @@
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+import requests
+from typing import Dict, Any
+from cymruwhois import Client  # Python interface to whois.cymru.com
+import csv
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+''' CLIENT COMMANDS '''
+
+
+def team_cymru_ip(client: Client, ip: str) -> Dict[str, str]:
+    """Perform lookups by ip address and return ASN, Country Code, and Netblock Owner.
+
+    :type client: ``Client``
+    :param client: cymruwhois client to use
+    :type ip: ``str``
+    :param ip: string to add in the dummy dict that is returned
+
+    :return: dict containing the result of the lookup action as returned from the API (asn, cc, owner, etc.)
+    :rtype: Dict[str, str]
+    """
+
+    return vars(client.lookup(ip))
+
+
+def team_cymru_bulk_whois(client: Client, bulk: []) -> Dict[str, str]:
+    """Perform lookups by bulk of ip addresses, returning a dictionary of ip -> record (ASN, Country Code, and Netblock Owner.)
+
+    :type client: ``Client``
+    :param client: cymruwhois client to use
+    :type bulk: ``list``
+    :param bulk: list of ip addresses
+
+    :return: dict containing the result of the lookupmany action as returned from the API (asn, cc, owner, etc.)
+    :rtype: Dict[ip, record]
+    """
+
+    # raw_result = dict()
+    # for subset_of_ips in split_list_into_chunks(bulk, 10000):  # TODO only do 10,000 ips at a time
+    #     print(subset_of_ips[0])
+    #     raw_result.update(client.lookupmany_dict(subset_of_ips))
+    # return raw_result
+    return client.lookupmany_dict(bulk)
+
+
+''' HELPER FUNCTIONS '''
+
+
+def parse_ip_result(ip, ip_data):
+    """
+    Arrange the ip's result from the API to the context format
+    :param ip: ip address
+    :param ip_data: the ip given data
+    :return: ip_entity, entry_context
+    """
+    asn = demisto.get(ip_data, 'asn')
+    owner = demisto.get(ip_data, 'owner')
+    country = demisto.get(ip_data, 'cc')
+    prefix = demisto.get(ip_data, 'prefix')
+    entry_context = {'Address': ip,
+                     'ASN': asn,
+                     'ASOwner': owner,
+                     'Geo': {'Country': country},
+                     'Registrar': {'Network': prefix}
+                     }
+    ip_entity = Common.IP(
+        ip=ip,
+        asn=asn,
+        as_owner=owner,
+        geo_country=country,
+        registrar_abuse_network=prefix,
+        dbot_score=Common.DBotScore(indicator=ip,
+                                    indicator_type=DBotScoreType.IP,
+                                    score=Common.DBotScore.NONE))
+    return ip_entity, entry_context
+
+
+def validate_ip_addresses(ips_list):
+    """
+    Given list of IP addresses, returns the invalid and valid ips.
+    :param ips_list: list of ip addresses
+    :return: invalid_ip_addresses, valid_ip_addresses
+    """
+    invalid_ip_addresses = []
+    valid_ip_addresses = []
+    for ip in ips_list:
+        ip = ip.strip().strip('\"')
+        if ip:
+            if is_ip_valid(ip):
+                valid_ip_addresses.append(ip)
+            else:
+                invalid_ip_addresses.append(ip)
+    return ", ".join(invalid_ip_addresses), valid_ip_addresses
+
+
+def parse_file(get_file_path_res):
+    """
+    Parses the given file line by line to list.
+    :param get_file_path_res: Object contains file ID, path and name
+    :return: bulk list of the elements in the file
+    """
+    bulk_list = []
+    with open(get_file_path_res['path']) as file:
+        reader = csv.reader(file, delimiter=',', skipinitialspace=True)
+        for row in reader:
+            bulk_list += row
+    return bulk_list
+
+
+def split_list_into_chunks(l, sublist_size):
+    """
+    returns successive sublist_size'd chunks from l
+    :param l: list to divide into chunks
+    :param sublist_size: the size of the chunks to divide the list into
+    :return: a generator that when called, gives back lists of
+                 size sublist_size
+    """
+    n = max(1, sublist_size)
+    return (l[i:i + n] for i in range(0, len(l), n))
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client) -> str:
+    """Tests API connectivity
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    message: str = ''
+    try:
+        result = team_cymru_ip(client, '8.8.8.8')
+        # This  should validate all the inputs given in the integration configuration panel,
+        # either manually or by using an API that uses them.
+        if result and result.get('owner') == 'GOOGLE, US':
+            message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return message
+
+
+def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns the results of 'ip' command
+    :type client: ``Client``
+    :param Client: client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: All command arguments, the field 'ip'
+    :return: CommandResults object containing the results of the lookup action as returned from the API
+    and its readable output.
+    """
+    ip = args.get('ip')
+    if not ip:
+        raise ValueError('Ip not specified')
+    if not is_ip_valid(ip):
+        raise ValueError(f"Error: The given IP address: {ip} is not valid")
+
+    # Call the Client function and get the raw response
+    result = team_cymru_ip(client, ip)
+    indicator, entry_context = parse_ip_result(ip, result)
+
+    headers = ['ip', 'asn', 'owner', 'cc', 'prefix']
+    mapping = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
+    human_readable = tableToMarkdown(f'Team Cymru results for {ip}', result, headers,
+                                     headerTransform=lambda header: mapping.get(header, header))
+    outputs_key_field = 'ip'  # marks the ip address
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=result,
+        outputs_prefix='TeamCymru.IP',
+        outputs_key_field=outputs_key_field,
+        indicator=indicator,
+        outputs=entry_context
+    )
+
+
+def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns results of 'cymru-bulk-whois' command
+    :type client: ``Client``
+    :param Client: client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: All command arguments - either 'bulk-list' or 'bulk-file'
+    :return: CommandResults object containing the results of the lookup action as returned from the API
+    and its readable output.
+    """
+
+    if args.get('bulk-list'):
+        if args.get('bulk-file'):
+            raise ValueError('Both bulk-list and bulk-file were inserted - please insert only one.')
+        bulk_list = argToList(args.get('bulk-list'))
+    elif args.get('bulk-file'):
+        demisto.debug('getting the path of the file from its bulk-file')
+        get_file_path_res = demisto.getFilePath(args.get('bulk-file'))
+        if not get_file_path_res:
+            raise ValueError('No file was found for given bulk-file')
+        bulk_list = parse_file(get_file_path_res)
+    else:
+        raise ValueError('No bulk-list or bulk-file specified.')
+
+    invalid_ips, valid_ips = validate_ip_addresses(bulk_list)
+    results = team_cymru_bulk_whois(client, valid_ips)
+    results = {k: vars(results[k]) for k in results}
+    contents, indicators = [], []
+    for ip, ip_data in results.items():
+        indicator, entry_context = parse_ip_result(ip, ip_data)
+        contents.append(entry_context)
+        indicators.append(indicator)
+    headers = ['ip', 'asn', 'owner', 'cc', 'prefix']
+    mapping = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
+    human_readable = tableToMarkdown(f'Team Cymru results:', list(results.values()), headers,
+                                     headerTransform=lambda header: mapping.get(header, header))
+    human_readable += f"The following IP Addresses were found invalid: {invalid_ips}" if invalid_ips else ""
+
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=results,
+        outputs_prefix='TeamCymru.Bulk',  # TODO
+        indicators=indicators,
+        outputs=contents
+    )
+
+
+''' MAIN FUNCTION '''
+
+
+def main() -> None:
+    """
+    main function, parses params and runs command functions
+    """
+
+    # if your Client class inherits from BaseClient, SSL verification is
+    # handled out of the box by it, just pass ``verify_certificate`` to
+    # the Client constructor
+    verify_certificate = not demisto.params().get('insecure', False)
+
+    # if your Client class inherits from BaseClient, system proxy is handled
+    # out of the box by it, just pass ``proxy`` to the Client constructor
+    proxy = demisto.params().get('proxy', False)
+
+    demisto.debug(f'Command being called is {demisto.command()}')
+    try:
+        client = Client()
+
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
+
+        elif demisto.command() == 'ip':
+            return_results(ip_command(client, demisto.args()))
+        elif demisto.command() == 'cymru-bulk-whois':
+            return_results(cymru_bulk_whois_command(client, demisto.args()))
+
+    # Log exceptions and return errors
+    except Exception as e:
+        print(e)
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+''' ENTRY POINT '''
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

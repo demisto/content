@@ -1,0 +1,305 @@
+id: 40276177-95b9-40f8-8a4c-68398194ed03
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: TeamCymru_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cd1eab84-1056-4ae1-863b-e24b411da19c
+    type: start
+    task:
+      id: cd1eab84-1056-4ae1-863b-e24b411da19c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 53c370c7-6b8f-4b6c-8038-3470ed753ec7
+    type: regular
+    task:
+      id: 53c370c7-6b8f-4b6c-8038-3470ed753ec7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6a25fe1b-1f3e-427e-8286-cad1a730b7ea
+    type: regular
+    task:
+      id: 6a25fe1b-1f3e-427e-8286-cad1a730b7ea
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: TeamCymru|||ip
+      type: regular
+      iscommand: true
+      brand: TeamCymru
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1df6cb2f-aa7c-45e0-87fa-b85d354aa61f
+    type: title
+    task:
+      id: 1df6cb2f-aa7c-45e0-87fa-b85d354aa61f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6e7d6109-681b-45ae-8599-4047f1533c3d
+    type: condition
+    task:
+      id: 6e7d6109-681b-45ae-8599-4047f1533c3d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TeamCymru.IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TeamCymru.IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TeamCymru.IP.ASOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d67dfbf0-8477-437f-84ba-24b9b3f1790d
+    type: regular
+    task:
+      id: d67dfbf0-8477-437f-84ba-24b9b3f1790d
+      version: -1
+      name: 'cymru-bulk-whois '
+      description: Look up many ip addresses. Insert CSV file or list of IPv4 addresses.
+        Queries exceeding 10,000 IPs may return in more than a minute given a moderately
+        sized Internet link.
+      script: TeamCymru|||cymru-bulk-whois
+      type: regular
+      iscommand: true
+      brand: TeamCymru
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      bulk-list:
+        simple: '"1.1.1.1, 8.8.8.8"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c4cb90f3-9297-49ea-8af8-5ebceec1d53b
+    type: condition
+    task:
+      id: c4cb90f3-9297-49ea-8af8-5ebceec1d53b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: IP
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 680,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: IPInfo_v2Test

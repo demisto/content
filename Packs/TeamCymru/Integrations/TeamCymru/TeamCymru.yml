@@ -1,0 +1,148 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TeamCymru
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Team Cymru provided various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. 
+  Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
+display: 'Team Cymru'
+name: TeamCymru
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: An IPv4 address to query, e.g., 1.1.1.1.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an IP address.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: TeamCymru.IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: TeamCymru.IP.ASN
+      description: The IP ASN.
+      type: String
+    - contextPath: TeamCymru.IP.ASOwner
+      description: The IP AS owner.
+      type: String
+    - contextPath: TeamCymru.IP.Geo.Country
+      description: The IP country.
+      type: String
+    - contextPath: TeamCymru.IP.Registrar.Abuse.Network
+      description: The IP range relevant for abuse inquiries provided for the IP.
+      type: String
+  - arguments:
+      - default: false
+        description: List of IPv4 addresses to query.
+        isArray: true
+        name: bulk-list
+        required: false
+        secret: false
+      - default: false
+        description: The CSV file's War Room entry ID. If a bulk-list is supplied, do not use this argument.
+        isArray: false
+        name: bulk-file
+        required: false
+        secret: false
+    deprecated: false
+    description: Look up many ip addresses. Insert CSV file or list of IPv4 addresses. Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
+    execution: false
+    name: cymru-bulk-whois
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: TeamCymru.IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: TeamCymru.IP.ASN
+      description: The IP ASN.
+      type: String
+    - contextPath: TeamCymru.IP.ASOwner
+      description: The IP AS owner.
+      type: String
+    - contextPath: TeamCymru.IP.Geo.Country
+      description: The IP country.
+      type: String
+    - contextPath: TeamCymru.IP.Registrar.Abuse.Network
+      description: The IP range relevant for abuse inquiries provided for the IP.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/cymruwhois:1.0.0.33653
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
