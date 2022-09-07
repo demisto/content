@@ -286,9 +286,10 @@ class TestCollector(ABC):
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
                     result.append(self._collect_test_dependency(
-                        dependency=integration,
+                        dependency_name=integration,
                         test_id=test_id,
                         pack_id=integration_object.pack_id,
+                        dependency_type='integration',
                     ))
                 else:
                     logger.warning(f'could not find integration {integration} in id_set'
@@ -298,9 +299,10 @@ class TestCollector(ABC):
             for script in test_object.scripts:
                 if script_object := self.id_set.id_to_script.get(script):
                     result.append(self._collect_test_dependency(
-                        dependency=script,
+                        dependency_name=script,
                         test_id=test_id,
                         pack_id=script_object.pack_id,
+                        dependency_type='script',
                     ))
                 else:
                     logger.warning(f'Could not find script {script} in id_set'
@@ -308,13 +310,15 @@ class TestCollector(ABC):
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
+    def _collect_test_dependency(
+            self, dependency_name: str, test_id: str, pack_id: str, dependency_type: str
+    ) -> CollectionResult:
         return CollectionResult(
             test=None,
             pack=pack_id,
             reason=CollectionReason.PACK_TEST_DEPENDS_ON,
             version_range=None,
-            reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+            reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
         )
