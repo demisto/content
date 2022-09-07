@@ -559,7 +559,7 @@ def resume_scan_command():
     return results
 
 
-def main():
+def main():  # pragma: no cover
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'tenable-io-list-scans':
