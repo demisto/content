@@ -72,8 +72,8 @@ def test_analyze_by_hash_command_already_running(requests_mock):
     requests_mock.post(
         f'{full_url}/analyze-by-hash',
         status_code=HTTPStatus.CONFLICT,
-        # see for expected validation: 
-        # https://github.com/intezer/analyze-python-sdk/blob/a64aec7a7b0ca9dd70f05447e461ff67ce34a4ea/intezer_sdk/api.py#L493 
+        # see for expected validation:
+        # https://github.com/intezer/analyze-python-sdk/blob/a64aec7a7b0ca9dd70f05447e461ff67ce34a4ea/intezer_sdk/api.py#L493
         json={'result': {'analysis_id': 'running_test'}}
 
     )
@@ -199,8 +199,8 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
     requests_mock.post(
         f'{full_url}/analyze',
         status_code=HTTPStatus.CONFLICT,
-        # see for expected validation: 
-        # https://github.com/intezer/analyze-python-sdk/blob/a64aec7a7b0ca9dd70f05447e461ff67ce34a4ea/intezer_sdk/api.py#L493 
+        # see for expected validation:
+        # https://github.com/intezer/analyze-python-sdk/blob/a64aec7a7b0ca9dd70f05447e461ff67ce34a4ea/intezer_sdk/api.py#L493
         json={'result': {'analysis_id': 'running_test'}}
     )
 
