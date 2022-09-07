@@ -2,17 +2,7 @@ category: Utilities
 commonfields:
   id: Cortex Attack Surface Management
   version: -1
-configuration:
-- defaultvalue: "false"
-  display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- defaultvalue: "false"
-  display: Trust any certificate
-  name: insecure
-  required: false
-  type: 8
+configuration: []
 description: Integration to pull asset and other ASM related information
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management
