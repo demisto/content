@@ -19,7 +19,7 @@ def main() -> None:
                 for mail in items:
                     users.add(mail['displayto'])
 
-            users = list(users)
+            users = list(users)  # type: ignore
             if users:
                 markdownString = '### Mailboxes with email(s) matching the query:\n'
                 markdownString += "".join(['* ' + s + '\n' for s in users])
