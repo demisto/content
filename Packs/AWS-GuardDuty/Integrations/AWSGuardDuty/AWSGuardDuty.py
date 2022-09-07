@@ -454,7 +454,7 @@ def get_members(client: boto3.client, args: dict):
                           outputs_key_field='AccountId')
 
 
-def test_function(client: boto3.client):
+def connection_test(client: boto3.client):
     response = client.list_detectors()
     if response.get('DetectorIds'):
         return 'ok'
@@ -493,7 +493,7 @@ def main():   # pragma: no cover
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            result = test_function(client)
+            result = connection_test(client)
 
         elif demisto.command() == 'aws-gd-create-detector':
             result = create_detector(client, demisto.args())

@@ -1,7 +1,7 @@
 from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
 
-from AWSGuardDuty import get_members, parse_incident_from_finding, test_function, list_members, \
+from AWSGuardDuty import get_members, parse_incident_from_finding, connection_test, list_members, \
     update_findings_feedback, archive_findings, unarchive_findings, create_sample_findings, get_findings, \
     list_findings, update_threat_intel_set, list_threat_intel_sets, get_threat_intel_set, delete_threat_intel_set, \
     create_threat_intel_set, update_ip_set, delete_ip_set, update_detector, delete_detector, list_ip_sets, get_ip_set, \
@@ -133,7 +133,7 @@ def test_test_module(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_detectors valid responses
 
     When:
         Running test-module command
@@ -146,7 +146,7 @@ def test_test_module(mocker, response, raises):
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors', side_effect=[response])
 
     with raises:
-        test_function(mocked_client)
+        connection_test(mocked_client)
 
     assert list_detectors_mock.is_called_once()
 
@@ -155,10 +155,10 @@ def test_list_members(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_members valid response
 
     When:
-        Running test-module command
+        Running list_members command
 
     Then:
         assert no exception is being raised.
@@ -181,13 +181,13 @@ def test_update_findings_feedback(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        update_findings_feedback various response
 
     When:
-        Running test-module command
+        Running update_findings_feedback command
 
     Then:
-        assert no exception is being raised.
+        assert exceptions are being raised according to api response
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
@@ -213,13 +213,13 @@ def test_archive_findings(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        archive_findings various response
 
     When:
-        Running test-module command
+        Running archive_findings command
 
     Then:
-        assert no exception is being raised.
+        assert exceptions are being raised according to api response
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
@@ -242,13 +242,13 @@ def test_unarchive_findings(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        unarchive_findings various response
 
     When:
-        Running test-module command
+        Running unarchive_findings command
 
     Then:
-        assert no exception is being raised.
+        assert exceptions are being raised according to api response
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
@@ -271,13 +271,13 @@ def test_create_sample_findings(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        create_sample_findings various response
 
     When:
-        Running test-module command
+        Running create_sample_findings command
 
     Then:
-        assert no exception is being raised.
+        assert exceptions are being raised according to api response
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
@@ -306,14 +306,13 @@ def test_get_findings(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        get_findings valid response
 
     When:
-        Running test-module command
+        Running get_findings command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
@@ -340,14 +339,13 @@ def test_list_findings(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_findings valid response
 
     When:
-        Running test-module command
+        Running list_findings command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
@@ -372,14 +370,14 @@ def test_update_threat_intel_set(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        update_threat_intel_set various responses
 
     When:
-        Running test-module command
+        Running update_threat_intel_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     update_threat_intel_set_mock = mocker.patch.object(MockedBoto3Client, 'update_threat_intel_set',
@@ -411,14 +409,13 @@ def test_get_threat_intel_set(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        get_threat_intel_set valid response
 
     When:
-        Running test-module command
+        Running get_threat_intel_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     get_threat_intel_set_mock = mocker.patch.object(MockedBoto3Client, 'get_threat_intel_set',
@@ -434,14 +431,13 @@ def test_list_threat_intel_sets(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_threat_intel_set valid response
 
     When:
-        Running test-module command
+        Running list_threat_intel_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     list_threat_intel_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_threat_intel_sets',
@@ -463,14 +459,14 @@ def test_delete_threat_intel_set(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_threat_intel_set various response
 
     When:
-        Running test-module command
+        Running list_threat_intel_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     delete_threat_intel_set_mock = mocker.patch.object(MockedBoto3Client, 'delete_threat_intel_set',
@@ -488,14 +484,13 @@ def test_create_threat_intel_set(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        create_threat_intel_set valid response
 
     When:
-        Running test-module command
+        Running create_threat_intel_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     create_threat_intel_set_mock = mocker.patch.object(MockedBoto3Client, 'create_threat_intel_set',
@@ -530,14 +525,13 @@ def test_get_ip_set(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        get_ip_set valid response
 
     When:
-        Running test-module command
+        Running get_ip_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     get_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'get_ip_set',
@@ -553,14 +547,13 @@ def test_list_ip_sets(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_ip_sets valid response
 
     When:
-        Running test-module command
+        Running list_ip_sets command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     list_ip_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_ip_sets',
@@ -578,14 +571,13 @@ def test_create_ip_set(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        create_ip_set valid response
 
     When:
-        Running test-module command
+        Running create_ip_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     create_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'create_ip_set',
@@ -614,14 +606,14 @@ def test_update_ip_set(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        update_ip_set various response
 
     When:
-        Running test-module command
+        Running update_ip_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     update_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'update_ip_set', side_effect=[response])
@@ -648,14 +640,14 @@ def test_delete_ip_set(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        delete_ip_set various response
 
     When:
-        Running test-module command
+        Running delete_ip_set command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     delete_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'delete_ip_set', side_effect=[response])
@@ -672,14 +664,13 @@ def test_list_detectors(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        list_detectors valid response
 
     When:
-        Running test-module command
+        Running list_detectors command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
@@ -699,14 +690,14 @@ def test_update_detector(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        update_detector various response
 
     When:
-        Running test-module command
+        Running update_detector command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     update_detector_mock = mocker.patch.object(MockedBoto3Client, 'update_detector', side_effect=[response])
@@ -727,14 +718,14 @@ def test_delete_detector(mocker, response, raises):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        delete_detector various response
 
     When:
-        Running test-module command
+        Running delete_detector command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     delete_detector_mock = mocker.patch.object(MockedBoto3Client, 'delete_detector', side_effect=[response])
@@ -758,14 +749,13 @@ def test_get_detector(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        get_detector valid response
 
     When:
-        Running test-module command
+        Running get_detector command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     get_detector_mock = mocker.patch.object(MockedBoto3Client, 'get_detector',
@@ -781,14 +771,13 @@ def test_create_detector(mocker):
     """
     Given:
         AWSClient session
-        list_detectors, list_finding_ids, get_finding_ids valid responses
+        create_detector valid response
 
     When:
-        Running test-module command
+        Running create_detector command
 
     Then:
-        assert no exception is being raised.
-        assert api calls are called exactly once.
+        assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
     create_ip_set_mock = mocker.patch.object(MockedBoto3Client, 'create_detector',
@@ -813,16 +802,15 @@ def test_fetch_events(mocker, xsoar_severity, gd_severity):
     """
     Given:
         AWSClient session
-        get_events various input parameters (collect_from, last_ids)
-        list_detectors, list_finding_ids, get_finding_ids various responses.
+        list_detectors, list_finding_ids, get_finding_ids valid responses.
+        various sevirity levels of findings to get.
 
     When:
-        Running get_events as part of fetch-events command.
+        Running fetch-incidents.
 
     Then:
-        assert events are returned as expected.
+        assert incidents are returned as expected.
         assert api calls are called as expected.
-        assert new_collect_from and new_last_ids are returned as expected.
     """
     mocked_client = MockedBoto3Client()
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
