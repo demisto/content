@@ -22,7 +22,7 @@ def test_resolve_un_shortened_url(mocker):
                                       '|---|---|---|\n| test | test | test |\n', 'EntryContext': {'URL.Data': ['test']}}
     with patch.object(urllib.request, 'urlopen', return_value=mock_response):
         mocker.patch("json.loads", return_value=content)
-        execute_mock = mocker.patch.object(demisto, 'results', return_value=1)
+        execute_mock = mocker.patch.object(demisto, 'results')
         ResolveShortenedURL.main()
         assert execute_mock.call_count == 1
         assert execute_mock.call_args[0][0] == excepted_args
@@ -43,7 +43,7 @@ def test_resolve_shortened_url(mocker):
     content = {'success': False}
     with patch.object(urllib.request, 'urlopen', return_value=mock_response):
         mocker.patch("json.loads", return_value=content)
-        execute_mock = mocker.patch.object(demisto, 'results', return_value=1)
+        execute_mock = mocker.patch.object(demisto, 'results')
         ResolveShortenedURL.main()
         assert execute_mock.call_count == 1
         assert execute_mock.call_args[0][0] == 'Provided URL could not be un-shortened'
