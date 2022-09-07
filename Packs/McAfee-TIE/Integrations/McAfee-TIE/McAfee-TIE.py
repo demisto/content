@@ -345,6 +345,11 @@ def get_hash_type_key(file_hash: str):
 #         LOWEST_SCORE_KEY: score,
 #     }
 
+def get_file_instance(dbot_score: Union[Common.DBotScore, None], file_hash: str, hash_type_key: str) -> Common.File:
+    return Common.File(dbot_score=dbot_score,
+                       md5=file_hash if hash_type_key == HashType.MD5 else None,
+                       sha1=file_hash if hash_type_key == HashType.SHA1 else None,
+                       sha256=file_hash if hash_type_key == HashType.SHA256 else None)
 
 def parse_reputation(provider_id: int, reputation: Dict):
     # TODO Check if we should keep provider_id int or Any
@@ -386,11 +391,13 @@ def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_ty
                                   score=lowest_tl_score[LOWEST_SCORE_KEY],
                                   )
 
-    file_instance = Common.File(dbot_score=dbot_score,
-                                md5=file_hash if hash_type_key == HashType.MD5 else None,
-                                sha1=file_hash if hash_type_key == HashType.SHA1 else None,
-                                sha256=file_hash if hash_type_key == HashType.SHA256 else None)
-
+    # file_instance = Common.File(dbot_score=dbot_score,
+    #                             md5=file_hash if hash_type_key == HashType.MD5 else None,
+    #                             sha1=file_hash if hash_type_key == HashType.SHA1 else None,
+    #                             sha256=file_hash if hash_type_key == HashType.SHA256 else None)
+    file_instance = get_file_instance(dbot_score=dbot_score,
+                                      file_hash=file_hash,
+                                      hash_type_key=hash_type_key)
     if lowest_tl_score[LOWEST_SCORE_KEY] >= Common.DBotScore.SUSPICIOUS:
         dbot_score.malicious_description = f"Trust level is {str(lowest_tl_score[LOWEST_TRUST_LEVEL_KEY])}"
 
@@ -422,10 +429,13 @@ def file(hashes: List[str], tie_client: TieClient, reliability: str) -> List[Com
                                           score=Common.DBotScore.NONE,
                                           )
 
-            file_instance = Common.File(dbot_score=dbot_score,
-                                        md5=file_hash if hash_type_key == HashType.MD5 else None,
-                                        sha1=file_hash if hash_type_key == HashType.SHA1 else None,
-                                        sha256=file_hash if hash_type_key == HashType.SHA256 else None)
+            # file_instance = Common.File(dbot_score=dbot_score,
+            #                             md5=file_hash if hash_type_key == HashType.MD5 else None,
+            #                             sha1=file_hash if hash_type_key == HashType.SHA1 else None,
+            #                             sha256=file_hash if hash_type_key == HashType.SHA256 else None)
+            file_instance = get_file_instance(dbot_score=dbot_score,
+                                              file_hash=file_hash,
+                                              hash_type_key=hash_type_key)
             command_result = CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputations For {file_hash}:', None),
                                             raw_response=raw_result,
                                             outputs_prefix=OUTPUT_PREFIX,
@@ -443,34 +453,41 @@ def file(hashes: List[str], tie_client: TieClient, reliability: str) -> List[Com
     return command_results
 
 
-def file_references(file_hash: str, tie_client: TieClient):
-    hash_type_key = get_hash_type_key(file_hash=file_hash)
-    if not hash_type_key:
-        raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
+def file_references(hashes: List[str], tie_client: TieClient) -> List[CommandResults]:
+    command_results: List[CommandResults] = []
+    for file_hash in hashes:
+        hash_type_key = get_hash_type_key(file_hash=file_hash)
+        if not hash_type_key:
+            raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
-    api_input = {}
-    api_input[hash_type_key] = file_hash
+        api_input = {}
+        api_input[hash_type_key] = file_hash
 
-    references = tie_client.get_file_first_references(api_input)
+        raw_result = tie_client.get_file_first_references(api_input)
 
-    table = references_to_human_readable(references)
+        table = references_to_human_readable(raw_result)
 
-    # TODO Create correct context
-    context_file = {}
-    # hash_type_uppercase = hash_type.upper()
+        file_instance = get_file_instance(dbot_score=None,
+                                          file_hash=file_hash,
+                                          hash_type_key=hash_type_key)
+        context_data = {}
 
-    # context_file[hash_type_uppercase] = hash
-    context_file['References'] = table
-    ec = {}
-    ec[outputPaths['file']] = context_file
-    return {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': references,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('References for hash %s' % (hash,), table),
-        'EntryContext': ec
-    }
+        context_data['References'] = table
+        command_results.append(CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputations For {file_hash}:', table),
+                                              raw_response=raw_result,
+                                              outputs_prefix=OUTPUT_PREFIX,
+                                              indicator=file_instance,
+                                              outputs=context_data,
+                                              ))
+    return command_results
+    # return {
+    #     'Type': entryTypes['note'],
+    #     'ContentsFormat': formats['json'],
+    #     'Contents': references,
+    #     'ReadableContentsFormat': formats['markdown'],
+    #     'HumanReadable': tableToMarkdown('References for hash %s' % (hash,), table),
+    #     'EntryContext': ec
+    # }
 
 
 def set_file_reputation(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
@@ -555,7 +572,7 @@ def main():
 
             elif command == 'tie-file-references':
                 tie_client = get_tie_client(dxl_client)
-                return_results(file_references(file_hash=args.get('file'),
+                return_results(file_references(hashes=argToList(args.get('file')),
                                                tie_client=tie_client,
                                                ))
 
