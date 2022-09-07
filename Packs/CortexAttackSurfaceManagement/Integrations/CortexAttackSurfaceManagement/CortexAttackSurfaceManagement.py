@@ -66,6 +66,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
     domain = args.get('domain')
     is_active = args.get('is_active')
     discovery_type = args.get('discovery_type')
+    # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
         search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
@@ -91,6 +92,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # assume that only one service_id was passed in or fail.
     service_id = args.get('service_id')
     service_id_list = service_id.split(",")
     if len(service_id_list) > 1:
@@ -127,6 +129,7 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # assume that only one range_id was passed in or fail.
     range_id = args.get('range_id')
     range_id_list = range_id.split(",")
     if len(range_id_list) > 1:
@@ -151,6 +154,7 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
     name = args.get('name')
     asm_type = args.get('type')
     has_active_external_services = args.get('has_active_external_services')
+    # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
         search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
@@ -176,6 +180,7 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # assume that only one asm_id was passed in or fail.
     asm_id = args.get('asm_id')
     asm_id_list = asm_id.split(",")
     if len(asm_id_list) > 1:
@@ -210,12 +215,6 @@ def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    #url = params.get('url')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-
-    #headers = {}
-    #headers['Authorization'] = f'{params["api_key"]}'
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
