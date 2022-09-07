@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
-import urllib.request
 from CommonServerPython import *  # noqa: F401
+import requests
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -15,9 +17,8 @@ headers = {
 def main():
     url = demisto.args().get('url')
 
-    req = urllib.request.Request('https://unshorten.me/json/' + url, headers=headers)
-    page = urllib.request.urlopen(req)
-    content = json.loads(page.read())
+    req = requests.get('https://unshorten.me/json/' + url, headers=headers, verify=False)
+    content = req.json()
     if content['success']:
         resolvedUrl = content['resolved_url']
         shortenedUrl = content['requested_url']
