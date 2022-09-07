@@ -52,7 +52,7 @@ def main():
                     for entry in contents:
                         raw_json = ''
                         if isinstance(entry, dict):
-                            raw_json = entry.get('rawJSON')
+                            raw_json = entry.get('rawJSON')  # type: ignore
                         if raw_json:
                             incidents_context.append(json.loads(raw_json))
                 except TypeError:
