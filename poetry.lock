@@ -2219,7 +2219,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "286c43289e98afd0060c5359c1995c5aa67a973a2dbc63852641120deecf61b0"
+content-hash = "e3e8454e22cebe493eddcee087a3f491aa907824921e807eaf9ef48b70f1f9b4"
 
 [metadata.files]
 aiohttp = [
