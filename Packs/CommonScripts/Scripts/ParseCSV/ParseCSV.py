@@ -1,10 +1,7 @@
 import csv
 
 from CommonServerPython import *
-import importlib
 
-importlib.reload(sys)  # type: ignore
-sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 codec_type = demisto.args().get('codec', 'utf-8')
 
 
@@ -141,7 +138,7 @@ def main():
             entry = get_entry_by_file_name(file_name)
             entry_id = entry['ID']
         except ValueError as e:
-            return_error(e.message)
+            return_error(e)
 
     res = demisto.getFilePath(entry_id)
     if not res:
