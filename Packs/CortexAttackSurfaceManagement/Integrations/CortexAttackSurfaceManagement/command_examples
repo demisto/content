@@ -1,4 +1,4 @@
-!asm-getassetinternetexposure asm_id_list=e06f15ce-9ab1-3460-8a31-000ac6d2d37e
+!asm-getassetinternetexposure asm_id=e06f15ce-9ab1-3460-8a31-000ac6d2d37e
 !asm-getexternalipaddressrange range_id=1093124c-ce26-33ba-8fb8-937fecb4c7b6
 !asm-getexternalservice service_id=94232f8a-f001-3292-aa65-63fa9d981427
 !asm-getexternalipaddressranges
