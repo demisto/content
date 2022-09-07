@@ -122,7 +122,7 @@ def collect_manual_attachments():
                 data = fp.read()
         else:
             with open(path, 'rb') as fp:  # type: ignore
-                data = fp.read()
+                data = fp.read()  # type: ignore
         attachments.append({
             'name': attachment['FileName'],
             'maintype': maintype,
@@ -161,7 +161,7 @@ def collect_attachments():
                     data = fp.read()
             else:
                 with open(path, 'rb') as fp:  # type: ignore
-                    data = fp.read()
+                    data = fp.read()  # type: ignore
             attachments.append({
                 'name': filename,
                 'maintype': maintype,
