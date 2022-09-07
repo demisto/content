@@ -1,9 +1,10 @@
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
-from Tests.scripts.collect_tests.logger import logger
 
 
 class TestConfItem(DictBased):
@@ -67,8 +68,10 @@ class TestConf(DictFileBased):
         logger.debug(f'integration_to_tests:\n{result}\n')
         return dict(result)
 
-    def get_test(self, test_id: str) -> TestConfItem:
+    def get_test(self, test_id: str) -> Optional[TestConfItem]:
         try:
             return self.test_id_to_test[test_id]
         except KeyError:
-            raise ValueError(f'test {test_id} is missing from conf.json, under `tests`')
+            # todo fix CIAC-4006
+            logger.warning(f'test {test_id} is missing from conf.json, under `tests`')
+            return None
