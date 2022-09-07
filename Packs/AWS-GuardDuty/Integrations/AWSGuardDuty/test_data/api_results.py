@@ -279,3 +279,62 @@ LIST_MEMBERS_RESPONSE = {
     ],
     'NextToken': 'string'
 }
+
+
+THREAT_INTEL_SET_RESPONSE = {
+    'Name': 'string',
+    'Format': 'TXT',
+    'Location': 'string',
+    'Status': 'INACTIVE',
+    'Tags': {
+        'string': 'string'
+    }
+}
+
+IP_SET_RESPONSE = {
+    'Name': 'string',
+    'Format': 'TXT',
+    'Location': 'string',
+    'Status': 'INACTIVE',
+    'Tags': {
+        'string': 'string'
+    }
+}
+
+DETECTOR_RESPONSE = {
+    'CreatedAt': 'string',
+    'FindingPublishingFrequency': 'FIFTEEN_MINUTES',
+    'ServiceRole': 'string',
+    'Status': 'ENABLED',
+    'UpdatedAt': 'string',
+    'DataSources': {
+        'CloudTrail': {
+            'Status': 'ENABLED'
+        },
+        'DNSLogs': {
+            'Status': 'ENABLED'
+        },
+        'FlowLogs': {
+            'Status': 'ENABLED'
+        },
+        'S3Logs': {
+            'Status': 'ENABLED'
+        },
+        'Kubernetes': {
+            'AuditLogs': {
+                'Status': 'ENABLED'
+            }
+        },
+        'MalwareProtection': {
+            'ScanEc2InstanceWithFindings': {
+                'EbsVolumes': {
+                    'Status': 'ENABLED'
+                }
+            },
+            'ServiceRole': 'string'
+        }
+    },
+    'Tags': {
+        'string': 'string'
+    }
+}

@@ -34,8 +34,10 @@ def create_detector(client: boto3.client, args: dict):
 
 def delete_detector(client: boto3.client, args: dict):
     response = client.delete_detector(DetectorId=args.get('detectorId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output=f"The Detector {args.get('detectorId')} has been deleted")
+    if response == dict():
+        return f"The Detector {args.get('detectorId')} has been deleted"
+    else:
+        raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
 
 
 def get_detector(client: boto3.client, args: dict):
@@ -59,7 +61,7 @@ def update_detector(client: boto3.client, args: dict):
         DetectorId=args.get('detectorId'),
         Enable=True if args.get('enable') == 'True' else False
     )
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response == dict():
         return f"The Detector {args.get('detectorId')} has been Updated"
     else:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
@@ -68,7 +70,7 @@ def update_detector(client: boto3.client, args: dict):
 def list_detectors(client: boto3.client, args: dict):
     response = client.list_detectors()
     detector = response['DetectorIds']
-
+    # TODO: is this a bug worth fixing?
     data = ({
         'DetectorId': detector[0]
     })
