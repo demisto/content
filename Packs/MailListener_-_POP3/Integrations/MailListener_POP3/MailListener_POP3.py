@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 
 from CommonServerPython import *
@@ -51,7 +50,6 @@ def get_user_emails():
     _, mails_list, _ = pop3_server_conn.list()  # type: ignore
 
     mails = []
-    index = ''
 
     for mail in mails_list:
         try:
@@ -62,7 +60,7 @@ def get_user_emails():
             msg['index'] = index
             mails.append(msg)
         except Exception:
-            demisto.error("Failed to get email with index " + index + 'from the server.')
+            demisto.error("Failed to get email with index " + str(index) + 'from the server.')
             raise
 
     return mails
@@ -219,7 +217,7 @@ def parse_mail_parts(parts):
             else:
                 str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
-                text = quopri.decodestring(str_utf8)
+                text = quopri.decodestring(str_utf8)  # type: ignore
 
             if not isinstance(text, str):
                 text = text.decode('unicode-escape')
