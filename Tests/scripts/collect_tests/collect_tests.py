@@ -272,14 +272,14 @@ class TestCollector(ABC):
                 # todo prevent this case, see CIAC-4006
                 continue
 
-            # collect the pack under which the test is located
-            pack_id = test_object.pack_id
+            # collect the pack containing the test playbook
+            pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
             result.append(self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
                 reason_description=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
-                allow_incompatible_marketplace=False,
+                allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
             ))
 
             # collect integrations used in the test
