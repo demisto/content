@@ -7,7 +7,7 @@ from AWSGuardDuty import get_members, parse_incident_from_finding, connection_te
     create_threat_intel_set, update_ip_set, delete_ip_set, update_detector, delete_detector, list_ip_sets, get_ip_set, \
     create_ip_set, list_detectors, get_detector, create_detector, fetch_incidents
 from test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST_MEMBERS_RESPONSE, \
-    THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE
+    THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
 
 import pytest
 from datetime import date
@@ -175,6 +175,8 @@ def test_list_members(mocker):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_update_findings_feedback(mocker, response, raises):
@@ -207,6 +209,8 @@ def test_update_findings_feedback(mocker, response, raises):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_archive_findings(mocker, response, raises):
@@ -236,6 +240,8 @@ def test_archive_findings(mocker, response, raises):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_unarchive_findings(mocker, response, raises):
@@ -265,6 +271,8 @@ def test_unarchive_findings(mocker, response, raises):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_create_sample_findings(mocker, response, raises):
@@ -364,6 +372,8 @@ def test_list_findings(mocker):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_update_threat_intel_set(mocker, response, raises):
@@ -453,6 +463,8 @@ def test_list_threat_intel_sets(mocker):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_delete_threat_intel_set(mocker, response, raises):
@@ -600,6 +612,8 @@ def test_create_ip_set(mocker):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_update_ip_set(mocker, response, raises):
@@ -634,6 +648,8 @@ def test_update_ip_set(mocker, response, raises):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_delete_ip_set(mocker, response, raises):
@@ -684,6 +700,8 @@ def test_list_detectors(mocker):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_update_detector(mocker, response, raises):
@@ -712,6 +730,8 @@ def test_update_detector(mocker, response, raises):
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
                                                            id='Success'),
+                                              pytest.param(RESPONSE_METADATA, does_not_raise(),
+                                                           id='Success with Metadata'),
                                               pytest.param({'response': 'bad'}, pytest.raises(Exception),
                                                            id='Failure')])
 def test_delete_detector(mocker, response, raises):

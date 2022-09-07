@@ -34,7 +34,7 @@ def create_detector(client: boto3.client, args: dict):
 
 def delete_detector(client: boto3.client, args: dict):
     response = client.delete_detector(DetectorId=args.get('detectorId'))
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The Detector {args.get('detectorId')} has been deleted"
     else:
         raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
@@ -61,7 +61,7 @@ def update_detector(client: boto3.client, args: dict):
         DetectorId=args.get('detectorId'),
         Enable=True if args.get('enable') == 'True' else False
     )
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The Detector {args.get('detectorId')} has been Updated"
     else:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
@@ -110,7 +110,7 @@ def delete_ip_set(client: boto3.client, args: dict):
         DetectorId=args.get('detectorId'),
         IpSetId=args.get('ipSetId')
     )
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The IPSet {args.get('ipSetId')} has been deleted from Detector {args.get('detectorId')}"
 
     else:
@@ -131,7 +131,7 @@ def update_ip_set(client: boto3.client, args: dict):
 
     response = client.update_ip_set(**kwargs)
 
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The IPSet {args.get('ipSetId')} has been Updated"
 
     else:
@@ -201,7 +201,7 @@ def delete_threat_intel_set(client: boto3.client, args: dict):
         DetectorId=args.get('detectorId'),
         ThreatIntelSetId=args.get('threatIntelSetId')
     )
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The ThreatIntel Set {args.get('threatIntelSetId')} has been deleted from Detector {args.get('detectorId')}"
     else:
         raise Exception(f"Failed to delete ThreatIntel set {args.get('threatIntelSetId')} . Response was: {response}")
@@ -256,7 +256,7 @@ def update_threat_intel_set(client: boto3.client, args: dict):
         kwargs.update({'Name': args.get('name')})
     response = client.update_threat_intel_set(**kwargs)
 
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The ThreatIntel set {args.get('threatIntelSetId')} has been updated"
     else:
         raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. "
@@ -377,7 +377,7 @@ def create_sample_findings(client: boto3.client, args: dict):
 
     response = client.create_sample_findings(**kwargs)
 
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Sample Findings were generated"
     else:
         raise Exception(f"Failed to generate findings. Response was: {response}")
@@ -390,7 +390,7 @@ def archive_findings(client: boto3.client, args: dict):
 
     response = client.archive_findings(**kwargs)
 
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings were archived"
     else:
         raise Exception(f"Failed to archive findings. Response was: {response}")
@@ -403,7 +403,7 @@ def unarchive_findings(client: boto3.client, args: dict):
 
     response = client.unarchive_findings(**kwargs)
 
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings were unarchived"
     else:
         raise Exception(f"Failed to archive findings. Response was: {response}")
@@ -419,7 +419,7 @@ def update_findings_feedback(client: boto3.client, args: dict):
         kwargs.update({'Feedback': argToList(args.get('feedback'))})
 
     response = client.update_findings_feedback(**kwargs)
-    if response == dict():
+    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings Feedback sent!"
     else:
         raise Exception(f"Failed to send findings feedback. Response was: {response}")

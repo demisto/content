@@ -338,3 +338,22 @@ DETECTOR_RESPONSE = {
         'string': 'string'
     }
 }
+
+
+RESPONSE_METADATA = {
+    'ResponseMetadata': {'RequestId': 'string',
+                         'HTTPStatusCode': 200,
+                         'HTTPHeaders':
+                             {'date': 'Wed, 07 Sep 2022 13:08:42 GMT',
+                              'content-type': 'application/json',
+                              'content-length': '0',
+                              'connection': 'keep-alive',
+                              'x-amzn-requestid': 'string',
+                              'access-control-allow-origin': '*',
+                              'access-control-allow-headers': 'string',
+                              'x-amz-apigw-id': 'string',
+                              'access-control-expose-headers': 'string',
+                              'x-amzn-trace-id': 'string',
+                              'access-control-max-age': 'string'},
+                         'RetryAttempts': 0}
+}
