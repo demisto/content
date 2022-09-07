@@ -136,7 +136,6 @@ def parse_ticket_data(raw_query):
 def create_ticket_request(encoded):
     suffix_url = 'ticket/new'
     ticket_id = http_request('POST', suffix_url, data=encoded)
-
     return ticket_id
 
 
@@ -150,7 +149,6 @@ def create_ticket_attachments_request(encoded, files_data):
 def create_ticket():
     args = dict(demisto.args())
     args = {arg: value for arg, value in args.items() if isinstance(value, str)}
-
     queue = args.get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
 
@@ -224,6 +222,7 @@ def create_ticket():
     else:
         raw_ticket_res = create_ticket_request(encoded)
     ticket_id = re.findall('\d+', str(raw_ticket_res.content))[-1]
+    demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
         return_error('Ticket creation failed')
 
@@ -242,7 +241,7 @@ def create_ticket():
     hr = 'Ticket {} was created successfully.'.format(ticket_id)
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': raw_ticket_res.content,
+        'Contents': str(raw_ticket_res.content),
         'ContentsFormat': formats['text'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr,
