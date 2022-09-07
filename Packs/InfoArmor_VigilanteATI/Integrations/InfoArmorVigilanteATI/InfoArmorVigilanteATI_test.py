@@ -612,3 +612,27 @@ def test_usage_info_command(mocker):
 
     assert expected_content == content
     assert expected_readable_output in readable_output
+
+
+@pytest.mark.parametrize('params_to_test, expected_params', [
+    ({'a': 'a', 'b': None, 'c': 'c'}, {'a': 'a', 'c': 'c'}),
+    ({'b': None}, {}),
+    ({'a': 'a', 'b': 'b', 'c': 'c'}, {'a': 'a', 'b': 'b', 'c': 'c'})
+])
+def test_remove_none_params(params_to_test, expected_params):
+    """
+        Given:
+            - A parameters dictionary:
+                1. with two valid values, and one None value.
+                2. with only one pair of key and value, where the value is none.
+                3. with 3 pairs of key and value, without None values.
+        When:
+            - Running the 'remove_none_params' function.
+        Then:
+            - Verify that the output params dictionary doesn't include key: value pairs of None values.
+    """
+    from InfoArmorVigilanteATI import remove_none_params
+
+    params_without_none_values = remove_none_params(params_to_test)
+
+    assert params_without_none_values == expected_params

@@ -390,18 +390,6 @@ def query_ecrime_intelligence_database_command(args):
     })
 
 
-def list_account_credentials(leak_id, limit, domains, token=None):
-    params = remove_none_params({
-        'leak_id': leak_id,
-        'limit': limit,
-        'domains': domains,
-        'token': token
-    })
-
-    res = http_request('get', 'api/1/leaks/get', 'leaks.get', params)
-    return res.json()
-
-
 def query_accounts(account_identifier, limit, days_ago):
     if days_ago is not None:
         days_ago = int(days_ago)
