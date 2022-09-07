@@ -15,7 +15,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   type: 15
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
