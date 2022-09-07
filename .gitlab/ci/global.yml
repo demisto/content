@@ -99,7 +99,8 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - echo $HOME
+  - echo "Checking if pyproject.toml is consistent with poetry.lock"
+  - poetry lock --check
   - |
     if [ -f "./.venv/bin/activate" ]; then
       echo "found venv"

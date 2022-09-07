@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.33771  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -156,6 +156,8 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
+        echo "Checking if pyproject.toml is consistent with poetry.lock"
+        poetry lock --check
         if [ ! -e ".venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 .hooks/bootstrap
