@@ -3,6 +3,7 @@ import MailSenderNew
 import demistomock as demisto
 import pytest
 import hmac
+import hashlib
 
 RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
@@ -62,11 +63,13 @@ def test_hmac(mocker):
     '''
     Test that hmac is able to handle unicode user/pass
     '''
+
     mocker.patch.object(demisto, 'params', return_value={
         'credentials': {'identifier': 'user', 'password': 'pass'}
     })
     user, password = MailSenderNew.get_user_pass()
-    res = user + hmac.HMAC(password, 'test').hexdigest()  # TODO: handle it
+    password = password.encode('utf-8')
+    res = user + hmac.HMAC(password, b'test', digestmod=hashlib.sha256).hexdigest()
     assert len(res) > 0
 
 
