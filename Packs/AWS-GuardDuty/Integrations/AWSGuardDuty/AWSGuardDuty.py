@@ -70,7 +70,7 @@ def update_detector(client: boto3.client, args: dict):
 def list_detectors(client: boto3.client, args: dict):
     response = client.list_detectors()
     detector = response['DetectorIds']
-    # TODO: is this a bug worth fixing?
+    # Only takes the first detector in the list, this should be addressed when rewriting.
     data = ({
         'DetectorId': detector[0]
     })
