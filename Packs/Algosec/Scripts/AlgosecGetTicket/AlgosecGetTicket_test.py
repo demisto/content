@@ -1,7 +1,7 @@
 import demistomock as demisto
 
 
-def test_AlgosecGetTicket_success(mocker):
+def test_algosec_get_ticket(mocker):
     """
     Given:
         - response mock.
