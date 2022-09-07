@@ -11,7 +11,8 @@ type: python
 subtype: python2
 tags:
 - OSQuery
-comment: Returns Users Table from a remote system using OSQuery
+deprecated: true
+comment: "Deprecated. Use OSQueryBasicQuery with query='select * from users;' instead."
 system: true
 args:
 - name: system
