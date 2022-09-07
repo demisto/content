@@ -1,2 +1,5 @@
 [file:AWSSagemaker.yml]
 ignore=IN145
+
+[Known_words]
+Sagemaker
