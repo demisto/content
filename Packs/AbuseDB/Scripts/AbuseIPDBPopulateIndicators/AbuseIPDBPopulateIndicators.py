@@ -44,5 +44,5 @@ def main():
     demisto.results("All Indicators were created successfully")
 
 
-if __name__ == "__main__":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
