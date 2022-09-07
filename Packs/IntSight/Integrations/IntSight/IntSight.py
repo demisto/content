@@ -1156,5 +1156,5 @@ def main():     # pragma: no cover
         return_error(str(err))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
