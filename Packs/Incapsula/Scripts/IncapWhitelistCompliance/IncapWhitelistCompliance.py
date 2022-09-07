@@ -17,13 +17,6 @@ please update your settings
 
 --DBot
 '''
-ADVANCE_WARNING_MAIL = '''
-WARNING
-Your Site {0} is not compliant to the Incapsula allow list policy
-please update your settings as soon as possible!
-
---DBot
-'''
 
 
 def sendMail(to, subject, body="", bcc=""):
@@ -36,8 +29,6 @@ def escalation(url, severity, owner_mail):
 
     if severity == 0:
         return None
-    elif severity < 4:
-        return sendMail(MAIL_TO_RECIPIENT, INCAPSULA_WARNING, BASIC_WARNING_MAIL.format(url), owner_mail)
     else:
         return sendMail(MAIL_TO_RECIPIENT, INCAPSULA_WARNING, BASIC_WARNING_MAIL.format(url), owner_mail)
 
