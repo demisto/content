@@ -8,11 +8,6 @@ import json
 from datetime import datetime, timedelta
 import time
 import re
-import sys
-
-# Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
@@ -112,7 +107,7 @@ def build_query(query_fields, path, template_context='SPECIFIC'):
 
 
 def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS, return_json=True):
-    LOG('running request with url=%s' % (SERVER + url_suffix))
+    LOG(f'running request with url={SERVER + url_suffix}')
     try:
         res = session.request(
             method,
@@ -136,7 +131,7 @@ def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS,
             error_msg = ''
             if 'Login' in str(error_content):
                 error_msg = 'Authentication failed, verify the credentials are correct.'
-            raise ValueError('Failed to process the API response. {} {} - {}'.format(error_msg, error_content, str(e)))
+            raise ValueError(f'Failed to process the API response. {error_msg} {error_content} - {str(e)}')
 
 
 def translate_timestamp(timestamp):
@@ -154,7 +149,7 @@ def update_output(output, simple_values, element_values, info_dict):
             output[info['header']] = dict_safe_get(element_values, [info.get('field'), 'elementValues', 0, 'name'])
 
         elif info_type == 'time':
-            time_stamp_str = dict_safe_get(simple_values, [info.get('field'), 'values', 0], default_return_value=u'',
+            time_stamp_str = dict_safe_get(simple_values, [info.get('field'), 'values', 0], default_return_value='',
                                            return_type=unicode)
             output[info['header']] = translate_timestamp(time_stamp_str) if time_stamp_str else ''
 
@@ -213,7 +208,7 @@ def is_probe_connected_command(is_remediation_commmand=False):
 
     for value in elements.values():
         machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
-                                     default_return_value=u'', return_type=unicode)
+                                     default_return_value='', return_type=unicode)
         if machine_name.upper() == machine.upper():
             is_connected = True
             break
@@ -474,24 +469,24 @@ def query_malops_command():
         for guid, malop in malops_map.iteritems():
             simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
             management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0],
-                                              default_return_value=u'',
+                                              default_return_value='',
                                               return_type=unicode)
 
-            if management_status.upper() == u'CLOSED':
+            if management_status.upper() == 'CLOSED':
                 continue
 
             creation_time = translate_timestamp(dict_safe_get(simple_values, ['creationTime', 'values', 0]))
             malop_last_update_time = translate_timestamp(
                 dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
             raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0],
-                                                 default_return_value=u'', return_type=unicode)
+                                                 default_return_value='', return_type=unicode)
             decision_failure = raw_decision_failure.replace('Process.', '')
             raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], default_return_value={},
                                          return_type=dict)
             suspects_string = ''
             if raw_suspects:
                 suspects = dict_safe_get(raw_suspects, ['elementValues', 0], default_return_value={}, return_type=dict)
-                suspects_string = '{}: {}'.format(suspects.get('elementType'), suspects.get('name'))
+                suspects_string = f'{suspects.get("elementType")}: {suspects.get("name")}'
 
             affected_machines = []
             elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'],
@@ -735,7 +730,7 @@ def add_comment_command():
         add_comment(malop_guid, comment.encode('utf-8'))
         demisto.results('Comment added successfully')
     except Exception as e:
-        raise Exception('Failed to add new comment. Orignal Error: ' + e.message)
+        raise Exception(f'Failed to add new comment. Orignal Error: {e}')
 
 
 def add_comment(malop_guid, comment):
@@ -754,14 +749,14 @@ def update_malop_status_command():
     update_malop_status(malop_guid, status)
 
     ec = {
-        'Cybereason.Malops(val.GUID && val.GUID == {})'.format(malop_guid): {
+        f'Cybereason.Malops(val.GUID && val.GUID == {malop_guid})': {
             'GUID': malop_guid,
             'Status': status
         }
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': 'Successfully updated malop {0} to status {1}'.format(malop_guid, status),
+        'Contents': f'Successfully updated malop {malop_guid} to status {status}',
         'ContentsFormat': formats['text'],
         'EntryContext': ec
     })
@@ -774,8 +769,7 @@ def update_malop_status(malop_guid, status):
 
     response = http_request('POST', '/rest/crimes/status', json_body=json_body)
     if response['status'] != 'SUCCESS':
-        raise Exception('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status,
-                                                                                        response['message']))
+        raise Exception(f'Failed to update malop {malop_guid} status to {status}. Message: {response["message"]}')
 
 
 def prevent_file_command():
@@ -862,8 +856,7 @@ def kill_process_command():
         response = kill_process(malop_guid, machine_guid, process_guid)
         status = dict_safe_get(response, ['statusLog', 0, 'status'])
         # response
-        demisto.results('Request to kill process {0} was sent successfully and now in status {1}'.format(process_guid,
-                                                                                                         status))
+        demisto.results(f'Request to kill process {process_guid} was sent successfully and now in status {status}')
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
@@ -1376,7 +1369,7 @@ def logout():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 
 session = requests.session()
 
