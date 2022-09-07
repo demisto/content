@@ -139,7 +139,8 @@ def is_job_ready_checkphish(jobID, api_key, base_url, use_ssl):
         'jobID': jobID
     }
     res = http_request('POST', base_url + STATUS_SUFFIX, use_ssl, data=json.dumps(query))
-    if res:
+    
+    if res and res['status'] == DONE_STATUS:
         return True
 
     return False
