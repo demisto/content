@@ -13,7 +13,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 3,
+	"logicalVersion": 6,
 	"mapping": {
 		"ThreatConnect": {
 			"dontMapEventToLabels": true,
@@ -38,6 +38,31 @@
 				},
 				"ThreatConnect Id": {
 					"simple": "id"
+				},
+				"Threatconnect Associated Indicators": {
+					"simple": "associatedIndicators"
+				},
+				"Threatconnect AssociatedGroups": {
+					"simple": "associatedGroups"
+				},
+				"Threatconnect Attributes": {
+					"simple": "attributes"
+				},
+				"Threatconnect Created By": {
+					"simple": "createdBy"
+				},
+				"Threatconnect Created by": {
+					"complex": {
+						"filters": [],
+						"root": "createdBy",
+						"transformers": []
+					}
+				},
+				"Threatconnect Security Labels": {
+					"simple": "securityLabels"
+				},
+				"Threatconnect Victim Assets": {
+					"simple": "associatedVictimAssets"
 				},
 				"Title": {
 					"simple": "name"

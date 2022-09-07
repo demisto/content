@@ -12,7 +12,8 @@
         "CrowdStrike Falcon Incident",
         "Microsoft Defender For Endpoint",
         "OpsGenie Incident",
-        "OpsGenie Alert"
+        "OpsGenie Alert",
+        "ThreatConnect"
     ],
     "breachScript": "",
     "caseInsensitive": true,
