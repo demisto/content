@@ -163,7 +163,7 @@ def flatten(d):
 
 def filter_dict_null(d):
     if isinstance(d, dict):
-        return dict((k, v) for k, v in list(d.items()) if v is not None)
+        return {k: v for k, v in d.items() if v is not None}
     return d
 
 
