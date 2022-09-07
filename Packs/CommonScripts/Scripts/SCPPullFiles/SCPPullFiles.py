@@ -3,14 +3,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def scp_pull_files(args):
-    res = []
+    res = []  # type: ignore
     s2f = demisto.get(args, 'systems2files')
     if s2f:
         s2f = json.loads(s2f)
         if not isinstance(s2f, dict):
             res = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                              "Contents": "Wrong argument provided. Not a dict. Dump of args: " + json.dumps(
-                                 args, indent=4)}
+                                 args, indent=4)}  # type: ignore
         else:
             for k in s2f:
                 res += demisto.executeCommand("copy-from", {'using': k, 'file': s2f[k]})
