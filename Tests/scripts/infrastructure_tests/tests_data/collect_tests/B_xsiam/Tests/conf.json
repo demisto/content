@@ -5,6 +5,9 @@
     },
     {
       "playbookID": "myTestPlaybook"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration"
     }
   ],
   "skipped_tests": {},
