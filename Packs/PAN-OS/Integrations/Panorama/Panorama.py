@@ -11158,36 +11158,104 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
     return http_request(URL, 'POST', params=params)
 
 
-def parse_pan_os_list_nat_rules(entries: Union[List, Dict]) -> List[Dict]:
+def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
 
-    def extract_info_by_key(_entry, _key):
+    for key in keys_to_remove:
+        try:
+            del dictionary[key]
+        except KeyError:
+            pass
 
-        key_info = _entry.get(_key)  # api could not return the key
-        if not key_info:
-            return None
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
 
-        if isinstance(key_info, dict) and (_member := key_info.get('member')):
-            if isinstance(_member, dict):
-                return _member.get('#text')  # this is an item which was not committed yet.
-            elif isinstance(_member, list):
-                return [text.get('#text') for text in _member]
-            return _member
-        elif isinstance(key_info, str):
-            return key_info
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            replace_and_remove_keys_from_dict(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    replace_and_remove_keys_from_dict(item, keys_to_remove)
 
+
+def extract_objects_info_by_key(_entry, _key):
+    key_info = _entry.get(_key)
+    if not key_info:  # api could not return the key
         return None
+
+    if isinstance(key_info, dict) and (_member := key_info.get('member')):
+        return _member
+    elif isinstance(key_info, str):
+        return key_info
+
+    return None
+
+
+def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> List[Dict]:
+
+    def parse_source_translation(_entry):
+
+        source_translation_object = _entry.get('source-translation', {})
+
+        for _source_translation_type, pretty_context in [
+            ('dynamic-ip', 'DynamicIP'), ('dynamic-ip-and-port', 'DynamicIpAndPort'), ('static-ip', 'StaticIP')
+        ]:
+            if _source_translation := source_translation_object.get(_source_translation_type):
+                if _source_translation_type == 'dynamic-ip-and-port':
+                    if interface := _source_translation.get('interface-address'):
+                        return {pretty_context: {
+                            'InterfaceAddress': extract_objects_info_by_key(interface, 'interface')}
+                        }
+
+                return {pretty_context: {
+                    'TranslatedAddress': extract_objects_info_by_key(_source_translation, 'translated-address')}
+                }
+        return None
+
+    def parse_destination_translation(_entry):
+        destination_translation_object = {}
+        if destination_translation := _entry.get('destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                destination_translation_object['TranslatedAddress'] = translated_address
+            if dns_rewrite := destination_translation.get('dns-rewrite'):
+                destination_translation_object['DNSRewrite'] = dns_rewrite.get('direction')
+        return destination_translation_object if destination_translation_object else None
+
+    def parse_dynamic_destination_translation(_entry):
+        dynamic_destination_translation_object = {}
+        if destination_translation := _entry.get('dynamic-destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                dynamic_destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                dynamic_destination_translation_object['TranslatedAddress'] = translated_address
+            if distribution := destination_translation.get('distribution'):
+                dynamic_destination_translation_object['DistributionMethod'] = distribution
+        return dynamic_destination_translation_object if dynamic_destination_translation_object else None
+
+    if show_uncommited:
+        for entry in entries:
+            replace_and_remove_keys_from_dict(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
 
     return [
         {
             'Name': entry.get('@name'),
-            'Tags': extract_info_by_key(entry, 'tag'),
-            'SourceZone': extract_info_by_key(entry, 'from'),
-            'DestinationZone': extract_info_by_key(entry, 'to'),
-            'SourceAddress': extract_info_by_key(entry, 'source'),
-            'DestinationAddress': extract_info_by_key(entry, 'destination'),
-            'DestinationInterface': extract_info_by_key(entry, 'to-interface'),
-            'Service': extract_info_by_key(entry, 'service'),
-            'Description': extract_info_by_key(entry, 'description')
+            'Tags': extract_objects_info_by_key(entry, 'tag'),
+            'SourceZone': extract_objects_info_by_key(entry, 'from'),
+            'DestinationZone': extract_objects_info_by_key(entry, 'to'),
+            'SourceAddress': extract_objects_info_by_key(entry, 'source'),
+            'DestinationAddress': extract_objects_info_by_key(entry, 'destination'),
+            'DestinationInterface': extract_objects_info_by_key(entry, 'to-interface'),
+            'Service': extract_objects_info_by_key(entry, 'service'),
+            'Description': extract_objects_info_by_key(entry, 'description'),
+            'SourceTranslation': parse_source_translation(entry),
+            'DestinationTranslation': parse_destination_translation(entry),
+            'DynamicDestinationTranslation': parse_dynamic_destination_translation(entry)
         } for entry in entries
     ]
 
@@ -11217,12 +11285,21 @@ def pan_os_list_nat_rules_command(args):
             limit = arg_to_number(args.get('limit')) or 50
             entries = entries[:limit]
 
-    nat_rules = parse_pan_os_list_nat_rules(entries)
+    nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
 
     return CommandResults(
         raw_response=raw_response,
         outputs=nat_rules,
-        readable_output=tableToMarkdown('Nat Policy Rules', nat_rules, removeNull=True),
+        readable_output=tableToMarkdown(
+            'Nat Policy Rules:',
+            nat_rules,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=[
+                'Name', 'Tags', 'SourceZone', 'DestinationZone', 'SourceAddress',
+                'DestinationAddress', 'DestinationInterface', 'Service', 'Description'
+            ]
+        ),
         outputs_prefix='Panorama.Nat',
         outputs_key_field='Name'
     )

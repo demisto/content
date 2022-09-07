@@ -3496,12 +3496,14 @@ class TestPanOSListNatRulesCommand:
             {
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
-                'Service': 'any', 'Description': None
+                'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
+                'DestinationTranslation': None
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
-                'Service': 'any', 'Description': None
+                'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
+                'DestinationTranslation': None
             }
         ]
 

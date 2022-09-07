@@ -8168,6 +8168,15 @@ script:
     - contextPath: Panorama.Nat.Description
       description: The description of the rule.
       type: String
+    - contextPath: Panorama.Nat.SourceTranslation
+      description: The source translation of the rule.
+      type: Unknown
+    - contextPath: Panorama.Nat.DestinationTranslation
+      description: The destination translation of the rule.
+      type: Unknown
+    - contextPath: Panorama.Nat.DynamicDestinationTranslation
+      description: The dynamic destination translation of the rule.
+      type: Unknown
   - arguments:
     - description: The name of the nat-rule to create.
       isArray: false

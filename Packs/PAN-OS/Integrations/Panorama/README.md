@@ -7449,7 +7449,7 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
-| device_group | The device-group in which the nat-rules are part of. | Optional | 
+| device-group | The device-group in which the nat-rules are part of. | Optional | 
 | pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
 | limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
@@ -7471,6 +7471,9 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 | Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
 | Panorama.Nat.Service | String | The service in which the rule has. | 
 | Panorama.Nat.Description | String | The description of the rule. | 
+| Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
+| Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
+| Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
 
 #### Command example
 ```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
@@ -7480,25 +7483,46 @@ Returns a list of nat-rules of either Panorama/firewall instance.
     "Panorama": {
         "Nat": [
             {
-                "Description": null,
-                "DestinationAddress": "any",
-                "DestinationInterface": "a2",
-                "DestinationZone": "1.1.1.1",
-                "Name": "test",
-                "Service": null,
-                "SourceAddress": "any",
-                "SourceZone": "3.3.3.3",
+                "Description": "a test rule",
+                "DestinationAddress": "test123",
+                "DestinationInterface": "any",
+                "DestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": null,
+                "Name": "test-2",
+                "Service": "any",
+                "SourceAddress": "5.5.5.5",
+                "SourceTranslation": {
+                    "DynamicIpAndPort": {
+                        "InterfaceAddress": "a2"
+                    }
+                },
+                "SourceZone": [
+                    "2.2.2.2",
+                    "3.3.3.3"
+                ],
                 "Tags": "test tag"
             },
             {
-                "Description": null,
-                "DestinationAddress": "any",
-                "DestinationInterface": null,
+                "Description": "blabla",
+                "DestinationAddress": "1.1.1.1",
+                "DestinationInterface": "a2",
+                "DestinationTranslation": null,
                 "DestinationZone": "2.2.2.2",
-                "Name": "test-2",
+                "DynamicDestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "Name": "test-1",
                 "Service": "any",
-                "SourceAddress": "any",
-                "SourceZone": "2.2.2.2",
+                "SourceAddress": "3.3.3.3",
+                "SourceTranslation": {
+                    "StaticIP": {
+                        "TranslatedAddress": "3.3.3.3"
+                    }
+                },
+                "SourceZone": "3.3.3.3",
                 "Tags": null
             }
         ]
@@ -7508,11 +7532,12 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 #### Human Readable Output
 
->### Nat Policy Rules
->|DestinationAddress|DestinationInterface|DestinationZone|Name|Service|SourceAddress|SourceZone|Tags|
->|---|---|---|---|---|---|---|---|
->| any | a2 | 1.1.1.1 | test |  | any | 3.3.3.3 | test tag |
->| any |  | 2.2.2.2 | test-2 | any | any | 2.2.2.2 |  |
+>### Nat Policy Rules:
+>| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
+--------|---|---|---|---|---|---|---|---|---|
+>| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
+>| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+
 
 ### pan-os-create-nat-rule
 ***
