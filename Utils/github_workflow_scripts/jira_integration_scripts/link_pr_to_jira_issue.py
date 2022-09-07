@@ -30,6 +30,7 @@ def arguments_handler():
     parser.add_argument('-m', '--is_merged', help='boolean. Whether the PR was merged or not.')
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
+    parser.add_argument('-url', '--url', help='The instance url.')
 
     return parser.parse_args()
 
@@ -59,6 +60,7 @@ def trigger_generic_webhook(options):
     pr_num = options.pr_num
     username = options.username
     password = options.password
+    instance_url = options.url
 
     print(f"{pr_title=}, {pr_link=}, {pr_body=}")
 
@@ -78,7 +80,7 @@ def trigger_generic_webhook(options):
     }
     print(body)
     # post to Content Gold
-    res = requests.post(JIRA_GITHUB_INTEGRATION_INSTANCE_URL, json=body, auth=(username, password))
+    res = requests.post(instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
         print(
