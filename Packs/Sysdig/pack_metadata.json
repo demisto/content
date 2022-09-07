@@ -1,0 +1,21 @@
+{
+    "name": "Sysdig",
+    "description": "This is an integration for Sysdig, a security solution for containers, Kubernetes, and cloud. This integration features commands that can be used for automating vulnerability detection and response through Cortex XSOAR. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jim Garrisi",
+    "url": "",
+    "email": "",
+    "created": "2022-09-07T19:07:03Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jmgarrisi"
+    ]
+}
