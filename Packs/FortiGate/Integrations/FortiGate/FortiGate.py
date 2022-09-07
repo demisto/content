@@ -72,7 +72,7 @@ def http_request(method, url_suffix, params={}, data=None):
         data=data
     )
     if res.status_code not in {200}:
-        return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
+        return_error(f'Error in API call to FortiGate [{res.status_code}] - {res.reason}')
     if method.upper() != 'GET':
         return res.status_code
 
@@ -1254,7 +1254,7 @@ def delete_address_request(name):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG(f'command is {demisto.command()}')
 
 try:
     if demisto.command() == 'test-module':
