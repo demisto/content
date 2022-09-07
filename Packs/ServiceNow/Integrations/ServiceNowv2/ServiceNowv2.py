@@ -11,8 +11,6 @@ requests.packages.urllib3.disable_warnings()
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
-SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
-
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -110,9 +108,6 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
-                  'priority', 'state', 'urgency', 'severity', 'closed_at',
-                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -2424,8 +2419,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
-    for field in out_fields:
+    for field in SNOW_ARGS:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
