@@ -552,9 +552,9 @@ def get_project_id(project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')
 
-    result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
 
-    for project in result.get('projects'):
+    for project in result:
         if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
             return project.get('id')
     return_error('Project not found')
