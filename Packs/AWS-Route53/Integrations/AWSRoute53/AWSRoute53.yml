@@ -24,7 +24,7 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: aws-route53-create-record
     arguments:
@@ -400,7 +400,7 @@ script:
     description: Upsert a resource record set. If a resource record set does not already
       exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
       it with the values in the request.
-  dockerimage: demisto/boto3:2.0.0.19411
+  dockerimage: demisto/boto3py3:1.0.0.33789
   runonce: false
 tests:
 - No tests
