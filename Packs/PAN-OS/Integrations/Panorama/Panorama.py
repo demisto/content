@@ -11158,7 +11158,18 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
     return http_request(URL, 'POST', params=params)
 
 
-def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
 
     for key in keys_to_remove:
         try:
@@ -11175,11 +11186,11 @@ def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
 
     for value in dictionary.values():
         if isinstance(value, dict):
-            replace_and_remove_keys_from_dict(value, keys_to_remove)
+            parse_pan_os_un_committed_data(value, keys_to_remove)
         elif isinstance(value, list):
             for item in value:
                 if isinstance(item, dict):
-                    replace_and_remove_keys_from_dict(item, keys_to_remove)
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
 def extract_objects_info_by_key(_entry, _key):
@@ -11240,7 +11251,7 @@ def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> 
 
     if show_uncommited:
         for entry in entries:
-            replace_and_remove_keys_from_dict(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
 
     return [
         {
