@@ -7471,7 +7471,7 @@ Returns a list of virtual routers of either Panorama/firewall instance.
 | Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
 
 #### Command example
-```!pan-os-list-virtual-routers show_uncommitted=true virtual_router=test-guy```
+```!pan-os-list-virtual-routers show_uncommitted=true```
 #### Context Example
 ```json
 {
@@ -7635,7 +7635,7 @@ Returns a list of virtual routers of either Panorama/firewall instance.
                                 "destination": "1.1.1.1",
                                 "metric": "10",
                                 "nexthop": {
-                                    "ip-address": "my_shared_address_object_test"
+                                    "ip-address": "2.2.2.2"
                                 },
                                 "path-monitor": {
                                     "enable": "no",
@@ -7662,4 +7662,91 @@ Returns a list of virtual routers of either Panorama/firewall instance.
 >|---|---|------------------|---|---|---|---|---|---|
 >| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
 >| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
+
+### pan-os-list-redistribution-profiles
+***
+Returns a list of redistribution-profiles of a specific virtual-router of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-redistribution-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Redistribution profile name. | Optional | 
+| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. can be retrieved from pan-os-list-virtual-routers. | Required | 
+| template | The template in which the redistribution profiles are part of. Use only for panorama instances. | Optional | 
+| limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-list-redistribution-profiles virtual_router=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RedistributionProfile": [
+            {
+                "Action": "redist",
+                "BGP": {
+                    "Community": [
+                        "local-as",
+                        "no-export"
+                    ],
+                    "ExtendedCommunity": "0x4164ACFCE33404EA"
+                },
+                "FilterDestination": "1.1.1.1",
+                "FilterInterface": "loopback",
+                "FilterNextHop": "2.2.2.2",
+                "FilterType": [
+                    "bgp",
+                    "connect",
+                    "ospf",
+                    "rip",
+                    "static"
+                ],
+                "Name": "test1",
+                "OSPF": {
+                    "Area": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                    ],
+                    "PathType": [
+                        "ext-1",
+                        "ext-2",
+                        "inter-area",
+                        "intra-area"
+                    ],
+                    "Tag": "1"
+                },
+                "Priority": "1"
+            },
+            {
+                "Action": "no-redist",
+                "BGP": null,
+                "FilterDestination": null,
+                "FilterInterface": null,
+                "FilterNextHop": null,
+                "FilterType": null,
+                "Name": "test-2",
+                "OSPF": null,
+                "Priority": "123"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Redistribution profiles for virtual router test-guy
+>|Name|Priority|Action|Filter Type|Filter Destination|Filter Next Hop|BGP|OSPF|
+>|---|---|---|---|---|---|---|---|
+>| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
+>| test-2 | 123 | no-redist |  |  |  |  |  |
 

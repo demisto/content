@@ -8159,6 +8159,30 @@ script:
     - contextPath: Panorama.VirtualRouter.StaticRoute
       description: The static routes(s) that the virtual router uses.
       type: Unknown
+    - contextPath: Panorama.VirtualRouter.ECMP
+      description: The ECMP defined for the virtual router.
+      type: Unknown
+  - arguments:
+    - description: Redistribution profile name.
+      isArray: false
+      name: name
+      required: false
+    - description: The name of the virtual router that has the redistribution profiles retrieve. can be retrieved from pan-os-list-virtual-routers
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template in which the redistribution profiles are part of. Use only for panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of redistribution-profiles to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: Returns a list of redistribution-profiles of a specific virtual-router of either Panorama/firewall instance.
+    name: pan-os-list-redistribution-profiles
+    outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

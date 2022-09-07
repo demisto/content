@@ -3435,7 +3435,7 @@ class TestPanOSListVirtualRouters:
         'args, params, expected_url_params, mocked_response_path',
         [
             pytest.param(
-                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false', 'name': 'test'},
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false', 'virtual_router': 'test'},
                 integration_panorama_params,
                 {
                     'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
@@ -3446,7 +3446,7 @@ class TestPanOSListVirtualRouters:
                 'test_data/list-virtual-routers-response.json'
             ),
             pytest.param(
-                {'show_uncommitted': 'false', 'name': 'test'},
+                {'show_uncommitted': 'false', 'virtual_router': 'test'},
                 integration_firewall_params,
                 {
                     'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
@@ -3456,7 +3456,7 @@ class TestPanOSListVirtualRouters:
                 'test_data/list-virtual-routers-response.json'
             ),
             pytest.param(
-                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'name': 'test'},
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'virtual_router': 'test'},
                 integration_panorama_params,
                 {
                     'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
@@ -3467,7 +3467,7 @@ class TestPanOSListVirtualRouters:
                 'test_data/list-virtual-routers-response-un-commited-router.json'
             ),
             pytest.param(
-                {'show_uncommitted': 'true', 'name': 'test'},
+                {'show_uncommitted': 'true', 'virtual_router': 'test'},
                 integration_firewall_params,
                 {
                     'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
@@ -3509,12 +3509,94 @@ class TestPanOSListVirtualRouters:
 
         assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
             {
-                'Name': 'test', 'Interface': None, 'RIP': {'enable': 'no'},
-                'OSPF': {'enable': 'no'}, 'OSPFv3': {'enable': 'no'},
-                'BGP': {'routing-options': {'graceful-restart': {'enable': 'yes'}}, 'enable': 'no'},
+                'BGP': {'enable': 'no',
+                'routing-options': {'graceful-restart': {'enable': 'yes'}}},
+                'ECMP': {'algorithm': {'ip-modulo': 'None'}},
+                'Interface': None,
                 'Multicast': {},
-                'StaticRoute': {},
-                'RedistributionProfile': {}
+                'Name': 'test',
+                'OSPF': {'enable': 'no'},
+                'OSPFv3': {'enable': 'no'},
+                'RIP': {'enable': 'no'},
+                'RedistributionProfile': None,
+                'StaticRoute': None
              }
         ]
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSListRedistributionProfiles:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'virtual_router': 'virtual-router-1', 'template': 'test-override'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry["
+                             "@name='test-override']/config/devices/entry[@name='localhost.localdomain']/network"
+                             "/virtual-router/entry[@name='virtual-router-1']/protocol/redist-profile"
+                }
+            ),
+            pytest.param(
+                {'virtual_router': 'virtual-router-1'},
+                integration_firewall_params,
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/"
+                             "entry[@name='virtual-router-1']/protocol/redist-profile"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_redistribution_profiles_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Given:
+         - Panorama instance configuration and name to retrieve redistribution profiles that were not committed.
+         - Firewall instance configuration and name to retrieve redistribution profiles that were not committed.
+
+        When:
+         - running the pan-os-list-redistribution-profiles through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall and that template gets overriden
+             when using panorama instance.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json(
+                'test_data/list-redistribution-profiles-un-committed-response.json'
+            )
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-redistribution-profiles')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+            {
+                'Name': 'test1', 'Priority': '1', 'Action': 'redist', 'FilterInterface': 'loopback',
+                'FilterType': ['bgp', 'connect', 'ospf', 'rip', 'static'], 'FilterDestination': '1.1.1.1',
+                'FilterNextHop': '2.2.2.2',
+                'BGP': {'Community': ['local-as', 'no-export'], 'ExtendedCommunity': '0x4164ACFCE33404EA'},
+                'OSPF': {
+                    'PathType': ['ext-1', 'ext-2', 'inter-area', 'intra-area'],
+                    'Area': ['1.1.1.1', '2.2.2.2'], 'Tag': '1'}
+            },
+            {
+                'Name': 'test-2', 'Priority': '123', 'Action': 'no-redist', 'FilterInterface': None,
+                'FilterType': None, 'FilterDestination': None, 'FilterNextHop': None, 'BGP': None, 'OSPF': None
+            }
+        ]
+
         assert mock_request.call_args.kwargs['params'] == expected_url_params

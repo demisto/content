@@ -11144,7 +11144,16 @@ def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
     return http_request(URL, 'POST', params=params)
 
 
-def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
 
     for key in keys_to_remove:
         try:
@@ -11152,42 +11161,43 @@ def replace_and_remove_keys_from_dict(dictionary, keys_to_remove):
         except KeyError:
             pass
 
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+
     for value in dictionary.values():
         if isinstance(value, dict):
-            for k in value.keys():
-                if isinstance(value[k], dict) and (text := (value[k].get('#text'))):
-                    value[k] = text
-            replace_and_remove_keys_from_dict(value, keys_to_remove)
+            parse_pan_os_un_committed_data(value, keys_to_remove)
         elif isinstance(value, list):
             for item in value:
                 if isinstance(item, dict):
-                    for k in item.keys():
-                        if isinstance(item[k], dict) and (text := (item[k].get('#text'))):
-                            item[k] = text
-                    replace_and_remove_keys_from_dict(item, keys_to_remove)
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
-def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
+def extract_objects_info_by_key(_entry, _key):
 
-    def extract_info_by_key(_entry, _key):
-
-        if isinstance(_entry, list):
-            return [item.get(_key) for item in _entry]
-
-        key_info = _entry.get(_key)  # api could not return the key
-        if not key_info:
+    if isinstance(_entry, dict):
+        key_info = _entry.get(_key)
+        if not key_info:  # api could not return the key
             return None
 
         if isinstance(key_info, dict) and (_member := key_info.get('member')):
             return _member
         elif isinstance(key_info, str):
             return key_info
+    elif isinstance(_entry, list):
+        return [item.get(_key) for item in _entry]
+    return None
 
-        return None
+
+def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
 
     if show_uncommitted:
         for entry in entries:
-            replace_and_remove_keys_from_dict(entry, ['@admin', '@dirtyId', '@time'])
+            parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
 
     human_readable, context = [], []
 
@@ -11195,18 +11205,18 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
         human_readable.append(
             {
                 'Name': entry.get('@name'),
-                'Interface': extract_info_by_key(entry, 'interface'),
-                'RIP': extract_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
-                'OSPF': extract_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
-                'OSPFv3': extract_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
-                'BGP': extract_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
-                'Multicast': extract_info_by_key(entry.get('multicast', {}), 'enable'),
-                'StaticRoute': extract_info_by_key(
+                'Interface': extract_objects_info_by_key(entry, 'interface'),
+                'RIP': extract_objects_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
+                'OSPF': extract_objects_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
+                'OSPFv3': extract_objects_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
+                'BGP': extract_objects_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
+                'Multicast': extract_objects_info_by_key(entry.get('multicast', {}), 'enable'),
+                'Static Route': extract_objects_info_by_key(
                     entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
                         'entry', {}),
                     '@name'
                 ),
-                'RedistributionProfile': extract_info_by_key(
+                'Redistribution Profile': extract_objects_info_by_key(
                     entry.get('protocol', {}).get('redist-profile', {}).get('entry', {}), '@name'
                 )
             }
@@ -11214,14 +11224,15 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
         context.append(
             {
                 'Name': entry.get('@name'),
-                'Interface': extract_info_by_key(entry, 'interface'),
-                'RIP': entry.get('protocol', {}).get('rip', {}),
-                'OSPF': entry.get('protocol', {}).get('ospf', {}),
-                'OSPFv3': entry.get('protocol', {}).get('ospfv3', {}),
-                'BGP': entry.get('protocol', {}).get('bgp', {}),
+                'Interface': extract_objects_info_by_key(entry, 'interface'),
+                'RIP': entry.get('protocol', {}).get('rip'),
+                'OSPF': entry.get('protocol', {}).get('ospf'),
+                'OSPFv3': entry.get('protocol', {}).get('ospfv3'),
+                'BGP': entry.get('protocol', {}).get('bgp'),
                 'Multicast': entry.get('multicast', {}),
-                'StaticRoute': entry.get('routing-table', {}),
-                'RedistributionProfile': entry.get('protocol', {}).get('redist-profile', {})
+                'StaticRoute': entry.get('routing-table'),
+                'RedistributionProfile': entry.get('protocol', {}).get('redist-profile'),
+                'ECMP': entry.get('ecmp')
             }
         )
 
@@ -11229,7 +11240,7 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
 
 
 def pan_os_list_virtual_routers_command(args):
-    name = args.get('name')
+    name = args.get('virtual_router')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
 
     raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
@@ -11240,7 +11251,7 @@ def pan_os_list_virtual_routers_command(args):
         entries = [entries]
 
     if not name:
-        # filter the nat-rules by limit - name means we get only a single entry anyway.
+        # if name was provided, api returns one entry so no need to do limit/pagination
         page = arg_to_number(args.get('page'))
         if page is not None:
             if page <= 0:
@@ -11258,6 +11269,91 @@ def pan_os_list_virtual_routers_command(args):
         outputs=context,
         readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
         outputs_prefix='Panorama.VirtualRouter',
+        outputs_key_field='Name'
+    )
+
+
+def build_redistribution_profile_xpath(virtual_router_name: Optional[str], redistribution_profile_name: Optional[str]):
+    _xpath = f"{build_virtual_routers_xpath(virtual_router_name)}/protocol/redist-profile"
+    if redistribution_profile_name:
+        _xpath = f"{_xpath}/entry[@name='{redistribution_profile_name}']"
+    return _xpath
+
+
+def pan_os_list_redistribution_profile(virtual_router_name: Optional[str], redistribution_profile_name: Optional[str]):
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_redistribution_profile_xpath(virtual_router_name, redistribution_profile_name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_redistribution_profiles(entries):
+
+    def extract_bgp_and_ospf_filters(_entry, _filters_types):
+        if not _entry:
+            return None
+
+        filters_by_types = {
+            camelize_string(src_str=filter_type, delim='-'): extract_objects_info_by_key(_entry, filter_type)
+            for filter_type in _filters_types if _entry.get(filter_type)
+        }
+
+        return filters_by_types if filters_by_types else None
+
+    for entry in entries:  # by default we can get also un-committed redistribution rules objects.
+        parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Priority': extract_objects_info_by_key(entry, 'priority'),
+            'Action': list(entry.get('action', {}).keys())[0] if entry.get('action') else None,
+            'FilterInterface': extract_objects_info_by_key(entry.get('filter', {}), 'interface'),
+            'FilterType': extract_objects_info_by_key(entry.get('filter', {}), 'type'),
+            'FilterDestination': extract_objects_info_by_key(entry.get('filter', {}), 'destination'),
+            'FilterNextHop': extract_objects_info_by_key(entry.get('filter', {}), 'nexthop'),
+            'BGP': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('bgp'), ['community', 'extended-community']
+            ),
+            'OSPF': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('ospf'), ['path-type', 'area', 'tag']
+            )
+        } for entry in entries
+    ]
+
+
+def pan_os_list_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    virtual_router_name = args.get('virtual_router')
+
+    raw_response = pan_os_list_redistribution_profile(virtual_router_name, redistribution_profile_name)
+
+    result = raw_response.get('response', {}).get('result', {})
+    entries = result.get('redist-profile', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not redistribution_profile_name:
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = entries[:limit]
+
+    redistribution_profiles = parse_pan_os_list_redistribution_profiles(entries)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=redistribution_profiles,
+        readable_output=tableToMarkdown(
+            f'Redistribution profiles of virtual router {virtual_router_name}:',
+            redistribution_profiles,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=['Name', 'Priority', 'Action', 'FilterType', 'FilterDestination', 'FilterNextHop', 'BGP', 'OSPF']
+        ),
+        outputs_prefix='Panorama.RedistributionProfile',
         outputs_key_field='Name'
     )
 
@@ -11914,6 +12010,8 @@ def main():
             return_results(pan_os_get_running_config(args))
         elif command == 'pan-os-list-virtual-routers':
             return_results(pan_os_list_virtual_routers_command(args))
+        elif command == 'pan-os-list-redistribution-profiles':
+            return_results(pan_os_list_redistribution_profile_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
