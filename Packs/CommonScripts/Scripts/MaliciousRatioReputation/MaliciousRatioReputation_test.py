@@ -17,7 +17,7 @@ def test_main_malicious_ratio_reputation(mocker):
                         return_value=1)
     mocker.patch.object(MaliciousRatioReputation, 'get_indicator_result',
                         return_value={'Type': 'type', 'EntryContext': 'ec'})
-    execute_mock = mocker.patch.object(demisto, 'results', return_value=1)
+    execute_mock = mocker.patch.object(demisto, 'results')
     MaliciousRatioReputation.main()
     assert execute_mock.call_count == 1
 
