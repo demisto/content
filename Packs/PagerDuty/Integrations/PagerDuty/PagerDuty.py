@@ -89,7 +89,7 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):
+def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
     headers = DEFAULT_HEADERS.copy()
     if not additional_headers:
@@ -113,7 +113,7 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
         raise
 
 
-def translate_severity(sev):
+def translate_severity(sev):  # pragma: no cover
     if sev == 'high':
         return 3
     elif sev == 'Low':
@@ -134,7 +134,7 @@ def unicode_to_str_recur(obj):
     return obj
 
 
-def test_module():
+def test_module():  # pragma: no cover
     get_on_call_now_users_command()
     demisto.results('ok')
 

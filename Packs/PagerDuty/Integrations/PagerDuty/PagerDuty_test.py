@@ -397,9 +397,8 @@ def test_get_users_notification_command(mocker, requests_mock):
 
     requests_mock.get(
         f'https://api.pagerduty.com/users/{user_id}/notification_rules',
-        json={'notification_rules': [{'id': 'id', 'urgency': 'urgency','type': 'type'}]}
+        json={'notification_rules': [{'id': 'id', 'urgency': 'urgency', 'type': 'type'}]}
     )
     from PagerDuty import get_users_notification_command
     res = get_users_notification_command(user_id)
     assert '### User notification rules' in res.get('HumanReadable')
-    
