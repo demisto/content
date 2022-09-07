@@ -50,7 +50,7 @@ script:
     description: Creates incidents from json files provided, and stores it in the instance context.
     execution: false
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

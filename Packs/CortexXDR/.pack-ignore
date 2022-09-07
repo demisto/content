@@ -48,6 +48,7 @@ ignore=RM108
 [known_words]
 XDR
 CoreIRApiModule
+CortexCoreIR
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101

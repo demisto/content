@@ -9,6 +9,37 @@ configuration:
   name: app_id
   required: true
   type: 0
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+  display: Authentication Type
+  name: auth_type
+  required: true
+  defaultvalue: Device Code
+  options:
+  - Authorization Code
+  - Device Code
+  type: 15
+- display: Tenant ID (for authorization code mode)
+  name: tenant_id
+  required: false
+  type: 0
+- display: Client Secret (for authorization code mode)
+  displaypassword: Client Secret (for authorization code mode)
+  hiddenusername: true
+  name: credentials
+  required: false
+  type: 9
+- display: Application redirect URI (for authorization code mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions (?) section
+  hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 - display: Subscription ID
   hidden: false
   name: subscription_id

@@ -34,7 +34,7 @@ configuration:
   name: fetch_index
   required: false
   type: 0
-- display: Query by which to fetch incidents (Lucene syntax)
+- display: Query String
   name: fetch_query
   required: false
   type: 0
@@ -42,35 +42,41 @@ configuration:
   name: fetch_time_field
   required: false
   type: 0
-- defaultvalue: Simple-Date
-  display: Time field type
+- display: Raw Query
+  name: raw_query
+  required: false
+  type: 12
+  additionalinfo: Will override the 'Query String' Lucene syntax string.
+  hidden: false
+- display: Time field type
+  defaultvalue: 'Simple-Date'
   name: time_method
+  required: false
+  type: 15
   options:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  required: false
-  type: 15
-- display: Map JSON fields into labels
-  defaultvalue: 'true'
+- defaultvalue: 'true'
+  display: Map JSON fields into labels
   name: map_labels
   required: false
   type: 8
-- defaultvalue: 3 days
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: '50'
-  display: The maximum number of results to return per fetch. The default is 50.
+  display: The maximum number of results to return per fetch.
   name: fetch_size
   required: false
   type: 0
-- defaultvalue: '60'
-  display: Request timeout (in seconds).
+- display: Request timeout (in seconds).
   name: timeout
   required: false
   type: 0
+  defaultvalue: '60'
 - display: Incident type
   name: incidentType
   required: false
@@ -79,8 +85,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: "Search for and analyze data in real time. \n Supports version 6 and\
-  \ later."
+description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
 script:
@@ -98,11 +103,10 @@ script:
       name: query
       predefined:
       - ''
-      required: true
+      required: false
       secret: false
     - default: false
-      description: A comma-separated list of document fields to fetch. If empty, the
-        entire document is fetched.
+      description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
       isArray: true
       name: fields
       required: false
@@ -110,8 +114,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false".
-        For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -121,23 +124,20 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default is "0".
+      description: The page number from which to start a search.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between
-        "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       isArray: false
       name: size
       required: false
       secret: false
     - default: false
-      description: The field by which to sort the results table. The supported result
-        types are boolean, numeric, date, and keyword fields. Keyword fields require
-        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       isArray: false
       name: sort-field
       predefined:
@@ -147,13 +147,30 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort the results table. The results tables
-        can only be sorted if a sort-field is defined.
+      description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
       isArray: false
       name: sort-order
       predefined:
       - asc
       - desc
+      required: false
+      secret: false
+    - default: false
+      description: Will overwrite the ‘query' arguments.
+      isArray: false
+      name: query_dsl
+      required: false
+      secret: false
+    - default: false
+      description: The starting time of the time range.
+      isArray: false
+      name: timestamp_range_start
+      required: false
+      secret: false
+    - default: false
+      description: The ending time of the time range.
+      isArray: false
+      name: timestamp_range_end
       required: false
       secret: false
     deprecated: false
@@ -189,7 +206,7 @@ script:
       description: The server on which the search was performed.
       type: String
     - contextPath: Elasticsearch.Search.timed_out
-      description: Whether the search stopped due to a time out.
+      description: Whether the search stopped due to a timeout.
       type: Boolean
     - contextPath: Elasticsearch.Search.took
       description: The time in milliseconds taken for the search to complete.
@@ -213,11 +230,10 @@ script:
       name: query
       predefined:
       - ''
-      required: true
+      required: false
       secret: false
     - default: false
-      description: A comma-separated list of document fields to fetch. If empty, fetches
-        the entire document.
+      description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
       isArray: true
       name: fields
       required: false
@@ -225,8 +241,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false".
-        For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -236,23 +251,20 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default is "0".
+      description: The page number from which to start a search.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between
-        "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       isArray: false
       name: size
       required: false
       secret: false
     - default: false
-      description: The field by which to sort the results table. The supported result
-        types are boolean, numeric, date, and keyword fields. Keyword fields require
-        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       isArray: false
       name: sort-field
       predefined:
@@ -262,8 +274,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort the results table. The results tables
-        can only be sorted if a sort-field is defined.
+      description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
       isArray: false
       name: sort-order
       predefined:
@@ -318,9 +329,116 @@ script:
   - deprecated: false
     execution: false
     name: get-mapping-fields
-    description: Returns the schema of the index to fetch from. This commmand should
-      be used for debugging purposes.
-  dockerimage: demisto/py3-tools:1.0.0.31193
+    description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
+  - deprecated: false
+    description: Search using EQL query
+    execution: false
+    name: es-eql-search
+    arguments:
+    - default: false
+      description: The index in which to perform a search.
+      isArray: false
+      name: index
+      required: true
+      secret: false
+    - default: false
+      description: The string to query (in Lucene syntax).
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: If two or more events share the same timestamp, Elasticsearch uses a tiebreaker field value to sort the events in ascending order.
+      isArray: false
+      name: sort-tiebreaker
+      required: false
+      secret: false
+    - default: false
+      description: Filter using query DSL.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: event.category
+      description: The event category field.
+      isArray: false
+      name: event_category_field
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". 
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: The starting time of the time range.
+      isArray: false
+      name: timestamp_range_start
+      required: false
+      secret: false
+    - default: false
+      description: The ending time of the time range.
+      isArray: false
+      name: timestamp_range_end
+      required: false
+      secret: false
+    - default: false
+      description: Timestamp field name.
+      defaultValue: "@timestamp"
+      isArray: false
+      name: timestamp_field
+      required: false
+      secret: false
+    outputs:
+    - contextPath: Elasticsearch.Search.Results._index
+      description: The index to which the document belongs.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._id
+      description: The ID of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._type
+      description: The mapping type of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.max_score
+      description: The maximum relevance score of a query.
+      type: Number
+    - contextPath: Elasticsearch.Search.Query
+      description: The query performed in the search.
+      type: String
+    - contextPath: Elasticsearch.Search.total.value
+      description: The number of search results.
+      type: Number
+    - contextPath: Elasticsearch.Search.Results._score
+      description: The relevance score of the search result.
+      type: Number
+    - contextPath: Elasticsearch.Search.Index
+      description: The index in which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.Server
+      description: The server on which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.timed_out
+      description: Whether the search stopped due to a timeout.
+      type: Boolean
+    - contextPath: Elasticsearch.Search.took
+      description: The time in milliseconds taken for the search to complete.
+      type: Number
+    - contextPath: Elasticsearch.Search.Page
+      description: The page number from which the search started.
+      type: Number
+    - contextPath: Elasticsearch.Search.Size
+      description: The maximum number of scores that a search can return.
+      type: Number
+  dockerimage: demisto/py3-tools:1.0.0.32758
   feed: false
   isfetch: true
   longRunning: false
@@ -331,3 +449,6 @@ script:
   type: python
   ismappable: true
 fromversion: 5.0.0
+defaultmapperin: Elasticsearch - Incoming Mapper
+tests:
+- No tests (auto formatted)

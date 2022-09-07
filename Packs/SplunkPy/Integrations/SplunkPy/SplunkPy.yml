@@ -16,7 +16,11 @@ configuration:
   name: port
   required: true
   type: 0
-- defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name)
+- additionalinfo: The Splunk search query by which to fetch events. The default query
+    fetches ES notable events. You can edit this query to fetch other types of events.
+    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
+    in your query.
+  defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name)
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
     | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
     | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
@@ -24,10 +28,6 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
-  additionalinfo: The Splunk search query by which to fetch events. The default query
-    fetches ES notable events. You can edit this query to fetch other types of events.
-    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
-    in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -86,18 +86,18 @@ configuration:
   name: type_field
   required: false
   type: 0
-- defaultvalue: 'false'
+- additionalinfo: If selected, when creating a mapper using the `Select Schema` feature
+    (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+    for more information.
+  defaultvalue: 'false'
   display: Use CIM Schemas for Mapping
   name: use_cim
   required: false
   type: 8
-  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature
-    (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
-    for more information.
-- defaultvalue: None
-  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk
     to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to
     XSOAR and Splunk).'
+  defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
   name: mirror_direction
@@ -148,71 +148,73 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
-- display: Enrichment Types
+- additionalinfo: Enrichment types to enrich each fetched notable. If none are selected,
+    the integration will fetch notables as usual (without enrichment). For more info
+    about enrichment types see the integration additional info.
+  display: Enrichment Types
   name: enabled_enrichments
-  type: 16
-  required: false
   options:
   - Drilldown
   - Asset
   - Identity
-  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected,
-    the integration will fetch notables as usual (without enrichment). For more info
-    about enrichment types see the integration additional info.
-- display: Enrichment Timeout (Minutes)
-  name: enrichment_timeout
-  defaultvalue: "5"
-  type: 0
   required: false
-  additionalinfo: When the selected timeout was reached, notable events that were
+  type: 16
+- additionalinfo: When the selected timeout was reached, notable events that were
     not enriched will be saved without the enrichment.
-- display: Number of Events Per Enrichment Type
-  name: num_enrichment_events
-  defaultvalue: "20"
-  type: 0
+  defaultvalue: '5'
+  display: Enrichment Timeout (Minutes)
+  name: enrichment_timeout
   required: false
-  additionalinfo: The limit of how many events to retrieve per each one of the enrichment
+  type: 0
+- additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
+  defaultvalue: '20'
+  display: Number of Events Per Enrichment Type
+  name: num_enrichment_events
+  required: false
+  type: 0
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use
+    this option unless advised otherwise.'
   name: extensive_logs
+  required: false
   type: 8
-  required: false
-- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
-  name: occurrence_look_behind
-  defaultvalue: "15"
-  type: 0
-  required: false
-  additionalinfo: The fetch time range will be at least of the size specified here.
+- additionalinfo: The fetch time range will be at least of the size specified here.
     This will support events that have a gap between their occurrence time and their
-    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
-    time between them both on your splunk envorinment.
-- display: 'Advanced: Unique ID fields'
-  name: unique_id_fields
-  type: 0
+    index time in Splunk. To decide how long the backwards window should be, you need
+    to analyze what is the average time between them both on your splunk envorinment.
+  defaultvalue: '15'
+  display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
   required: false
-  additionalinfo: Use this parameter to specify a list of comma separated fields, which
-    together are a unique identifier for the events you wish to fetch.
-- display: Enable user mapping
-  defaultvalue: 'false'
+  type: 0
+- additionalinfo: Use this parameter to specify a list of comma separated fields,
+    which together are a unique identifier for the events you wish to fetch.
+  display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Enable user mapping
   name: userMapping
   required: false
   type: 8
-- display: Users Lookup table name
-  additionalinfo: The name of the lookup table in splunk, containing the username's mapping data.
+- additionalinfo: The name of the lookup table in splunk, containing the username's
+    mapping data.
   defaultvalue: splunk_xsoar_users
+  display: Users Lookup table name
   name: user_map_lookup_name
   required: false
   type: 0
-- display: XSOAR user key
-  additionalinfo: The name of the lookup column containing the xsoar username.
+- additionalinfo: The name of the lookup column containing the xsoar username.
   defaultvalue: xsoar_username
+  display: XSOAR user key
   name: xsoar_user_field
   required: false
   type: 0
-- display: SPLUNK user key
-  additionalinfo: The name of the lookup table containing the Splunk username.
+- additionalinfo: The name of the lookup table containing the Splunk username.
   defaultvalue: splunk_username
+  display: SPLUNK user key
   name: splunk_user_field
   required: false
   type: 0
@@ -312,15 +314,17 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - default: false
+      defaultValue: '30'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-      defaultValue: '30'
     - default: false
       description: The job sid.
       isArray: false
@@ -723,8 +727,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Complex query to search in the store with operators such as "and", "or", "not", etc. For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore.
+      description: 'Complex query to search in the store with operators such as "and",
+        "or", "not", etc. For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore.'
       isArray: false
       name: query
       required: false
@@ -827,16 +831,17 @@ script:
       from Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
-  - name: splunk-reset-enriching-fetch-mechanism
-    arguments: []
+  - deprecated: false
     description: Resets the enrichment mechanism of fetched notables.
+    execution: false
+    name: splunk-reset-enriching-fetch-mechanism
   - arguments:
-      - default: true
-        description: Xsoar username to match in splunk's usernames records.
-        isArray: true
-        name: xsoar_username
-        required: true
-        secret: false
+    - default: true
+      description: Xsoar username to match in splunk's usernames records.
+      isArray: true
+      name: xsoar_username
+      required: true
+      secret: false
     deprecated: false
     description: Returns the Splunk's username matching the given Xsoar's username.
     execution: false
@@ -848,7 +853,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk:1.0.0.24033
+  dockerimage: demisto/splunksdk:1.0.0.33029
   feed: false
   isfetch: true
   longRunning: false
@@ -870,7 +875,7 @@ tests:
 - SplunkPy_KV_commands_default_handler
 - SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
-defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultclassifier: SplunkPy
 defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0

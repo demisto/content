@@ -1,0 +1,35 @@
+[MODEL:model="Network", dataset="fortinet_fortigate_raw"]
+// create timestamp field
+alter time_p1 = arrayindex( regextract(_time,"(\w+\s\d+)") ,0)
+| alter time_p2 = arrayindex( regextract(_time ,"(\d{4}\s\d+:\d+:\d+)") ,0)
+| alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2 ) )
+// end timestamp field
+|alter XDM.Network.application_protocol	=	app,
+XDM.Network.application_protocol_category	=	FTNTFGTcat,
+XDM.Network.Destination.host.fqdn	=	dhost,
+XDM.Network.Destination.ipv4	=	dst,
+XDM.Network.Destination.port	=	to_number(dpt),
+XDM.Network.Destination.user.username	=	duser,
+XDM.Network.event_timestamp	=	timestamp ,
+XDM.Network.http.url	=	request,
+XDM.Network.ip_protocol	=	proto,
+XDM.Network.Observer.action	=	act,
+XDM.Network.Observer.product	=	_product,
+XDM.Network.Observer.type	=	cat,
+XDM.Network.Observer.vendor	=	_vendor,
+XDM.Network.original_event_description	=	msg,
+XDM.Network.original_event_id	=	_id,
+XDM.Network.outcome	=	outcome,
+XDM.Network.reason	=	reason,
+XDM.Network.session_id	=	externalId,
+XDM.Network.Source.bytes	=	to_number(out),
+XDM.Network.Source.host.fqdn	=	shost,
+XDM.Network.Source.ipv4	=	src,
+XDM.Network.Source.port	=	to_number(spt),
+XDM.Network.Destination.bytes = to_number("in"),
+XDM.Network.Source.process.executable.filename	=	fname,
+XDM.Network.Source.process.name	=	sproc,
+XDM.Network.Source.user.username	=	suser,
+XDM.Network.threat.category	=	FTNTFGTdtype,
+XDM.Network.threat.description	=	FTNTFGTref,
+XDM.Network.threat.severity	=	cefSeverity ;

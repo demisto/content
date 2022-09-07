@@ -532,7 +532,7 @@ def test_function(client):
         return raise_error(e)
 
 
-def main():
+def main():   # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
@@ -553,8 +553,12 @@ def main():
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries)
+        args = demisto.args()
 
-        client = aws_client.aws_session(service=SERVICE)
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'),
+                                        role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'))
 
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':

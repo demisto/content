@@ -2,14 +2,13 @@ version: '3.9'
 
 volumes:
   node_modules:
-  idea:
-
+  venv:
 services:
   content:
     build: .
     volumes:
       - ..:/workspaces/content:cached
       - node_modules:/workspaces/content/node_modules
-      - idea:/workspaces/content/.idea
+      - venv:/workspaces/content/.venv
     working_dir: /workspaces/content
     command: /bin/sh -c "while sleep 1000; do :; done"  

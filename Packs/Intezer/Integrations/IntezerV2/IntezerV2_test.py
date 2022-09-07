@@ -2,20 +2,19 @@ import tempfile
 import uuid
 from http import HTTPStatus
 
-from intezer_sdk import consts
-from intezer_sdk.api import IntezerApi
-
 from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
 from IntezerV2 import analyze_by_uploaded_file_command
 from IntezerV2 import analyze_url_command
 from IntezerV2 import check_analysis_status_and_get_results_command
 from IntezerV2 import get_analysis_code_reuse_command
+from IntezerV2 import get_analysis_iocs_command
 from IntezerV2 import get_analysis_metadata_command
 from IntezerV2 import get_analysis_sub_analyses_command
 from IntezerV2 import get_family_info_command
 from IntezerV2 import get_latest_result_command
-from IntezerV2 import get_analysis_iocs_command
+from intezer_sdk import consts
+from intezer_sdk.api import IntezerApi
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
@@ -92,7 +91,10 @@ def test_analyze_by_hash_command_already_running(requests_mock):
 def test_get_latest_result_command_success(requests_mock):
     # Arrange
     sha256 = 'sha256'
+    md5 = 'md5'
+    sha1 = 'sha1'
     analysis_id = 'analysis_id'
+    root_sub_analysis = 'root_analysis_id'
     _setup_access_token(requests_mock)
     requests_mock.get(
         f'{full_url}/files/{sha256}',
@@ -107,14 +109,38 @@ def test_get_latest_result_command_success(requests_mock):
         }
     )
 
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256,
+            'source': 'root',
+            'sub_analysis_id': root_sub_analysis
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{root_sub_analysis}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5,
+            'sha1': sha1,
+            'sha256': sha256,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
     args = dict(file_hash=sha256)
 
     # Act
     command_results = get_latest_result_command(intezer_api, args)
 
     # Assert
+    indicators = [dbotscore['Indicator'] for dbotscore in command_results.outputs[outputPaths['dbotscore']]]
+
     assert len(command_results.outputs) == 3
-    assert command_results.outputs[outputPaths['dbotscore']]['Indicator'] == sha256
+    assert all(indicator in indicators for indicator in [sha256, md5, sha1])
 
 
 def test_get_latest_result_command_file_missing(requests_mock):
@@ -190,7 +216,10 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
 def test_check_analysis_status_and_get_results_command_single_success(requests_mock):
     # Arrange
     sha256 = 'sha256'
+    md5 = 'md5'
+    sha1 = 'sha1'
     analysis_id = 'analysis_id'
+    root_sub_analysis = 'root_sub_analysis'
     _setup_access_token(requests_mock)
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
@@ -206,6 +235,28 @@ def test_check_analysis_status_and_get_results_command_single_success(requests_m
         }
     )
 
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256,
+            'source': 'root',
+            'sub_analysis_id': root_sub_analysis
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{root_sub_analysis}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5,
+            'sha1': sha1,
+            'sha256': sha256,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
     args = dict(analysis_id=analysis_id)
 
     # Act
@@ -214,16 +265,21 @@ def test_check_analysis_status_and_get_results_command_single_success(requests_m
     # Assert
     assert len(command_results_list) == 1
 
-    first_result = command_results_list[0]
-    assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == sha256
+    indicators = [dbotscore['Indicator'] for dbotscore in command_results_list[0].outputs[outputPaths['dbotscore']]]
+    assert all(indicator in indicators for indicator in [sha256, md5, sha1])
 
 
 def test_check_analysis_status_and_get_results_url_command_single_success(requests_mock):
     # Arrange
     url = 'https://intezer.com'
+    scanned_url = 'https://intezer.com/r'
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
     file_analysis_id = '8db9a401-a142-41be-9a31-8e5f3642db62'
+    file_root_analysis_id = 'root_analysis_id'
+    sha256 = 'sha256'
+    md5 = 'md5'
+    sha1 = 'sha1'
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
         json={
@@ -266,6 +322,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                         'url': 'http://www.foo.com/'
                     }
                 ],
+                'scanned_url': scanned_url,
                 'submitted_url': url,
                 'downloaded_file': {
                     'analysis_id': file_analysis_id,
@@ -290,13 +347,35 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
         json={
             'result': {
                 'analysis_id': file_analysis_id,
-                'sub_verdict': 'trusted',
+                'sub_verdict': 'malicious',
                 'sha256': 'a' * 64,
-                'verdict': 'trusted',
+                'verdict': 'malicious',
                 'analysis_url': 'bla'
             },
             'status': 'succeeded'
         })
+
+    requests_mock.get(
+        f'{full_url}/analyses/{file_analysis_id}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256,
+            'source': 'root',
+            'sub_analysis_id': file_root_analysis_id
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{file_analysis_id}/sub-analyses/{file_root_analysis_id}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5,
+            'sha1': sha1,
+            'sha256': sha256,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
 
     args = dict(analysis_id=analysis_id, analysis_type='Url')
 
@@ -305,10 +384,12 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
 
     # Assert
     assert len(command_results_list) == 1
+    assert len(command_results_list[0].outputs[outputPaths['dbotscore']]) == 5
 
     first_result = command_results_list[0]
-    assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == url
-    assert first_result.outputs[outputPaths['dbotscore']]['Score'] == 3
+    indicators = [dbotscore['Indicator'] for dbotscore in first_result.outputs[outputPaths['dbotscore']]]
+    assert all(indicator in indicators for indicator in [sha256, md5, sha1, url, scanned_url])
+    assert all(dbot['Score'] == 3 for dbot in first_result.outputs[outputPaths['dbotscore']])
 
 
 def test_check_analysis_status_and_get_results_command_single_success_endpoint(requests_mock):
@@ -348,10 +429,16 @@ def test_check_analysis_status_and_get_results_command_single_success_endpoint(r
 def test_check_analysis_status_and_get_results_command_multiple_analyses(requests_mock):
     # Arrange
     sha256_1 = 'sha256'
+    sha1_1 = 'sha1'
+    md5_1 = 'md5'
     analysis_id_1 = 'analysis_id'
+    root_analysis_id_1 = 'root_analysis_id'
 
-    sha256_2 = 'sha256foo'
+    sha256_2 = 'sha256-2'
+    sha1_2 = 'sha1-2'
+    md5_2 = 'md5-2'
     analysis_id_2 = 'analysis_id-2'
+    root_analysis_id_2 = 'root_analysis_id_2'
 
     _setup_access_token(requests_mock)
     requests_mock.get(
@@ -367,6 +454,29 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
             'status': 'succeeded'
         }
     )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_1}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256_1,
+            'source': 'root',
+            'sub_analysis_id': root_analysis_id_1
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_1}/sub-analyses/{root_analysis_id_1}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5_1,
+            'sha1': sha1_1,
+            'sha256': sha256_1,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id_2}',
         json={
@@ -381,6 +491,28 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
         }
     )
 
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_2}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256_2,
+            'source': 'root',
+            'sub_analysis_id': root_analysis_id_2
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_2}/sub-analyses/{root_analysis_id_2}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5_2,
+            'sha1': sha1_2,
+            'sha256': sha256_2,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
     args = dict(analysis_id=f'{analysis_id_1},{analysis_id_2}')
 
     # Act
@@ -390,16 +522,21 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
     assert len(command_results_list) == 2
 
     first_result = command_results_list[0]
-    assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == sha256_1
+    indicators = [dbotscore['Indicator'] for dbotscore in first_result.outputs[outputPaths['dbotscore']]]
+    assert all(indicator in indicators for indicator in [sha256_1, md5_1, sha1_1])
 
     second_result = command_results_list[1]
-    assert second_result.outputs[outputPaths['dbotscore']]['Indicator'] == sha256_2
+    indicators = [dbotscore['Indicator'] for dbotscore in second_result.outputs[outputPaths['dbotscore']]]
+    assert all(indicator in indicators for indicator in [sha256_2, md5_2, sha1_2])
 
 
 def test_check_analysis_status_and_get_results_command_multiple_analyses_one_fails(requests_mock):
     # Arrange
     sha256_1 = 'sha256'
+    md5_1 = 'md5'
+    sha1_1 = 'sha1'
     analysis_id_1 = 'analysis_id'
+    root_analysis_id_1 = 'root_analysis_id'
 
     analysis_id_2 = 'analysis_id-2'
 
@@ -418,6 +555,28 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses_one_fai
         }
     )
     requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_1}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256_1,
+            'source': 'root',
+            'sub_analysis_id': root_analysis_id_1
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id_1}/sub-analyses/{root_analysis_id_1}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5_1,
+            'sha1': sha1_1,
+            'sha256': sha256_1,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
+    requests_mock.get(
         f'{full_url}/analyses/{analysis_id_2}',
         status_code=HTTPStatus.NOT_FOUND,
     )
@@ -431,7 +590,8 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses_one_fai
     assert len(command_results_list) == 2
 
     first_result = command_results_list[0]
-    assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == sha256_1
+    indicators = [dbotscore['Indicator'] for dbotscore in first_result.outputs[outputPaths['dbotscore']]]
+    assert all(indicator in indicators for indicator in [sha256_1, md5_1, sha1_1])
 
     second_result = command_results_list[1]
     assert second_result.readable_output == f'The Analysis {analysis_id_2} was not found on Intezer Analyze'

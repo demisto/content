@@ -13,12 +13,12 @@ if not demisto.getParam('proxy'):
     del os.environ['https_proxy']
 
 VALIDATE_CERT = not demisto.params().get('insecure', True)
-
+API_KEY = demisto.getParam('credentials')['password']
 ID_AND_API_KEY = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
 ENCODED_AUTH_KEY = base64.b64encode(ID_AND_API_KEY.encode("utf-8"))
 MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
 
-HEADERS = {'Authorization': 'Basic {}'.format(ENCODED_AUTH_KEY.decode()), 'Content-Type': 'application/json',
+HEADERS = {'Authorization': 'Basic {}'.format(API_KEY), 'Content-Type': 'application/json',
            'Account-Id': demisto.getParam('credentials')['identifier']}
 
 # Change the Account-Id to the sub account id, so all actions will be on the sub account.

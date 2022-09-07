@@ -78,7 +78,6 @@ FILE_INDICATOR_MAPPING = {
     'itype': 'IType',
 }
 
-
 INDICATOR_EXTENDED_MAPPING = {
     'Value': 'value',
     'ID': 'id',
@@ -148,6 +147,21 @@ RELATIONSHIPS_MAPPING = {
     ]
 }
 
+INTELLIGENCE_TYPES = ['actor', 'signature', 'tipreport', 'ttp', 'vulnerability', 'campaign']
+
+INTELLIGENCE_TYPE_TO_ENTITY_TYPE = {'actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                    'signature': 'Signature',
+                                    'vulnerability': FeedIndicatorType.CVE,
+                                    'ttp': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+                                    'tipreport': 'Publication',
+                                    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN}
+
+INTELLIGENCE_TYPE_TO_CONTEXT = {'actor': 'Actor',
+                                'signature': 'Signature',
+                                'vulnerability': 'Vulnerability',
+                                'ttp': 'TTP',
+                                'tipreport': 'ThreatBulletin',
+                                'campaign': 'Campaign'}
 ''' HELPER FUNCTIONS '''
 
 
@@ -207,6 +221,7 @@ class DBotScoreCalculator:
     """
     Class for DBot score calculation based on thresholds and confidence
     """
+
     def __init__(self, params: Dict):
         self.instance_defined_thresholds = {
             DBotScoreType.IP: arg_to_number(params.get('ip_threshold')),
@@ -257,6 +272,8 @@ def prepare_args(args, command, params):
         args['status'] = "active,inactive" if include_inactive else "active"
     if 'threshold' in args:
         args['threshold'] = arg_to_number(args['threshold'])
+    if 'threat_model_association' in args:
+        args['threat_model_association'] = argToBoolean(args.pop('threat_model_association', False))
 
     # special handling for threatstream-get-indicators
     if 'indicator_severity' in args:
@@ -418,6 +435,23 @@ def create_relationships(client: Client, indicator, ioc_type, relation_mapper):
     return relationships
 
 
+def create_intelligence_relationship(client: Client, indicator, ioc_type, entity_b, entity_b_type):
+    relationship = None
+    if not client.should_create_relationships:
+        return relationship
+
+    if entity_b:
+        relationship = EntityRelationship(entity_a=indicator['value'],
+                                          entity_a_type=ioc_type,
+                                          name=EntityRelationship.Relationships.RELATED_TO,
+                                          entity_b=entity_b,
+                                          entity_b_type=entity_b_type,
+                                          source_reliability=client.reliability,
+                                          brand=THREAT_STREAM,
+                                          reverse_name=EntityRelationship.Relationships.RELATED_TO)
+    return relationship
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -429,15 +463,17 @@ def test_module(client: Client):
     return 'ok'
 
 
-def ips_reputation_command(client: Client, score_calc: DBotScoreCalculator, ip, status, threshold=None):
+def ips_reputation_command(client: Client, score_calc: DBotScoreCalculator, ip, status, threshold=None,
+                           threat_model_association=False):
     results = []  # type: ignore
     ips = argToList(ip, ',')
     for single_ip in ips:
-        results.append(get_ip_reputation(client, score_calc, single_ip, status, threshold))
+        results.append(get_ip_reputation(client, score_calc, single_ip, status, threshold, threat_model_association))
     return results
 
 
-def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, status, threshold=None):
+def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, status, threshold=None,
+                      threat_model_association=False):
     """
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest confidence score.
@@ -479,6 +515,16 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
         reliability=client.reliability,
     )
 
+    if threat_model_association:  # pragma: no cover
+        intelligence_relationships, outputs = get_intelligence(client,
+                                                               indicator,
+                                                               FeedIndicatorType.IP
+                                                               )
+        if intelligence_relationships:
+            relationships.extend(intelligence_relationships)
+        threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
+
     ip_indicator = Common.IP(
         dbot_score=dbot_score,
         tags=get_tags(indicator),
@@ -498,18 +544,66 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     )
 
 
-def domains_reputation_command(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None):
+def get_intelligence(client: Client, indicator, ioc_type):
+    relationships: List[EntityRelationship] = []
+    intelligence_outputs: Dict[str, Any] = {}
+
+    for intelligence_type in INTELLIGENCE_TYPES:
+        intelligence_relationships, intelligence_output = get_intelligence_information(
+            client, indicator, ioc_type, intelligence_type)
+        if intelligence_relationships:
+            relationships.extend(intelligence_relationships)
+
+        intelligence_outputs[INTELLIGENCE_TYPE_TO_CONTEXT[intelligence_type]] = intelligence_output
+
+    return relationships, intelligence_outputs
+
+
+def get_intelligence_information(client: Client, indicator, ioc_type, intelligence_type):
+
+    value = indicator.get('value')
+    url = f"v1/{intelligence_type}/associated_with_intelligence/"
+    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', None)
+    relationships: List[EntityRelationship] = []
+
+    for intelligence in intelligences:
+        intelligence_name = intelligence.get('name')
+        if intelligence_name:
+            entity_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
+            relationship = create_intelligence_relationship(
+                client,
+                indicator,
+                ioc_type,
+                intelligence_name,
+                entity_type)
+
+        relationships.append(relationship)
+
+    return relationships, intelligences
+
+
+def create_human_readable(intelligence_outputs):  # pragma: no cover
+    table = ''
+    for intelligence in intelligence_outputs.keys():
+        table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name', 'id'])
+
+    return table
+
+
+def domains_reputation_command(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None,
+                               threat_model_association=False):
     """
         Wrapper function for get_domain_reputation.
     """
     results = []  # type: ignore
     domains = argToList(domain, ',')
     for single_domain in domains:
-        results.append(get_domain_reputation(client, score_calc, single_domain, status, threshold))
+        results.append(get_domain_reputation(client, score_calc, single_domain, status, threshold, threat_model_association))
     return results
 
 
-def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None):
+def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domain, status, threshold=None,
+                          threat_model_association=False):
     """
         Checks the reputation of given domain from ThreatStream and
         returns the indicator with highest confidence score.
@@ -546,6 +640,17 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
         reliability=client.reliability,
         score=score_calc.calculate_score(DBotScoreType.DOMAIN, indicator, threshold),
     )
+
+    if threat_model_association:  # pragma: no cover
+        intelligence_relationships, outputs = get_intelligence(client,
+                                                               indicator,
+                                                               FeedIndicatorType.Domain
+                                                               )
+        if intelligence_relationships:
+            relationships.append(intelligence_relationships)
+        threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
+
     domain_indicator = Common.Domain(
         dbot_score=dbot_score,
         tags=get_tags(indicator),
@@ -566,18 +671,20 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     )
 
 
-def files_reputation_command(client: Client, score_calc: DBotScoreCalculator, file, status, threshold=None):
+def files_reputation_command(client: Client, score_calc: DBotScoreCalculator, file, status, threshold=None,
+                             threat_model_association=False):
     """
         Wrapper function for get_file_reputation.
     """
     results = []
     files = argToList(file, ',')
     for single_file in files:
-        results.append(get_file_reputation(client, score_calc, single_file, status, threshold))
+        results.append(get_file_reputation(client, score_calc, single_file, status, threshold, threat_model_association))
     return results
 
 
-def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, status, threshold=None):
+def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, status, threshold=None,
+                        threat_model_association=False):
     """
         Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
@@ -622,6 +729,17 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
         score=score_calc.calculate_score(DBotScoreType.FILE, indicator, threshold),
     )
 
+    if threat_model_association:  # pragma: no cover
+        intelligence_relationships, outputs = get_intelligence(client,
+                                                               indicator,
+                                                               FeedIndicatorType.File
+                                                               )
+        if intelligence_relationships:
+            relationships.extend(intelligence_relationships)
+        threat_context.update(outputs)
+
+        human_readable += create_human_readable(outputs)
+
     file_indicator = Common.File(
         dbot_score=dbot_score,
         tags=get_tags(indicator),
@@ -640,18 +758,20 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
     )
 
 
-def urls_reputation_command(client: Client, score_calc: DBotScoreCalculator, url, status, threshold=None):
+def urls_reputation_command(client: Client, score_calc: DBotScoreCalculator, url, status, threshold=None,
+                            threat_model_association=False):
     """
         Wrapper function for get_url_reputation.
     """
     results = []
     urls = argToList(url, ',')
     for single_url in urls:
-        results.append(get_url_reputation(client, score_calc, single_url, status, threshold))
+        results.append(get_url_reputation(client, score_calc, single_url, status, threshold, threat_model_association))
     return results
 
 
-def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, status, threshold=None):
+def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, status, threshold=None,
+                       threat_model_association=False):
     """
         Checks the reputation of given url address from ThreatStream and
         returns the indicator with highest confidence score.
@@ -689,6 +809,16 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
         reliability=client.reliability,
         score=score_calc.calculate_score(DBotScoreType.URL, indicator, threshold),
     )
+
+    if threat_model_association:  # pragma: no cover
+        intelligence_relationships, outputs = get_intelligence(client,
+                                                               indicator,
+                                                               FeedIndicatorType.URL
+                                                               )
+        if intelligence_relationships:
+            relationships.extend(intelligence_relationships)
+        threat_context.update(outputs)
+        human_readable += create_human_readable(outputs)
 
     url_indicator = Common.URL(
         dbot_score=dbot_score,
@@ -1177,6 +1307,36 @@ def get_indicators(client: Client, **kwargs):
     )
 
 
+def search_intelligence(client: Client, **kwargs):
+    """
+        Returns filtered indicators by parameters from ThreatStream.
+        By default the limit of indicators result is set to 50.
+    """
+    page = int(kwargs.pop('page', 0))
+    page_size = int(kwargs.pop('page_size', 0))
+    if page_size > 0:
+        kwargs['limit'] = page_size
+    else:
+        kwargs['limit'] = int(kwargs.get('limit', 50))
+    kwargs['offset'] = page * page_size
+    url = 'v2/intelligence/'
+    if 'query' in kwargs:
+        url += f"?q={kwargs.pop('query')}"
+    intelligence_list = client.http_request('GET', url, params=kwargs).get('objects', None)
+    if not intelligence_list:
+        return 'No intelligence found from ThreatStream'
+
+    intelligence_table = tableToMarkdown('The intelligence results', intelligence_list, removeNull=True,
+                                         headerTransform=string_to_table_header)
+
+    return CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.Intelligence',
+        outputs=intelligence_list,
+        readable_output=intelligence_table,
+        raw_response=intelligence_list
+    )
+
+
 def main():
     """
     Initiate integration command
@@ -1220,6 +1380,8 @@ def main():
         'threatstream-update-model': update_model,
         'threatstream-submit-to-sandbox': submit_report,
         'threatstream-add-tag-to-model': add_tag_to_model,
+
+        'threatstream-search-intelligence': search_intelligence,
     }
     try:
 

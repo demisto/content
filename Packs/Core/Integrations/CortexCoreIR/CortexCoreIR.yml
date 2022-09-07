@@ -3247,6 +3247,284 @@ script:
     - contextPath: Core.AnalyticsPrevalence.Cmd.data.prevalence.value
       description: The prevalence of the Cmd.
       type: Number
+  - arguments:
+    - default: false
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to assign the tag.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: The tag name to assign to the endpoint(s).
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint IDs by which to filter the results.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of IP addresses.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of group name to which the agent belongs.
+        Example: group_name1,group_name2
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The endpoint platform.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of alias names.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of hostnames.
+        Example: hostname1,hostname2
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen after {first_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen before {first_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_lte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a tag to one or more endpoints.
+    execution: false
+    name: core-add-endpoint-tag
+  - arguments:
+    - default: false
+      description: A comma-separated list of tenant IDs of the endpoint(s) for which you want to remove the tag.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: The tag name to remove from the endpoint(s).
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint IDs to filter by them.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of IP addresses.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of group names to which the agent belongs.
+        Example: group_name1,group_name2
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The endpoint platform.       
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of alias names.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of hostnames.
+        Example: hostname1,hostname2
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen after {first_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen before {first_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_lte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove a tag from one or more endpoints.
+    execution: false
+    name: core-remove-endpoint-tag
   feed: false
   isfetch: false
   longRunning: false
@@ -3255,7 +3533,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
 tests:
 - No tests
 fromversion: 6.2.0

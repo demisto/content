@@ -270,8 +270,11 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
     for record in records:
         if record.get('hostname'):
             hostname = record.get('hostname')
-            dbot_score = Common.DBotScore(indicator=hostname, indicator_type=DBotScoreType.DOMAIN,
-                                          integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
+            dbot_score = Common.DBotScore(indicator=hostname,
+                                          indicator_type=DBotScoreType.DOMAIN,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=Common.DBotScore.NONE,
+                                          reliability=demisto.params().get('integrationReliability'))
             if auto_detect_indicator_type(hostname) == FeedIndicatorType.Domain:
                 domain_ioc = Common.Domain(domain=hostname, dbot_score=dbot_score)
                 # add standard output with standard readable output
@@ -281,8 +284,11 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
                 ))
         elif record.get('address'):
             address = record.get('address')
-            dbot_score = Common.DBotScore(indicator=address, indicator_type=DBotScoreType.IP,
-                                          integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
+            dbot_score = Common.DBotScore(indicator=address,
+                                          indicator_type=DBotScoreType.IP,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=Common.DBotScore.NONE,
+                                          reliability=demisto.params().get('integrationReliability'))
             if auto_detect_indicator_type(address) == FeedIndicatorType.IP:
                 ip_ioc = Common.IP(ip=address, dbot_score=dbot_score)
                 # add standard output with standard readable output
@@ -498,7 +504,8 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]], score=0) -> Tu
                     indicator=domain.get('domain', ''),
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name=INTEGRATION_NAME,
-                    score=score
+                    score=score,
+                    reliability=demisto.params().get('integrationReliability')
                 )
             )
             # add standard output with standard readable output
@@ -953,7 +960,8 @@ def get_standard_context(score: int, ip: str) -> Common.IP:
         indicator=ip,
         integration_name='PassiveTotal',
         indicator_type=DBotScoreType.IP,
-        score=score
+        score=score,
+        reliability=demisto.params().get('integrationReliability')
     )
     return Common.IP(
         ip=ip,
