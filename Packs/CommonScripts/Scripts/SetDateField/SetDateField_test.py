@@ -35,7 +35,7 @@ def test_is_valid_field(field_name, incident, expected):
 @pytest.mark.parametrize(
     "incident, expected",
     [
-        (demisto.incident(), ["foo", "goo"]),
+        ({"CustomFields": {"foo": "bar", "goo": "baz"}, "account": ""}, ["foo", "goo"]),
         ({"name": "1", "CustomFields": {"foo": "bar"}}, ["foo"]),
         ({"name": "1"}, [])
     ]
