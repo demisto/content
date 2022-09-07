@@ -29,12 +29,12 @@ REQUEST_ARGS_MOCK = {'details': 'details',
                      'requester_work_location': 'requester_work_location',
                      'requester_work_street': 'requester_work_street'}
 
+
 def test_remedy_get_ticket_command(mocker):
     """
-    Given: An existing last run time.
-    When:  Running a fetch incidents command normally (not a first run).
-    Then:  The last run time object should increment by 1 second.
-           2020-01-07-04:58:18 -> 2020-01-07-04:58:19
+    Given: Demisto args and params.
+    When:  Running a remedy_get_ticket_command normally.
+    Then:  ensures the expected result is returned
     """
 
     mocker.patch.object(demisto, 'results')
@@ -45,18 +45,19 @@ def test_remedy_get_ticket_command(mocker):
     mocker.patch.object(demisto, 'args', return_value={'service_request_id': 'service_request_id'})
 
     import remedy_SR
-    mocker.patch.object(remedy_SR, 'http_request', return_value={'Envelope': {'Body': {'getResponse': {'return': {'Body': HTTP_REQUEST_MOCK}}}}})
+    mocker.patch.object(remedy_SR, 'http_request',
+                        return_value={'Envelope': {'Body': {'getResponse': {'return': {'Body': HTTP_REQUEST_MOCK}}}}})
 
     remedy_SR.remedy_get_ticket_command()
 
     assert '### Ticket:' in demisto.results.call_args_list[0][0][0].get('HumanReadable')
-                                                                            
+
+
 def test_remedy_create_ticket_command(mocker):
     """
     Given: Demisto args and params.
     When:  Running a create_ticket_command normally.
-    Then:  The last run time object should increment by 1 second.
-           2020-01-07-04:58:18 -> 2020-01-07-04:58:19
+    Then:  ensures the expected result is returned
     """
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'params', return_value={'server': 'server',
@@ -66,7 +67,8 @@ def test_remedy_create_ticket_command(mocker):
     mocker.patch.object(demisto, 'args', return_value=REQUEST_ARGS_MOCK)
 
     import remedy_SR
-    mocker.patch.object(remedy_SR, 'http_request', return_value={'Envelope': {'Body': {'createResponse': {'return': {'Body': HTTP_REQUEST_MOCK}}}}})
+    mocker.patch.object(remedy_SR, 'http_request',
+                        return_value={'Envelope': {'Body': {'createResponse': {'return': {'Body': HTTP_REQUEST_MOCK}}}}})
 
     remedy_SR.remedy_create_ticket_command()
 
