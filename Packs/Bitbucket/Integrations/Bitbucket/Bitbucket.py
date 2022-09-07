@@ -13,6 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
+import json
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -164,7 +165,7 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         else:
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues'
-        return self._http_request(method='POST', url_suffix=url_suffix, data=body)
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -474,7 +475,7 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
 def issue_create_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     title = args.get('title', None)
-    state = args.get('state')
+    state = args.get('state', 'new')
     issue_type = args.get('type', 'bug')
     priority = args.get('priority', 'major')
     content = args.get('content', None)
@@ -496,17 +497,10 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
             "username": assignee_user_name
         }
     response = client.issue_create_request(repo, body)
-    if response.id:
-        return CommandResults(readable_output=f'The issue "{title}" was created successfully',
-                              outputs_prefix='Bitbucket.Issue',
-                              outputs=response,
-                              raw_response=response)
-    else:
-        return CommandResults(readable_output='The command failed.',
-                              outputs_prefix='Bitbucket.RawFile',
-                              outputs=response,
-                              raw_response=response)
-
+    return CommandResults(readable_output=f'The issue "{title}" was created successfully',
+                          outputs_prefix='Bitbucket.Issue',
+                          outputs=response,
+                          raw_response=response)
 
 
 ''' MAIN FUNCTION '''
