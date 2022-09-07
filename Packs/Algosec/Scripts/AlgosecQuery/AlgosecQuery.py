@@ -6,15 +6,15 @@ def algosec_query():
     resp = demisto.executeCommand("algosec-query", demisto.args())
 
     if isError(resp[0]):
-        demisto.results(resp)
+        return resp
     else:
         data = demisto.get(resp[0], "Contents.QueryResponse.QueryResult")
         if data:
             data = data if isinstance(data, list) else [data]
             data = flattenTable(data)
-            demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data})
+            return {"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data}
         else:
-            demisto.results("No results.")
+            return "No results."
 
 
 def main():  # pragma: no cover

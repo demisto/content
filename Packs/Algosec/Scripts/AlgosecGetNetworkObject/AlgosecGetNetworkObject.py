@@ -6,15 +6,15 @@ def algosec_get_network_object():
     resp = demisto.executeCommand("algosec-get-network-object", demisto.args())
 
     if isError(resp[0]):
-        demisto.results(resp)
+        return resp
     else:
         data = [demisto.get(entry, "Contents") for entry in resp]
         if data:
             data = data if isinstance(data, list) else [data]
             data = flattenTable(data)
-            demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data})
+            return {"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data}
         else:
-            demisto.results("No results.")
+            return "No results."
 
 
 def main():  # pragma: no cover

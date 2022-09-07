@@ -6,7 +6,7 @@ def algosec_create_ticket():
     resp = demisto.executeCommand("algosec-create-ticket", demisto.args())
 
     if isError(resp[0]):
-        demisto.results(resp)
+        return resp
     else:
         data = demisto.get(resp[0], "Contents.createTicketResponse")
         if data:
@@ -17,9 +17,9 @@ def algosec_create_ticket():
                         item[row] = item[row]['#text']
 
             data = flattenTable(data)
-            demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data})
+            return {"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data}
         else:
-            demisto.results("No results.")
+            return "No results."
 
 
 def main():  # pragma: no cover
