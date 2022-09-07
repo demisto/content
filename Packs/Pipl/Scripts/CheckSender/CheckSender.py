@@ -4,6 +4,15 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def get_sender_from_text(text):
+    sender = re.search(
+        r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", text,
+        re.I)
+    if sender:
+        return sender.group(1)
+    return ''
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -11,11 +20,7 @@ def main():
     try:
         email = demisto.getArg('email')
         if not email:
-            sender = re.search(
-                r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'],
-                re.I)
-            if sender:
-                email = sender.group(1)
+            get_sender_from_text(demisto.incidents()[0]['details'])
 
         if email:
             resp = demisto.executeCommand('pipl-search', {'email': email})
