@@ -14,7 +14,7 @@ def scp_pull_files(args):
         else:
             for k in s2f:
                 res += demisto.executeCommand("copy-from", {'using': k, 'file': s2f[k]})
-                demisto.log('Copying file ' + s2f[k] + ' from device ' + k)
+                demisto.info('Copying file ' + s2f[k] + ' from device ' + k)
     return res
 
 

@@ -20,7 +20,7 @@ def util_any_results(args):
     except Exception as ex:
         res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                     "Contents": "Error occurred while parsing data. Exception info:\n" + str(
-                        ex) + "\n\nInvalid data:\n" + str(data)})
+                        ex) + "\n\nInvalid data:\n" + str(data)})  # type: ignore
     return res
 
 
