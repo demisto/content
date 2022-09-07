@@ -123,6 +123,8 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        poetry --version
+
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
@@ -173,7 +175,6 @@ references:
         node --version
         npm --version
         demisto-sdk --version
-        poetry --version
 
   restore_cache: &restore_cache
     restore_cache:
