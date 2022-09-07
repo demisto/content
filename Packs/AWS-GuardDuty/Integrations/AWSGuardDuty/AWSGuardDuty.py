@@ -135,7 +135,7 @@ def update_ip_set(client: boto3.client, args: dict):
         return f"The IPSet {args.get('ipSetId')} has been Updated"
 
     else:
-        raise Exception(f"Failed to update ip set {args.get('ipSetId')} . Response was: {response}")
+        raise Exception(f"Failed updating ip set {args.get('ipSetId')} . Response was: {response}")
 
 
 def get_ip_set(client: boto3.client, args: dict):
@@ -259,7 +259,8 @@ def update_threat_intel_set(client: boto3.client, args: dict):
     if response == dict():
         return f"The ThreatIntel set {args.get('threatIntelSetId')} has been updated"
     else:
-        raise Exception(f"Failed to update ThreatIntel set {args.get('threatIntelSetId')} . Response was: {response}")
+        raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. "
+                        f"Response was: {response}")
 
 
 def severity_mapping(severity: int):
