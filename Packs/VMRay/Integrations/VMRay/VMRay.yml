@@ -6,7 +6,7 @@ configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
-  name: reliability
+  name: integrationReliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -15,7 +15,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   type: 15
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)

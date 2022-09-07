@@ -14,7 +14,7 @@ SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
-RELIABILITY = demisto.params().get('reliability', DBotScoreReliability.C) or DBotScoreReliability.C
+RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
