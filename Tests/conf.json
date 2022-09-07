@@ -93,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names":["azure_waf_prod", "azure_waf_user_auth_instance"],
+            "instance_names":"azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -3302,7 +3302,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -3807,7 +3807,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
-            "instance_names": ["azure_sql_user_auth_instance", "azure_sql_device_code_instance"],
+            "instance_names": "azure_sql_device_code_instance",
             "integrations": [
                 "Azure SQL Management"
             ]
@@ -4251,7 +4251,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
-            "instance_names": ["aks_device_code_instance", "aks_user_auth_instance"],
+            "instance_names": "aks_device_code_instance",
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -5174,6 +5174,11 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5290,7 +5295,6 @@
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
-        "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
         "GSuiteAdmin-Test": "Issue 34784",
@@ -5316,9 +5320,11 @@
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "Elasticsearch_v2_test-v8": "CRTX-61980"
+        "Elasticsearch_v2_test-v8": "CRTX-61980",
+        "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "checkpointdome9" : "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",

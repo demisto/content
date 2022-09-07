@@ -102,6 +102,7 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
+    demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
 
@@ -228,6 +229,8 @@ def main():
     key = params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
+
+    demisto.info(f'{objects_to_fetch=}')
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")

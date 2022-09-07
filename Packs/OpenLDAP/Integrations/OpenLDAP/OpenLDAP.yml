@@ -161,7 +161,7 @@ script:
     description: Performs a simple bind operation on the LDAP server and returns the      authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.31193
+  dockerimage: demisto/py3-tools:1.0.0.32758
   feed: false
   isfetch: false
   longRunning: false

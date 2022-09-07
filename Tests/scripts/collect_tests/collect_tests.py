@@ -5,30 +5,31 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
-from constants import (ALWAYS_INSTALLED_PACKS,
-                       DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES,
-                       ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
-                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, str2bool
-from exceptions import (DeprecatedPackException, InvalidTestException,
-                        NonDictException, NoTestsConfiguredException,
-                        NothingToCollectException, NotUnderPackException,
-                        PrivateTestException, SkippedPackException,
-                        SkippedTestException, TestMissingFromIdSetException,
-                        UnsupportedPackException)
-from id_set import IdSet
-from logger import logger
-from test_conf import TestConf
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
+from Tests.scripts.collect_tests.constants import (
+    ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
+    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
+    XSOAR_SANITY_TEST_NAMES)
+from Tests.scripts.collect_tests.exceptions import (
+    DeprecatedPackException, IncompatibleMarketplaceException,
+    InvalidTestException, NonDictException, NonXsoarSupportedPackException,
+    NoTestsConfiguredException, NothingToCollectException,
+    NotUnderPackException, PrivateTestException, SkippedPackException,
+    SkippedTestException, TestMissingFromIdSetException)
+from Tests.scripts.collect_tests.id_set import IdSet, IdSetItem
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.utils import find_yml_content_type
-from utils import (ContentItem, Machine, PackManager, VersionRange,
-                   find_pack_folder)
+from Tests.scripts.collect_tests.test_conf import TestConf
+from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
+                                               PackManager, find_pack_folder,
+                                               find_yml_content_type, to_tuple)
+from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -38,7 +39,7 @@ class CollectionReason(str, Enum):
     ID_SET_MARKETPLACE_VERSION = 'id_set marketplace version'
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
-    SANITY_TESTS = 'sanity tests by marketplace value'
+    SANITY_TESTS = 'sanity tests'
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
@@ -48,6 +49,9 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
+    PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+    NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
+
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -94,17 +98,27 @@ class CollectionResult:
         try:
             self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
 
-        except (InvalidTestException, SkippedPackException, DeprecatedPackException, UnsupportedPackException) as e:
+        except NonXsoarSupportedPackException:
+            if test:
+                logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
+                test = None
+
+        except InvalidTestException as e:
+            suffix = ' (pack will be installed)' if pack else ''
+            logger.info(f'{str(e)}, not collecting {test}{suffix}')
+            test = None
+
+        except (SkippedPackException, DeprecatedPackException,) as e:
             logger.warning(str(e))
             return
 
         if test:
             self.tests = {test}
-            logger.info(f'collected {test=}, {reason} ({reason_description})')
+            logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
             self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description})')
+            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
@@ -142,7 +156,13 @@ class CollectionResult:
                 raise PrivateTestException(test)
 
         if pack:
-            PACK_MANAGER.validate_pack(pack)
+            try:
+                PACK_MANAGER.validate_pack(pack)
+
+            except NonXsoarSupportedPackException:
+                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    return
+                raise
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
@@ -152,8 +172,10 @@ class CollectionResult:
             reason_description='', conf=None, id_set=None
         )
 
-    def __add__(self, other: 'CollectionResult') -> 'CollectionResult':
+    def __add__(self, other: Optional['CollectionResult']) -> 'CollectionResult':
         # initial object just to add others to
+        if not other:
+            return self
         result = self.__empty_result()
         result.tests = self.tests | other.tests  # type: ignore[operator]
         result.packs = self.packs | other.packs  # type: ignore[operator]
@@ -161,7 +183,7 @@ class CollectionResult:
         return result
 
     @staticmethod
-    def union(collected_tests: Optional[tuple[Optional['CollectionResult'], ...]]) -> Optional['CollectionResult']:
+    def union(collected_tests: Optional[Sequence[Optional['CollectionResult']]]) -> Optional['CollectionResult']:
         non_none = filter(None, collected_tests or (None,))
         return sum(non_none, start=CollectionResult.__empty_result())
 
@@ -186,7 +208,8 @@ class TestCollector(ABC):
                 test=test,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
-                version_range=None, reason_description=str(self.marketplace.value),
+                version_range=None,
+                reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True
@@ -195,7 +218,7 @@ class TestCollector(ABC):
         ))
 
     @property
-    def _always_installed_packs(self):
+    def _always_installed_packs(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
@@ -222,7 +245,7 @@ class TestCollector(ABC):
         """
         pass
 
-    def collect(self, run_nightly: bool) -> Optional[CollectionResult]:
+    def collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = self._collect()
 
         if not result:
@@ -234,28 +257,182 @@ class TestCollector(ABC):
                 logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
                 return None
 
-        self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
-        result += self._always_installed_packs
-        result.machines = Machine.get_suitable_machines(result.version_range, run_nightly)  # type:ignore[union-attr]
+        self.__validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        result += self._always_installed_packs  # type:ignore[operator]
+        result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
+        result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
+
         return result
 
-    def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := (
-                (set(tests) - set(self._sanity_test_names)).difference(self.id_set.id_to_test_playbook.keys())
-        ):
-            not_found_string = ', '.join(sorted(not_found))
-            logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
+    def _collect_test_dependencies(self, test_ids: Iterable[str]) -> Optional[CollectionResult]:
+        result = []
 
-    def _collect_pack(self, pack_name: str, reason: CollectionReason, reason_description: str) -> CollectionResult:
+        for test_id in test_ids:
+            if not (test_object := self.conf.get_test(test_id)):
+                # todo prevent this case, see CIAC-4006
+                continue
+
+            for integration in test_object.integrations:
+                if integration_object := self.id_set.id_to_integration.get(integration):
+                    result.append(self._collect_test_dependency(dependency=integration,
+                                                                test_id=test_id,
+                                                                pack_id=integration_object.pack_id,
+                                                                ))
+                else:
+                    logger.warning(f'could not find integration {integration} in id_set'
+                                   f' when searching for integrations the {test_id} test depends on')
+
+            for script in test_object.scripts:
+                if script_object := self.id_set.id_to_script.get(script):
+                    result.append(self._collect_test_dependency(dependency=script,
+                                                                test_id=test_id,
+                                                                pack_id=script_object.pack_id,
+                                                                ))
+                else:
+                    logger.warning(f'Could not find script {script} in id_set'
+                                   f' when searching for integrations the {test_id} test depends on')
+
+        return CollectionResult.union(tuple(result))
+
+    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
         return CollectionResult(
             test=None,
-            pack=pack_name,
+            pack=pack_id,
+            reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+            version_range=None,
+            reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+            conf=self.conf,
+            id_set=self.id_set,
+        )
+
+    def __validate_compatibility(
+            self,
+            id_: str,
+            pack_id: str,
+            marketplaces: Optional[tuple[MarketplaceVersions, ...]],
+            path: Path,
+            version_range: Optional[VersionRange],
+            is_integration: bool,
+    ):
+        # exception order matters: important tests come first
+        self._validate_path(path)
+        if is_integration:
+            self.__validate_skipped_integration(id_, path)
+        self.__validate_marketplace_compatibility(marketplaces or (), path)
+        self.__validate_support_level_is_xsoar(pack_id, version_range)
+
+    def _validate_path(self, path: Path):
+        if not path.exists():
+            raise FileNotFoundError(path)
+
+        self.__validate_triggering_sanity_test(path)
+        self.__validate_not_ignored_file(path)
+
+    def _validate_content_item_compatibility(self, content_item: ContentItem, is_integration: bool) -> None:
+        self.__validate_compatibility(
+            id_=content_item.id_,
+            pack_id=content_item.pack_id,
+            marketplaces=content_item.marketplaces,
+            path=content_item.path,
+            version_range=content_item.version_range,
+            is_integration=is_integration,
+        )
+
+    def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None:
+        if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):
+            raise RuntimeError(f'could not find pack of {id_set_item.name}')
+
+        self.__validate_compatibility(
+            id_=id_set_item.id_,
+            pack_id=pack_id,
+            marketplaces=id_set_item.marketplaces,
+            path=id_set_item.path,
+            version_range=id_set_item.version_range,
+            is_integration=is_integration,
+        )
+
+    def _collect_pack(
+            self,
+            pack_id: str,
+            reason: CollectionReason,
+            reason_description: str,
+            content_item_range: Optional[VersionRange] = None,
+            allow_incompatible_marketplace: bool = False,
+    ) -> Optional[CollectionResult]:
+        pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+
+        try:
+            self._validate_content_item_compatibility(pack_metadata, is_integration=False)
+        except NonXsoarSupportedPackException as e:
+            # we do want to install packs in this case (tests are not collected in this case anyway)
+            logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
+                        f'collecting to make sure it is installed properly.')
+        except IncompatibleMarketplaceException:
+            # sometimes, we want to install packs that are not compatible (e.g. both marketplaces)
+            # because they have content that IS compatible.
+            if not allow_incompatible_marketplace:
+                raise
+
+        version_range = content_item_range \
+            if pack_metadata.version_range.is_default \
+            else (pack_metadata.version_range | content_item_range)
+
+        return CollectionResult(
+            test=None,
+            pack=pack_id,
             reason=reason,
-            version_range=PACK_MANAGER[pack_name].version_range,
+            version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
         )
+
+    def __validate_skipped_integration(self, id_: str, path: Path):
+        if id_ in self.conf.skipped_integrations:
+            raise NothingToCollectException(path, 'integration is skipped')
+
+    def __validate_triggering_sanity_test(self, path: Path):
+        if path in PATHS.files_triggering_sanity_tests:
+            self.trigger_sanity_tests = True
+            raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
+
+    @staticmethod
+    def __validate_not_ignored_file(path: Path):
+        if path in PATHS.files_to_ignore:
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+
+    @staticmethod
+    def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
+        # intended to only be called from __validate_compatibility
+        if (support_level := PACK_MANAGER.get_support_level(pack_id)) != 'xsoar':
+            raise NonXsoarSupportedPackException(pack_id, support_level, content_item_range)
+
+    def __validate_marketplace_compatibility(self,
+                                             content_item_marketplaces: tuple[MarketplaceVersions, ...],
+                                             content_item_path: Path) -> None:
+        # intended to only be called from __validate_compatibility
+        if not content_item_marketplaces:
+            logger.debug(f'{content_item_path} has no marketplaces set, '
+                         f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
+            content_item_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
+
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                if content_item_marketplaces != (self.marketplace,):
+                    # marketplacev2 must be the only value in order to be collected
+                    raise IncompatibleMarketplaceException(content_item_path)
+
+            case MarketplaceVersions.XSOAR:
+                if self.marketplace not in content_item_marketplaces:
+                    raise IncompatibleMarketplaceException(content_item_path)
+
+            case _:
+                raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
+
+    def __validate_tests_in_id_set(self, tests: Iterable[str]):
+        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
+            not_found_string = ', '.join(sorted(not_found))
+            logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
 
 class BranchTestCollector(TestCollector):
@@ -279,68 +456,93 @@ class BranchTestCollector(TestCollector):
         self.service_account = service_account
         self.private_pack_path: Optional[Path] = private_pack_path
 
-    def _get_private_pack_files(self) -> tuple[Path, ...]:
+    def _get_private_pack_files(self) -> tuple[str, ...]:
         if not self.private_pack_path:
             raise RuntimeError('private_pack_path cannot be empty')
-        return tuple(path for path in self.private_pack_path.rglob('*') if path.is_file())
+        return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectionResult]:
         result = []
-        paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
-        for path in paths:
+        paths: tuple[str, ...] = self._get_private_pack_files() \
+            if self.private_pack_path \
+            else self._get_changed_files()
+
+        for raw_path in paths:
+            path = PATHS.content_path / raw_path
+            logger.debug(f'Collecting tests for {raw_path}')
             try:
-                result.append(self._collect_single(PATHS.content_path / path))
+                result.append(self._collect_single(path))
+            except NonXsoarSupportedPackException as e:
+                result.append(self._collect_pack(
+                    pack_id=find_pack_folder(path).name,
+                    reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                    reason_description=raw_path,
+                    content_item_range=e.content_version_range,
+                ))
             except NothingToCollectException as e:
-                logger.warning(e.message)
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
+                raise e
 
-        return CollectionResult.union(tuple(result))
+        return CollectionResult.union(result)
 
-    def _collect_yml(self, content_item_path: Path) -> CollectionResult:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
-        result: Optional[CollectionResult] = None
         yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
         try:
             yml = ContentItem(yml_path)
             if not yml.id_:
                 raise ValueError(f'id field of {yml_path} cannot be empty')
         except FileNotFoundError:
-            raise FileNotFoundError(
-                f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}'
-            )
-        if yml.id_ in self.conf.skipped_integrations:
-            raise NothingToCollectException(yml.path, 'integration is skipped')
-        relative_yml_path = PackManager.relative_to_packs(yml_path)
+            raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
+
+        actual_content_type = find_yml_content_type(yml_path)
+        self._validate_content_item_compatibility(yml, is_integration=actual_content_type == FileType.INTEGRATION)
+
+        relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
-        match actual_content_type := find_yml_content_type(yml_path):
+        match actual_content_type:
             case None:
                 path_description = f'{yml_path} (original item {content_item_path}' \
-                    if content_item_path != yml_path else yml_path
+                    if content_item_path != yml_path \
+                    else yml_path
                 raise ValueError(f'could not detect type for {path_description}')
 
             case FileType.TEST_PLAYBOOK:
-                if yml.id_ in self.conf.test_ids:
+                if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
-                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise ValueError(f'test playbook with id {yml.id_} is missing from conf.test_ids')
+                    # todo fix in CIAC-4006
+                    logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
+                    tests = ()
+                reason = CollectionReason.TEST_PLAYBOOK_CHANGED
 
             case FileType.INTEGRATION:
-
                 if yml.explicitly_no_tests():
-                    logger.debug(f'{yml.id_} explicitly states `tests: no tests`')
+                    suffix = ''
+
+                    if tests_from_conf := self.conf.integrations_to_tests.get(yml.id_, ()):
+                        tests_str = ', '.join(sorted(tests_from_conf))
+                        suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
+
+                    logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
+                    # note, this whole method is always called after validating support level is xsoar
                     raise ValueError(
-                        f'integration id={yml.id_} is both '
-                        f'(1) missing from conf.json, and'
-                        ' (2) does not explicitly state `tests: no tests`. '
-                        'Please change one of these to allow test collection.'
+                        f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
+                        f'(1) missing from conf.json, AND'
+                        ' (2) does not explicitly state `tests: no tests` AND'
+                        ' (3) has support level == xsoar. '
+                        'Please change at least one of these to allow test collection.'
                     )
                 else:
+                    # integration to test mapping available, and support level == xsoar (so - we run the tests)
                     tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
@@ -364,9 +566,8 @@ class BranchTestCollector(TestCollector):
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
-        # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
-            result = CollectionResult.union(tuple(
+            return CollectionResult.union(tuple(
                 CollectionResult(
                     test=test,
                     pack=yml.pack_id,
@@ -376,47 +577,44 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set
                 ) for test in tests))
-        if result:
-            return result
         else:
-            raise NothingToCollectException(yml.path, 'no tests were found')
+            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
-        if not path.exists():
-            raise FileNotFoundError(path)
+        self._validate_path(path)
 
         file_type = find_type(str(path))
-        try:
-            reason_description = relative_path = PackManager.relative_to_packs(path)
-        except NotUnderPackException:
-            # infrastructure files are not collected
 
-            if path in PATHS.files_to_ignore:
-                raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
-
-            if path in PATHS.files_triggering_sanity_tests:
-                self.trigger_sanity_tests = True
-                raise NothingToCollectException(path, 'not under a pack (triggering sanity tests)')
-            raise
+        if file_type in IGNORED_FILE_TYPES:
+            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         try:
             content_item = ContentItem(path)
+            self._validate_content_item_compatibility(content_item, is_integration=file_type == FileType.INTEGRATION)
+
         except NonDictException:
-            # for `.py`, `.md`, etc., that are not dictionary-based
-            # Suitable logic follows, see collect_yml
-            content_item = None
+            content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
+        except NonXsoarSupportedPackException as e:
+            return self._collect_pack(
+                pack_id=find_pack_folder(path).name,
+                reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                reason_description=e.support_level,
+            )
+
+        pack_id = find_pack_folder(path).name
+        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
-            # install pack without collecting tests.
             return self._collect_pack(
-                pack_name=find_pack_folder(path).name,
+                pack_id=pack_id,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
                 reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
-                raise NothingToCollectException(path, 'unit tests changed')
+                raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
@@ -434,9 +632,6 @@ class BranchTestCollector(TestCollector):
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
             return self._collect_yml(path)  # checks for containing folder (content item type)
-
-        elif file_type in IGNORED_FILE_TYPES:
-            raise NothingToCollectException(path, f'ignored type {file_type}')
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
@@ -489,10 +684,23 @@ class BranchTestCollector(TestCollector):
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
         for line in diff.splitlines():
-            try:
-                git_status, file_path = line.split()
-            except ValueError:
-                raise ValueError(f'unexpected line format (expected `<modifier>\t<file>`, got {line}')
+            match len(parts := line.split('\t')):
+                case 2:
+                    git_status, file_path = parts
+                case 3:
+                    git_status, _, file_path = parts  # R <old location> <new location>
+
+                    if git_status.startswith('R'):
+                        logger.debug(f'{git_status=} for {file_path=}, considering it as <M>odified')
+                        git_status = 'M'
+                case _:
+                    raise ValueError(f'unexpected line format '
+                                     f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
+                                     f', got {line}')
+
+            if git_status not in {'A', 'M', 'D', }:
+                logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
+
             if git_status == 'D':  # git-deleted file
                 logger.warning(f'Found a file deleted from git {file_path}, '
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
@@ -511,124 +719,105 @@ class UploadCollector(BranchTestCollector):
 
 
 class NightlyTestCollector(TestCollector, ABC):
-    def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
+    def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
-        :param only_value: whether the value is the only one under the marketplaces field.
         :return: all tests whose marketplace field includes the collector's marketplace value
                     (or is equal to it, if `only_value` is used).
         """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
-                    f'{postfix}')
-
         result = []
-
         for playbook in self.id_set.test_playbooks:
-            playbook_marketplaces = playbook.marketplaces or default
-
-            if only_value and len(playbook_marketplaces) != 1:
-                continue
-
-            if self.marketplace in playbook_marketplaces:
+            try:
+                self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
-                    test=playbook.id_, pack=playbook.pack_id,
+                    test=playbook.id_,
+                    pack=playbook.pack_id,
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=self.marketplace.value,
                     version_range=playbook.version_range,
-                    conf=self.conf, id_set=self.id_set)
-                )
+                    conf=self.conf,
+                    id_set=self.id_set,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
 
-        if not result:
-            logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
-            return None
+        return CollectionResult.union(result)
 
-        return CollectionResult.union(tuple(result))
-
-    def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
-        """
-        :param only_value: whether the value is the only one under the marketplaces field.
-        :return: all packs whose marketplaces field contains self.marketplaces (or is equal to, if only_value is True).
-        """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}'
-            f'{postfix}')
-        packs = []
-
-        for pack in PACK_MANAGER:
-            pack_marketplaces = pack.marketplaces or default
-            if only_value and len(pack_marketplaces) != 1:
-                continue
-            if self.marketplace in pack_marketplaces:
-                packs.append(pack.pack_id)
-
-        if not packs:
-            logger.warning(f'no packs matching marketplace {self.marketplace.value} ({only_value=}) were found')
-            return None
-
-        return CollectionResult.union(
-            tuple(CollectionResult(test=None, pack=pack, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                                   version_range=None, reason_description=self.marketplace.value,
-                                   conf=self.conf, id_set=self.id_set)
-                  for pack in packs)
-        )
-
-    def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectionResult]:
-        """
-        :param only_value: whether the value is the only one under the marketplaces field.
-        :return: all packs whose under which a content item marketplace field contains self.marketplaces
-                (or is equal to, if only_value is True).
-        """
-        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
-        postfix = ' (only where this is the only marketplace value)' if only_value else ''
-        logger.info(
-            f'collecting content items by their marketplace field, searching for {self.marketplace.value} {postfix}')
-
+    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
         result = []
-
-        for item in self.id_set.artifact_iterator:
-            item_marketplaces = item.marketplaces or default
-
-            if only_value and len(item_marketplaces) != 1:
-                continue
-
-            if self.marketplace in item_marketplaces:
-                path = PATHS.content_path / item.file_path_str
-                try:
-                    pack = PACK_MANAGER[find_pack_folder(path).name]
-                    if not item.path:
-                        raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
-                    relative_path = PACK_MANAGER.relative_to_packs(item.path)
-                    result.append(
-                        CollectionResult(
-                            test=None,
-                            pack=pack.pack_id,
-                            reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
-                            version_range=item.version_range or pack.version_range,
-                            reason_description=f'{str(relative_path)}, ({self.marketplace.value})',
-                            conf=self.conf,
-                            id_set=self.id_set,
-                        )
-                    )
-
-                except NotUnderPackException:
-                    if path.name in SKIPPED_CONTENT_ITEMS:
-                        logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
-                        continue
-        return CollectionResult.union(tuple(result))
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self):
         super().__init__(MarketplaceVersions.MarketplaceV2)
 
+    def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
+        """
+        :return: all packs whose under which a content item marketplace field contains self.marketplaces
+                (or is equal to, if only_value is True).
+        """
+        result = []
+
+        for item in self.id_set.artifact_iterator:
+            if not item.path or not item.file_path_str:
+                raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
+            path = PATHS.content_path / item.file_path_str
+
+            try:
+                pack_id = find_pack_folder(path).name
+                pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+                try:
+                    self._validate_id_set_item_compatibility(item, is_integration='Integrations' in path.parts)
+                except NonXsoarSupportedPackException as e:
+                    logger.info(f'{str(e)} - collecting pack anyway')
+                except NothingToCollectException as e:
+                    logger.info(e)
+                    continue
+
+                marketplaces_string = ', '.join(map(str, item.marketplaces))
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
+                    reason_description=f'{item.file_path_str} ({marketplaces_string})',
+                    content_item_range=item.version_range,
+                    allow_incompatible_marketplace=True,
+                ))
+
+            except NotUnderPackException:
+                if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                    logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
+                    continue
+        return CollectionResult.union(result)
+
+    @property
+    def sanity_tests(self) -> Optional[CollectionResult]:
+        return CollectionResult(
+            test='Sanity Test - Playbook with Unmockable Whois Integration',
+            pack='Whois',
+            reason=CollectionReason.SANITY_TESTS,
+            reason_description='XSIAM Nightly sanity',
+            version_range=None,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+        )
+
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value(only_value=True),
-            self._packs_matching_marketplace_value(only_value=True),
-            self._packs_of_content_matching_marketplace_value(only_value=True)
+            self._id_set_tests_matching_marketplace_value(),
+            self._collect_all_marketplace_compatible_packs(),
+            self._collect_packs_of_content_matching_marketplace_value(),
+            self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
 
 
@@ -638,8 +827,8 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value(only_value=False),
-            self._packs_matching_marketplace_value(only_value=False),
+            self._id_set_tests_matching_marketplace_value(),
+            self._collect_all_marketplace_compatible_packs(),
         ))
 
 
@@ -665,7 +854,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220817')
+    logger.info('TestCollector v20220831')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -677,24 +866,31 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
+    logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
+    branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
+    nightly = args.nightly
+    service_account = args.service_account
 
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, args.service_account, args.changed_pack_path)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
+
+    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+        collector = UploadCollector(branch_name, marketplace, service_account)
+
     else:
-        match (args.nightly, marketplace):
+        match (nightly, marketplace):
             case False, _:  # not nightly
-                branch_name = PATHS.content_repo.active_branch.name
-                collector = BranchTestCollector(branch_name, marketplace, args.service_account)
+                collector = BranchTestCollector(branch_name, marketplace, service_account)
             case True, MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector()
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector()
             case _:
-                raise ValueError(f"unexpected values of (either) {marketplace=}, {args.nightly=}")
+                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
-    collected = collector.collect(run_nightly=args.nightly)
+    collected = collector.collect()
     output(collected)  # logs and writes to output files
