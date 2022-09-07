@@ -13,7 +13,7 @@ EXPECTED_RESULTS = 'From:"my_test_mail@test.com" AND Subject:"test" AND Body:"th
 @pytest.mark.parametrize('args, expected_results', [
     (DEMISTO_ARGS, EXPECTED_RESULTS),
 ])
-def test_buildewsquery(args, expected_results):
+def test_build_ews_query(args, expected_results):
     """
     Given:
         - args dictionary.
