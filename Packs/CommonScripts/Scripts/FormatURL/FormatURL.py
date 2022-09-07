@@ -1,5 +1,6 @@
 import ipaddress
 import urllib.parse
+from CommonServerPython import *
 
 
 class URLError(Exception):
@@ -175,7 +176,7 @@ class URLCheck(object):
         """
 
         index = self.base
-        host = ""
+        host: Any = ''
         is_ip = False
 
         while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
@@ -222,13 +223,13 @@ class URLCheck(object):
 
                 else:
                     try:
-                        host = ipaddress.ip_address(host)
+                        ip = ipaddress.ip_address(host)
                         is_ip = True
 
                     except ValueError:
                         raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
 
-                    if self.inside_brackets and host.version == 6:
+                    if self.inside_brackets and ip.version == 6:
                         self.output += self.modified_url[index]
                         index += 1
                         self.inside_brackets = False
@@ -535,19 +536,12 @@ def main():
             demisto.info(e.__str__())
 
         except Exception as e:
-            demisto.error(traceback.format_exc() + str(e))  # print the traceback)
+            demisto.error(traceback.format_exc() + str(e))  # print the traceback
 
         finally:
             formatted_urls.append(formatted_url)
-
-    response = [{
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [url],
-        'EntryContext': {'URL': url} if url else {}
-    } for url in formatted_urls]
-
-    demisto.results(response)
+    
+    demisto.results(formatted_urls)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

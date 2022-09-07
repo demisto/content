@@ -61,7 +61,10 @@ ATP_REDIRECTS = [('https://na01.safelinks.protection.outlook.com/?url=https%3A%2
                   '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
                   '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
                   '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0',
-                  'https://office.memoriesflower.com/Permission/office.php')]
+                  'https://office.memoriesflower.com/Permission/office.php'),
+                 ("https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",
+                  "https://google.com:443/search?q=a*test&gs=ps"),
+]
 
 PROOF_POINT_REDIRECTS = [
     ('https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html',
@@ -84,8 +87,6 @@ PROOF_POINT_REDIRECTS = [
      'https://google.com:443/search?q=a*test&gs=ps')
 ]
 
-REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
-
 FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
@@ -102,8 +103,6 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('1.2.3.4/path/to/file.html', '1.2.3.4/path/to/file.html'),
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),
     ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),
-    ('http://142.42.1.1:aaa8080', ''),  # invalid port
-    ('http://142.42.1.1:aaa', ''),  # invalid port
     ('http://☺.damowmow.com/', 'http://☺.damowmow.com/'),
     ('http://223.255.255.254', 'http://223.255.255.254'),
     ('ftp://foo.bar/baz', 'ftp://foo.bar/baz'),
@@ -112,30 +111,28 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
     ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+"),  # comma is removed
     ('https://test.com#fragment3', 'https://test.com#fragment3'),
-    ('https://test.com#fragment3#fragment3', ''),  # Only one fragment allowed
     ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
     ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]',  # disable-secrets-detection
      'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
     ('[2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
      '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
-    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
-     ''),  # disable-secrets-detection, IPv6 must appear with square brackets
     ('2001:db8:3333:4444:5555:6666:7777:8888',  # disable-secrets-detection
      '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
 ]
 
-REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
-                                 'https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html')]
+FAILS = [
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]', pytest.raises(URLError)),  # disable-secrets-detection IPv6 must have square brackets
+    ('http://142.42.1.1:aaa8080', pytest.raises(URLError)),  # invalid port
+    ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # invalid port  # disable-secrets-detection
+    ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
+]
 
+REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
 
-REDIRECT_TEST_CASES = PROOF_POINT_REDIRECTS + REDIRECT_NON_ATP_PROOF_POINT
-
-FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + REDIRECT_TEST_CASES + FORMAT_URL_ADDITIONAL_TEST_CASES
+FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_URL_ADDITIONAL_TEST_CASES
 
 
 class TestFormatURL:
-
-
     @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
     def test_replace_protocol(self, non_formatted_url: str, expected: str):
         """
@@ -148,10 +145,10 @@ class TestFormatURL:
         Then:
         - Ensure for every expected protocol given, it is replaced with the expected value.
         """
-        assert URLFormatter(non_formatted_url).correct_and_refang_url(non_formatted_url) == expected
+        assert URLFormatter(non_formatted_url).correct_and_refang_url(non_formatted_url) == expected.lower()
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
-    def test_format_url(self, url_: str, expected: Union[List[str], str]):
+    def test_format_url(self, url_: str, expected: str):
         """
         Given:
         - URL.
@@ -164,20 +161,18 @@ class TestFormatURL:
         """
 
         assert URLFormatter(url_).__str__() == expected.lower()
+    
+    @pytest.mark.parametrize('url_, expected', FAILS)
+    def test_exceptions(self, url_: str, expected):
+        """
+        Checks the formatter raises the correct exception.
+        """
 
-    @pytest.mark.parametrize('url_, expected', [
-        ('https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r'
-         '-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c'
-         '=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m'
-         '=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=',
-         'http://links.mkt3337.com/ctt?kn=3&ms=mzq3otg3mdqs1&r=mzkxnzk3ndkwmda0s0&b=0&j=mtmwmja1odyznqs2&mt=1&rt=0'),
-        ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe'
-         '&q=1&e=221919da-9d68-429a-a70e-9d8d836ca107&u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial',
-         'https://www.facebook.com/NamshiOfficial'),
-        ("https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__"
-         "https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",
-         "https://google.com:443/search?q=a*test&gs=ps")
-    ])
+        with expected:
+            assert URLFormatter(url_) is not None
+
+
+    @pytest.mark.parametrize('url_, expected', REDIRECT_TEST_CASES)
     def test_wrappers(self, url_: str, expected: str):
         """
         Given:
@@ -213,25 +208,3 @@ class TestFormatURL:
         - Ensure formatted URL is returned.
         """
         assert URLFormatter(url_).__str__() == expected.lower()
-
-    @pytest.mark.parametrize('inp', [
-        (['a']),
-        (['a', 'a'])
-    ])
-    def test_main__failed_run(self, mocker, inp):
-        """
-        Given:
-            - a list of URLs
-            - main will fail
-        When:
-            - Calling main
-        Then:
-            - Main returns a list of empty strings the size of input
-        """
-        import FormatURL as fu
-        mocker.patch.object(fu.URLFormatter, '__init__', side_effect=Exception('test'))
-        mocker.patch.object(fu.demisto, 'error')
-        mocker.patch.object(fu.demisto, 'args', return_value={'input': inp})
-        actual = fu.main()
-        assert len(actual) == len(inp)
-        assert actual == ([''] * len(actual))
