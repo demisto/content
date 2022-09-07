@@ -60,20 +60,40 @@ PR_TEST_CASE = [
 
 @pytest.mark.parametrize('pr_body, is_merged, expected', PR_TEST_CASE)
 def test_find_fixed_issue_in_body(pr_body, is_merged, expected):
+    """
+    Given: A PR representing text containing a few links.
+    When: Searching all relevant links for closing/ for connecting
+    Then: validates relevant links were fetch for closing, and relevant links were fetch when only connected.
+    """
     res = link_pr_to_jira_issue.find_fixed_issue_in_body(pr_body, is_merged)
     res_ids = [x.get('id') for x in res]
     assert res_ids == expected
 
 
 TRIGGER_TEST_CASE = [
-    (True, [{'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}]),
-    (False, [{'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
-             {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}])
+    (
+        True,
+        [  # case one link with fixes:
+            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}
+        ]
+    ),
+    (
+        False,
+        [  # case multiple links only related:
+            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
+            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
+        ]
+    )
 ]
 
 
 @pytest.mark.parametrize('is_merged, expected', TRIGGER_TEST_CASE)
 def test_trigger_generic_webhook(requests_mock, is_merged, expected):
+    """
+    Given: the links in a PR
+    When: Running github action on PR
+    Then: make sure the request to server is created correctly.
+    """
     class OptionMock:
         def __init__(self, link, num, title, body, merged):
             self.pr_link = link

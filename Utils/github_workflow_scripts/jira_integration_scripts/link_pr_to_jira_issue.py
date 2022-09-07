@@ -41,8 +41,9 @@ def find_fixed_issue_in_body(body_text, is_merged):
     fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
     related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
 
-    # If a PR is not merged, we just add its link to all the  link to the issues using Gold.
+    # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
+    # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
     fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
     related_issue = []
     if not is_merged:
