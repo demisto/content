@@ -4,7 +4,7 @@
         "Configuration Setup"
     ],
     "caseInsensitive": true,
-    "cliName": "incidentconfigurationsetups3bucketname",
+    "cliName": "cicds3bucketname",
     "closeForm": false,
     "content": true,
     "editForm": true,
