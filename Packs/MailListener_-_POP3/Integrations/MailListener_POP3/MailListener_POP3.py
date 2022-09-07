@@ -214,7 +214,8 @@ def parse_mail_parts(parts):
             elif headers.get('content-transfer-encoding') == 'quoted-printable':
                 str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
-                text = quopri.decodestring(str_utf8)
+                decoded_string = quopri.decodestring(str_utf8)
+                text = str(decoded_string, errors='ignore')
             else:
                 str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
@@ -370,5 +371,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or True:
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
