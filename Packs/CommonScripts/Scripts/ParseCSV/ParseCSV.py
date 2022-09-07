@@ -1,8 +1,9 @@
 import csv
 
 from CommonServerPython import *
+import importlib
 
-reload(sys)  # type: ignore
+importlib.reload(sys)  # type: ignore
 sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 codec_type = demisto.args().get('codec', 'utf-8')
 
@@ -13,7 +14,7 @@ def remove_non_printable_chars(s):
     'ZERO WIDTH SPACE' (U+200B)
     'ZERO WIDTH NO-BREAK SPACE' (U+FEFF)
     """
-    return s.replace(u'\ufeff', '').replace(u'\u200f', '')
+    return s.replace('\ufeff', '').replace('\u200f', '')
 
 
 def unicode_dict_reader(csv_data, **kwargs):
@@ -47,7 +48,7 @@ def unicode_dict_reader(csv_data, **kwargs):
     for row in csv_reader:
         row_dict = {}
 
-        for key, value in row.iteritems():
+        for key, value in row.items():
             if key is None:
                 # if the key is None it means there are fields in the row which has no column name
                 # so we create NO_NAME_COLUMN_{} column
@@ -57,17 +58,17 @@ def unicode_dict_reader(csv_data, **kwargs):
                 counter = 0
                 for val in value:
                     col_name = 'NO_NAME_COLUMN_{}'.format(counter)
-                    row_dict[col_name] = unicode(val, codec_type)
+                    row_dict[col_name] = str(val, codec_type)
                     counter += 1
 
                 if no_name_columns_counter < counter:
                     no_name_columns_counter = counter
 
             elif value is not None:
-                col_name = remove_non_printable_chars(unicode(key, codec_type))
-                row_dict[col_name] = unicode(value, codec_type)
+                col_name = remove_non_printable_chars(str(key, codec_type))
+                row_dict[col_name] = str(value, codec_type)
             else:
-                col_name = remove_non_printable_chars(unicode(key, codec_type))
+                col_name = remove_non_printable_chars(str(key, codec_type))
                 row_dict[col_name] = None
 
         arr.append(row_dict)
@@ -89,7 +90,7 @@ def get_entry_by_file_name(file_name):
     for entry in reversed(entries):
         fn = demisto.get(entry, 'File')
 
-        if type(fn) not in [unicode, str]:
+        if type(fn) not in [str, str]:
             continue
 
         if file_name.lower() == fn.lower():
