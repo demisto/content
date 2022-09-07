@@ -33,7 +33,7 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
     """
     Authenticate to the docker service. Return an authentication token if authentication is required.
     """
-    res = requests.get("https://{}/v2/".format(registry), headers=ACCEPT_HEADER,
+    res = requests.get(f"https://{registry}/v2/", headers=ACCEPT_HEADER,
                        timeout=TIMEOUT, verify=verify_ssl)
     if res.status_code == 401:  # need to authenticate
         # defaults in case we fail for some reason
@@ -46,17 +46,16 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
             if parse_auth:
                 realm, service = parse_auth
             else:
-                demisto.info('Failed parsing www-authenticate header: {}'.format(www_auth))
+                demisto.info(f'Failed parsing www-authenticate header: {www_auth}')
         else:
-            demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
-                registry, res.url))
+            demisto.info(f'Failed extracting www-authenticate header from registry: {registry}, final url: {res.url}')
         auth = None
         if registry.lower().startswith('xsoar-registry'):
-            demisto.debug('Authenticating using license id to registry: {}'.format(registry))
+            demisto.debug(f'Authenticating using license id to registry: {registry}')
             licenseID = demisto.getLicenseID()
             auth = ('preview', licenseID)
         res = requests.get(
-            "{}?scope=repository:{}:pull&service={}".format(realm, image_name, service),
+            f"{realm}?scope=repository:{image_name}:pull&service={service}",
             headers=ACCEPT_HEADER, timeout=TIMEOUT, verify=verify_ssl, auth=auth)
         res.raise_for_status()
         res_json = res.json()
@@ -74,10 +73,8 @@ def docker_min_layer(layers):
 
 def main():
     if demisto.args().get('use_system_proxy') == 'no':
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
+        for key in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+            del os.environ[key]
     verify_ssl = demisto.args().get('trust_any_certificate') != 'yes'
     docker_full_name = demisto.args()['input']
     registry = DEFAULT_REGISTRY
@@ -95,29 +92,28 @@ def main():
         auth_token = docker_auth(image_name, verify_ssl, registry)
         headers = ACCEPT_HEADER.copy()
         if auth_token:
-            headers['Authorization'] = "Bearer {}".format(auth_token)
-        res = requests.get("https://{}/v2/{}/manifests/{}".format(registry, image_name, tag),
+            headers['Authorization'] = f"Bearer {auth_token}"
+        res = requests.get(f"https://{registry}/v2/{image_name}/manifests/{tag}",
                            headers=headers, timeout=TIMEOUT, verify=verify_ssl)
         res.raise_for_status()
         layers = res.json().get('layers')
         if not layers:
-            raise ValueError("No 'layers' found in json response: {}".format(res.content))
+            raise ValueError(f"No 'layers' found in json response: {res.content}")
         layer_min = docker_min_layer(layers)
         headers['Range'] = "bytes=0-99"
-        res = requests.get("https://{}/v2/{}/blobs/{}".format(registry, image_name, layer_min['digest']),
+        res = requests.get(f"https://{registry}/v2/{image_name}/blobs/{layer_min['digest']}",
                            headers=headers, timeout=TIMEOUT, verify=verify_ssl)
         res.raise_for_status()
         expected_len = min([100, layer_min['size']])
         cont_len = len(res.content)
-        demisto.info("Docker image check [{}] downloaded layer content of len: {}".format(docker_full_name, cont_len))
+        demisto.info(f"Docker image check [{docker_full_name}] downloaded layer content of len: {cont_len}")
         if cont_len < expected_len:
-            raise ValueError('Content returned is shorter than expected length: {}. Content: {}'.format(expected_len,
-                             res.content))
+            raise ValueError(f'Content returned is shorter than expected length: {expected_len}. Content: {res.content}')
         demisto.results('ok')
     except Exception as ex:
-        return_error("Failed verifying: {}. Err: {}".format(docker_full_name, str(ex)))
+        return_error(f"Failed verifying: {docker_full_name}. Err: {str(ex)}")
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
