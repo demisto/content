@@ -496,7 +496,7 @@ script:
     name: zscaler-get-usergroups
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   dockerimage: demisto/python3:3.10.6.33415
   type: python
 fromversion: 5.0.0
