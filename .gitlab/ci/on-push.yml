@@ -6,6 +6,7 @@
 trigger-private-build:
   tags:
     - gke
+    - us-central1
   needs: []
   stage: unittests-and-validations
   extends:
@@ -52,6 +53,7 @@ run-validations:
 validate-content-conf:
   tags:
     - gke
+    - us-central1
   stage: unittests-and-validations
   needs: []
   extends:
@@ -79,6 +81,7 @@ validate-content-conf:
 create-instances:
   tags:
     - gke
+    - us-central1
   extends:
     - .default-job-settings
   rules:
@@ -149,6 +152,7 @@ create-instances:
 prepare-testing-bucket-mpv2:
   tags:
     - gke
+    - us-central1
   extends:
     - .default-job-settings
   rules:
@@ -211,6 +215,7 @@ prepare-testing-bucket-mpv2:
 .test_content_on_xsoar_server_instances_base:
   tags:
     - gke
+    - us-central1
   extends:
     - .default-job-settings
     - .push-rule
@@ -304,6 +309,7 @@ xsoar_server_master:
 fan-in-nightly:
   tags:
     - gke
+    - us-central1
   stage: fan-in
   rules:
     - if: '$NIGHTLY'
@@ -331,6 +337,7 @@ slack-notify-nightly-build:
 .test_content_on_xsiam_server_instances_base:
   tags:
     - gke
+    - us-central1
     - us-west1
   extends:
     - .default-job-settings

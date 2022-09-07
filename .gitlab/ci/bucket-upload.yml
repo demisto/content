@@ -70,6 +70,7 @@ prepare-testing-bucket-mpv2-upload-flow:
 .install_packs_in_xsoar_server:
   tags:
     - gke
+    - us-central1
   needs: ["create-instances-upload-flow"]
   stage: run-instances
   artifacts:
@@ -133,6 +134,7 @@ install-packs-in-server-master:
 .install-mpv2-packs-on-xsiam-instances:
   tags:
     - gke
+    - us-central1
   needs: ["prepare-testing-bucket-mpv2-upload-flow"]
   stage: run-instances
   artifacts:
@@ -195,6 +197,7 @@ install-packs-in-xsiam-master:
 upload-packs-to-marketplace:
   tags:
     - gke
+    - us-central1
   needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
@@ -270,6 +273,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
+    - us-central1
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-master"]
   stage: upload-to-marketplace
   artifacts:
@@ -328,6 +332,7 @@ upload-packs-to-marketplace-v2:
 force-pack-upload:
   tags:
     - gke
+    - us-central1
   stage: upload-to-marketplace
   needs: ["create-instances-upload-flow"]
   rules:
@@ -356,6 +361,7 @@ force-pack-upload:
 fan-in-bucket-upload:
   tags:
     - gke
+    - us-central1
   stage: fan-in
   extends:
     - .bucket-upload-rule-always
