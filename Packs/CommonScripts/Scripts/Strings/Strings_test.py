@@ -23,3 +23,11 @@ def test_strings_small_buff(mocker):
     mocker.patch.object(demisto, 'get', return_value='./test_data/text_file.txt')
     entry = strings({'chars': 1, 'size': 1024, 'entry': '123'})
     assert entry == 'abcabc'
+
+
+def test_strings_regex(mocker):
+    mocker.patch.object(demisto, 'executeCommand',
+                        return_value=[{'path': './test_data/text_file.txt', 'name': 'text_file.txt', 'Type': ''}])
+    mocker.patch.object(demisto, 'get', return_value='./test_data/text_file.txt')
+    entry = strings({'chars': 1, 'size': 1024, 'entry': '123', 'filter': '.*'})
+    assert entry == 'abcabc'
