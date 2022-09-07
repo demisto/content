@@ -73,8 +73,7 @@ def docker_min_layer(layers):
 
 def main():
     if demisto.args().get('use_system_proxy') == 'no':
-        for key in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-            del os.environ[key]
+        handle_proxy()
     verify_ssl = demisto.args().get('trust_any_certificate') != 'yes'
     docker_full_name = demisto.args()['input']
     registry = DEFAULT_REGISTRY
