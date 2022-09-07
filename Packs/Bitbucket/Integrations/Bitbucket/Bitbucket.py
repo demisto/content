@@ -169,7 +169,17 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def issue_list_request(self, repo:str, params: Dict, issue_id: str) -> Dict:
+    def issue_list_request(self, repo: str, params: Dict, issue_id: str) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/issues/issue_id endpoint to get
+            A list of all the issues or 1 issue a specific id is added to the api call.
+            :param repo: str - The repository the user entered if he did.
+            :param params: Dict - the params to the api call
+            :param issue_id: str - an id to a specific issue to get.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
+            :rtype Dict[str, Any]
+        """
         if repo:
             url_suffix = f'/repositories/{self.workspace}/{repo}/issues/'
         else:
@@ -567,6 +577,9 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+def issue_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 ''' MAIN FUNCTION '''
