@@ -924,6 +924,177 @@ script:
         - contextPath: Bitbucket.Issue.watches
           description: 'The watchers of the issue.'
           type: Number
+    - name: bitbucket-issue-update
+      description: Updates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: title
+          required: true
+          description: The title of the new issue.
+          isArray: false
+        - name: issue_id
+          required: true
+          description: The id of the issue to update.
+          isArray: false
+        - name: state
+          auto: PREDEFINED
+          description: The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'.
+          isArray: false
+          predefined:
+            - new
+            - open
+            - resolved
+            - on hold
+            - invalid
+            - duplicate
+            - wontfix
+            - closed
+          required: false
+        - name: type
+          auto: PREDEFINED
+          description: The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'.
+          isArray: false
+          predefined:
+            - bug
+            - enhancement
+            - proposal
+            - task
+          required: false
+        - name: priority
+          auto: PREDEFINED
+          description: The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'.
+          isArray: false
+          predefined:
+            - trivial
+            - minor
+            - major
+            - critical
+            - blocker
+          required: false
+        - name: content
+          required: false
+          description: The content of the issue to create.
+          isArray: false
+        - name: assignee_id
+          required: false
+          description: The id of the assignee of the issue to create.
+          isArray: false
+        - name: assignee_user_name
+          required: false
+          description: The user name of the assignee of the issue to create.
+          isArray: false
+      outputs:
+        - contextPath: Bitbucket.Issue.type
+          description: 'The action type.'
+          type: String
+        - contextPath: Bitbucket.Issue.id
+          description: 'The id of the issue.'
+          type: Number
+        - contextPath: Bitbucket.Issue.repository.type
+          description: 'he type of the repository.'
+          type: String
+        - contextPath: Bitbucket.Issue.repository.full_name
+          description: 'The full name of the repository.'
+          type: String
+        - contextPath: Bitbucket.Issue.repository.links
+          description: 'Links with information about the repository related to the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.repository.name
+          description: 'The name of the repository.'
+          type: String
+        - contextPath: Bitbucket.Issue.repository.uuid
+          description: 'The unique id of the repository.'
+          type: String
+        - contextPath: Bitbucket.Issue.links
+          description: 'Links with information about the issue'
+          type: String
+        - contextPath: Bitbucket.Issue.title
+          description: 'The title of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.content.type
+          description: 'The type of the content.'
+          type: String
+        - contextPath: Bitbucket.Issue.content.raw
+          description: 'The content of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.content.markup
+          description: 'The type of markup (like markdown).'
+          type: String
+        - contextPath: Bitbucket.Issue.content.html
+          description: 'The content of the issue in html format.'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.display_name
+          description: 'The display name of the reporter of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.links
+          description: 'Links with information about the reporter.'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.type
+          description: 'The type of the reporter.'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.uuid
+          description: 'The unique id of the reporter'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.account_id
+          description: 'The account id of the reporter.'
+          type: String
+        - contextPath: Bitbucket.Issue.reporter.nickname
+          description: 'The nickname of the reporter.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.display_name
+          description: 'The display name of the assignee to the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.links
+          description: 'Links with information about the assignee.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.type
+          description: 'The type of the assignee.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.uuid
+          description: 'The unique od of the assignee.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.account_id
+          description: 'The account id of the assignee.'
+          type: String
+        - contextPath: Bitbucket.Issue.assignee.nickname
+          description: 'The nickname of the assignee.'
+          type: String
+        - contextPath: Bitbucket.Issue.created_on
+          description: 'The creation date of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.edited_on
+          description: 'The edit date of the issue.'
+          type: Unknown
+        - contextPath: Bitbucket.Issue.updated_on
+          description: 'The update date of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.state
+          description: 'The state odf the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.kind
+          description: 'The kind of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.milestone
+          description: 'The milestones in the issue.'
+          type: Unknown
+        - contextPath: Bitbucket.Issue.component
+          description: 'The different components of the issue.'
+          type: Unknown
+        - contextPath: Bitbucket.Issue.priority
+          description: 'The priority of the issue.'
+          type: String
+        - contextPath: Bitbucket.Issue.version
+          description: 'The version of the issue.'
+          type: Unknown
+        - contextPath: Bitbucket.Issue.votes
+          description: 'The votes of approval of the issue.'
+          type: Number
+        - contextPath: Bitbucket.Issue.watches
+          description: 'The watchers of the issue.'
+          type: Number
   isfetch: false
   runonce: false
   script: "-"

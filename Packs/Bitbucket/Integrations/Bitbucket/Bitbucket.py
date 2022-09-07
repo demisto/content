@@ -160,7 +160,7 @@ class Client(BaseClient):
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
-    def issue_create_request(self, repo:str, body: dict) -> Dict:
+    def issue_create_request(self, repo: str, body: dict) -> Dict:
         if repo:
             url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         else:
@@ -189,6 +189,24 @@ class Client(BaseClient):
         if issue_id:
             url_suffix = f'{url_suffix}{issue_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def issue_update_request(self, repo: str, body: dict, issue_id: int) -> Dict:
+        """ Makes a POST request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
+            :param repo: str - The repository the user entered if he did.
+            :param body: Dict - the params to the api call
+            :param issue_id: str - an id to a specific issue to get.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
+            :rtype Dict[str, Any]
+        """
+        if repo:
+            url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues/{issue_id}/'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -580,6 +598,45 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def issue_update_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+        Args:
+            client: A Bitbucket client.
+            args: Demisto args.
+        Returns:
+            A CommandResult object with a dictionary contains the updated issue.
+        """
+    repo = args.get('repo', None)
+    issue_id = arg_to_number(args.get('issue_id', None))
+    title = args.get('title', None)
+    state = args.get('state')
+    issue_type = args.get('type')
+    priority = args.get('priority')
+    content = args.get('content', None)
+    assignee_id = args.get('assignee_id', None)
+    assignee_user_name = args.get('assignee_user_name', None)
+    body = {
+        "title": title
+    }
+    if state:
+        body['state'] = state
+    if issue_type:
+        body['kind'] = issue_type
+    if priority:
+        body['priority'] = priority
+    if content:
+        body["content"] = {
+            "raw": content
+        }
+    if assignee_id:
+        body["assignee"] = {
+            "account_id": assignee_id,
+            "username": assignee_user_name
+        }
+    response = client.issue_update_request(repo, body, issue_id)
+    return CommandResults(readable_output=f'The issue with id "{issue_id}" was updated successfully',
+                          outputs_prefix='Bitbucket.Issue',
+                          outputs=response,
+                          raw_response=response)
 
 
 ''' MAIN FUNCTION '''
@@ -648,6 +705,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-list':
             result = issue_list_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-update':
+            result = issue_update_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
