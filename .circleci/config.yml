@@ -156,8 +156,6 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
-        echo "Checking if pyproject.toml is consistent with poetry.lock"
-        poetry lock --check
         if [ ! -e ".venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 .hooks/bootstrap
@@ -166,6 +164,8 @@ references:
           echo "venv exists (from cache). activating"
           source ./.venv/bin/activate
         fi
+        echo "Checking if pyproject.toml is consistent with poetry.lock"
+        poetry lock --check
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
