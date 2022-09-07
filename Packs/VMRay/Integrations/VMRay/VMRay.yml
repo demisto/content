@@ -6,7 +6,7 @@ configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
-  name: integrationReliability
+  name: reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
