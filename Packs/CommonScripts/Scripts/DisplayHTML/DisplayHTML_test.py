@@ -1,7 +1,6 @@
 import demistomock as demisto
 
 
-
 def test_DisplayHTML(mocker):
     """
     Given:
@@ -9,14 +8,15 @@ def test_DisplayHTML(mocker):
     When:
         - Running the DisplayHTML script.
     Then:
-        - Validating the outputs as expected.
+        - Validating calling to 'demisto.results' once with the right arguments.
     """
-    from
-    args_mock = mocker.patch.object(demisto, 'args', return_value={'system': 'system', 'query': 'query'})  # noqa: F841
-    execute_command_res = [{'Type': 4, 'Contents': 'Error', 'Brand': 'brand'}]
-    execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=execute_command_res)
+    from DisplayHTML import main
+    mocker.patch.object(demisto, 'args', return_value={'html': 'html', 'markAsNote': 'True', "header": "header"})
     results_mock = mocker.patch.object(demisto, 'results')
     main()
-
-    assert execute_mock.call_count == 1
-    assert 'An Error occurred on remote system' in results_mock.call_args[0][0][0]['Contents']
+    results_mock.assert_called_once()
+    results = results_mock.call_args[0][0]
+    assert results == {'Contents': '<h1>header</h1></br>html',
+                       'ContentsFormat': 'html',
+                       'Note': True,
+                       'Type': 1}
