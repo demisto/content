@@ -2,28 +2,9 @@ commonfields:
   id: AlgosecCreateTicket
   version: -1
 name: AlgosecCreateTicket
-script: >2
-
-  resp = demisto.executeCommand("algosec-create-ticket", demisto.args())
-
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents.createTicketResponse")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          for item in data:
-              for row in item:
-                  if '#text' in item[row]:
-                      item[row] = item[row]['#text']
-
-          data = flattenTable(data)
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
+script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - Algosec
 comment: Creates a new FireFlow change request
@@ -67,6 +48,6 @@ dependson:
   must:
   - algosec-create-ticket
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
