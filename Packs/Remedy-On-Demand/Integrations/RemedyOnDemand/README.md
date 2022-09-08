@@ -34,8 +34,8 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first-name | costumer's first name (make sure costumer already exists). | Required | 
-| last-name | costumer's first name (make sure costumer already exists). | Required | 
+| first-name | customer's first name (make sure customer already exists). | Required | 
+| last-name | customer's first name (make sure customer already exists). | Required | 
 | description | Incident description. | Required | 
 | status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required | 
 | source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Required | 
