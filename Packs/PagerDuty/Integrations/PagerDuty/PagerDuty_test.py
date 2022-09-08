@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from CommonServerPython import *
-
+import pytest
 
 def load_mock_response(file_name):
     """
@@ -402,3 +402,28 @@ def test_get_users_notification_command(mocker, requests_mock):
     from PagerDuty import get_users_notification_command
     res = get_users_notification_command(user_id)
     assert '### User notification rules' in res.get('HumanReadable')
+
+
+@pytest.mark.parametrize('severity, expected_result', [('high', 3), ('Low', 1), ('other_severity', 0)])
+def test_translate_severity(mocker, severity, expected_result):
+    """
+    Given:
+        - a severity.
+    When:
+        - Running translate_severity function.
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+    from PagerDuty import translate_severity
+    res = translate_severity(severity)
+    assert res == expected_result
