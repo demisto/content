@@ -2,7 +2,7 @@ import json
 
 import demistomock as demisto
 from CommonServerPython import Common
-from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
+from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones, \
     get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash, \
     add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details, create_instaquery, list_instaquery, \
@@ -173,60 +173,60 @@ EXPECTED_LIST = {'Category': 'Admin Tool',
                  }
 
 POLICY_OUTPUT = {'memoryviolation_actions': {'memory_violations': [],
-                                              'memory_exclusion_list': [],
-                                              'memory_violations_ext': []},
+                                             'memory_exclusion_list': [],
+                                             'memory_violations_ext': []},
                  'logpolicy': {'log_upload': None,
-                                'maxlogsize': '100',
-                                'retentiondays': '30'
-                                },
+                               'maxlogsize': '100',
+                               'retentiondays': '30'
+                               },
                  'file_exclusions': [],
                  'checksum': '987978644c220a71f6fa67685b06571d',
                  'filetype_actions': {'suspicious_files': [{'file_type': 'executable', 'actions': '0'}],
-                                       'threat_files': [{'file_type': 'executable', 'actions': '0'}]},
+                                      'threat_files': [{'file_type': 'executable', 'actions': '0'}]},
                  'policy_name': 'fff',
                  'policy_utctimestamp': '/Date(1586773964507+0000)/',
                  'policy': [{'name': 'auto_blocking', 'value': '0'},
-                             {'name': 'auto_uploading', 'value': '0'},
-                             {'name': 'threat_report_limit', 'value': '500'},
-                             {'name': 'low_confidence_threshold',
-                              'value': '-600'},
-                             {'name': 'full_disc_scan', 'value': '0'},
-                             {'name': 'watch_for_new_files', 'value': '0'},
-                             {'name': 'memory_exploit_detection', 'value': '0'},
-                             {'name': 'trust_files_in_scan_exception_list', 'value': '0'},
-                             {'name': 'logpolicy', 'value': '0'},
-                             {'name': 'script_control', 'value': '0'},
-                             {'name': 'prevent_service_shutdown', 'value': '0'},
-                             {'name': 'scan_max_archive_size', 'value': '0'},
-                             {'name': 'sample_copy_path', 'value': None},
-                             {'name': 'kill_running_threats', 'value': '0'},
-                             {'name': 'show_notifications', 'value': '0'},
-                             {'name': 'optics_set_disk_usage_maximum_fixed',
-                              'value': '1000'},
-                             {'name': 'optics_malware_auto_upload', 'value': '0'},
-                             {'name': 'optics_memory_defense_auto_upload', 'value': '0'},
-                             {'name': 'optics_script_control_auto_upload', 'value': '0'},
-                             {'name': 'optics_application_control_auto_upload', 'value': '0'},
-                             {'name': 'optics_sensors_dns_visibility', 'value': '0'},
-                             {'name': 'optics_sensors_private_network_address_visibility', 'value': '0'},
-                             {'name': 'optics_sensors_windows_event_log_visibility', 'value': '0'},
-                             {'name': 'optics_sensors_advanced_powershell_visibility', 'value': '0'},
-                             {'name': 'optics_sensors_advanced_wmi_visibility', 'value': '0'},
-                             {'name': 'optics_sensors_advanced_executable_parsing', 'value': '0'},
-                             {'name': 'optics_sensors_enhanced_process_hooking_visibility', 'value': '0'},
-                             {'name': 'device_control', 'value': '0'},
-                             {'name': 'optics', 'value': '0'},
-                             {'name': 'auto_delete', 'value': '0'},
-                             {'name': 'days_until_deleted', 'value': '14'},
-                             {'name': 'pdf_auto_uploading', 'value': '0'},
-                             {'name': 'ole_auto_uploading', 'value': '0'},
-                             {'name': 'docx_auto_uploading', 'value': '0'},
-                             {'name': 'python_auto_uploading', 'value': '0'},
-                             {'name': 'autoit_auto_uploading', 'value': '0'},
-                             {'name': 'powershell_auto_uploading', 'value': '0'},
-                             {'name': 'data_privacy', 'value': '0'},
-                             {'name': 'custom_thumbprint', 'value': None},
-                             {'name': 'scan_exception_list', 'value': []}],
+                            {'name': 'auto_uploading', 'value': '0'},
+                            {'name': 'threat_report_limit', 'value': '500'},
+                            {'name': 'low_confidence_threshold',
+                             'value': '-600'},
+                            {'name': 'full_disc_scan', 'value': '0'},
+                            {'name': 'watch_for_new_files', 'value': '0'},
+                            {'name': 'memory_exploit_detection', 'value': '0'},
+                            {'name': 'trust_files_in_scan_exception_list', 'value': '0'},
+                            {'name': 'logpolicy', 'value': '0'},
+                            {'name': 'script_control', 'value': '0'},
+                            {'name': 'prevent_service_shutdown', 'value': '0'},
+                            {'name': 'scan_max_archive_size', 'value': '0'},
+                            {'name': 'sample_copy_path', 'value': None},
+                            {'name': 'kill_running_threats', 'value': '0'},
+                            {'name': 'show_notifications', 'value': '0'},
+                            {'name': 'optics_set_disk_usage_maximum_fixed',
+                             'value': '1000'},
+                            {'name': 'optics_malware_auto_upload', 'value': '0'},
+                            {'name': 'optics_memory_defense_auto_upload', 'value': '0'},
+                            {'name': 'optics_script_control_auto_upload', 'value': '0'},
+                            {'name': 'optics_application_control_auto_upload', 'value': '0'},
+                            {'name': 'optics_sensors_dns_visibility', 'value': '0'},
+                            {'name': 'optics_sensors_private_network_address_visibility', 'value': '0'},
+                            {'name': 'optics_sensors_windows_event_log_visibility', 'value': '0'},
+                            {'name': 'optics_sensors_advanced_powershell_visibility', 'value': '0'},
+                            {'name': 'optics_sensors_advanced_wmi_visibility', 'value': '0'},
+                            {'name': 'optics_sensors_advanced_executable_parsing', 'value': '0'},
+                            {'name': 'optics_sensors_enhanced_process_hooking_visibility', 'value': '0'},
+                            {'name': 'device_control', 'value': '0'},
+                            {'name': 'optics', 'value': '0'},
+                            {'name': 'auto_delete', 'value': '0'},
+                            {'name': 'days_until_deleted', 'value': '14'},
+                            {'name': 'pdf_auto_uploading', 'value': '0'},
+                            {'name': 'ole_auto_uploading', 'value': '0'},
+                            {'name': 'docx_auto_uploading', 'value': '0'},
+                            {'name': 'python_auto_uploading', 'value': '0'},
+                            {'name': 'autoit_auto_uploading', 'value': '0'},
+                            {'name': 'powershell_auto_uploading', 'value': '0'},
+                            {'name': 'data_privacy', 'value': '0'},
+                            {'name': 'custom_thumbprint', 'value': None},
+                            {'name': 'scan_exception_list', 'value': []}],
                  'policy_id': '980fad21-b119-4cc4-ac97-2b2c035b4666'
                  }
 
@@ -252,19 +252,22 @@ INSTAQUERY_RESULT_OUTPUT = {
     'status': 'done',
     'id': 'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
     'result': [
-        {'@timestamp': 1653264158.3315804,
+        {
+            '@timestamp': 1653264158.3315804,
             'HostName': 'windows-server-',
             'DeviceId': '65DB26864E364409B50DDC23291A3511',
             '@version': '1',
             'CorrelationId': 'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
-            'Result': '{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", '
-                       '"Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": '
-                       '"c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": '
-                       '"2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": '
-                       '"256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", "Owner": "NT AUTHORITY\\\\SYSTEM", '
-                       '"SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": '
-                       '"P3p6fdq3FlMsld6Rz95EOA=="}}'
-         }
+            'Result': '{"FirstObservedTime": "1970-01-01T00:00:00.000Z", '
+                      '"LastObservedTime": "1970-01-01T00:00:00.000Z", '
+                      '"Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": '
+                      '"c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": '
+                      '"2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": '
+                      '"256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", '
+                      '"Owner": "NT AUTHORITY\\\\SYSTEM", '
+                      '"SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": '
+                      '"P3p6fdq3FlMsld6Rz95EOA=="}}'
+        }
     ]
 }
 
@@ -316,7 +319,7 @@ def test_create_dbot_score_entry():
     """
 
     threat = THREAT_OUTPUT
-    dbot_score = translate_score(threat['cylance_score'], FILE_THRESHOLD)
+    dbot_score = translate_score(threat['cylance_score'], 2)
     dbot_score_entry = create_dbot_score_entry(THREAT_OUTPUT, dbot_score)
     assert isinstance(dbot_score_entry, Common.DBotScore)
 
@@ -337,8 +340,11 @@ def test_get_device(mocker):
     get_device()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_DEVICE.items()) <= list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === '
-                                                                       'obj.ID)').items())
+    assert sorted(list(EXPECTED_DEVICE.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)').items()
+        )
+    )
 
 
 def test_get_device_by_hostname(mocker):
@@ -357,8 +363,8 @@ def test_get_device_by_hostname(mocker):
     get_device_by_hostname()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_HOSTNAME.items()) <= list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === '
-                                                                         'obj.ID)').items())
+    assert sorted(list(EXPECTED_HOSTNAME.items())) == sorted(
+        list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === ' 'obj.ID)').items()))
 
 
 def test_update_device(mocker):
@@ -425,8 +431,11 @@ def test_get_policies(mocker):
     get_policies()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_POLICIES.items()) <= list(contents.get('EntryContext').get(
-        'CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items())
+    assert sorted(list(EXPECTED_POLICIES.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items()
+        )
+    )
 
 
 def test_create_zone(mocker):
@@ -468,8 +477,8 @@ def test_get_zones(mocker):
     get_zones()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_ZONES.items()) <= \
-        list(contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items())
+    assert sorted(list(EXPECTED_ZONES.items())) == \
+        sorted(list(contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()))
 
 
 def test_get_zone(mocker):
@@ -489,7 +498,11 @@ def test_get_zone(mocker):
     get_zone()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_ZONES.items()) <= list(contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items())
+    assert sorted(list(EXPECTED_ZONES.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items()
+        )
+    )
 
 
 def test_update_zone(mocker):
@@ -578,7 +591,9 @@ def test_get_threat_devices(mocker):
     get_threat_devices()
 
     contents = demisto_results.call_args[0][0]
-    assert list(EXPECTED_THREAT_DEVICES.items()) <= list(contents.get('EntryContext').get('File').items())
+    assert sorted(list(EXPECTED_THREAT_DEVICES.items())) == sorted(
+        list(contents.get('EntryContext').get('File').items())
+    )
 
 
 def test_get_list(mocker):
@@ -601,7 +616,7 @@ def test_get_list(mocker):
     get_list()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_LIST <= contents.get('EntryContext').get('File')[0]
+    assert EXPECTED_LIST == contents.get('EntryContext').get('File')[0]
 
 
 def test_get_list_entry_by_hash(mocker):
@@ -723,8 +738,8 @@ def test_get_policy_details(mocker):
     get_policy_details()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_POLICY.get("ID") == \
-        contents.get('EntryContext').get('Cylance.Policy(val.policy_id && val.policy_id == obj.policy_id)').get("policy_id")
+    assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get(
+        'Cylance.Policy(val.policy_id && val.policy_id == obj.policy_id)').get("policy_id")
 
 
 def test_create_instaquery(mocker):
@@ -785,9 +800,7 @@ def test_list_instaquery(mocker):
     Then
         - checks if the number of output items is as expected
     """
-    args = {'page_number': '1',
-            'page_size': '2'
-            }
+    args = {'page_number': '1', 'page_size': '2'}
     mocker.patch.object(Cylance_Protect_v2, "list_instaquery_request", return_value=LIST_INSTAQUERY_OUTPUT)
     mocker.patch.object(demisto, 'args', return_value=args)
     demisto_results = mocker.patch.object(demisto, 'results')
