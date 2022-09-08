@@ -45,6 +45,14 @@ class Client(BaseClient):
     def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
         return self._http_request(method='GET', full_url=full_url, params=params)
 
+    def check_repo(self, repo: str) -> str:
+        if repo:
+            return f'/repositories/{self.workspace}/{repo}'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            return f'/repositories/{self.workspace}/{self.repository}'
+
     def get_project_list_request(self, params: Dict, project_key: str = None) -> Dict:
         if not project_key:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
@@ -55,32 +63,15 @@ class Client(BaseClient):
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     def get_open_branch_list_request(self, repo: str, params: Dict) -> Dict:
-        if repo:
-            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{repo}/refs/branches'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            full_url = f'{self.serverUrl}/repositories/{self.workspace}/{self.repository}/refs/branches'
-
-        return self._http_request(method='GET', full_url=full_url, params=params)
+        url_suffix = self.check_repo(repo) + '/refs/branches'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def get_branch_request(self, branch_name: str, repo: str = None) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches/{branch_name}'
-
+        url_suffix = self.check_repo(repo) + f'/refs/branches/{branch_name}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def branch_create_request(self, name: str, target_branch: str, repo: str = None) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches'
+        url_suffix = self.check_repo(repo) + '/refs/branches'
         body = {
             "target": {
                 "hash": target_branch
@@ -90,13 +81,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def branch_delete_request(self, branch_name: str, repo: str = None) -> str:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/refs/branches/{branch_name}'
-
+        url_suffix = self.check_repo(repo) + f'/refs/branches/{branch_name}'
         try:
             self._http_request(method='DELETE', url_suffix=url_suffix)
         except DemistoException as e:
@@ -107,12 +92,7 @@ class Client(BaseClient):
                 return e.message
 
     def commit_create_request(self, body: Dict, repo: str = None):
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/src'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src'
+        url_suffix = self.check_repo(repo) + '/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
                                   data=body,
@@ -126,12 +106,7 @@ class Client(BaseClient):
 
     def commit_list_request(self, repo: str, params: Dict, excluded_list: list = None,
                             included_list: list = None) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/commits'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/commits'
+        url_suffix = self.check_repo(repo) + '/commits'
         if excluded_list:
             url_suffix = self.add_branches_url('exclude', excluded_list, url_suffix)
         if included_list:
@@ -142,31 +117,18 @@ class Client(BaseClient):
         return response
 
     def file_delete_request(self, body: Dict, repo: str = None) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/src'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src'
+        url_suffix = self.check_repo(repo) + '/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
                                   data=body,
                                   resp_type='response')
 
     def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
-        else:
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/src/{commit_hash}/{file_path}'
+        url_suffix = self.check_repo(repo) + f'/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
     def issue_create_request(self, repo: str, body: dict) -> Dict:
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues'
+        url_suffix = self.check_repo(repo) + '/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def issue_list_request(self, repo: str, params: Dict, issue_id: str) -> Dict:
@@ -180,12 +142,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
             :rtype Dict[str, Any]
         """
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/issues/'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues/'
+        url_suffix = self.check_repo(repo) + '/issues/'
         if issue_id:
             url_suffix = f'{url_suffix}{issue_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -200,12 +157,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
             :rtype Dict[str, Any]
         """
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/issues/{issue_id}/'
+        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
@@ -217,12 +169,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/pullrequests endpoint
             :rtype Dict[str, Any]
         """
-        if repo:
-            url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/{self.workspace}/{self.repository}/pullrequests'
+        url_suffix = self.check_repo(repo) + f'/pullrequests'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def pull_request_update_request(self, repo: str, body: Dict, pr_id: str) -> Dict:
@@ -237,14 +184,6 @@ class Client(BaseClient):
         """
         url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
-
-    def check_repo(self, repo: str) -> str:
-        if repo:
-            return f'/repositories/{self.workspace}/{repo}'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            return f'/repositories/{self.workspace}/{self.repository}'
 
 
 ''' HELPER FUNCTIONS '''
@@ -714,30 +653,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
     close_source_branch = args.get('close_source_branch', None)
-    body = {
-        "title": title,
-        "source": {
-            "branch": {
-                "name": source_branch
-            }
-        }
-    }
-    if destination_branch:
-        body["destination"] = {
-            "branch": {
-                "name": destination_branch
-            }
-        }
-    if reviewer_id:
-        body["reviewers"] = [
-            {
-                "account_id": reviewer_id
-            }
-        ]
-    if description:
-        body["description"] = description
-    if close_source_branch:
-        body["close_source_branch"] = argToBoolean(close_source_branch)
+    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
     response = client.pull_request_create_request(repo, body)
     return CommandResults(readable_output=f'The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
