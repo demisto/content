@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
+from Tests.scripts.collect_tests.version_range import VersionRange
+
 
 class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
@@ -21,8 +23,10 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'pack support level is not XSOAR')
+    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
+        self.support_level = support_level
+        self.content_version_range = content_version_range
+        super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 
 class DeprecatedPackException(UnsupportedPackException):
@@ -74,7 +78,7 @@ class NothingToCollectException(Exception):
         return self.message
 
 
-class NonXSIAMContentException(NothingToCollectException):
+class IncompatibleMarketplaceException(NothingToCollectException):
     def __init__(self, content_path: Path):
         super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
 
