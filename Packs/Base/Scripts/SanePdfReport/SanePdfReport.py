@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-import traceback
 
+import shutil
+import traceback
 import os
 import shlex
 import base64
@@ -14,8 +15,6 @@ import tempfile
 from http.server import HTTPServer
 
 WORKING_DIR = Path("/app")
-INPUT_FILE_PATH = '/tmp/sample{id}.json'
-OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
 MD_HTTP_PORT = 10888
@@ -105,8 +104,8 @@ def startServer():
                 self.send_response(404)
                 self.flush_headers()
 
-    # Make sure the server is created at current directory
-    os.chdir('.')
+    # Make sure the server is created at tmp dir
+    os.chdir(tempfile.gettempdir())
     # Create server object listening the port 10888
     global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
@@ -155,42 +154,44 @@ def main():
             if isTableTextMaxLengthSupported:
                 extra_cmd += f' {tableTextMaxLength}'
 
-        input_file = tempfile.NamedTemporaryFile(delete=False)
-        output_file = tempfile.NamedTemporaryFile(delete=False)
+        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:
+            input_file = tmpdir + '/input.json'
+            output_file = tmpdir + '/output.pdf'
+            dist_dir = tmpdir + '/dist'
 
-        input_file.write(base64.b64decode(sane_json_b64))
-        input_file.close()
+            shutil.copytree(WORKING_DIR / 'dist', dist_dir)
 
-        cmd = ['./reportsServer', input_file.name, output_file.name, 'dist'] + shlex.split(
-            extra_cmd)
+            with open(input_file, 'wb') as f:
+                f.write(base64.b64decode(sane_json_b64))
 
-        # Logging things for debugging
-        params = f'[orientation="{orientation}",' \
-            f' resourceTimeout="{resourceTimeout}",' \
-            f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
-            f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-            f' disableHeaders="{disableHeaders}"'
+            cmd = ['./reportsServer', input_file, output_file, dist_dir] + shlex.split(
+                extra_cmd)
 
-        if isMDImagesSupported:
-            params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
+            # Logging things for debugging
+            params = f'[orientation="{orientation}",' \
+                f' resourceTimeout="{resourceTimeout}",' \
+                f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
+                f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
+                f' disableHeaders="{disableHeaders}"'
 
-        LOG(f"Sane-pdf parameters: {params}]")
-        cmd_string = " ".join(cmd)
-        LOG(f"Sane-pdf cmd: {cmd_string}")
-        LOG.print_log()
+            if isMDImagesSupported:
+                params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
 
-        # Execute the report creation
-        out = subprocess.check_output(cmd, cwd=WORKING_DIR,
-                                      stderr=subprocess.STDOUT)
-        LOG(f"Sane-pdf output: {str(out)}")
+            LOG(f"Sane-pdf parameters: {params}]")
+            cmd_string = " ".join(cmd)
+            LOG(f"Sane-pdf cmd: {cmd_string}")
+            LOG.print_log()
 
-        with open(output_file.name, 'rb') as f:
-            encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
+            # Execute the report creation
+            out = subprocess.check_output(cmd, cwd=WORKING_DIR,
+                                          stderr=subprocess.STDOUT)
+            LOG(f"Sane-pdf output: {str(out)}")
 
-        os.remove(input_file.name)
-        os.remove(output_file.name)
-        return_outputs(readable_output='Successfully generated pdf',
-                       outputs={}, raw_response={'data': encoded})
+            with open(output_file, 'rb') as f:
+                encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
+
+            return_outputs(readable_output='Successfully generated pdf',
+                           outputs={}, raw_response={'data': encoded})
 
     except subprocess.CalledProcessError as e:
         tb = traceback.format_exc()
