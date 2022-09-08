@@ -1,6 +1,5 @@
 from CommonServerPython import *
 import json
-import io
 import demistomock as demisto
 
 """ API RAW RESULTS """
