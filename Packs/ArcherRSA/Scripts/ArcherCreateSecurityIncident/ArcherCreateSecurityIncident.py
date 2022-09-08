@@ -20,17 +20,6 @@ defined fields might need to be changed as they belong to application 75.
 """
 
 """
-If you want to add some constant args you can modify fieldsToValues
-and add them inside it as key:value pairs
-"""
-
-createRecordArgs = {
-    'applicationId': 75,
-    'fieldsToValues': {
-    }
-}
-
-"""
 Demisto script arguments cannot have spaces or special char such '/' in their name.
 Therefore, we are transforming some values which are have such structure in Archer
 from their script argument structure to their Archer structure.
@@ -51,6 +40,14 @@ Adding the argument fields to the fieldsToValues dictionary.
 If the key is in keysToChange we would add the Archer form, else we will add it as it is
 """
 
-createRecordArgs['fieldsToValues'].update({(keysToChange[k] if k in keysToChange else k): v for k, v in demisto.args().items()})
+
+"""
+If you want to add some constant args you can modify fieldsToValues
+and add them inside it as key:value pairs
+"""
+createRecordArgs: Dict[Any, Any] = {
+    'applicationId': 75,
+    'fieldsToValues': ({(keysToChange[k] if k in keysToChange else k): v for k, v in demisto.args().items()})
+}
 createRecordResult = demisto.executeCommand("archer-create-record", createRecordArgs)
 demisto.results(createRecordResult)

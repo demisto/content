@@ -29,12 +29,12 @@ createRecordArgs = {
     }
 }
 
-if (args['contentId']):
-    createRecordArgs['contentId'] = args['contentId']
-elif (args['incidentId']):
-    createRecordArgs['incidentId'] = args['incidentId']
+if (demisto.args()['contentId']):
+    createRecordArgs['contentId'] = demisto.args()['contentId']
+elif (demisto.args()['incidentId']):
+    createRecordArgs['incidentId'] = demisto.args()['incidentId']
 else:
-    raise("Please enter either contentId or incidentId")
+    return_error("Please enter either contentId or incidentId")
 
 """
 Demisto script arguments cannot have spaces or special char such '/' in their name.
@@ -53,10 +53,16 @@ keysToChange = {
 }
 
 """
+If you want to add some constant args you can modify fieldsToValues
+and add them inside it as key:value pairs
+"""
+createRecordArgs: Dict[Any, Any] = {
+    'applicationId': 75,
+    'fieldsToValues': ({(keysToChange[k] if k in keysToChange else k): v for k, v in demisto.args().items()})
+}
+"""
 Adding the argument fields to the fieldsToValues dictionary.
 If the key is in keysToChange we would add the Archer form, else we will add it as it is
 """
-
-createRecordArgs['fieldsToValues'].update({(keysToChange[k] if k in keysToChange else k): v for k, v in demisto.args().items()})
 createRecordResult = demisto.executeCommand("archer-update-record", createRecordArgs)
 demisto.results(createRecordResult)
