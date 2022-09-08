@@ -208,7 +208,7 @@ def is_probe_connected_command(is_remediation_commmand=False):
     if elements:
         for value in elements.values():
             machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
-                                        default_return_value='')
+                                         default_return_value='')
             if machine_name.upper() == machine.upper():
                 is_connected = True
                 break
@@ -660,7 +660,7 @@ def malop_processes_command():
 
             if machine_name_list:
                 machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], default_return_value=[],
-                                            return_type=list)
+                                             return_type=list)
                 wanted_machine = False
                 for machine in machine_list:
                     current_machine_name = machine.get('name', '').lower()
@@ -871,6 +871,7 @@ def kill_process_command():
     else:
         demisto.results('No processes were found for entered parameters')
 
+
 def kill_process(malop_guid, machine_guid, process_guid):
     json_body = {
         'malopId': malop_guid,
@@ -981,8 +982,11 @@ def query_file_command():
         for fname, fstat in files.items():
             raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
                                                 default_return_value={}, return_type=dict)
-            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(list(raw_machine_details.keys()) if raw_machine_details else [], [0]),
-                                            default_return_value={}, return_type=dict)
+            machine_details = dict_safe_get(
+                raw_machine_details,
+                dict_safe_get(list(raw_machine_details.keys()) if raw_machine_details else [], [0]),
+                default_return_value={}, return_type=dict
+            )
             simple_values = dict_safe_get(fstat, ['simpleValues'], default_return_value={}, return_type=dict)
             file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
             md5 = dict_safe_get(simple_values, ['md5String', 'values', 0])
