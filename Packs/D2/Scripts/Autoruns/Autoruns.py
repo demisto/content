@@ -18,15 +18,16 @@ else:
             hashCol = -1
         mdTable = headers + '\n'
         mdTable += '|'.join('---' * len(headers.split('|'))) + '\n'
-        for l in lines[6:]:
+        for line in lines[6:]:
             if hashCol > -1:
-                cells = l.split('\t')
+                cells = line.split('\t')
                 if hashCol < len(cells) and cells[hashCol].strip():
                     hashes.append(cells[hashCol])
-            mdTable += l.replace('\t', '|') + '\n'
+            mdTable += line.replace('\t', '|') + '\n'
         if hashes:
             appendContext('md5s', ', '.join(hashes), dedup=True)
         demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['markdown'], 'Contents': mdTable})
     except Exception as ex:
+        contents = f"Error occurred while parsing output from D2Autoruns:\n{str(ex)}\n\nAutoruns output:\n{respAR[0]['Contents']}"
         demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-                        'Contents': "Error occurred while parsing output from D2Autoruns:\n" + str(ex) + '\n\nAutoruns output:\n' + respAR[0]['Contents']})
+                        'Contents': contents})

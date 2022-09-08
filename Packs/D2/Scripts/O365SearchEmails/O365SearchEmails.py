@@ -9,7 +9,7 @@ dArgs['using'] = dArgs['system']
 REGEX_RESULTS = r"Search results\: \{([^}]*)\}"
 
 delArg = demisto.get(dArgs, 'delete')
-if type(delArg) in [str, unicode] and delArg.lower() == 'true':
+if type(delArg) in [str] and delArg.lower() == 'true':
     demisto.log('[*] Script set to also delete found emails.')
     resCmdName = demisto.executeCommand("D2O365SearchAndDelete", dArgs)
 else:
@@ -26,6 +26,7 @@ try:
                 searchResults = match.groups()[0]
                 res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": searchResults})
 except Exception as ex:
+    contents = f"Error occurred while parsing output from command. Exception info:\n{str(ex)}\nInvalid output:\n{str(resCmdName)}"
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+                "Contents": contents})
 demisto.results(res)
