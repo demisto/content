@@ -49,7 +49,7 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
-    PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+    PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
 
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
@@ -272,35 +272,53 @@ class TestCollector(ABC):
                 # todo prevent this case, see CIAC-4006
                 continue
 
+            # collect the pack containing the test playbook
+            pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
+            result.append(self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+                reason_description=f'test {test_id} is saved under pack {pack_id}',
+                content_item_range=test_object.version_range,
+                allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
+            ))
+
+            # collect integrations used in the test
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
-                    result.append(self._collect_test_dependency(dependency=integration,
-                                                                test_id=test_id,
-                                                                pack_id=integration_object.pack_id,
-                                                                ))
+                    result.append(self._collect_test_dependency(
+                        dependency_name=integration,
+                        test_id=test_id,
+                        pack_id=integration_object.pack_id,
+                        dependency_type='integration',
+                    ))
                 else:
                     logger.warning(f'could not find integration {integration} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
 
+            # collect scripts used in the test
             for script in test_object.scripts:
                 if script_object := self.id_set.id_to_script.get(script):
-                    result.append(self._collect_test_dependency(dependency=script,
-                                                                test_id=test_id,
-                                                                pack_id=script_object.pack_id,
-                                                                ))
+                    result.append(self._collect_test_dependency(
+                        dependency_name=script,
+                        test_id=test_id,
+                        pack_id=script_object.pack_id,
+                        dependency_type='script',
+                    ))
                 else:
                     logger.warning(f'Could not find script {script} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
+    def _collect_test_dependency(
+            self, dependency_name: str, test_id: str, pack_id: str, dependency_type: str
+    ) -> CollectionResult:
         return CollectionResult(
             test=None,
             pack=pack_id,
             reason=CollectionReason.PACK_TEST_DEPENDS_ON,
             version_range=None,
-            reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+            reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
         )
