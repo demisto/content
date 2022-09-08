@@ -1,6 +1,6 @@
 {
-    "name": "ArcSight XML",
-    "description": "Create incidents and updates cases of ArcSight ESM SIEM through XML files. By Micro Focus (Formerly HPE Software).",
+    "name": "ArcSight XML (Deprecated)",
+    "description": "Deprecated. Use ArcSight ESM v2 instead.",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
