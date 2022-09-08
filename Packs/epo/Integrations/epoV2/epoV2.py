@@ -297,7 +297,7 @@ class Client(BaseClient):
                                       url_suffix='system.wakeupAgent',
                                       params=params,
                                       resp_type='text',
-                                      timeout=60)
+                                      timeout=self.timeout)
 
         # response = response.split('"')[1] if response.startswith('"') else response
         # response = response.replace(r'\n', '\n')
@@ -321,7 +321,7 @@ class Client(BaseClient):
                                       url_suffix='system.applyTag',
                                       params=params,
                                       resp_type='text',
-                                      timeout=60)
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def clear_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
@@ -342,7 +342,7 @@ class Client(BaseClient):
                                       url_suffix='system.clearTag',
                                       params=params,
                                       resp_type='text',
-                                      timeout=60)
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def list_tag(self, search_text: str = None) -> Tuple[dict, dict]:
@@ -361,7 +361,7 @@ class Client(BaseClient):
                                       url_suffix='system.findTag',
                                       params=params,
                                       resp_type='text',
-                                      timeout=60)
+                                      timeout=self.timeout)
         return self._parse_response(response)
 
     def get_table(self, table_name: str = None) -> Tuple[dict, dict]:
