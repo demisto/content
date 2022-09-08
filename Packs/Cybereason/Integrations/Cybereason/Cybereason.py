@@ -783,7 +783,7 @@ def prevent_file_command():
     file_hash = demisto.getArg('md5') if demisto.getArg('md5') else ''
     response = prevent_file(file_hash)
     outcome = response.get('outcome') if response else ''
-    if outcome == 'success':
+    if outcome.lower() == 'success':
         ec = {
             'Process(val.MD5 && val.MD5 === obj.MD5)': {
                 'MD5': file_hash,
