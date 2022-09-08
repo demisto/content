@@ -193,6 +193,6 @@ def test_use_head_variable(requests_mock, params):
     use_head = params['useHead']
     requests_mock.get('http://example.test.com')
     requests_mock.head('http://example.test.com')
-    response = get_response(url='http://example.test.com', use_head=use_head, verify_ssl=False)
-    assert requests_mock.request_history[0].method == 'HEAD' if use_head == 'true' else requests_mock.request_history[0].method == 'GET'
-
+    get_response(url='http://example.test.com', use_head=use_head, verify_ssl=False)
+    assert (requests_mock.request_history[0].method == 'HEAD' if use_head == 'true'
+            else requests_mock.request_history[0].method == 'GET')
