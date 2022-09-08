@@ -24,4 +24,3 @@ def test_util_any_results_str_empty_lst(mocker):
 def test_util_any_results_int(mocker):
     mocker.patch.object(demisto, 'get', return_value=1)
     assert util_any_results({}) == ['no']
-
