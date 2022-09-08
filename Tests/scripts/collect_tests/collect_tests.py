@@ -206,10 +206,10 @@ class TestCollector(ABC):
         return CollectionResult.union(tuple(
             CollectionResult(
                 test=test,
-                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                pack=SANITY_TEST_TO_PACK.get(test),  # May be None
                 reason=CollectionReason.SANITY_TESTS,
                 version_range=None,
-                reason_description=f'by marketplace version {self.marketplace}',
+                reason_description=f'for marketplace {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True
@@ -229,8 +229,11 @@ class TestCollector(ABC):
     def _sanity_test_names(self) -> tuple[str, ...]:
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
+                logger.info('XSIAM sanity tests are taken from conf.json/test_marketplacev2')
                 return tuple(self.conf['test_marketplacev2'])
             case MarketplaceVersions.XSOAR:
+                logger.info('XSOAR sanity tests are taken from '
+                            'Tests/collect_tests/constants.py/XSOAR_SANITY_TEST_NAMES')
                 return XSOAR_SANITY_TEST_NAMES
             case _:
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
@@ -250,9 +253,9 @@ class TestCollector(ABC):
 
         if not result:
             if self.trigger_sanity_tests:
-                result = self.sanity_tests
                 logger.warning('Nothing was collected, but sanity-test-triggering files were changed, '
                                'returning sanity tests')
+                result = self.sanity_tests
             else:
                 logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
                 return None
