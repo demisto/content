@@ -7,13 +7,13 @@ MAILBOXES_CTXKEY = "Mailboxes"
 def main() -> None:
     res = []
     resp = demisto.executeCommand("mimecast-query", demisto.args())
-    users = set()
 
     if isError(resp[0]):
         demisto.results(resp)
     else:
         data = demisto.get(resp[0], "Contents.data")
         if data:
+            users = set()
             items = demisto.get(data[0], 'items')
             if isinstance(items, list):
                 for mail in items:
