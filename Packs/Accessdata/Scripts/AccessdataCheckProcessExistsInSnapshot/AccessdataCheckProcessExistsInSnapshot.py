@@ -13,28 +13,35 @@ proc = {
     'Exists': "No"
 }
 
-error = None
-try:
-    res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
-    data = demisto.get(res[0], 'Contents')
-    converted = json.loads(xml2json(data.encode("utf-8")))
-except Exception as ex:
-    error = str(ex)
 
-if (converted is not None) and ('root' in converted) and ('Process' in converted['root']):
-    process_list = [process['Name'] for process in converted['root']['Process']]
+def main():
+    error = None
+    try:
+        res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
+        data = demisto.get(res[0], 'Contents')
+        converted = json.loads(xml2json(data.encode("utf-8")))
+    except Exception as ex:
+        error = str(ex)
+        converted = None
 
-    if process_name in process_list:
-        proc['Exists'] = "Yes"
+    if (converted is not None) and ('root' in converted) and ('Process' in converted['root']):
+        process_list = [process['Name'] for process in converted['root']['Process']]
 
-humanReadable = 'Process "' + proc['Name'] + '" exists: ' + proc['Exists']
-if error is not None:
-    humanReadable = humanReadable + " Error: {}".format(error)
+        if process_name in process_list:
+            proc['Exists'] = "Yes"
 
-demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['json'],
-    'Contents': proc,
-    'HumanReadable': humanReadable,
-    'EntryContext': {'Accessdata.Process(val && val.Name == obj.Name)': proc}
-})
+    humanReadable = 'Process "' + proc['Name'] + '" exists: ' + proc['Exists']
+    if error is not None:
+        humanReadable = humanReadable + " Error: {}".format(error)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': proc,
+        'HumanReadable': humanReadable,
+        'EntryContext': {'Accessdata.Process(val && val.Name == obj.Name)': proc}
+    })
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:
+    main()
