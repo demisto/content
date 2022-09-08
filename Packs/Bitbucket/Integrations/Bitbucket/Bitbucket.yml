@@ -552,7 +552,7 @@ script:
           description: 'The raw summary of the commit.'
           type: String
         - contextPath: Bitbucket.Commit.summary.markup
-          description: 'Text styling type, such as markdown.'
+          description: 'The text styling type, such as markdown.'
           type: String
         - contextPath: Bitbucket.Commit.summary.html
           description: 'The summary in html format.'
@@ -1095,6 +1095,187 @@ script:
         - contextPath: Bitbucket.Issue.watches
           description: 'The watchers of the issue.'
           type: Number
+    - name: bitbucket-pull-request-create
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: title
+          required: true
+          description: The title of the new pull request.
+          isArray: false
+        - name: source_branch
+          required: true
+          description: The branch to merge.
+          isArray: false
+        - name: destination_branch
+          required: false
+          description: The branch to merge to.
+          isArray: false
+        - name: reviewer_id
+          required: false
+          description: The id of the account of the person to review the pull request.
+          isArray: false
+        - name: description
+          required: false
+          description: A description of the pull request.
+          isArray: false
+        - name: close_source_branch
+          required: false
+          description: Should the source branch be closed after the pull request.
+          isArray: false
+      outputs:
+        - contextPath: Bitbucket.PullRequest.comment_count
+          description: 'How many comments there are in the pull request.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.task_count
+          description: 'How many tasks there are in the pull request.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.type
+          description: 'The type of the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.id
+          description: 'The id of the action.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.title
+          description: 'The title of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.description
+          description: 'The description of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.title.type
+          description: 'The type of the title of the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.title.raw
+          description: 'The content of the rendered title.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.title.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.title.html
+          description: 'The html format of the pull request title.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.description.type
+          description: 'The type of the pull request description'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.description.raw
+          description: 'The content of the description of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.description.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.rendered.description.html
+          description: 'Html format of the description content.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.state
+          description: 'The status of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.merge_commit
+          description: 'Is it a merge commit.'
+          type: Unknown
+        - contextPath: Bitbucket.PullRequest.close_source_branch
+          description: 'Should the branch be closed after the merge.'
+          type: Boolean
+        - contextPath: Bitbucket.PullRequest.closed_by
+          description: 'The user that closed the pull request.'
+          type: Unknown
+        - contextPath: Bitbucket.PullRequest.author.display_name
+          description: 'The display name of the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.links
+          description: 'Links with information about the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.type
+          description: 'The type of the author'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.uuid
+          description: 'The unique universal id of the author.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.account_id
+          description: 'The account id of the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.nickname
+          description: 'The nickname of the author.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.reason
+          description: 'The reason to create the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.created_on
+          description: 'The creation date of the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.updated_on
+          description: 'The date of the last update of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.branch.name
+          description: 'The name of the destination branch, the branch to merge to.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.type
+          description: 'The type of the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.hash
+          description: 'The hash of the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.links
+          description: 'Links with information about the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.type
+          description: 'The type of the repository.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.full_name
+          description: 'The full name of the repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.links
+          description: 'Links with information about The repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.name
+          description: 'The name of the repository.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.uuid
+          description: 'The unique id of the repository.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.branch.name
+          description: 'The name of the source branch, The branch with the changes that will be merged.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.type
+          description: 'The type of the commit in the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.hash
+          description: 'The hash of the commit in the source branch'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.links
+          description: 'Links with information about the commit in source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.type
+          description: 'The type of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.full_name
+          description: 'The full name of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
+          description: 'Links with information about the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.name
+          description: 'The name of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.uuid
+          description: 'The unique id of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.links
+          description: 'Links to information about the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.type
+          description: 'The type of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.raw
+          description: 'The description of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.html
+          description: 'The description of the pull request in html format.'
+          type: String
   isfetch: false
   runonce: false
   script: "-"

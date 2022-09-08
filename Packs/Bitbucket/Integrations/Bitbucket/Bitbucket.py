@@ -664,7 +664,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     destination_branch = args.get('destination_branch', None)
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
-    close_source_branch = argToBoolean(args.get('close_source_branch', None))
+    close_source_branch = args.get('close_source_branch', None)
     body = {
         "title": title,
         "source": {
@@ -688,14 +688,12 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     if description:
         body["description"] = description
     if close_source_branch:
-        body["close_source_branch"] = close_source_branch
-    response = client.pull_request_create_request(repo, body) # TODO check!!
+        body["close_source_branch"] = argToBoolean(close_source_branch)
+    response = client.pull_request_create_request(repo, body)
     return CommandResults(readable_output=f'The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
                           outputs=response,
                           raw_response=response)
-
-
 
 
 ''' MAIN FUNCTION '''
@@ -767,6 +765,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-update':
             result = issue_update_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-create':
+            result = pull_request_create_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
