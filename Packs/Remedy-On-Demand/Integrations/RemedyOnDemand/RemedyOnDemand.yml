@@ -47,9 +47,9 @@ script:
   - name: remedy-incident-create
     arguments:
     - name: first-name
-      description: costumer's first name (make sure costumer already exists)
+      description: customer's first name (make sure customer already exists)
     - name: last-name
-      description: costumer's first name (make sure costumer already exists)
+      description: customer's first name (make sure customer already exists)
     - name: description
       description: Incident description
     - name: status
