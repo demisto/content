@@ -9,7 +9,7 @@ deprecated: true
 tags:
 - carbon-black
 - endpoint
-comment: Deprecared. Use CBLiveGetFile_V2 instead.
+comment: Deprecated. Use CBLiveGetFile_V2 instead.
   Live.
 system: true
 args:
