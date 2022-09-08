@@ -19,7 +19,7 @@ DEFAULT_HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def httpRequest(method, urlSuffix, data, headers): # pragma: no cover
+def httpRequest(method, urlSuffix, data, headers):  # pragma: no cover
     data = {} if data is None else data
 
     url = BASE_URL + urlSuffix
@@ -40,7 +40,7 @@ def httpRequest(method, urlSuffix, data, headers): # pragma: no cover
         raise e
 
 
-def httpPost(urlSuffix, data=None, files=None): # pragma: no cover
+def httpPost(urlSuffix, data=None, files=None):  # pragma: no cover
     data = {} if data is None else data
     url = BASE_URL + urlSuffix
     LOG('running request with url=%s\tdata=%s\tfiles=%s' % (url, data, files))

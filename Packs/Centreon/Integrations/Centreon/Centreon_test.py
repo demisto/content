@@ -1,5 +1,6 @@
 import demistomock as demisto
 
+
 def test_get_host_status_command(mocker):
     """
     Given: Demisto args and params.
@@ -7,28 +8,27 @@ def test_get_host_status_command(mocker):
     Then:  ensures the expected result is returned
     """
 
-    mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'params', return_value={'server': 'server',
                                                          'credentials': {'identifier': 'identifier',
                                                                          'password': 'password'}})
     mocker.patch.object(demisto, 'args', return_value={'service_request_id': 'service_request_id'})
 
     import Centreon
-    mocker.patch.object(Centreon, 'httpRequest', return_value=[{"Acknowledged":"0",
-                                                               "Address":"192.168.1.22",
-                                                               "Alias":"jumphost",
-                                                               "CheckAttempt":"1",
-                                                               "Criticality":"",
-                                                               "Id":"37",
-                                                               "InstanceName":"Central",
-                                                               "LastCheck":"1524487822",
-                                                               "LastHardStateChange":"1523986444",
-                                                               "LastStateChange":"1523986444",
-                                                               "MaxCheckAttempts":"3",
-                                                               "Name":"jumphost",
-                                                               "Output":"OK",
-                                                               "State":"0",
-                                                               "StateType":"1"}])
+    mocker.patch.object(Centreon, 'httpRequest', return_value=[{"Acknowledged": "0",
+                                                                "Address": "192.168.1.22",
+                                                                "Alias": "jumphost",
+                                                                "CheckAttempt": "1",
+                                                                "Criticality": "",
+                                                                "Id": "37",
+                                                                "InstanceName": "Central",
+                                                                "LastCheck": "1524487822",
+                                                                "LastHardStateChange": "1523986444",
+                                                                "LastStateChange": "1523986444",
+                                                                "MaxCheckAttempts": "3",
+                                                                "Name": "jumphost",
+                                                                "Output": "OK",
+                                                                "State": "0",
+                                                                "StateType": "1"}])
     mocker.patch.object(Centreon, 'httpPost', return_value={'authToken': 'authToken'})
 
     entry = Centreon.get_host_status_command()
@@ -43,7 +43,6 @@ def test_get_service_status_command(mocker):
     Then:  ensures the expected result is returned
     """
 
-    mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'params', return_value={'server': 'server',
                                                          'credentials': {'identifier': 'identifier',
                                                                          'password': 'password'}})
