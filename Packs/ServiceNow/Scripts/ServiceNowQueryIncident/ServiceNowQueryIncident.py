@@ -141,9 +141,11 @@ def main():
 
                 for mr in mapped_records:
                     # Query the user table to get the name of the caller
-                    mr['Caller'] = get_user_name(mr['Caller'].get('value'))
+                    if mr.get('Caller'):
+                        mr['Caller'] = get_user_name(mr['Caller'].get('value'))
                     # Map the priority
-                    mr['Priority'] = INCIDENT_PRIORITY.get(mr['Priority'], mr['Priority'])
+                    if mr.get('Priority'):
+                        mr['Priority'] = INCIDENT_PRIORITY.get(mr['Priority'], mr['Priority'])
                 display_headers = ['ID', 'Number', 'Priority', 'Description', 'Caller']
 
                 # Output entry

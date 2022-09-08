@@ -157,6 +157,7 @@ def main():
     command_args['using'] = using
 
     command_res = demisto.executeCommand('servicenow-create-record', command_args)
+    demisto.log(command_res)
     result = {}
     try:
         entry = command_res[0]
