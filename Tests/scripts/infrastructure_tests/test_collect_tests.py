@@ -157,7 +157,8 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
     (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
 
-    (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
+    (MockerCases.C, XSOARNightlyTestCollector,
+     {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
      {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None),
 
     (MockerCases.C, XSIAMNightlyTestCollector,
