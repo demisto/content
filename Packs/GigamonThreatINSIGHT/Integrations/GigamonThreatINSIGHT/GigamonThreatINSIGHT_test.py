@@ -26,6 +26,43 @@ Tests helpers
 """
 
 
+def test_map_severity():
+    from GigamonThreatINSIGHT import mapSeverity
+
+    assert mapSeverity('high') == 3
+    assert mapSeverity('moderate') == 2
+    assert mapSeverity('low') == 1
+    assert mapSeverity(getRandomString(12)) == 0
+
+
+def test_get_first_fetch_datetime():
+    from GigamonThreatINSIGHT import getFirstFetch
+
+    invalid_unit = getRandomString(12)
+    valid_value = random.randint(0, 9)
+    invalid_value = "value"
+
+    firstFetch = getFirstFetch(f'  {valid_value} hours   ')
+    assert firstFetch['hours'] == valid_value
+    assert firstFetch['days'] == 0
+
+    firstFetch = getFirstFetch(f'{valid_value} days')
+    assert firstFetch['days'] == valid_value
+    assert firstFetch['hours'] == 0
+
+    firstFetch = getFirstFetch(f'  {invalid_value} hours   ')
+    assert firstFetch['days'] == 7
+    assert firstFetch['hours'] == 0
+
+    firstFetch = getFirstFetch(f'  {valid_value} {invalid_unit}')
+    assert firstFetch['days'] == 7
+    assert firstFetch['hours'] == 0
+
+    firstFetch = getFirstFetch(f'{invalid_value} {invalid_unit}   ')
+    assert firstFetch['days'] == 7
+    assert firstFetch['hours'] == 0
+
+
 def test_encode_args():
     from GigamonThreatINSIGHT import encodeArgsToURL
 
@@ -206,22 +243,29 @@ def test_get_detections(requests_mock):
 def test_fetch_incidents(requests_mock):
     from GigamonThreatINSIGHT import Client, DetectionClient, commandFetchIncidents
     mock_response = util_load_json('test_data/detections_results.json')
+    i = 1
+    for detection in mock_response.get('detections'):
+        timestamp: datetime = datetime.now() - timedelta(days=i)
+        detection['first_seen'] = timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        if i == 1:
+            expected_Last_fetch = detection['first_seen']
+        i += 1
     requests_mock.get('https://detections.icebrg.io/v1/detections', json=mock_response)
 
     client: DetectionClient = Client.getClient('Detections', '')
-    next_fetch, incidents = commandFetchIncidents(client, 'account_id', 3, {}, datetime.now() - timedelta(days=365))
+    next_fetch, incidents = commandFetchIncidents(client, 'account_id', {'first_fetch': '7 days'}, {})
 
     assert len(incidents) == 3
-    for detection in incidents:
-        assert 'name' in detection
-        assert 'occurred' in detection
+    for incident in incidents:
+        assert 'name' in incident
+        assert 'occurred' in incident
     assert 'last_fetch' in next_fetch
-    assert next_fetch['last_fetch'] == "2022-05-31T00:00:00.000000Z"
+    assert next_fetch['last_fetch'] == expected_Last_fetch
 
-    next_fetch, incidents = commandFetchIncidents(client, 'account_id', 3, next_fetch, datetime.now())
+    next_fetch, incidents = commandFetchIncidents(client, 'account_id', {'first_fetch': '7 days'}, next_fetch)
     assert len(incidents) == 0
     assert 'last_fetch' in next_fetch
-    assert next_fetch['last_fetch'] == "2022-05-31T00:00:00.000000Z"
+    assert next_fetch['last_fetch'] == expected_Last_fetch
 
 
 def test_get_detection_rules(requests_mock):
@@ -247,7 +291,7 @@ def test_get_detection_events(requests_mock):
     client: DetectionClient = Client.getClient('Detections', '')
 
     with pytest.raises(Exception):
-        response: CommandResults = commandGetDetectionRuleEvents(client, {})
+        commandGetDetectionRuleEvents(client, {})
 
     response: CommandResults = commandGetDetectionRuleEvents(client, {'rule_uuid': 'rule_uuid'})
 

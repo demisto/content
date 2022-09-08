@@ -11,6 +11,7 @@ from CommonServerUserPython import *
 
 import json
 from datetime import datetime, timedelta
+from typing import Tuple
 
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
 MAX_DETECTIONS = 100
@@ -400,6 +401,80 @@ def formatEvents(r_json):
     return newData
 
 
+def getFirstFetch(firstFetch) -> dict[str, Any]:
+
+    pieces = firstFetch.strip().split()
+    unit = pieces[len(pieces) - 1]
+
+    try:
+        delta = arg_to_number(
+            arg=pieces[0],
+            arg_name='first_fetch',
+            required=False
+        )
+    except Exception:
+        delta = 0
+
+    days: int = delta if delta and unit == 'days' else 0
+    hours: int = delta if delta and unit == 'hours' else 0
+
+    if days == 0 and hours == 0:
+        days = 7
+
+    return {'days': days, 'hours': hours}
+
+
+def mapSeverity(severity) -> int:
+    match severity:
+        case 'high':
+            return 3
+        case 'moderate':
+            return 2
+        case 'low':
+            return 1
+        case _:
+            return 0
+
+
+def getIncidents(result, last_fetch) -> Tuple[Dict[str, int], List[dict[str, Any]]]:
+    # Initialize an empty list of incidents to return
+    # Each incident is a dict with a string as a key
+    incidents: List[Dict[str, Any]] = []
+
+    last_incident_time = last_fetch
+    for detection in result.outputs:
+        incident_time = datetime.strptime(detection['first_seen'], DATE_FORMAT)
+
+        # Check if inciden has been reported before
+        if last_fetch >= incident_time:
+            continue
+
+        severity = mapSeverity(detection['rule_severity'])
+
+        incident = {
+            'name': detection['rule_name'],
+            'occurred': detection['first_seen'],
+            'severity': severity,
+            'details': detection['rule_description'],
+            'dbotMirrorId': detection['uuid'],
+            'rawJSON': json.dumps(detection),
+        }
+
+        incidents.append(incident)
+
+        if last_incident_time < incident_time:
+            last_incident_time = incident_time
+
+    demisto.debug(
+        f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
+
+    next_run = {'last_fetch': last_incident_time.strftime(DATE_FORMAT)}
+
+    demisto.debug(f'fetched {len(incidents)} incidents')
+
+    return next_run, incidents
+
+
 # Commands Methods
 
 
@@ -713,15 +788,26 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
 # Detections API commands
 
 
-def commandFetchIncidents(detectionClient: DetectionClient, account_uuid,
-                          max_results, last_run, first_fetch_time):
+def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, params, last_run) -> Tuple[Dict[str, int], List[dict]]:
+    demisto.debug('commandFetchIncidents has been called.')
+
     demisto.debug(f'last_run retrieved: {last_run}')
+
+    firstFetch = getFirstFetch(params.get('first_fetch'))
+    first_fetch_time = datetime.now() - timedelta(days=firstFetch['days'], hours=firstFetch['hours'])
+
     last_fetch = last_run.get('last_fetch')
 
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
         last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+
+    max_results = arg_to_number(
+        arg=params.get('max_fetch'),
+        arg_name='max_fetch',
+        required=False
+    )
 
     if not max_results or max_results > MAX_DETECTIONS:
         max_results = MAX_DETECTIONS
@@ -737,45 +823,7 @@ def commandFetchIncidents(detectionClient: DetectionClient, account_uuid,
 
     result = commandGetDetections(detectionClient, args)
 
-    last_incident_time = last_fetch
-    detections = []
-    for detection in result.outputs:
-        severity = 0
-        match detection['rule_severity']:
-            case 'high':
-                severity = 3
-            case 'moderate':
-                severity = 2
-            case 'low':
-                severity = 1
-        this_detection = {
-            'occurred': detection['first_seen'],
-            'name': detection['rule_name'],
-            'dbotMirrorId': detection['uuid'],
-            'severity': severity,
-            'details': detection['rule_description'],
-            'rawJSON': json.dumps(detection),
-        }
-        incident_time = datetime.strptime(detection['first_seen'], DATE_FORMAT)
-
-        # To workaround the issue with multiple detections at same timestamp
-        if last_fetch < incident_time:
-            detections.append(this_detection)
-
-        if last_incident_time < incident_time:
-            last_incident_time = incident_time
-
-    demisto.debug(
-        f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
-
-    next_run = {'last_fetch': last_incident_time.strftime(DATE_FORMAT)}
-
-    demisto.debug(f'fetched {len(detections)} incidents')
-
-    demisto.setLastRun(next_run)
-    demisto.incidents(detections)
-
-    return next_run, detections
+    return getIncidents(result, last_fetch)
 
 
 def addDetectionRules(result):
@@ -999,28 +1047,17 @@ def main():
             return_results(commandTestModule(sensorClient))
 
         elif command == 'fetch-incidents':
-            # default first fetch to -7days
-            delta = arg_to_number(
-                arg=params.get('first_fetch'),
-                arg_name='first_fetch',
-                required=False
-            )
-            if not delta:
-                delta = 7
-
-            first_fetch_time = datetime.now() - timedelta(days=delta)
-            max_results = arg_to_number(
-                arg=params.get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
-            commandFetchIncidents(
+            next_run, incidents = commandFetchIncidents(
                 detectionClient,
-                account_uuid=account_uuid,
-                max_results=max_results,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time
+                account_uuid,
+                params,
+                demisto.getLastRun()
             )
+            # saves next_run for the time fetch-incidents is invoked
+            demisto.setLastRun(next_run)
+            # fetch-incidents calls ``demisto.incidents()`` to provide the list
+            # of incidents to create
+            demisto.incidents(incidents)
 
         elif command == 'insight-get-sensors':
             return_results(commandGetSensors(sensorClient, args))
