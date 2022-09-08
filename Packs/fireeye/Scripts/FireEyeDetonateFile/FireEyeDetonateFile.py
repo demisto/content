@@ -47,7 +47,7 @@ def denote_file(args):
                         "Contents": 'FireEye: Integration not available.'})
 
 
-def poll_stage(feDone, feSubmissionKeys, profiles):
+def poll_stage(feDone, feSubmissionKeys, profiles, file):
     status = None
     sec = 0
     stauses = {}
@@ -74,6 +74,7 @@ def poll_stage(feDone, feSubmissionKeys, profiles):
                 feDone = True
         else:
             break
+    get_results(feDone, profiles, stauses, feSubmissionKeys, file)
 
 
 def get_results(feDone, profiles, stauses, feSubmissionKeys, file):
