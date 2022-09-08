@@ -19,21 +19,21 @@ class BucketVerifier:
         self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
 
     def verify_modified_pack(self, pack_id, pack_items):
-        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in
-                        pack_items.items()]
+        pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        version_exists = [self.gcp.is_in_index(pack_id), pack_path]
+        items_exists = [self.gcp.get_items_dict(pack_path, pack_id) == pack_items]
         self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
 
     def verify_new_version(self, pack_id, rn):
         # check: RN, new version exists
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        new_version_exists_in_changelog = self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
+        new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id)
-        self.is_valid = self.is_valid and all([new_version_exists, new_version_exists_in_changelog == rn, new_version_exists_in_metadata])
+        self.is_valid = self.is_valid and all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata])
 
     def verify_rn(self, pack_id, rn):
-        # verify by version the content of the RN TODO: try to get the changes as input
-        self.is_valid = self.is_valid and self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]) == rn
+        # verify by version the content of the RN
+        self.is_valid = self.is_valid and rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
 
     def verify_hidden(self, pack_id):
         # verify not in index
@@ -41,23 +41,11 @@ class BucketVerifier:
 
     def verify_readme(self, pack_id, readme):
         # verify readme content, no version bump
-        self.is_valid = self.is_valid and gcp.get_max_version(pack_id) and self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md') == readme
-
-    def verify_pack_ignore(self, pack_id):
-        # not sure TODO: verify
-        pass
-
-    def verify_landing_page(self, pack_id):
-        # not sure TODO: verify
-        pass
+        self.is_valid = self.is_valid and gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md')
 
     def verify_failed_pack(self, pack_id):
         # verify commit hash is not updated
         self.is_valid = self.is_valid and self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit')
-
-    def verify_modified_pack(self):
-        # verify new version TODO: remove since dup
-        pass
 
     def verify_modified_path(self, pack_id, item_type, item_file_name, extension):
         # verify the path of the item is modified
@@ -141,6 +129,11 @@ class GCP:
         with open(item_path, 'r') as f:
             return f.read()
 
+    def get_items_dict(self, pack_path, pack_id):
+        pack = Pack(pack_id, pack_path)
+        pack.collect_content_items()
+        return pack._content_items
+
 
 def get_args():
     """Validates and parses script arguments.
@@ -176,29 +169,27 @@ if __name__ == "__main__":
     bv.verify_dependency('Armis', 'TestUploadFlow')
 
     # verify new version
-    expected_rn = ''  # TODO: add from branch script
+    expected_rn = 'testing adding new RN'
     bv.verify_new_version('ZeroFox', expected_rn)
 
     # verify modified existing rn
-    expected_rn = ''  # TODO: add from branch script
+    expected_rn = 'testing modifying existing RN'
     bv.verify_rn('Box', expected_rn)
 
     # verify 1.0.0 rn was added
-    expected_rn = ''  # TODO: add from branch script
+    expected_rn = f"""
+                    #### Integrations
+                    ##### BPA
+                    first release note
+                    """
     bv.verify_rn('BPA', expected_rn)
 
     # verify pack is set to hidden
     bv.verify_hidden('Microsoft365Defender')
 
     # verify readme
-    expected_readme = '' # TODO: add
+    expected_readme = 'readme test upload flow'
     bv.verify_readme('Maltiverse', expected_readme)
-
-    # verify pack ignore
-    bv.verify_pack_ignore('MISP') # TODO: fix
-
-    # verify landingpage
-    bv.verify_landing_page('Trello') # TODO: fix
 
     # verify failing pack
     bv.verify_failed_pack('Absolute')
@@ -209,5 +200,5 @@ if __name__ == "__main__":
     bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'xif')
 
     # verify modified pack
-    bv.verify_modified_pack('Alexa', items_dict.get('Alexa'))
+    bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 

@@ -6,19 +6,24 @@ from git import GitCommandError, Repo, Head
 from pathlib import Path
 import subprocess
 import json
-
-changed_packs = set()
-
+from Tests.Marketplace.marketplace_services import *
+versions_dict = {}
+pack_items_dict = {}
 
 def add_changed_pack(func):
     def wrapper(*args, **kwargs):
         global changed_packs
+        global versions_dict
+        global pack_items_dict
         print(f'Running {func.__name__}', end=" ")
-        res = func(*args, **kwargs)
-        changed_packs.add(res)
-        print("Done\n")
+        pack, version, pack_items = func(*args, **kwargs)
+        changed_packs.add(pack)
+        versions_dict[pack] = version
+        if pack_items_dict:
+            pack_items[pack] = pack_items_dict
+        print("Done")
 
-        return res
+        return pack, version, pack_items
     return wrapper
 
 
@@ -34,7 +39,7 @@ def create_new_pack():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
     subprocess.call(['demisto-sdk', 'format', '-i', dest_path], stdout=subprocess.DEVNULL)
-    return dest_path
+    return dest_path, '1.0.0', {'Integrations': 'TestUploadFlow', 'Playbooks': 'TestUploadFlow'}
 
 
 @add_changed_pack
@@ -47,17 +52,14 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
         "mandatory": True,
         "display_name": new_pack_name
     }
-
-    with metadata_json.open('w') as f:
-        json.dump(base_metadata, f)
-    return base_pack
+    return base_pack, base_metadata['currentVersion'], None
 
 
 @add_changed_pack
 def enhance_release_notes(pack: Path):
     subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
-                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'], stdout=subprocess.DEVNULL)
-    return pack
+                    f'{pack}', "--force", '--text', 'testing adding new RN'], stdout=subprocess.DEVNULL)
+    return pack, get_current_version(pack), None
 
 
 @add_changed_pack
@@ -66,18 +68,18 @@ def change_image(pack: Path):
     for p in Path(pack).glob('**/*.png'):
         # shutil.rmtree(p)
         shutil.copy(new_image, p)
-    return pack
+    return pack, get_current_version(pack), None
 
 
 @add_changed_pack
-def update_existing_release_notes(pack: Path, relese_note: str):
-    path = pack / 'ReleaseNotes' / relese_note
+def update_existing_release_notes(pack: Path, version: str):
+    path = pack / 'ReleaseNotes' / f'{version}.md'
     if not path.exists():
         raise Exception("path is not valid release note")
 
     with path.open('a') as f:
-        f.write('\n#### Upload flow\n - Test\n')
-    return pack
+        f.write('testing modifying existing RN')
+    return pack, version, None
 
 
 @add_changed_pack
@@ -88,15 +90,15 @@ def set_pack_hidden(pack: Path):
     base_metadata['hidden'] = True
     with metadata_json.open('w') as f:
         json.dump(base_metadata, f)
-    return pack
+    return pack, base_metadata['currentVersion'], None
 
 
 @add_changed_pack
 def update_readme(pack: Path):
     for path in pack.glob('**/*.README.md'):
         with path.open('a') as f:
-            f.write("\n#### Upload flow\n - Test\n")
-    return pack
+            f.write("readme test upload flow")
+    return pack, get_current_version(pack), None
 
 
 @add_changed_pack
@@ -104,20 +106,7 @@ def update_pack_ignore(pack: Path):
     pack_ignore = pack / ".pack-ignore"
     with pack_ignore.open('a') as f:
         f.write("\n[file:1_0_1.md]\nignore=RM104\n")
-    return pack
-
-
-def add_pack_to_landing_page(pack_name: str):
-    global changed_packs
-    content_path = Path(__file__).parent.parent.parent
-    landing_page = content_path / 'Tests' / 'Marketplace' / 'landingPage_sections.json'
-    with landing_page.open('r') as f:
-        landing_json = json.load(f)
-    landing_json['Getting Started'].append(pack_name)
-    landing_json['Featured'].append(pack_name)
-    with landing_page.open('w') as f:
-        json.dump(landing_json, f)
-    changed_packs.add(landing_page.parent)
+    return pack, get_current_version(pack), None
 
 
 @add_changed_pack
@@ -128,7 +117,7 @@ def create_failing_pack(integration: Path):
     """
     integration.open('a')
     integration.write_text('\n#  CHANGE IN PACK\n')
-    return integration.parent.parent.parent
+    return integration.parent.parent.parent, get_current_version(integration.parent.parent.parent), None
 
 
 def modify_pack(pack: Path, integration: str):
@@ -139,16 +128,17 @@ def modify_pack(pack: Path, integration: str):
     integration.open('a')
     integration.write_text('\n#  CHANGE IN PACK\n')
     enhance_release_notes(pack)
+    return pack, get_current_version(pack), get_all_packs_items_dict(pack)
 
 
 @add_changed_pack
-def modify_item_path(item: Path, new_name: str):
+def modify_item_path(item: Path, new_name: str, pack_id: Path):
     """
     Modify item's path, in order to verify that the pack was uploaded again
     """
     parent = item.parent
     item.rename(parent.joinpath(new_name))
-    return item.parent.parent.parent
+    return item.parent.parent.parent, get_current_version(pack_id), None
 
 
 @add_changed_pack
@@ -159,7 +149,20 @@ def add_1_0_0_release_notes(pack: Path):
 ##### {pack.name}
 first release note
 """)
-    return pack
+    return pack, get_current_version(pack), None
+
+
+def get_current_version(pack: Path):
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    return base_metadata['currentVersion']
+
+
+def get_all_packs_items_dict(pack: Path):
+    pack = Pack(pack.name, str(pack))
+    pack.collect_content_items()
+    return pack._content_items
 
 
 def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
@@ -197,24 +200,22 @@ if __name__ == "__main__":
         enhance_release_notes(packs_path / 'ZeroFox')
         change_image(packs_path / 'Armis')
 
-        update_existing_release_notes(packs_path / 'Box', "2_1_2.md")
+        update_existing_release_notes(packs_path / 'Box', "2_1_2")
         enhance_release_notes(packs_path / 'Box')
-        update_existing_release_notes(packs_path / 'Base', "1_13_13.md")
         add_1_0_0_release_notes(packs_path / 'BPA')
         set_pack_hidden(packs_path / 'Microsoft365Defender')
         update_readme(packs_path / 'Maltiverse')
         update_pack_ignore(packs_path / 'MISP')
 
-        add_pack_to_landing_page('Trello')
         create_failing_pack(packs_path / 'Absolute/Integrations/Absolute/Absolute.py')
-        modify_pack(packs_path / 'Alexa', 'Integrations/Alexa/Alexa.py')
+        modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
         modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.xif',
-                         'Alibaba.xif')
+                         'Alibaba.xif', 'AlibabaActionTrail')
         modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.yml',
-                         'Alibaba.yml')
+                         'Alibaba.yml', 'AlibabaActionTrail')
         modify_item_path(packs_path /
                          'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
-                         'Alibaba_schema.json')
+                         'Alibaba_schema.json', 'AlibabaActionTrail')
         print(changed_packs)
         for p in changed_packs:
             repo.git.add(f"{p}/*")
@@ -229,6 +230,4 @@ if __name__ == "__main__":
         repo.git.checkout(original_branch)
         if branch:
             repo.delete_head(branch, force=True)
-
-    # TODO: shoud return dict of pack name and version
 

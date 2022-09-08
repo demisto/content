@@ -2043,8 +2043,9 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                         })
-
+                        print('here')
                     elif current_directory == PackFolders.INTEGRATIONS.value:
+                        print('here')
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.add_pack_type_tags(content_item, 'Integration')
                         folder_collected_items.append({
