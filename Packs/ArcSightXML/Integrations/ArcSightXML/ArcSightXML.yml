@@ -1,0 +1,52 @@
+commonfields:
+  id: ArcSight XML
+  version: -1
+name: ArcSight XML
+display: ArcSight XML
+category: Analytics & SIEM
+description: Create incidents and updates cases of ArcSight ESM SIEM through XML files. By Micro Focus (Formerly HPE Software).
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Directory from which to get XML files and create incidents.
+  name: inputDirPath
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Directory to which put command XML files.
+  name: commandsDirPath
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: arcsight-update-case
+    arguments:
+    - name: caseId
+      required: true
+      description: ID of the case.
+    - name: name
+      required: true
+      description: Name of the case.
+    - name: stage
+      required: true
+      description: The stage of the case.
+    description: Create an XML to update a case.
+  - name: arcsight-fetch-xml
+    arguments: []
+    description: Used for testing, should fetch xml file and return Demisto incident object
+  isfetch: true
+  runonce: false
+  dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No test
+fromversion: 5.0.0
