@@ -1,3 +1,4 @@
+from freezegun import freeze_time
 import Packetsled
 
 
@@ -19,24 +20,29 @@ def test_format_flow():
                                             'family': ['network_management', 'tunnel', 'application_service']}
 
 
+@freeze_time("2022-09-08 17:22:13 UTC")
 def test_getTime():
-    assert Packetsled.getTime('2017-01-12T14:12:06.000Z') == 1484223126.0
+    time = Packetsled.getTime('2017-01-12T14:12:06.000Z')
+    assert time == 1484230326.0
 
 
+@freeze_time("2022-09-08 17:22:13 UTC")
 def test_isoTime():
-    assert Packetsled.getTime('2017-01-12T14:12:06.000Z') == 1484223126.0
+    time = Packetsled.getTime('2017-01-12T14:12:06.000Z')
+    assert time == 1484230326.0
 
 
 def test_coalesceToArray():
     assert Packetsled.coalesceToArray({'1': True, '2': False}) == [{'1': True, '2': False}]
 
 
+@freeze_time("2022-09-08 17:22:13 UTC")
 def test_make_timerange():
     dargs = {
         'stop_time': '2017-01-12T14:12:06.000Z',
         'start_time': '2016-01-12T14:12:06.000Z'
     }
-    assert Packetsled.make_timerange(dargs) == (1452600726.0, 1484223126.0)
+    assert Packetsled.make_timerange(dargs) == (1452607926.0, 1484230326.0)
 
 
 def test_make_query():
@@ -46,6 +52,6 @@ def test_make_query():
         'family': ['network_management', 'tunnel', 'application_service']
     }
     assert Packetsled.make_query(dargs) == {'time': {'=': {'scalars': [],
-                                                           'ranges': [{'v1': 1452600726.0, 'v2': 1484223126.0}]}},
+                                                           'ranges': [{'v1': 1452607926.0, 'v2': 1484230326.0}]}},
                                             'family': {
                                                 '=': {'scalars': [{'v1': 2}, {'v1': 4}, {'v1': 6}], 'ranges': []}}}
