@@ -11,18 +11,19 @@ def parseSepAvDef(s, res):
     d = ''
     try:
         m = re.match(VERSIONS_REGEX, s)
-        d = m.group(1)
-        v = float(m.group(2))
+        d = m.group(1)  # type: ignore
+        v = float(m.group(2))  # type: ignore
         return d, v
     except Exception as ex:
         res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                    "Contents": "Error occurred while parsing AV Def version. Exception info:\n" + str(ex) + "\n\nInvalid input:\n" + str(s)})
+                    "Contents": "Error occurred while parsing AV Def version. "
+                                "Exception info:\n" + str(ex) + "\n\nInvalid input:\n" + str(s)})
         demisto.results(res)
         sys.exit()
 
 
 def check_outdated_endpoints():
-    res = []
+    res: list = []
     reqAvDef = demisto.get(demisto.args(), 'requiredavdefversion')
     strReqDate, reqVer = parseSepAvDef(reqAvDef, res)
     reqDate = time.strptime(strReqDate, '%m/%d/%Y')
@@ -50,7 +51,8 @@ def check_outdated_endpoints():
         else:
             res.append("no")
             demisto.setContext('txtSEPOutdatedVersions', '')
-            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "All endpoints are up to date."})
+            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"],
+                        "Contents": "All endpoints are up to date."})
     demisto.results(res)
 
 
