@@ -214,7 +214,6 @@ def parse_mail_parts(parts):
                 str_utf8 = str_utf8.encode('utf-8')
                 decoded_string = quopri.decodestring(str_utf8)
                 text = str(decoded_string, errors='ignore')
-
             else:
                 str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
