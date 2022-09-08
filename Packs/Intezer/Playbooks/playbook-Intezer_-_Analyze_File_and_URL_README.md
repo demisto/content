@@ -1,4 +1,4 @@
-Analyze the given email's Attachments and URLs on Intezer Analyze.
+Analyze Files and URLs on Intezer Analyze.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -48,4 +48,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Intezer_Analyze_Phishing email](../doc_files/Intezer_Analyze_Phishing_Email.png)
+![Intezer_Analyze_File_and_URL](../doc_files/Intezer_Analyze_File_and_URL.png)

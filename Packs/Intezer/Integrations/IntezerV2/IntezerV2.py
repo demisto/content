@@ -95,13 +95,16 @@ def _get_missing_family_result(family_id: str) -> CommandResults:
     )
 
 
-def _get_analysis_running_result(analysis_id: str = None, response: requests.Response = None) -> CommandResults:
+def _get_analysis_running_result(analysis_type: str,
+                                 analysis_id: str = None,
+                                 response: requests.Response = None) -> CommandResults:
     if response:
         analysis_id = response.json()['result_url'].split('/')[2]
 
     context_json = {
         'ID': analysis_id,
-        'Status': 'InProgress'
+        'Status': 'InProgress',
+        'Type': analysis_type
     }
 
     return CommandResults(
@@ -142,7 +145,7 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'File'
+            'Type': 'File'
         }
 
         return CommandResults(
@@ -154,7 +157,7 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
     except HashDoesNotExistError:
         return _get_missing_file_result(file_hash)
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result(analysis_type='File', response=error.response)
 
 
 def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
@@ -172,7 +175,7 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'Url'
+            'Type': 'Url'
         }
 
         return CommandResults(
@@ -182,7 +185,7 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
             readable_output='Analysis created successfully: {}'.format(analysis_id)
         )
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result('Url', response=error.response)
     except ServerError as ex:
         return _get_missing_url_result(url, ex)
 
@@ -213,7 +216,7 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'File'
+            'Type': 'File'
         }
 
         return CommandResults(
@@ -223,7 +226,7 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
             readable_output='Analysis created successfully: {}'.format(analysis.analysis_id)
         )
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result('File', response=error.response)
 
 
 def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args: dict) -> List[CommandResults]:
@@ -269,13 +272,13 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
 
         except HTTPError as http_error:
             if http_error.response.status_code == HTTPStatus.CONFLICT:
-                command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+                command_results.append(_get_analysis_running_result(analysis_type, analysis_id=analysis_id))
             elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
                 command_results.append(_get_missing_analysis_result(analysis_id))
             else:
                 raise http_error
         except AnalysisIsStillRunning:
-            command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+            command_results.append(_get_analysis_running_result(analysis_type, analysis_id=analysis_id))
 
     return command_results
 
@@ -288,7 +291,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
         if not analysis:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except AnalysisIsStillRunning:
-        return _get_analysis_running_result(analysis_id=str(analysis_id))
+        return _get_analysis_running_result('File', analysis_id=str(analysis_id))
 
     sub_analyses: List[SubAnalysis] = analysis.get_sub_analyses()
 
@@ -321,7 +324,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
 
     if not sub_analysis_code_reuse:
@@ -381,7 +384,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
@@ -417,7 +420,7 @@ def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandRes
         analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
 
     if not analysis:
