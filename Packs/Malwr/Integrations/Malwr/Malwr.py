@@ -1,0 +1,303 @@
+import hashlib
+import json
+import os
+import re
+
+import demistomock as demisto  # noqa: F401
+import requests
+from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
+
+MAIN_URL = 'https://malwr.com'
+STATUS_URL = '/submission/status/%s/'
+RESULT_URL = '/analysis/%s/'
+MD5_PREFIX_STR = 'with MD5 '
+SUPPORTED_COMMANDS = ['Submit', 'Status', 'Result', 'Detonate']
+DETONATE_DEFAULT_TIMEOUT = 600
+DETONATE_POLLING_INTERVAL = 10
+
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, 'rb') as f:
+        for chunk in iter(lambda: f.read(4096), b''):
+            hash_md5.update(chunk)
+
+    return hash_md5.hexdigest()
+
+
+def get_file_path(file_id):
+    filepath_result = demisto.getFilePath(file_id)
+    if 'path' not in filepath_result:
+        demisto.results('Error: entry %s is not a file.' % (file_id, ))
+        sys.exit(0)
+
+    return filepath_result['path']
+
+# The Malwar API from https://github.com/PaulSec/API-malwr.com
+
+
+class MalwrAPI(object):
+    """
+        MalwrAPI Main Handler
+    """
+    session = None
+    logged = False
+    headers = {
+        'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) "
+                      + "Gecko/20100101 Firefox/41.0"
+    }
+
+    def __init__(self, url, username=None, password=None):
+        self.url = url
+        self.session = requests.session()
+        self.username = username
+        self.password = password
+
+    def login(self):
+        """Login on malwr.com website"""
+
+        if self.username and self.password:
+            soup = self.request_to_soup(self.url + '/account/login')
+            csrf_input = soup.find(attrs=dict(name='csrfmiddlewaretoken'))
+            csrf_token = csrf_input['value']
+            payload = {
+                'csrfmiddlewaretoken': csrf_token,
+                'username': u'{0}'.format(self.username),
+                'password': u'{0}'.format(self.password)
+            }
+            login_request = self.session.post(self.url + "/account/login/",
+                                              data=payload, headers=self.headers)
+
+            if login_request.status_code == 200:
+                self.logged = True
+                return True
+            else:
+                self.logged = False
+                return False
+
+    def request_to_soup(self, url=None):
+        """Request url and return the Beautifoul Soup object of html returned"""
+        if not url:
+            url = self.url
+
+        req = self.session.get(url, headers=self.headers)
+        soup = BeautifulSoup(req.content, "html.parser")
+        return soup
+
+    @staticmethod
+    def find_submission_links(req):
+        # regex to check if the file was already submitted before
+        pattern = '(\/analysis\/[a-zA-Z0-9]{12,}\/)'
+        submission_links = re.findall(pattern, req.content)
+
+        return submission_links
+
+    def submit_sample(self, filepath, analyze=True, share=True, private=True):
+        if self.logged is False:
+            self.login()
+
+        s = self.session
+        req = s.get(self.url + '/submission/', headers=self.headers)
+        soup = BeautifulSoup(req.content, "html.parser")
+
+        pattern = '(\d [-+*] \d) ='
+        data = {
+            'math_captcha_field': eval(re.findall(pattern, req.content)[0]),
+            'math_captcha_question': soup.find('input', {'name': 'math_captcha_question'})['value'],
+            'csrfmiddlewaretoken': soup.find('input', {'name': 'csrfmiddlewaretoken'})['value'],
+            'share': 'on' if share else 'off',  # share by default
+            'analyze': 'on' if analyze else 'off',  # analyze by default
+            'private': 'on' if private else 'off'  # private by default
+        }
+
+        req = s.post(self.url + '/submission/', data=data, headers=self.headers, files={'sample': open(filepath, 'rb')})
+        submission_links = MalwrAPI.find_submission_links(req)
+
+        res = {
+            'md5': hashlib.md5(open(filepath, 'rb').read()).hexdigest(),
+            'file': filepath
+        }
+
+        if len(submission_links) > 0:
+            res['analysis_link'] = submission_links[0]
+        else:
+            pattern = '(\/submission\/status\/[a-zA-Z0-9]{12,}\/)'
+            submission_status = re.findall(pattern, req.content)
+
+            if len(submission_status) > 0:
+                res['analysis_link'] = submission_status[0]
+            elif 'file like this waiting for processing, submission aborted.' in req.content:
+                res = 'File already submitted, check its status.'
+            else:
+                res = 'Error with the file.'
+
+        return res, soup
+
+    def get_status(self, analysis_id):
+        s = self.session
+        req = s.get(self.url + STATUS_URL % (analysis_id, ), headers=self.headers)
+        soup = BeautifulSoup(req.content, 'html.parser')
+        submission_links = MalwrAPI.find_submission_links(req)
+        if len(submission_links) > 0:
+            status = 'complete'
+            return status, submission_links[0], soup
+        elif 'The analysis is still pending' in str(soup):
+            status = 'pending'
+        else:
+            status = 'error'
+
+        return status, None, soup
+
+    def get_result(self, analysis_id):
+        analysis_status, _, _ = self.get_status(analysis_id)
+        if analysis_status != 'complete':
+            status = 'pending'
+            soup = None
+            is_malicious = None
+            md5 = None
+        else:
+            status = 'complete'
+            s = self.session
+            req = s.get(self.url + RESULT_URL % (analysis_id, ), headers=self.headers)
+            soup = BeautifulSoup(req.content, 'html.parser')
+            is_malicious = 'malicious' in str(soup)
+            soup_str = str(soup)
+            start_index = soup_str.find(MD5_PREFIX_STR)
+            if start_index == -1:
+                md5 = None
+            else:
+                start_index += len(MD5_PREFIX_STR)
+                md5 = soup_str[start_index: start_index + 32]
+
+        return status, is_malicious, soup, md5
+
+
+if 'identifier' in demisto.params()['credentials'] and 'password' in demisto.params()['credentials']:
+    username = demisto.params()['credentials']['identifier']
+    password = demisto.params()['credentials']['password']
+else:
+    username = None
+    password = None
+
+malwr = MalwrAPI(
+    url=demisto.params()['server'],
+    username=username,
+    password=password
+)
+
+entry = {
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['text'],
+    'ReadableContentsFormat': formats['text']
+}
+
+if demisto.command() == 'test-module':
+    demisto.results('ok')
+    sys.exit(0)
+
+elif demisto.command() == 'malwr-submit':
+    file_id = demisto.args()['fileId']
+    filepath = get_file_path(file_id)
+    res, soup = malwr.submit_sample(filepath)
+    if 'analysis_link' in res:
+        analysis_id = res['analysis_link'].split('/')[-2]
+
+        message = 'File submitted: %s%s\n' % (MAIN_URL, res['analysis_link'])
+        message += 'MD5: %s\n' % (res['md5'], )
+        message += 'Analysis ID: %s' % (analysis_id, )
+
+        entry['Contents'] = str(soup)
+        entry['HumanReadable'] = message
+        entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Md5': res['md5'], 'Status': 'pending'}}
+
+    else:
+        entry['HumanReadable'] = res
+
+elif demisto.command() == 'malwr-status':
+    analysis_id = demisto.args()['analysisId']
+    status, data, soup = malwr.get_status(analysis_id)
+    if status == 'complete':
+        message = 'The analysis is complete, you can view it at: %s%s.' % (MAIN_URL, data)
+    elif status == 'pending':
+        message = 'The analysis is still in progress.'
+    else:
+        message = 'Error: the specified analysis does not exist.'
+
+    entry['Contents'] = str(soup)
+    entry['HumanReadable'] = message
+    entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Status': status}}
+
+elif demisto.command() == 'malwr-result':
+    analysis_id = demisto.args()['analysisId']
+    status, is_malicious, soup, md5 = malwr.get_result(analysis_id)
+
+    if status == 'pending':
+        message = 'The analysis is still in progress.'
+        demisto.results(message)
+        sys.exit(0)
+
+    if is_malicious:
+        entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id,
+                                                                       'Status': status, 'Malicious': {'Vendor': 'Malwr'}}}
+        entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3}
+        message = 'The file is malicious.'
+    else:
+        entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Status': status}}
+        entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 0}
+        message = 'The file is not malicious.'
+
+    entry['Contents'] = str(soup)
+    entry['HumanReadable'] = message
+
+elif demisto.command() == 'malwr-detonate':
+    file_id = demisto.args()['fileId']
+    filepath = get_file_path(file_id)
+    timeout = int(demisto.args()['timeout']) if 'timeout' in demisto.args() else DETONATE_DEFAULT_TIMEOUT
+
+    # Submit the sample
+    res, soup = malwr.submit_sample(filepath)
+    if 'analysis_link' not in res:
+        demisto.results('ERROR: %s' % (res, ))
+        sys.exit(0)
+
+    # Poll the status of the analysis
+    analysis_id = res['analysis_link'].split('/')[-2]
+
+    start_time = time.time()
+    while (time.time() - start_time) < timeout:
+        status, _, _ = malwr.get_status(analysis_id)
+
+        if status == 'error':
+            demisto.results('Error analyzing file.')
+            sys.exit(0)
+
+        demisto.info('status = %s' % (status, ))
+        if status == 'complete':
+            break
+
+        time.sleep(DETONATE_POLLING_INTERVAL)
+
+    if status == 'pending':
+        demisto.results('File analysis timed out.')
+        sys.exit(0)
+
+    # Get the result
+    status, is_malicious, soup, md5 = malwr.get_result(analysis_id)
+    if status != 'complete':
+        demisto.results('Error analyzing file.')
+        sys.exit(0)
+
+    if is_malicious:
+        entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id,
+                                                                       'Md5': md5, 'Status': status, 'Malicious': {'Vendor': 'Malwr'}}}
+        entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3 if is_malicious else 0}
+        message = 'The file is malicious.'
+    else:
+        entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Md5': res['md5'], 'Status': status}}
+        message = 'The file is not malicious.'
+
+    entry['Contents'] = str(soup)
+    entry['HumanReadable'] = message
+
+demisto.results(entry)
