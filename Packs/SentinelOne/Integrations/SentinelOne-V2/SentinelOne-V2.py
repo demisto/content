@@ -2895,7 +2895,7 @@ def main():
     base_url = urljoin(server, f'/web/api/v{api_version}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    BLOCK_SITEIDS = params.get('block_siteIDs', 'None')
+    BLOCK_SITEIDS = params.get('block_site_ids', 'None')
     GLOBAL_BLOCK = BLOCK_SITEIDS == 'None'
 
     IS_VERSION_2_1 = api_version == '2.1'
