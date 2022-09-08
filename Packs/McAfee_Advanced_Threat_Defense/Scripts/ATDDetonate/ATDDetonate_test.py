@@ -4,7 +4,6 @@ import pytest
 
 import demistomock as demisto  # noqa: F401
 from ATDDetonate import main
-from unittest import TestCase, mock
 
 
 @pytest.mark.parametrize("response, expected_output",

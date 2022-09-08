@@ -1,4 +1,3 @@
-import json
 from time import sleep
 
 import demistomock as demisto  # noqa: F401
@@ -14,8 +13,6 @@ def main():
     interval = 10
     if 'interval' in demisto.args():
         interval = int(demisto.args()['interval'])
-
-    file = demisto.get(demisto.args(), 'file')
 
     atdDone = False
     taskID = ""
@@ -35,7 +32,8 @@ def main():
             sys.exit(0)
 
     if taskID == "-1":
-        demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not supported"})
+        demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not "
+                                                                                                     "supported"})
         sys.exit(0)
 
     # Poll stage ############
@@ -63,7 +61,8 @@ def main():
     # Get results ############
     if not atdDone:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                        "Contents": 'Could not retrieve results from ATD (may be due to timeout). last status = {0}'.format(status)})
+                        "Contents":
+                            'Could not retrieve results from ATD (may be due to timeout). last status = {0}'.format(status)})
         sys.exit(0)
     if istate and int(istate) in [1, 2]:
         reportType = 'json'
