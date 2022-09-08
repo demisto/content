@@ -772,7 +772,7 @@ def update_malop_status(malop_guid, status):
 
     response = http_request('POST', '/rest/crimes/status', json_body=json_body)
     status = response.get('status') if response else ''
-    if status != 'SUCCESS':
+    if status.upper() != 'SUCCESS':
         raise Exception(
             f'Failed to update malop {malop_guid} status to {status}.'
             f' Message: {response.get("message") if response else ""}'
