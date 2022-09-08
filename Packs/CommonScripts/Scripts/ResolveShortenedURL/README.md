@@ -14,6 +14,7 @@ Resolves the original URL from the given shortened URL and places it in both, as
 | **Argument Name** | **Description** |
 | --- | --- |
 | url | The URL to resolve. |
+| verify | Whether the request should verify the SSL certificate. |
 
 ## Outputs
 ---
