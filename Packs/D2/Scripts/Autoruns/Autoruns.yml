@@ -2,8 +2,6 @@ commonfields:
   id: Autoruns
   version: -1
 name: Autoruns
-deprecated: true
-comment: Deprecated. No available replacement.
 script: >-
   respAR = demisto.executeCommand( 'D2Autoruns', { 'using' : demisto.args()['system'] } )
 
@@ -39,9 +37,8 @@ subtype: python2
 tags:
 - endpoint
 - forensics
-comment: |-
-  Collect Autoruns items from an endpoint and hashes for each item.
-  Uses a d2 agent to run SysInternals Autoruns.
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 args:
 - name: system
