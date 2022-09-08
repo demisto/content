@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.67"
+version = "1.24.68"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.67,<1.28.0"
+botocore = ">=1.27.68,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.67"
+version = "1.27.68"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -500,8 +500,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "c699c6dee5e9da5f7ff0a956e4706681db709a09"
-resolved_reference = "c699c6dee5e9da5f7ff0a956e4706681db709a09"
+reference = "f26fbfb48ecbc88659bd028af4627fe525ff7e86"
+resolved_reference = "f26fbfb48ecbc88659bd028af4627fe525ff7e86"
 
 [[package]]
 name = "Deprecated"
@@ -1464,7 +1464,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "PyPDF2"
-version = "1.28.5"
+version = "1.28.6"
 description = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
 category = "main"
 optional = false
@@ -1970,7 +1970,7 @@ types-cryptography = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.20.1"
+version = "3.20.2"
 description = "Typing stubs for protobuf"
 category = "main"
 optional = false
@@ -2096,7 +2096,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.16.4"
+version = "20.16.5"
 description = "Virtual Python Environment builder"
 category = "main"
 optional = false
@@ -2219,7 +2219,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "422853329392fb01ef1f0a3aec945245f096da1b0e2b79fd78c41f17bf94518a"
+content-hash = "8f3aebe159bcd215eb3316bc66026bdc6a29f77f99516de6991b20c351e72d21"
 
 [metadata.files]
 aiohttp = [
@@ -2370,12 +2370,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.67-py3-none-any.whl", hash = "sha256:22d214a480103595098e73259021a1115966c057f421c28b7a117121a5a1ed89"},
-    {file = "boto3-1.24.67.tar.gz", hash = "sha256:2b9309a98fd7264788ff1d1b19146406cc4191e53ed9a03aca03e8837303fae2"},
+    {file = "boto3-1.24.68-py3-none-any.whl", hash = "sha256:428d94d7c79b6ea65ade428afbd89fb1b869da631bb5acf22230b5b0b7486290"},
+    {file = "boto3-1.24.68.tar.gz", hash = "sha256:d8785ada565bd3118b9c4c26d8fa64c32d86e62c3404aab612571ae32c270be2"},
 ]
 botocore = [
-    {file = "botocore-1.27.67-py3-none-any.whl", hash = "sha256:05832d3c3691bcc02c4376ea6ed04cade24bc564aa54d60dc54c7098e8397184"},
-    {file = "botocore-1.27.67.tar.gz", hash = "sha256:b00894d2eee8a795ecedf9f4cbc454fa449a7bb11af1390c7414755243f90610"},
+    {file = "botocore-1.27.68-py3-none-any.whl", hash = "sha256:d7decff8d5d94c265ad533c11ba0d653acf0819fcdf1049452076cf8fc0f8946"},
+    {file = "botocore-1.27.68.tar.gz", hash = "sha256:aa8ce593e8d6e1aeb5852f8847e3d1750a1e840b221c01ff63ac0cb1dc583aba"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3308,8 +3308,8 @@ pyparsing = [
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
 PyPDF2 = [
-    {file = "PyPDF2-1.28.5-py3-none-any.whl", hash = "sha256:5ee092a9bf5fb3aeb1e9a85fb6e15d746ebcdee65b5c8915d054d43476f5e73e"},
-    {file = "PyPDF2-1.28.5.tar.gz", hash = "sha256:bc9619d9b8c33c66550a1f824ae884f99f33dd2ea64baf55d0e98ff6852bfb74"},
+    {file = "PyPDF2-1.28.6-py3-none-any.whl", hash = "sha256:d7118f0187153257b1f906dcfcd8236608f4987b6a9999b7c5ad49114706a1ad"},
+    {file = "PyPDF2-1.28.6.tar.gz", hash = "sha256:c0840835d18357b077da05bdad1423f5e29419f318135b6a6542895930dc4905"},
 ]
 pyreadline3 = [
     {file = "pyreadline3-3.4.1-py3-none-any.whl", hash = "sha256:b0efb6516fd4fb07b45949053826a62fa4cb353db5be2bbb4a7aa1fdd1e345fb"},
@@ -3681,8 +3681,8 @@ types-paramiko = [
     {file = "types_paramiko-2.11.5-py3-none-any.whl", hash = "sha256:08127a205b2a8f70dea04f0cfa256a7a82037f82d86c12e8db339d35cabd6f5b"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.20.1.tar.gz", hash = "sha256:36e3426476e373da6f2bb8a81a1194478cd1f33813a4e254849146d28c450e00"},
-    {file = "types_protobuf-3.20.1-py3-none-any.whl", hash = "sha256:b0bc0ffde2a339ee25c4b47e9dd515010153ad80c21d16fb57a2429987579801"},
+    {file = "types-protobuf-3.20.2.tar.gz", hash = "sha256:cfb76b5eba514807796603006134ccc361432dd061a8ccb8db2cf9108a454369"},
+    {file = "types_protobuf-3.20.2-py3-none-any.whl", hash = "sha256:e5aa38c2ea7a765f5d572a961e92b150c2eb8504b56a525eaae745a41b4d8fdc"},
 ]
 types-PyMySQL = [
     {file = "types-PyMySQL-1.0.19.tar.gz", hash = "sha256:f79a1f4d9df4a65db999537f9a47de419be162dfeab3b2c91bcba8bb1a362a65"},
@@ -3785,8 +3785,8 @@ urllib3 = [
     {file = "urllib3-1.26.12.tar.gz", hash = "sha256:3fa96cf423e6987997fc326ae8df396db2a8b7c667747d47ddd8ecba91f4a74e"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.16.4-py3-none-any.whl", hash = "sha256:035ed57acce4ac35c82c9d8802202b0e71adac011a511ff650cbcf9635006a22"},
-    {file = "virtualenv-20.16.4.tar.gz", hash = "sha256:014f766e4134d0008dcaa1f95bafa0fb0f575795d07cae50b1bee514185d6782"},
+    {file = "virtualenv-20.16.5-py3-none-any.whl", hash = "sha256:d07dfc5df5e4e0dbc92862350ad87a36ed505b978f6c39609dc489eadd5b0d27"},
+    {file = "virtualenv-20.16.5.tar.gz", hash = "sha256:227ea1b9994fdc5ea31977ba3383ef296d7472ea85be9d6732e42a91c04e80da"},
 ]
 virtualenv-clone = [
     {file = "virtualenv-clone-0.5.7.tar.gz", hash = "sha256:418ee935c36152f8f153c79824bb93eaf6f0f7984bae31d3f48f350b9183501a"},
