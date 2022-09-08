@@ -977,55 +977,6 @@ def convert_datetime_str(time_str: str) -> struct_time:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def convert_duration_time_minutes(duration_string: str) -> float:
-    """
-    Convert an ISO 8601 Duration string to a float representing the same duration time in minutes.
-
-    Args:
-        duration_string (str): A string representing an ISO 8601 Duration time.
-
-    Returns:
-         float: The same duration in minutes represented as a float.
-    """
-    if duration_string is None:
-        return 0
-
-    if duration_string[0] != "P":
-        raise ValueError(f"{duration_string} is not a valid ISO 8601 Duration string.")
-
-    year_in_minutes = 525600
-    month_in_minutes = 43800
-    week_in_minutes = 10080
-    day_in_minutes = 1440
-    hour_in_minutes = 60
-
-    minutes = 0
-
-    # Split by "T" char
-    for i, item in enumerate(duration_string.split("T")):
-        for number, period in re.findall(r"(?P<number>\d+)(?P<period>[SMHDWY])", item):
-            number = float(number)
-            this = 0
-            if period == "Y":
-                this = number * year_in_minutes  # 365.25
-            elif period == "W":
-                this = number * week_in_minutes
-            elif period == "D":
-                this = number * day_in_minutes
-            elif period == "H":
-                this = number * hour_in_minutes
-            elif period == "M":
-                # Ambiguity between months and minutes
-                if i == 0:
-                    this = number * month_in_minutes  # Assume 30 days
-                else:
-                    this = number
-            elif period == "S":
-                this = number / 60
-            minutes = minutes + this
-    return minutes
-
-
 def convert_duration_time(duration: str) -> str:
     """
     | Convert an ISO 8601 duration string to a human-readable string format.
