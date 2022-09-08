@@ -17,5 +17,4 @@ def test_PcapHTTPExtractor(mocker):
     PcapHTTPExtractor.main()
 
     args_to_demisto_res = demisto_res.call_args.args[0]
-    assert args_to_demisto_res.get('Contents') == open_file('Test_data/readable_output.md')
     assert len(args_to_demisto_res.get('EntryContext', {}).get('PcapHTTPFlows', {})) == 2
