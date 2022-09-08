@@ -17,7 +17,7 @@ def hide_fields_on_new_incident(incident, field):
         Returns: demisto.results object
 
     """
-    if incident["id"] == "":
+    if not incident.get("id"):
         # This is a new incident, hide the field
         demisto.results({"hidden": True, "options": []})
     else:
