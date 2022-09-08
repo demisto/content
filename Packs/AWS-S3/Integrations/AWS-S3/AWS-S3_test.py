@@ -57,6 +57,7 @@ def util_load_json(path: str):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
 def convert_size(size_bytes):
     import math
 
@@ -92,7 +93,8 @@ def test_create_bucket_command(mocker):
 
 
 @pytest.mark.parametrize('res, excepted', [({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NO_CONTENT}}, 'deleted'),
-                                           ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}}, 'not found')])
+                                           ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}},
+                                            'not found')])
 def test_delete_bucket_command(mocker, res, excepted):
     """
     Given:
@@ -127,8 +129,9 @@ def test_list_bucket_command(mocker):
     args = TEST_PARAMS
     response = {'Buckets': [{'Name': 'test_1', 'CreationDate': datetime(2022, 1, 1)},
                             {'Name': 'test_2', 'CreationDate': datetime(2022, 2, 2)}]}
-    excepted = [{'BucketName': bucket.get('Name'), 'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')}
-                for bucket in response.get('Buckets')]
+    excepted = [{'BucketName': bucket.get('Name'),
+                 'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')} for bucket in
+                response.get('Buckets')]
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_buckets", return_value=response)
 
@@ -142,8 +145,7 @@ TEST_POLICY = {'Policy': """
                    {
                        "Id": "1",
                        "Version": "1.0.0",
-                       "Statement": 
-                       [
+                       "Statement": [
                            {
                                "BucketName": "bucket_name_1",
                                "Sid": "Sid_1",
@@ -187,8 +189,9 @@ def test_get_bucket_policy_command(mocker):
     assert res.outputs == excepted
 
 
-@pytest.mark.parametrize('res, excepted', [({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.OK}}, 'Successfully applied'),
-                                           ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}}, "Couldn't apply")])
+@pytest.mark.parametrize('res, excepted',
+                         [({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.OK}}, 'Successfully applied'),
+                          ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}}, "Couldn't apply")])
 def test_put_bucket_policy_command(mocker, res, excepted):
     """
     Given:
@@ -258,8 +261,9 @@ def test_list_objects_command(mocker):
     assert res.outputs[0].get('LastModified') == datetime.strftime(contents.get('LastModified'), '%Y-%m-%dT%H:%M:%S')
 
 
-@pytest.mark.parametrize('res, excepted', [({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.OK}}, 'Successfully applied'),
-                                           ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}}, "Couldn't apply")])
+@pytest.mark.parametrize('res, excepted',
+                         [({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.OK}}, 'Successfully applied'),
+                          ({'ResponseMetadata': {'HTTPStatusCode': HTTPStatus.NOT_FOUND}}, "Couldn't apply")])
 def test_put_public_access_block_command(mocker, res, excepted):
     """
     Given:
@@ -269,8 +273,8 @@ def test_put_public_access_block_command(mocker, res, excepted):
     Then:
     - Ensure that the bucket public access block has been updated.
     """
-    args = {'bucket': 'test_bucket', 'BlockPublicAcls': 'false', 'IgnorePublicAcls': 'false', 'BlockPublicPolicy': 'false',
-            'RestrictPublicBuckets': 'false'}
+    args = {'bucket': 'test_bucket', 'BlockPublicAcls': 'false', 'IgnorePublicAcls': 'false',
+            'BlockPublicPolicy': 'false', 'RestrictPublicBuckets': 'false'}
     args.update(TEST_PARAMS)
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())

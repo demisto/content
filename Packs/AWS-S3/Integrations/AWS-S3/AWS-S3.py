@@ -38,13 +38,9 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 def create_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     data = []
     kwargs = {'Bucket': args.get('bucket', '').lower()}
     if args.get('acl') is not None:
@@ -64,22 +60,15 @@ def create_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> Comman
 
     response = client.create_bucket(**kwargs)
 
-    data.append({
-        'BucketName': args.get('bucket'),
-        'Location': response['Location']
-    })
+    data.append({'BucketName': args.get('bucket'), 'Location': response['Location']})
     human_readable = tableToMarkdown('AWS S3 Buckets', data)
     return CommandResults(readable_output=human_readable, outputs=data, outputs_prefix='AWS.S3.Buckets')
 
 
 def delete_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
 
     response = client.delete_bucket(Bucket=args.get('bucket', '').lower())
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.NO_CONTENT:
@@ -88,69 +77,45 @@ def delete_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> Comman
 
 
 def list_buckets_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     data = []
     response = client.list_buckets()
     for bucket in response['Buckets']:
-        data.append({
-            'BucketName': bucket['Name'],
-            'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')
-        })
+        data.append({'BucketName': bucket['Name'],
+                     'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')})
     human_readable = tableToMarkdown('AWS S3 Buckets', data)
     return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
                           outputs_key_field='BucketName', outputs=data)
 
 
 def get_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     data = []
     response = client.get_bucket_policy(Bucket=args.get('bucket', '').lower())
     policy = json.loads(response['Policy'])
     statements = policy['Statement']
     for statement in statements:
-        data.append({
-            'BucketName': args.get('bucket'),
-            'PolicyId': policy.get('Id'),
-            'PolicyVersion': policy.get('Version'),
-            'Sid': statement.get('Sid'),
-            'Action': statement.get('Action'),
-            'Principal': statement.get('Principal'),
-            'Resource': statement.get('Resource'),
-            'Effect': statement.get('Effect'),
-            'Json': response.get('Policy')
-        })
+        data.append(
+            {'BucketName': args.get('bucket'), 'PolicyId': policy.get('Id'), 'PolicyVersion': policy.get('Version'),
+             'Sid': statement.get('Sid'), 'Action': statement.get('Action'), 'Principal': statement.get('Principal'),
+             'Resource': statement.get('Resource'), 'Effect': statement.get('Effect'), 'Json': response.get('Policy')})
     human_readable = tableToMarkdown('AWS S3 Bucket Policy', data)
     return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
                           outputs_key_field='BucketName', outputs=data)
 
 
 def put_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    kwargs = {
-        'Bucket': args.get('bucket', '').lower(),
-        'Policy': args.get('policy')
-    }
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
+    kwargs = {'Bucket': args.get('bucket', '').lower(), 'Policy': args.get('policy')}
     if args.get('confirmRemoveSelfBucketAccess') is not None:
-        kwargs.update({'ConfirmRemoveSelfBucketAccess': True if args.get(
-            'confirmRemoveSelfBucketAccess') == 'True' else False})
+        kwargs.update(
+            {'ConfirmRemoveSelfBucketAccess': True if args.get('confirmRemoveSelfBucketAccess') == 'True' else False})
 
     response = client.put_bucket_policy(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
@@ -159,25 +124,17 @@ def put_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> Co
 
 
 def delete_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     client.delete_bucket_policy(Bucket=args.get('bucket', '').lower())
     return CommandResults(readable_output=f"Policy deleted from {args.get('bucket')}")
 
 
 def download_file_command(args: Dict[str, Any], aws_client: AWSClient):
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     data = io.BytesIO()
     client.download_fileobj(args.get('bucket', '').lower(), args.get('key'), data)
 
@@ -185,17 +142,11 @@ def download_file_command(args: Dict[str, Any], aws_client: AWSClient):
 
 
 def list_objects_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     data = []
-    kwargs = {
-        'Bucket': args.get('bucket')
-    }
+    kwargs = {'Bucket': args.get('bucket')}
     if args.get('delimiter') is not None:
         kwargs.update({'Delimiter': args.get('delimiter')})
     if args.get('prefix') is not None:
@@ -206,11 +157,8 @@ def list_objects_command(args: Dict[str, Any], aws_client: AWSClient) -> Command
     for response in paginator.paginate(**kwargs):
         if response.get('Contents', None):
             for key in response['Contents']:
-                data.append({
-                    'Key': key['Key'],
-                    'Size': convert_size(key['Size']),
-                    'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-                })
+                data.append({'Key': key['Key'], 'Size': convert_size(key['Size']),
+                             'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')})
 
     if len(data) > 0:
         human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
@@ -225,13 +173,9 @@ def get_file_path(file_id):
 
 
 def upload_file_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     path = get_file_path(args.get('entryID'))
 
     with open(path['path'], 'rb') as data:
@@ -241,54 +185,37 @@ def upload_file_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandR
 
 
 def get_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
     response = client.get_public_access_block(Bucket=args.get('bucket'))
     public_access_block_configuration = response.get('PublicAccessBlockConfiguration')
-    data = {
-        'BucketName': args.get('bucket'),
-        'PublicAccessBlockConfiguration': {
-            'BlockPublicAcls': public_access_block_configuration.get('BlockPublicAcls'),
-            'IgnorePublicAcls': public_access_block_configuration.get('IgnorePublicAcls'),
-            'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
-            'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets'),
-        }
-    }
+    data = {'BucketName': args.get('bucket'), 'PublicAccessBlockConfiguration': {
+        'BlockPublicAcls': public_access_block_configuration.get('BlockPublicAcls'),
+        'IgnorePublicAcls': public_access_block_configuration.get('IgnorePublicAcls'),
+        'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
+        'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets'), }}
     human_readable = tableToMarkdown('AWS S3 Bucket Public Access Block', data)
     return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
                           outputs_key_field='BucketName')
 
 
 def put_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    kwargs = {
-        'Bucket': args.get('bucket'),
-        'PublicAccessBlockConfiguration': {
-            'BlockPublicAcls': argToBoolean(args.get('BlockPublicAcls')),
-            'IgnorePublicAcls': argToBoolean(args.get('IgnorePublicAcls')),
-            'BlockPublicPolicy': argToBoolean(args.get('BlockPublicPolicy')),
-            'RestrictPublicBuckets': argToBoolean(args.get('RestrictPublicBuckets'))
-        }
-    }
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
+    kwargs = {'Bucket': args.get('bucket'),
+              'PublicAccessBlockConfiguration': {'BlockPublicAcls': argToBoolean(args.get('BlockPublicAcls')),
+                                                 'IgnorePublicAcls': argToBoolean(args.get('IgnorePublicAcls')),
+                                                 'BlockPublicPolicy': argToBoolean(args.get('BlockPublicPolicy')),
+                                                 'RestrictPublicBuckets': argToBoolean(
+                                                     args.get('RestrictPublicBuckets'))}}
     response = client.put_public_access_block(**kwargs)
 
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
         return CommandResults(
             readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
     return CommandResults(readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket")
-
-
 
 
 def main():  # pragma: no cover
@@ -363,5 +290,3 @@ def main():  # pragma: no cover
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
-
