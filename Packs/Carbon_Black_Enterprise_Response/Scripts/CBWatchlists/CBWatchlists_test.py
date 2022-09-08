@@ -4,7 +4,7 @@ from CommonServerPython import *
 
 QUERY_COMMAND_RESPONSE = [([{
     'Type': entryTypes['note'],
-    'Contents':  [
+    'Contents': [
         {'name': 'test_value',
          'last_hit_count': '3'}
     ]
@@ -12,8 +12,7 @@ QUERY_COMMAND_RESPONSE = [([{
     ([{
         'Type': entryTypes['note'],
         'Contents': []
-    }
-     ], 'No matches.')
+    }], 'No matches.')
 ]
 
 

@@ -7,17 +7,10 @@ QUERY_COMMAND_RESPONSE = [([{
     'Contents': {'results': [
         {'test': 'test_value',
          'test2': 'test_value2'}
-    ]
-    }
-}
-                           ], [{'test': 'test_value', 'test2': 'test_value2'}]),
+    ]}}], [{'test': 'test_value', 'test2': 'test_value2'}]),
     ([{
         'Type': entryTypes['note'],
-        'Contents': {'results': []
-                     }
-    }
-     ], 'No matches.')
-]
+        'Contents': {'results': []}}], 'No matches.')]
 
 
 @pytest.mark.parametrize('res, contents', QUERY_COMMAND_RESPONSE)
