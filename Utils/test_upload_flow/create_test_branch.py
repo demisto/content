@@ -216,7 +216,6 @@ if __name__ == "__main__":
         modify_item_path(packs_path /
                          'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
                          'Alibaba_schema.json', 'AlibabaActionTrail')
-        print(changed_packs)
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
