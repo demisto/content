@@ -1738,9 +1738,9 @@ def get_batch_id(client: Client, suspect_files_guids: dict, timeout_seconds: int
         time.sleep(interval_seconds)  # Sleep for 10 seconds before next call
         passed_seconds = passed_seconds - interval_seconds
     for suspect_file in list(suspect_files_guids.keys()):
-        malop_comment = f'''Could not download the file '{
-            suspect_file}' from source machine, even after waiting for {timeout_seconds} seconds.'''
-        new_malop_comments.append({"isSuccess": False, "message": malop_comment})
+        malop_comment = f'Could not download the file {suspect_file} from source machine, even after waiting for {timeout_seconds} seconds.'
+        raise DemistoException(malop_comment)
+
     return new_malop_comments
 
 
