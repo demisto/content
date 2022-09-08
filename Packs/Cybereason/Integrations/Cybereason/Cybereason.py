@@ -209,7 +209,7 @@ def is_probe_connected_command(is_remediation_commmand=False):
         for value in elements.values():
             machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
                                          default_return_value='')
-            if machine_name.upper() == machine.upper():
+            if machine_name and machine and machine_name.upper() == machine.upper():
                 is_connected = True
                 break
 
@@ -379,7 +379,7 @@ def query_connections_command():
     context = []
     for output in outputs:
         # Remove whitespaces from dictionary keys
-        context.append({key.translate(None, ' '): value for key, value in output.items()})
+        context.append({key.replace(' ', ''): value for key, value in output.items()})
 
     ec = {
         'Connection': context
