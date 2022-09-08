@@ -1,10 +1,9 @@
 import demistomock as demisto
-import pytest
 
 def test_get_host_status_command(mocker):
     """
     Given: Demisto args and params.
-    When:  Running a remedy_get_ticket_command normally.
+    When:  Running a get_host_status_command normally.
     Then:  ensures the expected result is returned
     """
 
@@ -40,7 +39,7 @@ def test_get_host_status_command(mocker):
 def test_get_service_status_command(mocker):
     """
     Given: Demisto args and params.
-    When:  Running a remedy_get_ticket_command normally.
+    When:  Running a get_service_status_command normally.
     Then:  ensures the expected result is returned
     """
 
