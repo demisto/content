@@ -366,7 +366,7 @@ class URLCheck(object):
         return index, part
 
     @staticmethod
-    def check_domain(host):
+    def check_domain(host: str) -> bool:
         """
         Checks if the domain is a valid domain (has at least 1 dot and a tld >= 2)
         :return: boolean
@@ -384,7 +384,7 @@ class URLCheck(object):
         else:
             return True
 
-    def hex_check(self, index):
+    def hex_check(self, index: int) -> bool:
         """
         Checks the next two chars in the url are hex digits
         :param index: the index pointer
@@ -430,8 +430,6 @@ class URLCheck(object):
             index += 1
 
         self.modified_url = self.modified_url[index:]
-
-        # index = len(self.modified_url)-1
 
 
 class URLFormatter(object):
@@ -540,7 +538,7 @@ def main():
 
         finally:
             formatted_urls.append(formatted_url)
-    
+
     demisto.results(formatted_urls)
 
 

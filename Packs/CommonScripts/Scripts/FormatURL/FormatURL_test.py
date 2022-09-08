@@ -1,5 +1,4 @@
 import pytest
-from typing import List, Union
 from FormatURL import *
 
 TEST_URL_HTTP = 'http://www.test.com'
@@ -57,13 +56,15 @@ BRACKETS_URL_TO_FORMAT = [
     ('https://test1.test-api.com', 'https://test1.test-api.com'),
 ]
 
-ATP_REDIRECTS = [('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
-                  '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
-                  '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
-                  '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0',
-                  'https://office.memoriesflower.com/Permission/office.php'),
-                 ("https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",
-                  "https://google.com:443/search?q=a*test&gs=ps"),
+ATP_REDIRECTS = [
+    ('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
+     '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
+     '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
+     '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0',
+     'https://office.memoriesflower.com/Permission/office.php'),
+    ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
+     'https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
+     'https://google.com:443/search?q=a*test&gs=ps'),
 ]
 
 PROOF_POINT_REDIRECTS = [
@@ -121,7 +122,8 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
 ]
 
 FAILS = [
-    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]', pytest.raises(URLError)),  # disable-secrets-detection IPv6 must have square brackets
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',
+     pytest.raises(URLError)),  # disable-secrets-detection IPv6 must have square brackets
     ('http://142.42.1.1:aaa8080', pytest.raises(URLError)),  # invalid port
     ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # invalid port  # disable-secrets-detection
     ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
@@ -145,7 +147,8 @@ class TestFormatURL:
         Then:
         - Ensure for every expected protocol given, it is replaced with the expected value.
         """
-        assert URLFormatter(non_formatted_url).correct_and_refang_url(non_formatted_url) == expected.lower()
+        url = URLFormatter('https://www.test.com/')
+        assert url.correct_and_refang_url(non_formatted_url) == expected.lower()
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: str):
@@ -161,7 +164,7 @@ class TestFormatURL:
         """
 
         assert URLFormatter(url_).__str__() == expected.lower()
-    
+
     @pytest.mark.parametrize('url_, expected', FAILS)
     def test_exceptions(self, url_: str, expected):
         """
@@ -171,8 +174,7 @@ class TestFormatURL:
         with expected:
             assert URLFormatter(url_) is not None
 
-
-    @pytest.mark.parametrize('url_, expected', REDIRECT_TEST_CASES)
+    @pytest.mark.parametrize('url_, expected', REDIRECT_TEST_DATA)
     def test_wrappers(self, url_: str, expected: str):
         """
         Given:
@@ -208,3 +210,10 @@ class TestFormatURL:
         - Ensure formatted URL is returned.
         """
         assert URLFormatter(url_).__str__() == expected.lower()
+
+    def test_url_class(self):
+        url = URLType('https://www.test.com')
+
+        assert url.raw == 'https://www.test.com'
+        assert url.__str__() == ("Scheme = \nUser_info = \nHostname = \nPort = \n"
+                                 "Path = \nQuery = \nFragment = ")
