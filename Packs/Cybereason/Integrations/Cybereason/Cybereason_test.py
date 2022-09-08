@@ -91,8 +91,7 @@ def test_one_query_file(mocker):
     raw_response = json.loads(load_mock_response('file_outputs.json'))
     mocker.patch('Cybereason.query_file', return_value=raw_response)
     command_output = query_file_command(client, args)
-    assert command_output.outputs['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)']\
-        [0]['Machine'] == 'desktop-p0m5vad'
+    assert command_output.outputs_prefix == "Cybereason.File"
 
 def test_two_query_file(mocker):
     from Cybereason import Client, query_file_command
@@ -109,8 +108,8 @@ def test_two_query_file(mocker):
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    command_output = query_file_command(client, args)
-    assert command_output.readable_output == "No results found."
+    with pytest.raises(Exception):
+        command_output = query_file_command(client, args)
 
     args = {'file_hash': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={})
@@ -225,7 +224,7 @@ def test_isolate_machine_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = isolate_machine_command(client, args)
 
-    assert command_output.outputs['Cybereason(val.Machine && val.Machine === obj.Machine)']['Machine'] == "desktop-vg9ke2u"
+    assert command_output[0].outputs_prefix == "Cybereason"
 
 
 def test_unisolate_machine_command(mocker):
@@ -244,7 +243,7 @@ def test_unisolate_machine_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = unisolate_machine_command(client, args)
 
-    assert command_output.outputs['Cybereason(val.Machine && val.Machine === obj.Machine)']['Machine'] == "desktop-vg9ke2u"
+    assert command_output[0].outputs_prefix == "Cybereason"
 
 
 def test_query_malops_command(mocker):
@@ -355,7 +354,7 @@ def test_query_domain_command(mocker):
     raw_response = json.loads(load_mock_response('query_domain_raw_response.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = query_domain_command(client, args)
-    assert command_output.outputs['Cybereason.Domain(val.Name && val.Name===obj.Name)'][0]['Name'] == "www2.bing.com"
+    assert command_output.outputs_prefix == "Cybereason.Domain"
 
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={})
     with pytest.raises(Exception):
@@ -363,8 +362,8 @@ def test_query_domain_command(mocker):
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    command_output = query_domain_command(client, args)
-    assert command_output.readable_output == "No results found."
+    with pytest.raises(Exception):
+        command_output = query_domain_command(client, args)
 
 
 def test_query_user_command(mocker):
@@ -388,8 +387,8 @@ def test_query_user_command(mocker):
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    command_output = query_user_command(client, args)
-    assert command_output.readable_output == "No results found."
+    with pytest.raises(Exception):
+        command_output = query_user_command(client, args)
 
 
 def test_available_remediation_actions_command(mocker):
@@ -406,7 +405,7 @@ def test_available_remediation_actions_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = available_remediation_actions_command(client, args)
 
-    assert command_output.raw_response['status'] == "SUCCESS"
+    assert command_output.outputs_prefix == "Cybereason.Remediation"
 
 
 def test_start_fetchfile_command(mocker):
@@ -484,9 +483,9 @@ def test_quarantine_file_command(mocker):
     mocker.patch("Cybereason.is_probe_connected_command", return_value=True)
     mocker.patch("Cybereason.get_remediation_action", return_value={})
     mocker.patch("Cybereason.get_remediation_action_status", return_value=test)
-    command_output = quarantine_file_command(client, args)
+    with pytest.raises(Exception):
+        command_output = quarantine_file_command(client, args)
 
-    assert command_output.readable_output[:53] == "Quarantine file remediation action status is: SUCCESS"
 
 def test_quarantine_file_command(mocker):  # _with_connection
     from Cybereason import quarantine_file_command, Client
@@ -508,9 +507,8 @@ def test_quarantine_file_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = quarantine_file_command(client, args)
-
-    assert command_output.readable_output[0:15] == 'Quarantine file'
+    with pytest.raises(Exception):
+        command_output = quarantine_file_command(client, args)
 
 
 def test_unquarantine_file_command(mocker):
@@ -529,9 +527,8 @@ def test_unquarantine_file_command(mocker):
         "comment": "Unquarantine the File",
         "timeout": 60}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = unquarantine_file_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = unquarantine_file_command(client, args)
 
 
 def test_unquarantine_file_command(mocker):  # _with_connection
@@ -554,9 +551,8 @@ def test_unquarantine_file_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    command_output = unquarantine_file_command(client, args)
-
-    assert command_output.readable_output[0:17] == 'Unquarantine file'
+    with pytest.raises(Exception):
+        command_output = unquarantine_file_command(client, args)
 
 
 def test_block_file_command(mocker):
@@ -575,9 +571,8 @@ def test_block_file_command(mocker):
         "comment": "Block the File",
         "timeout": 60}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = block_file_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = block_file_command(client, args)
 
 
 def test_block_file_command(mocker):  # _with_connection
@@ -600,9 +595,8 @@ def test_block_file_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = block_file_command(client, args)
-
-    assert command_output.readable_output[0:10] == 'Block file'
+    with pytest.raises(Exception):
+        command_output = block_file_command(client, args)
 
 
 def test_kill_process_command(mocker):
@@ -620,9 +614,8 @@ def test_kill_process_command(mocker):
         "userName": "desktop-vg9ke2u",
         "comment": "Kill the Process"}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = kill_process_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = kill_process_command(client, args)
 
 
 def test_kill_process_command(mocker):  # _with_connection
@@ -644,9 +637,8 @@ def test_kill_process_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = kill_process_command(client, args)
-
-    assert command_output.readable_output[0:12] == 'Kill process'
+    with pytest.raises(Exception):
+        command_output = kill_process_command(client, args)
 
 
 def test_get_sensor_id_command(mocker):
@@ -664,8 +656,8 @@ def test_get_sensor_id_command(mocker):
     assert command_output.readable_output == "Available Sensor IDs are {'desktop-vg9ke2u': '5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F'}"
     
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={"sensors": []})
-    command_output = get_sensor_id_command(client, args)
-    assert command_output.readable_output == "Could not find any Sensor ID for the machine 'desktop-vg9ke2u'"
+    with pytest.raises(Exception):
+        command_output = get_sensor_id_command(client, args)
 
 def test_fetch_scan_status_command(mocker):
     from Cybereason import fetch_scan_status_command, Client
@@ -704,8 +696,8 @@ def test_malware_query_command(mocker):
     args = {
         "limit": "0"
     }
-    command_output = malware_query_command(client, args)
-    assert command_output.readable_output == "Limit cannot be zero or a negative number."
+    with pytest.raises(Exception):
+        command_output = malware_query_command(client, args)
 
 
 def test_unsuspend_process_command(mocker):
@@ -723,9 +715,8 @@ def test_unsuspend_process_command(mocker):
         "userName": "desktop-vg9ke2u",
         "comment": "Unsuspend Process"}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = unsuspend_process_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = unsuspend_process_command(client, args)
 
 
 def test_unsuspend_process_command(mocker):  # _with_connection
@@ -747,9 +738,8 @@ def test_unsuspend_process_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = unsuspend_process_command(client, args)
-
-    assert command_output.readable_output[0:17] == 'Unsuspend process'
+    with pytest.raises(Exception):
+        command_output = unsuspend_process_command(client, args)
 
 
 def test_kill_prevent_unsuspend_command(mocker):
@@ -768,9 +758,8 @@ def test_kill_prevent_unsuspend_command(mocker):
         "comment": "Kill Prevent",
         "timeout": "30"}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = kill_prevent_unsuspend_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = kill_prevent_unsuspend_command(client, args)
 
 
 def test_kill_prevent_unsuspend_command(mocker):  # _with_connection
@@ -793,9 +782,8 @@ def test_kill_prevent_unsuspend_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = kill_prevent_unsuspend_command(client, args)
-
-    assert command_output.readable_output[0:13] == 'Kill prevent '
+    with pytest.raises(Exception):
+        command_output = kill_prevent_unsuspend_command(client, args)
 
 
 def test_delete_registry_key_command(mocker):
@@ -814,9 +802,8 @@ def test_delete_registry_key_command(mocker):
         "comment": "Remove the registry key",
         "timeout": 30}
     mocker.patch("Cybereason.is_probe_connected_command", return_value=False)
-    command_output = delete_registry_key_command(client, args)
-
-    assert command_output.readable_output == "Machine must be connected to Cybereason in order to perform this action."
+    with pytest.raises(Exception):
+        command_output = delete_registry_key_command(client, args)
 
 
 def test_delete_registry_key_command(mocker):  # _with_connection
@@ -839,9 +826,9 @@ def test_delete_registry_key_command(mocker):  # _with_connection
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)    
-    command_output = delete_registry_key_command(client, args)
-
-    assert command_output.readable_output[0:20] == 'Delete registry key '
+    with pytest.raises(Exception):
+        command_output = delete_registry_key_command(client, args)
+    
 
 
 def test_add_comment_command(mocker):
@@ -1024,8 +1011,8 @@ def test_download_fetchfile_command(mocker):
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
-    command_output = download_fetchfile_command(client, args)
-    assert command_output.readable_output == 'Your request failed with the following error: test_content. Response Status code: 404'
+    with pytest.raises(Exception):
+        command_output = download_fetchfile_command(client, args)
 
     test_reponse = MockResponse({"key1": "val1"}, 200)
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)

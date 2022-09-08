@@ -823,7 +823,6 @@ def available_remediation_actions_command(client: Client, args: dict):
     }
 
     response = client.cybereason_api_call('POST', '/rest/detection/custom-remediation', json_body=json_body)
-
     if response:
         cybereason_outputs = []
         data_list = dict_safe_get(response, ['data'], default_return_value={}, return_type=list)
@@ -850,7 +849,7 @@ def available_remediation_actions_command(client: Client, args: dict):
 
     return CommandResults(
                 readable_output=tableToMarkdown(
-                    f'Cybereason available remediation actions for malop {malop_guid}:', cybereason_outputs, removeNull=True),
+                    f'Cybereason available remediation actions for malop {malop_guid}:', cybereason_outputs, removeNull=False),
                 outputs_prefix='Cybereason.Remediation',
                 outputs_key_field='TargetID',
                 outputs=cybereason_outputs)
