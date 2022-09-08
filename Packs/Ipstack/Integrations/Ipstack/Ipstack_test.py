@@ -1,4 +1,3 @@
-import pytest
 import demistomock as demisto
 
 RAW_RESPONSE_MOCK = {
@@ -14,10 +13,7 @@ CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val
 CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
 
-@pytest.mark.parametrize('raw_response_mock', [
-    RAW_RESPONSE_MOCK
-])
-def test_right_location_format(mocker, raw_response_mock, requests_mock):
+def test_right_location_format(mocker, requests_mock):
     """
     When:
       - Calling ip_command
@@ -29,7 +25,6 @@ def test_right_location_format(mocker, raw_response_mock, requests_mock):
     mocker.patch.object(demisto, 'params', return_value={'proxy': 'proxy',
                                                          'apikey': 'apikey',
                                                          'integrationReliability': 'C - Fairly reliable'})
-    mocker.patch('Ipstack.do_ip', return_value=raw_response_mock)
     mocker.patch.object(demisto, 'args', return_value={'ip': '1.2.3.4'})
     mocker.patch.object(demisto, 'results')
     requests_mock.get(
