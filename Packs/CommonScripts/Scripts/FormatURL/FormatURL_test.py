@@ -121,7 +121,8 @@ FORMAT_PATH = [
 
 FORMAT_QUERY = [
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
-    ('https://www.test.test.com/test.html?paramaters=testagain', 'https://www.test.test.com/test.html?paramaters=testagain'),
+    ('https://www.test.test.com/test.html?paramaters=testagain',
+     'https://www.test.test.com/test.html?paramaters=testagain'),
 ]
 
 FORMAT_FRAGMENT = [
@@ -161,8 +162,8 @@ FAILS = [
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
 
-FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY + 
-                FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
+FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY
+                + FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_TESTS
 
@@ -182,7 +183,7 @@ class TestFormatURL:
         """
         url = URLFormatter('https://www.test.com/')
         assert url.correct_and_refang_url(non_formatted_url) == expected.lower()
-    
+
     @pytest.mark.parametrize('non_formatted_url, expected', FORMAT_HEX)
     def test_hex_chars(self, non_formatted_url: str, expected: str):
         """
