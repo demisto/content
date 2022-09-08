@@ -9,14 +9,18 @@ import demistomock as demisto
 def test_get_results(mocker, args, expected_results):
     """
     Given
-    - case 1: get_results function args, including False 'feDone' argument and empty profiles list.
-    - case 2: get_results function args, succesful fe-submit-result response mock with "Contents.alerts.alert" section.
-    - case 2: get_results function args, succesful fe-submit-result response mock without "Contents.alerts.alert" section.
-    - case 2: get_results function args, an errored fe-submit-result response mock.
+    - case 1: Empty args.
+    - case 2: args only with 'old' key.
+    - case 3: Empty with both 'old' and 'new' key.
+    - case 4: args with only 'new' key.
     When
-    - Running get_results function.
+    - Running StopTimeToAssignOnOwnerChange script.
     Then
-    - Ensure the right results were given and that the function paused the execution.
+    - Ensure the right results were given.
+    - case 1: No results.
+    - case 2: No results.
+    - case 3: No results.
+    - case 4: should results: "Assignment of the incident was successful and so the Time To Assignment timer has been stopped."
     """
     from StopTimeToAssignOnOwnerChange import main
     mocker.patch.object(demisto, 'results')
