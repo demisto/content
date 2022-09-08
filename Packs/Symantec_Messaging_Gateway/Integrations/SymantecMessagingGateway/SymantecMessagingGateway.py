@@ -43,7 +43,7 @@ def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
 
         if res.status_code not in (200, 204):
             raise Exception('Your request failed with the following error: ' + res.reason)
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
     return res
@@ -465,7 +465,7 @@ try:
         demisto.results(get_blocked_domains())
     elif demisto.command() == 'smg-get-blocked-ips':
         demisto.results(get_blocked_ips())
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(e)
     LOG.print_log()
     raise
