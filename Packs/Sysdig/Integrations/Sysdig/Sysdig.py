@@ -321,7 +321,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             try:
-                result = get_users(monitor, url)
+                get_users(monitor, url)
                 demisto.results('ok')
             except Exception as e:
                 return_error(f'Error:\n{str(e)}')
