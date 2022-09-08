@@ -201,9 +201,11 @@ def quit_driver_and_display_and_reap_children(driver, display):
     :return: None
     """
     demisto.debug(f'Quitting driver session: {driver.session_id}')
-    driver.quit()
 
     try:
+        if driver:
+            driver.quit()
+
         if display:
             display.stop()
 
@@ -290,8 +292,9 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
     :param include_url: when set to True, will include the URL bar in the image result
     """
 
-    driver, display = init_driver_and_display(width, height, offline_mode, include_url)
     try:
+        driver, display = init_driver_and_display(width, height, offline_mode, include_url)
+
         demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}.'
                       f' page load: {max_page_load_time}')
         driver.set_page_load_timeout(max_page_load_time)
