@@ -185,6 +185,21 @@ class Client(BaseClient):
         url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
+    def pull_request_list_request(self, repo: str, pr_id: str, params: Dict) -> Dict:
+        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
+            :param repo: str - The repository the user entered if he did.
+            :param body: Dict - the params to the api call
+            :param pr_id: str - an id to a specific pull request to update.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + '/pullrequests'
+        if pr_id:
+            url_suffix = f'{url_suffix}/{pr_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -571,7 +586,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
     response = client.issue_list_request(repo, params, issue_id)
     if issue_id:
         results = [response]
-        hr_title = f'The information about "{issue_id}"'
+        hr_title = f'The information about issue "{issue_id}"'
     else:
         results = check_pagination(client, response, limit)
         hr_title = f'List of the issues'
@@ -605,12 +620,12 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
 
 def issue_update_command(client: Client, args: Dict) -> CommandResults:
     """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
-        Args:
-            client: A Bitbucket client.
-            args: Demisto args.
-        Returns:
-            A CommandResult object with a dictionary contains the updated issue.
-        """
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a dictionary contains the updated issue.
+    """
     repo = args.get('repo', None)
     issue_id = arg_to_number(args.get('issue_id', None))
     title = args.get('title', None)
@@ -646,6 +661,13 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a dictionary contains information about the new pull request.
+    """
     repo = args.get('repo', None)
     title = args.get('title', None)
     source_branch = args.get('source_branch')
@@ -662,6 +684,13 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a dictionary contains information about the updated pull request.
+    """
     repo = args.get('repo', None)
     pull_request_id = args.get('pull_request_id', None)
     title = args.get('title', None)
@@ -676,6 +705,64 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
                           outputs_prefix='Bitbucket.PullRequest',
                           outputs=response,
                           raw_response=response)
+
+
+def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a dictionary contains a list of pull request.
+        If a state is provided than the list will contain only PR with the wanted status.
+        If a state is not provided, by default a list of the open pull requests will return.
+    """
+    repo = args.get('repo', None)
+    pull_request_id = args.get('pull_request_id', None)
+    state = args.get('state', None)
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'page': page,
+        'pagelen': page_size
+    }
+    if state:
+        params["state"] = state
+    response = client.pull_request_list_request(repo, pull_request_id, params)
+    if pull_request_id:
+        results = [response]
+        hr_title = f'The information about pull request "{pull_request_id}"'
+    else:
+        results = check_pagination(client, response, limit)
+        hr_title = f'List of the pull requests'
+    human_readable = []
+    for value in results:
+        d = {'Title': value.get('title'),
+             'Description': value.get('description'),
+             'SourceBranch': demisto.get(value, 'source.branch.name'),
+             'DestinationBranch': demisto.get(value, 'destination.branch.name'),
+             'State': value.get('state'),
+             'CreatedBy': demisto.get(value, 'author.display_name'),
+             'CreatedAt': value.get('created_on'),
+             'UpdatedAt': value.get('updated_on')
+             }
+        human_readable.append(d)
+
+    headers = ['Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt', 'UpdatedAt']
+    readable_output = tableToMarkdown(
+        name=hr_title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.PullRequest',
+        outputs=results,
+        raw_response=results
+    )
 
 
 ''' MAIN FUNCTION '''
