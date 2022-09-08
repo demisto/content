@@ -21,8 +21,8 @@ def test_get_results(mocker, feDone, profiles, status, feSubmissionKeys, file, m
     Given
     - case 1: get_results function args, including False 'feDone' argument and empty profiles list.
     - case 2: get_results function args, succesful fe-submit-result response mock with "Contents.alerts.alert" section.
-    - case 2: get_results function args, succesful fe-submit-result response mock without "Contents.alerts.alert" section.
-    - case 2: get_results function args, an errored fe-submit-result response mock.
+    - case 3: get_results function args, succesful fe-submit-result response mock without "Contents.alerts.alert" section.
+    - case 4: get_results function args, an errored fe-submit-result response mock.
     When
     - Running get_results function.
     Then
