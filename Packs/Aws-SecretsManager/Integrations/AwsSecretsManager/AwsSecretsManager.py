@@ -3,6 +3,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+import json
 
 import requests
 from typing import Dict, Any
@@ -23,6 +24,16 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' HELPER FUNCTIONS '''
+
+class DatetimeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -71,6 +82,9 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
 
     response = aws_client.list_secrets(Filters=filters, SortOrder=sort)
 
+    output = json.dumps(response, cls=DatetimeEncoder)
+    response = json.loads(output)
+
     readable_output = [{'Name': secret.get('Name', ''),
                         'ARN': secret.get('ARN', ''),
                         'Description': secret.get('Description', ''),
@@ -106,6 +120,9 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
         kwargs['VersionStage'] = args.get('version_stage')
 
     response = client.get_secret_value(**kwargs)
+
+    output = json.dumps(response, cls=DatetimeEncoder)
+    response = json.loads(output)
 
     if not response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return_error(f'Get command encountered an issue, got unexpected result! {response["ResponseMetadata"]}')
