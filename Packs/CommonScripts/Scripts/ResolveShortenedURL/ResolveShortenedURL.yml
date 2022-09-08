@@ -14,10 +14,10 @@ args:
   required: true
   default: true
   description: URL to resolve
-- name: verify
+- name: insecure
   required: false
-  default: true
-  description: Whether the request should verify the SSL certificate.
+  type: 8
+  description: Trust any certificate (not secure)
 outputs:
 - contextPath: URL.Data
   description: Shortened URL

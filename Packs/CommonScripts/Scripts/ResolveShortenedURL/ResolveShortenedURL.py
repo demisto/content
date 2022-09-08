@@ -16,7 +16,7 @@ headers = {
 
 def main():
     url = demisto.args().get('url')
-    verify = demisto.args().get('verify')
+    verify = not argToBoolean(demisto.args().get('insecure', False))
     req = requests.get('https://unshorten.me/json/' + url, headers=headers, verify=verify)
     content = req.json()
     if content['success']:
