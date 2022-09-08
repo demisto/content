@@ -32,7 +32,3 @@ for sensorId in sensorList:
                         "Contents": "Error occurred while parsing output from command. Exception info:\n"
                         + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
 demisto.results(res)
-
-
-if __name__ in ["__builtin__", "builtins", '__main__']:
-    main()
