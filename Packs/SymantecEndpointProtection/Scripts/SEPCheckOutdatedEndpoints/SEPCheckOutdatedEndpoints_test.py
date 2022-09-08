@@ -21,5 +21,4 @@ def test_check_outdated_endpoints(mocker, args, need_update):
     mocker.patch.object(demisto, 'executeCommand', return_value=entry)
     results_mock = mocker.patch.object(demisto, 'results')
     check_outdated_endpoints()
-    test = results_mock.call_args[0][0]
     assert results_mock.call_args[0][0][0] == need_update
