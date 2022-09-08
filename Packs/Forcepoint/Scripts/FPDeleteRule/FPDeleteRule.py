@@ -7,10 +7,11 @@ from CommonServerPython import *  # noqa: F401
 FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
 CMD_DEL_RULE_FORMAT = "sed -i '/^{0}={1} action=[A-Za-z]*$/d' {2}"
 CMD_TRITON_RELOAD_CONFIG = "/opt/WCG/bin/content_line -x"  # && /opt/WCG/WCGAdmin runds"
+ALLOWED_TYPES = ["dest_domain", "dest_ip", "dest_host", "url_regex"]
 
 
 def delete_rule(ruleType):
-    if ruleType not in ["dest_domain", "dest_ip", "dest_host", "url_regex"]:
+    if ruleType not in ALLOWED_TYPES:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                          "Contents":
                              'Type argument must be "dest_domain", "dest_ip", "dest_host" or "url_regex".'

@@ -7,13 +7,14 @@ FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
 CMD_SET_RULE_FORMAT = "sed -i '/^{0}={1} action=/{{h;s/{0}={1} action=[A-Za-z]*$/{0}={1} action={2}/}};${{x;/^$/{{" \
                       "s//{0}={1} action={2}/;H}};x}}' {3} "
 CMD_TRITON_RELOAD_CONFIG = "/opt/WCG/bin/content_line -x"  # && /opt/WCG/WCGAdmin runds"
+ALLOWED_TYPES = ["dest_domain", "dest_ip", "dest_host", "url_regex"]
 
 
 def set_rule(policy, ruleType):
     if policy not in ["allow", "deny"]:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                          "Contents": 'Policy argument must be "allow" or "deny". Invalid value: ' + policy})
-    elif ruleType not in ["dest_domain", "dest_ip", "dest_host", "url_regex"]:
+    elif ruleType not in ALLOWED_TYPES:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                          "Contents": 'Type argument must be "dest_domain", "dest_ip", "dest_host" or "url_regex". '
                                      'Invalid value: ' + ruleType})
