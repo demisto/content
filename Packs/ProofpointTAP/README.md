@@ -7,23 +7,13 @@ This pack includes XSIAM content.
 
 In order to use the collector to collect events from the vendor,  to collect events.You will need to configure the vendor and product for this specific collector.
 
-### XDRC (XDR Collector)
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
-You can configure the vendor and product by replacing vendor_product_raw with proofpoint_tap_raw.
-When configuring the instance, you should use a yml that configures the vendor and product, like this example for the Microsoft NPS product:
+<~XSIAM>
+<br/>This pack includes XSIAM content.
 
-```yml
-filebeat.inputs:
-- type: filestream
-  enabled: true
-  paths:
-    - c:\windows\system32\logfiles\*.log
-  processors:
-    - add_fields:
-        fields:
-          vendor: msft
-          product: nps
-```
+### Collect Events from Proofpoint TAP (XSIAM)
+To define a collector for Proofpoint you'll need to configure it in XDR documentation can be found [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors).
+
+</~XSIAM>
 
 ## What does this pack do?
 - Fetches events for all clicks and messages relating to known threats within a specified time period.
