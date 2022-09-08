@@ -42,7 +42,8 @@ tags:
 - office365
 - email
 - response
-comment: Search mails in office-365
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 args:
 - name: username

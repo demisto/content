@@ -40,7 +40,8 @@ subtype: python2
 tags:
 - registry
 - enhancement
-comment: Collect values for the given registry path from all Windows systems in this investigation.
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 args:
 - name: regpath
