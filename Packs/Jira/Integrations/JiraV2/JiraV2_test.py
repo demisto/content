@@ -37,6 +37,24 @@ def set_params(mocker):
     mocker.patch.object(demisto, "params", return_value=integration_params)
 
 
+def jira_req_side_effect(*args, **kwargs):
+    if args[1] == 'rest/api/latest/project':
+        return [{"id": "1234", "key": "testKey", "name": "testName"}]
+
+    return {
+        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234",
+        "accountId": "1234",
+        "emailAddress": "admin@demistodev.com",
+        "displayName": "test",
+        "active": True,
+        "timeZone": "Asia/Jerusalem",
+        "locale": "en_US",
+        "groups": {"size": 1, "items": []},
+        "applicationRoles": {"size": 1, "items": []},
+        "expand": "groups,applicationRoles",
+    }
+
+
 @pytest.mark.parametrize(
     "args",
     [
@@ -49,20 +67,7 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
     from JiraV2 import create_issue_command
 
     mocker.patch.object(demisto, "args", return_value=args)
-    user_data = {
-        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234",
-        "accountId": "1234",
-        "emailAddress": "admin@demistodev.com",
-        "displayName": "test",
-        "active": True,
-        "timeZone": "Asia/Jerusalem",
-        "locale": "en_US",
-        "groups": {"size": 1, "items": []},
-        "applicationRoles": {"size": 1, "items": []},
-        "expand": "groups,applicationRoles",
-        "projects": [{"id": "1234", "key": "testKey", "name": "testName"}],
-    }
-    mocker.patch("JiraV2.jira_req", return_value=user_data)
+    mocker.patch("JiraV2.jira_req", side_effect=jira_req_side_effect)
     mocker.patch.object(demisto, "results")
     create_issue_command()
     assert demisto.results.call_count == 1
