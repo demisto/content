@@ -21,7 +21,13 @@ def test_levenshtein(str1, str2, expected_results):
     assert levenshtein(str1, str2) == expected_results
 
 
-def test_main(mocker):
+@pytest.mark.parametrize('domain, sender, expected_results', [
+    ('example.com', 'mail@example1.com', 'yes'),
+    ('', 'mail@example1.com', 'no'),
+    ('example.com', '', 'no'),
+    ('example.com', 'mail@example.com', 'no')
+])
+def test_main(mocker, domain, sender, expected_results):
     """
         Given
         - The commands args.
@@ -33,10 +39,12 @@ def test_main(mocker):
     from CheckSenderDomainDistance import main
 
     mocker.patch('CheckSenderDomainDistance.levenshtein', return_value=1)
-    mocker.patch.object(demisto, 'args', return_value={"domain": "example.com", "sender": "mail@example1.com"})
+    mocker.patch.object(demisto, 'args', return_value={"domain": domain, "sender": sender})
     results_mock = mocker.patch.object(demisto, 'results')
-    expected_result = 'yes'
 
     main()
 
-    assert results_mock.call_args[0][0][1] == expected_result
+    try:
+        assert results_mock.call_args[0][0][1] == expected_results
+    except IndexError:  # In the fourth case
+        assert results_mock.call_args[0][0][0] == expected_results
