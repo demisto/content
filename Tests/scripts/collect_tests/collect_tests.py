@@ -7,7 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, TESTS_AND_DOC_DIRECTORIES
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
@@ -417,7 +417,11 @@ class TestCollector(ABC):
     @staticmethod
     def __validate_not_ignored_file(path: Path):
         if path in PATHS.files_to_ignore:
-            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests)')
+
+        if set(PACK_MANAGER.relative_to_packs(path).parts).intersection(TESTS_AND_DOC_DIRECTORIES):
+            raise NothingToCollectException(path, 'file under test_data or documentation folder,'
+                                                  ' (not triggering sanity tests)')
 
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
