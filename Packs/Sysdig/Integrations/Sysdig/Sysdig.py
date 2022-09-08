@@ -299,16 +299,6 @@ def query_vulns_by_container(client: Client, args, url):
     return entry
 
 
-def test_module(monitor, url):
-    try:
-        sdclient = SdMonitorClient(token=monitor, sdc_url=url)
-        ok, res = sdclient.get_alerts()
-        if ok is True:
-            demisto.results('ok')
-    except Exception as e:
-        return_error(f'Error:\n{str(e)}')
-
-
 def main():
     url = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
     secure = demisto.params()['securekey']
@@ -333,8 +323,8 @@ def main():
             try:
                 result = get_users(monitor, url)
                 demisto.results('ok')
-            except:
-                return_results(result)
+            except Exception as e:
+                return_error(f'Error:\n{str(e)}')
 
         elif demisto.command() == 'sysdig-get-alerts':
             return_results(get_alerts(monitor, url))
