@@ -127,11 +127,11 @@ class Client(BaseClient):
     def commit_list_request(self, repo: str, params: Dict, excluded_list: list = None,
                             included_list: list = None) -> Dict:
         if repo:
-            url_suffix = f'/repositories/rotemamit/{repo}/commits'
+            url_suffix = f'/repositories/{self.workspace}/{repo}/commits'
         else:
             if not self.repository:
                 raise Exception("Please provide a repository name")
-            url_suffix = f'/repositories/rotemamit/{self.repository}/commits'
+            url_suffix = f'/repositories/{self.workspace}/{self.repository}/commits'
         if excluded_list:
             url_suffix = self.add_branches_url('exclude', excluded_list, url_suffix)
         if included_list:
@@ -191,10 +191,10 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def issue_update_request(self, repo: str, body: dict, issue_id: int) -> Dict:
-        """ Makes a POST request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
+        """ Makes a PUT request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
             :param repo: str - The repository the user entered if he did.
             :param body: Dict - the params to the api call
-            :param issue_id: str - an id to a specific issue to get.
+            :param issue_id: str - an id to a specific issue to update.
 
             Creates the url and makes the api call
             :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
@@ -209,13 +209,12 @@ class Client(BaseClient):
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
-        """ Makes a POST request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
+        """ Makes a POST request /repositories/workspace/repository/pullrequests endpoint to create a pull request.
             :param repo: str - The repository the user entered if he did.
             :param body: Dict - the params to the api call
-            :param issue_id: str - an id to a specific issue to get.
 
             Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
+            :return JSON response from /repositories/workspace/repository/pullrequests endpoint
             :rtype Dict[str, Any]
         """
         if repo:
@@ -225,6 +224,27 @@ class Client(BaseClient):
                 raise Exception("Please provide a repository name")
             url_suffix = f'/repositories/{self.workspace}/{self.repository}/pullrequests'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+    def pull_request_update_request(self, repo: str, body: Dict, pr_id: str) -> Dict:
+        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
+            :param repo: str - The repository the user entered if he did.
+            :param body: Dict - the params to the api call
+            :param pr_id: str - an id to a specific pull request to update.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+
+    def check_repo(self, repo: str) -> str:
+        if repo:
+            return f'/repositories/{self.workspace}/{repo}'
+        else:
+            if not self.repository:
+                raise Exception("Please provide a repository name")
+            return f'/repositories/{self.workspace}/{self.repository}'
 
 
 ''' HELPER FUNCTIONS '''
@@ -264,6 +284,35 @@ def check_args(limit: int, page: int):
         raise Exception('The limit value must be equal to 1 or bigger.')
     if page is not None and page < 1:
         raise Exception('The page value must be equal to 1 or bigger.')
+
+
+def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
+                             description: str, close_source_branch: str) -> Dict:
+    body = {
+        "title": title,
+        "source": {
+            "branch": {
+                "name": source_branch
+            }
+        }
+    }
+    if destination_branch:
+        body["destination"] = {
+            "branch": {
+                "name": destination_branch
+            }
+        }
+    if reviewer_id:
+        body["reviewers"] = [
+            {
+                "account_id": reviewer_id
+            }
+        ]
+    if description:
+        body["description"] = description
+    if close_source_branch:
+        body["close_source_branch"] = argToBoolean(close_source_branch)
+    return body
 
 
 ''' COMMAND FUNCTIONS '''
@@ -696,6 +745,23 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
                           raw_response=response)
 
 
+def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
+    repo = args.get('repo', None)
+    pull_request_id = args.get('pull_request_id', None)
+    title = args.get('title', None)
+    source_branch = args.get('source_branch')
+    destination_branch = args.get('destination_branch', None)
+    reviewer_id = args.get('reviewer_id', None)
+    description = args.get('description', None)
+    close_source_branch = args.get('close_source_branch', None)
+    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
+    response = client.pull_request_update_request(repo, body, pull_request_id)
+    return CommandResults(readable_output=f'The pull request {pull_request_id} was updated successfully',
+                          outputs_prefix='Bitbucket.PullRequest',
+                          outputs=response,
+                          raw_response=response)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -768,6 +834,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-create':
             result = pull_request_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-update':
+            result = pull_request_update_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
