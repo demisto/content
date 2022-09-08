@@ -7,7 +7,7 @@ import requests
 import json
 import re
 import zipfile
-from io import StringIO
+from io import BytesIO
 from datetime import datetime, timedelta
 
 # disable insecure warnings
@@ -996,12 +996,12 @@ def download_threat():
     threat_file = requests.get(threat_url, allow_redirects=True, verify=USE_SSL)
     if threat_file.status_code == 200:
         if demisto.args()['unzip'] == "yes":
-            file_archive = StringIO(threat_file.content)
+            file_archive = BytesIO(threat_file.content)
             zip_file = zipfile.ZipFile(file_archive)
-            file_data = zip_file.read(sha256.upper(), pwd='infected')
+            file_data = zip_file.read(sha256.upper(), pwd=b'infected')
             demisto.results(fileResult(sha256, file_data))
         else:
-            demisto.results(fileResult(sha256, threat_file.content + '.zip'))
+            demisto.results(fileResult(sha256, threat_file.content + b'.zip'))
     else:
         return_error('Could not fetch the file')
 
@@ -1103,7 +1103,7 @@ def add_hash_to_list():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully added to ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully added to {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
@@ -1147,7 +1147,7 @@ def delete_hash_from_lists():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully removed from ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully removed from {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
