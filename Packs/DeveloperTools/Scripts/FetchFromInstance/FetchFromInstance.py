@@ -5,10 +5,10 @@ from CommonServerPython import *  # noqa: F401
 
 
 def get_instance_name(args):
-    brand_name = args.get("brand_name")
     if args.get("instance_name"):
         return args['instance_name']
 
+    brand_name = args.get("brand_name")
     if brand_name:
         context_modules = demisto.getModules()
         for module_name, module in context_modules.items():
