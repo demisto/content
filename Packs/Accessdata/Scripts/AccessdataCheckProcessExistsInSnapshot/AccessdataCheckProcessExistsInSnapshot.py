@@ -3,18 +3,16 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-# Constant and mandatory arguments
-args = demisto.args()
-process_name = args['process']
-file_path = args['filepath']
-
-proc = {
-    'Name': process_name,
-    'Exists': "No"
-}
-
-
 def main():
+    args = demisto.args()
+    process_name = args['process']
+    file_path = args['filepath']
+
+    proc = {
+        'Name': process_name,
+        'Exists': "No"
+    }
+
     error = None
     try:
         res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
