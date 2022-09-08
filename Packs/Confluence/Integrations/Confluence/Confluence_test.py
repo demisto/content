@@ -171,9 +171,9 @@ def test_search_content_command(mocker):
 
     import Confluence
     mocker.patch.object(Confluence, 'http_request', return_value={'results': [{'id': 'id',
-                                                                  'title': 'title',
-                                                                  'type': 'type',
-                                                                  'version': {'number': 'number'} }]})
+                                                                               'title': 'title',
+                                                                               'type': 'type',
+                                                                               'version': {'number': 'number'}}]})
 
     Confluence.search_content_command()
 
