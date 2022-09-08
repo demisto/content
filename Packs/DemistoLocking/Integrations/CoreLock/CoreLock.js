@@ -37,7 +37,8 @@ switch (command) {
     case 'test-module':
         return 'ok';
 
-    case ('demisto-lock-get' || 'core-lock-get'):
+    case 'demisto-lock-get':
+    case 'core-lock-get':
         var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
@@ -76,7 +77,8 @@ switch (command) {
         }
         break;
 
-    case ('demisto-lock-release' || 'core-lock-release'):
+    case 'demisto-lock-release':
+    case 'core-lock-release':
         if(sync)   {
             mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
         } else {
@@ -89,14 +91,16 @@ switch (command) {
         md += 'Lock released successfully';
         return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
-    case ('demisto-lock-release-all' || 'core-lock-release-all'):
+    case 'demisto-lock-release-all':
+    case 'core-lock-release-all':
         setVersionedIntegrationContext({}, sync);
 
         var md = '### Core Locking Mechanism\n';
         md += 'All locks released successfully';
         return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
-    case ('demisto-lock-info' || 'core-lock-info'):
+    case 'demisto-lock-info':
+    case 'core-lock-info':
         integrationContext = getVersionedIntegrationContext(sync);
         var obj = [];
 
