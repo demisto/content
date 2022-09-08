@@ -88,37 +88,67 @@ PROOF_POINT_REDIRECTS = [
      'https://google.com:443/search?q=a*test&gs=ps')
 ]
 
-FORMAT_URL_ADDITIONAL_TEST_CASES = [
-    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
-    ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
-    ('http://ötest.com/', 'http://ötest.com/'),
-    ('https://testö.com/test.html', 'https://testö.com/test.html'),
-    ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
-    ('https://www.teöst.com/', 'https://www.teöst.com/'),
-    ('www.test.com/check', 'www.test.com/check'),
-    ('http://xn--t1e2s3t4.com/testagain.aspx', 'http://xn--t1e2s3t4.com/testagain.aspx'),
-    ('https://www.xn--t1e2s3t4.com', 'https://www.xn--t1e2s3t4.com'),
+FORMAT_USERINFO = [
+    ('https://user@domain.com', 'https://user@domain.com')
+]
+
+FORMAT_PORT = [
     ('www.test.com:443/path/to/file.html', 'www.test.com:443/path/to/file.html'),
+]
+
+FORMAT_IPv4 = [
     ('https://1.2.3.4/path/to/file.html', 'https://1.2.3.4/path/to/file.html'),
     ('1.2.3.4/path', '1.2.3.4/path'),
     ('1.2.3.4/path/to/file.html', '1.2.3.4/path/to/file.html'),
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),
     ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),
-    ('http://☺.damowmow.com/', 'http://☺.damowmow.com/'),
     ('http://223.255.255.254', 'http://223.255.255.254'),
-    ('ftp://foo.bar/baz', 'ftp://foo.bar/baz'),
-    ('ftps://foo.bar/baz', 'ftps://foo.bar/baz'),
-    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-    ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+"),  # comma is removed
-    ('https://test.com#fragment3', 'https://test.com#fragment3'),
-    ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
+]
+
+FORMAT_IPv6 = [
     ('[http://[2001:db8:3333:4444:5555:6666:7777:8888]]',  # disable-secrets-detection
      'http://[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
     ('[2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
      '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
     ('2001:db8:3333:4444:5555:6666:7777:8888',  # disable-secrets-detection
      '[2001:db8:3333:4444:5555:6666:7777:8888]'),  # disable-secrets-detection
+]
+
+FORMAT_PATH = [
+    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
+    ('www.test.com/check', 'www.test.com/check'),
+]
+
+FORMAT_QUERY = [
+    ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
+    ('https://www.test.test.com/test.html?paramaters=testagain', 'https://www.test.test.com/test.html?paramaters=testagain'),
+]
+
+FORMAT_FRAGMENT = [
+    ('https://test.com#fragment3', 'https://test.com#fragment3'),
+    ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
+]
+
+FORMAT_REFANG = [
+    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
+]
+
+FORMAT_NON_ASCII = [
+    ('http://☺.damowmow.com/', 'http://☺.damowmow.com/'),
+    ('http://ötest.com/', 'http://ötest.com/'),
+    ('https://testö.com/test.html', 'https://testö.com/test.html'),
+    ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
+    ('https://www.teöst.com/', 'https://www.teöst.com/'),
+]
+
+FORMAT_PUNYCODE = [
+    ('http://xn--t1e2s3t4.com/testagain.aspx', 'http://xn--t1e2s3t4.com/testagain.aspx'),
+    ('https://www.xn--t1e2s3t4.com', 'https://www.xn--t1e2s3t4.com'),
+]
+
+FORMAT_HEX = [
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
+    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz !"#$%&'),
 ]
 
 FAILS = [
@@ -131,7 +161,10 @@ FAILS = [
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
 
-FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_URL_ADDITIONAL_TEST_CASES
+FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY + 
+                FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
+
+FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_TESTS
 
 
 class TestFormatURL:
@@ -149,6 +182,22 @@ class TestFormatURL:
         """
         url = URLFormatter('https://www.test.com/')
         assert url.correct_and_refang_url(non_formatted_url) == expected.lower()
+    
+    @pytest.mark.parametrize('non_formatted_url, expected', FORMAT_HEX)
+    def test_hex_chars(self, non_formatted_url: str, expected: str):
+        """
+        Given:
+        - non_formatted_url: A URL.
+
+        When:
+        - Replacing protocol to http:// or https://.
+
+        Then:
+        - Ensure for every expected protocol given, it is replaced with the expected value.
+        """
+        url = URLCheck(non_formatted_url)
+        hex = non_formatted_url.find('%')
+        assert url.hex_check(hex)
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: str):

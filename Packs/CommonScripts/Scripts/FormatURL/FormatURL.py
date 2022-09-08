@@ -1,6 +1,7 @@
 import ipaddress
 import urllib.parse
 from CommonServerPython import *
+from typing import Match
 
 
 class URLError(Exception):
@@ -398,7 +399,7 @@ class URLCheck(object):
         except ValueError:
             return False
 
-    def check_done(self, index):
+    def check_done(self, index: int) -> bool:
         """
         Checks if the validator already went over the URL and nothing is left to check.
         :param index: The current index of the pointer
@@ -514,7 +515,7 @@ class URLFormatter(object):
 
         url = url.lower().replace("meow", "http").replace("hxxp", "http").replace("[.]", ".")
 
-        def fix_scheme(match):
+        def fix_scheme(match: Match) -> str:
             return re.sub(":(\\\\|/)*", "://", match.group(0))
 
         scheme_fix = re.compile("https?(:[/|\\\]*)")
