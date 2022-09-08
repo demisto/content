@@ -37,7 +37,6 @@ def denote_file(args):
             resp = demisto.executeCommand('fe-submit', bArgs)
             if isError(resp[0]):
                 demisto.results(resp)
-                sys.exit(0)
             else:
                 feSubmissionKey = demisto.get(resp[0], 'Contents')
                 if isinstance(feSubmissionKey, str):
@@ -46,9 +45,9 @@ def denote_file(args):
     else:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                         "Contents": 'FireEye: Integration not available.'})
-        sys.exit(0)
 
-def Poll_stage():
+
+def poll_stage(feDone, feSubmissionKeys, profiles):
     status = None
     sec = 0
     stauses = {}
@@ -60,7 +59,6 @@ def Poll_stage():
                 resp = demisto.executeCommand('fe-submit-status', {'submission_Key': feSubmissionKeys[profile]})
                 if isError(resp[0]):
                     demisto.results(resp)
-                    sys.exit(0)
 
                 stauses[profile] = demisto.get(resp[0], 'Contents.submissionStatus')
                 if stauses[profile] in ["In Progress"]:
@@ -78,7 +76,7 @@ def Poll_stage():
             break
 
 
-def get_results():
+def get_results(feDone, profiles, stauses, feSubmissionKeys, file):
     if not feDone:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                         "Contents": 'Could not retrieve results from FireEye (may be due to timeout).'})
