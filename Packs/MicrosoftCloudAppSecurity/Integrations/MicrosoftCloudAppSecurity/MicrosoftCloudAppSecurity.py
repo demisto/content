@@ -4,6 +4,7 @@ from pytz import utc
 import urllib3
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+import demistomock as demisto
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -232,11 +233,12 @@ def args_to_filter(arguments: dict):
 
 
 def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
-                                        specific_id_to_search: Any = ''):
+                                        specific_id_to_search: Any = '', is_scan: bool = False):
     """
         This function build the filters dict or url to filter with.
 
         Args:
+            is_scan:
             url_suffix: The url suffix.
             custom_filter: custom filters from the customer (other filters will not work).
             arguments: args to filter with.
@@ -254,6 +256,8 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = args_to_filter(arguments)
 
     request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
+    if is_scan:
+        request_data['isScan'] = True
     return request_data, url_suffix
 
 
@@ -311,7 +315,7 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
+def not_test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={})
         if is_fetch:
@@ -484,12 +488,18 @@ def list_activities_command(client: Client, args: dict):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
+    is_scan = args.get('is_scan', False)
     arguments = assign_params(**args)
     timeout = arg_to_number(arguments.get('timeout', 60)) or 60
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
-    activities_response_data = client.list_activities(url_suffix, request_data, timeout)
-    list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
-        else [activities_response_data]
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id, is_scan)
+    has_next = True
+    list_activities = []
+    while has_next:
+        activities_response_data = client.list_activities(url_suffix, request_data, timeout)
+        list_activities.append(
+            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data])
+        has_next = activities_response_data.get('data').get('hasNext', False)
+        request_data['filters'] = activities_response_data.get('data').get('nextQueryFilters')
     activities = arrange_entities_data(list_activities)
     return create_ip_command_results(activities)
 
@@ -834,7 +844,7 @@ def main():  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
+            result = not_test_module(client, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif command == 'fetch-incidents':
