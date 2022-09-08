@@ -13,7 +13,6 @@ def test_parse_mail_parts():
     Then
     - run parse_mail_parts method
     - Validate The result body.
-    test pr
     """
 
     class MockEmailPart:
@@ -25,7 +24,7 @@ def test_parse_mail_parts():
     parts = [part]
 
     body, html, attachments = parse_mail_parts(parts)
-    assert body == 'el Niño'
+    assert body == 'el Nio'
 
 
 def test_base64_mail_decode():
