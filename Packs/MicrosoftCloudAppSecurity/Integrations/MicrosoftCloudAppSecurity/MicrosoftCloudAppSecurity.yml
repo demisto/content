@@ -87,7 +87,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -139,7 +139,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -289,7 +289,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -586,7 +586,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -808,7 +808,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -963,7 +963,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -1060,7 +1060,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: true
   longRunning: false
