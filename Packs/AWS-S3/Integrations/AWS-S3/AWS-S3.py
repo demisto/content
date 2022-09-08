@@ -1,11 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 import io
 import math
 import json
 from datetime import datetime, date
 import urllib3.util
+from AWSApiModule import *  # noqa: E402
+from http import HTTPStatus
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,7 +23,7 @@ def convert_size(size_bytes):
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
-    return "{} {}".format(s, size_name[i])
+    return f"{s} {size_name[i]}"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -36,8 +37,8 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_bucket_command(args, aws_client):
-    client = aws_client. aws_session(
+def create_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
+    client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
@@ -45,7 +46,7 @@ def create_bucket_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
-    kwargs = {'Bucket': args.get('bucket').lower()}
+    kwargs = {'Bucket': args.get('bucket', '').lower()}
     if args.get('acl') is not None:
         kwargs.update({'ACL': args.get('acl')})
     if args.get('locationConstraint') is not None:
@@ -67,12 +68,11 @@ def create_bucket_command(args, aws_client):
         'BucketName': args.get('bucket'),
         'Location': response['Location']
     })
-    ec = {'AWS.S3.Buckets': data}
     human_readable = tableToMarkdown('AWS S3 Buckets', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(readable_output=human_readable, outputs=data, outputs_prefix='AWS.S3.Buckets')
 
 
-def delete_bucket_command(args, aws_client):
+def delete_bucket_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -81,12 +81,13 @@ def delete_bucket_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    response = client.delete_bucket(Bucket=args.get('bucket').lower())
-    if response['ResponseMetadata']['HTTPStatusCode'] == 204:
-        demisto.results("the Bucket {bucket} was Deleted ".format(bucket=args.get('bucket')))
+    response = client.delete_bucket(Bucket=args.get('bucket', '').lower())
+    if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.NO_CONTENT:
+        return CommandResults(readable_output=f"The requested bucket '{args.get('bucket')}' was deleted")
+    return CommandResults(readable_output=f"The requested bucket '{args.get('bucket')}' was not found")
 
 
-def list_buckets_command(args, aws_client):
+def list_buckets_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -101,12 +102,12 @@ def list_buckets_command(args, aws_client):
             'BucketName': bucket['Name'],
             'CreationDate': datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')
         })
-    ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName)': data}
     human_readable = tableToMarkdown('AWS S3 Buckets', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                          outputs_key_field='BucketName', outputs=data)
 
 
-def get_bucket_policy_command(args, aws_client):
+def get_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -115,7 +116,7 @@ def get_bucket_policy_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
-    response = client.get_bucket_policy(Bucket=args.get('bucket').lower())
+    response = client.get_bucket_policy(Bucket=args.get('bucket', '').lower())
     policy = json.loads(response['Policy'])
     statements = policy['Statement']
     for statement in statements:
@@ -130,12 +131,12 @@ def get_bucket_policy_command(args, aws_client):
             'Effect': statement.get('Effect'),
             'Json': response.get('Policy')
         })
-    ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName).Policy': data}
     human_readable = tableToMarkdown('AWS S3 Bucket Policy', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                          outputs_key_field='BucketName', outputs=data)
 
 
-def put_bucket_policy_command(args, aws_client):
+def put_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -144,7 +145,7 @@ def put_bucket_policy_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        'Bucket': args.get('bucket').lower(),
+        'Bucket': args.get('bucket', '').lower(),
         'Policy': args.get('policy')
     }
     if args.get('confirmRemoveSelfBucketAccess') is not None:
@@ -152,11 +153,12 @@ def put_bucket_policy_command(args, aws_client):
             'confirmRemoveSelfBucketAccess') == 'True' else False})
 
     response = client.put_bucket_policy(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('Successfully applied Bucket policy to {bucket} bucket'.format(bucket=args.get('BucketName')))
+    if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
+    return CommandResults(readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket")
 
 
-def delete_bucket_policy_command(args, aws_client):
+def delete_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -164,11 +166,11 @@ def delete_bucket_policy_command(args, aws_client):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    client.delete_bucket_policy(Bucket=args.get('bucket').lower())
-    demisto.results('Policy deleted from {}'.format(args.get('bucket')))
+    client.delete_bucket_policy(Bucket=args.get('bucket', '').lower())
+    return CommandResults(readable_output=f"Policy deleted from {args.get('bucket')}")
 
 
-def download_file_command(args, aws_client):
+def download_file_command(args: Dict[str, Any], aws_client: AWSClient):
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -177,12 +179,12 @@ def download_file_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     data = io.BytesIO()
-    client.download_fileobj(args.get('bucket').lower(), args.get('key'), data)
+    client.download_fileobj(args.get('bucket', '').lower(), args.get('key'), data)
 
     demisto.results(fileResult(args.get('key'), data.getvalue()))
 
 
-def list_objects_command(args, aws_client):
+def list_objects_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -211,11 +213,10 @@ def list_objects_command(args, aws_client):
                 })
 
     if len(data) > 0:
-        ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
         human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
-        return_outputs(human_readable, ec)
-    else:
-        return_outputs("The {} bucket contains no objects.".format(args.get('bucket')))
+        return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                              outputs_key_field='BucketName', outputs=data)
+    return CommandResults(readable_output=f"The {args.get('bucket')} bucket contains no objects.")
 
 
 def get_file_path(file_id):
@@ -223,7 +224,7 @@ def get_file_path(file_id):
     return filepath_result
 
 
-def upload_file_command(args, aws_client):
+def upload_file_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -233,16 +234,13 @@ def upload_file_command(args, aws_client):
     )
     path = get_file_path(args.get('entryID'))
 
-    try:
-        with open(path['path'], 'rb') as data:
-            client.upload_fileobj(data, args.get('bucket'), args.get('key'))
-            demisto.results('File {file} was uploaded successfully to {bucket}'.format(
-                file=args.get('key'), bucket=args.get('bucket')))
-    except (OSError, IOError) as e:
-        return_error("Could not read file: {path}\n {msg}".format(path=path, msg=e.message))
+    with open(path['path'], 'rb') as data:
+        client.upload_fileobj(data, args.get('bucket'), args.get('key'))
+        return CommandResults(
+            readable_output=f"File {args.get('key')} was uploaded successfully to {args.get('bucket')}")
 
 
-def get_public_access_block(args, aws_client):
+def get_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -261,12 +259,12 @@ def get_public_access_block(args, aws_client):
             'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets'),
         }
     }
-    ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName)': data}
     human_readable = tableToMarkdown('AWS S3 Bucket Public Access Block', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                          outputs_key_field='BucketName')
 
 
-def put_public_access_block(args, aws_client):
+def put_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
@@ -285,12 +283,15 @@ def put_public_access_block(args, aws_client):
     }
     response = client.put_public_access_block(**kwargs)
 
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('Successfully applied public access block to the {bucket} bucket'.format(
-            bucket=args.get('bucket')))
+    if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        return CommandResults(
+            readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
+    return CommandResults(readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket")
 
 
-def main():
+
+
+def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
@@ -314,30 +315,30 @@ def main():
         command = demisto.command()
         args = demisto.args()
 
-        LOG('Command being called is {command}'.format(command=demisto.command()))
+        demisto.info(f'Command being called is {demisto.command()}')
         if command == 'test-module':
             client = aws_client.aws_session(service=SERVICE)
             response = client.list_buckets()
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
                 demisto.results('ok')
 
         elif command == 'aws-s3-create-bucket':
-            create_bucket_command(args, aws_client)
+            return_results(create_bucket_command(args, aws_client))
 
         elif command == 'aws-s3-delete-bucket':
-            delete_bucket_command(args, aws_client)
+            return_results(delete_bucket_command(args, aws_client))
 
         elif command == 'aws-s3-list-buckets':
-            list_buckets_command(args, aws_client)
+            return_results(list_buckets_command(args, aws_client))
 
         elif command == 'aws-s3-get-bucket-policy':
-            get_bucket_policy_command(args, aws_client)
+            return_results(get_bucket_policy_command(args, aws_client))
 
         elif command == 'aws-s3-put-bucket-policy':
-            put_bucket_policy_command(args, aws_client)
+            return_results(put_bucket_policy_command(args, aws_client))
 
         elif command == 'aws-s3-delete-bucket-policy':
-            delete_bucket_policy_command(args, aws_client)
+            return_results(delete_bucket_policy_command(args, aws_client))
 
         elif command == 'aws-s3-download-file':
             download_file_command(args, aws_client)
@@ -346,20 +347,21 @@ def main():
             list_objects_command(args, aws_client)
 
         elif command == 'aws-s3-upload-file':
-            upload_file_command(args, aws_client)
+            return_results(upload_file_command(args, aws_client))
 
         elif command == 'aws-s3-get-public-access-block':
-            get_public_access_block(args, aws_client)
+            return_results(get_public_access_block(args, aws_client))
 
         elif command == 'aws-s3-put-public-access-block':
-            put_public_access_block(args, aws_client)
+            return_results(put_public_access_block(args, aws_client))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
-            error=type(e), message=e.message))
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
-
-from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
+
+
