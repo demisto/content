@@ -1,12 +1,19 @@
 import pytest
 
-from CommonServerPython import DemistoException
+from CommonServerPython import *
+import demistomock as demisto
 
 
-def test_get_contents():
+@pytest.mark.parametrize(
+    "return_val, expected", [(None, None), ([{"Contents": ["1.1.1.1"]}], ["1.1.1.1"])]
+)
+def test_get_contents(mocker, return_val, expected):
     from AbuseIPDBPopulateIndicators import get_contents
 
-    assert get_contents({}) is None
+    mocker.patch(
+        "AbuseIPDBPopulateIndicators.execute_command", return_value=return_val
+    )
+    assert get_contents({}) == expected
 
 
 @pytest.mark.parametrize("input", ["Too many requests", None])
@@ -18,7 +25,20 @@ def test_check_ips_fail(input):
     assert str(e.value) == "No Indicators were created (possibly bad API key)"
 
 
-def test_check_ips(input=[True]):
+def test_check_ips():
     from AbuseIPDBPopulateIndicators import check_ips
 
-    assert check_ips(input) is None
+    assert check_ips(["1.1.1.1"]) is None
+
+
+def test_main(mocker):
+    from AbuseIPDBPopulateIndicators import main
+
+    mocker.patch.object(
+        demisto, "args", return_value={"days": 30, "limit": 200, "confidence": 100}
+    )
+    mocker.patch("AbuseIPDBPopulateIndicators.execute_command", return_value=None)
+    mocker.patch("AbuseIPDBPopulateIndicators.get_contents", return_value=["1.1.1.1"])
+    return_results_mock = mocker.patch("AbuseIPDBPopulateIndicators.return_results")
+    main()
+    return_results_mock.assert_called_with("All Indicators were created successfully")

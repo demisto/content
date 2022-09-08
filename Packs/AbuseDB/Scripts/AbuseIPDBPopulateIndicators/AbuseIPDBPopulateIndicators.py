@@ -26,8 +26,8 @@ def get_contents(args: Dict[str, Any]):
     return res[0].get("Contents", None)
 
 
-def check_ips(ips: dict):
-    """Check 'ips' dictionary validity
+def check_ips(ips: list):
+    """Check 'ips' list validity
 
     :return: None if valid, else execute return_error()
     :rtype: ``None``
