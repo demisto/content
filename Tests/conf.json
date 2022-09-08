@@ -2742,7 +2742,7 @@
         },
         {
             "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
+            "playbookID": "GoogleCloudComputeListTest"
         },
         {
             "integrations": "AWS - S3",
@@ -5384,7 +5384,6 @@
         "Attivo Botsink": "no instance, not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
