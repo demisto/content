@@ -136,23 +136,29 @@ switch (command) {
     case 'test-module':
         sendRequest('GET','user');
         return 'ok';
-    case ('demisto-api-post' || 'core-api-post'):
+    case 'demisto-api-post':
+    case 'core-api-post':
         if(args.body)
             var body = JSON.parse(args.body);
         else
             logDebug('The body is empty.')
 
         return sendRequest('POST',args.uri, args.body);
-    case ('demisto-api-get' || 'core-api-get'):
+    case 'demisto-api-get':
+    case 'core-api-get':
         return sendRequest('GET',args.uri);
-    case ('demisto-api-put' || 'core-api-put'):
+    case 'demisto-api-put':
+    case 'core-api-put':
         var body = JSON.parse(args.body);
         return sendRequest('PUT',args.uri, args.body);
-    case ('demisto-api-delete' || 'core-api-delete'):
+    case 'demisto-api-delete':
+    case 'core-api-delete':
         return sendRequest('DELETE',args.uri);
-    case ('demisto-api-multipart' || 'core-api-multipart'):
+    case 'demisto-api-multipart':
+    case 'core-api-multipart':
         return sendMultipart(args.uri, args.entryID, args.body);
-    case ('demisto-api-download' || 'core-api-download'):
+    case 'demisto-api-download':
+    case 'core-api-download':
         var res = sendRequest('GET',args.uri,args.body,true);
         var filename = res.Path;
         if (args.filename) {
@@ -165,7 +171,8 @@ switch (command) {
         }
         var desc = args.description || '';
         return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
-    case ('demisto-delete-incidents' || 'core-delete-incidents'):
+    case 'demisto-delete-incidents':
+    case 'core-delete-incidents':
         var ids = argToList(args.ids);
         return deleteIncidents(ids);
     default:
