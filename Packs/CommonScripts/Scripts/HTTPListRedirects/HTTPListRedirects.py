@@ -6,13 +6,19 @@ import os
 requests.packages.urllib3.disable_warnings()
 
 
-def get_response(url: str, use_head: str, verify_ssl: str) -> requests.Response:
+def get_response(url: str, use_head: str, verify_ssl: bool) -> requests.Response:
     if use_head == 'true':
         response = requests.head(url, allow_redirects=True, verify=verify_ssl)
     else:
         response = requests.get(url, allow_redirects=True, verify=verify_ssl)
-
     return response
+
+
+def create_command_result(history_urls: List[Dict[str, Union[str, int]]]):
+    ec = {'URL(val.Data == obj.Data)': [{'Data': history_url['Data']} for history_url in history_urls]}
+    return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': history_urls,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('URLs', history_urls, ['Data', 'Status']), 'EntryContext': ec}
 
 
 def get_response_history(response: requests.Response):
@@ -24,33 +30,25 @@ def get_response_history(response: requests.Response):
     return urls
 
 
-def main():
-    use_system_proxy = demisto.args().get('use_system_proxy')
-    url = demisto.args().get('url')
-    use_head = demisto.args()['useHead']
-    trust_any_certificate = demisto.args().get('trust_any_certificate')
-    try:
-        if use_system_proxy == 'false':
-            del os.environ['HTTP_PROXY']
-            del os.environ['HTTPS_PROXY']
-            del os.environ['http_proxy']
-            del os.environ['https_proxy']
-        verify_ssl = trust_any_certificate != 'true'
+def delete_environment_variables(use_system_proxy: str):
+    if use_system_proxy == 'false':
+        env_variables = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']
+        for env_var in env_variables:
+            if(env_var in os.environ):
+                del os.environ[env_var]
 
-        if not url.lower().startswith('http'):
-            url = f'http://{url}'
+
+def main():
+    url = demisto.args().get('url')
+    try:
+        delete_environment_variables(use_system_proxy=demisto.args().get('use_system_proxy'))
+        url = f'http://{url}' if not url.lower().startswith('http') else url
 
         response = get_response(url=url,
-                                use_head=use_head,
-                                verify_ssl=verify_ssl)
-
+                                use_head=demisto.args()['useHead'],
+                                verify_ssl=demisto.args().get('trust_any_certificate') != 'true')
         history_urls = get_response_history(response=response)
-
-        ec = {'URL(val.Data == obj.Data)': [{'Data': history_url['Data']} for history_url in history_urls]}
-
-        demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': history_urls,
-                         'ReadableContentsFormat': formats['markdown'],
-                         'HumanReadable': tableToMarkdown('URLs', history_urls, ['Data', 'Status']), 'EntryContext': ec})
+        demisto.results(create_command_result(history_urls=history_urls))
 
     except Exception as e:
         return_error(f'Failed to execute script.\nError:\n{str(e)}')
