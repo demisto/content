@@ -10,6 +10,7 @@ INTERVAL = 10
 
 
 def denote_file(args):
+    should_continue = True
     file = demisto.get(args, 'file')
     feDone = False
     feSubmissionKeys = {}
@@ -37,6 +38,8 @@ def denote_file(args):
             resp = demisto.executeCommand('fe-submit', bArgs)
             if isError(resp[0]):
                 demisto.results(resp)
+                should_continue = False
+                break
             else:
                 feSubmissionKey = demisto.get(resp[0], 'Contents')
                 if isinstance(feSubmissionKey, str):
@@ -45,9 +48,13 @@ def denote_file(args):
     else:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                         "Contents": 'FireEye: Integration not available.'})
+        should_continue = False
+    if should_continue:
+        poll_stage(feDone, feSubmissionKeys, profiles, file)
 
 
 def poll_stage(feDone, feSubmissionKeys, profiles, file):
+    should_continue = True
     status = None
     sec = 0
     stauses = {}
@@ -59,11 +66,14 @@ def poll_stage(feDone, feSubmissionKeys, profiles, file):
                 resp = demisto.executeCommand('fe-submit-status', {'submission_Key': feSubmissionKeys[profile]})
                 if isError(resp[0]):
                     demisto.results(resp)
+                    should_continue = False
+                    break
 
                 stauses[profile] = demisto.get(resp[0], 'Contents.submissionStatus')
                 if stauses[profile] in ["In Progress"]:
                     status = "In Progress"
-
+            if not should_continue:
+                break
             # find status
             if status in ["In Progress"]:
                 sec += INTERVAL
@@ -74,7 +84,8 @@ def poll_stage(feDone, feSubmissionKeys, profiles, file):
                 feDone = True
         else:
             break
-    get_results(feDone, profiles, stauses, feSubmissionKeys, file)
+    if should_continue:
+        get_results(feDone, profiles, stauses, feSubmissionKeys, file)
 
 
 def get_results(feDone, profiles, stauses, feSubmissionKeys, file):
