@@ -160,7 +160,7 @@ def main():
                 }
 
     except Exception as ex:
-        return_error(ex.message)
+        return_error(str(ex))
 
     demisto.results(result)
 
