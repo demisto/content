@@ -57,15 +57,15 @@ def format_flow(flow):
     if 'time' in flow:
         flow['time'] = isoTime(flow['time'])
     if 'family' in flow:
-        flow['family'] = map(lambda x: family_inv_map[x], flow['family'])
+        flow['family'] = list(map(lambda x: family_inv_map[x], flow['family']))
     if 'proto' in flow:
-        flow['proto'] = map(lambda x: proto_inv_map[x], flow['proto'])
+        flow['proto'] = list(map(lambda x: proto_inv_map[x], flow['proto']))
     return flow
 
 
 def get_flows(result):
     data = result['data'] or []
-    return map(lambda x: format_flow(x), data)
+    return list(map(lambda x: format_flow(x), data))
 
 
 def validate_response(response):
@@ -144,7 +144,7 @@ def make_query(dargs):
         entity = coalesceToArray(dargs['entity'])
         search['ip'] = {
             '=': {
-                'scalars': map(lambda x: {'v1': ip_to_number(x)}, entity),
+                'scalars': list(map(lambda x: {'v1': ip_to_number(x)}, entity)),
                 'ranges': []
             }
         }
@@ -153,7 +153,7 @@ def make_query(dargs):
         protocol = coalesceToArray(dargs['protocol'])
         search['proto'] = {
             '=': {
-                'scalars': map(lambda x: {'v1': proto_map[x]}, protocol),
+                'scalars': list(map(lambda x: {'v1': proto_map[x]}, protocol)),
                 'ranges': []
             }
         }
@@ -162,7 +162,7 @@ def make_query(dargs):
         family = coalesceToArray(dargs['family'])
         search['family'] = {
             '=': {
-                'scalars': map(lambda x: {'v1': family_map[x]}, family),
+                'scalars': list(map(lambda x: {'v1': family_map[x]}, family)),
                 'ranges': []
             }
         }
@@ -171,7 +171,7 @@ def make_query(dargs):
         geo = coalesceToArray(dargs['geo'])
         search['geo'] = {
             '=': {
-                'scalars': map(lambda x: {'v1': x}, geo),
+                'scalars': list(map(lambda x: {'v1': x}, geo)),
                 'ranges': []
             }
         }
@@ -180,7 +180,7 @@ def make_query(dargs):
         port = coalesceToArray(dargs['port'])
         search['port'] = {
             '=': {
-                'scalars': map(lambda x: {'v1': x}, port),
+                'scalars': list(map(lambda x: {'v1': x}, port)),
                 'ranges': []
             }
         }
@@ -209,7 +209,7 @@ def main():
         demisto.results('ok')
         sys.exit(0)
 
-    if demisto.command() == 'packetsled-sensors':
+    elif demisto.command() == 'packetsled-sensors':
         response = requests.get(urljoin(apiserver, '/admin/probes'),
                                 params={'filterscount': 1, 'filtercondition0': 'NOT_EQUAL', 'filterdatafield0': 'deleted',
                                         'filtervalue0': 1},
@@ -227,7 +227,7 @@ def main():
             }
         })
 
-    if demisto.command() == "fetch-incidents" or demisto.command() == 'packetsled-get-incidents':
+    elif demisto.command() == "fetch-incidents" or demisto.command() == 'packetsled-get-incidents':
         now = datetime.utcnow().isoformat()[:-3] + "Z"
         dargs = demisto.args()
         tmin, tnow = make_timerange(dargs)
@@ -320,11 +320,11 @@ def main():
 
             # validate the response
             result = validate_response(response)
-            entitys += map(lambda x: number_to_ip(x['name']), result['data'] or [])
+            entitys += list(map(lambda x: number_to_ip(x['name']), result['data'] or []))
             entitys = list(set(entitys))
 
         if demisto.command() == "fetch-incidents":
-            incidents += map(lambda x: {
+            incidents += list(map(lambda x: {
                 'id': x + '-' + str(tmin) + '-' + str(tnow),
                 'name': 'SOURCE: Packetsled SENSOR: ' + sensor['label'] + ' ENTITY: ' + x,
                 'labels': [{'Provider': 'packetsled'}, {'Sensor': sensor['label']}, {'Entity': x}],
@@ -337,10 +337,10 @@ def main():
                     'envid': sensor['envid'],
                     'probe': sensor['probe']
                 })
-            }, entitys)
+            }, entitys))
             demisto.incidents(incidents)
         else:
-            incidents += map(lambda x: {
+            incidents += list(map(lambda x: {
                 'id': x + '-' + str(tmin) + '-' + str(tnow),
                 'log': ['intel', 'notice', 'psfile_analytics'],
                 'entity': x,
@@ -348,7 +348,7 @@ def main():
                 'stop_time': tnow,
                 'envid': sensor['envid'],
                 'probe': sensor['probe']
-            }, entitys)
+            }, entitys))
             demisto.results({
                 'HumanReadable': humanReadable('Incidents', incidents),
                 'Type': entryTypes['note'],
@@ -362,7 +362,7 @@ def main():
             })
         demisto.setLastRun({"time": now})
 
-    if demisto.command() == 'packetsled-get-flows':
+    elif demisto.command() == 'packetsled-get-flows':
         dargs = demisto.args()
 
         limit = 5000
@@ -391,7 +391,7 @@ def main():
                 'Packetsled.Flows': flows
             }
         })
-    if demisto.command() == 'packetsled-get-events':
+    elif demisto.command() == 'packetsled-get-events':
         dargs = demisto.args()
         sensorContext = make_context(dargs, apiserver, auth_token)
 
@@ -414,7 +414,7 @@ def main():
                          'ContentsFormat': formats['json'], 'Contents': {'packetsled-get-events': result['data']},
                          'EntryContext': {'packetsled.events': result['data']}
                          })
-    if demisto.command() == 'packetsled-get-files':
+    elif demisto.command() == 'packetsled-get-files':
         dargs = demisto.args()
 
         limit = 5000
@@ -451,7 +451,7 @@ def main():
                     if response.status_code == 200:
                         demisto.results(fileResult(file.replace('/', '_'), response.content))
 
-    if demisto.command() == 'packetsled-get-pcaps':
+    elif demisto.command() == 'packetsled-get-pcaps':
         dargs = demisto.args()
         tmin, tnow = make_timerange(dargs)
         sensorContext = make_context(dargs, apiserver, auth_token)
@@ -461,21 +461,21 @@ def main():
         if 'entity' in dargs:
             entity = coalesceToArray(dargs['entity'])
             if len(entity) > 1:
-                query = query + " and (" + " or ".join(map(lambda x: "host " + x, entity)) + ")"
+                query = query + " and (" + " or ".join(list(map(lambda x: "host " + x, entity))) + ")"
             else:
                 query = query + " and host " + entity[0]
 
         if 'protocol' in dargs:
             protocol = coalesceToArray(dargs['protocol'])
             if len(protocol) > 1:
-                query = query + " and (" + " or ".join(map(lambda x: x, protocol)) + ")"
+                query = query + " and (" + " or ".join(list(map(lambda x: x, protocol))) + ")"
             else:
                 query = query + " and " + protocol[0]
 
         if 'port' in dargs:
             port = coalesceToArray(dargs['port'])
             if len(port) > 1:
-                query = query + " and (" + " or ".join(map(lambda x: "port " + x, port)) + ")"
+                query = query + " and (" + " or ".join(list(map(lambda x: "port " + x, port))) + ")"
             else:
                 query = query + " and port " + port[0]
 
