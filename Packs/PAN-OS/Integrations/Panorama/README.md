@@ -7813,3 +7813,28 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Redistribution profile test was edited successfully.
+### pan-os-delete-redistribution-profile
+***
+Deletes a redistribution-profile from a virtual-router.
+
+
+#### Base Command
+
+`pan-os-delete-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to delete. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-redistribution-profile virtual_router=test1 name=test```
+#### Human Readable Output
+
+>Redistribution profile test was deleted successfully.

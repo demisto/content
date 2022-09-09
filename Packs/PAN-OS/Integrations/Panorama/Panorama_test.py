@@ -3780,3 +3780,59 @@ class TestPanOSEditRedistributionProfile:
         main()
 
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/c"
+                             "onfig/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            )
+        ]
+    )
+def test_pan_os_delete_redistribution_profile_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+    - Panorama instance configuration and arguments to delete a redistribution-profile.
+    - Firewall instance configuration and arguments to delete a redistribution-profile.
+
+    When:
+    - running the pan-os-delete-redistribution-profile through the main flow.
+
+    Then:
+    - make sure the xpath and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-redistribution-profile')
+
+    main()
+
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

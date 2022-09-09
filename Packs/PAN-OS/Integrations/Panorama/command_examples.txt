@@ -124,3 +124,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-list-redistribution-profiles virtual_router=test
 !pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1
 !pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf
+!pan-os-delete-redistribution-profile virtual_router=test1 name=test

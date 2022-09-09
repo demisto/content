@@ -8282,7 +8282,7 @@ script:
       isArray: true
       name: filter_bgp_extended_community
       required: false
-    description: Creates a new redistribution-profile in panorama/firewall instance. If trying to create an existing profile, it will override its configuration.
+    description: Creates a new redistribution-profile under a virtual-router for panorama/firewall instance. If trying to create an existing redistribution-profile, it will override its configuration.
     name: pan-os-create-redistribution-profile
     outputs: []
   - arguments:
@@ -8318,8 +8318,24 @@ script:
       isArray: true
       name: element_value
       required: true
-    description: Edits a redistribution-profile.
+    description: Edits a redistribution-profile in a virtual-router.
     name: pan-os-edit-redistribution-profile
+    outputs: []
+  - arguments:
+    - description: The name of the redistribution-profile to delete.
+      isArray: false
+      name: name
+      required: true
+    - description: The name of the virtual-router that the redistribution-profile is part of.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template in which the virtual-router is in, relevant only for panorama instances.
+      isArray: false
+      name: template
+      required: false
+    description: Deletes a redistribution-profile from a virtual-router.
+    name: pan-os-delete-redistribution-profile
     outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false

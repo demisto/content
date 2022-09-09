@@ -286,7 +286,8 @@ def http_request(uri: str, method: str, headers: dict = {},
                                   f' The available Device Groups for this instance:'
                                   f' {", ".join(device_group_names)}.')
                 raise PAN_OS_Not_Found(error_message)
-        return_warning('List not found and might be empty', True)
+        xpath = body.get('xpath') or params.get('xpath')
+        return_warning(f'The object on this path: {xpath} does not exist', True)
     if json_result['response']['@code'] not in ['19', '20']:
         # error code non exist in dict and not of success
         if 'msg' in json_result['response']:
@@ -11488,6 +11489,27 @@ def pan_os_edit_redistribution_profile_command(args):
     )
 
 
+def pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile):
+    params = {
+        'xpath': build_redistribution_profile_xpath(virtual_router, redistribution_profile),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_redistribution_profile_command(args):
+    redistribution_profile, virtual_router = args.get('name'), args.get('virtual_router')
+    raw_response = pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile} was deleted successfully.'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -12146,6 +12168,8 @@ def main():
             return_results(pan_os_create_redistribution_profile_command(args))
         elif command == 'pan-os-edit-redistribution-profile':
             return_results(pan_os_edit_redistribution_profile_command(args))
+        elif command == 'pan-os-delete-redistribution-profile':
+            return_results(pan_os_delete_redistribution_profile_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
