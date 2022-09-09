@@ -5222,6 +5222,11 @@
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
+======= },
+        {
+            "integrations": "Cortex Attack Surface Management",
+            "playbookID": "CortexAttackSurfaceManagement_Test"
+>>>>>>> fc3e280f2c (test playbook submission)
         }
     ],
     "skipped_tests": {
