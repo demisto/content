@@ -11358,6 +11358,79 @@ def pan_os_list_redistribution_profile_command(args):
     )
 
 
+def add_fields_as_json(key, value, is_list=True):
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def json_to_xml(_json):
+    return re.sub('<\/*xml2json>|\s', '', json2xml({'xml2json': _json}).decode('utf-8'))
+
+
+def pan_os_create_redistribution_profile(args):
+
+    def get_element_as_xml():
+
+        element_as_json = {}
+        if priority := args.get('priority'):
+            element_as_json['priority'] = priority
+        if action := args.get('action'):
+            element_as_json['action'] = {action: {}}
+
+        if filters := {
+            'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
+            'filter_ospf_path_type', 'filter_bgp_community', 'filter_bgp_extended_community'
+        }.intersection(set(args.keys())):
+            element_as_json['filter'] = {}
+            if 'filter_ospf_path_type' in filters or 'filter_ospf_area' in filters or 'filter_ospf_tag' in filters:
+                element_as_json['filter']['ospf'] = {}
+                if filter_ospf_path_type := args.get('filter_ospf_path_type'):
+                    element_as_json['filter']['ospf'].update(add_fields_as_json('path-type', filter_ospf_path_type))
+                if filter_ospf_area := args.get('filter_ospf_area'):
+                    element_as_json['filter']['ospf'].update(add_fields_as_json('area', filter_ospf_area))
+                if filter_ospf_tag := args.get('filter_ospf_tag'):
+                    element_as_json['filter']['ospf'].update(add_fields_as_json('tag', filter_ospf_tag))
+            if 'filter_bgp_community' in filters or 'filter_bgp_extended_community' in filters:
+                element_as_json['filter']['bgp'] = {}
+                if filter_bgp_community := args.get('filter_bgp_community'):
+                    element_as_json['filter']['bgp'].update(add_fields_as_json('community', filter_bgp_community))
+                if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
+                    element_as_json['filter']['bgp'].update(
+                        add_fields_as_json('extended-community', filter_bgp_extended_community)
+                    )
+            if 'filter_source_type' in filters:
+                element_as_json['filter'].update(add_fields_as_json('type', args.get('filter_source_type')))
+            if 'interface' in filters:
+                element_as_json['filter'].update(add_fields_as_json('interface', args.get('interface')))
+            if 'destination' in filters:
+                element_as_json['filter'].update(add_fields_as_json('destination', args.get('destination')))
+            if 'nexthop' in filters:
+                element_as_json['filter'].update(add_fields_as_json('nexthop', args.get('nexthop')))
+
+        return json_to_xml(element_as_json)
+
+    params = {
+        'xpath': build_redistribution_profile_xpath(
+            virtual_router_name=args.get('virtual_router'), redistribution_profile_name=args.get('name')
+        ),
+        'element': get_element_as_xml(),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    raw_response = pan_os_create_redistribution_profile(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was created successfully.'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -12012,6 +12085,8 @@ def main():
             return_results(pan_os_list_virtual_routers_command(args))
         elif command == 'pan-os-list-redistribution-profiles':
             return_results(pan_os_list_redistribution_profile_command(args))
+        elif command == 'pan-os-create-redistribution-profile':
+            return_results(pan_os_create_redistribution_profile_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

@@ -8182,6 +8182,108 @@ script:
       required: false
     description: Returns a list of redistribution-profiles of a specific virtual-router of either Panorama/firewall instance.
     name: pan-os-list-redistribution-profiles
+    outputs:
+    - contextPath: Panorama.RedistributionProfile.Name
+      description: The name of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.Priority
+      description: The priority of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.Action
+      description: The action of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.FilterInterface
+      description: The filter interface(s).
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterType
+      description: The filter type(s)
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterDestination
+      description: The filter destination(s).
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterNextHop
+      description: The filter next hop.
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.BGP
+      description: The BGP of the profile.
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.OSPF
+      description: The OSPF of the profile.
+      type: Unknown
+  - arguments:
+    - description: The name of the of the redistribution profile to create.
+      isArray: false
+      name: name
+      required: true
+    - description: The virtual router that the redistribution profile will be created on.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template in which the virtual-router is in. Use only for panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - auto: PREDEFINED
+      description: Comma separated list of The filter source types.
+      isArray: true
+      name: filter_source_type
+      predefined:
+      - bgp
+      - ospf
+      - rip
+      - static
+    - description: A comma-separated list of destination to filter by.
+      isArray: true
+      name: destination
+      required: false
+    - description: A comma-separated list of next-hops to filter by.
+      isArray: true
+      name: nexthop
+      required: false
+    - description: A comma-separated list of interfaces to filter by.
+      isArray: true
+      name: interface
+      required: false
+    - description: The priority of the profile. (1-255).
+      isArray: false
+      name: priority
+      required: true
+    - description: The action of the profile.
+      isArray: false
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - redist
+      - no-redist
+    - description: A comma-separated list of areas for the OSPF.
+      isArray: true
+      name: filter_ospf_area
+      required: false
+    - description: A comma-separated list of tags for the OSPF.
+      isArray: true
+      name: filter_ospf_tag
+      required: false
+    - auto: PREDEFINED
+      predefined:
+      - ext-1
+      - ext-2
+      - inter-area
+      - intra-area
+      description: A comma-separated list of path types for the OSPF.
+      isArray: true
+      name: filter_ospf_path_type
+      required: false
+    - description: A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format - where AS and VAL are each in 0 - 65535 range. (Max 10 values)
+      isArray: true
+      name: filter_bgp_community
+      required: false
+    - description: A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values)
+      isArray: true
+      name: filter_bgp_extended_community
+      required: false
+    description: Creates a new redistribution-profile in panorama/firewall instance. If trying to create an existing profile, it will override its configuration.
+    name: pan-os-create-redistribution-profile
     outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false

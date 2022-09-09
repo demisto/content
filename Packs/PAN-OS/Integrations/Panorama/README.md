@@ -7750,3 +7750,39 @@ There is no context output for this command.
 >| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
 >| test-2 | 123 | no-redist |  |  |  |  |  |
 
+### pan-os-create-redistribution-profile
+***
+Creates a new redistribution-profile in panorama/firewall instance. If trying to create an existing profile, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the of the redistribution profile to create. | Required | 
+| virtual_router | The virtual router that the redistribution profile will be created on. | Required | 
+| template | The template in which the virtual-router is in. Use only for panorama instances. | Optional | 
+| filter_source_type | Comma separated list of The filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
+| destination | A comma-separated list of destination to filter by. | Optional | 
+| nexthop | A comma-separated list of next-hops to filter by. | Optional | 
+| interface | A comma-separated list of interfaces to filter by. | Optional | 
+| priority | The priority of the profile. (1-255). | Required | 
+| action | The action of the profile. Possible values are: redist, no-redist. | Optional | 
+| filter_ospf_area | A comma-separated list of areas for the OSPF. | Optional | 
+| filter_ospf_tag | A comma-separated list of tags for the OSPF. | Optional | 
+| filter_ospf_path_type | A comma-separated list of path types for the OSPF. Possible values are: ext-1, ext-2, inter-area, intra-area. | Optional | 
+| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format - where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
+| filter_bgp_extended_community | A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1```
+#### Human Readable Output
+
+>Redistribution profile test was created successfully.

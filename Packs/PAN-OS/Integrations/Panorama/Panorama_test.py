@@ -3600,3 +3600,62 @@ class TestPanOSListRedistributionProfiles:
         ]
 
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSCreateRedistributionProfile:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile', 'priority': '12',
+                    'action': 'redist', 'filter_bgp_extended_community': '0x4164ACFCE33404EA',
+                    'filter_source_type': 'bgp,ospf', 'filter_ospf_area': '1.1.1.1,2.2.2.2'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/"
+                             "config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry["
+                             "@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'element': '<priority>12</priority><action><redist/></action><filter><ospf><area><member>1.1.1.1<'
+                               '/member><member>2.2.2.2</member></area></ospf><bgp><extended-community>'
+                               '<member>0x4164ACFCE33404EA</member></extended-community></bgp><type><member>bgp'
+                               '</member><member>ospf</member></type></filter>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile', 'interface': 'loopback',
+                    'filter_ospf_tag': '1.1.1.1,2.2.2.2', 'filter_source_type': 'ospf,bgp',
+                    'filter_ospf_path_type': 'ext-1,ext-2'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'element': '<filter><ospf><path-type><member>ext-1</member><member>ext-2</member></path-type><tag>'
+                               '<member>1.1.1.1</member><member>2.2.2.2</member></tag></ospf><type><member>'
+                               'ospf</member><member>bgp</member></type><interface><member>loopback</member>'
+                               '</interface></filter>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_create_redistribution_profile_command_main_flow(self, mocker, args, params, expected_url_params):
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-create-redistribution-profile')
+
+        main()
+
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
