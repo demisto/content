@@ -5174,6 +5174,10 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "Cortex Attack Surface Management",
+            "playbookID": "CortexAttackSurfaceManagement_Test"
         }
     ],
     "skipped_tests": {
