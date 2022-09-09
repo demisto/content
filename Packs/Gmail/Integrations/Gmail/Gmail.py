@@ -1102,7 +1102,7 @@ def search_all_mailboxes(receive_only_accounts, max_results):
     service = get_service('admin', 'directory_v1')
     accounts_counter = 0
     msg_counter = 0
-    entry_print_goal = max_results
+    log_msg_target = max_results
     while True:
         command_args = {
             'maxResults': 100,
@@ -1125,14 +1125,14 @@ def search_all_mailboxes(receive_only_accounts, max_results):
                 entries.append(entry)
                 if receive_only_accounts:
                     if accounts_counter % 100 == 0:
-                        demisto.info(
+                        demisto.debug(
                             'Still searching. Searched {} of total accounts'.format(
                                 accounts_counter),
                         )
                 else:
                     msg_counter += num_of_messages
-                    if msg_counter >= entry_print_goal or accounts_counter % 100 == 0:
-                        entry_print_goal = msg_counter + max_results
+                    if msg_counter >= log_msg_target or accounts_counter % 100 == 0:
+                        log_msg_target = msg_counter + max_results
                         demisto.info(
                             'Still searching. Searched {} of total accounts, and found {} results so far'.format(
                                 accounts_counter,
@@ -2204,7 +2204,7 @@ def main():
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
                 demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
-            if command == 'gmail-search':
+            elif command == 'gmail-search':
                 demisto.results(cmd_func()[0])  # type: ignore
             else:
                 demisto.results(cmd_func())  # type: ignore
