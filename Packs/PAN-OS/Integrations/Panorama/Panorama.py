@@ -11273,10 +11273,14 @@ def pan_os_list_virtual_routers_command(args):
     )
 
 
-def build_redistribution_profile_xpath(virtual_router_name: Optional[str], redistribution_profile_name: Optional[str]):
+def build_redistribution_profile_xpath(
+    virtual_router_name: Optional[str], redistribution_profile_name: Optional[str], element: Optional[str] = None
+):
     _xpath = f"{build_virtual_routers_xpath(virtual_router_name)}/protocol/redist-profile"
     if redistribution_profile_name:
         _xpath = f"{_xpath}/entry[@name='{redistribution_profile_name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
@@ -11428,6 +11432,59 @@ def pan_os_create_redistribution_profile_command(args):
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Redistribution profile {redistribution_profile_name} was created successfully.'
+    )
+
+
+def pan_os_edit_redistribution_profile(
+    virtual_router_name, redistribution_profile_name, element_to_change, element_value, json_key_path, is_listable
+):
+
+    params = {
+        'xpath': build_redistribution_profile_xpath(
+            virtual_router_name, redistribution_profile_name, element=element_to_change
+        ),
+        'element': json_to_xml(add_fields_as_json(json_key_path, element_value, is_list=is_listable)),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_redistribution_profile_command(args):
+    virtual_router_name, redistribution_profile_name = args.get('virtual_router'), args.get('name')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'filter_type': ('filter/type', 'type', True),
+        'filter_destination': ('filter/destination', 'destination', True),
+        'filter_nexthop': ('filter/nexthop', 'nexthop', True),
+        'filter_interface': ('filter/interface', 'interface', True),
+        'priority': ('priority', 'priority', False),
+        'action': ('action', 'action', False),
+        'filter_ospf_area': ('filter/ospf/area', 'area', True),
+        'filter_ospf_tag': ('filter/ospf/tag', 'tag', True),
+        'filter_ospf_path_type': ('filter/ospf/path-type', 'path-type', True),
+        'filter_bgp_community': ('filter/bgp/community', 'community', True),
+        'filter_bgp_extended_community': ('filter/bgp/community', 'extended-community', True)
+    }
+
+    element_to_change, api_path_json_key, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_redistribution_profile(
+        virtual_router_name=virtual_router_name,
+        redistribution_profile_name=redistribution_profile_name,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        json_key_path=api_path_json_key,
+        is_listable=is_listable
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was edited successfully.'
     )
 
 
@@ -12087,6 +12144,8 @@ def main():
             return_results(pan_os_list_redistribution_profile_command(args))
         elif command == 'pan-os-create-redistribution-profile':
             return_results(pan_os_create_redistribution_profile_command(args))
+        elif command == 'pan-os-edit-redistribution-profile':
+            return_results(pan_os_edit_redistribution_profile_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
