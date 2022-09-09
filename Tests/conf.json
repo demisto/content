@@ -2742,7 +2742,7 @@
         },
         {
             "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
+            "playbookID": "GoogleCloudComputeListTest"
         },
         {
             "integrations": "AWS - S3",
@@ -3302,7 +3302,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -4618,7 +4618,16 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "OpenLDAP"
-            ]
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
+        },
+        {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
             "playbookID": "Splunk-Test",
@@ -5379,7 +5388,6 @@
         "Attivo Botsink": "no instance, not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
