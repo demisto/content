@@ -8100,6 +8100,80 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
+  - arguments:
+    - description: The name of the pbf-rule to retrieve, if not mentioned will bring all the pbf rules.
+      isArray: false
+      name: rulename
+      required: false
+    - description: The device-group in which the pbf-rules are part of.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed rules or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of pbf-rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing pbf-rules, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of pbf-rules of either Panorama/firewall instance.
+    name: pan-os-list-pbf-rules
+    outputs:
+    - contextPath: Panorama.PBF.Name
+      description: The name of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Description
+      description: The description of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Tags
+      description: The tags of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceZone
+      description: The source-zones of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceInterface
+      description: The source-interfaces of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceAddress
+      description: The source-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceUser
+      description: The source-users of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.DestinationAddress
+      description: The destination-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.EnforceSymmetricReturn
+      description: The enforce-symmetric-return of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Target
+      description: The target of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Application
+      description: The applications of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Service
+      description: The services of the PBF rule.
+      type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

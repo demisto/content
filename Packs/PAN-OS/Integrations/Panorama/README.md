@@ -7436,3 +7436,97 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-pbf-rules
+***
+Returns a list of pbf-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-pbf-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to retrieve, if not mentioned will bring all the pbf rules. | Optional | 
+| device-group | The device-group in which the pbf-rules are part of. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of pbf-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing pbf-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.PBF.Name | String | The name of the PBF rule. | 
+| Panorama.PBF.Description | String | The description of the PBF rule. | 
+| Panorama.PBF.Tags | Unknown | The tags of the PBF rule. | 
+| Panorama.PBF.SourceZone | Unknown | The source-zones of the PBF rule. | 
+| Panorama.PBF.SourceInterface | Unknown | The source-interfaces of the PBF rule. | 
+| Panorama.PBF.SourceAddress | Unknown | The source-addresses of the PBF rule. | 
+| Panorama.PBF.SourceUser | Unknown | The source-users of the PBF rule. | 
+| Panorama.PBF.DestinationAddress | Unknown | The destination-addresses of the PBF rule. | 
+| Panorama.PBF.EnforceSymmetricReturn | Unknown | The enforce-symmetric-return of the PBF rule. | 
+| Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
+| Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
+| Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+
+#### Command example
+```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "PBF": {
+            "Action": {
+                "forward": {
+                    "egress-interface": "a2",
+                    "monitor": {
+                        "disable-if-unreachable": "no",
+                        "ip-address": "1.1.1.1",
+                        "profile": "profile"
+                    },
+                    "nexthop": {
+                        "ip-address": "2.2.2.2"
+                    }
+                }
+            },
+            "Application": "3pc",
+            "Description": "this is a test description",
+            "DestinationAddress": "1.1.1.1",
+            "EnforeSymmetricReturn": {
+                "enabled": "yes",
+                "nexthop-address-list": {
+                    "entry": {
+                        "@name": "1.1.1.1"
+                    }
+                }
+            },
+            "Name": "test",
+            "Service": "application-default",
+            "SourceAddress": "1.1.1.1",
+            "SourceInterface": null,
+            "SourceUser": "pre-logon",
+            "SourceZone": "1.1.1.1",
+            "Tags": [
+                "test tag",
+                "dag_test_tag"
+            ],
+            "Target": {
+                "negate": "no"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Based Forwarding Rules:
+>|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
+>|---|---|---|---|---|---|---|---|
+>| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+

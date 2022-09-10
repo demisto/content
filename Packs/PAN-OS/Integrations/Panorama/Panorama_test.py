@@ -3426,3 +3426,152 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+class TestPanOSListPBFRulesCommand:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group"
+                             "/entry[@name='Lab-Devices']/pre-rulebase/pbf"
+                }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'true'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                             "[@name='vsys1']/rulebase/pbf"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_pbf_command_un_committed_rules_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration and arguments to get all the un-committed PBF rules.
+         - Firewall instance configuration and arguments to get all the un-committed PBF rules.
+
+        When:
+         - running the pan-os-list-pbf-rules through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        expected_context = [
+            {
+                'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
+                'DestinationAddress': '1.1.1.1',
+                'Action': {
+                    'forward': {
+                        'nexthop': {'ip-address': '2.2.2.2'},
+                        'monitor': {'profile': 'profile', 'disable-if-unreachable': 'no', 'ip-address': '1.1.1.1'},
+                        'egress-interface': 'a2'
+                    }
+                },
+                'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+            },
+            {
+                'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
+                'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
+                'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
+                'Application': 'any', 'Service': 'any'
+            },
+            {
+                'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
+                'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
+                'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
+                'Application': 'any', 'Service': 'any'
+            }
+        ]
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json('test_data/list-pbf-rules-response-un-committed.json')
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-pbf-rules')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false', 'rulename': 'test'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'false', 'rulename': 'test'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/pbf/rules/entry[@name='test']"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_pbf_command_committed_rules_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration and arguments to get a specific committed PBF rule.
+         - Firewall instance configuration and arguments to get a specific committed PBF rule.
+
+        When:
+         - running the pan-os-list-pbf-rules through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+        expected_context = [
+            {
+                'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
+                'DestinationAddress': '1.1.1.1',
+                'Action': {
+                    'forward': {
+                        'nexthop': {'ip-address': '2.2.2.2'},
+                        'monitor': {'profile': 'profile', 'disable-if-unreachable': 'no', 'ip-address': '1.1.1.1'},
+                        'egress-interface': 'a2'
+                    }
+                },
+                'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'}
+        ]
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json('test_data/list-pbf-rules-response-commited.json')
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-pbf-rules')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
+        assert mock_request.call_args.kwargs['params'] == expected_url_params

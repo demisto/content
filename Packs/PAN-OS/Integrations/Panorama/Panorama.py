@@ -11133,6 +11133,154 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def build_pbf_xpath(name, pre_post):
+    _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
+    if name:
+        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    return _xpath
+
+
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
+
+    for key in keys_to_remove:
+        try:
+            del dictionary[key]
+        except KeyError:
+            pass
+
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            parse_pan_os_un_committed_data(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
+
+
+def extract_objects_info_by_key(_entry, _key):
+    key_info = _entry.get(_key)
+    if not key_info:  # api could not return the key
+        return None
+
+    if isinstance(key_info, dict) and (_member := key_info.get('member')):
+        return _member
+    elif isinstance(key_info, str):
+        return key_info
+
+    return None
+
+
+def pan_os_list_pbf_rules(name, pre_post, show_uncommitted):
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        # rulebase is for firewall instance.
+        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        human_readable.append(
+            {
+                'Name': extract_objects_info_by_key(entry, '@name'),
+                'Description': extract_objects_info_by_key(entry, 'description'),
+                'Tags': extract_objects_info_by_key(entry, 'tag'),
+                'Source Zone': extract_objects_info_by_key(entry.get('from', {}), 'zone'),
+                'Source Interface': extract_objects_info_by_key(entry.get('from', {}), 'interface'),
+                'Source Address': extract_objects_info_by_key(entry, 'source'),
+                'Source User': extract_objects_info_by_key(entry, 'source-user'),
+                'Destination Address': extract_objects_info_by_key(entry, 'destination'),
+                'Action': list(entry['action'].keys())[0] if entry.get('action') else None
+            }
+        )
+
+        context.append(
+            {
+                'Name': extract_objects_info_by_key(entry, '@name'),
+                'Description': extract_objects_info_by_key(entry, 'description'),
+                'Tags': extract_objects_info_by_key(entry, 'tag'),
+                'SourceZone': extract_objects_info_by_key(entry.get('from', {}), 'zone'),
+                'SourceInterface': extract_objects_info_by_key(entry.get('from', {}), 'interface'),
+                'SourceAddress': extract_objects_info_by_key(entry, 'source'),
+                'SourceUser': extract_objects_info_by_key(entry, 'source-user'),
+                'DestinationAddress': extract_objects_info_by_key(entry, 'destination'),
+                'Action': entry.get('action'),
+                'EnforceSymmetricReturn': entry.get('enforce-symmetric-return'),
+                'Target': entry.get('target'),
+                'Application': extract_objects_info_by_key(entry, 'application'),
+                'Service': extract_objects_info_by_key(entry, 'service')
+            }
+        )
+
+    return human_readable, context
+
+
+def pan_os_list_pbf_rules_command(args):
+    name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = (result.get('pbf', {}).get('rules', {}).get('entry')) or [result.get('entry')]
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
+
+    if not name:
+        # filter the pbf-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        if page is not None:
+            if page <= 0:
+                raise DemistoException(f'page {page} must be a positive number')
+            page_size = arg_to_number(args.get('page_size')) or 50
+            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
+        else:
+            limit = arg_to_number(args.get('limit')) or 50
+            entries = entries[:limit]
+
+    table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=pbf_rules,
+        readable_output=tableToMarkdown('Policy Based Forwarding Rules:', table, removeNull=True),
+        outputs_prefix='Panorama.PBF',
+        outputs_key_field='Name'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -11783,6 +11931,8 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-pbf-rules':
+            return_results(pan_os_list_pbf_rules_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
