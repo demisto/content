@@ -20,3 +20,4 @@ ignore=PB106
 Atlassian
 Jira
 JiraEventCollector
+JiraCreateIssue
