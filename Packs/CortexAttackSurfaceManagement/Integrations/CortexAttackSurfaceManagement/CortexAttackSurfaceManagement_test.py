@@ -56,4 +56,4 @@ def test_getexternalservices_command(requests_mock):
     assert response.outputs == mock_response_result
     assert response.outputs_prefix == 'ASM.GetExternalServices'
     assert response.outputs_key_field == 'service_id'
-# TODO: ADD HERE unit tests for every command
+# TODO: ADD HERE unit tests for every command d
