@@ -1,0 +1,1 @@
+Creating API keys is done in the Cortex XSIAM interface, under Settings -> Configurations -> API Keys
