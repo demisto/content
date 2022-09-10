@@ -10,8 +10,12 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import json
+import pytest
 import io
+import json
+from CommonServerPython import *
+from CommonServerPython import Common
+#from CortexAttackSurfaceManagement import Client, getexternalservices_command, getexternalservice_command, getexternalipaddressranges_command, getexternalipaddressrange_command, getassetsinternetexposure_command, getassetinternetexposure_command
 
 
 def util_load_json(path):
@@ -20,23 +24,36 @@ def util_load_json(path):
 
 
 # TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_getexternalservices_command(requests_mock):
+    """Tests asm-getexternalservices_command command function.
 
     Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    from CortexAttackSurfaceManagement import Client, getexternalservices_command
 
-    client = Client(base_url='some_mock_url', verify=False)
+    mock_response_result = util_load_json('test_data/getexternalservices_result.json')
+    mock_response_raw = util_load_json('test_data/getexternalservices_raw.json')
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_external_services/',
+                      json=mock_response_raw)
+
+    client = Client(
+            base_url='https://test.com/api/webapp/public_api/v1',
+            verify=True,
+            headers = {
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+            },
+            proxy=False,
+            auth=None)
+
     args = {
-        'dummy': 'this is a dummy response'
+        'domain': 'testdomain.com',
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    response = getexternalservices_command(client, args)
 
-    assert response.outputs == mock_response
+    assert response.outputs == mock_response_result
+    assert response.outputs_prefix == 'ASM.GetExternalServices'
+    assert response.outputs_key_field == 'service_id'
 # TODO: ADD HERE unit tests for every command
