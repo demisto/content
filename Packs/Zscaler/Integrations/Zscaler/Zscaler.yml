@@ -27,7 +27,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   type: 15
 - additionalinfo: If enabled, the integration will log out after executing each command.
   defaultvalue: 'true'
