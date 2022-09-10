@@ -1,12 +1,33 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+##TODO TEMPLATE TO REMOVE
+        """descrioption
+        Args:
+            ip (str): 
+        Returns:
+            dict: 
+        """
 
 class Client(BaseClient):
+    """
+    Client class to interact with the service API.
+    """
     def __init__(self, base_url, verify, proxy, headers, auth):
+        """
+        Class initialization.
+        """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def getexternalservices_request(self, search_params):
+        """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
+        
+        Args:
+            search_params (list): list of search parameters to add to the API call body.
+        
+        Returns:
+            dict: dict containing list of external services.
+        """
         data = {"request_data": {"filters": search_params, "search_to": 100}}
         headers = self._headers
 
@@ -16,6 +37,14 @@ class Client(BaseClient):
         return response
 
     def getexternalservice_request(self, service_id_list):
+        """Get service details using the '/assets/get_external_service/' endpoint.
+        
+        Args:
+            service_id_list (list): single service id in list format.
+        
+        Returns:
+            dict: dict containing information on single external service.
+        """
         data = {"request_data": {"service_id_list": service_id_list}}
         headers = self._headers
 
@@ -25,6 +54,14 @@ class Client(BaseClient):
         return response
 
     def getexternalipaddressranges_request(self):
+        """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
+        
+        Args:
+            None
+        
+        Returns:
+            dict: dict containing list of external ip address ranges.
+        """
         data = {"request_data": {"search_to": 100}}
         headers = self._headers
 
@@ -34,6 +71,14 @@ class Client(BaseClient):
         return response
 
     def getexternalipaddressrange_request(self, range_id_list):
+        """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
+        
+        Args:
+            range_id_list (list): single range id in list format.
+        
+        Returns:
+            dict: dict containing information on external ip address range.
+        """
         data = {"request_data": {"range_id_list": range_id_list}}
         headers = self._headers
 
@@ -43,6 +88,14 @@ class Client(BaseClient):
         return response
 
     def getassetsinternetexposure_request(self, search_params):
+        """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
+        
+        Args:
+            search_params (list): list of search parameters to add to the API call body.
+        
+        Returns:
+            dict: dict containing list of internet exposure assets.
+        """
         data = {"request_data": {"filters": search_params, "search_to": 100}}
         headers = self._headers
 
@@ -52,6 +105,14 @@ class Client(BaseClient):
         return response
 
     def getassetinternetexposure_request(self, asm_id_list):
+        """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
+        
+        Args:
+            asm_id_list (list): single attack surface management id in list format.
+        
+        Returns:
+            dict: dict containing information on an internet exposure asset.
+        """
         data = {"request_data": {"asm_id_list": asm_id_list}}
         headers = self._headers
 
@@ -62,6 +123,20 @@ class Client(BaseClient):
 
 
 def getexternalservices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getexternalservices command: Returns list of external services.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['ip_address']`` IP Address to search on.
+            ``args['domain']`` Domain to search on.
+            ``args['is_active']`` If the service active or not.
+            ``args['discovery_type']`` how service was discovered.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external services.
+    """
     ip_address = args.get('ip_address')
     domain = args.get('domain')
     is_active = args.get('is_active')
@@ -92,6 +167,18 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getexternalservice command: Returns details of single external service.
+    Returns error if more than one service_id was provided in comma separated format.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['service_id']`` A string represenng the service ID you want get details for.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external service information.
+    """
     # assume that only one service_id was passed in or fail.
     service_id = args.get('service_id')
     service_id_list = service_id.split(",")
@@ -113,7 +200,17 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getexternalipaddressranges command: Returns list of external ip ranges.
 
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            No subkeys of args used.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external IP address ranges.
+    """
     response = client.getexternalipaddressranges_request()
     parsed = response['reply']['external_ip_address_ranges']
     markdown = tableToMarkdown('External IP Address Ranges', parsed)
@@ -129,6 +226,18 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getexternalipaddressrange command: Returns details of single external ip range.
+    Returns error if more than one range_id was provided in comma separated format.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['range_id']`` A string representing the range ID for which you want to get the details for.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external ip range information.
+    """
     # assume that only one range_id was passed in or fail.
     range_id = args.get('range_id')
     range_id_list = range_id.split(",")
@@ -150,6 +259,20 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getassetsinternetexposure command: Returns list of external internet exposures.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['ip_address']`` IP Address to search on.
+            ``args['name']`` name of asset to search on.
+            ``args['type']`` type of external service.
+            ``args['has_active_external_services']`` if the internet exposure have an active external service.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external internet exposures.
+    """
     ip_address = args.get('ip_address')
     name = args.get('name')
     asm_type = args.get('type')
@@ -180,6 +303,18 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-getassetinternetexposure_command command: Returns details of single external internet exposure.
+    Returns error if more than one asm_id was provided in comma separated format.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['asm_id']`` A string representing the asset ID for which you want to get the details for.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains internet exposure information.
+    """
     # assume that only one asm_id was passed in or fail.
     asm_id = args.get('asm_id')
     asm_id_list = asm_id.split(",")
@@ -201,6 +336,18 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
 
 
 def test_module(client: Client) -> None:
+    """
+    Tests API connectivity and authentication'
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
+    Raises exceptions if something goes wrong.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        
+    Returns:
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+    """
     try:
         response = client.getexternalservices_request([])
     except DemistoException as e:
@@ -212,7 +359,9 @@ def test_module(client: Client) -> None:
 
 
 def main() -> None:
-
+    """
+    main function
+    """
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
@@ -256,6 +405,7 @@ def main() -> None:
     except Exception as e:
         return_error(str(e))
 
+''' ENTRY POINT '''
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

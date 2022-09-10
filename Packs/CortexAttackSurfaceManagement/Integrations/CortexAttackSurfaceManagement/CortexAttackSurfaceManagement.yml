@@ -72,7 +72,7 @@ script:
       description: External service vulnerability score
       type: Unknown
   - arguments:
-    - description: An string represenng the service ID you want get details for.
+    - description: A string represenng the service ID you want get details for.
       name: service_id
       required: true
     description: Get service details according to the service ID.
@@ -152,7 +152,7 @@ script:
       description: External IP address range associated organization handles
       type: String
   - arguments:
-    - description: An string representing the range ID for which you want to get the details for.
+    - description: A string representing the range ID for which you want to get the details for.
       name: range_id
       required: true
     description: Get external IP address range details according to the range IDs.
@@ -260,7 +260,7 @@ script:
       description: IP addresses associated wih the internet exposure
       type: String
   - arguments:
-    - description: An string representing the asset ID for which you want to get the details for
+    - description: A string representing the asset ID for which you want to get the details for
       name: asm_id
       required: true
     description: Get Internet exposure asset details according to the asset ID.
