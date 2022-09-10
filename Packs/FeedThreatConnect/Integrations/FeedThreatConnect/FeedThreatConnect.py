@@ -90,8 +90,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
               'threatAssessRating': 'verdict',
               'description': 'description',
               'threatAssessConfidence': 'confidence',
-              'summary': 'name',
-              'Mutex': 'mutex'},
+              'summary': 'name'},
     'Registry Key': {'dateAdded': 'firstseenbysource',
                      'lastModified': 'updateddate',
                      'threatAssessRating': 'verdict',
@@ -113,7 +112,8 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
             'threatAssessRating': 'verdict',
             'description': 'description',
             'threatAssessConfidence': 'confidence',
-            'AS Number': 'value'},
+            'AS Number': 'value',
+            'summary': 'name'},
     'Attack Pattern': {'dateAdded': 'firstseenbysource',
                        'lastModified': 'updateddate',
                        'description': 'description',
@@ -170,16 +170,25 @@ def set_fields_query() -> str:
 
 
 def create_types_query() -> str:
+    """Creating TypeName query to fetch different types of indicators"""
+    group_types = argToList(demisto.getParam('groupType'))
+    indicator_types = argToList(demisto.getParam('indicatorType'))
     types = []
-    if 'All' in demisto.getParam('groupType') and 'All' in demisto.getParam('indicatorType'):
-        return ''
-    if 'All' in demisto.getParam('groupType'):
 
-        types.extend(argToList(demisto.getParam("groupType")))
-    if 'All' not in demisto.getParam('indicatorType'):
-        types.extend(argToList(demisto.getParam("indicatorType")))
-    if not types:
+    if not group_types and not indicator_types:
+        raise ValueError('No indicator type or group type were chosen, please choose at least one.')
+
+    if 'All' in group_types and 'All' in indicator_types:
         return ''
+    elif 'All' in group_types:
+        types.extend(INDICATOR_GROUPS)
+        types.extend(indicator_types)
+    elif 'All' in indicator_types:
+        types.extend(INDICATOR_TYPES)
+        types.extend(group_types)
+    else:
+        types.extend(group_types)
+        types.extend(indicator_types)
 
     query = 'typeName IN ('
     for item in types:
@@ -215,10 +224,11 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         dict: Parsed indicator.
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
-    fields = add_indicator_fields(indicator, indicator_type)
+    indicator_value = indicator.get('summary') or indicator.get('name')
+    fields = create_indicator_fields(indicator, indicator_type, indicator_value)
 
     indicator_obj = {
-        "value": indicator.get('summary'),
+        "value": indicator_value,
         "type": indicator_type,
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
@@ -228,7 +238,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     return indicator_obj
 
 
-def add_indicator_fields(indicator, indicator_type):
+def create_indicator_fields(indicator, indicator_type, indicator_value):
+    """Creating an indicator fields from a raw indicator"""
     params = demisto.params()
     indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
     fields: dict = {}
@@ -257,7 +268,7 @@ def add_indicator_fields(indicator, indicator_type):
         fields['trafficlightprotocol'] = tlp_color  # type: ignore
 
     if argToBoolean(params.get('retrieveRelationships')):
-        relationships = create_indicator_relationships(fields)
+        relationships = create_indicator_relationships(fields, indicator_type, indicator_value)
         if relationships:
             fields['relationships'] = relationships
 
@@ -266,13 +277,13 @@ def add_indicator_fields(indicator, indicator_type):
     return fields
 
 
-def create_indicator_relationships(indicator):
+def create_indicator_relationships(indicator, indicator_type, indicator_value):
     relationships_list: List[EntityRelationship] = []
     entities_b = indicator.get('feedrelatedindicators', [])
     for entity_b in entities_b:
-
-        relationships_list.extend(create_relationships(indicator.get('value'), indicator.get('type'),
-                                                       entity_b.get('summary') or entity_b.get('data'), entity_b.get('type')))
+        entity_b_value = entity_b.get('summary') or entity_b.get('name')
+        relationships_list.extend(create_relationships(indicator_value, indicator_type,
+                                                       entity_b_value, entity_b.get('type')))
 
     return relationships_list
 
@@ -280,17 +291,10 @@ def create_indicator_relationships(indicator):
 def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str):
     """
     Create a list of entityRelationship object from the api result
-    entity_a: (str) - source of the relationship
-    entity_a_type: (str) - type of the source of the relationship
-    relationships_response: (dict) - the relationship response from the api
-    reliability: The reliability of the source.
-
-    Returns a list of EntityRelationship objects.
     """
     relationships_list: List[EntityRelationship] = []
 
     if entity_b and entity_b_type:
-
         relationships_list.append(
             EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=EntityRelationship.Relationships.RELATED_TO,
                                entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam(

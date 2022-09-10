@@ -35,11 +35,11 @@ def test_create_or_query():
     assert create_or_query('test', '1,2,3,4,5') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '
 
 
-@pytest.mark.parametrize(argnames="params, expected_result",
-                         argvalues=[({'indicatorActive': False, "groupType": [], "indicatorType": [], 'retrieveRelationships': False},
-                                      ''),
-                                    ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [], 'retrieveRelationships': False},
-                                    'indicatorActive EQ True AND typeName IN ("File")')])
+@pytest.mark.parametrize("params, expected_result",
+                        [({'indicatorActive': False, "groupType": ['All'], "indicatorType": ['All'], 'retrieveRelationships': False},
+                          ''),
+                         ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [], 'retrieveRelationships': False},
+                           'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
     """
     Given:
