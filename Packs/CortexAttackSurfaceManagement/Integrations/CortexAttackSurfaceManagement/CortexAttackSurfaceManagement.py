@@ -1,13 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *
 
-##TODO TEMPLATE TO REMOVE
-        """descrioption
-        Args:
-            ip (str): 
-        Returns:
-            dict: 
-        """
+
 
 class Client(BaseClient):
     """
@@ -344,7 +339,7 @@ def test_module(client: Client) -> None:
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
-        
+
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
