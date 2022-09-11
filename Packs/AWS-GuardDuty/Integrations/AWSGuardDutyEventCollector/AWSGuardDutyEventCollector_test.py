@@ -5,7 +5,7 @@ from unittest.mock import call
 from typing import Optional
 
 from AWSGuardDutyEventCollector import get_events
-from test_data.finding_for_test import FINDING, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
+from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
 
 LIST_DETECTORS_RESPONSE = {
@@ -125,7 +125,7 @@ def test_test_module(mocker):
                                                                               max_results=1,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [FINDING], id='simple, no next tokens, low severity'),
+                                       [FINDING_OUTPUT], id='simple, no next tokens, low severity'),
                           pytest.param(10, 'Low', [{"DetectorIds": ["detector_id1"], "NextToken": "next"},
                                                    {"DetectorIds": ["detector_id2"]}],
                                        [{"FindingIds": ["finding_id1"]}, {"FindingIds": ["finding_id2"]}],
@@ -144,8 +144,8 @@ def test_test_module(mocker):
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1']),
                                         call(DetectorId='detector_id2', FindingIds=['finding_id2'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1"),
-                                        update_finding_id(FINDING.copy(), "finding_id2")],
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id2")],
                                        id='2 detectors'),
                           pytest.param(10, 'Low', [{"DetectorIds": ["detector_id1"]}],
                                        [{"FindingIds": ["finding_id1"], "NextToken": "next"},
@@ -164,8 +164,8 @@ def test_test_module(mocker):
                                                                               max_results=9,
                                                                               next_token='next'))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1', 'finding_id2'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1"),
-                                        update_finding_id(FINDING.copy(), "finding_id2")],
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id2")],
                                        id='1 detector, paginated findings'),
                           pytest.param(10, 'Low', [{"DetectorIds": ["detector_id1"]}],
                                        [{"FindingIds": ["finding_id1", "finding_id2"]}],
@@ -178,8 +178,8 @@ def test_test_module(mocker):
                                                                               max_results=10,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1', 'finding_id2'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1"),
-                                        update_finding_id(FINDING.copy(), "finding_id2")],
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id2")],
                                        id='1 detector, 2 findings'),
                           pytest.param(10, 'Low', [{"DetectorIds": ["detector_id1"]}],
                                        [{"FindingIds": ["finding_id1"]}],
@@ -201,7 +201,7 @@ def test_test_module(mocker):
                                                                               max_results=1,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [FINDING], id='simple, no next tokens, medium severity'),
+                                       [FINDING_OUTPUT], id='simple, no next tokens, medium severity'),
                           pytest.param(1, 'High', [LIST_DETECTORS_RESPONSE], [LIST_FINDING_IDS_RESPONSE], [FINDINGS],
                                        [call(MaxResults=50)],
                                        [call(**get_expected_list_finding_args(detector_id='detector_id1',
@@ -210,7 +210,7 @@ def test_test_module(mocker):
                                                                               max_results=1,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [FINDING], id='simple, no next tokens, high severity')
+                                       [FINDING_OUTPUT], id='simple, no next tokens, high severity')
 
                           ])
 def test_get_events_command(mocker, limit, severity, list_detectors_res, list_finding_ids_res, findings_res,
@@ -267,11 +267,11 @@ def test_get_events_command(mocker, limit, severity, list_detectors_res, list_fi
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1', 'finding_id2']),
                                         call(DetectorId='detector_id1', FindingIds=['finding_id3', 'finding_id4']),
                                         call(DetectorId='detector_id1', FindingIds=['finding_id5'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1"),
-                                        update_finding_id(FINDING.copy(), "finding_id2"),
-                                        update_finding_id(FINDING.copy(), "finding_id3"),
-                                        update_finding_id(FINDING.copy(), "finding_id4"),
-                                        update_finding_id(FINDING.copy(), "finding_id5")],
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id2"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id3"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id4"),
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id5")],
                                        id='1 detector, 5 findings, 2 is request limit')])
 def test_get_events_with_chunked_finding_ids(mocker, list_detectors_res, list_finding_ids_res, findings_res,
                                              list_detectors_calls, list_findings_calls, get_findings_calls,
@@ -371,7 +371,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                                                                               max_results=10,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1",
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1",
                                                           updated_at="2022-09-28T10:12:39.923854")],
                                        {"detector_id1": "2022-09-28T10:12:39.923854"},
                                        {"detector_id1": "finding_id1"},
@@ -389,7 +389,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                                                                               max_results=10,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1",
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1",
                                                           updated_at="2022-09-28T10:12:39.923854")],
                                        {"detector_id1": "2022-09-28T10:12:39.923854"},
                                        {"detector_id1": "finding_id1"},
@@ -445,9 +445,9 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1']),
                                         call(DetectorId='detector_id2', FindingIds=['finding_id2'])],
-                                       [update_finding_id(FINDING.copy(), "finding_id1",
+                                       [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1",
                                                           updated_at="2022-09-28T10:12:39.923854"),
-                                        update_finding_id(FINDING.copy(), "finding_id2",
+                                        update_finding_id(FINDING_OUTPUT.copy(), "finding_id2",
                                                           updated_at="2022-07-29T10:12:39.923854")],
                                        {"detector_id1": "2022-09-28T10:12:39.923854",
                                         "detector_id2": "2022-07-29T10:12:39.923854"},

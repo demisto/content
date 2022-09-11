@@ -3,10 +3,12 @@ from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 
 from typing import Tuple
+from datetime import datetime, date
 
 import traceback
 import urllib3.util
 import boto3
+import json
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +23,13 @@ GD_SEVERITY_DICT = {
 }
 
 
+class DatetimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime) or isinstance(obj, date):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%f')
+        return json.JSONEncoder.default(self, obj)
+
+
 def convert_events_with_datetime_to_str(events: list) -> list:
     """Convert datetime fields in events to string.
 
@@ -30,32 +39,11 @@ def convert_events_with_datetime_to_str(events: list) -> list:
     Returns:
         events (list): Events with dates as strings only.
     """
+    output_events = []
     for event in events:
-        if event.get('Resource'):
-            resource = event.get('Resource', {})
-            service = event.get('Service', {})
-            if resource.get('S3BucketDetails'):
-                s3bucket_details = resource.get('S3BucketDetails')
-                if s3bucket_details and type(s3bucket_details) == list:
-                    for s3buckt_detail in s3bucket_details:
-                        if type(s3buckt_detail.get('CreatedAt')) == datetime:
-                            s3buckt_detail['CreatedAt'] = s3buckt_detail['CreatedAt'].__str__()
-            if type(resource.get('EksClusterDetails', {}).get('CreatedAt')) == datetime:
-                resource['EksClusterDetails']['CreatedAt'] = resource['EksClusterDetails']['CreatedAt'].__str__()
-            if type(resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('TaskCreatedAt')) == datetime:
-                resource['EcsClusterDetails']['TaskDetails']['TaskCreatedAt'] = \
-                    resource['EcsClusterDetails']['TaskDetails']['TaskCreatedAt'].__str__()
-            if type(resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('StartedAt')) == datetime:
-                resource['EcsClusterDetails']['TaskDetails']['StartedAt'] = \
-                    resource['EcsClusterDetails']['TaskDetails']['StartedAt'].__str__()
-            if type(service.get('EbsVolumeScanDetails', {}).get('ScanStartedAt')) == datetime:
-                service['EbsVolumeScanDetails']['ScanStartedAt'] = \
-                    service['EbsVolumeScanDetails']['ScanStartedAt'].__str__()
-            if type(service.get('EbsVolumeScanDetails', {}).get('ScanCompletedAt')) == datetime:
-                service['EbsVolumeScanDetails']['ScanCompletedAt'] = \
-                    service['EbsVolumeScanDetails']['ScanCompletedAt'].__str__()
-
-    return events
+        output = json.dumps(event, cls=DatetimeEncoder)
+        output_events.append(json.loads(output))
+    return output_events
 
 
 def get_events(aws_client: boto3.client, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
@@ -86,8 +74,8 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
     new_last_ids = last_ids.copy()
     new_collect_from = collect_from.copy()
 
-    demisto.info(f"AWSGuardDutyEventCollector Starting get_events. collect_from is {collect_from}, "
-                 f"collect_from_default is {collect_from_default}, last_ids are {last_ids}")
+    demisto.debug(f"AWSGuardDutyEventCollector Starting get_events. {collect_from=}, {collect_from_default=}, "
+                  f"{last_ids=}")
 
     # List all detectors
     while next_token:
@@ -99,11 +87,11 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
         detector_ids += response.get('DetectorIds', [])
         next_token = response.get('NextToken')
 
-    demisto.info(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
+    demisto.debug(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
 
     for detector_id in detector_ids:
-        demisto.info(f"AWSGuardDutyEventCollector - Getting finding ids for detector id {detector_id}. "
-                     f"Collecting from {collect_from.get(detector_id, collect_from_default)}")
+        demisto.debug(f"AWSGuardDutyEventCollector - Getting finding ids for detector id {detector_id}. "
+                      f"Collecting from {collect_from.get(detector_id, collect_from_default)}")
         next_token = 'starting_token'
         finding_ids: list = []
         detector_events: list = []
@@ -111,8 +99,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
             detector_id) else collect_from_default
         # List all finding ids
         while next_token and len(events) + len(finding_ids) < limit:
-            demisto.info(f"AWSGuardDutyEventCollector - Getting more finding ids with next_token: {next_token} "
-                         f"and updated_at {updated_at}")
+            demisto.debug(f"AWSGuardDutyEventCollector - Getting more finding ids with {next_token=}, {updated_at=}")
             list_finding_args = {
                 'DetectorId': detector_id,
                 'FindingCriteria': {
@@ -135,28 +122,28 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
 
             # Handle duplicates and findings updated at the same time.
             if last_ids.get(detector_id) and last_ids.get(detector_id) in finding_ids:
-                demisto.info(f"AWSGuardDutyEventCollector - Cutting finding_ids {finding_ids} "
-                             f"for detector {detector_id} and last_id {last_ids.get(detector_id)}.")
+                demisto.debug(f"AWSGuardDutyEventCollector - Cutting {finding_ids=} "
+                              f"for {detector_id=} and last_id={last_ids.get(detector_id)}.")
                 finding_ids = finding_ids[finding_ids.index(last_ids.get(detector_id)) + 1:]
-                demisto.info(
-                    f"AWSGuardDutyEventCollector - New finding_ids {finding_ids} after cut "
-                    f"for detector {detector_id} and last_id {last_ids.get(detector_id)}.")
+                demisto.debug(
+                    f"AWSGuardDutyEventCollector - New {finding_ids=} after cut "
+                    f"for {detector_id=} and last_id={last_ids.get(detector_id)}.")
 
         # Handle duplicates in response while preserving order
         finding_ids_unique = list(dict.fromkeys(finding_ids))
-        demisto.info(f"Detector id {detector_id} unique finding ids found: {finding_ids_unique}")
+        demisto.debug(f"Detector id {detector_id} unique finding ids found: {finding_ids_unique}")
         # Get all relevant findings
         chunked_finding_ids = [finding_ids_unique[i: i + max_ids_per_req] for i in range(0, len(finding_ids_unique),
                                                                                          max_ids_per_req)]
         for chunk_of_finding_ids in chunked_finding_ids:
-            demisto.info(f"Getting chunk of finding ids {chunk_of_finding_ids}")
+            demisto.debug(f"Getting {chunk_of_finding_ids=}")
             findings_response = aws_client.get_findings(DetectorId=detector_id, FindingIds=chunk_of_finding_ids)
             detector_events += findings_response.get('Findings', [])
 
-        demisto.info(f"AWSGuardDutyEventCollector - Detector id {detector_id} "
-                     f"findings found ({len(detector_events)}): {detector_events}")
+        demisto.debug(f"AWSGuardDutyEventCollector - {detector_id=} "
+                      f"findings found ({len(detector_events)}): {detector_events}")
         events += detector_events
-        demisto.info(f"AWSGuardDutyEventCollector - Number of events is {len(events)}")
+        demisto.debug(f"AWSGuardDutyEventCollector - Number of events is {len(events)}")
 
         if finding_ids:
             new_last_ids[detector_id] = finding_ids[-1]
@@ -164,7 +151,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
         if detector_events:
             new_collect_from[detector_id] = detector_events[-1].get('UpdatedAt', detector_events[-1].get('CreatedAt'))
 
-    demisto.info(f"AWSGuardDutyEventCollector - Total number of events is {len(events)}")
+    demisto.debug(f"AWSGuardDutyEventCollector - Total number of events is {len(events)}")
     events = convert_events_with_datetime_to_str(events)
     return events, new_last_ids, new_collect_from
 
@@ -224,9 +211,6 @@ def main():  # pragma: no cover
 
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('AWSGuardDuty Logs', events, headerTransform=pascalToSpace),
-                    outputs_prefix='AWSGuardDuty.Logs',
-                    outputs_key_field='event.id',
-                    outputs=events,
                     raw_response=events,
                 )
                 return_results(command_results)
