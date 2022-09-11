@@ -11376,57 +11376,74 @@ def add_fields_as_json(key, value, is_list=True):
     return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
-def json_to_xml(_json):
-    return re.sub('<\/*xml2json>|\s', '', json2xml({'xml2json': _json}).decode('utf-8'))
+def json_to_xml(_json, remove_spaces=False):
+    pattern = '<\/*xml2json>'
+    if remove_spaces:
+        pattern = f'{pattern}|\s'
+    return re.sub(pattern, '', json2xml({'xml2json': _json}).decode('utf-8'))
 
 
 def pan_os_create_redistribution_profile(args):
+    def _set_up_body_request():
+        def _set_up_ospf_filter_body_request():
+            _ospf_filter_body_request = {}
+            if filter_ospf_path_type := args.get('filter_ospf_path_type'):
+                _ospf_filter_body_request.update(add_fields_as_json('path-type', filter_ospf_path_type))
+            if filter_ospf_area := args.get('filter_ospf_area'):
+                _ospf_filter_body_request.update(add_fields_as_json('area', filter_ospf_area))
+            if filter_ospf_tag := args.get('filter_ospf_tag'):
+                _ospf_filter_body_request.update(add_fields_as_json('tag', filter_ospf_tag))
 
-    def get_element_as_xml():
+            return {'ospf': _ospf_filter_body_request} if _ospf_filter_body_request else {}
 
-        element_as_json = {}
+        def _set_up_bgp_filter_body_request():
+            _bgp_filter_body_request = {}
+            if filter_bgp_community := args.get('filter_bgp_community'):
+                _bgp_filter_body_request.update(add_fields_as_json('community', filter_bgp_community))
+            if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
+                _bgp_filter_body_request.update(
+                    add_fields_as_json('extended-community', filter_bgp_extended_community)
+                )
+            return {'bgp': _bgp_filter_body_request} if _bgp_filter_body_request else {}
+
+        def _set_up_general_filter_body_request():
+            _general_filters_body_request = {}
+            _arguments_to_pan_os_paths = {
+                'filter_source_type': 'type',
+                'interface': 'interface',
+                'destination': 'destination',
+                'nexthop': 'nexthop'
+            }
+
+            for argument, pan_os_object_path in _arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _general_filters_body_request.update(add_fields_as_json(pan_os_object_path, argument_value))
+
+            return _general_filters_body_request
+
+        _body_request = {}
+
         if priority := args.get('priority'):
-            element_as_json['priority'] = priority
+            _body_request['priority'] = priority
         if action := args.get('action'):
-            element_as_json['action'] = {action: {}}
+            _body_request['action'] = {action: {}}
 
-        if filters := {
+        if {
             'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
             'filter_ospf_path_type', 'filter_bgp_community', 'filter_bgp_extended_community'
         }.intersection(set(args.keys())):
-            element_as_json['filter'] = {}
-            if 'filter_ospf_path_type' in filters or 'filter_ospf_area' in filters or 'filter_ospf_tag' in filters:
-                element_as_json['filter']['ospf'] = {}
-                if filter_ospf_path_type := args.get('filter_ospf_path_type'):
-                    element_as_json['filter']['ospf'].update(add_fields_as_json('path-type', filter_ospf_path_type))
-                if filter_ospf_area := args.get('filter_ospf_area'):
-                    element_as_json['filter']['ospf'].update(add_fields_as_json('area', filter_ospf_area))
-                if filter_ospf_tag := args.get('filter_ospf_tag'):
-                    element_as_json['filter']['ospf'].update(add_fields_as_json('tag', filter_ospf_tag))
-            if 'filter_bgp_community' in filters or 'filter_bgp_extended_community' in filters:
-                element_as_json['filter']['bgp'] = {}
-                if filter_bgp_community := args.get('filter_bgp_community'):
-                    element_as_json['filter']['bgp'].update(add_fields_as_json('community', filter_bgp_community))
-                if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
-                    element_as_json['filter']['bgp'].update(
-                        add_fields_as_json('extended-community', filter_bgp_extended_community)
-                    )
-            if 'filter_source_type' in filters:
-                element_as_json['filter'].update(add_fields_as_json('type', args.get('filter_source_type')))
-            if 'interface' in filters:
-                element_as_json['filter'].update(add_fields_as_json('interface', args.get('interface')))
-            if 'destination' in filters:
-                element_as_json['filter'].update(add_fields_as_json('destination', args.get('destination')))
-            if 'nexthop' in filters:
-                element_as_json['filter'].update(add_fields_as_json('nexthop', args.get('nexthop')))
+            _body_request['filter'] = {}
+            _body_request['filter'].update(_set_up_ospf_filter_body_request())
+            _body_request['filter'].update(_set_up_bgp_filter_body_request())
+            _body_request['filter'].update(_set_up_general_filter_body_request())
 
-        return json_to_xml(element_as_json)
+        return _body_request
 
     params = {
         'xpath': build_redistribution_profile_xpath(
             virtual_router_name=args.get('virtual_router'), redistribution_profile_name=args.get('name')
         ),
-        'element': get_element_as_xml(),
+        'element': json_to_xml(_set_up_body_request(), remove_spaces=True),
         'action': 'set',
         'type': 'config',
         'key': API_KEY
