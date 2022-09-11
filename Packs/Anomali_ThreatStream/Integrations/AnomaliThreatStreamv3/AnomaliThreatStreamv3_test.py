@@ -141,13 +141,13 @@ class TestReputationCommands:
     def test_get_intelligence_with_false_create_relationships(self, mocker):
         """
         Given:
-            - Client, indicator, and indicator type
+            - Client with should_create_relationships=False, indicator, and indicator type
 
         When:
             - Call the get_intelligence command
 
         Then:
-            - Validate that the outputs and the relationship were created
+            - Validate that the relatiionships list does not have None values
         """
 
         # prepare
