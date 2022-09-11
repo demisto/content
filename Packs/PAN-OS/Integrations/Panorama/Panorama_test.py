@@ -764,16 +764,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap', 'pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -1209,14 +1209,14 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
 @pytest.mark.parametrize(
     'action, existing_url_categories_mock, category', [
         (
-                'add',
-                {'list': {'member': []}},
-                'category1'
+            'add',
+            {'list': {'member': []}},
+            'category1'
         ),
         (
-                'remove',
-                {'list': {'member': ['category2']}},
-                'category2'
+            'remove',
+            {'list': {'member': ['category2']}},
+            'category2'
         )
     ]
 )
