@@ -1291,12 +1291,8 @@ def test_get_impacted_resources(mocker):
         -  Ensure raw_response is a dictionary with the given cve as a key and the value is the mocked answer
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_impacted_resources, PrismaCloudComputeClient
-    d = {'_id': 'string', 'codeRepos': [],
-              'codeReposCount': 0, 'functions': [],
-              'functionsCount': 0, 'hosts': [],
-              'hostsCount': 0, 'images': [],
-              'imagesCount': 0, 'registryImages': [],
-              'registryImagesCount': 0}
+    d = {'_id': 'string', 'codeRepos': [], 'codeReposCount': 0, 'functions': [], 'functionsCount': 0, 'hosts': [],
+                'hostsCount': 0, 'images': [], 'imagesCount': 0, 'registryImages': [], 'registryImagesCount': 0}
     mocker.patch.object(PrismaCloudComputeClient, 'get_impacted_resources', return_value=d)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
