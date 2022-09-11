@@ -139,34 +139,32 @@ class TestReputationCommands:
         assert intelligence_relationships
 
     def test_get_intelligence_with_false_create_relationships(self, mocker):
-            """
-            Given:
-                - Client, indicator, and indicator type
+        """
+        Given:
+            - Client, indicator, and indicator type
 
-            When:
-                - Call the get_intelligence command
+        When:
+            - Call the get_intelligence command
 
-            Then:
-                - Validate that the outputs and the relationship were created
-            """
+        Then:
+            - Validate that the outputs and the relationship were created
+        """
 
-            # prepare
-            mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request)
-            client = Client(base_url='',
-                            user_name='',
-                            api_key='',
-                            proxy=False,
-                            should_create_relationships=False,
-                            verify=False,
-                            reliability='B - Usually reliable'
-                        )
+        # prepare
+        mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request)
+        client = Client(base_url='',
+                        user_name='',
+                        api_key='',
+                        proxy=False,
+                        should_create_relationships=False,
+                        verify=False,
+                        reliability='B - Usually reliable')
 
-            # run
-            intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
+        # run
+        intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
 
-            # validate
-            assert None not in intelligence_relationships
-
+        # validate
+        assert None not in intelligence_relationships
 
 
     @pytest.mark.parametrize(

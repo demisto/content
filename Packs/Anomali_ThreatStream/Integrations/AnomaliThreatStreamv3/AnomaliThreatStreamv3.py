@@ -563,21 +563,23 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
 
     value = indicator.get('value')
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
-    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', None)
+    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', [])
     relationships: List[EntityRelationship] = []
+    entity_b_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
 
     for intelligence in intelligences:
-        intelligence_name = intelligence.get('name')
-        if intelligence_name:
-            entity_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
+        entity_b_name = intelligence.get('name')
+
+        if entity_b_name:
             relationship = create_intelligence_relationship(
                 client,
                 indicator,
                 ioc_type,
-                intelligence_name,
-                entity_type)
+                entity_b_name,
+                entity_b_type)
 
-        relationships.append(relationship)
+            if relationship:
+                relationships.append(relationship)
 
     return relationships, intelligences
 
@@ -647,7 +649,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
                                                                FeedIndicatorType.Domain
                                                                )
         if intelligence_relationships:
-            relationships.append(intelligence_relationships)
+            relationships.extend(intelligence_relationships)
         threat_context.update(outputs)
         human_readable += create_human_readable(outputs)
 
