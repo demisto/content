@@ -632,9 +632,9 @@ class BranchTestCollector(TestCollector):
                 '''
                 Upon reaching this part, we know the file is a content item (and not release note config, scheme, etc.)
                 so _validate_content_item can be called (which we can't do to non-content files, often lacking an id).
-                
+
                 when content_item *is* None, the same validations are called either in _collect_yml or _collect_pack.
-                
+
                 '''
                 self._validate_content_item_compatibility(
                     content_item,
