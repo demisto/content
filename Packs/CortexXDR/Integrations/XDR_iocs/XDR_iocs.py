@@ -206,7 +206,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
-            'severity': Client.severity,
+            'severity': Client.severity,  # may be overwritten with the value from custom_fields/xdrseverity
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
@@ -221,15 +221,22 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if vendors:
             xdr_ioc['vendors'] = vendors
 
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {})
-        if threat_type:
+        custom_fields = ioc.get('CustomFields', {})
+
+        if threat_type := custom_fields.get('threattypes', {}):
             threat_type = threat_type[0] if isinstance(threat_type, list) else threat_type
             threat_type = threat_type.get('threatcategory')
             if threat_type:
                 xdr_ioc['class'] = threat_type
-        if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
+
+        if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
+
+        if severity := custom_fields.get('xdrseverity'):
+            xdr_ioc['severity'] = severity
+
         return xdr_ioc
+
     except KeyError as error:
         demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
         return {}
