@@ -278,7 +278,7 @@ class TestFormatURL:
         assert url.raw == 'https://www.test.com'
         assert url.__str__() == ("Scheme = \nUser_info = \nHostname = \nPort = \n"
                                  "Path = \nQuery = \nFragment = ")
-    
+
 
 def test_formatter(mocker):
     mocker.patch.object(demisto, 'args', return_value={'input': 'https://www.test.com'})
@@ -289,6 +289,7 @@ def test_formatter(mocker):
     results = demisto.results.call_args[0]
 
     assert results[0] == ['https://www.test.com']
+
 
 def test_failed_formatter(mocker):
     mocker.patch.object(demisto, 'args', return_value={'input': 'https://@www.test.com'})

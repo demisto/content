@@ -477,14 +477,14 @@ class URLFormatter(object):
         while wrapper:
             # Will strip multiple wrapped URLs
 
-            if proofpoint_regex.findall(url):
-                url = self.extract_url_proofpoint(proofpoint_regex.findall(url)[0])
+            if fireeye_regex.match(url):
+                url = urllib.parse.unquote(fireeye_regex.findall(url)[0])
 
             elif ATP_regex.match(url):
                 url = urllib.parse.unquote(ATP_regex.findall(url)[0])
 
-            elif fireeye_regex.match(url):
-                url = urllib.parse.unquote(fireeye_regex.findall(url)[0])
+            elif proofpoint_regex.findall(url):
+                url = self.extract_url_proofpoint(proofpoint_regex.findall(url)[0])
 
             else:
                 wrapper = False
