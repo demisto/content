@@ -3221,26 +3221,8 @@ def panorama_move_rule_command(args: dict):
     """
     Move a security rule
     """
+    result = panorama_move_rule(args)
     rulename = args['rulename']
-    params = {
-        'type': 'config',
-        'action': 'move',
-        'key': API_KEY,
-        'where': args['where'],
-    }
-
-    if DEVICE_GROUP:
-        if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
-        else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
-    else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-
-    if 'dst' in args:
-        params['dst'] = args['dst']
-
-    result = http_request(URL, 'POST', body=params)
     rule_output = {'Name': rulename}
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -3257,6 +3239,27 @@ def panorama_move_rule_command(args: dict):
     })
 
 
+def panorama_move_rule(args):
+    rulename = args['rulename']
+    params = {
+        'type': 'config',
+        'action': 'move',
+        'key': API_KEY,
+        'where': args['where'],
+    }
+    if DEVICE_GROUP:
+        if not PRE_POST:
+            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+    else:
+        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+    if 'dst' in args:
+        params['dst'] = args['dst']
+    result = http_request(URL, 'POST', body=params)
+    return result
+
+
 ''' Security Rule Configuration '''
 
 
@@ -3265,7 +3268,7 @@ def panorama_create_rule_command(args: dict):
     """
     Create a security rule
     """
-    rulename = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
+    rulename = args['rulename'] = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(args.get('source'))
     destination = argToList(args.get('destination'))
     source_zone = argToList(args.get('source_zone'))
@@ -3312,6 +3315,12 @@ def panorama_create_rule_command(args: dict):
     rule_output['Name'] = rulename
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
+
+    if where:
+        try:
+            panorama_move_rule(args)
+        except Exception as e:
+            demisto.error(f'Unable to move rule. {e}')
 
     return_results({
         'Type': entryTypes['note'],
