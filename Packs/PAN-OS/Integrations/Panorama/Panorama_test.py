@@ -3575,3 +3575,136 @@ class TestPanOSListPBFRulesCommand:
 
         assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestCreatePBFRuleCommand:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'negate_source': 'yes',
+                    'action': 'forward',
+                    'egress_interface': 'egress-interface',
+                    'nexthop': 'none',
+                    'destination_address': 'any',
+                    'enforce_symmetric_return': 'no',
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']",
+                    'element': '<action><forward><egress-interface>egress-interface</egress-interface></forward>'
+                               '</action><enforce-symmetric-return><enabled>no</enabled></enforce-symmetric-return>'
+                               '<destination><member>any</member></destination><description>test</description>'
+                               '<negate-source>yes</negate-source>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'action': 'no-pbf',
+                    'source_zone': '1.1.1.1,2.2.2.2',
+                    'enforce_symmetric_return': 'yes',
+                    'nexthop_address_list': '1.1.1.1,2.2.2.2',
+                    'nexthop': 'ip-address',
+                    'nexthop_value': '1.1.1.1',
+                },
+                integration_firewall_params,
+                {
+                    'action': 'set',
+                    'element': '<action><no-pbf/></action><enforce-symmetric-return><enabled>yes</enabled>'
+                               '<nexthop-address-list><entry name="1.1.1.1"/><entry name="2.2.2.2"/>'
+                               '</nexthop-address-list></enforce-symmetric-return><description>test'
+                               '</description><from><zone><member>1.1.1.1'
+                               '</member><member>2.2.2.2</member></zone></from>',
+                     'key': 'thisisabogusAPIKEY!',
+                     'type': 'config',
+                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                              "/rulebase/pbf/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'action': 'discard',
+                    'destination_address': '1.1.1.1,2.2.2.2',
+                    'tags': 'tag1,tag2',
+                    'nexthop_address_list': '1.1.1.1,2.2.2.2',
+                    'nexthop': 'fqdn',
+                    'nexthop_value': '1.1.1.1/24',
+                    'pre_post': 'pre-rulebase',
+                    'enforce_symmetric_return': 'yes'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'set',
+                    'element': '<action><discard/></action><enforce-symmetric-return><enabled>yes</'
+                               'enabled><nexthop-address-list><entry '
+                               'name="1.1.1.1"/><entry name="2.2.2.2"/></nexthop-address-list>'
+                               '</enforce-symmetric-return><destination>'
+                               '<member>1.1.1.1</member><member>2.2.2.2</member>'
+                               '</destination><description>test</description>',
+                     'key': 'thisisabogusAPIKEY!',
+                     'type': 'config',
+                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                              "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'action': 'forward',
+                    'egress_interface': 'egress-interface',
+                    'source_zone': 'all access zone external',
+                    'nexthop': 'none',
+                    'enforce_symmetric_return': 'no'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'set',
+                    'element': '<action><forward><egress-interface>egress-interface</egress-interface></forward>'
+                               '</action><enforce-symmetric-return><enabled>no</enabled></enforce-symmetric-return>'
+                               '<description>test</description><from><zone>'
+                               '<member>all access zone external</member></zone></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/pbf/rules/entry[@name='test']"}
+            ),
+        ]
+    )
+    def test_pan_os_create_pbf_rule_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration with forward action and egress_interface arguments.
+         - Firewall instance configuration with no-pbf action and ip-address as nexthop arguments.
+         - Panorama instance configuration with discard action and fqdn as nexthop arguments.
+         - firewall instance configuration with basic parameter configurations along with dynamic-ip
+
+        When:
+         - running the pan-os-create-pbf-rule through the main flow.
+
+        Then:
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-create-pbf-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params'] == expected_url_params

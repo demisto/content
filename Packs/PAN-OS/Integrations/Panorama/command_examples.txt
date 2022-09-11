@@ -121,3 +121,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-status job_id=31377
 !pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test
+!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https

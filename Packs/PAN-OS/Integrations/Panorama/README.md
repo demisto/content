@@ -7530,3 +7530,44 @@ Returns a list of pbf-rules of either Panorama/firewall instance.
 >|---|---|---|---|---|---|---|---|
 >| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
 
+### pan-os-create-pbf-rule
+***
+Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF-rule to create. | Required | 
+| description | The description that the new PBF-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| tags | The tags that the rule will be created with. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| source_address | A comma-separated list of source addresses. Default is any. | Optional | 
+| source_user | A comma-separated list of source users. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| destination_address | A comma-separated list of destination addresses. Default is any. | Optional | 
+| application | A comma-separated list of applications. Default is any. | Optional | 
+| action | The action that the rule will be created with. Possible values are: forward, discard, no-pbf. | Required | 
+| egress_interface | The egress interface the rule will be created with. must be provided if action == forward. | Optional | 
+| nex thop | The next-hop type when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
+| nexthop_value | The next-hop value when action = forward, could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
+| enforce_symmetric_return | Whether to enforce symmetric return. Possible values are: yes, no. Default is no. | Optional | 
+| negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
+| negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
+| nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https```
+#### Human Readable Output
+
+>PBF rule test4 was created successfully.

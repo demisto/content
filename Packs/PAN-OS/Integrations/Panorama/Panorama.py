@@ -11152,10 +11152,9 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
     """
 
     for key in keys_to_remove:
-        try:
+        if key in dictionary:
             del dictionary[key]
-        except KeyError:
-            pass
+
 
     for key in dictionary:
         if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
@@ -11278,6 +11277,114 @@ def pan_os_list_pbf_rules_command(args):
         readable_output=tableToMarkdown('Policy Based Forwarding Rules:', table, removeNull=True),
         outputs_prefix='Panorama.PBF',
         outputs_key_field='Name'
+    )
+
+
+def dict_to_xml(_dictionary, contains_xml_chars=False):
+    """
+    Transforms a dict object to an XML object.
+
+    Args:
+        _dictionary (dict): the dict to parse into XML
+        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
+
+    Returns:
+        str: the dict representation in XML.
+    """
+    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    if contains_xml_chars:
+        return xml.replace('&gt;', '>').replace('&lt;', '<')
+    return xml
+
+
+def add_fields_as_json(key, value, is_list=True):
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def pan_os_create_pbf_rule(args):
+    def _set_up_body_request():
+        def _set_up_action_body_request():
+            _action_body_request = {}
+            if action := args.get('action'):
+                if action == 'forward':
+                    _action_body_request['action'] = {'forward': {}}
+                    nexthop = args.get('nexthop')
+                    if nexthop != 'none':
+                        nexthop_value = args.get('nexthop_value')
+                        if not nexthop_value:
+                            raise DemistoException('nexthop_value argument must be set when nexthop is not none')
+                        _action_body_request['action']['forward']['nexthop'] = {nexthop: nexthop_value}
+                    if egress_interface := args.get('egress_interface'):
+                        _action_body_request['action']['forward']['egress-interface'] = egress_interface
+                    else:
+                        raise DemistoException(f'egress_interface argument must be set when action == forward')
+                else:
+                    _action_body_request['action'] = f'<{action}/>'
+            return _action_body_request
+
+        def _set_up_enforce_symmetric_return_body_request():
+            _enforce_symmetric_return_body_request = {}
+            # enforce_symmetric_return = 'yes' or 'no' always
+            enforce_symmetric_return = args.get('enforce_symmetric_return')
+            _enforce_symmetric_return_body_request['enforce-symmetric-return'] = {'enabled': enforce_symmetric_return}
+
+            if enforce_symmetric_return == 'yes' and (nexthop_address_list := args.get('nexthop_address_list')):
+                _enforce_symmetric_return_body_request['enforce-symmetric-return']['nexthop-address-list'] = ''.join(
+                    f'<entry name="{address}"/>' for address in argToList(nexthop_address_list)
+                )
+            return _enforce_symmetric_return_body_request
+
+        def _setup_general_rule_body_request():
+            _general_rule_body_request = {}
+            objects_mapping_pan_os = {
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'source_user': ('source-user', True),
+                'application': ('application', True),
+                'service': ('service', True),
+                'description': ('description', False),
+                'negate_source': ('negate-source', False),
+                'negate_destination': ('negate-destination', False)
+            }
+
+            for argument, (pan_os_object_path, is_listable) in objects_mapping_pan_os.items():
+                if argument_value := args.get(argument):
+                    _general_rule_body_request.update(
+                        add_fields_as_json(pan_os_object_path, argument_value, is_list=is_listable)
+                    )
+            return _general_rule_body_request
+
+        _body_request = {}
+        _body_request.update(_set_up_action_body_request())
+        _body_request.update(_set_up_enforce_symmetric_return_body_request())
+        _body_request.update(_setup_general_rule_body_request())
+
+        if source_zone := args.get('source_zone'):
+            _body_request['from'] = add_fields_as_json('zone', source_zone)
+
+        return _body_request
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_pbf_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = pan_os_create_pbf_rule(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was created successfully.'
     )
 
 
@@ -11933,6 +12040,8 @@ def main():
             return_results(pan_os_get_running_config(args))
         elif command == 'pan-os-list-pbf-rules':
             return_results(pan_os_list_pbf_rules_command(args))
+        elif command == 'pan-os-create-pbf-rule':
+            return_results(pan_os_create_pbf_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

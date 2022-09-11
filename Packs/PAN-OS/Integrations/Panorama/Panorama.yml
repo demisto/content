@@ -8174,6 +8174,119 @@ script:
     - contextPath: Panorama.PBF.Service
       description: The services of the PBF rule.
       type: Unknown
+  - arguments:
+    - description: The name of the PBF-rule to create.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The description that the new PBF-rule should have.
+      isArray: false
+      name: description
+      required: false
+    - description: The device-group in which the new rule should be created. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The tags that the rule will be created with.
+      isArray: true
+      name: tags
+      required: false
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+    - description: A comma-separated list of source addresses.
+      isArray: true
+      name: source_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of source users.
+      isArray: false
+      name: source_user
+      required: false
+      defaultValue: 'any'
+    - description: The service in which the rule will be created with.
+      isArray: true
+      name: service
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of destination addresses.
+      isArray: true
+      name: destination_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of applications.
+      isArray: true
+      name: application
+      required: false
+      defaultValue: 'any'
+    - auto: PREDEFINED
+      predefined:
+      - forward
+      - discard
+      - no-pbf
+      description: The action that the rule will be created with.
+      isArray: false
+      name: action
+      required: true
+    - description: The egress interface the rule will be created with. must be provided if action == forward.
+      isArray: false
+      name: egress_interface
+      required: false
+    - defaultValue: 'none'
+      auto: PREDEFINED
+      predefined:
+      - ip-address
+      - fqdn
+      - none
+      description: The next-hop type when action = forward.
+      isArray: false
+      name: nexthop
+      required: false
+    - description: The next-hop value when action = forward, could be an IP address or FQDN. Required when nexthop is not none.
+      isArray: false
+      name: nexthop_value
+      required: false
+    - description: Whether to enforce symmetric return.
+      isArray: false
+      defaultValue: 'no'
+      name: enforce_symmetric_return
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      description: Whether to negate the source.
+      isArray: false
+      name: negate_source
+      required: false
+    - description: Whether to negate the destination.
+      isArray: false
+      name: negate_destination
+      required: false
+      defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The nexthop addresses list for the symmetric return.
+      isArray: true
+      name: nexthop_address_list
+      required: false
+    description: Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+    name: pan-os-create-pbf-rule
+    outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false
