@@ -3451,14 +3451,14 @@ def test_upload_batch_custom_ioc_command(requests_mock):
     assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '4.5.8.6'
 
 
-@pytest.mark.parametrize('endpoint_status, status,expected_status, is_isolated',
-                         [('Normal', 'online', 'Online', ''),
-                          ('normal', 'Online', 'Online', ''),
-                          ('containment_pending', 'Offline', '', 'Pending isolation'),
-                          ('contained', 'Offline', '', 'Yes'),
-                          ('lift_containment_pending', 'Offline', '', 'Pending unisolation'),
+@pytest.mark.parametrize('endpoint_status, status, is_isolated',
+                         [('Normal', 'Online', ''),
+                          ('normal', 'Online', ''),
+                          ('containment_pending', '', 'Pending isolation'),
+                          ('contained', '', 'Yes'),
+                          ('lift_containment_pending', '', 'Pending unisolation'),
                           ])
-def test_generate_status_field(requests_mock, endpoint_status, status, expected_status, is_isolated):
+def test_get_isolation_status(endpoint_status, status, is_isolated):
     """
     Test valid call for generate status field
     Given
@@ -3468,35 +3468,12 @@ def test_generate_status_field(requests_mock, endpoint_status, status, expected_
     Then
      - Return status and is_isolated
      """
-    from CrowdStrikeFalcon import generate_status_fields
+    from CrowdStrikeFalcon import get_isolation_status
 
-    status_res = {
-        "meta": {
-            "query_time": 0.002455124,
-            "powered_by": "device-api",
-            "trace_id": "c876614b-da71-4942-88db-37b939a78eb3"
-        },
-        "resources": [
-            {
-                "id": "device_id",
-                "cid": "20879a8064904ecfbb62c118a6a19411",
-                "last_seen": "2022-09-03T10:48:12Z",
-                "state": "merit"
-            }
-        ],
-        "errors": []
-    }
-
-    requests_mock.get(
-        f'{SERVER_URL}/devices/entities/online-state/v1',
-        json=status_res,
-        status_code=200,
-    )
-
-    assert (expected_status, is_isolated) == generate_status_fields(endpoint_status, 'device_id')
+    assert is_isolated == get_isolation_status(endpoint_status)
 
 
-def test_generate_status_field_invalid():
+def test_get_isolation_status_invalid():
     """
     Test invalid call for generate status field
     Given
@@ -3506,9 +3483,9 @@ def test_generate_status_field_invalid():
     Then
      - Raise an exception
      """
-    from CrowdStrikeFalcon import generate_status_fields
+    from CrowdStrikeFalcon import get_isolation_status
     with pytest.raises(DemistoException):
-        generate_status_fields('unknown status')
+        get_isolation_status('unknown status')
 
 
 def test_list_incident_summaries_command_no_given_ids(requests_mock, mocker):

@@ -2421,15 +2421,15 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
 
@@ -2465,10 +2465,10 @@ def search_device_by_ip(raw_res, ip_address):
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
     state = raw_res.get('resources')[0].get('state', '')
-    return 'Online' if state == 'online' or 'Online' else ''
+    return 'Online' if state in ['online', 'Online'] else ''
 
 
-def generate_status_fields(endpoint_status, device_id):
+def get_isolation_status(endpoint_status):
     is_isolated = ''
 
     if endpoint_status == 'containment_pending':
@@ -2479,21 +2479,21 @@ def generate_status_fields(endpoint_status, device_id):
         is_isolated = 'Pending unisolation'
     elif endpoint_status.lower() != 'normal':
         raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
-    return get_status(device_id), is_isolated
+    return is_isolated
 
 
 def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
         standard_endpoints.append(endpoint)
