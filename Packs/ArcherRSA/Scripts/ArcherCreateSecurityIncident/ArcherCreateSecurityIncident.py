@@ -45,7 +45,7 @@ If the key is in keysToChange we would add the Archer form, else we will add it 
 If you want to add some constant args you can modify fieldsToValues
 and add them inside it as key:value pairs
 """
-createRecordArgs: Dict[Any, Any] = {
+createRecordArgs = {
     'applicationId': 75,
     'fieldsToValues': ({(keysToChange[k] if k in keysToChange else k): v for k, v in demisto.args().items()})
 }
