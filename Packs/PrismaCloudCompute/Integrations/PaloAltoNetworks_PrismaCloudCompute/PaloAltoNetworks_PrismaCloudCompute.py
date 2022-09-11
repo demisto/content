@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -1510,7 +1512,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     resource_type = args.get("resourceType", "")
 
     context_output, raw_response = [], {}
-    final_impacted_resources = {"images": [], "registryImages": [], "hosts": [], "functions": [], "codeRepos": []}
+    final_impacted_resources: defaultdict[str, list] = defaultdict(list)
     resources_list = ["images", "registryImages", "hosts", "functions", "codeRepos"]
     for cve in cves:
         # api does not support offset/limit
@@ -1524,7 +1526,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                         offset=offset
                     )
 
-                    for resource in cve_impacted_resources.get(resources):
+                    for resource in (cve_impacted_resources.get(resources) or []):
                         resource_id_table_details = {
                             "resourceID": resource.get("resourceID"),
                         }
@@ -1536,8 +1538,8 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                                 resource_id_table_details['Host'] = container.get("host")
                                 resource_id_table_details['Namespace'] = container.get("namespace")
 
-                        if resource_id_table_details not in final_impacted_resources.get(resources):
-                            final_impacted_resources.get(resources).append(resource_id_table_details)
+                        if resource_id_table_details not in final_impacted_resources[resources]:
+                            final_impacted_resources[resources].append(resource_id_table_details)
 
             context_output.append(cve_impacted_resources)
 
