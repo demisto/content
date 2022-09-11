@@ -1,4 +1,5 @@
 import pytest
+import demistomock as demisto
 from FormatURL import *
 
 TEST_URL_HTTP = 'http://www.test.com'
@@ -88,6 +89,12 @@ PROOF_POINT_REDIRECTS = [
      'https://google.com:443/search?q=a*test&gs=ps')
 ]
 
+FIREEYE_REDIRECT = [
+    ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe&q=1'
+     '&e=221919da-9d68-429a-a70e-9d8d836ca107&u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial',
+     'https://www.facebook.com/namshiofficial'),
+]
+
 FORMAT_USERINFO = [
     ('https://user@domain.com', 'https://user@domain.com')
 ]
@@ -128,6 +135,8 @@ FORMAT_QUERY = [
 FORMAT_FRAGMENT = [
     ('https://test.com#fragment3', 'https://test.com#fragment3'),
     ('http://_23_11.redacted.com./#redactedredactedredacted', 'http://_23_11.redacted.com./#redactedredactedredacted'),
+    ('https://test.com?a=b#fragment3', 'https://test.com?a=b#fragment3'),
+    ('https://test.com/?a=b#fragment3', 'https://test.com/?a=b#fragment3'),
 ]
 
 FORMAT_REFANG = [
@@ -154,13 +163,15 @@ FORMAT_HEX = [
 
 FAILS = [
     ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',
-     pytest.raises(URLError)),  # disable-secrets-detection IPv6 must have square brackets
+     pytest.raises(URLError)),  # IPv6 must have square brackets # disable-secrets-detection
     ('http://142.42.1.1:aaa8080', pytest.raises(URLError)),  # invalid port
-    ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # invalid port  # disable-secrets-detection
+    ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # port contains non digits # disable-secrets-detection
     ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
+    ('ftps://foo.bar/baz%GG', pytest.raises(URLError)),  # Invalid hex code in path
+    ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host
 ]
 
-REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
+REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
 
 FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY
                 + FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
@@ -241,9 +252,9 @@ class TestFormatURL:
 
     @pytest.mark.parametrize('url_, expected', [
         ('[https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$]',
-         'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$'),
+         'https://google.com:443/search?66ujQIQ$'),
         ('(https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$)',
-         'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
+         'https://google.com:443/searchERujngZv9UWf66ujQIQ$'),
         ('[https://testURL.com)', 'https://testURL.com'),
         ('[https://testURL.com', 'https://testURL.com'),
         ('[(https://testURL.com)]', 'https://testURL.com')
@@ -267,3 +278,24 @@ class TestFormatURL:
         assert url.raw == 'https://www.test.com'
         assert url.__str__() == ("Scheme = \nUser_info = \nHostname = \nPort = \n"
                                  "Path = \nQuery = \nFragment = ")
+    
+
+def test_formatter(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'input': 'https://www.test.com'})
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert results[0] == ['https://www.test.com']
+
+def test_failed_formatter(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'input': 'https://@www.test.com'})
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert results[0] == ['']

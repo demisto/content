@@ -191,6 +191,9 @@ class URLCheck(object):
                 else:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
+            elif self.modified_url[index] == "%" and not self.hex_check(index):
+                raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+
             elif self.modified_url[index] == ":" and not self.inside_brackets:
                 if index == len(self.modified_url) - 1:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
@@ -468,13 +471,14 @@ class URLFormatter(object):
 
         ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&')
         fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)')
+        proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
         wrapper = True
 
         while wrapper:
             # Will strip multiple wrapped URLs
 
-            if url.startswith('https://urldefense'):
-                url = self.extract_url_proofpoint(url)
+            if proofpoint_regex.findall(url):
+                url = self.extract_url_proofpoint(proofpoint_regex.findall(url)[0])
 
             elif ATP_regex.match(url):
                 url = urllib.parse.unquote(ATP_regex.findall(url)[0])
@@ -494,8 +498,6 @@ class URLFormatter(object):
         :param url: The wrapped URL
         :return: Unquoted extracted URL as a string
         """
-        proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
-        url = proofpoint_regex.findall(url)[0]
 
         if url[0]:
             # Proofpoint v1 and v2
