@@ -5,11 +5,11 @@ from CommonServerPython import *  # noqa: F401
 def test_main(mocker):
     """
     Given:
-        - The script args.
+        - The CyberReasonPreProcessingExample.
     When:
-        - Running main function.
+        - Running the script function.
     Then:
-        - Validating the outputs as expected.
+        - Validating the incidents outputs as expected.
     """
     from CybereasonPreProcessingExample import main
     value = 'Some value'
