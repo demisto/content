@@ -7,7 +7,7 @@ def Reg2Markdown(baseKey, regResp):
     if isError(regResp[0]):
         res += regResp
     elif len(regResp) > 1:
-        contents = f'Unexpected output from D2RegQuery - more than one entry returned:\n\n{[str(x) for x in regResp]}'
+        contents = 'Unexpected output from D2RegQuery - more than one entry returned:\n' + '\n'.join([str(x) for x in regResp])
         res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
                    'Contents': contents})
     else:

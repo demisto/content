@@ -26,7 +26,8 @@ try:
                 searchResults = match.groups()[0]
                 res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": searchResults})
 except Exception as ex:
-    contents = f"Error occurred while parsing output from command. Exception info:\n{str(ex)}\nInvalid output:\n{str(resCmdName)}"
+    contents = "Error occurred while parsing output from command. Exception info:\n"
+    contents += str(ex) + "\n\nInvalid output:\n" + str(resCmdName)
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                 "Contents": contents})
 demisto.results(res)

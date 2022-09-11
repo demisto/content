@@ -9,12 +9,12 @@ else:
     try:
         try:
             lines = respAR[0]['Contents'][2:].decode('utf-16').encode('ascii').split('\r\n')
-        except Exception as ex:
+        except Exception:
             lines = respAR[0]['Contents'].split('\r\n')
         headers = lines[5].replace('\t', '|')
         try:
             hashCol = headers.split('|').index('MD5')
-        except ValueError as ve:
+        except ValueError:
             hashCol = -1
         mdTable = headers + '\n'
         mdTable += '|'.join('---' * len(headers.split('|'))) + '\n'
@@ -28,6 +28,7 @@ else:
             appendContext('md5s', ', '.join(hashes), dedup=True)
         demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['markdown'], 'Contents': mdTable})
     except Exception as ex:
-        contents = f"Error occurred while parsing output from D2Autoruns:\n{str(ex)}\n\nAutoruns output:\n{respAR[0]['Contents']}"
+        contents = "Error occurred while parsing output from D2Autoruns:\n"
+        contents += str(ex) + '\n\nAutoruns output:\n' + respAR[0]['Contents']
         demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
                         'Contents': contents})
