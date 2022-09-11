@@ -186,9 +186,10 @@ class Client(BaseClient):
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_list_request(self, repo: str, pr_id: str, params: Dict) -> Dict:
-        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
+        """ Makes a PUT request to /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
+            if there isn't a pull request id, makes a PUT request to /repositories/workspace/repository/pullrequests
             :param repo: str - The repository the user entered if he did.
-            :param body: Dict - the params to the api call
+            :param params: Dict - the params to the api call
             :param pr_id: str - an id to a specific pull request to update.
 
             Creates the url and makes the api call
@@ -199,6 +200,19 @@ class Client(BaseClient):
         if pr_id:
             url_suffix = f'{url_suffix}/{pr_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def issue_comment_create_request(self, repo: str, issue_id: str, body: Dict) -> Dict:
+        """ Makes a PUT request /repositories/workspace/repository/issues/{issue_id}/comments endpoint to update a pull request.
+            :param repo: str - The repository the user entered if he did.
+            :param body: Dict - The content of the comment, in a dictionary form.
+            :param issue_id: str - an id to a specific issue to comment on.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments'
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -708,7 +722,7 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
-    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    """ Returns a list of pull requests.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
@@ -763,6 +777,31 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+def issue_comment_create(client: Client, args: Dict) -> CommandResults:
+    """ Creates a comment on a specific issue in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a dictionary contains information about .
+        If a state is provided than the list will contain only PR with the wanted status.
+        If a state is not provided, by default a list of the open pull requests will return.
+    """
+    repo = args.get('repo', None)
+    issue_id = args.get('issue_id', None)
+    content = args.get('content', None)
+    body = {
+        "content": {
+            "raw": content
+        }
+    }
+    response = client.issue_comment_create_request(repo, issue_id, body)
+    return CommandResults(readable_output=f'The comment on the issue {issue_id} was created successfully',
+                          outputs_prefix='Bitbucket.IssueComment',
+                          outputs=response,
+                          raw_response=response)
 
 
 ''' MAIN FUNCTION '''
@@ -843,6 +882,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-list':
             result = pull_request_list_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-comment-create':
+            result = issue_comment_create(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
