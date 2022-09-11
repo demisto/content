@@ -178,6 +178,7 @@ class ContentItem(DictFileBased):
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
         if self._has_no_id:
             return None
+        # todo use get_id from the SDK once https://github.com/demisto/demisto-sdk/pull/2345 is merged & released
         if 'commonfields' in self:
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
