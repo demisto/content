@@ -1,5 +1,7 @@
+import ast
 import hashlib
 import re
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -7,8 +9,8 @@ from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
 MAIN_URL = 'https://malwr.com'
-STATUS_URL = '/submission/status/%s/'
-RESULT_URL = '/analysis/%s/'
+STATUS_URL = '/submission/status/{}/'
+RESULT_URL = '/analysis/{}/'
 MD5_PREFIX_STR = 'with MD5 '
 SUPPORTED_COMMANDS = ['Submit', 'Status', 'Result', 'Detonate']
 DETONATE_DEFAULT_TIMEOUT = 600
@@ -16,8 +18,7 @@ DETONATE_POLLING_INTERVAL = 10
 
 
 def md5(fname):
-    hash_md5 = hashlib.md5()  # nosec B324
-    with open(fname, 'rb') as f:
+    hash_md5 = hashlib.md5()  # guardrails-disable-line  # nosec B324
         for chunk in iter(lambda: f.read(4096), b''):
             hash_md5.update(chunk)
 
@@ -39,10 +40,7 @@ class MalwrAPI:
     """
         MalwrAPI Main Handler
     """
-    headers = {
-        'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) "
-                      + "Gecko/20100101 Firefox/41.0"
-    }
+    HEADERS = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0'}
 
     def __init__(self, url, username=None, password=None):
         self.url = url
@@ -64,7 +62,7 @@ class MalwrAPI:
                 'password': f'{self.password}'
             }
             login_request = self.session.post(self.url + "/account/login/",
-                                              data=payload, headers=self.headers)
+                                              data=payload, headers=self.HEADERS)
 
             if login_request.status_code == 200:
                 self.logged = True
@@ -78,15 +76,30 @@ class MalwrAPI:
         if not url:
             url = self.url
 
-        req = self.session.get(url, headers=self.headers)
-        soup = BeautifulSoup(req.content, "html.parser")
+        req = self.session.get(url, headers=self.HEADERS)
+        soup = BeautifulSoup(req.text, "html.parser")
         return soup
+
+    @staticmethod
+    def evaluate_simple_math_expr(expr: str) -> Optional[int]:
+        # from https://stackoverflow.com/a/38860845
+        try:
+            tree = ast.parse(expr, mode='eval')
+        except SyntaxError:
+            return None  # not a Python expression
+        if not all(isinstance(node, (ast.Expression,
+                                     ast.UnaryOp, ast.unaryop,
+                                     ast.BinOp, ast.operator,
+                                     ast.Num)) for node in ast.walk(tree)):
+            return None  # not a mathematical expression (numbers and operators)
+        result = eval(compile(tree, filename='', mode='eval'))  # nosec B307
+        return result
 
     @staticmethod
     def find_submission_links(req):
         # regex to check if the file was already submitted before
         pattern = r'(\/analysis\/[a-zA-Z0-9]{12,}\/)'
-        submission_links = re.findall(pattern, req.content)
+        submission_links = re.findall(pattern, req.text)
 
         return submission_links
 
@@ -95,12 +108,16 @@ class MalwrAPI:
             self.login()
 
         s = self.session
-        req = s.get(self.url + '/submission/', headers=self.headers)
-        soup = BeautifulSoup(req.content, "html.parser")
+        req = s.get(self.url + '/submission/', headers=self.HEADERS)
+        soup = BeautifulSoup(req.text, "html.parser")
 
         pattern = r'(\d [-+*] \d) ='
+        math_captcha_fields = re.findall(pattern, req.text)
+        math_captcha_field = None
+        if math_captcha_fields:
+            math_captcha_field = MalwrAPI.evaluate_simple_math_expr(math_captcha_fields[0])
         data = {
-            'math_captcha_field': eval(re.findall(pattern, req.content)[0]),
+            'math_captcha_field': math_captcha_field,
             'math_captcha_question': soup.find('input', {'name': 'math_captcha_question'})['value'],
             'csrfmiddlewaretoken': soup.find('input', {'name': 'csrfmiddlewaretoken'})['value'],
             'share': 'on' if share else 'off',  # share by default
@@ -108,33 +125,33 @@ class MalwrAPI:
             'private': 'on' if private else 'off'  # private by default
         }
 
-        req = s.post(self.url + '/submission/', data=data, headers=self.headers, files={'sample': open(filepath, 'rb')})
+        req = s.post(self.url + '/submission/', data=data, headers=self.HEADERS, files={'sample': open(filepath, 'rb')})
         submission_links = MalwrAPI.find_submission_links(req)
 
-        res = {
-            'md5': hashlib.md5(open(filepath, 'rb').read()).hexdigest(),  # usedforsecurity=False
+        res: dict[str, Any] = {
+            'md5': hashlib.md5(open(filepath, 'rb').read()).hexdigest(),  # guardrails-disable-line  # nosec B324
             'file': filepath
         }
 
         if len(submission_links) > 0:
             res['analysis_link'] = submission_links[0]
+            return res, soup
         else:
             pattern = r'(\/submission\/status\/[a-zA-Z0-9]{12,}\/)'
-            submission_status = re.findall(pattern, req.content)
+            submission_status = re.findall(pattern, req.text)
 
             if len(submission_status) > 0:
                 res['analysis_link'] = submission_status[0]
-            elif 'file like this waiting for processing, submission aborted.' in req.content:
-                res = 'File already submitted, check its status.'
+                return res, soup
+            elif 'file like this waiting for processing, submission aborted.' in req.text:
+                return 'File already submitted, check its status.', soup
             else:
-                res = 'Error with the file.'
-
-        return res, soup
+                return 'Error with the file.', soup
 
     def get_status(self, analysis_id):
         s = self.session
-        req = s.get(self.url + STATUS_URL % (analysis_id, ), headers=self.headers)
-        soup = BeautifulSoup(req.content, 'html.parser')
+        req = s.get(self.url + STATUS_URL.format(analysis_id), headers=self.HEADERS)
+        soup = BeautifulSoup(req.text, 'html.parser')
         submission_links = MalwrAPI.find_submission_links(req)
         if len(submission_links) > 0:
             status = 'complete'
@@ -156,8 +173,8 @@ class MalwrAPI:
         else:
             status = 'complete'
             s = self.session
-            req = s.get(self.url + RESULT_URL % (analysis_id, ), headers=self.headers)
-            soup = BeautifulSoup(req.content, 'html.parser')
+            req = s.get(self.url + RESULT_URL.format(analysis_id), headers=self.HEADERS)
+            soup = BeautifulSoup(req.text, 'html.parser')
             is_malicious = 'malicious' in str(soup)
             soup_str = str(soup)
             start_index = soup_str.find(MD5_PREFIX_STR)
@@ -168,6 +185,12 @@ class MalwrAPI:
                 md5 = soup_str[start_index: start_index + 32]
 
         return status, is_malicious, soup, md5
+
+    def __setattr__(self, name, value):
+        if name == 'HEADERS':
+            raise AttributeError(f"can't reassign constant '{name}'")
+        else:
+            self.__dict__[name] = value
 
 
 def main():
@@ -184,7 +207,7 @@ def main():
         password=password
     )
 
-    entry = {
+    entry: dict[str, Any] = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'ReadableContentsFormat': formats['text']
@@ -198,7 +221,7 @@ def main():
         file_id = demisto.args()['fileId']
         filepath = get_file_path(file_id)
         res, soup = malwr.submit_sample(filepath)
-        if 'analysis_link' in res:
+        if isinstance(res, dict) and 'analysis_link' in res:
             analysis_id = res['analysis_link'].split('/')[-2]
 
             message = 'File submitted: {}{}\n'.format(MAIN_URL, res['analysis_link'])
@@ -254,18 +277,19 @@ def main():
         entry['HumanReadable'] = message
 
     elif demisto.command() == 'malwr-detonate':
+        status = ''
         file_id = demisto.args()['fileId']
         filepath = get_file_path(file_id)
         timeout = int(demisto.args()['timeout']) if 'timeout' in demisto.args() else DETONATE_DEFAULT_TIMEOUT
 
         # Submit the sample
         res, soup = malwr.submit_sample(filepath)
-        if 'analysis_link' not in res:
+        if isinstance(res, dict) and 'analysis_link' not in res:
             demisto.results(f'ERROR: {res}')
             return
 
         # Poll the status of the analysis
-        analysis_id = res['analysis_link'].split('/')[-2]
+        analysis_id = res.get('analysis_link', '').split('/')[-2]
 
         start_time = time.time()
         while (time.time() - start_time) < timeout:
