@@ -35,7 +35,10 @@ MAX_SEARCHES_QUEUE = 10  # maximum number of searches to poll in the search queu
 SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
+
 EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
+EVENTS_SEARCH_POLLING_RETRIES = 10  # number of consecutive failures events polling will tolerate
+EVENTS_SEARCH_RETRY_TIME = 100  # seconds between retries to poll offense events
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -45,6 +48,8 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
     'MAX_SEARCHES_QUEUE',
     'EVENTS_SEARCH_FAILURE_LIMIT',
+    'EVENTS_SEARCH_POLLING_RETRIES',
+    'EVENTS_SEARCH_RETRY_TIME',
     'FAILURE_SLEEP',
     'FETCH_SLEEP',
     'BATCH_SIZE',
@@ -1461,8 +1466,9 @@ def test_module_command(client: Client, params: Dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global DEFAULT_EVENTS_TIMEOUT
-    DEFAULT_EVENTS_TIMEOUT = 1
+    global EVENTS_SEARCH_FAILURE_LIMIT, EVENTS_SEARCH_POLLING_RETRIES
+    EVENTS_SEARCH_FAILURE_LIMIT = 1
+    EVENTS_SEARCH_POLLING_RETRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
@@ -1587,8 +1593,11 @@ def poll_offense_events(client: Client,
         return [], QueryStatus.ERROR.value
 
 
-def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
-                                   max_retries: int = DEFAULT_EVENTS_TIMEOUT - 2) -> Tuple[List[Dict], str]:
+def poll_offense_events_with_retry(
+    client: Client,
+    search_id: str, offense_id: int,
+    max_retries: int = EVENTS_SEARCH_POLLING_RETRIES,
+) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
@@ -1609,12 +1618,13 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     """
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
-        time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             return events, ''
         elif status == QueryStatus.ERROR.value:
             return [], 'Error while getting events.'
+        time.sleep(EVENTS_INTERVAL_SECS)
+
     print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
     return [], 'Fetching events is in progress'
 
@@ -1641,7 +1651,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     events: List[dict] = []
     failure_message = ''
     is_success = True
-    for _ in range(MAX_FETCH_EVENT_RETRIES):
+    for retry in range(MAX_FETCH_EVENT_RETRIES):
+        start_time = time.time()
         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                              events_limit)
         if search_id == QueryStatus.ERROR.value:
@@ -1650,14 +1661,17 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
         offense['events_fetched'] = events_fetched
-        if events:
-            print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
-            offense['events'] = events
+        offense['events'] = events
+        print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
+        if events_count >= events_fetched:
             break
-        print_debug_msg(f'No events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.')
-        time.sleep(FAILURE_SLEEP)
+        print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
+                        f'Retry {retry+1}/{MAX_FETCH_EVENT_RETRIES}')
+        time_elapsed = time.time() - start_time
+        # wait for the rest of the time
+        time.sleep(max(EVENTS_SEARCH_RETRY_TIME - time_elapsed, 0))
     else:
-        print_debug_msg(f'No events were fetched for offense {offense_id}. '
+        print_debug_msg(f'Not all the events were fetched for offense {offense_id} (fetched {events_fetched}/{events_count}). '
                         f'If mirroring is enabled, it will be queried again in mirroring.')
         is_success = False
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
@@ -1725,24 +1739,19 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
     offenses: list[dict] = []
     if fetch_mode != FetchMode.no_events.value:
-        try:
-            futures = []
-            for offense in raw_offenses:
-                futures.append(EXECUTOR.submit(
-                    enrich_offense_with_events,
-                    client=client,
-                    offense=offense,
-                    fetch_mode=fetch_mode,
-                    events_columns=events_columns,
-                    events_limit=events_limit,
-                ))
-            offenses_with_success = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
-            offenses = [offense for offense, _ in offenses_with_success]
-            prepare_context_for_failed_events(offenses_with_success)
-        except concurrent.futures.TimeoutError as e:
-            demisto.error(
-                f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
-            update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
+        futures = []
+        for offense in raw_offenses:
+            futures.append(EXECUTOR.submit(
+                enrich_offense_with_events,
+                client=client,
+                offense=offense,
+                fetch_mode=fetch_mode,
+                events_columns=events_columns,
+                events_limit=events_limit,
+            ))
+        offenses_with_success = [future.result() for future in futures]
+        offenses = [offense for offense, _ in offenses_with_success]
+        prepare_context_for_failed_events(offenses_with_success)
     else:
         offenses = raw_offenses
     if is_reset_triggered():
@@ -1766,28 +1775,6 @@ def prepare_context_for_failed_events(offenses_with_success):
             ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
             changed_offense_ids.append(offense_id)
     safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
-
-
-def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
-    """
-    Populate offenses with missing offenses.
-    Move the missing offenses to the mirroring queue.
-    """
-    ctx, ctx_version = get_integration_context_with_version()
-    changed_ids = []
-    offenses_ids = {str(offense['id']) for offense in raw_offenses} or set()
-    updated_offenses_ids = {str(offense['id']) for offense in offenses} or set()
-    missing_ids = offenses_ids - updated_offenses_ids
-    if missing_ids:
-        for offense in raw_offenses:
-            offense_id = str(offense['id'])
-            if offense_id in missing_ids:
-                offenses.append(offense)
-                changed_ids.append(offense_id)
-                ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
-
-    print_debug_msg(f'Moving {changed_ids} to mirroring queue')
-    safely_update_context_data(ctx, ctx_version, offense_ids=changed_ids)
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
