@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
+
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 
@@ -79,8 +81,8 @@ class NothingToCollectException(Exception):
 
 
 class IncompatibleMarketplaceException(NothingToCollectException):
-    def __init__(self, content_path: Path):
-        super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
+    def __init__(self, content_path: Path, expected_marketplace:MarketplaceVersions):
+        super().__init__(content_path, f'is not compatible with {expected_marketplace=}')
 
 
 class InvalidTestException(Exception):
