@@ -169,6 +169,8 @@ FAILS = [
     ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
     ('ftps://foo.bar/baz%GG', pytest.raises(URLError)),  # Invalid hex code in path
     ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host # disable-secrets-detection
+    ('', pytest.raises(URLError)),  # Empty string
+    ('htt$p://test.com/', pytest.raises(URLError))  # Invalid character in sceme
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
