@@ -27,7 +27,9 @@
         "Microsoft CAS Alert",
         "Trend Micro CAS Event",
         "CrowdStrike Falcon Detection",
-        "CrowdStrike Falcon Incident"
+        "CrowdStrike Falcon Incident",
+        "Skyhigh Security Alert",
+        "Skyhigh Security Threat"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
