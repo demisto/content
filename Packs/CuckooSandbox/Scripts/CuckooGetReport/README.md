@@ -1,3 +1,5 @@
+Deprecated. Use the 'cuckoo-get-task-report' command instead.
+
 Gets the report of a completed analysis.
 ## Script Data
 ---

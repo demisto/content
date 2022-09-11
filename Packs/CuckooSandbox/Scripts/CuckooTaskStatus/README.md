@@ -1,3 +1,5 @@
+Deprecated. Use the 'cuckoo-view-task' command instead.
+
 Checks the current status of a task in Cuckoo sandbox.
 
 ## Script Data

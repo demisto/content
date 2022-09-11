@@ -8,6 +8,7 @@ subtype: python3
 tags:
 - cuckoo
 comment: Deprecated. Use 'cuckoo-create-task-from-url' instead.
+deprecated: true
 system: true
 args:
 - name: url

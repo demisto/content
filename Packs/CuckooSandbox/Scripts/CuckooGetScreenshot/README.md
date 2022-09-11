@@ -1,3 +1,5 @@
+Deprecated. Use 'cuckoo-task-screenshot' command instead.
+
 Retrieves screenshots taken during a task analysis
 
 ## Script Data

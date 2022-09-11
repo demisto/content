@@ -8,6 +8,7 @@ subtype: python3
 tags:
 - cuckoo
 comment: Deprecated. Use the 'cuckoo-get-task-report' command instead.
+deprecated: true
 system: true
 args:
 - name: taskID

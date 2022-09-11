@@ -1,3 +1,5 @@
+Deprecated. Use 'cuckoo-create-task-from-url' instead.
+
 Detonates a URL in the Cuckoo sandbox.
 ## Script Data
 ---
