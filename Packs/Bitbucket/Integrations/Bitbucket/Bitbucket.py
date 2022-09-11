@@ -230,6 +230,21 @@ class Client(BaseClient):
         url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
+    def issue_comment_update_request(self, repo: str, issue_id: str, comment_id: str, body: Dict) -> Dict:
+        """ Makes a PUT request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to
+            update a comment in an issue.
+            :param repo: str - The repository the user entered, if he did.
+            :param issue_id: str - an id to a specific issue to update one of its comments.
+            :param comment_id: str - an id of a specific comment to update.
+            :param body: Dict - an id of a specific comment to update.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/{comment_id}'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+
     def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, params: Dict) -> Dict:
         """ Makes a GET request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to get
             information about a specific comment to an issue. if there is no comment_id than Makes a GET request
@@ -838,7 +853,7 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
                           raw_response=response)
 
 
-def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults: # TODO check after doing the comment list command
+def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
     """ Deletes a comment on a specific issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -854,6 +869,30 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults: 
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs={},
                           raw_response={})
+
+
+def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates a comment on a specific issue in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful update.
+    """
+    repo = args.get('repo', None)
+    issue_id = args.get('issue_id', None)
+    comment_id = args.get('comment_id', None)
+    content = args.get('content', None)
+    body = {
+        'content': {
+            'raw': content
+        }
+    }
+    response = client.issue_comment_update_request(repo, issue_id, comment_id, body)
+    return CommandResults(readable_output=f'The comment "{comment_id}" on issue "{issue_id}" was updated successfully',
+                          outputs_prefix='Bitbucket.IssueComment',
+                          outputs=response,
+                          raw_response=response)
 
 
 def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
@@ -993,6 +1032,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-comment-delete':
             result = issue_comment_delete_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-comment-update':
+            result = issue_comment_update_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-comment-list':
             result = issue_comment_list_command(client, demisto.args())

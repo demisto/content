@@ -1838,6 +1838,98 @@ script:
         - contextPath: Bitbucket.IssueComment.links
           description: 'Links to information about the comment.'
           type: String
+    - name: bitbucket-issue-comment-update
+      description: Updates a specific comment on a given issue.
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: issue_id
+          required: true
+          description: The id of the issue to comment on.
+          isArray: false
+        - name: comment_id
+          required: true
+          description: The id of the comment to delete.
+          isArray: false
+        - name: content
+          required: true
+          description: The new content of the comment.
+          isArray: false
+      outputs:
+        - contextPath: Bitbucket.IssueComment.type
+          description: 'The action type.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.id
+          description: 'The id of the action'
+          type: Number
+        - contextPath: Bitbucket.IssueComment.created_on
+          description: 'The creation date of the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.updated_on
+          description: 'When the comment was updated.'
+          type: Unknown
+        - contextPath: Bitbucket.IssueComment.content.type
+          description: 'The type of the content.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.content.raw
+          description: 'The content of the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.content.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.content.html
+          description: 'The content of the comment in html format.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.display_name
+          description: 'The display name of the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.links
+          description: 'Links with information about the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.type
+          description: 'The type of the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.uuid
+          description: 'The unique id of the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.account_id
+          description: 'The account id of the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.user.nickname
+          description: 'The nickname of the user of who created the comment.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.type
+          description: 'The type of the issue.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.id
+          description: 'The id of the issue.'
+          type: Number
+        - contextPath: Bitbucket.IssueComment.issue.repository.type
+          description: 'The type of the repository connected to the relevant issue.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.repository.full_name
+          description: 'The full name of the repository connected to the relevant issue.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.repository.links
+          description: 'Links to information about the relevant repository.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.repository.name
+          description: 'The name of the relevant repository.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.repository.uuid
+          description: 'The unique id of the relevant repository.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.links
+          description: 'Links with information about the issue.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.issue.title
+          description: 'The title of the issue.'
+          type: String
+        - contextPath: Bitbucket.IssueComment.links
+          description: 'Links to information about the comment.'
+          type: String
   isfetch: false
   runonce: false
   script: "-"
