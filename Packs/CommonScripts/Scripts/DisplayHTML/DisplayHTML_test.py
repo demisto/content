@@ -1,5 +1,5 @@
 import demistomock as demisto
-
+from CommonServerPython import *
 
 def test_DisplayHTML(mocker):
     """
@@ -8,7 +8,7 @@ def test_DisplayHTML(mocker):
     When:
         - Running the DisplayHTML script.
     Then:
-        - Validating calling to 'demisto.results' once with the right arguments.
+        - Validating the results after manipulating the given data.
     """
     from DisplayHTML import main
     mocker.patch.object(demisto, 'args', return_value={'html': 'html', 'markAsNote': 'True', "header": "header"})
@@ -19,4 +19,4 @@ def test_DisplayHTML(mocker):
     assert results == {'Contents': '<h1>header</h1></br>html',
                        'ContentsFormat': 'html',
                        'Note': True,
-                       'Type': 1}
+                       'Type': EntryType.NOTE}
