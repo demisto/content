@@ -10,7 +10,7 @@ REGEX_RESULTS = r"Search results\: \{([^}]*)\}"
 
 delArg = demisto.get(dArgs, 'delete')
 if type(delArg) in [str] and delArg.lower() == 'true':
-    demisto.log('[*] Script set to also delete found emails.')
+    demisto.info('[*] Script set to also delete found emails.')
     resCmdName = demisto.executeCommand("D2O365SearchAndDelete", dArgs)
 else:
     resCmdName = demisto.executeCommand("D2O365ComplianceSearch", dArgs)
