@@ -4,6 +4,7 @@ from AWSApiModule import *  # noqa: E402
 
 from typing import Tuple
 
+import traceback
 import urllib3.util
 import boto3
 
@@ -254,7 +255,8 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}'
+                     f'\nTraceback:\n{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
