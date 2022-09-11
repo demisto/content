@@ -1,0 +1,143 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "08c31f6b-725f-4127-83f7-b629d38159f9",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 12,
+	"mapping": {
+		"ThreatConnect": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Item Owner": {
+					"simple": "ownerName"
+				},
+				"Last Update Time": {
+					"simple": "lastModified"
+				},
+				"Source Create time": {
+					"simple": "dateAdded"
+				},
+				"Tags": {
+					"simple": "tags.data.name"
+				},
+				"ThreatConnect Event Date": {
+					"simple": "eventDate"
+				},
+				"ThreatConnect Group Type": {
+					"simple": "type"
+				},
+				"ThreatConnect Id": {
+					"simple": "id"
+				},
+				"Threatconnect Associated Indicators": {
+					"complex": {
+						"accessor": "data",
+						"filters": [],
+						"root": "associatedIndicators",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Threatconnect AssociatedGroups": {
+					"complex": {
+						"accessor": "data",
+						"filters": [],
+						"root": "associatedGroups",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Threatconnect Attributes": {
+					"complex": {
+						"accessor": "data",
+						"filters": [],
+						"root": "attributes",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Threatconnect Created By": {
+					"complex": {
+						"filters": [],
+						"root": "createdBy",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Threatconnect Created by": {
+					"complex": {
+						"filters": [],
+						"root": "createdBy",
+						"transformers": []
+					}
+				},
+				"Threatconnect Security Labels": {
+					"complex": {
+						"accessor": "data",
+						"filters": [],
+						"root": "securityLabels",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Threatconnect Victim Assets": {
+					"complex": {
+						"accessor": "data",
+						"filters": [],
+						"root": "associatedVictimAssets",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Title": {
+					"simple": "name"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "Threatconnect Mapper (incoming)",
+	"nameRaw": "Threatconnect Mapper (incoming)",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

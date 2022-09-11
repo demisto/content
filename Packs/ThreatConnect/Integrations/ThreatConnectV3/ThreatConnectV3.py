@@ -471,12 +471,14 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
         last_run = dateparser.parse(last_run)
 
     response = list_groups(client, {}, group_type=group_type, fields=fields, return_raw=True, tag=tags,
-                           status=status, from_date=last_run, limit=max_fetch)
+                           status=status, from_date=last_run, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
     incidents = []
     for incident in response:
         incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
     demisto.incidents(incidents)
-    demisto.setLastRun({'last': get_last_run_time(response)})
+    set_last = get_last_run_time(response)
+    demisto.debug('Setting last run to: ' + set_last)
+    demisto.setLastRun({'last': set_last})
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -619,7 +621,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
                 include_all_metadata: str = '', status: str = '', owner: str = '', limit: str = '100', fields: str = '',
-                return_raw=False) -> Any:
+                return_raw=False, sort='') -> Any:
     # TQL PARAMS
     group_id = args.get('id', group_id)
     from_date = args.get('fromDate', from_date)
@@ -681,10 +683,10 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         tql = f'{tql_filter}{group_id}{group_type}{from_date}{tag}{security_label}'.replace(' AND ', '', 1)
         tql = urllib.parse.quote(tql.encode('utf8'))
         tql = f'?tql={tql}'
-    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit={limit}'
+    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit={limit}{sort}'
     if not tql_prefix:
         url = url.replace('&', '?', 1)
-
+    demisto.debug(url)
     response = client.make_request(Method.GET, url)
 
     if return_raw:
