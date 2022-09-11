@@ -1,6 +1,6 @@
 {
     "available_tests_fields": {
-        "has_api" : "Determines whether a test playbook uses API, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false."
+        "has_api": "Determines whether a test playbook uses API, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -1190,7 +1190,8 @@
             "playbookID": "ParseExcel-test"
         },
         {
-            "playbookID": "ParseHTMLIndicators-Test"
+            "playbookID": "ParseHTMLIndicators-Test",
+            "has_api": true
         },
         {
             "playbookID": "Detonate File - No Files test"
@@ -2551,7 +2552,8 @@
             "playbookID": "HTTPListRedirects Basic Test"
         },
         {
-            "playbookID": "CheckDockerImageAvailableTest"
+            "playbookID": "CheckDockerImageAvailableTest",
+            "has_api": true
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
@@ -4743,7 +4745,8 @@
         },
         {
             "playbookID": "ValidateContent - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "has_api": true
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5123,7 +5126,8 @@
             "fromversion": "6.5.0",
             "scripts": [
                 "HttpV2"
-            ]
+            ],
+            "has_api": true
         },
         {
             "integrations": [
