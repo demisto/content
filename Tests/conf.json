@@ -5190,6 +5190,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
