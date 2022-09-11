@@ -522,6 +522,7 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
         - Ensure empty list of events are returned.
         - Ensure poll events is queried with the expected search ID, if search ID succeeded.
     """
+    offense = offense.copy()
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
