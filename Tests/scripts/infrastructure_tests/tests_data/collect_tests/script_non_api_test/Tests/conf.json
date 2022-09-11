@@ -5,7 +5,7 @@
     },
     {
       "playbookID": "myOtherTestPlaybook",
-      "is_api": true
+      "has_api": true
     }
   ],
   "skipped_tests": {},

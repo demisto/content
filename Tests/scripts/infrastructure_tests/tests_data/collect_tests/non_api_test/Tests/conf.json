@@ -3,7 +3,7 @@
     {
       "playbookID": "myTestPlaybook",
       "integrations": "myIntegration",
-      "is_api": false
+      "has_api": false
     }
   ],
   "skipped_tests": {},

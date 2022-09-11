@@ -1,6 +1,6 @@
 {
     "available_tests_fields": {
-        "is_api" : "Determines whether a test playbook uses APi, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false."
+        "has_api" : "Determines whether a test playbook uses API, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -766,7 +766,7 @@
         {
             "integrations": "Server Message Block (SMB) v2",
             "playbookID": "SMB_v2-Test",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -985,42 +985,42 @@
             "playbookID": "generic-sql",
             "instance_names": "mysql instance",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "postgreSQL instance",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
             "instance_names": "Microsoft SQL instance using encrypted connection",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Panorama",
@@ -1147,7 +1147,7 @@
             "instance_names": "edl_update",
             "fromversion": "5.5.0",
             "pid_threshold": 8,
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Test_export_indicators_service",
@@ -1222,7 +1222,7 @@
         {
             "integrations": "dnstwist",
             "playbookID": "dnstwistTest",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "BitDam",
@@ -2346,14 +2346,14 @@
             "playbookID": "Active Directory Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Docker Hardening Test",
@@ -2364,30 +2364,30 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "active directory search user with parentheses test",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "mysql",
             "playbookID": "MySQL Test",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Cofense Intelligence",
@@ -2459,7 +2459,7 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
             "fromversion": "5.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Kafka V2",
@@ -2611,7 +2611,7 @@
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2646,7 +2646,7 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "MITRE ATT&CK v2",
@@ -3407,7 +3407,7 @@
             "integrations": "Generic Webhook",
             "playbookID": "Generic Webhook - Test",
             "fromversion": "5.5.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "integrations": "Palo Alto Networks Enterprise DLP",
@@ -3631,7 +3631,7 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Export Indicators Performance Test",
@@ -3849,12 +3849,12 @@
         {
             "playbookID": "EDL Indicator Performance Test",
             "fromversion": "6.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "EDL Performance Test - Concurrency",
             "fromversion": "6.0.0",
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Venafi - Test",
@@ -4212,7 +4212,7 @@
             "integrations": [
                 "palo_alto_networks_pan_os_edl_management"
             ],
-            "is_api": false
+            "has_api": false
         },
         {
             "playbookID": "Group-IB Threat Intelligence & Attribution-Test",
