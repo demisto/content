@@ -164,22 +164,38 @@ FORMAT_HEX = [
 FAILS = [
     ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
      pytest.raises(URLError)),  # IPv6 must have square brackets
-    ('http://142.42.1.1:aaa8080', pytest.raises(URLError)),  # invalid port
-    ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # port contains non digits # disable-secrets-detection
-    ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
-    ('ftps://foo.bar/baz%GG', pytest.raises(URLError)),  # Invalid hex code in path
-    ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host # disable-secrets-detection
-    ('', pytest.raises(URLError)),  # Empty string
-    ('htt$p://test.com/', pytest.raises(URLError)),  # Invalid character in sceme
-    ('https://', pytest.raises(URLError)),  # Only scheme
-    ('https://test@/test', pytest.raises(URLError)),  # No host data, only scheme and user info
-    ('https://www.te$t.com/', pytest.raises(URLError)),  # Bad chars in host
-    ('https://www.[test].com/', pytest.raises(URLError)),  # Invalid square brackets
-    ('https://www.te]st.com/', pytest.raises(URLError)),  # Squre brackets closing without opening
-    ('https://[192.168.1.1]', pytest.raises(URLError)),  # Only IPv6 allowed in square brackets # disable-secrets-detection
-    ('https://[www.test.com]', pytest.raises(URLError)),  # Only IPv6 allowed in square brackets
-    ('https://www/test/', pytest.raises(URLError)),  # invalid domain in host section (no tld)
-    ('https://www.t/', pytest.raises(URLError)),  # invalid domain in host section (single letter tld)
+    ('http://142.42.1.1:aaa8080',  # disable-secrets-detection
+     pytest.raises(URLError)),  # invalid port
+    ('http://142.42.1.1:aaa',  # disable-secrets-detection
+     pytest.raises(URLError)),  # port contains non digits
+    ('https://test.com#fragment3#fragment3',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Only one fragment allowed
+    ('ftps://foo.bar/baz%GG',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Invalid hex code in path
+    ('https://www.%gg.com/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Non valid hexadecimal value in host
+    ('',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Empty string
+    ('htt$p://test.com/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Invalid character in scheme
+    ('https://',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Only scheme
+    ('https://test@/test', # disable-secrets-detection
+     pytest.raises(URLError)),  # No host data, only scheme and user info
+    ('https://www.te$t.com/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Bad chars in host
+    ('https://www.[test].com/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Invalid square brackets
+    ('https://www.te]st.com/', # disable-secrets-detection
+     pytest.raises(URLError)),  # Square brackets closing without opening
+    ('https://[192.168.1.1]',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Only IPv6 allowed in square brackets
+    ('https://[www.test.com]',  # disable-secrets-detection
+     pytest.raises(URLError)),  # Only IPv6 allowed in square brackets
+    ('https://www/test/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # invalid domain in host section (no tld)
+    ('https://www.t/',  # disable-secrets-detection
+     pytest.raises(URLError)),  # invalid domain in host section (single letter tld)
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
