@@ -23,7 +23,8 @@ This integration was integrated and tested with version xx of AWS - GuardDuty Ev
     | Guard Duty Severity level | The minimum severity of the events to fetch. \(inclusive\). | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | The product corresponding to the integration that originated the events. |  | True |
+    | The product name corresponding to the integration that originated the events |  | False |
+    | The vendor name corresponding to the integration that originated the events |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
