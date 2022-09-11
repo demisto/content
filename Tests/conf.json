@@ -5175,6 +5175,16 @@
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate File - SecneurX Analysis - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5320,7 +5330,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
-        "checkpointdome9" : "No license",
+        "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
@@ -5401,6 +5411,7 @@
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
         "ANYRUN": "No instance",
+        "SecneurX Analysis": "No Instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
         "Phish.AI": "Issue 17291",
