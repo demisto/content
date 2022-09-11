@@ -41,7 +41,7 @@ successfully execute a command, a DBot message appears in the War Room with the 
 ### mimecast-query
 
 ***
-Query mimecast emails. This is archive search command.
+Query Mimecast emails. This is an archive search command.
 
 #### Base Command
 
@@ -54,7 +54,7 @@ Query mimecast emails. This is archive search command.
 | queryXml          | The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional     | 
 | text              | Search for this text in messages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional     | 
 | dryRun            | Will not execute the query, but just return the query string built. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional     | 
-| date              | Search in specific dates only (default is all mails fomr). Possible values are: today, yesterday, last_week, last_month, last_year.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional     | 
+| date              | Search in specific dates only. Possible values are: today, yesterday, last_week, last_month, last_year.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional     | 
 | dateFrom          | Search emails from date, format YYYY-MM-DDTHH:MM:SZ (e.g. 2015-09-21T23:00:00Z).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional     | 
 | dateTo            | Search emails to date, format YYYY-MM-DDTHH:MM:SZ (e.g. 2015-09-21T23:00:00Z).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional     | 
 | sentTo            | Filter on messages to a specific address.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional     | 
@@ -85,7 +85,7 @@ Query mimecast emails. This is archive search command.
 ### mimecast-list-blocked-sender-policies
 
 ***
-List all existing mimecast blocked sender policies
+List all existing Mimecast blocked sender policies
 
 #### Base Command
 
@@ -104,14 +104,14 @@ List all existing mimecast blocked sender policies
 | Mimecast.Policy.Sender.Address   | string   | Block Sender by email address          | 
 | Mimecast.Policy.Sender.Domain    | string   | Block Sender by domain                 | 
 | Mimecast.Policy.Sender.Group     | string   | Block Sender by group                  | 
-| Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is Bidirectional or not | 
-| Mimecast.Policy.Receiver.Address | string   | Block emails to Receiver type address  | 
-| Mimecast.Policy.Receiver.Domain  | string   | Block emails to Receiver type domain   | 
-| Mimecast.Policy.Receiver.Group   | string   | Block emails to Receiver type group    | 
+| Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is bidirectional or not | 
+| Mimecast.Policy.Receiver.Address | string   | Block emails to receiver type address  | 
+| Mimecast.Policy.Receiver.Domain  | string   | Block emails to receiver type domain   | 
+| Mimecast.Policy.Receiver.Group   | string   | Block emails to receiver type group    | 
 | Mimecast.Policy.FromDate         | date     | Policy validation start date           | 
 | Mimecast.Policy.ToDate           | date     | Policy expiration date                 | 
-| Mimecast.Policy.Sender.Type      | string   | Block emails to Sender type            | 
-| Mimecast.Policy.Receiver.Type    | string   | Block emails to Receiver type          | 
+| Mimecast.Policy.Sender.Type      | string   | Block emails to sender type            | 
+| Mimecast.Policy.Receiver.Type    | string   | Block emails to receiver type          | 
 
 ### mimecast-get-policy
 
@@ -136,10 +136,10 @@ Get a blocked sender policy by ID
 | Mimecast.Policy.Sender.Address   | string   | Block Sender by email address          | 
 | Mimecast.Policy.Sender.Domain    | string   | Block Sender by domain                 | 
 | Mimecast.Policy.Sender.Group     | string   | Block Sender by group                  | 
-| Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is Bidirectional or not | 
-| Mimecast.Policy.Receiver.Address | string   | Block emails to Receiver type address  | 
-| Mimecast.Policy.Receiver.Domain  | string   | Block emails to Receiver type domain   | 
-| Mimecast.Policy.Receiver.Group   | string   | Block emails to Receiver type group    | 
+| Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is bidirectional or not | 
+| Mimecast.Policy.Receiver.Address | string   | Block emails to receiver type address  | 
+| Mimecast.Policy.Receiver.Domain  | string   | Block emails to receiver type domain   | 
+| Mimecast.Policy.Receiver.Group   | string   | Block emails to receiver type group    | 
 | Mimecast.Policy.Fromdate         | date     | Policy validation start date           | 
 | Mimecast.Policy.Todate           | date     | Policy expiration date                 | 
 
@@ -173,9 +173,9 @@ Create a Blocked Sender Policy
 | Mimecast.Policy.Sender.Domain    | string   | Block Sender by domain                 | 
 | Mimecast.Policy.Sender.Group     | string   | Block Sender by group                  | 
 | Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is Bidirectional or not | 
-| Mimecast.Policy.Receiver.Address | string   | Block emails to Receiver type address  | 
-| Mimecast.Policy.Receiver.Domain  | string   | Block emails to Receiver type domain   | 
-| Mimecast.Policy.Receiver.Group   | string   | Block emails to Receiver type group    | 
+| Mimecast.Policy.Receiver.Address | string   | Block emails to receiver type address  | 
+| Mimecast.Policy.Receiver.Domain  | string   | Block emails to receiver type domain   | 
+| Mimecast.Policy.Receiver.Group   | string   | Block emails to receiver type group    | 
 | Mimecast.Policy.Fromdate         | date     | Policy validation start date           | 
 | Mimecast.Policy.Todate           | date     | Policy expiration date                 | 
 | Mimecast.Policy.Sender.Type      | String   | The sender type                        | 
@@ -293,7 +293,7 @@ Create a managed URL on Mimecast
 ### mimecast-list-messages
 
 ***
-Get a list of messages for a given user. This is archive search command. Required Permissions The following permissions
+Get a list of messages for a given user. This is an archive search command. Required Permissions The following permissions
 are required for this command.
 
 - Mimecast administrator with at least one of the following permissions: Archive/Search/Read.
@@ -411,13 +411,13 @@ Returns Impersonation Protect logs for a Mimecast customer account
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                  | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | resultsNumber     | This parameter is ignored, use the 'limit' parameter instead. Possible values are: .                                                                                                                                                                                                                                             | Optional     | 
-| taggedMalicious   | Filters for messages tagged malicious (true) or not tagged malicious (false). Omit for no tag filtering. default is true. Possible values are: true, false. Default is true.                                                                                                                                                     | Optional     | 
-| searchField       | The field to search,Defaults to all (meaning all of the preceding fields). Possible values are: senderAddress, recipientAddress, subject, policy, all.                                                                                                                                                                           | Optional     | 
+| taggedMalicious   | Filters for messages tagged malicious (true) or not tagged malicious (false). Omit for no tag filtering. Default is true. Possible values are: true, false. Default is true.                                                                                                                                                     | Optional     | 
+| searchField       | The field to search,Defaults is all (meaning all of the preceding fields). Possible values are: senderAddress, recipientAddress, subject, policy, all.                                                                                                                                                                           | Optional     | 
 | query             | Required if searchField exists. A character string to search for in the logs.                                                                                                                                                                                                                                                    | Optional     | 
 | identifiers       | Filters logs by identifiers, can include any of newly_observed_domain, internal_user_name, repy_address_mismatch, and targeted_threat_dictionary. you can choose more then one identifier separated by comma. Possible values are: newly_observed_domain, internal_user_name, repy_address_mismatch, targeted_threat_dictionary. | Optional     | 
 | fromDate          | Start date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is the start of the current day.                                                                                                                                                                                                          | Optional     | 
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                                                                                                                                                                                                                         | Optional     | 
-| actions           | Filters logs by action, you can choose more then one action separated by comma. Possible values are: delete, hold, bounce, smart_folder, disable_smart_folder, content_expire, meta_expire, stationery, gcc, secure_delivery, derivery_route, document_policy, disable_document_policy, attach_set_policy, remove_email.         | Optional     | 
+| actions           | Filters logs by action, you can choose more then one action separated by comma. Possible values are: delete, hold, bounce, smart_folder, disable_smart_folder, content_expire, meta_expire, stationery, gcc, secure_delivery, delivery_route, document_policy, disable_document_policy, attach_set_policy, remove_email.         | Optional     | 
 | limit             | The maximum number of results to return. Default is 100.                                                                                                                                                                                                                                                                         | Optional     | 
 | page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: .                                                                                                                                                                                               | Optional     | 
 | page_size         | Number of results per page to display. Possible values are: .                                                                                                                                                                                                                                                                    | Optional     | 
@@ -520,7 +520,7 @@ There is no context output for this command.
 ### mimecast-get-message
 
 ***
-Get the contents or metadata of a given message. This is archive search command.
+Get the contents or metadata of a given message. This is an archive search command.
 
 ### Required Permissions
 
@@ -535,12 +535,12 @@ The following permissions are required for this command.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| messageID         | Message ID                                                                                                                                                                                                                                                                                                     | Required     | 
-| context           | Defines which copy of the message part to return, must be one of: "delievered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all) | Required     | 
-| type              | The message type to return. (Only relevant for part argument = message or all)                                                                                                                                                                                                                                 | Optional     | 
-| part              | Define what message part to return - download message, get metadata or both.                                                                                                                                                                                                                                   | Optional     | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                 | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| messageID         | Message ID                                                                                                                                                                                                                                                                                                      | Required     | 
+| context           | Defines which copy of the message part to return, must be one of: "delivered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all)   | Required     | 
+| type              | The message type to return. (Only relevant for part argument = message or all)                                                                                                                                                                                                                                  | Optional     | 
+| part              | Define what message part to return - download message, get metadata or both.                                                                                                                                                                                                                                    | Optional     | 
 
 #### Context Output
 
@@ -563,7 +563,7 @@ The following permissions are required for this command.
 | Mimecast.Message.Attachments.Size     | number   | Message attachment's file size.                                    | 
 | Mimecast.Message.Processed            | date     | The date the message was processed by Mimecast in ISO 8601 format. | 
 | Mimecast.Message.HasHtmlBody          | boolean  | If the message has an HTML body part.                              | 
-| File.Size                             | number   | File Size                                                          | 
+| File.Size                             | number   | File size                                                          | 
 | File.SHA1                             | string   | SHA1 hash of the file                                              | 
 | File.SHA256                           | string   | SHA256 hash of the file                                            | 
 | File.Name                             | string   | The sample name                                                    | 
@@ -576,7 +576,7 @@ The following permissions are required for this command.
 ### mimecast-download-attachments
 
 ***
-Download attachments from a specified message. This is archive search command.
+Download attachments from a specified message. This is an archive search command.
 
 #### Required Permissions
 
@@ -606,7 +606,7 @@ The following permissions are required for this command.
 | File.SSDeep  | string   | SSDeep hash of the file       | 
 | File.EntryID | string   | War-Room Entry ID of the file | 
 | File.Info    | string   | Basic information of the file | 
-| File.Type    | string   | File type e.g. "PE"           | 
+| File.Type    | string   | File type e.g., "PE"          | 
 | File.MD5     | string   | MD5 hash of the file          | 
 
 ### mimecast-find-groups
@@ -620,11 +620,11 @@ Returns the list of groups according to the specified query.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                  | **Required** |
-|-------------------|--------------------------------------------------------------------------------------------------|--------------|
-| query_string      | The string to query.                                                                             | Optional     | 
-| query_source      | The group source by which to filter. Can be "cloud" or "ldap". Possible values are: cloud, ldap. | Optional     | 
-| limit             | The maximum number of results to return.                                                         | Optional     | 
+| **Argument Name** | **Description**                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------|--------------|
+| query_string      | The string to query.                                                    | Optional     | 
+| query_source      | The group source by which to filter. Possible values are: cloud, ldap.  | Optional     | 
+| limit             | The maximum number of results to return.                                | Optional     | 
 
 #### Context Output
 
@@ -667,7 +667,7 @@ Returns the members list for the specified group.
 ### mimecast-add-group-member
 
 ***
-Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+Adds a user to a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
 
 #### Base Command
 
@@ -691,7 +691,7 @@ Adds a user to a group. The email_address and domain_adddress arguments are opti
 ### mimecast-remove-group-member
 
 ***
-Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be
+Removes a user from a group. The email_address and domain_address arguments are optional, but one of them must be
 supplied.
 
 #### Base Command
@@ -776,13 +776,13 @@ Creates a new Mimecast remediation incident.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hash_message_id | The file hash or messageId value. | Required | 
-| reason | The reason for creating the remediation incident. | Required | 
-| search_by | The message component by which to search. Can be "hash" or "messagId". Default is "hash". Possible values are: hash, messageId. | Optional | 
-| start_date | The startt date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000). | Optional | 
-| end_date | Theend date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000). | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| hash_message_id | The file hash or messageId value.                                                                                       | Required | 
+| reason | The reason for creating the remediation incident.                                                                       | Required | 
+| search_by | The message component by which to search. Default is "hash". Possible values are: hash, messageId.                      | Optional | 
+| start_date | The start date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000).       | Optional | 
+| end_date | The end date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000). | Optional | 
 
 #### Context Output
 
@@ -872,33 +872,33 @@ Updates the specified policy.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| policy_id | The ID of the policy to update. | Required | 
-| description | A new description for the policy. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                          | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| policy_id | The ID of the policy to update.                                                                                                                                                                                                                                                                                                                                                          | Required | 
+| description | A new description for the policy.                                                                                                                                                                                                                                                                                                                                                        | Optional | 
 | fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Optional | 
-| toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Optional | 
-| option | The block action. Can be "no_action" or "block_sender". Possible values are: no_action, block_sender. | Optional | 
-| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain. | Optional | 
-| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain. | Optional | 
-| fromPart | The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both". Possible values are: envelope_from, header_from, both. | Optional | 
+| toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address.                                                        | Optional | 
+| option | The block action. Possible values are: no_action, block_sender.                                                                                                                                                                                                                                                                                                                          | Optional | 
+| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.                                                                                                                                                                                                                                                        | Optional | 
+| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.                                                                                                                                                                                                                                                              | Optional | 
+| fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both.                                                                                                                                                                                                                                                                                         | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Mimecast.Policy.ID | string | Policy ID. | 
-| Mimecast.Policy.Sender.Address | string | Block Sender by email address value. | 
-| Mimecast.Policy.Sender.Domain | string | Block sender by domain value. | 
-| Mimecast.Policy.Sender.Group | string | Block sender by group value. | 
+| **Path** | **Type** | **Description**                              |
+| --- | --- |----------------------------------------------|
+| Mimecast.Policy.ID | string | Policy ID.                                   | 
+| Mimecast.Policy.Sender.Address | string | Block sender by email address value.         | 
+| Mimecast.Policy.Sender.Domain | string | Block sender by domain value.                | 
+| Mimecast.Policy.Sender.Group | string | Block sender by group value.                 | 
 | Mimecast.Policy.Bidirectional | boolean | Whether the blocked policy is bidirectional. | 
-| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
-| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
-| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
-| Mimecast.Policy.Fromdate | date | The policy validation start date. | 
-| Mimecast.Policy.Todate | date | The policy expiration date. | 
-| Mimecast.Policy.Sender.Type | String | The sender type. | 
-| Mimecast.Policy.Receiver.Type | String | The receiver type. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address.       | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain.        | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group.         | 
+| Mimecast.Policy.Fromdate | date | The policy validation start date.            | 
+| Mimecast.Policy.Todate | date | The policy expiration date.                  | 
+| Mimecast.Policy.Sender.Type | String | The sender type.                             | 
+| Mimecast.Policy.Receiver.Type | String | The receiver type.                           | 
 
 ### mimecast-search-message
 
@@ -911,17 +911,17 @@ Searches a message
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search_reason | Reason for tracking the email. Possible values are: . | Optional | 
-| from_date | Api start parameter. Datetime format is ISO 8601. Possible values are: . | Optional | 
-| to_date | Api end parameter  Datetime format ISO 8601. Possible values are: . | Optional | 
-| message_id | The internet message id of the message to track. Possible values are: . | Optional | 
-| from | Part of advancedTrackAndTraceOptions object : The sending email address or domain of the messages to track. Possible values are: . | Optional | 
+| **Argument Name** | **Description**                                                                                                                     | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------| --- |
+| search_reason | Reason for tracking the email. Possible values are: .                                                                               | Optional | 
+| from_date | API start parameter. Datetime format is ISO 8601. Possible values are: .                                                            | Optional | 
+| to_date | API end parameter  Datetime format ISO 8601. Possible values are: .                                                                 | Optional | 
+| message_id | The internet message id of the message to track. Possible values are: .                                                             | Optional | 
+| from | Part of advancedTrackAndTraceOptions object: The sending email address or domain of the messages to track. Possible values are: .   | Optional | 
 | to | Part of advancedTrackAndTraceOptions object: The recipient email address or domain of the messages to track. Possible values are: . | Optional | 
-| subject | Part of advancedTrackAndTraceOptions object : The subject of the messages to track. Possible values are: . | Optional | 
-| sender_IP | Part of advancedTrackAndTraceOptions object : The source IP address of messages to track. Possible values are: . | Optional | 
-| route | An array of routes to filter by. Possible values are internal, outbound and inbound. Possible values are: . | Optional | 
+| subject | Part of advancedTrackAndTraceOptions object: The subject of the messages to track. Possible values are: .                           | Optional | 
+| sender_IP | Part of advancedTrackAndTraceOptions object: The source IP address of the messages to track. Possible values are: .                  | Optional | 
+| route | An array of routes to filter by. Possible values are internal, outbound and inbound. Possible values are: .                         | Optional | 
 
 #### Context Output
 
@@ -960,108 +960,108 @@ Retrieves detailed information about a specific message.
 | ids | The Mimecast ID of the message to load. This is returned by the /api/message-finder/search endpoint. (mimecast-search-message command). Possible values are: . | Required | 
 | show_recipient_info |  Default value is true. When argument is true all data from recipientInfo object is presented at command response. Possible values are: true, false. Default is true. | Optional | 
 | show_delivered_message | default value is false .When argument is true all data from deliveredMessage object is presented at command response. Possible values are: true, false. Default is false. | Optional | 
-| show_retention_info | Default value is true.When argument is true all data from retentionInfo object  is presented at command response. Possible values are: true, false. Default is true. | Optional | 
+| show_retention_info | Default value is true.When argument is true all data from retentionInfo object is presented at command response. Possible values are: true, false. Default is true. | Optional | 
 | show_spam_info | Default value is true.When argument is true all spamInfo block is presented at command response. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.extension | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.hash | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.mimeType | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.name | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.size | Number |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.type | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.deliveryEvent | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.emailAddress | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.encryptionInfo | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.messageExpiresIn | Number |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.processingServer | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.receiptAcknowledgement | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteHost | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteIp | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteServerGreeting | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionEnd | Date |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionSize | Number |  | 
-| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionStart | Date |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.fromEnvelope | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.fromHeader | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.processed | Date |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.route | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.sent | Date |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.subject | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.to | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.messageInfo.transmissionInfo | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.policyInfo.inherited | Boolean |  | 
-| Mimecast.MessageInfo.deliveredMessage.policyInfo.policyName | String |  | 
-| Mimecast.MessageInfo.deliveredMessage.policyInfo.policyType | String |  | 
-| Mimecast.MessageInfo.id | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.binaryEmailSize | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.extension | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.hash | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.mimeType | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.name | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.size | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.components.type | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.encryptionInfo | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.fromEnvelope | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.fromHeader | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.messageExpiresIn | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.processed | Date |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.processingServer | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.receiptAcknowledgement | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.receiptEvent | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteHost | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteIp | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteServerGreeting | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.sent | Date |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.spamEvent | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.subject | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.to | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionEnd | Date |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionInfo | String |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionSize | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionStart | Date |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.binaryEmailSize | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.extension | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.hash | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.mimeType | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.name | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.size | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.type | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.encryptionInfo | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.messageExpiresIn | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.processingServer | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptAcknowledgement | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptEvent | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteHost | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteIp | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteServerGreeting | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.spamEvent | String |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionEnd | Date |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionSize | Number |  | 
-| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionStart | Date |  | 
-| Mimecast.MessageInfo.retentionInfo.currentPurgeDate | Date |  | 
-| Mimecast.MessageInfo.retentionInfo.originalPurgeDate | Date |  | 
-| Mimecast.MessageInfo.retentionInfo.purgeBasedOn | String |  | 
-| Mimecast.MessageInfo.retentionInfo.retentionAdjustmentDays | Number |  | 
-| Mimecast.MessageInfo.spamInfo.detectionLevel | String |  | 
-| Mimecast.MessageInfo.spamInfo.dkim.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.dkim.info | String |  | 
-| Mimecast.MessageInfo.spamInfo.dmarc.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.dmarc.info | String |  | 
-| Mimecast.MessageInfo.spamInfo.greyEmail | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.managedSender.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.managedSender.info | String |  | 
-| Mimecast.MessageInfo.spamInfo.permittedSender.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.permittedSender.info | String |  | 
-| Mimecast.MessageInfo.spamInfo.rbl.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.rbl.info | String |  | 
-| Mimecast.MessageInfo.spamInfo.spamScore | Number |  | 
-| Mimecast.MessageInfo.spamInfo.spf.allow | Boolean |  | 
-| Mimecast.MessageInfo.spamInfo.spf.info | String |  | 
-| Mimecast.MessageInfo.status | String |  | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.extension | String | Component extension type. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.hash | String | Component hash. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.mimeType | String | Component MIME type. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.name | String | Component name. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.size | Number | Component size. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.type | String | Component type. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.deliveryEvent | String | Description of delivery event. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.emailAddress | String | Email address of recipient. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.encryptionInfo | String | Encryption type. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.messageExpiresIn | Number | Expiration time of message. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.processingServer | String | Processing server address. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.receiptAcknowledgement | String | Recipient acknowledgement. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteHost | String | Remote host address. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteIp | String | Remote IP address. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteServerGreeting | String | Remote server greeting. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionEnd | Date | Transmission end date. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionSize | Number | Transmission size. | 
+| Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionStart | Date |  Transmission start date. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.fromEnvelope | String | Sender mail. (From envelope) | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.fromHeader | String | Sender mail. (From header) | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.processed | Date | Processed time and date. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.route | String | Message route. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.sent | Date | Message sent time and date. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.subject | String | Message subject. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.to | String | Recipients info. | 
+| Mimecast.MessageInfo.deliveredMessage.messageInfo.transmissionInfo | String | Transmission info. | 
+| Mimecast.MessageInfo.deliveredMessage.policyInfo.inherited | Boolean | Whether policy is inherited. | 
+| Mimecast.MessageInfo.deliveredMessage.policyInfo.policyName | String | Policy name. | 
+| Mimecast.MessageInfo.deliveredMessage.policyInfo.policyType | String | Policy type. | 
+| Mimecast.MessageInfo.id | String | Message ID. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.binaryEmailSize | Number | Email size. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.extension | String | Component extension type. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.hash | String | Component hash. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.mimeType | String | Component MIME type. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.name | String | Component name. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.size | Number | Component size. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.components.type | String | Component type. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.encryptionInfo | String | Encryption information. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.fromEnvelope | String |  The routable email address (From envelope). | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.fromHeader | String | The routable email address (From header). | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.messageExpiresIn | Number | Expiry time of message. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.processed | Date | Message processed time. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.processingServer | String | Message processing server. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.receiptAcknowledgement | String | Recipient acknowledgement. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.receiptEvent | String | Receipt event name. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteHost | String | Remote host address. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteIp | String | Remote IP address. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.remoteServerGreeting | String | Remote server greeting. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.sent | Date | Message send time and date. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.spamEvent | String | Spam event name. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.subject | String | Message subject. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.to | String | Recipient info. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionEnd | Date | Transmission end date. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionInfo | String | Transmission info. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionSize | Number | Transmission size. | 
+| Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionStart | Date | Transmission start date. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.binaryEmailSize | Number | Email size | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.extension | String | Component extension type. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.hash | String | Component hash type. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.mimeType | String | Component MIME type. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.name | String | Component name. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.size | Number | Component size. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.type | String | Component type. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.encryptionInfo | String | Encryption information. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.messageExpiresIn | Number | Expiration time of message. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.processingServer | String | Processing server address. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptAcknowledgement | String | Recipient acknowledgement. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptEvent | String | Receipt event name. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteHost | String | Remote host address. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteIp | String | Remote IP address. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteServerGreeting | String | Remote server greeting. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.spamEvent | String | Spam event name. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionEnd | Date | Transmission end date. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionSize | Number | Transmission size. | 
+| Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionStart | Date | Transmission start date. | 
+| Mimecast.MessageInfo.retentionInfo.currentPurgeDate | Date | Current purge date and time. | 
+| Mimecast.MessageInfo.retentionInfo.originalPurgeDate | Date | Original purge date and time. | 
+| Mimecast.MessageInfo.retentionInfo.purgeBasedOn | String | Value that purge is based on. | 
+| Mimecast.MessageInfo.retentionInfo.retentionAdjustmentDays | Number | Retention adjustment days. | 
+| Mimecast.MessageInfo.spamInfo.detectionLevel | String | Spam detection level. | 
+| Mimecast.MessageInfo.spamInfo.dkim.allow | Boolean | Is DomainKeys Identified Mail (DKIM) allowed. | 
+| Mimecast.MessageInfo.spamInfo.dkim.info | String | DKIM info. | 
+| Mimecast.MessageInfo.spamInfo.dmarc.allow | Boolean | Is Domain-based Message Authentication, Reporting & Conformance (DMARC) allowed. | 
+| Mimecast.MessageInfo.spamInfo.dmarc.info | String | DMARC info. | 
+| Mimecast.MessageInfo.spamInfo.greyEmail | Boolean | Is grey email allowed. | 
+| Mimecast.MessageInfo.spamInfo.managedSender.allow | Boolean | Is Managed Sender allowed. | 
+| Mimecast.MessageInfo.spamInfo.managedSender.info | String | Managed Sender info. | 
+| Mimecast.MessageInfo.spamInfo.permittedSender.allow | Boolean | Is Permitted Sender allowed. | 
+| Mimecast.MessageInfo.spamInfo.permittedSender.info | String | Permitted Sender info. | 
+| Mimecast.MessageInfo.spamInfo.rbl.allow | Boolean | Is Real-time blackhole list (RBL) allowed. | 
+| Mimecast.MessageInfo.spamInfo.rbl.info | String | RBL info. | 
+| Mimecast.MessageInfo.spamInfo.spamScore | Number | Spam score. | 
+| Mimecast.MessageInfo.spamInfo.spf.allow | Boolean | Is Sender Policy Framework (SPF) allowed. | 
+| Mimecast.MessageInfo.spamInfo.spf.info | String | SPF info. | 
+| Mimecast.MessageInfo.status | String | Message status. | 
 
 ### mimecast-list-held-message
 
@@ -1076,7 +1076,7 @@ Get information about held messages, including the reason, hold level, sender an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| admin | Only results for the currently authenticated user will be returned. Possible values are: true, false. Default is false. | Optional | 
+| admin | Whether only results for the currently authenticated user will be returned. Possible values are: true, false. Default is false. | Optional | 
 | from_date | Datetime format ISO 8601. Possible values are: . | Optional | 
 | to_date | Datetime format ISO 8601. Possible values are: . | Optional | 
 | value | Free text to filter results by. Possible values are: . | Optional | 
@@ -1092,9 +1092,9 @@ Get information about held messages, including the reason, hold level, sender an
 | Mimecast.HeldMessage.dateReceived               | Date     | The timestamp of the message transmission.                                                      | 
 | Mimecast.HeldMessage.from.displayableName       | String   | The sender name.                                                                                | 
 | Mimecast.HeldMessage.from.emailAddress          | String   | The sender email.                                                                               | 
-| Mimecast.HeldMessage.fromHeader.displayableName | String   | The display name of the sender \(From envelope\).                                               | 
-| Mimecast.HeldMessage.fromHeader.emailAddress    | String   | The email address of the sender \(From envelope\).                                              | 
-| Mimecast.HeldMessage.hasAttachments             | Boolean  | Returns true if the message contains attachments. False indicates no attachments                | 
+| Mimecast.HeldMessage.fromHeader.displayableName | String   | The display name of the sender \(From header\).                                                 | 
+| Mimecast.HeldMessage.fromHeader.emailAddress    | String   | The email address of the sender \(From header\).                                                | 
+| Mimecast.HeldMessage.hasAttachments             | Boolean  | Returns true if the message contains attachments. False indicates no attachments.               | 
 | Mimecast.HeldMessage.id                         | String   | The Mimecast secure ID for a message.                                                           | 
 | Mimecast.HeldMessage.policyInfo                 | String   | Information or definition name triggering the message hold action.                              | 
 | Mimecast.HeldMessage.reason                     | String   | The summary reason for holding the message.                                                     | 
@@ -1109,7 +1109,7 @@ Get information about held messages, including the reason, hold level, sender an
 ### mimecast-held-message-summary
 
 ***
-Get counts of currenlty held messages for each hold reason.
+Get counts of currently held messages for each hold reason.
 
 #### Base Command
 
@@ -1140,10 +1140,10 @@ Reject a currently held message.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                  | **Required** |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| ids | An array of Mimecast secure ids: Ids are extracted from command : mimecast-list-held-message. Possible values are: .                                                                                                             | Required | 
-| message | Rejection message to be returned to sender. Possible values are: .                                                                                                                                                               | Optional | 
+| ids | An array of Mimecast secure IDs IDs are extracted from the mimecast-list-held-message command. Possible values are: .                                                                                                            | Required | 
+| message | Rejection message to be returned to the sender. Possible values are: .                                                                                                                                                           | Optional | 
 | reason_type | User can choose reason . Possible values are: MESSAGE CONTAINS UNDESIRABLE CONTENT,MESSAGE CONTAINS CONFIDENTIAL INFORMATION,REVIEWER DISAPPROVES OF CONTENT,, INAPPROPRIATE COMMUNICATIONMESSAGE GOES AGAINST EMAIL POLICIES, . | Optional | 
-| notify | User can choose if rejection notification is delivered. Possible values are: true, false.                                                                                                                                        | Optional | 
+| notify | Whether to deliver rejection notificationd. Possible values are: true, false.                                                                                                                                        | Optional | 
 
 #### Context Output
 
@@ -1170,7 +1170,7 @@ Release a currently held message.
 
 | **Argument Name** | **Description**                                                                                                     | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------| --- |
-| id | Mimecast secure id: id can be extracted from following command : mimecast-list-held-message. Possible values are: . | Required | 
+| id | Mimecast secure id: ID can be extracted from following command : mimecast-list-held-message. Possible values are: . | Required | 
 
 #### Context Output
 
@@ -1187,7 +1187,7 @@ There is no context output for this command.
 ### mimecast-search-processing-message
 
 ***
-Return messages currently being processed by Mimecast. Notice, most of the time, no results are returned.
+Return messages currently being processed by Mimecast. Note that most of the time, no results are returned.
 
 #### Base Command
 
@@ -1197,12 +1197,12 @@ Return messages currently being processed by Mimecast. Notice, most of the time,
 
 | **Argument Name** | **Description**                                                                                                                    | **Required** |
 |-------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| sort_order        | User can choose sort order. Possible values are: asc, desc.                                                                        | Optional     | 
+| sort_order        | The method used to sort the messages. Possible values are: asc, desc.                                                              | Optional     | 
 | from_date         | Datetime format ISO 8601. Possible values are: .                                                                                   | Optional     | 
 | to_date           | Datetime format ISO 8601. Possible values are: .                                                                                   | Optional     | 
 | value             | The search value to be used. Possible values are: .                                                                                | Optional     | 
 | field_name        | The field to be searched. Possible values are: ALL, fromAddress, toAddress, subject, info, remoteIp.                               | Optional     | 
-| attachments       | The presence of an attachment in the message. Possible values are: .                                                               | Optional     | 
+| attachments       | Whether there is an attachment in the message. Possible values are: .                                                              | Optional     | 
 | route             | The message route. Possible values are: all, internal, outbound, inbound, external.                                                | Optional     | 
 | page_size         | Number of results per page to display. Possible values are: .                                                                      | Optional     | 
 | page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional     | 
@@ -1212,7 +1212,7 @@ Return messages currently being processed by Mimecast. Notice, most of the time,
 
 | **Path**                                                    | **Type** | **Description**                                                                                    |
 |-------------------------------------------------------------|----------|----------------------------------------------------------------------------------------------------|
-| Mimecast.ProcessingMessage.messages.id                      | String   | The Mimecast secure id of the message.                                                             | 
+| Mimecast.ProcessingMessage.messages.id                      | String   | The Mimecast secure ID of the message.                                                             | 
 | Mimecast.ProcessingMessage.messages.fromEnv.emailAddress    | String   | The routable email address \(From evelope\).                                                       | 
 | Mimecast.ProcessingMessage.messages.fromHeader.emailAddress | String   | The routable email address \(From header\).                                                        | 
 | Mimecast.ProcessingMessage.messages.to.emailAddress         | String   | The routable email address.                                                                        | 
@@ -1221,11 +1221,11 @@ Return messages currently being processed by Mimecast. Notice, most of the time,
 | Mimecast.ProcessingMessage.messages.routing                 | String   | The directional route of the message. Possible values are internal, outbound, inbound or external. | 
 | Mimecast.ProcessingMessage.messages.size                    | Number   | The size of the message in bytes.                                                                  | 
 | Mimecast.ProcessingMessage.messages.remoteIp                | String   | The connecting IP address.                                                                         | 
-| Mimecast.ProcessingMessage.messages.attempts                | Number   | The processing attemp count of the message.                                                        | 
+| Mimecast.ProcessingMessage.messages.attempts                | Number   | The number of processing attempts of the message.                                                  | 
 | Mimecast.ProcessingMessage.messages.nextAttempt             | Date     | The date of the next process attempt for the message.                                              | 
 | Mimecast.ProcessingMessage.messages.created                 | Date     | The date of the processing request creation.                                                       | 
 | Mimecast.ProcessingMessage.messages.info                    | String   | Current processing status of the message.                                                          | 
-| Mimecast.ProcessingMessage.messages.priority                | String   | Message Proirity.                                                                                  | 
+| Mimecast.ProcessingMessage.messages.priority                | String   | Message proirity.                                                                                  | 
 
 ### mimecast-list-email-queues
 
@@ -1245,12 +1245,12 @@ Get the count of the inbound and outbound email queues at specified times.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Mimecast.EmailQueue.inboundEmailQueue.count | Number | The number of inbound messages currently queued. | 
-| Mimecast.EmailQueue.inboundEmailQueue.date | Date | The date for displayed number of messages. | 
+| **Path** | **Type** | **Description**                                   |
+| --- | --- |---------------------------------------------------|
+| Mimecast.EmailQueue.inboundEmailQueue.count | Number | The number of inbound messages currently queued.  | 
+| Mimecast.EmailQueue.inboundEmailQueue.date | Date | The date for the displayed number of messages.    | 
 | Mimecast.EmailQueue.outboundEmailQueue.count | Number | The number of outbound messages currently queued. | 
-| Mimecast.EmailQueue.outboundEmailQueue.date | Date | The date for displayed number of messages. | 
+| Mimecast.EmailQueue.outboundEmailQueue.date | Date | The date for the displayed number of messages.    | 
 
 #### Command example
 

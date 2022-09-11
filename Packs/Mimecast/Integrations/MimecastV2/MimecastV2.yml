@@ -133,7 +133,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Search in specific dates only (default is all mails fomr)
+      description: Search in specific dates only.
       isArray: false
       name: date
       predefined:
@@ -252,7 +252,7 @@ script:
     - contextPath: Mimecast.Message.Recipient
       description: Message recipient address
       type: string
-    - contextPath: Mimecast.Message.ReceivedDate
+    - contextPath: Mimecast.Message.RecievedDate
       description: Message received date
       type: date
     - contextPath: Mimecast.Message.Size
@@ -729,7 +729,7 @@ script:
     - contextPath: Mimecast.Message.Size
       description: The size of the message in bytes
       type: number
-    - contextPath: Mimecast.Message.ReceivedDate
+    - contextPath: Mimecast.Message.RecievedDate
       description: The date the message was received
       type: date
     - contextPath: Mimecast.Message.From
@@ -844,7 +844,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: malicious
-      description: Filters logs by scan result, default is all
+      description: Filters logs by scan result
       isArray: false
       name: resultType
       predefined:
@@ -2278,10 +2278,10 @@ script:
       description: The sender email.
       type: String
     - contextPath: Mimecast.HeldMessage.fromHeader.displayableName
-      description: The display name of the sender (From envelope).
+      description: The display name of the sender (From header).
       type: String
     - contextPath: Mimecast.HeldMessage.fromHeader.emailAddress
-      description: The email address of the sender (From envelope).
+      description: The email address of the sender (From header).
       type: String
     - contextPath: Mimecast.HeldMessage.hasAttachments
       description: Returns true if the message contains attachments. False indicates no attachments.
@@ -2353,7 +2353,7 @@ script:
       defaultValue: ""
       predefined:
       - MESSAGE CONTAINS UNDESIRABLE CONTENT,MESSAGE CONTAINS CONFIDENTIAL INFORMATION,REVIEWER DISAPPROVES OF CONTENT.
-      - INAPPROPRIATE COMMUNICATION MESSAGE GOES AGAINST EMAIL POLICIES
+      - INAPPROPRIATE COMMUNICATIONMESSAGE GOES AGAINST EMAIL POLICIES
       - ""
     - auto: PREDEFINED
       name: notify
