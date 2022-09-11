@@ -8127,7 +8127,7 @@ script:
       name: limit
       required: false
     - defaultValue: '50'
-      description: The size of nat-rules to return.
+      description: The page size of the nat-rules to return.
       isArray: false
       name: page_size
       required: false
@@ -8216,7 +8216,7 @@ script:
       isArray: true
       name: destination_zone
       required: false
-    - description: The page at which to start listing nat-rules, must be a positive number.
+    - description: The destination interface for the rule.
       isArray: false
       name: destination_interface
       required: false
