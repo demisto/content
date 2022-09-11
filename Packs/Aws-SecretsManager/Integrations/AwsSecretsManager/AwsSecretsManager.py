@@ -67,6 +67,9 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     page = args.get('page', 1)
     page_size = args.get('page_size', 50)
 
+    offset = page_size * page
+    end = page_size * page + page_size
+
     filters = []
     if description:
         filters.append({'Key': 'description', 'Values': description})
@@ -80,7 +83,7 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
         filters.append({'Key': 'all', 'Values': general_search})
 
 
-    response = aws_client.list_secrets(Filters=filters, SortOrder=sort)
+    response = aws_client.list_secrets(Filters=filters, SortOrder=sort, MaxResults=limit)
 
     output = json.dumps(response, cls=DatetimeEncoder)
     response = json.loads(output)
@@ -88,7 +91,7 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     readable_output = [{'Name': secret.get('Name', ''),
                         'ARN': secret.get('ARN', ''),
                         'Description': secret.get('Description', ''),
-                        'LastAccessedDate': secret.get('LastChangedDate', '')} for secret in response['SecretList']]
+                        'LastAccessedDate': secret.get('LastChangedDate', '')} for secret in response['SecretList'][offset:end]]
 
     human_readable = tableToMarkdown('AWS Secrets List', readable_output)
 
