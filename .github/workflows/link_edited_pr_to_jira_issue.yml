@@ -19,6 +19,10 @@ jobs:
           python-version: '3.9'
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - name: Install Python Dependencies
         run: |
           poetry install
