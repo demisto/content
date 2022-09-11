@@ -186,8 +186,9 @@ class Client(BaseClient):
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_list_request(self, repo: str, pr_id: str, params: Dict) -> Dict:
-        """ Makes a PUT request to /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
-            if there isn't a pull request id, makes a PUT request to /repositories/workspace/repository/pullrequests
+        """ Makes a GET request to /repositories/workspace/repository/pullrequests/{pr_id} endpoint to get information
+            about a specific pull request. if there isn't a pull request id, makes a GET request to
+             /repositories/workspace/repository/pullrequests endpoint to get a list of pull requests.
             :param repo: str - The repository the user entered if he did.
             :param params: Dict - the params to the api call
             :param pr_id: str - an id to a specific pull request to update.
@@ -202,7 +203,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def issue_comment_create_request(self, repo: str, issue_id: str, body: Dict) -> Dict:
-        """ Makes a PUT request /repositories/workspace/repository/issues/{issue_id}/comments endpoint to update a pull request.
+        """ Makes a POST request /repositories/workspace/repository/issues/{issue_id}/comments endpoint to create
+            a comment on an issue.
             :param repo: str - The repository the user entered if he did.
             :param body: Dict - The content of the comment, in a dictionary form.
             :param issue_id: str - an id to a specific issue to comment on.
@@ -213,6 +215,38 @@ class Client(BaseClient):
         """
         url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+    def issue_comment_delete_request(self, repo: str, issue_id: str, comment_id: str) -> Dict:
+        """ Makes a DELETE request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to delete
+            a comment in an issue.
+            :param repo: str - The repository the user entered, if he did.
+            :param issue_id: str - an id to a specific issue to delete one of its comments.
+            :param comment_id: str - an id of a specific comment to delete.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/{comment_id}'
+        return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
+
+    def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, params: Dict) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to get
+            information about a specific comment to an issue. if there is no comment_id than Makes a GET request
+            /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific issue.
+            :param repo: str - The repository the user entered, if he did.
+            :param issue_id: str - an id to a specific issue to get its comments.
+            :param comment_id: str - an id of a specific comment.
+            :param params: Dict - a dictionary containing the information about the pagination if needed.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/'
+        if comment_id:
+            url_suffix = f'{url_suffix}{comment_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -779,7 +813,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def issue_comment_create(client: Client, args: Dict) -> CommandResults:
+def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
     """ Creates a comment on a specific issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -802,6 +836,77 @@ def issue_comment_create(client: Client, args: Dict) -> CommandResults:
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
                           raw_response=response)
+
+
+def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults: # TODO check after doing the comment list command
+    """ Deletes a comment on a specific issue in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful deletion.
+    """
+    repo = args.get('repo', None)
+    issue_id = args.get('issue_id', None)
+    comment_id = args.get('comment_id', None)
+    response = client.issue_comment_delete_request(repo, issue_id, comment_id)
+    return CommandResults(readable_output=f'The comment number {comment_id} on the issue number {issue_id} was deleted successfully',
+                          outputs_prefix='Bitbucket.IssueComment',
+                          outputs={},
+                          raw_response={})
+
+
+def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of comments.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful deletion.
+    """
+    repo = args.get('repo', None)
+    issue_id = args.get('issue_id', None)  # TODO make sure that it is ok to make it a required field
+    comment_id = args.get('comment_id', None)
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'page': page,
+        'pagelen': page_size
+    }
+    response = client.issue_comment_list_request(repo, issue_id, comment_id, params)
+    if comment_id:
+        results = [response]
+        hr_title = f'The information about the comment "{comment_id}"'
+    else:
+        results = check_pagination(client, response, limit)
+        hr_title = f'List of the comments on issue "{issue_id}"'
+    human_readable = []
+    for value in results:
+        d = {'Id': value.get('id'),
+             'Content': demisto.get(value, 'content.raw'),
+             'CreatedBy': demisto.get(value, 'user.display_name'),
+             'CreatedAt': value.get('created_on'),
+             'UpdatedAt': value.get('updated_on'),
+             'IssueId': demisto.get(value, 'issue.id'),
+             'IssueTitle': demisto.get(value, 'issue.title'),
+             }
+        human_readable.append(d)
+
+    headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
+    readable_output = tableToMarkdown(
+        name=hr_title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.IssueComment',
+        outputs=results,
+        raw_response=results
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -884,7 +989,13 @@ def main() -> None:  # pragma: no cover
             result = pull_request_list_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-comment-create':
-            result = issue_comment_create(client, demisto.args())
+            result = issue_comment_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-comment-delete':
+            result = issue_comment_delete_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-issue-comment-list':
+            result = issue_comment_list_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
