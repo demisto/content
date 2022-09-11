@@ -6,7 +6,7 @@
   "toServerVersion": "",
   "name": "Threatconnect AssociatedGroups",
   "ownerOnly": false,
-  "fromVersion": "5.0.0",
+  "fromVersion": "6.5.0",
   "content": true,
   "unsearchable": true,
   "placeholder": "",
@@ -26,7 +26,6 @@
   "useAsKpi": false,
   "locked": false,
   "system": false,
-  "content": false,
   "group": 0,
   "hidden": false,
   "openEnded": false,
@@ -36,7 +35,6 @@
   "systemAssociatedTypes": null,
   "associatedToAll": false,
   "unmapped": false,
-  "unsearchable": false,
   "caseInsensitive": true,
   "columns": [
     {

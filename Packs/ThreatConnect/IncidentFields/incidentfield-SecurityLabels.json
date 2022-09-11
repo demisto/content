@@ -1,6 +1,9 @@
 {
   "id": "incident_threatconnectsecuritylabels",
-  "version": 2,
+  "version": -1,
+  "fromVersion": "6.5.0",
+  "content": true,
+  "unsearchable": true,
   "modified": "2022-09-11T09:04:47.76414Z",
   "itemVersion": "",
   "toServerVersion": "",
@@ -23,7 +26,6 @@
   "useAsKpi": false,
   "locked": false,
   "system": false,
-  "content": false,
   "group": 0,
   "hidden": false,
   "openEnded": false,
@@ -33,7 +35,6 @@
   "systemAssociatedTypes": null,
   "associatedToAll": false,
   "unmapped": false,
-  "unsearchable": false,
   "caseInsensitive": true,
   "columns": [
     {
