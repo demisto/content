@@ -7,7 +7,7 @@ configuration:
   display: Token
   name: token
   required: true
-  type: 0
+  type: 4
 - additionalinfo: 'When you creating an Instamce you''ll get an instance id. Example: instance12345'
   display: Instance
   name: instance
@@ -19,13 +19,14 @@ name: UltraMSG
 script:
   commands:
   - arguments:
-    - description: 'Phone Number (With Country Code) or Group Id. Example: +972501234567'
+    - description: 'Phone Number or Group ID. Example: +972501234567'
       name: id
       required: true
-    - description: Free text
+    - description: Message Body
       name: text
       required: true
-    name: send-whatapp
+    description: Send WhatsApp Message
+    name: send-whatsapp
   dockerimage: demisto/python3:3.10.6.33415
   runonce: false
   script: ''

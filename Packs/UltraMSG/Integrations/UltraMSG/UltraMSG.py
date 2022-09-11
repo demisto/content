@@ -5,13 +5,13 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def send_whatapp(token, instance, t_id, text):
+def send_whatsapp(token, instance, t_id, text):
     try:
         conn = http.client.HTTPSConnection("api.ultramsg.com")
         payload = "token=" + token + "&to=" + t_id + "&body=" + text + "&priority=1"
         headers = {'content-type': "application/x-www-form-urlencoded"}
         conn.request("POST", "/" + instance + "/messages/chat", payload, headers)
-        demisto.results(f'Task send_whatapp successfully added to project')
+        demisto.results(f'Task send_whatsapp successfully added to project')
     except Exception:
         demisto.results('Task creation failed')
 
@@ -39,10 +39,10 @@ def main():
     token = params.get('token')
     instance = params.get('instance')
     try:
-        if demisto.command() == 'send-whatapp':
+        if demisto.command() == 'send-whatsapp':
             t_id = demisto.args()['id']
             text = demisto.args()['text']
-            send_whatapp(token, instance, t_id, text)
+            send_whatsapp(token, instance, t_id, text)
         elif demisto.command() == 'test-module':
             return_results(test_module(token, instance))
     except Exception as err:

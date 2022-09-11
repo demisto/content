@@ -14,20 +14,20 @@ This is the UltraMSG integration for getting started made by Trustnet
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### send-whatapp
+### send-whatsapp
 ***
- 
+Send WhatsApp Message
 
 
 #### Base Command
 
-`send-whatapp`
+`send-whatsapp`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Phone Number (With Country Code) or Group Id. Example: +972501234567. | Required | 
-| text | Free text. | Required | 
+| id | Phone Number or Group ID. Example: +972501234567. | Required | 
+| text | Message Body. | Required | 
 
 
 #### Context Output
