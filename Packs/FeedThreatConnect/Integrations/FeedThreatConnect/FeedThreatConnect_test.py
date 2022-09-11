@@ -36,14 +36,14 @@ def test_create_or_query():
 
 
 @pytest.mark.parametrize("params, expected_result",
-                        [({'indicatorActive': False, "groupType": ['All'], "indicatorType": ['All'], 'retrieveRelationships': False},
-                          ''),
-                         ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [], 'retrieveRelationships': False},
-                           'indicatorActive EQ True AND typeName IN ("File")')])
+                        [({'indicatorActive': False, "groupType": ['All'], "indicatorType": ['All'],
+                           'retrieveRelationships': False}, ''),
+                         ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [],
+                           'retrieveRelationships': False}, 'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
     """
     Given:
-        - an empty from_date value
+        - an empty from_date value and demisto params
 
     When:
         - running set_tql_query command

@@ -143,8 +143,28 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
             'publishDate': 'published'}
 }
 
-INDICATOR_TYPES = ['EmailAddress', 'File', 'Host', 'URL', 'ASN', 'CIDR', 'Email Subject', 'Hashtag', 'Mutex', 'Registry Key', "User Agent", "Address"]
-INDICATOR_GROUPS = ['Attack Pattern', 'Campaign', 'Course of Action', 'Intrusion Set', 'Malware', 'Report', 'Tool', 'Vulnerability']
+INDICATOR_TYPES = ['EmailAddress',
+                   'File',
+                   'Host',
+                   'URL',
+                   'ASN',
+                   'CIDR',
+                   'Email Subject',
+                   'Hashtag',
+                   'Mutex',
+                   'Registry Key',
+                   'User Agent',
+                   'Address'
+                   ]
+INDICATOR_GROUPS = ['Attack Pattern',
+                    'Campaign',
+                    'Course of Action',
+                    'Intrusion Set',
+                    'Malware',
+                    'Report',
+                    'Tool',
+                    'Vulnerability'
+                    ]
 
 #########
 # Utils #
@@ -282,8 +302,8 @@ def create_indicator_relationships(indicator, indicator_type, indicator_value):
     entities_b = indicator.get('feedrelatedindicators', [])
     for entity_b in entities_b:
         entity_b_value = entity_b.get('summary') or entity_b.get('name')
-        relationships_list.extend(create_relationships(indicator_value, indicator_type,
-                                                       entity_b_value, entity_b.get('type')))
+        entity_b_type = entity_b.get('type')
+        relationships_list.extend(create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
 
     return relationships_list
 
