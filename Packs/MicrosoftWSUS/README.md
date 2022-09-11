@@ -6,7 +6,7 @@ This pack includes XSIAM content
  - Navigate to "Server Roles" section in the left menu.
  - Scroll down and validate that "Windows Server Update Services" is selected.
  - Validate that also "WID Connectivity" and "WSUS Services" are selected and installed.
-![Server Screenshot](https://i.postimg.cc/HspQzkJF/WSUS.pngJ)
+
 ## Filebeat Collection
 In order to use the collector, you need to use the following option to collect events from the vendor:
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
