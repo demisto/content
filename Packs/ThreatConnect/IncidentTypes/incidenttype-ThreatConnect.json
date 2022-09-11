@@ -1,6 +1,5 @@
 {
     "id": "ThreatConnect",
-    "description": "A type to use for threatconnect integration.",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
