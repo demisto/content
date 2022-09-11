@@ -1,5 +1,4 @@
 {
-  "cacheVersn": 0,
   "close": {
     "sections": [
       {
@@ -33,8 +32,8 @@
     ]
   },
   "definitionId": "",
+  "fromVersion": "5.0.0",
   "description": "",
-  "detached": false,
   "details": null,
   "detailsV2": {
     "TypeName": "",
