@@ -44,12 +44,12 @@ def test_mock_trigger_workflow():
         mocker.post(API_URL + trigger_workflow_ext[1].format(workflowid="1"), json=True)
 
         workflow_params = {
-            "Automation ID": "1",
-            "Case IDs": "1",
-            "Evidence Path": "\\\\localhost\\Evidence",
-            "SearchandTag Path": "\\\\localhost\\ScanAndTag",
-            "Export Path": "\\\\localhost\\Exports",
-            "Target IPs": "127.0.0.1"
+            "automation_id": "1",
+            "case_ids": "1",
+            "evidence_path": "\\\\localhost\\Evidence",
+            "search_tag_path": "\\\\localhost\\ScanAndTag",
+            "export_path": "\\\\localhost\\Exports",
+            "target_ips": "127.0.0.1"
         }
         result = _trigger_workflow(client, **workflow_params)
         outputs = result.outputs
