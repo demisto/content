@@ -16,7 +16,7 @@ class Client(BaseClient):
 
     def getexternalservices_request(self, search_params):
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
-        
+
         Args:
             search_params (list): list of search parameters to add to the API call body.
         
@@ -175,7 +175,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external service information.
     """
     # assume that only one service_id was passed in or fail.
-    service_id = args.get('service_id')
+    service_id = str(args.get('service_id'))
     service_id_list = service_id.split(",")
     if len(service_id_list) > 1:
         return_error("This command only supports one service_id at this time")
@@ -234,7 +234,7 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external ip range information.
     """
     # assume that only one range_id was passed in or fail.
-    range_id = args.get('range_id')
+    range_id = str(args.get('range_id'))
     range_id_list = range_id.split(",")
     if len(range_id_list) > 1:
         return_error("This command only supports one range_id at this time")
@@ -311,7 +311,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains internet exposure information.
     """
     # assume that only one asm_id was passed in or fail.
-    asm_id = args.get('asm_id')
+    asm_id = str(args.get('asm_id'))
     asm_id_list = asm_id.split(",")
     if len(asm_id_list) > 1:
         return_error("This command only supports one asm_id at this time")
@@ -347,7 +347,7 @@ def test_module(client: Client) -> None:
         response = client.getexternalservices_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            raise DemistoException('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
     return_results('ok')
