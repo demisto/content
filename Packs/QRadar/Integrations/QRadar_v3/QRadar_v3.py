@@ -38,7 +38,7 @@ EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
 EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
 EVENTS_SEARCH_POLLING_RETRIES = 10  # number of consecutive failures events polling will tolerate
-EVENTS_SEARCH_RETRY_TIME = 100  # seconds between retries to poll offense events
+EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to poll offense events
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -49,7 +49,7 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'MAX_SEARCHES_QUEUE',
     'EVENTS_SEARCH_FAILURE_LIMIT',
     'EVENTS_SEARCH_POLLING_RETRIES',
-    'EVENTS_SEARCH_RETRY_TIME',
+    'EVENTS_SEARCH_RETRY_SECONDS',
     'FAILURE_SLEEP',
     'FETCH_SLEEP',
     'BATCH_SIZE',
@@ -1663,13 +1663,13 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         offense['events_fetched'] = events_fetched
         offense['events'] = events
         print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
-        if events_count >= events_fetched:
+        if events_count <= events_fetched:
             break
         print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
                         f'Retry {retry+1}/{MAX_FETCH_EVENT_RETRIES}')
         time_elapsed = time.time() - start_time
         # wait for the rest of the time
-        time.sleep(max(EVENTS_SEARCH_RETRY_TIME - time_elapsed, 0))
+        time.sleep(max(EVENTS_SEARCH_RETRY_SECONDS - time_elapsed, 0))
     else:
         print_debug_msg(f'Not all the events were fetched for offense {offense_id} (fetched {events_fetched}/{events_count}). '
                         f'If mirroring is enabled, it will be queried again in mirroring.')
