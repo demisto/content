@@ -1528,9 +1528,14 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                         resource_id_table_details = {
                             "resourceID": resource.get("resourceID"),
                         }
-                        if containers := (resource.get('Containers') or []):
-                            resource_id_table_details['Containers'] = [container.get('container') for container in
-                                                                       containers]
+                        if containers := (resource.get('containers') or []):
+                            for container in containers:
+                                resource_id_table_details['Cve'] = cve
+                                resource_id_table_details['Image'] = container.get('image')
+                                resource_id_table_details['Container'] = container.get('container')
+                                resource_id_table_details['Host'] = container.get("host")
+                                resource_id_table_details['Namespace'] = container.get("namespace")
+
                         if resource_id_table_details not in final_impacted_resources.get(resources):
                             final_impacted_resources.get(resources).append(resource_id_table_details)
 
@@ -1549,7 +1554,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                 impacted_resources_tables.append(tableToMarkdown(
                     name=mapping_resources_to_names.get(resources),
                     t=final_impacted_resources.get(resources),
-                    headers=["resourceID", 'Containers'],
+                    headers=["resourceID", "Cve", "Image", "Container", "Host", "Namespace"],
                     removeNull=True)
                 )
         table = ''.join(impacted_resources_tables)

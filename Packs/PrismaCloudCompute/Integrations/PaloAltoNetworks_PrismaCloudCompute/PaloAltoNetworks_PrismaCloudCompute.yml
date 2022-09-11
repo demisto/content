@@ -1561,8 +1561,6 @@ script:
         - 'container'
         - 'image'
         - 'host'
-        - 'istio'
-        - 'vm'
         - 'function'
         - 'codeRepo'
         - 'registryImage'
