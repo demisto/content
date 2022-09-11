@@ -391,6 +391,7 @@ class TestCollector(ABC):
             reason_description: str,
             content_item_range: Optional[VersionRange] = None,
             allow_incompatible_marketplace: bool = False,
+            is_nightly: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
 
@@ -418,6 +419,7 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
+            is_nightly=is_nightly
         )
 
     def __validate_skipped_integration(self, id_: str, path: Path):
