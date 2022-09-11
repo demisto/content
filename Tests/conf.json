@@ -5461,11 +5461,6 @@
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated"
     },
-    "nightly_integrations": [
-        "Laline v2",
-        "TruSTAR",
-        "VulnDB"
-    ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
         "Cylance Protect v2": "uses time-based JWT token",

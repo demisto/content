@@ -14,7 +14,6 @@
     "mySkippedIntegration": "Skipped for testing skipped_integrations in case J"
   },
   "unmockable_integrations": {},
-  "nightly_integrations": [],
   "parallel_integrations": [],
   "private_tests": [],
   "test_marketplacev2": []
