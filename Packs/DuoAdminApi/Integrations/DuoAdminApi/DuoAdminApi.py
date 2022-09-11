@@ -396,7 +396,7 @@ def modify_user(admin_api, user_id=None, user_name=None, real_name=None, status=
 def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         admin_api = create_api_call()
         set_proxy(admin_api)
