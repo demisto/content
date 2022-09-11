@@ -15,6 +15,19 @@ configuration:
   name: key
   required: true
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
 - additionalinfo: If enabled, the integration will log out after executing each command.
   defaultvalue: 'true'
   display: Auto Logout
@@ -496,8 +509,8 @@ script:
     name: zscaler-get-usergroups
   runonce: false
   script: ''
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  subtype: python3
+  dockerimage: demisto/python3:3.10.6.33415
   type: python
 fromversion: 5.0.0
 tests:
