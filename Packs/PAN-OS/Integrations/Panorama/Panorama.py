@@ -11210,10 +11210,9 @@ def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> 
 
         source_translation_object = _entry.get('source-translation', {})
 
-        for _source_translation_type, pretty_context in [
-            ('dynamic-ip', 'DynamicIP'), ('dynamic-ip-and-port', 'DynamicIpAndPort'), ('static-ip', 'StaticIP')
-        ]:
+        for _source_translation_type in ('dynamic-ip', 'dynamic-ip-and-port', 'static-ip'):
             if _source_translation := source_translation_object.get(_source_translation_type):
+                pretty_context = camelize_string(src_str=_source_translation_type, delim='-')
                 if _source_translation_type == 'dynamic-ip-and-port':
                     if interface := _source_translation.get('interface-address'):
                         return {pretty_context: {
