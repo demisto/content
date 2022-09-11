@@ -1,7 +1,7 @@
 import json
 import pytest
 import io
-from CommonServerPython import Common
+from CommonServerPython import Common, DemistoException
 from typing import *
 
 
@@ -34,12 +34,12 @@ PAGINATION_SUCCESS = [
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_SUCCESS)
-def test_pagination_success(args, excepted):
+def test_paginate_success(args, excepted):
     """
     Given:
         - An paginate arguments such as limit, page and page size.
     When:
-        - Pagination method has been called.
+        - Paginate method was called.
     Then:
         - Ensure that the right page were returned.
     """
@@ -51,20 +51,20 @@ def test_pagination_success(args, excepted):
 
 
 PAGINATION_FAILURE = [
-    ({'limit': '-1'}, "one of the arguments are not having a valid value"),
-    ({'page': '1'}, "one of the page or page_size arguments are missing"),
-    ({'page_size': '1'}, "one of the page or page_size arguments are missing"),
-    ({'page': '-1', 'page_size': '1'}, "one of the arguments are not having a valid value"),
+    ({'limit': '-1'}, ValueError),
+    ({'page': '1'}, DemistoException),
+    ({'page_size': '1'}, DemistoException),
+    ({'page': '-1', 'page_size': '1'}, ValueError),
 ]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_FAILURE)
-def test_pagination_failure(args, excepted):
+def test_paginate_failure(args, excepted):
     """
     Given:
         - An invalid paginate arguments values.
     When:
-        - Pagination method has been called.
+        - Pagination method was called.
     Then:
         - Ensure that the right error message raised.
     """
@@ -74,16 +74,16 @@ def test_pagination_failure(args, excepted):
 
     with pytest.raises(Exception) as e:
         paginate(args, pages)
-    assert e.value.args[0] == excepted
+    assert isinstance(e.value, excepted)
 
 
 @pytest.mark.parametrize('result,excepted', [({'online': True}, 'online'), ({'online': False}, 'offline')])
 def test_is_online_command(mocker, result, excepted):
     """
     Given:
-        - An app client object.
+        - A Joe sever status (online/offline).
     When:
-        - Is online method has been called.
+        - joe-is-online command was called.
     Then:
         - Ensure the human-readable corresponding to the expcted server status.
     """
@@ -98,16 +98,16 @@ def test_is_online_command(mocker, result, excepted):
 def test_list_analysis_command(mocker):
     """
     Given:
-        - An app client object.
+        - A list of Joe analysis.
     When:
-        - list analysis method has been called.
+        - joe-list-analysis command was called.
     Then:
         - Ensure the corresponding indicator were created with the right DBscore and verify the outputs as expected.
     """
     from JoeSecurityV2 import list_analysis_command
 
-    result = util_load_json('test_data/analysis_info_list.json')
-    excepted = util_load_json('test_data/analysis.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     client = mock_client()
     mocker.patch.object(client, 'analysis_list_paged', return_value=[])
@@ -131,7 +131,7 @@ def test_download_report_command(mocker, web_id, file_type):
     Given:
         - An app client object, web id and file type.
     When:
-        - download report method has been called.
+        - joe-download-report command was called.
     Then:
         - Ensure the corresponding infoFile has been created.
     """
@@ -147,9 +147,9 @@ def test_download_report_command(mocker, web_id, file_type):
 def test_download_sample_command(mocker):
     """
     Given:
-        - An app client object and web ids.
+        - An app client object and web id.
     When:
-        - download report method has been called.
+        - joe-download-sample command was called.
     Then:
         - Ensure the corresponding File has been created.
     """
@@ -166,9 +166,9 @@ def test_download_sample_command(mocker):
 def test_search_command(mocker):
     """
     Given:
-        - An app client object and fake query.
+        - A query.
     When:
-        - The search method has been called.
+        - joe-search command was called
     Then:
         - Ensure the corresponding readable output is returned.
     """
@@ -177,8 +177,8 @@ def test_search_command(mocker):
     client = mock_client()
 
     mocker.patch.object(client, 'analysis_search', return_value=[])
-    response = search_command(client, {'query': 'test.com'})[0]
-    assert response.readable_output == 'No Results were found.'
+    response = search_command(client, {'query': 'test.com'})
+    assert not response.outputs
 
 
 def test_file_command(mocker):
@@ -186,14 +186,14 @@ def test_file_command(mocker):
     Given:
         - An app client object and files for reputation command.
     When:
-        - The file reputation method has been called.
+        - The file reputation command was called.
     Then:
         - Ensure the corresponding indicator were created with the right DBscore and duplicates were removed.
     """
     from JoeSecurityV2 import file_command
 
-    result = util_load_json('test_data/analysis_info_list.json')[:-1]
-    excepted = util_load_json('test_data/analysis.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')[:-1]
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=result)
@@ -211,14 +211,14 @@ def test_url_command(mocker):
     Given:
         - An app client object and urls for reputation command.
     When:
-        - The url reputation method has been called.
+        - The url reputation command was called.
     Then:
         - Ensure the corresponding indicator were created with the right DBscore and duplicates were removed.
     """
     from JoeSecurityV2 import url_command
 
-    result = util_load_json('test_data/analysis_info_list.json')[-1]
-    excepted = util_load_json('test_data/analysis.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')[-1]
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=[result])
