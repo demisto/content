@@ -113,6 +113,7 @@ def main():
         for ind in stix_package.indicators:
             pass
 
+from TAXII2ApiModule import *
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
