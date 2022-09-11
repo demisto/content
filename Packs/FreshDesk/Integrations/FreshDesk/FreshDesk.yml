@@ -1323,8 +1323,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  subtype: python3
+  dockerimage: demisto/python3:3.10.6.33415
   type: python
 tests:
 - Freshdesk-Test
