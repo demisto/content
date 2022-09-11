@@ -886,3 +886,41 @@
 <blockquote>Added comment to ticket 113 successfully.</blockquote>
 <h5>Context Example</h5>
 <p>There is no context example for this command.</p>
+
+<hr>
+<h3 id="h_1765878985061532264445957">9. Add a reply to a ticket</h3>
+<p>Add a textual reply to a specified ticket.</p>
+<h5>Base Command</h5>
+<p><code>rtir-add-reply</code></p>
+<h5>Input</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td><strong>Input Parameter</strong></td>
+<td><strong>Description</strong></td>
+</tr>
+<tr>
+<td>ticket-id</td>
+<td>Ticket ID to add a comment to.</td>
+</tr>
+<tr>
+<td>text</td>
+<td>Text of the comment.</td>
+</tr>
+<tr>
+<td>cc</td>
+<td>
+<p>Email of the user to send the reply.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<p>There is no context output for this command. </p>
+<h5>Command Example</h5>
+<pre>!rtir-add-reply text=replyText ticket-id=113</pre>
+<h5>Raw Output</h5>
+<blockquote>Added reply to ticket 113 successfully.</blockquote>
+<h5>Context Example</h5>
+<p>There is no context example for this command.</p>

@@ -259,6 +259,10 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.J, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
 
+     # test data file changes - should not be collected
+     (MockerCases.J, (), (), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/myIntegration/test_data/file.json',)),
+
      # Integration is changed but its test playbook is skipped - pack should be collected, test should not.
      (MockerCases.K, (), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
