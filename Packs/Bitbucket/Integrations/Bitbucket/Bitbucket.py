@@ -841,6 +841,9 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'bitbucket-pull-request-update':
             result = pull_request_update_command(client, demisto.args())
             return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-list':
+            result = pull_request_list_command(client, demisto.args())
+            return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         # TODO: ADD command cases for the commands you will implement

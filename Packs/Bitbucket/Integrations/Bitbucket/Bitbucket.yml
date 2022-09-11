@@ -1312,10 +1312,10 @@ script:
           isArray: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
-          description: 'How many comments there are in the pull request.'
+          description: 'The number of comments in the pull request.'
           type: Number
         - contextPath: Bitbucket.PullRequest.task_count
-          description: 'How many tasks there are in the pull request.'
+          description: 'The number of tasks in the pull request.'
           type: Number
         - contextPath: Bitbucket.PullRequest.type
           description: 'The type of the request.'
@@ -1372,7 +1372,7 @@ script:
           description: 'Links with information about the author of the pull request.'
           type: String
         - contextPath: Bitbucket.PullRequest.author.type
-          description: 'The type of the author'
+          description: 'The type of the author.'
           type: String
         - contextPath: Bitbucket.PullRequest.author.uuid
           description: 'The unique universal id of the author.'
@@ -1405,7 +1405,7 @@ script:
           description: 'Links with information about the commit.'
           type: String
         - contextPath: Bitbucket.PullRequest.destination.repository.type
-          description: 'The type of the repository.'
+          description: 'The type of the repository of the destination branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.destination.repository.full_name
           description: 'The full name of the repository of the destination branch.'
@@ -1414,10 +1414,10 @@ script:
           description: 'Links with information about The repository of the destination branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.destination.repository.name
-          description: 'The name of the repository.'
+          description: 'The name of the repository of the destination branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.destination.repository.uuid
-          description: 'The unique id of the repository.'
+          description: 'The unique id of the repository of the destination branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.source.branch.name
           description: 'The name of the source branch, The branch with the changes that will be merged.'
@@ -1426,7 +1426,7 @@ script:
           description: 'The type of the commit in the source branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.source.commit.hash
-          description: 'The hash of the commit in the source branch'
+          description: 'The hash of the commit in the source branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.source.commit.links
           description: 'Links with information about the commit in source branch.'
@@ -1437,7 +1437,185 @@ script:
         - contextPath: Bitbucket.PullRequest.source.repository.full_name
           description: 'The full name of the repository of the source branch.'
           type: String
-        - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
+        - contextPath: Bitbucket.PullRequest.source.repository.links
+          description: 'Links with information about the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.name
+          description: 'The name of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.uuid
+          description: 'The unique id of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.links
+          description: 'Links to information about the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.type
+          description: 'The type of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.raw
+          description: 'The description of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.summary.html
+          description: 'The description of the pull request in html format.'
+          type: String
+    - name: bitbucket-pull-request-list
+      description: Returns a list of the pull requests. If a state is provided than the list will contain only PR with the wanted status.
+        If a state is not provided, by default a list of the open pull requests will return.
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: pull_request_id
+          required: false
+          description: The id of the pull request to update.
+          isArray: false
+        - name: state
+          auto: PREDEFINED
+          description: The state of the pull requests to see.
+          isArray: false
+          predefined:
+            - OPEN
+            - MERGED
+            - DECLINED
+            - SUPERSEDED
+            - ALL
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
+      outputs:
+        - contextPath: Bitbucket.PullRequest.comment_count
+          description: 'The number of comments in the pull request.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.task_count
+          description: 'The number of tasks in the pull request.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.type
+          description: 'The type of the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.id
+          description: 'The id of the action.'
+          type: Number
+        - contextPath: Bitbucket.PullRequest.title
+          description: 'The title of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.description
+          description: 'The description of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.state
+          description: 'The status of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.merge_commit.type
+          description: 'The type of the merge commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.merge_commit.hash
+          description: 'The hash of the merged commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.merge_commit.links
+          description: 'Links with information about the merged commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.close_source_branch
+          description: 'Should the branch be closed after the merge.'
+          type: Boolean
+        - contextPath: Bitbucket.PullRequest.closed_by.display_name
+          description: 'The display name of the user that closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.closed_by.links
+          description: 'Links with information about the user that closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.closed_by.type
+          description: 'The type of user that closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.closed_by.uuid
+          description: 'The unique id of the user who closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.closed_by.account_id
+          description: 'The account id of the user who closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.closed_by.nickname
+          description: 'The nickname of the user who closed the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.display_name
+          description: 'The display name of the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.links.self.href
+          description: 'Links with information about the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.type
+          description: 'The type of the author.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.uuid
+          description: 'The unique universal id of the author.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.account_id
+          description: 'The account id of the author of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.author.nickname
+          description: 'The nickname of the author.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.reason
+          description: 'The reason to create the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.created_on
+          description: 'The creation date of the request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.updated_on
+          description: 'The date of the last update of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.branch.name
+          description: 'The name of the destination branch, the branch to merge to.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.type
+          description: 'The type of the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.hash
+          description: 'The hash of the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.commit.links
+          description: 'Links with information about the commit.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.type
+          description: 'The type of the repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.full_name
+          description: 'The full name of the repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.links
+          description: 'Links with information about The repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.name
+          description: 'The name of the repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.destination.repository.uuid
+          description: 'The unique id of the repository of the destination branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.branch.name
+          description: 'The name of the source branch, The branch with the changes that will be merged.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.type
+          description: 'The type of the commit in the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.hash
+          description: 'The hash of the commit in the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.commit.links
+          description: 'Links with information about the commit in source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.type
+          description: 'The type of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.full_name
+          description: 'The full name of the repository of the source branch.'
+          type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.links
           description: 'Links with information about the repository of the source branch.'
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.name
