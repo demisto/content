@@ -162,13 +162,13 @@ FORMAT_HEX = [
 ]
 
 FAILS = [
-    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',
-     pytest.raises(URLError)),  # IPv6 must have square brackets # disable-secrets-detection
+    ('[http://2001:db8:3333:4444:5555:6666:7777:8888]',  # disable-secrets-detection
+     pytest.raises(URLError)),  # IPv6 must have square brackets
     ('http://142.42.1.1:aaa8080', pytest.raises(URLError)),  # invalid port
     ('http://142.42.1.1:aaa', pytest.raises(URLError)),  # port contains non digits # disable-secrets-detection
     ('https://test.com#fragment3#fragment3', pytest.raises(URLError)),  # Only one fragment allowed
     ('ftps://foo.bar/baz%GG', pytest.raises(URLError)),  # Invalid hex code in path
-    ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host
+    ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host # disable-secrets-detection
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
