@@ -50,6 +50,8 @@ client = Client(
     }
 )
 
+QRadar_v3.EVENTS_SEARCH_RETRY_SECONDS = 0
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -547,10 +549,12 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     assert 'mirroring_events_message' in enriched_offense
     del enriched_offense['mirroring_events_message']
     if mock_search_response:
-        assert is_success
+        assert is_success == (offense['event_count'] <= num_events)
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     else:
         assert not is_success
+    if not expected_offense.get('events'):
+        expected_offense['events'] = []
     assert enriched_offense == expected_offense
 
 
@@ -898,6 +902,9 @@ def test_get_modified_remote_data_command(mocker):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
+    set_integration_context({MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                             'last_update': 1})
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])

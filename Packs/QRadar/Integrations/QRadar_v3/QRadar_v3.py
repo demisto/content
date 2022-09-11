@@ -1623,7 +1623,9 @@ def poll_offense_events_with_retry(
             return events, ''
         elif status == QueryStatus.ERROR.value:
             return [], 'Error while getting events.'
-        time.sleep(EVENTS_INTERVAL_SECS)
+        # dont sleep in the last iteration
+        if retry < max_retries - 1:
+            time.sleep(EVENTS_INTERVAL_SECS)
 
     print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
     return [], 'Fetching events is in progress'
@@ -1667,7 +1669,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
             break
         print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
                         f'Retry {retry+1}/{MAX_FETCH_EVENT_RETRIES}')
-        time_elapsed = time.time() - start_time
+        time_elapsed = int(time.time() - start_time)
         # wait for the rest of the time
         time.sleep(max(EVENTS_SEARCH_RETRY_SECONDS - time_elapsed, 0))
     else:
