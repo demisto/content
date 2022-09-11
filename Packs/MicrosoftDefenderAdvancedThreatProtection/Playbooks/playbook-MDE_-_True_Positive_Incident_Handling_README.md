@@ -49,4 +49,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![MDE - True Positive Incident Handling_copy](../doc_files/MDE_-_True_Positive_Incident_Handling_copy.png)
+![MDE - Retrieve File](../doc_files/MDE_-_Retrieve_File.png)
