@@ -134,7 +134,7 @@ script:
     - contextPath: TeamCymru.IP.Geo.Country
       description: The IP country.
       type: String
-    - contextPath: TeamCymru.IP.Registrar.Abuse.Network
+    - contextPath: TeamCymru.IP.Registrar.Network
       description: The IP range relevant for abuse inquiries provided for the IP.
       type: String
   isfetch: false

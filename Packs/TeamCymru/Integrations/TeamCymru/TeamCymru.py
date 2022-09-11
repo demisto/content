@@ -94,7 +94,7 @@ def validate_ip_addresses(ips_list):
                 valid_ip_addresses.append(ip)
             else:
                 invalid_ip_addresses.append(ip)
-    return ", ".join(invalid_ip_addresses), valid_ip_addresses
+    return invalid_ip_addresses, valid_ip_addresses
 
 
 def parse_file(get_file_path_res):
@@ -228,12 +228,13 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandRes
     mapping = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
     human_readable = tableToMarkdown(f'Team Cymru results:', list(results.values()), headers,
                                      headerTransform=lambda header: mapping.get(header, header))
+    invalid_ips = ", ".join(invalid_ips)
     human_readable += f"The following IP Addresses were found invalid: {invalid_ips}" if invalid_ips else ""
 
     return CommandResults(
         readable_output=human_readable,
         raw_response=results,
-        outputs_prefix='TeamCymru.Bulk',  # TODO
+        outputs_prefix='TeamCymru.IP',  # TODO
         indicators=indicators,
         outputs=contents
     )

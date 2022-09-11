@@ -1,7 +1,7 @@
-id: 40276177-95b9-40f8-8a4c-68398194ed03
-version: 6
+id: TeamCymruTest
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: TeamCymru_test
+name: TeamCymruTest
 starttaskid: "0"
 tasks:
   "0":
@@ -209,10 +209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d67dfbf0-8477-437f-84ba-24b9b3f1790d
+    taskid: ccc2239e-3fa1-4567-8f16-24e1f2c33566
     type: regular
     task:
-      id: d67dfbf0-8477-437f-84ba-24b9b3f1790d
+      id: ccc2239e-3fa1-4567-8f16-24e1f2c33566
       version: -1
       name: 'cymru-bulk-whois '
       description: Look up many ip addresses. Insert CSV file or list of IPv4 addresses.
@@ -227,7 +227,7 @@ tasks:
       - "7"
     scriptarguments:
       bulk-list:
-        simple: '"1.1.1.1, 8.8.8.8"'
+        simple: '"1.1.1.1, 8.8.4.4"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c4cb90f3-9297-49ea-8af8-5ebceec1d53b
+    taskid: 3ba8af07-02d3-4441-8ece-b037f5719c3b
     type: condition
     task:
-      id: c4cb90f3-9297-49ea-8af8-5ebceec1d53b
+      id: 3ba8af07-02d3-4441-8ece-b037f5719c3b
       version: -1
       name: Verify Outputs
       type: condition
@@ -272,7 +272,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -302,4 +302,3 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: IPInfo_v2Test
