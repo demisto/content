@@ -764,16 +764,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap', 'pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap', 'pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -1209,14 +1209,14 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
 @pytest.mark.parametrize(
     'action, existing_url_categories_mock, category', [
         (
-            'add',
-            {'list': {'member': []}},
-            'category1'
+                'add',
+                {'list': {'member': []}},
+                'category1'
         ),
         (
-            'remove',
-            {'list': {'member': ['category2']}},
-            'category2'
+                'remove',
+                {'list': {'member': ['category2']}},
+                'category2'
         )
     ]
 )
@@ -1416,7 +1416,6 @@ class MockedResponse:
 
 
 class TestPanoramaCommitCommand:
-
     COMMIT_POLLING_ARGS = {
         'device-group': 'some_device',
         'admin_name': 'some_admin_name',
@@ -1435,7 +1434,6 @@ class TestPanoramaCommitCommand:
 
     @staticmethod
     def create_mock_responses(job_commit_status_count):
-
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
                 text='<response status="success" code="19"><result><msg>''<line>Commit job '
@@ -1534,7 +1532,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-        self, mocker, args, expected_request_params, request_result, expected_demisto_result
+            self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
@@ -1595,7 +1593,7 @@ class TestPanoramaCommitCommand:
         ]
     )
     def test_panorama_commit_command_with_polling(
-        self, mocker, args, expected_commit_request_url_params, api_response_queue
+            self, mocker, args, expected_commit_request_url_params, api_response_queue
     ):
         """
         Given:
@@ -3273,7 +3271,7 @@ class TestObjectFunctions:
                                      'cmd': '<show><system><info/></system></show>',
                                      'key': 'fakeAPIKEY!',
                                  },
-                                 None,),
+                                 None, ),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -3479,7 +3477,7 @@ class TestPanOSListVirtualRouters:
         ]
     )
     def test_pan_os_list_virtual_routers_command_main_flow(
-        self, mocker, args, params, expected_url_params, mocked_response_path
+            self, mocker, args, params, expected_url_params, mocked_response_path
     ):
         """
         Given:
@@ -3510,7 +3508,7 @@ class TestPanOSListVirtualRouters:
         assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
             {
                 'BGP': {'enable': 'no',
-                'routing-options': {'graceful-restart': {'enable': 'yes'}}},
+                        'routing-options': {'graceful-restart': {'enable': 'yes'}}},
                 'ECMP': {'algorithm': {'ip-modulo': 'None'}},
                 'Interface': None,
                 'Multicast': {},
@@ -3520,7 +3518,7 @@ class TestPanOSListVirtualRouters:
                 'RIP': {'enable': 'no'},
                 'RedistributionProfile': None,
                 'StaticRoute': None
-             }
+            }
         ]
         assert mock_request.call_args.kwargs['params'] == expected_url_params
 
@@ -3554,7 +3552,7 @@ class TestPanOSListRedistributionProfiles:
         ]
     )
     def test_pan_os_list_redistribution_profiles_main_flow(
-        self, mocker, args, params, expected_url_params
+            self, mocker, args, params, expected_url_params
     ):
         """
         Given:
@@ -3783,34 +3781,33 @@ class TestPanOSEditRedistributionProfile:
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
-                },
-                integration_panorama_params,
-                {
-                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/c"
-                             "onfig/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
-                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
-                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-            ),
-            pytest.param(
-                {
-                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
-                },
-                integration_firewall_params,
-                {
-                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
-                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
-                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-
-            )
-        ]
-    )
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+            },
+            integration_panorama_params,
+            {
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/c"
+                         "onfig/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                         "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        ),
+        pytest.param(
+            {
+                'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+            },
+            integration_firewall_params,
+            {
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                         "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        )
+    ]
+)
 def test_pan_os_delete_redistribution_profile_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
