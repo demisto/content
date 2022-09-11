@@ -1,0 +1,35 @@
+[MODEL: dataset="fortinet_fortigate_raw"]
+// create timestamp field
+alter time_p1 = arrayindex(regextract(_time,"(\w+\s\d+)"),0)
+| alter time_p2 = arrayindex(regextract(_time,"(\d{4}\s\d+:\d+:\d+)"),0)
+| alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2))
+// end timestamp field
+| alter xdm.network.application_protocol = app,
+	xdm.network.application_protocol_category = FTNTFGTcat,
+	xdm.target.host.fqdn = dhost,
+	xdm.target.ipv4 = dst,
+	xdm.target.port = to_number(dpt),
+	xdm.target.user.username = duser,
+	_time = timestamp,
+	xdm.network.http.url = request,
+	xdm.network.ip_protocol = proto,
+	xdm.observer.action = act,
+	xdm.observer.product = _product,
+	xdm.observer.type = cat,
+	xdm.observer.vendor = _vendor,
+	xdm.event.description = msg,
+	xdm.event.id = _id,
+	xdm.event.outcome = outcome,
+	xdm.event.outcome_reason = reason,
+	xdm.network.session_id = externalId,
+	xdm.source.sent_bytes = to_number(out),
+	xdm.source.host.fqdn = shost,
+	xdm.source.ipv4 = src,
+	xdm.source.port = to_number(spt),
+	xdm.target.sent_bytes = to_number("in"),
+	xdm.source.process.executable.filename = fname,
+	xdm.source.process.name = sproc,
+	xdm.source.user.username = suser,
+	xdm.alert.category = FTNTFGTdtype,
+	xdm.alert.description = FTNTFGTref,
+	xdm.alert.severity = cefSeverity;
