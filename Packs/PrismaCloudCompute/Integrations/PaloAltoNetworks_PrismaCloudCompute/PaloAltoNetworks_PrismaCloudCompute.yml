@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: PaloAltoNetworks_PrismaCloudCompute - Test
+  id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
 configuration:
 - name: isFetch
@@ -50,8 +50,8 @@ configuration:
   type: 13
 description: Use the Prisma Cloud Compute integration to fetch incidents from your
   Prisma Cloud Compute environment.
-display: Palo Alto Networks - Prisma Cloud Compute - Test
-name: PaloAltoNetworks_PrismaCloudCompute - Test
+display: Palo Alto Networks - Prisma Cloud Compute
+name: PaloAltoNetworks_PrismaCloudCompute
 script:
   dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
