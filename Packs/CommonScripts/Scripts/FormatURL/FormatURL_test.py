@@ -170,7 +170,16 @@ FAILS = [
     ('ftps://foo.bar/baz%GG', pytest.raises(URLError)),  # Invalid hex code in path
     ('https://www.%gg.com/', pytest.raises(URLError)),  # Non valid hexadecimal value in host # disable-secrets-detection
     ('', pytest.raises(URLError)),  # Empty string
-    ('htt$p://test.com/', pytest.raises(URLError))  # Invalid character in sceme
+    ('htt$p://test.com/', pytest.raises(URLError)),  # Invalid character in sceme
+    ('https://', pytest.raises(URLError)),  # Only scheme
+    ('https://test@/test', pytest.raises(URLError)),  # No host data, only scheme and user info
+    ('https://www.te$t.com/', pytest.raises(URLError)),  # Bad chars in host
+    ('https://www.[test].com/', pytest.raises(URLError)),  # Invalid square brackets
+    ('https://www.te]st.com/', pytest.raises(URLError)),  # Squre brackets closing without opening
+    ('https://[192.168.1.1]', pytest.raises(URLError)),  # Only IPv6 allowed in square brackets # disable-secrets-detection
+    ('https://[www.test.com]', pytest.raises(URLError)),  # Only IPv6 allowed in square brackets
+    ('https://www/test/', pytest.raises(URLError)),  # invalid domain in host section (no tld)
+    ('https://www.t/', pytest.raises(URLError)),  # invalid domain in host section (single letter tld)
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
