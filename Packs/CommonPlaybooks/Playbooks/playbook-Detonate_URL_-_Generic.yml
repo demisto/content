@@ -33,6 +33,7 @@ tasks:
         - "25"
         - "26"
         - "27"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -733,13 +734,66 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ca1a3f90-8330-4eac-885c-eec86c8b8885
+    type: playbook
+    task:
+      id: ca1a3f90-8330-4eac-885c-eec86c8b8885
+      version: -1
+      name: Detonate URL - SecneurX Analysis
+      description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      playbookName: Detonate URL - SecneurX Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Priority:
+        simple: High
+      Reboot:
+        simple: "False"
+      ReportFormat:
+        simple: json
+      URL:
+        complex:
+          root: URL
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 6320,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 6690,
+        "width": 7090,
         "x": -390,
         "y": 50
       }
@@ -1122,6 +1176,21 @@ outputs:
   - contextPath: HybridAnalysis.URL.Scanner
     description: The place holder for the scanner data.
     type: unknown
+  - contextPath: SecneurXAnalysis.Report.SHA256
+    description: SHA256 value of the analyzed sample
+    type: string
+  - contextPath: SecneurXAnalysis.Report.Verdict
+    description: Summary result of the analyzed sample
+    type: string
+  - contextPath: SecneurXAnalysis.Report.Tags
+    description: More details of the analyzed sample
+    type: string
+  - contextPath: SecneurXAnalysis.Report.IOC
+    description: List of IOC's observed in the analyzed sample
+    type: string
+  - contextPath: SecneurXAnalysis.Report.Status
+    description: Analysis queued sample state
+    type: String
 fromversion: 5.0.0
 tests:
   - Detonate URL - Generic Test
