@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 import pytest
 
 
@@ -37,8 +38,8 @@ def test_MattermostAskUser(mocker):
                                                        'replyEntriesTag': 'replyEntriesTag',
                                                        'option1': {'no'}, 'option2': {'yes'},
                                                        'task': 'none', 'user': {'emai'}})
-    execute_command_add_entitlement_res = [{'Type': 1, 'Contents': 'some-guid'}]
-    execute_command_send_notification_res = [{'Type': 1, 'HumanReadable': 'Message sent to Slack successfully.'
+    execute_command_add_entitlement_res = [{'Type': EntryTypes.NOTE, 'Contents': 'some-guid'}]
+    execute_command_send_notification_res = [{'Type': EntryType.NOTE, 'HumanReadable': 'Message sent to Slack successfully.'
                                                                           ' \nThread ID is: 1660645689.649679'}]
     execute_mock = mocker.patch.object(demisto, 'executeCommand', side_effect=[execute_command_add_entitlement_res,
                                                                                execute_command_send_notification_res])
