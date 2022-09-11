@@ -5,16 +5,16 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    timeout = 960
+
     dArgs = demisto.args()
 
+    timeout = 960
     if 'timeout' in demisto.args():
         timeout = int(demisto.args()['timeout'])
     interval = 10
     if 'interval' in demisto.args():
         interval = int(demisto.args()['interval'])
 
-    atdDone = False
     taskID = ""
 
     # Upload file/url and get taskID
@@ -41,6 +41,7 @@ def main():
     istate = None
     sec = 0
 
+    atdDone = False
     while sec < timeout and not atdDone:
         # Get status
         resp = demisto.executeCommand('atd-check-status', {'taskId': taskID})
@@ -62,7 +63,7 @@ def main():
     if not atdDone:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                         "Contents":
-                            'Could not retrieve results from ATD (may be due to timeout). last status = {0}'.format(status)})
+                            f'Could not retrieve results from ATD (may be due to timeout). last status = {status}'})
         sys.exit(0)
     if istate and int(istate) in [1, 2]:
         reportType = 'json'
@@ -71,7 +72,7 @@ def main():
         demisto.results(demisto.executeCommand('atd-get-report', {'taskId': taskID, 'type': reportType}))
     else:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                        "Contents": 'ATD: Failed to detonate source, exit status = {0}'.format(status)})
+                        "Contents": f'ATD: Failed to detonate source, exit status = {status}'})
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
