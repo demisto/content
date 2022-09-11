@@ -11374,11 +11374,21 @@ def add_fields_as_json(key, value, is_list=True):
     return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
-def json_to_xml(_json, remove_spaces=False):
-    pattern = '<\/*xml2json>'
-    if remove_spaces:
-        pattern = f'{pattern}|\s'
-    return re.sub(pattern, '', json2xml({'xml2json': _json}).decode('utf-8'))
+def dict_to_xml(_dictionary, contains_xml_chars=False):
+    """
+    Transforms a dict object to an XML string.
+
+    Args:
+        _dictionary (dict): the dict to parse into XML
+        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
+
+    Returns:
+        str: the dict representation in XML.
+    """
+    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    if contains_xml_chars:
+        return xml.replace('&gt;', '>').replace('&lt;', '<')
+    return xml
 
 
 def pan_os_create_redistribution_profile(args):
@@ -11424,7 +11434,7 @@ def pan_os_create_redistribution_profile(args):
         if priority := args.get('priority'):
             _body_request['priority'] = priority
         if action := args.get('action'):
-            _body_request['action'] = {action: {}}
+            _body_request['action'] = f'<{action}/>'
 
         if {
             'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
@@ -11441,7 +11451,7 @@ def pan_os_create_redistribution_profile(args):
         'xpath': build_redistribution_profile_xpath(
             virtual_router_name=args.get('virtual_router'), redistribution_profile_name=args.get('name')
         ),
-        'element': json_to_xml(_set_up_body_request(), remove_spaces=True),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
         'action': 'set',
         'type': 'config',
         'key': API_KEY
@@ -11468,7 +11478,7 @@ def pan_os_edit_redistribution_profile(
         'xpath': build_redistribution_profile_xpath(
             virtual_router_name, redistribution_profile_name, element=element_to_change
         ),
-        'element': json_to_xml(build_body_request_to_edit_pan_os_object(
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
             behavior='replace', object_name=object_name, element_value=element_value, is_listable=is_listable)
         ),
         'action': 'edit',
