@@ -1,23 +1,25 @@
 commonfields:
-  id: D2Remove
+  id: RegCollectValues
   version: -1
-name: D2Remove
+name: RegCollectValues
 script: ''
 type: python
 subtype: python2
-tags: []
+tags:
+- registry
+- enhancement
 deprecated: true
 comment: Deprecated. No available replacement.
-enabled: true
+system: true
 args:
-- name: system
+- name: regpath
   required: true
   default: true
-  description: The system name
+  description: The registry path of the key to query
 scripttarget: 0
-runonce: false
-runas: DBotWeakRole
-tests:
-- no test (impossible to mock)
+dependson: {}
+timeout: 0s
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)
