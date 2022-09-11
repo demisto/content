@@ -11469,28 +11469,61 @@ def pan_os_delete_nat_rule_command(args):
     )
 
 
-def pan_os_edit_nat_rule(
-    rule_name, pre_post, behavior, element_to_change, element_value, json_key_path, is_listable=True
+def build_body_request_to_edit_pan_os_object(
+    behavior, object_name, element_value, is_listable, xpath, should_contain_entries=True
 ):
+    """
+    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
+    the requested behavior and a full xpath to the object.
 
-    xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
+    Args:
+        behavior (str): must be one of add/remove/replace.
+        object_name (str): the name of the object that needs to be updated.
+        element_value (str): the value of the new element.
+        is_listable (bool): whether the object is listable or not, relevant when behavior == 'replace'.
+        xpath (str): the full xpath to the object that should be edit.
+        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+
+    Returns:
+        dict: a body request for the new object to update it.
+    """
+
+    if behavior not in {'replace', 'remove', 'add'}:
+        raise ValueError(f'behavior argument must be one of replace/remove/add values')
 
     if behavior == 'replace':
-        element = add_fields_as_json(json_key_path, element_value, is_list=is_listable)
+        element = add_fields_as_json(object_name, element_value, is_list=is_listable)
     else:  # add or remove is only for listable objects.
-        current_objects_items = panorama_get_current_element(element_to_change=json_key_path, xpath=xpath)
+        current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
         if behavior == 'add':
             updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
         else:  # remove
             updated_object_items = [item for item in current_objects_items if item not in element_value]
-            if not updated_object_items:
-                raise Exception(f'The object: {element_to_change} must have at least one item.')
+            if not updated_object_items and should_contain_entries:
+                raise DemistoException(f'The object: {object_name} must have at least one item.')
 
-        element = add_fields_as_json(json_key_path, updated_object_items, is_list=True)
+        element = add_fields_as_json(object_name, updated_object_items, is_list=True)
+
+    return element
+
+
+def pan_os_edit_nat_rule(
+    rule_name, pre_post, behavior, element_to_change, element_value, object_name, is_listable=True
+):
+
+    xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
 
     params = {
         'xpath': xpath,
-        'element': json_to_xml(element),
+        'element': json_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True
+            )
+        ),
         'action': 'edit',
         'type': 'config',
         'key': API_KEY
@@ -11567,7 +11600,7 @@ def pan_os_edit_nat_rule_command(args):
         'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
     }
 
-    element_to_change, api_path_json_key, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,
@@ -11575,7 +11608,7 @@ def pan_os_edit_nat_rule_command(args):
         behavior=behavior,
         element_to_change=element_to_change,
         element_value=element_value,
-        json_key_path=api_path_json_key,
+        object_name=object_name,
         is_listable=is_listable
     )
 

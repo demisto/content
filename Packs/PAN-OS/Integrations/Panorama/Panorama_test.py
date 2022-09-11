@@ -3813,7 +3813,7 @@ class TestPanOSEditNatRule:
         assert mock_request.call_args.kwargs['params'] == expected_url_params
 
     @pytest.mark.parametrize('nat_rule_object', ['destination_translation_ip', 'destination_interface', 'nat_type'])
-    def test_pan_os_add_or_remove_un_listable_objects(self, mocker, nat_rule_object):
+    def test_pan_os_add_or_remove_un_listable_objects(self, nat_rule_object):
         """
         Given
          - un-listable nat-rules object.
