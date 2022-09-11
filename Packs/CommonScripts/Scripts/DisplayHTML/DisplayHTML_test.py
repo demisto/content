@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def test_DisplayHTML(mocker):
     """
     Given:
