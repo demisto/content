@@ -166,7 +166,6 @@ class TestReputationCommands:
         # validate
         assert None not in intelligence_relationships
 
-
     @pytest.mark.parametrize(
         argnames='confidence, threshold, exp_dbot_score',
         argvalues=[(20, None, Common.DBotScore.GOOD),
