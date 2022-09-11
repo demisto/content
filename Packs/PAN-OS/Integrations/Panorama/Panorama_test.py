@@ -3534,7 +3534,8 @@ class TestCreatePanOSNatRuleCommand:
                     'pre_post': 'pre-rulebase',
                     'source_translation_type': 'static-ip',
                     'source_translated_address': '1.1.1.1',
-                    'source_translated_address_type': 'translated-address'
+                    'source_translated_address_type': 'translated-address',
+                    'destination_translation_type': 'none'
                 },
                 integration_panorama_params,
                 {
@@ -3551,7 +3552,8 @@ class TestCreatePanOSNatRuleCommand:
                     'description': 'test',
                     'source_translation_type': 'static-ip',
                     'source_translated_address': '1.1.1.1',
-                    'source_translated_address_type': 'translated-address'
+                    'source_translated_address_type': 'translated-address',
+                    'destination_translation_type': 'none'
                 },
                 integration_firewall_params,
                 {
@@ -3573,6 +3575,7 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
+                    'destination_translation_type': 'none'
                 },
                 integration_panorama_params,
                 {
@@ -3596,7 +3599,8 @@ class TestCreatePanOSNatRuleCommand:
                     'source_address': '1.1.1.1,2.2.2.2',
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
-                    'source_translated_address': '1.1.1.1,2.2.2.2'
+                    'source_translated_address': '1.1.1.1,2.2.2.2',
+                    'destination_translation_type': 'none'
                 },
                 integration_firewall_params,
                 {

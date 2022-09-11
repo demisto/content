@@ -11172,10 +11172,8 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
     """
 
     for key in keys_to_remove:
-        try:
+        if key in dictionary:
             del dictionary[key]
-        except KeyError:
-            pass
 
     for key in dictionary:
         if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
@@ -11280,7 +11278,7 @@ def pan_os_list_nat_rules_command(args):
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
-    entries = (result.get('nat', {}).get('rules', {}).get('entry')) or [result.get('entry')]
+    entries = dict_safe_get(result, ['nat', 'rules', 'entry'], default_return_value=[]) or result.get('entry')
     if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
         entries = [entries]
 
@@ -11321,44 +11319,44 @@ def json_to_xml(_json):
 
 
 def create_nat_rule(args):
-    def get_element_as_xml():
-        def get_destination_translation_info_by_type(_type):
-            data = {}
-            if destination_translated_port := args.get('destination_translated_port'):
-                data['translated-port'] = destination_translated_port
-            if destination_translated_address := args.get('destination_translated_address'):
-                data['translated-address'] = destination_translated_address
-            if _type == 'static_ip':
-                if destination_dns_rewrite_direction := args.get('destination_dns_rewrite_direction'):
-                    data['dns-rewrite'] = {
-                        'direction': destination_dns_rewrite_direction
-                    }
-            else:  # dynamic-ip
-                if method := args.get('destination_translation_distribution_method'):
-                    element_as_json['distribution'] = method
-            return data
+    def _set_up_body_request():
+        def _set_up_destination_translation_body_request():
+            destination_translation_type = args.get('destination_translation_type')
+            if destination_translation_type != 'none':
+                destination_translation_body_request = {}
+                if destination_translated_port := args.get('destination_translated_port'):
+                    destination_translation_body_request['translated-port'] = destination_translated_port
+                if destination_translated_address := args.get('destination_translated_address'):
+                    destination_translation_body_request['translated-address'] = destination_translated_address
+                if destination_translation_type == 'static_ip':
+                    if destination_dns_rewrite_direction := args.get('destination_dns_rewrite_direction'):
+                        destination_translation_body_request['dns-rewrite'] = {
+                            'direction': destination_dns_rewrite_direction
+                        }
+                    return {'destination-translation': destination_translation_body_request}
+                else:  # destination_translation_type == dynamic-ip
+                    if method := args.get('destination_translation_distribution_method'):
+                        destination_translation_body_request['distribution'] = method
+                    return {'dynamic-destination-translation': destination_translation_body_request}
+            return {}
 
-        element_as_json = {}
-        if source_translation_type := args.get('source_translation_type'):
+        def _set_up_source_translation_body_request():
+            source_translation_type = args.get('source_translation_type')
             if source_translation_type != 'none':
                 source_translated_address_type = args.get('source_translated_address_type')
                 if source_translated_address_type == 'translated-address':
                     source_translated_address = args.get('source_translated_address')
                     if source_translated_address:
-                        if source_translation_type == 'static-ip':
-                            element_as_json['source-translation'] = {
-                                'static-ip': {
-                                    'translated-address': source_translated_address
-                                }
+                        return {
+                            'source-translation': {
+                                source_translation_type: add_fields_as_json(
+                                    'translated-address',
+                                    source_translated_address,
+                                    is_list=False if source_translation_type == 'static-ip' else True
+                                    # dynamic-ip and dynamic-ip-and-port can be a list of IPs
+                                )
                             }
-                        else:  # dynamic-ip or dynamic-ip-and-port
-                            element_as_json['source-translation'] = {
-                                source_translation_type: {
-                                    'translated-address': {
-                                        'member': argToList(source_translated_address)
-                                    }
-                                }
-                            }
+                        }
                     else:
                         raise DemistoException(
                             'source_translated_address must be provided '
@@ -11368,10 +11366,12 @@ def create_nat_rule(args):
                     source_translated_interface = args.get('source_translated_interface')
                     if source_translated_interface:
                         if source_translation_type == 'dynamic-ip-and-port':
-                            element_as_json['source-translation'] = {
-                                'dynamic-ip-and-port': {
-                                    'interface-address': {
-                                        'interface': source_translated_interface
+                            return {
+                                'source-translation': {
+                                    'dynamic-ip-and-port': {
+                                        'interface-address': add_fields_as_json(
+                                            'interface', source_translated_interface, is_list=False
+                                        )
                                     }
                                 }
                             }
@@ -11384,67 +11384,49 @@ def create_nat_rule(args):
                             'source_translated_interface must be '
                             'provided if source_translation_type == interface-address'
                         )
+            return {}
 
-        destination_translation_type = args.get('destination_translation_type')
-
-        if destination_translation_type != 'none':
-            if destination_translation_type == 'static_ip':
-                element_as_json['destination-translation'] = get_destination_translation_info_by_type('static_ip')
-
-            if destination_translation_type == 'dynamic_ip':
-                element_as_json['dynamic-destination-translation'] = get_destination_translation_info_by_type(
-                    'dynamic_ip'
-                )
-
-        if destination_zone := args.get('destination_zone'):
-            element_as_json['to'] = {
-                'member': argToList(destination_zone)
+        def _set_up_original_packet_objects_body_request():
+            _packets_objects_body_request = {}
+            arguments_to_pan_os_paths = {
+                'destination_zone': ('to', True),
+                'source_zone': ('from', True),
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'tags': ('tag', True),
+                'service': ('service', False),
+                'description': ('description', False),
+                'nat_type': ('nat-type', False),
+                'destination_interface': ('to-interface', False)
             }
 
-        if source_zone := args.get('source_zone'):
-            element_as_json['from'] = {
-                'member': argToList(source_zone)
-            }
+            for argument, (pan_os_object_path, is_listable_arg) in arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _packets_objects_body_request.update(
+                        add_fields_as_json(pan_os_object_path, argument_value, is_list=is_listable_arg)
+                    )
 
-        if source_address := args.get('source_address'):
-            element_as_json['source'] = {
-                'member': argToList(source_address)
-            }
+            return _packets_objects_body_request
 
-        if destination_address := args.get('destination_address'):
-            element_as_json['destination'] = {
-                'member': argToList(destination_address)
-            }
-
-        if tags := args.get('tags'):
-            element_as_json['tag'] = {
-                'member': argToList(tags)
-            }
-
-        if service := args.get('service'):
-            element_as_json['service'] = service
-
-        if description := args.get('description'):
-            element_as_json['description'] = description
-
-        if nat_type := args.get('nat_type'):
-            element_as_json['nat-type'] = nat_type
-
-        if destination_interface := args.get('destination_interface'):
-            element_as_json['to-interface'] = destination_interface
+        _body_request = {}
 
         if negate_destination := args.get('negate_destination'):
-            element_as_json['target'] = {
+            _body_request['target'] = {
                 'negate': negate_destination
             }
-        return json_to_xml(element_as_json)
+
+        _body_request.update(_set_up_source_translation_body_request())
+        _body_request.update(_set_up_destination_translation_body_request())
+        _body_request.update(_set_up_original_packet_objects_body_request())
+
+        return _body_request
 
     if DEVICE_GROUP and not args.get('pre_post'):
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
 
     params = {
         'xpath': build_nat_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
-        'element': get_element_as_xml(),
+        'element': json_to_xml(_set_up_body_request()),
         'action': 'set',
         'type': 'config',
         'key': API_KEY
