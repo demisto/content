@@ -1,8 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterator, Optional, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -17,6 +16,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NoTestsConfiguredException, NotUnderPackException, SkippedPackException)
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
+from Tests.scripts.collect_tests.version_range import VersionRange
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -32,39 +32,12 @@ def find_pack_folder(path: Path) -> Path:
     >>> find_pack_folder(Path('Packs/MyPack4')).name
     'MyPack4'
     """
+
     if 'Packs' not in path.parts:
         raise NotUnderPackException(path)
     if path.parent.name == 'Packs':
         return path
     return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
-
-
-@dataclass
-class VersionRange:
-    min_version: Version | NegativeInfinityType
-    max_version: Version | InfinityType
-
-    def __contains__(self, item):
-        return self.min_version <= item <= self.max_version
-
-    def __repr__(self):
-        return f'{self.min_version} -> {self.max_version}'
-
-    def __or__(self, other: Optional['VersionRange']) -> 'VersionRange':
-        if other is None or other.is_default or self.is_default:
-            return self
-
-        self.min_version = min(self.min_version, other.min_version)
-        self.max_version = max(self.max_version, other.max_version)
-
-        return self
-
-    @property
-    def is_default(self):
-        """
-        :return: whether the range is (-Infinity -> Infinity)
-        """
-        return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
 
 
 class Machine(Enum):
@@ -191,15 +164,17 @@ class ContentItem(DictFileBased):
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
+        self._is_pack_metadata = self.path.name == 'pack_metadata.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
+        if self._is_pack_metadata:
+            return None
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
     def name(self) -> str:
-        id_ = self.get('id', '', warn_if_missing=False)
-        return self.get('name', default='', warn_if_missing=False, warning_comment=id_)
+        return self.get('name', default='', warn_if_missing=False, warning_comment=self.id_ or '')
 
     @property
     def tests(self) -> list[str]:
@@ -261,10 +236,10 @@ class PackManager:
 
         self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 
-    def __getitem__(self, pack_id: str) -> ContentItem:
+    def get_pack_metadata(self, pack_id: str) -> ContentItem:
         return self._pack_id_to_pack_metadata[pack_id]
 
-    def __iter__(self):
+    def iter_pack_metadata(self) -> Iterator[ContentItem]:
         yield from self._pack_id_to_pack_metadata.values()
 
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
@@ -292,18 +267,20 @@ class PackManager:
         if not (support_level := self.get_support_level(pack)):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
-            raise NonXsoarSupportedPackException(pack)
+            raise NonXsoarSupportedPackException(pack, support_level)
 
-    def get_support_level(self, pack: str) -> Optional[str]:
-        return self[pack].get('support', '').lower() or None
+    def get_support_level(self, pack_id: str) -> Optional[str]:
+        return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> Optional[tuple]:
     if value is None:
         return value
     if not value:
         return ()
-    if isinstance(value, str):
+    if isinstance(value, tuple):
+        return value
+    if isinstance(value, (str, int, MarketplaceVersions)):
         return value,
     return tuple(value)
 
