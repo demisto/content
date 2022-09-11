@@ -12,7 +12,7 @@ def test_PcapHTTPExtractor(mocker):
     mocker.patch.object(demisto, 'args',
                         return_value={"entryID": "6@1", "limit": "50", "start": "0", "limitData": "512"})
     mocker.patch.object(demisto, 'executeCommand',
-                        return_value=[{'Contents': {'path': 'Test_data/TestPcapPost.pcap'}, 'Type': ''}])
+                        return_value=[{'Contents': {'path': 'test_data/TestPcapPost.pcap'}, 'Type': ''}])
     demisto_res = mocker.patch.object(demisto, 'results')
     PcapHTTPExtractor.main()
 
