@@ -1,4 +1,4 @@
-from FireEyeDetonateFile import get_results, denote_file, poll_stage
+from FireEyeDetonateFile import get_results, detonate_file, poll_stage
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
@@ -54,7 +54,7 @@ def test_denote_file(mocker, args, first_mock_value, second_mock_value, expected
     """
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'executeCommand', side_effect=[first_mock_value, second_mock_value])
-    denote_file(args)
+    detonate_file(args)
     res = demisto.results
     content = res.call_args[0][0]
     assert content == expected_results

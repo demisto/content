@@ -9,7 +9,7 @@ TIMEOUT = 960
 INTERVAL = 10
 
 
-def denote_file(args):
+def detonate_file(args):
     should_continue = True
     file = demisto.get(args, 'file')
     feDone = False
@@ -116,7 +116,7 @@ def get_results(feDone, profiles, stauses, feSubmissionKeys, file):
 def main():  # pragma: no cover
     args = demisto.args()
     try:
-        denote_file(args)
+        detonate_file(args)
     except Exception as e:
         err_msg = f'Encountered an error while running the script: [{e}]'
         return_error(err_msg, error=e)
