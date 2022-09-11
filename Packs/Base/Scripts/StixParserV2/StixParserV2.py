@@ -7,7 +7,6 @@ from datetime import datetime
 
 from stix.core import STIXPackage
 
-
 PATTERNS_DICT = {
     "file:": FeedIndicatorType.File,
     "ipv6": FeedIndicatorType.IPv6,
@@ -98,13 +97,13 @@ def main():
         with open(file_path, 'rb') as f:
             content = f.read()
     else:
-        content = indicator_txt.encode('utf-8')
+        content = indicator_txt
 
     if stix2 := convert_to_json(content):
         indicators = parse_stix2(stix2)
     else:
         with tempfile.NamedTemporaryFile() as temp:
-            temp.write(demisto.args()["iocXml"].encode("utf-8"))
+            temp.write(content)
             temp.flush()
             stix_package = STIXPackage.from_xml(temp.name)
 
@@ -112,6 +111,7 @@ def main():
     if stix_package.indicators:
         for ind in stix_package.indicators:
             pass
+
 
 from TAXII2ApiModule import *
 
