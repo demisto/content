@@ -933,10 +933,16 @@ script:
         type: Array
   - arguments:
     - default: false
-      description: integer <int32> The identifier of the site.
+      description: ID of the site.
       isArray: false
       name: site
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site`)
+      isArray: false
+      name: site_name
+      required: false
       secret: false
     - default: false
       description: Multiple criteria of <string> The hosts that should be included as a part of the scan. This should be a mixture of IP Addresses and host names as a comma separated string array.

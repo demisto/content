@@ -2824,7 +2824,7 @@ def main():
             results = start_site_scan_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("id"),
+                    site_id=args.get("site"),
                     site_name=args.get("site_name"),
                     client=client,
                 ),
