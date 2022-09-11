@@ -147,6 +147,18 @@ script:
       type: string
   - arguments:
     - default: false
+      description: The number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: An option to retrieve a specific page when pagination is used.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
       description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
@@ -214,6 +226,18 @@ script:
       description: 'Multiple criteria of <string> Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using '';'' separator. For example: ''ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       isArray: false
       name: query
+      required: false
+      secret: false
+    - default: false
+      description: The number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: An option to retrieve a specific page when pagination is used.
+      isArray: false
+      name: page
       required: false
       secret: false
     - default: false
@@ -551,6 +575,18 @@ script:
     execution: false
     name: nexpose-delete-site
   - arguments:
+    - default: false
+      description: The number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: An option to retrieve a specific page when pagination is used.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     - default: false
       defaultValue: '10'
       description: The number of records to retrieve.
@@ -1052,6 +1088,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: An option to retrieve a specific page when pagination is used.
+      isArray: false
+      name: page
       required: false
       secret: false
     - default: false

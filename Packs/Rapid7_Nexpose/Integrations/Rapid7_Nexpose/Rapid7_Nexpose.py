@@ -308,7 +308,8 @@ class Client(BaseClient):
         )
 
     def get_asset_vulnerabilities(self, asset_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+                                  page: Union[int, None] = None, sort: Union[str, None] = None,
+                                  limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieves a list of all vulnerability findings on an asset.
         |
@@ -319,6 +320,7 @@ class Client(BaseClient):
             asset_id (str): ID of the site to retrieve linked assets from.
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of assets to return. None means to not use a limit.
@@ -331,6 +333,7 @@ class Client(BaseClient):
             url_suffix=f"/assets/{asset_id}/vulnerabilities",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -354,7 +357,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_assets(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+    def get_assets(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
                    sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of all assets.
@@ -364,6 +367,7 @@ class Client(BaseClient):
         Args:
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of assets to return. None means to not use a limit.
@@ -376,6 +380,7 @@ class Client(BaseClient):
             url_suffix="/assets",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -452,7 +457,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_scans(self, active: Union[bool, None] = False, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+    def get_scans(self, active: Union[bool, None] = False,
+                  page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
                   sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of all scans.
@@ -463,6 +469,7 @@ class Client(BaseClient):
             active (bool | None, optional): Whether to return active scans or not. Defaults to False.
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
@@ -478,6 +485,7 @@ class Client(BaseClient):
             method="GET",
             params=params,
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -556,7 +564,8 @@ class Client(BaseClient):
         )
 
     def get_site_assets(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                        sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+                        page: Union[int, None] = None, sort: Union[str, None] = None,
+                        limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of all assets that are linked with a specific site.
         |
@@ -566,6 +575,7 @@ class Client(BaseClient):
             site_id (str): ID of the site to retrieve linked assets from.
             page_size (int | None, optional): Number of assets to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
@@ -578,13 +588,15 @@ class Client(BaseClient):
             url_suffix=f"/sites/{site_id}/assets",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
         )
 
     def get_site_scans(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                       sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+                       page: Union[int, None] = None, sort: Union[str, None] = None,
+                       limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of scans from a specific site.
         |
@@ -594,6 +606,7 @@ class Client(BaseClient):
             site_id (str): ID of the site to retrieve scans from.
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
@@ -606,6 +619,7 @@ class Client(BaseClient):
             url_suffix=f"/sites/{site_id}/scans",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -659,7 +673,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_sites(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+    def get_sites(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
                   sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of sites.
@@ -669,6 +683,7 @@ class Client(BaseClient):
         Args:
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
@@ -681,12 +696,13 @@ class Client(BaseClient):
             url_suffix="/sites",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
         )
 
-    def get_vulnerabilities(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
+    def get_vulnerabilities(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
                             sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve information about all existing vulnerabilities.
@@ -696,6 +712,7 @@ class Client(BaseClient):
         Args:
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
@@ -708,6 +725,7 @@ class Client(BaseClient):
             url_suffix="/vulnerabilities",
             method="GET",
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -772,8 +790,8 @@ class Client(BaseClient):
         )
 
     def search_assets(self, filters: Union[list[dict], None], match: str,
-                      page_size: Union[int, None] = DEFAULT_PAGE_SIZE, sort: Union[str, None] = None,
-                      limit: Union[int, None] = None) -> list[dict]:
+                      page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
+                      sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
         """
         | Retrieve a list of all assets with access permissions that match the provided search filters.
         |
@@ -785,6 +803,7 @@ class Client(BaseClient):
                 Can be either "all" or "any". Defaults to MATCH_DEFAULT_VALUE.
             page_size (int | None, optional): Number of scans to return per page when using pagination.
                 Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
             sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
                 Defaults to None.
             limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
@@ -803,6 +822,7 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             page_size=page_size,
+            page=page,
             sort=sort,
             limit=limit,
             resp_type="json",
@@ -1831,18 +1851,25 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     }
 
 
-def get_assets_command(client: Client, sort: Union[str, None] = None,
+def get_assets_command(client: Client, page_size: Union[int, None] = None,
+                       page: Union[int, None] = None, sort: Union[str, None] = None,
                        limit: Union[int, None] = None) -> Union[CommandResults, list[CommandResults]]:
     """
     Retrieve a list of all assets.
 
     Args:
         client (Client): Client to use for API requests.
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
         sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
     assets = client.get_assets(
+        page_size=page_size,
+        page=page,
         sort=sort,
         limit=limit
     )
@@ -2164,7 +2191,8 @@ def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[C
     return scans
 
 
-def get_scans_command(client: Client, active: Union[bool, None] = None, sort: Union[str, None] = None,
+def get_scans_command(client: Client, active: Union[bool, None] = None, page_size: Union[int, None] = None,
+                      page: Union[int, None] = None, sort: Union[str, None] = None,
                       limit: Union[int, None] = None) -> CommandResults:
     """
     Retrieve a list of all scans.
@@ -2172,12 +2200,18 @@ def get_scans_command(client: Client, active: Union[bool, None] = None, sort: Un
     Args:
         client (Client): Client to use for API requests.
         active (bool | None, optional): Whether to return active scans or not. Defaults to False.
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
         sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
     scans: list = client.get_scans(
         active=active,
+        page_size=page_size,
+        page=page,
         sort=sort,
         limit=limit,
     )
@@ -2212,17 +2246,24 @@ def get_scans_command(client: Client, active: Union[bool, None] = None, sort: Un
     )
 
 
-def get_sites_command(client: Client, sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
+def get_sites_command(client: Client, page_size: Union[int, None] = None, page: Union[int, None] = None,
+                      sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
     """
     Retrieve a list of sites.
 
     Args:
         client (Client): Client to use for API requests.
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
         sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
     sites = client.get_sites(
+        page_size=page_size,
+        page=page,
         sort=sort,
         limit=limit
     )
@@ -2342,6 +2383,7 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
                           ip_addresses: Union[str, None] = None, hostnames: Union[str, None] = None,
                           risk_score: Union[str, None] = None, vulnerability_title: Union[str, None] = None,
                           sites: Union[Site, list[Site], None] = None, match: Union[str, None] = None,
+                          page_size: Union[int, None] = None, page: Union[int, None] = None,
                           sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
     """
     Retrieve a list of all assets with access permissions that match the provided search filters.
@@ -2359,6 +2401,10 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
             Defaults to None.
         match (str | None, optional): Determine if the filters should match all or any of the filters.
             Can be either "all" or "any". Defaults to None (Results in using MATCH_DEFAULT_VALUE).
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
         sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
@@ -2407,6 +2453,8 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
             client.search_assets(
                 filters=convert_asset_search_filters(filter_data),
                 match=match,
+                page_size=page_size,
+                page=page,
                 sort=sort,
                 limit=limit,
             )
@@ -2680,6 +2728,8 @@ def main():
         elif command == "nexpose-get-assets":
             results = get_assets_command(
                 client=client,
+                page=arg_to_number(args.get("page")),
+                page_size=arg_to_number(args.get("page_size")),
                 sort=args.get("sort"),
                 limit=arg_to_number(args.get("limit"))
             )
@@ -2702,12 +2752,16 @@ def main():
             results = get_scans_command(
                 client=client,
                 active=args.get("active"),
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-get-sites":
             results = get_sites_command(
                 client=client,
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
                 limit=arg_to_number(args.get("limit")),
             )
@@ -2720,8 +2774,8 @@ def main():
                     client=client,
                 ),
                 schedule_id=args.get("schedule_id"),
-                page=arg_to_number(args.get("page")),
                 page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-pause-scan":
@@ -2754,6 +2808,8 @@ def main():
                 vulnerability_title=args.get("vulnerabilityTitleContains"),
                 sites=sites,
                 match=args.get("match"),
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
                 limit=arg_to_number(args.get("limit")),
             )
@@ -2792,5 +2848,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ["__main__", "builtin", "builtins"]:
+if __name__ in ("__main__", "builtin", "builtins"):
     main()
