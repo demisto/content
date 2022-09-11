@@ -9,7 +9,9 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"Trend Micro CAS Event",
-		"Netwitness Incident"
+		"Netwitness Incident",
+		"Skyhigh Security Alert",
+		"Skyhigh Security Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
