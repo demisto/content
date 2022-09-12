@@ -46,5 +46,8 @@
     },
     "marketplaces": [
         "marketplacev2"
+    ],
+    "itemPrefix": [
+        "ASM"
     ]
 }
