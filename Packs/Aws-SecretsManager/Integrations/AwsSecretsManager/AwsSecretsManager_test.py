@@ -85,15 +85,16 @@ def test_aws_secrets_manager_secret_delete_command(mocker, args, expected_result
     mocker.patch.object(Boto3Client, 'delete_secret',
                         return_value={'ResponseMetadata': {'HTTPStatusCode': 200}, 'Name': "dwdw", 'ARN': "arnarn"})
     mocker.patch.object(demisto, 'results')
-    return_error_method = mocker.patch.object(AWS_SECRETSMANAGER, 'return_error', return_value=expected_results)
-
-    AWS_SECRETSMANAGER.aws_secrets_manager_secret_delete_command(aws_client, args)
 
     if len(args) < 3:
+        AWS_SECRETSMANAGER.aws_secrets_manager_secret_delete_command(aws_client, args)
         results = demisto.results.call_args[0][0]
         assert results == expected_results
     else:
-        return_error_method.assert_called_with(expected_results)
+        try:
+            AWS_SECRETSMANAGER.aws_secrets_manager_secret_delete_command(aws_client, args)
+        except Exception as e:
+            assert expected_results == e.args[0]
 
 @pytest.mark.parametrize('args, expected_results', [
     ({"secret_id": "123"}, 'the secret was restored successfully'),

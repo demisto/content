@@ -162,7 +162,7 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str,
         kwargs['RecoveryWindowInDays'] = int(args.get('days_of_recovery'))
     if args.get('delete_immediately') is not None:
         if args.get('days_of_recovery'):
-            return_error('Delete command cannot be executed with both args: delete_immediately and days_of_recovery')
+            raise Exception('Delete command cannot be executed with both args: delete_immediately and days_of_recovery')
         kwargs['ForceDeleteWithoutRecovery'] = argToBoolean(args.get('delete_immediately')) == True
 
     response = client.delete_secret(**kwargs)
