@@ -261,7 +261,7 @@ def parse_error_response(error_response):
     # NetWitness has fixed structure for
     try:
         error = error_response.json()
-        return 'Request failed with status code: {}\nReason: {}\n{}'.format(error_response.status_code,
+        return f'Request failed with status code: {error_response.status_code}\nReason: {error.ResponseStatus.ErrorCode}\n{error.ResponseStatus.Message}'
                                                                             error.ResponseStatus.ErrorCode,
                                                                             error.ResponseStatus.Message)
     except Exception as e:
