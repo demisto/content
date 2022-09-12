@@ -1156,31 +1156,39 @@ def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
                 entries.append(entry)
             if receive_only_accounts:
                 if accounts_counter % writing_to_logs == 0:
-                    demisto.debug(
-                        'Still searching. Searched {} of total accounts'.format(
-                            accounts_counter),
+                    demisto.info(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
+                            int((accounts_counter / all_acounts) * 100),
+                            accounts_counter,
+                            all_acounts,
+                            matching_accounts_counter),
                     )
             else:
                 msg_counter += num_of_messages
                 if msg_counter >= log_msg_target:
                     log_msg_target = msg_counter + max_results
                     demisto.info(
-                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
+                            int((accounts_counter / all_acounts) * 100),
                             accounts_counter,
+                            all_acounts,
                             msg_counter),
                     )
                 elif accounts_counter % 100 == 0:
                     demisto.info(
-                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
+                            int((accounts_counter / all_acounts) * 100),
                             accounts_counter,
+                            all_acounts,
                             msg_counter),
                     )
-                    
+
             if receive_only_accounts:
                 entries = [mailboxes_to_entry(entries)]
             # return midway results
             if accounts_counter % 100:
                 demisto.results(entries)
+                entries = []
         # if these are the final result push - return them
         entries.append("Search completed")
         return entries
@@ -1226,7 +1234,7 @@ def search_command(mailbox=None, receive_only_accounts=False):
     if receive_only_accounts:
         if mails:
             return {'Mailbox': mailbox, 'q': q}, 0
-        return {'Mailbox': None, 'q': q}, 0
+        return None, 0
 
     res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
     return res, len(mails)
@@ -2238,7 +2246,8 @@ def main():
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
-                demisto.results(cmd_func(receive_only_accounts, max_results))  # type: ignore
+                writing_to_logs = arg_to_number(demisto.args().get('writing-to-logs', 10))
+                demisto.results(cmd_func(receive_only_accounts, max_results, writing_to_logs))  # type: ignore
             elif command == 'gmail-search':
                 demisto.results(cmd_func()[0])  # type: ignore
             else:
@@ -2256,5 +2265,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", '__main__'):
     main()
