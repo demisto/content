@@ -214,7 +214,7 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
         readable_output=human_readable
     ))
 
-def fetch_credentials(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cover
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -241,7 +241,7 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]) -> CommandResults
         })
     demisto.credentials(credentials)
 
-def main() -> None:
+def main() -> None # pragma: no cover:
     try:
         params = demisto.params()
         aws_default_region = params.get('defaultRegion')
