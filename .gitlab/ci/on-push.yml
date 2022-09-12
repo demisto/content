@@ -415,10 +415,10 @@ xsiam_server_master:
     GCS_QUEUE_FILE: "queue-master"
     TEST_MACHINES_LIST: "test-machines-master"
 
-test_upload_flow:
-  rules:
-    - # TODO: fix
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
-    GCS_MARKET_KEY: "$GCS_MARKET_KEY"
+#test_upload_flow:
+#  rules:
+#    - # TODO: fix
+#  variables:
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
+#    GCS_MARKET_KEY: "$GCS_MARKET_KEY"
 
