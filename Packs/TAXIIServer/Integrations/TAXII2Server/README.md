@@ -25,7 +25,7 @@ Use one of the following options:
 - **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
 
 ## Access the TAXII Service by Instance Name
-To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration**, add the *instance.execute.external* and set the value to *true*.
@@ -153,8 +153,8 @@ TIM fields (system generated and custom). An example of these two related object
 
 #### Find the information required for the Sentinel TAXII connector
 
-  1. API root - Your XSOAR TAXII2 API root can be found at - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
-  2. Collection ID - Use `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
+  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their ids. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
  
  Response Example:
   ```JSON
@@ -194,3 +194,106 @@ Paste your API root URL in the field marked **API Root URL** and the desired col
 
 Example:
 ![Microsoft Sentinel TI Configuration](../../doc_files/MS-Sentinel-TI-Config.png)
+
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### taxii-server-list-collections
+***
+Returns all the collections.
+
+
+#### Base Command
+
+`taxii-server-list-collections`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TAXIIServer.Collection.id | String | The collection ID. | 
+| TAXIIServer.Collection.query | String | The collection query. | 
+| TAXIIServer.Collection.title | String | The collection title. | 
+| TAXIIServer.Collection.description | String | The collection description. | 
+
+#### Command example
+```!taxii-server-list-collections```
+#### Context Example
+```json
+{
+    "TAXIIServer": {
+        "Collection": {
+            "can_read": true,
+            "can_write": false,
+            "description": "",
+            "id": "2eb7bfae-7739-5863-9b00-1681309c3d8c",
+            "media_types": [
+                "application/stix+json;version=2.1"
+            ],
+            "query": "",
+            "title": "ALL"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Collections
+>|id|title|query|description|
+>|---|---|---|---|
+>| 2eb7bfae-7739-5863-9b00-1681309c3d8c | ALL |  |  |
+
+
+### taxii-server-info
+***
+Returns the TAXII server info, default URL, title, etc.
+
+
+#### Base Command
+
+`taxii-server-info`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TAXIIServer.ServerInfo.title | String | The server title | 
+| TAXIIServer.ServerInfo.api_roots | Unknown | The server API roots URLs. | 
+| TAXIIServer.ServerInfo.default | String | The default URL. | 
+| TAXIIServer.ServerInfo.description | String | The server description | 
+
+#### Command example
+```!taxii-server-info```
+#### Context Example
+```json
+{
+    "TAXIIServer": {
+        "ServerInfo": {
+            "api_roots": [
+                "https://foo.cooo.com/inc/threatintel/"
+            ],
+            "default": "https://foo.cooo.com/inc/threatintel/",
+            "description": "This integration provides TAXII Services for system indicators (Outbound feed).",
+            "title": "Cortex XSOAR TAXII2 Server"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>**In case the default URL is incorrect, you can override it by setting the "TAXII2 Service URL Address" field in the integration configuration**
+>
+>### Server Info
+>|api_roots|default|description|title|
+>|---|---|---|---|
+>| https:<span>//</span>foo.cooo.com/inc/threatintel/ | https:<span>//</span>foo.cooo.com/inc/threatintel/ | This integration provides TAXII Services for system indicators (Outbound feed). | Cortex XSOAR TAXII2 Server |
+

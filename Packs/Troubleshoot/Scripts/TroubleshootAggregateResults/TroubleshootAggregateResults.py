@@ -61,7 +61,6 @@ Instance name : {instance_name}
         }
         return_outputs(doc, context)
     except Exception as exc:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(exc))
 
 

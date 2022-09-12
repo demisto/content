@@ -20,10 +20,23 @@ args:
 - name: end_date
   required: true
   description: Upper date range
+outputs:
+- contextPath: BetweenDates.result
+  description: Whether the input hour is between the given hours.
+  type: boolean
+- contextPath: BetweenDates.value
+  description: The value to check.
+  type: string
+- contextPath: BetweenDates.begin_date
+  description: Lower date range.
+  type: string
+- contextPath: BetweenDates.end_date
+  description: Upper date range.
+  type: string
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 tests:
-  - No test
+- No test

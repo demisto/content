@@ -767,7 +767,8 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
                 indicator=cidr_data['cidr'],
                 indicator_type=DBotScoreType.CIDR,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -857,7 +858,8 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 indicator=domain,
                 indicator_type=indicator_type,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             ),
             **whois_args
         )
@@ -941,7 +943,8 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
                 indicator=indicator_value,
                 indicator_type=DBotScoreType.CERTIFICATE,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -980,7 +983,8 @@ def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[Co
                 indicator=cloud_resource_data['ips'][0],
                 indicator_type=DBotScoreType.IP,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             )
         )
         command_results.append(CommandResults(
@@ -2419,7 +2423,8 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integrationReliability')
             ),
             hostname=ip_data.get('domain', None)
         )

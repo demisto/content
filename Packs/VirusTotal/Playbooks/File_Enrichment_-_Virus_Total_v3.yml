@@ -1,0 +1,505 @@
+id: File Enrichment - Virus Total (API v3)
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: File Enrichment - Virus Total (API v3)
+description: Get file information using the Virus Total API integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cdcd5ce3-8d4a-4981-89ff-e94904ef9de0
+    type: start
+    task:
+      id: cdcd5ce3-8d4a-4981-89ff-e94904ef9de0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": -23
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e5be9a7a-708a-4976-84de-f60213e157f0
+    type: title
+    task:
+      id: e5be9a7a-708a-4976-84de-f60213e157f0
+      version: -1
+      name: Enrich using VirusTotal (API v3)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "30"
+        - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 10dbc242-e1c6-4746-852e-3777185de510
+    type: title
+    task:
+      id: 10dbc242-e1c6-4746-852e-3777185de510
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3d9a4d8a-9a38-45a5-86d0-d9707b8f9bf1
+    type: condition
+    task:
+      id: 3d9a4d8a-9a38-45a5-86d0-d9707b8f9bf1
+      version: -1
+      name: Is VirusTotal (API v3) enabled?
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      yes:
+        - "1"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: VirusTotal (API v3)
+                          ignorecase: true
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: active
+                          ignorecase: true
+                    accessor: brand
+                iscontext: true
+              right:
+                value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 151
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6bbaad1d-e54f-4da5-8416-5cd6e60fc026
+    type: regular
+    task:
+      id: 6bbaad1d-e54f-4da5-8416-5cd6e60fc026
+      version: -1
+      name: "Enriching file reputation "
+      description: Checks the file reputation of the specified hash.
+      script: VirusTotal (API v3)|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      file:
+        simple: ${inputs.FileHash}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 223709ce-d1e9-46c7-8515-13d6bc6fa139
+    type: regular
+    task:
+      id: 223709ce-d1e9-46c7-8515-13d6bc6fa139
+      version: -1
+      name: Enriching a behavioral relationship
+      description: Retrieves a behavioral relationship of the given file hash.
+      script: VirusTotal (API v3)|||vt-file-sandbox-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.FileHash
+          filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.FileHash
+                  iscontext: true
+      retry-count:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 838,
+        "width": 1015,
+        "x": 1155,
+        "y": -23
+      }
+    }
+  }
+inputs:
+  - key: FileHash
+    value:
+      complex:
+        root: File
+        accessor: SHA256
+        transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: File.SHA1
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: File.MD5
+                iscontext: true
+    required: false
+    description: File Hash to enrich
+    playbookInputQuery:
+outputs:
+  - contextPath: File.MD5
+    description: Bad MD5 hash.
+    type: Unknown
+  - contextPath: File.SHA1
+    description: Bad SHA1 hash.
+    type: Unknown
+  - contextPath: File.SHA256
+    description: Bad SHA256 hash.
+    type: Unknown
+  - contextPath: File.Relationships.EntityA
+    description: The source of the relationship.
+    type: String
+  - contextPath: File.Relationships.EntityB
+    description: The destination of the relationship.
+    type: String
+  - contextPath: File.Relationships.Relationship
+    description: The name of the relationship.
+    type: String
+  - contextPath: File.Relationships.EntityAtype
+    description: The type of the source of the relationship.
+    type: String
+  - contextPath: File.Relationships.EntityBtype
+    description: The type of the destination of the relationship.
+    type: String
+  - contextPath: File.Malicious.Vendor
+    description: For malicious files, the vendor that made the decision.
+    type: Unknown
+  - contextPath: File.Malicious.Detections
+    description: For malicious files, the total number of detections.
+    type: Unknown
+  - contextPath: File.Malicious.TotalEngines
+    description: For malicious files, the total number of engines that checked the file hash.
+    type: Unknown
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: Unknown
+  - contextPath: DBotScore.type
+    description: The indicator type.
+    type: Unknown
+  - contextPath: DBotScore.Vendor
+    description: The vendor used to calculate the DBot score.
+    type: Unknown
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: Number
+  - contextPath: DBotScore.Reliability
+    description: Reliability of the source providing the intelligence data.
+    type: String
+  - contextPath: VirusTotal.File.attributes.type_description
+    description: description of the type of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.tlsh
+    description: The locality-sensitive hashing.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.MIMEtype
+    description: MIME type of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.names
+    description: Names of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.javascript_info.tags
+    description: Tags of the JavaScript.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.Filetype
+    description: The file type.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.WordCount
+    description: Total number of words in the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.LineCount
+    description: Total number of lines in file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.info
+    description: Number of IDS that marked the file as "info".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.high
+    description: Number of IDS that marked the file as "high".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.medium
+    description: Number of IDS that marked the file as "medium".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.low
+    description: Number of IDS that marked the file as "low".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.critical
+    description: Number of Sigma analysis that marked the file as "critical".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.high
+    description: Number of Sigma analysis that marked the file as "high".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.medium
+    description: Number of Sigma analysis that marked the file as "medium".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.low
+    description: Number of Sigma analysis that marked the file as "low".
+    type: Number
+  - contextPath: VirusTotal.File.attributes.exiftool.MIMEEncoding
+    description: The MIME encoding.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.FiletypeExtension
+    description: The file type extension.
+    type: String
+  - contextPath: VirusTotal.File.attributes.exiftool.Newlines
+    description: Number of newlines signs.
+    type: String
+  - contextPath: VirusTotal.File.attributes.trid.file_type
+    description: The TrID file type.
+    type: String
+  - contextPath: VirusTotal.File.attributes.trid.probability
+    description: The TrID probability.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.description
+    description: description of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.source
+    description: Source of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.author
+    description: Author of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name
+    description: Rule set name of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.rule_name
+    description: Name of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id
+    description: ID of the YARA rule.
+    type: String
+  - contextPath: VirusTotal.File.attributes.names
+    description: Name of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.last_modification_date
+    description: The last modification date in epoch format.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.type_tag
+    description: Tag of the type.
+    type: String
+  - contextPath: VirusTotal.File.attributes.total_votes.harmless
+    description: Total number of harmless votes.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.total_votes.malicious
+    description: Total number of malicious votes.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.size
+    description: Size of the file.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label
+    description: Suggested thread label.
+    type: String
+  - contextPath: VirusTotal.File.attributes.popular_threat_classification.popular_threat_name
+    description: The popular thread name.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.times_submitted
+    description: Number of times the file was submitted.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_submission_date
+    description: Last submission date in epoch format.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.downloadable
+    description: Whether the file is downloadable.
+    type: Boolean
+  - contextPath: VirusTotal.File.attributes.sha256
+    description: SHA-256 hash of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.type_extension
+    description: Extension of the type.
+    type: String
+  - contextPath: VirusTotal.File.attributes.tags
+    description: File tags.
+    type: String
+  - contextPath: VirusTotal.File.attributes.last_analysis_date
+    description: Last analysis date in epoch format.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.unique_sources
+    description: Unique sources.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.first_submission_date
+    description: First submission date in epoch format.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.ssdeep
+    description: SSDeep hash of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.md5
+    description: MD5 hash of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.sha1
+    description: SHA-1 hash of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.magic
+    description: Identification of file by the magic number.
+    type: String
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.harmless
+    description: The number of engines that found the indicator to be harmless.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.type-unsupported
+    description: The number of engines that found the indicator to be of type unsupported.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.suspicious
+    description: The number of engines that found the indicator to be suspicious.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout
+    description: The number of engines that confirmed the timeout of the indicator.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.timeout
+    description: The number of engines that timed out for the indicator.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.failure
+    description: The number of failed analysis engines.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.malicious
+    description: The number of engines that found the indicator to be malicious.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.last_analysis_stats.undetected
+    description: The number of engines that could not detect the indicator.
+    type: Number
+  - contextPath: VirusTotal.File.attributes.meaningful_name
+    description: Meaningful name of the file.
+    type: String
+  - contextPath: VirusTotal.File.attributes.reputation
+    description: The reputation of the file.
+    type: Number
+  - contextPath: VirusTotal.File.type
+    description: type of the indicator (file).
+    type: String
+  - contextPath: VirusTotal.File.id
+    description: type ID of the indicator.
+    type: String
+  - contextPath: VirusTotal.File.links.self
+    description: Link to the response.
+    type: Unknown
+tests:
+  - No tests (auto formatted)
+fromversion: 6.0.0

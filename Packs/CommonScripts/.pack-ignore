@@ -70,6 +70,9 @@ ignore=SC106
 [file:ReadPDFFileV2_test.py]
 ignore=BA119
 
+[file:HideFieldsOnNewIncident.yml]
+ignore=SC105
+
 [known_words]
 UnzipFile
 ZipStrings
@@ -81,3 +84,7 @@ RTF
 msg
 lastCompletedTaskEntries
 cgroups
+AttachmentFile
+formatter
+FPs
+GetIndicatorDBotScore

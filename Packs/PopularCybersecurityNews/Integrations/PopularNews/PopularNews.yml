@@ -3,7 +3,7 @@ commonfields:
   id: Popular News
   version: -1
 configuration:
-- display: "Trust any certificate (not secure)"
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -27,7 +27,7 @@ script:
   - arguments: []
     description: Get News from all outlets
     name: get-news-generic-all
-  dockerimage: demisto/bs4:1.0.0.19034
+  dockerimage: demisto/bs4:1.0.0.24033
   runonce: false
   script: ''
   subtype: python3

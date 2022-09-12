@@ -1,14 +1,15 @@
 id: SentinelOne V2.1 - Test
-version: -1
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
 name: SentinelOne V2.1 - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4ce6fe9b-4a58-48dc-8e87-b4f19c4b2e68
+    taskid: a1682714-f0ee-4d74-88c0-181ff1bc7d71
     type: start
     task:
-      id: 4ce6fe9b-4a58-48dc-8e87-b4f19c4b2e68
+      id: a1682714-f0ee-4d74-88c0-181ff1bc7d71
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: afbee47d-9758-4c3b-8253-8172a3403ac4
+    taskid: 1234590c-6ebf-48c0-824f-56e2f85183fb
     type: regular
     task:
-      id: afbee47d-9758-4c3b-8253-8172a3403ac4
+      id: 1234590c-6ebf-48c0-824f-56e2f85183fb
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -44,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "39"
     scriptarguments:
       all:
         simple: "yes"
@@ -67,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: aeea9334-633c-42d8-8ffc-8b98aca87aa2
+    taskid: 02381f70-bf10-40e7-8d37-dd9176c18365
     type: regular
     task:
-      id: aeea9334-633c-42d8-8ffc-8b98aca87aa2
+      id: 02381f70-bf10-40e7-8d37-dd9176c18365
       version: -1
       name: Get Threats
       description: Get threats using a variety of filters.
@@ -101,7 +102,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -111,10 +112,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 180b5b16-cec4-4ff4-8ee6-30f12f2c1f9a
+    taskid: 1e9df3b3-6473-45b2-8e8e-3bfa7660a142
     type: regular
     task:
-      id: 180b5b16-cec4-4ff4-8ee6-30f12f2c1f9a
+      id: 1e9df3b3-6473-45b2-8e8e-3bfa7660a142
       version: -1
       name: Get Activities
       description: Get a list of activities.
@@ -145,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
@@ -155,10 +156,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 8a6d5eb0-4e6a-4d66-8ff8-f55d441aeb6c
+    taskid: d3c91d8d-9e12-43a3-8c31-b247e3f92de5
     type: regular
     task:
-      id: 8a6d5eb0-4e6a-4d66-8ff8-f55d441aeb6c
+      id: d3c91d8d-9e12-43a3-8c31-b247e3f92de5
       version: -1
       name: Get All agents
       description: List all agents matching the input filter.
@@ -180,7 +181,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4365
+          "y": 5735
         }
       }
     note: false
@@ -190,10 +191,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 251fef3a-2199-4a50-8894-53ce42830a29
+    taskid: 858e524f-14a2-4b27-89ff-cfa2bf48d491
     type: regular
     task:
-      id: 251fef3a-2199-4a50-8894-53ce42830a29
+      id: 858e524f-14a2-4b27-89ff-cfa2bf48d491
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -212,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4540
+          "y": 5910
         }
       }
     note: false
@@ -222,10 +223,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0f7945c7-9af4-4f4f-8adf-e2aed991160a
+    taskid: a70840d4-211b-4e88-87ff-4623a531b22f
     type: regular
     task:
-      id: 0f7945c7-9af4-4f4f-8adf-e2aed991160a
+      id: a70840d4-211b-4e88-87ff-4623a531b22f
       version: -1
       name: Get all groups
       description: Gets the group data.
@@ -250,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3870
         }
       }
     note: false
@@ -260,10 +261,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 1a17d3b4-d7fa-49fe-8496-702dab0ce87c
+    taskid: 8531600b-fc1c-49a6-8c82-66c1bb45d4f8
     type: regular
     task:
-      id: 1a17d3b4-d7fa-49fe-8496-702dab0ce87c
+      id: 8531600b-fc1c-49a6-8c82-66c1bb45d4f8
       version: -1
       name: Get threat summary
       description: Get dashboard threat summary.
@@ -282,7 +283,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
     note: false
@@ -292,10 +293,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: c5e155a9-0e02-4cdc-8b67-f88d2866f655
+    taskid: 20770569-64dd-4559-828a-5e67f15275a8
     type: regular
     task:
-      id: c5e155a9-0e02-4cdc-8b67-f88d2866f655
+      id: 20770569-64dd-4559-828a-5e67f15275a8
       version: -1
       name: Disconnect agent from network
       description: Disconnect agents from network
@@ -314,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4715
+          "y": 6085
         }
       }
     note: false
@@ -324,10 +325,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d232d791-e89d-47e7-84e9-d447c632e5b1
+    taskid: 99511407-85d2-4f35-817b-07bf6db2fe1f
     type: regular
     task:
-      id: d232d791-e89d-47e7-84e9-d447c632e5b1
+      id: 99511407-85d2-4f35-817b-07bf6db2fe1f
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -351,7 +352,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5940
+          "y": 7310
         }
       }
     note: false
@@ -361,10 +362,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 0a4fdbc8-c732-4277-8d80-fa99e5d79cfc
+    taskid: c46dfbdb-405e-44e3-8039-00232043ec56
     type: regular
     task:
-      id: 0a4fdbc8-c732-4277-8d80-fa99e5d79cfc
+      id: c46dfbdb-405e-44e3-8039-00232043ec56
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -391,12 +392,13 @@ tasks:
       to_date:
         complex:
           root: TimeNow
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -406,10 +408,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: a7941630-c284-4b45-896f-8745a038d972
+    taskid: 5f8127cc-056b-4011-8b68-9203f3b390a7
     type: regular
     task:
-      id: a7941630-c284-4b45-896f-8745a038d972
+      id: 5f8127cc-056b-4011-8b68-9203f3b390a7
       version: -1
       name: Get events
       description: Get all Deep Visibility events from query
@@ -430,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -440,10 +442,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: a0bf5813-c3f4-47aa-8110-e2c0961084a4
+    taskid: 3009be32-c79b-44d7-8a5d-4518fbd2562c
     type: regular
     task:
-      id: a0bf5813-c3f4-47aa-8110-e2c0961084a4
+      id: 3009be32-c79b-44d7-8a5d-4518fbd2562c
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
@@ -453,7 +455,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "45"
+      - "52"
     scriptarguments:
       activities_ids: {}
       activity_types: {}
@@ -480,7 +482,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6115
+          "y": 7485
         }
       }
     note: false
@@ -490,10 +492,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: c9a07062-ca35-443e-8f15-184ef9aa506b
+    taskid: 3f85c2d8-6727-4db9-876b-b6d2bfdd9ac2
     type: condition
     task:
-      id: c9a07062-ca35-443e-8f15-184ef9aa506b
+      id: 3f85c2d8-6727-4db9-876b-b6d2bfdd9ac2
       version: -1
       name: Verify outputs
       type: condition
@@ -520,43 +522,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 86e8c673-0f92-4022-848c-9e3b2f16fd45
-    type: regular
-    task:
-      id: 86e8c673-0f92-4022-848c-9e3b2f16fd45
-      version: -1
-      name: Fetch Incidents
-      description: Execute FetchIncident for a given instance
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      add_to_context: {}
-      brand_name:
-        simple: SentinelOne V2
-      error_msg_in_incident: {}
-      expect_data: {}
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "y": 2995
         }
       }
     note: false
@@ -566,10 +532,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: e2bc9deb-00a1-4b39-8118-cd803e27bfd0
+    taskid: 192947b8-effc-45a5-87a4-15de8752883d
     type: regular
     task:
-      id: e2bc9deb-00a1-4b39-8118-cd803e27bfd0
+      id: 192947b8-effc-45a5-87a4-15de8752883d
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -588,7 +554,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4890
+          "y": 6260
         }
       }
     note: false
@@ -598,10 +564,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 7dbfef72-1460-439f-8285-87e7a7b54522
+    taskid: 99f43258-d0ab-4305-827a-883d7c0d7574
     type: condition
     task:
-      id: 7dbfef72-1460-439f-8285-87e7a7b54522
+      id: 99f43258-d0ab-4305-827a-883d7c0d7574
       version: -1
       name: 'Is the agent disconnected? '
       type: condition
@@ -634,7 +600,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5065
+          "y": 6435
         }
       }
     note: false
@@ -644,10 +610,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 0958db10-fb15-4244-8641-aab4a6022559
+    taskid: 91c1fb36-e367-4270-84c0-14eeff6a451d
     type: regular
     task:
-      id: 0958db10-fb15-4244-8641-aab4a6022559
+      id: 91c1fb36-e367-4270-84c0-14eeff6a451d
       version: -1
       name: Connect agent to network
       description: Connects agents to network.
@@ -666,7 +632,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5240
+          "y": 6610
         }
       }
     note: false
@@ -676,10 +642,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 596f0f54-1a4b-409b-8a7e-86a77f1751bb
+    taskid: 20da38f8-b9a3-43b7-847f-86032fd33905
     type: regular
     task:
-      id: 596f0f54-1a4b-409b-8a7e-86a77f1751bb
+      id: 20da38f8-b9a3-43b7-847f-86032fd33905
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -698,7 +664,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5590
+          "y": 6960
         }
       }
     note: false
@@ -708,10 +674,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 09f0005d-4bf8-42af-8a07-8ee4915b7f12
+    taskid: b1c1de11-159e-4e07-8c91-a1de767fecfe
     type: condition
     task:
-      id: 09f0005d-4bf8-42af-8a07-8ee4915b7f12
+      id: b1c1de11-159e-4e07-8c91-a1de767fecfe
       version: -1
       name: 'Is the agent reconnect? '
       type: condition
@@ -736,7 +702,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5765
+          "y": 7135
         }
       }
     note: false
@@ -746,10 +712,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 0a312e30-8676-4fd6-821f-0ac3a45bf003
+    taskid: b24dd4a6-1ba3-41d9-86dd-c219eab4139d
     type: condition
     task:
-      id: 0a312e30-8676-4fd6-821f-0ac3a45bf003
+      id: b24dd4a6-1ba3-41d9-86dd-c219eab4139d
       version: -1
       name: Verify Context
       type: condition
@@ -771,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -781,10 +747,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: c60eafe7-98cc-4cc1-8b59-e0eb2615520b
+    taskid: f3423e12-2bda-49ce-8800-c26d31bd941d
     type: regular
     task:
-      id: c60eafe7-98cc-4cc1-8b59-e0eb2615520b
+      id: f3423e12-2bda-49ce-8800-c26d31bd941d
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -803,7 +769,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -813,10 +779,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 25d72135-95b7-4f36-8d55-8d6d3fac6ce0
+    taskid: 758bba39-80bb-499e-8545-49fdd43bea08
     type: regular
     task:
-      id: 25d72135-95b7-4f36-8d55-8d6d3fac6ce0
+      id: 758bba39-80bb-499e-8545-49fdd43bea08
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -835,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5415
+          "y": 6785
         }
       }
     note: false
@@ -845,10 +811,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: aab748c1-da75-43e9-82a9-8961a795539a
+    taskid: 1893a992-2eb7-4308-818c-537a392325a3
     type: regular
     task:
-      id: aab748c1-da75-43e9-82a9-8961a795539a
+      id: 1893a992-2eb7-4308-818c-537a392325a3
       version: -1
       name: Set Date
       description: |
@@ -875,7 +841,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1945
         }
       }
     note: false
@@ -885,10 +851,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: c5693651-e403-4a45-8e89-b28500e63d12
+    taskid: 5de370d6-716f-4f79-82bf-aca0efdc493a
     type: regular
     task:
-      id: c5693651-e403-4a45-8e89-b28500e63d12
+      id: 5de370d6-716f-4f79-82bf-aca0efdc493a
       version: -1
       name: Get all sites
       description: Returns all sites that match the specified criteria.
@@ -898,7 +864,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "58"
     scriptarguments:
       account_id: {}
       admin_only: {}
@@ -916,7 +882,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4220
         }
       }
     note: false
@@ -926,10 +892,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c5a8c226-6df1-4783-8855-5040843f2866
+    taskid: 4a732db8-6fc3-47a2-87a1-cff11f2678d2
     type: regular
     task:
-      id: c5a8c226-6df1-4783-8855-5040843f2866
+      id: 4a732db8-6fc3-47a2-87a1-cff11f2678d2
       version: -1
       name: Get Site
       description: Returns a site, by site ID.
@@ -952,7 +918,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4570
         }
       }
     note: false
@@ -962,10 +928,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a930b0c0-ea12-41ff-89fe-c80d4ecac568
+    taskid: 20414a33-7cd4-4a02-8177-da80cd8e4dbd
     type: condition
     task:
-      id: a930b0c0-ea12-41ff-89fe-c80d4ecac568
+      id: 20414a33-7cd4-4a02-8177-da80cd8e4dbd
       version: -1
       name: Verify result
       type: condition
@@ -973,7 +939,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "46"
+      - "49"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -987,7 +953,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4745
         }
       }
     note: false
@@ -997,10 +963,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 504dc531-2760-4b2c-8d56-e44c289f07be
+    taskid: ea050cd9-594c-43ba-8583-f2f1c63ed278
     type: condition
     task:
-      id: 504dc531-2760-4b2c-8d56-e44c289f07be
+      id: ea050cd9-594c-43ba-8583-f2f1c63ed278
       version: -1
       name: Verify Results
       type: condition
@@ -1008,7 +974,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1022,7 +988,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -1032,10 +998,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: e8b62f74-388c-4139-860f-4065dc004f9d
+    taskid: c886af85-a0bd-401a-88b3-af53b4088d46
     type: title
     task:
-      id: e8b62f74-388c-4139-860f-4065dc004f9d
+      id: c886af85-a0bd-401a-88b3-af53b4088d46
       version: -1
       name: Done
       type: title
@@ -1046,7 +1012,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6435
+          "y": 10515
         }
       }
     note: false
@@ -1056,10 +1022,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 5f2fa3ec-c9b8-4d72-84fc-0b5a993c9960
+    taskid: 2eec3a62-935d-46ef-8692-75f269025801
     type: regular
     task:
-      id: 5f2fa3ec-c9b8-4d72-84fc-0b5a993c9960
+      id: 2eec3a62-935d-46ef-8692-75f269025801
       version: -1
       name: Delete Threat from Context
       description: Delete field from context
@@ -1082,7 +1048,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -1092,10 +1058,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 915f9565-2690-42bf-8ed9-85ab6f70abd7
+    taskid: e4c026f0-504b-4518-881f-5b8123de69e7
     type: regular
     task:
-      id: 915f9565-2690-42bf-8ed9-85ab6f70abd7
+      id: e4c026f0-504b-4518-881f-5b8123de69e7
       version: -1
       name: Get Hash
       description: Get file reputation by a SHA1 hash.
@@ -1114,7 +1080,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3170
         }
       }
     note: false
@@ -1124,10 +1090,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: ea3b24a0-dd3b-41b0-8f20-e7c52227838d
+    taskid: 547c5b03-686a-4615-8d5a-4a40fe2b0014
     type: condition
     task:
-      id: ea3b24a0-dd3b-41b0-8f20-e7c52227838d
+      id: 547c5b03-686a-4615-8d5a-4a40fe2b0014
       version: -1
       name: Verify outputs
       type: condition
@@ -1149,7 +1115,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3345
         }
       }
     note: false
@@ -1159,10 +1125,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: e43c6e26-90e1-42f2-82d4-5652ac28f8bf
+    taskid: 057822c4-5f72-4dd0-89e2-4faed3b6eed9
     type: regular
     task:
-      id: e43c6e26-90e1-42f2-82d4-5652ac28f8bf
+      id: 057822c4-5f72-4dd0-89e2-4faed3b6eed9
       version: -1
       name: Get Exclusions
       description: Lists all exclusion items that match the specified input filter.
@@ -1185,7 +1151,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3520
         }
       }
     note: false
@@ -1195,10 +1161,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 0bcd92ee-8223-49db-8c7d-db09d2f370b1
+    taskid: aaa6854d-5051-44dc-89e5-3ee823775536
     type: condition
     task:
-      id: 0bcd92ee-8223-49db-8c7d-db09d2f370b1
+      id: aaa6854d-5051-44dc-89e5-3ee823775536
       version: -1
       name: Verify outputs
       type: condition
@@ -1223,7 +1189,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3695
         }
       }
     note: false
@@ -1233,10 +1199,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: a2b4aecb-e085-40e5-805e-e3e426e880ce
+    taskid: f4792892-9d14-4e2b-8b88-cfc17add7d8f
     type: condition
     task:
-      id: a2b4aecb-e085-40e5-805e-e3e426e880ce
+      id: f4792892-9d14-4e2b-8b88-cfc17add7d8f
       version: -1
       name: Verify outputs
       type: condition
@@ -1261,7 +1227,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 4045
         }
       }
     note: false
@@ -1271,10 +1237,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 36221d62-a56a-42ce-8d27-920384723d2f
+    taskid: bc1c2ee8-c977-4f6c-8c51-a0c1e3f78abe
     type: title
     task:
-      id: 36221d62-a56a-42ce-8d27-920384723d2f
+      id: bc1c2ee8-c977-4f6c-8c51-a0c1e3f78abe
       version: -1
       name: Agents Done
       type: title
@@ -1282,13 +1248,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "59"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6290
+          "y": 8010
         }
       }
     note: false
@@ -1298,10 +1264,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: add305a5-cd34-49a9-818e-556d02c455e0
+    taskid: 914283af-1364-40cf-83e9-09a0e74372be
     type: title
     task:
-      id: add305a5-cd34-49a9-818e-556d02c455e0
+      id: 914283af-1364-40cf-83e9-09a0e74372be
       version: -1
       name: Agents
       type: title
@@ -1315,7 +1281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 5590
         }
       }
     note: false
@@ -1325,10 +1291,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 4a1fd1cc-640b-4507-8678-629a0440ad4c
+    taskid: f21f9f96-1b18-44b5-8e56-12273ecad59a
     type: condition
     task:
-      id: 4a1fd1cc-640b-4507-8678-629a0440ad4c
+      id: f21f9f96-1b18-44b5-8e56-12273ecad59a
       version: -1
       name: Verify Results
       type: condition
@@ -1350,7 +1316,929 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 25e92077-be45-416c-838c-27c83972c608
+    type: regular
+    task:
+      id: 25e92077-be45-416c-838c-27c83972c608
+      version: -1
+      name: Create IOC
+      description: Add an IoC to the Threat Intelligence database. Relevant for API
+        version 2.1
+      script: SentinelOne V2|||sentinelone-create-ioc
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      account_ids: {}
+      description: {}
+      externalId: {}
+      method: {}
+      name: {}
+      source: {}
+      type: {}
+      validUntil: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: fe680f66-ba6c-49a4-8ac2-cbdc2699ed9d
+    type: title
+    task:
+      id: fe680f66-ba6c-49a4-8ac2-cbdc2699ed9d
+      version: -1
+      name: IOCs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 1083b633-e8db-4a33-80fe-601814551f34
+    type: regular
+    task:
+      id: 1083b633-e8db-4a33-80fe-601814551f34
+      version: -1
+      name: Get IOCs
+      description: Get the IOCs of a specified Account that match the filter. Relevant
+        for API version 2.1
+      script: SentinelOne V2|||sentinelone-get-iocs
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      account_ids: {}
+      batch_id: {}
+      category_in: {}
+      creation_time_gte: {}
+      creation_time_lte: {}
+      creator_contains: {}
+      cursor: {}
+      description_contains: {}
+      external_id: {}
+      limit:
+        simple: "5"
+      name_contains: {}
+      source: {}
+      type: {}
+      updated_at_gte: {}
+      updated_at_lte: {}
+      upload_time_gte: {}
+      upload_time_lte: {}
+      uuids: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 480d5f5b-a3d8-4afb-87e5-df4ab16ea39e
+    type: regular
+    task:
+      id: 480d5f5b-a3d8-4afb-87e5-df4ab16ea39e
+      version: -1
+      name: Delete IOC
+      description: Delete an IoC from the Threat Intelligence database that matches
+        a filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-delete-ioc
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      account_ids: {}
+      uuids:
+        complex:
+          root: SentinelOne.IOC
+          accessor: UUID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: ca174b0f-92a2-4f3a-8d34-800ec5ea1c11
+    type: regular
+    task:
+      id: ca174b0f-92a2-4f3a-8d34-800ec5ea1c11
+      version: -1
+      name: Get installed applications
+      description: Get the installed applications for a specific Agent.
+      script: SentinelOne V2|||sentinelone-get-installed-applications
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      agent_ids:
+        complex:
+          root: SentinelOne.Agents
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 0616b0ee-f7f6-4be8-89de-113edbbc83b9
+    type: regular
+    task:
+      id: 0616b0ee-f7f6-4be8-89de-113edbbc83b9
+      version: -1
+      name: Initiate endpoint scan
+      description: Initiate the endpoint virus scan on provided agent IDs
+      script: SentinelOne V2|||sentinelone-initiate-endpoint-scan
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      agent_ids:
+        complex:
+          root: SentinelOne.Agents
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: e0b31d50-d8f5-44dd-89aa-860544e63031
+    type: regular
+    task:
+      id: e0b31d50-d8f5-44dd-89aa-860544e63031
+      version: -1
+      name: Update threat status
+      description: Updates the incident status to a group of threats that match the
+        specified input filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-update-threats-status
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      status:
+        simple: in_progress
+      threat_ids:
+        complex:
+          root: SentinelOne.Threat
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 8490e3c5-99e0-4ce3-8536-dd4d0b72932d
+    type: regular
+    task:
+      id: 8490e3c5-99e0-4ce3-8536-dd4d0b72932d
+      version: -1
+      name: Update threats verdict
+      description: Updates the analyst verdict to a group of threats that match the
+        specified input filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-update-threats-verdict
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      threat_ids:
+        complex:
+          root: SentinelOne.Threat
+          accessor: ID
+          transformers:
+          - operator: LastArrayElement
+      verdict:
+        simple: true_positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: dc503eb0-8a45-4942-8acb-22b71a43086c
+    type: regular
+    task:
+      id: dc503eb0-8a45-4942-8acb-22b71a43086c
+      version: -1
+      name: Write threat note
+      description: Add a threat note to one or more threats. Relevant for API version
+        2.1
+      script: SentinelOne V2|||sentinelone-write-threat-note
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      note:
+        simple: a xsoar test
+      threat_ids:
+        complex:
+          root: SentinelOne.Threat
+          accessor: ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 8ba7732f-7b22-4690-825c-5dd3310ef82a
+    type: regular
+    task:
+      id: 8ba7732f-7b22-4690-825c-5dd3310ef82a
+      version: -1
+      name: Fetch threat file
+      description: Fetch a file associated with the threat that matches the filter.
+      script: SentinelOne V2|||sentinelone-fetch-threat-file
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      password:
+        simple: Mysecret@123
+      threat_id:
+        complex:
+          root: SentinelOne.Threat
+          accessor: ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: f2175775-90ef-4f58-802e-32c05e191685
+    type: regular
+    task:
+      id: f2175775-90ef-4f58-802e-32c05e191685
+      version: -1
+      name: Expire site
+      description: Expire the Site of the given ID
+      script: SentinelOne V2|||sentinelone-expire-site
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      site_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 69d5c165-ce57-4c50-8c50-2a66f1febcfe
+    type: title
+    task:
+      id: 69d5c165-ce57-4c50-8c50-2a66f1febcfe
+      version: -1
+      name: Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 93150c1a-0b4c-4ff1-85f9-dd614b2a8197
+    type: regular
+    task:
+      id: 93150c1a-0b4c-4ff1-85f9-dd614b2a8197
+      version: -1
+      name: Get alerts
+      description: Get the list of alerts that matches the filter provided. Relevant
+        for API version 2.1
+      script: SentinelOne V2|||sentinelone-get-alerts
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      alert_ids: {}
+      analystVerdict: {}
+      created_from: {}
+      created_until: {}
+      cursor: {}
+      incidentStatus: {}
+      limit:
+        simple: "10"
+      ruleName: {}
+      site_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 0ccdc1e9-e479-4167-8a32-15786dbe4c56
+    type: regular
+    task:
+      id: 0ccdc1e9-e479-4167-8a32-15786dbe4c56
+      version: -1
+      name: Update alert status
+      description: Updates the incident status to a group of alerts that match the
+        specified input filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-update-alerts-status
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: SentinelOne.Alert
+          accessor: AlertId
+          transformers:
+          - operator: FirstArrayElement
+      status:
+        simple: in_progress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 35d2c9cf-4c1b-4fb6-86b9-1e6b154c1d16
+    type: regular
+    task:
+      id: 35d2c9cf-4c1b-4fb6-86b9-1e6b154c1d16
+      version: -1
+      name: Update alert verdict
+      description: Updates the analyst verdict to a group of alerts that match the
+        specified input filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-update-alerts-verdict
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: SentinelOne.Alert
+          accessor: AlertId
+          transformers:
+          - operator: FirstArrayElement
+      verdict:
+        simple: true_positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: ee577190-ea0a-4521-8226-b1c4d1577bad
+    type: title
+    task:
+      id: ee577190-ea0a-4521-8226-b1c4d1577bad
+      version: -1
+      name: Star rules
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 387c37cc-a449-45ba-8e15-92c88ba1a584
+    type: regular
+    task:
+      id: 387c37cc-a449-45ba-8e15-92c88ba1a584
+      version: -1
+      name: Get star rules
+      description: Get a list of Custom Detection Rules for a given scope. Relevant
+        for API version 2.1
+      script: SentinelOne V2|||sentinelone-get-star-rules
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      accountIds: {}
+      creator_contains: {}
+      description_contains: {}
+      expirationMode: {}
+      limit:
+        simple: "10"
+      name_contains: {}
+      query: {}
+      queryType: {}
+      ruleIds: {}
+      siteIds: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 5efc3d3f-77ee-4743-8f34-223f960b3fae
+    type: regular
+    task:
+      id: 5efc3d3f-77ee-4743-8f34-223f960b3fae
+      version: -1
+      name: Create star rule
+      description: Creates a custom STAR rule. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-create-star-rule
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      account_ids: {}
+      description: {}
+      expiration_date: {}
+      expiration_mode: {}
+      group_ids: {}
+      name: {}
+      network_quarantine: {}
+      query: {}
+      query_type: {}
+      rule_severity: {}
+      site_ids: {}
+      treatAsThreat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: d363dbfd-226d-467c-8d40-89eb5453d090
+    type: regular
+    task:
+      id: d363dbfd-226d-467c-8d40-89eb5453d090
+      version: -1
+      name: Update star rule
+      description: Updates a custom STAR rule. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-update-star-rule
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      account_ids: {}
+      description: {}
+      expiration_date: {}
+      expiration_mode: {}
+      group_ids: {}
+      name: {}
+      network_quarantine: {}
+      query: {}
+      query_type: {}
+      rule_id: {}
+      rule_severity: {}
+      site_ids: {}
+      treatAsThreat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 6961fae9-b49f-4b6a-8609-7f20a9abf502
+    type: regular
+    task:
+      id: 6961fae9-b49f-4b6a-8609-7f20a9abf502
+      version: -1
+      name: Disable star rule
+      description: Disable Custom Detection Rules that match the specified input filter.
+        Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-disable-star-rules
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      rule_ids:
+        complex:
+          root: SentinelOne.StarRule
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 14dd1293-fad3-43df-8313-47ee16c8c01e
+    type: regular
+    task:
+      id: 14dd1293-fad3-43df-8313-47ee16c8c01e
+      version: -1
+      name: Enable star rule
+      description: Activate Custom Detection Rules that match the specified input
+        filter. Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-enable-star-rules
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      rule_ids:
+        complex:
+          root: SentinelOne.StarRule
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: cb1e0ae4-e95e-440f-80f8-c79a70e2a59b
+    type: regular
+    task:
+      id: cb1e0ae4-e95e-440f-80f8-c79a70e2a59b
+      version: -1
+      name: Delete star rule
+      description: Deletes Custom Detection Rules that match the specified input filter.
+        Relevant for API version 2.1
+      script: SentinelOne V2|||sentinelone-delete-star-rule
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      rule_ids:
+        complex:
+          root: SentinelOne.StarRule
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: e8db31c1-cd30-4517-8611-f14f3b174df3
+    type: title
+    task:
+      id: e8db31c1-cd30-4517-8611-f14f3b174df3
+      version: -1
+      name: Power query
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 2f26c186-e67e-423f-843f-ddde765ee636
+    type: regular
+    task:
+      id: 2f26c186-e67e-423f-843f-ddde765ee636
+      version: -1
+      name: Create power query
+      description: Start a Deep Visibility Power Query, get back status and potential
+        results (ping afterwards using the queryId if query has not finished). Relevant
+        for API version 2.1
+      script: SentinelOne V2|||sentinelone-create-power-query
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      from_date: {}
+      limit: {}
+      query: {}
+      to_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 9066ef5a-6bbf-4979-857d-b4ffd1fd3eb3
+    type: regular
+    task:
+      id: 9066ef5a-6bbf-4979-857d-b4ffd1fd3eb3
+      version: -1
+      name: Ping power query
+      description: Ping a Deep Visibility Power Query using the queryId if results
+        have not returned from an initial Power Query or a previous ping. Relevant
+        for API version 2.1
+      script: SentinelOne V2|||sentinelone-ping-power-query
+      type: regular
+      iscommand: true
+      brand: SentinelOne V2
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      queryId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10340
         }
       }
     note: false
@@ -1363,7 +2251,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6450,
+        "height": 10530,
         "width": 380,
         "x": 50,
         "y": 50

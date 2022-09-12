@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 from dateutil import parser
 import copy
 from typing import Optional, Dict
-import traceback
 
 # XDR_FIELDS
 INCIDENT_ID_XDR_FIELD = "incident_id"
@@ -441,7 +440,6 @@ def main(args):
         if verbose:
             raise
 
-        demisto.error(traceback.format_exc())
         return_error(str(ex), ex)
     finally:
         # even if error occurred keep trigger sync

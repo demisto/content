@@ -3,16 +3,5 @@ id: Apache_Web_Server
 fromversion: 6.8.0
 tags: Apache Web Server
 rules: ''
-schema: |-
-  {
-    "Apache_httpd_error": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-      "httpd_access": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-  }
+schema: ''
+

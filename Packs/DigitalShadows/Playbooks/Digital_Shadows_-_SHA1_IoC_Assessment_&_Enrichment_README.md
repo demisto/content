@@ -11,10 +11,9 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * AddEvidence
+* Print
 
 ### Commands
-* associateIndicatorsToIncident
-* createNewIndicator
 * ds-search
 
 ## Playbook Inputs
@@ -22,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_SHA1 | A SHA1 hash to assess and enrich | File.SHA1 | Optional |
+| IoC_SHA1 | A Digital Shadows ShadowSearch query containing SHA1 hashes | File.SHA1 | Optional |
 
 ## Playbook Outputs
 ---

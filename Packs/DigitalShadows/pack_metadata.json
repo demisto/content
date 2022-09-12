@@ -2,7 +2,7 @@
     "name": "Digital Shadows SearchLight",
     "description": "Digital Shadows monitors and manages an organization's digital risk across the open, deep, and dark web.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Digital Shadows",
     "url": "https://www.digitalshadows.com/",
     "email": "info@digitalshadows.com",
@@ -64,20 +64,20 @@
             "mandatory": true,
             "display_name": "Core Alert Fields"
         },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
         "Phishing": {
             "mandatory": true,
             "display_name": "Phishing"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
         }
     },
     "displayedImages": [
         "CommonScripts",
         "CoreAlertFields",
-        "CommonTypes",
-        "Phishing"
+        "Phishing",
+        "CommonTypes"
     ],
     "itemPrefix": [
         "DS",

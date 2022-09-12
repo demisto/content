@@ -1,0 +1,64 @@
+{
+    "paloaltonetworks_saassecurity_raw": {
+      "log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "timestamp": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "admin_role": {
+        "type": "string",
+        "is_array": false
+      },
+      "ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "event_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "item_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "remoteAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "resource_value_old": {
+        "type": "string",
+        "is_array": false
+      },
+      "resource_value_new": {
+        "type": "string",
+        "is_array": false
+      },
+      "asset_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "location": {
+        "type": "string",
+        "is_array": false
+      },
+      "target_name": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

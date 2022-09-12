@@ -131,7 +131,6 @@ def main():
         entries_data = collect_entries_data_from_response(parsed_feed_data, limit)
         content = create_widget_content(entries_data)
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(str(e))
 
     return_results({

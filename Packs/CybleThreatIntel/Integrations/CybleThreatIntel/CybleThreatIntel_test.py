@@ -1,6 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import pytest
+
+input_value = json.load(open("test_data/input.json", "r"))
+params = input_value['params']
+args = input_value['args']
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S+00:00"
 
 
 def load_json_file(filename):
@@ -15,326 +20,222 @@ def load_json_file(filename):
     return content
 
 
-def test_module(requests_mock):
+def test_get_recursively():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = load_json_file("test.json")
+    val = Client.get_recursively(client, mock_response_1[0][0], "value")
+    assert isinstance(val, list)
+    assert 'URL Watchlist' in val
+
+
+def test_build_indicators():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    val = Client.build_indicators(client, args, mock_response_1[0])
+    assert isinstance(val, list)
+    assert mock_response_2 == val
+
+
+def test_get_parse_to_json():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data.xml", "r").read())
+    mock_response_3 = load_json_file("data.json")
+    val = Client.parse_to_json(client, mock_response_1)
+    assert isinstance(val, dict)
+    assert mock_response_3 == val
+
+
+def test_get_taxii(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data.xml", "r").read())
+    mock_response_3 = load_json_file("data.json")
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    val, time = Client.get_taxii(client, args)
+    assert isinstance(val, list)
+    assert isinstance(time, str)
+    assert mock_response_3 == val[0]
+
+
+def test_get_taxii_invalid(mocker, capfd):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data_err.xml", "r").read())
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    with capfd.disabled():
+        try:
+            val, time = Client.get_taxii(client, args)
+        except Exception as e:
+            error_val = e.args[0]
+
+    assert "Last fetch time retrieval failed." in error_val
+
+
+def test_get_taxii_failure(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mocker.patch.object(client, 'fetch', return_value=[])
+    val, time = Client.get_taxii(client, args)
+    assert isinstance(val, list)
+    assert time is None
+    assert [] == val
+
+
+def test_get_taxii_error(mocker, capfd):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = """
+                <stix:STIX_Package id="example:Package-19548504-7169-4b2e-9b54-0fa1c3d931f8" version="1.2">
+                </stix:STIX_Package>
+                """
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    with capfd.disabled():
+        try:
+            val, time = Client.get_taxii(client, args)
+        except Exception as e:
+            error_val = e.args[0]
+
+    assert "Namespace prefix stix on STIX_Package is not defined" in error_val
+
+
+def test_get_services(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mocker.patch.object(client, 'client', return_value=[])
+    val = Client.get_services(client)
+    assert isinstance(val, list)
+    assert val == []
+
+
+def test_module(mocker):
     """
     Test the basic test command for Cyble Threat Intel
     :return:
     """
+    # import requests_mock
     from CybleThreatIntel import Client, get_test_response
-    mock_response = load_json_file("cyble_threat_intel.json")
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
+    client = Client(params)
 
-    args = {
-        'token': 'some_random_token',
-        "page": 1,
-        "limit": 1,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22",
-        "start_time": "00:00:00",
-        "end_time": "00:00:00",
-    }
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    response = get_test_response(client=client, method='POST', params=args)
+    mock_response_1 = load_json_file("test.json")
+    mocker.patch.object(client, 'get_taxii', return_value=mock_response_1)
+    response = get_test_response(client, {})
 
     assert isinstance(response, str)
     assert response == 'ok'
 
 
-def test_response_failure(requests_mock):
+def test_module_failure(mocker):
     """
-    Test the basic test-module command in case of a failure.
+    Test the basic test command for Cyble Threat Intel
+    :return:
     """
+    # import requests_mock
     from CybleThreatIntel import Client, get_test_response
-    mock_response = load_json_file("cyble_threat_intel.json")
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
+    client = Client(params)
 
-    args = {
-        "page": 1,
-        "limit": 1,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22",
-        "start_time": "00:00:00",
-        "end_time": "00:00:00",
-    }
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    response = get_test_response(client=client, method='POST', params=args)
+    mocker.patch.object(client, 'get_taxii', return_value=[])
+    response = get_test_response(client, {})
 
     assert isinstance(response, str)
-    assert response == 'Access token missing.'
+    assert response == 'Unable to Contact Feed Service, Please Check the parameters.'
 
 
-def test_module_failure(requests_mock):
+def test_module_error(mocker):
     """
-    Test the basic test-module command in case of a failure.
+    Test the basic test command for Cyble Threat Intel
+    :return:
     """
     from CybleThreatIntel import Client, get_test_response
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
-
-    args = {
-        'token': 'some_random_token',
-        "page": 1,
-        "limit": 1,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22",
-        "start_time": "00:00:00",
-        "end_time": "00:00:00",
-    }
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    response = get_test_response(client=client, method='POST', params=args)
+    client = Client(params)
+    mocker.patch.object(client, 'get_taxii', return_value={})
+    response = get_test_response(client, {})
 
     assert isinstance(response, str)
-    assert response == 'Failed to fetch feed!!'
+    assert response == 'Unable to Contact Feed Service, Please Check the parameters.'
+
+
+def test_cyble_fetch_taxii(mocker):
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+    client = Client(params)
+
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    mocker.patch.object(client, 'get_taxii', return_value=mock_response_1)
+    mocker.patch.object(client, 'build_indicators', return_value=mock_response_2)
+    response = cyble_fetch_taxii(client, args).outputs
+
+    assert response[0]['rawJSON'] == mock_response_1[0][0]
 
 
 @pytest.mark.parametrize(
-    "page,limit", [
-        (1, 1), (3, 5), (5, 15), (7, 7), (9, 20)
+    "begin", [
+        "2022-06-73 00:00:00",
+        "2022-46-13 00:00:00",
+        "2022-06-13 88:00:00",
+        "2022-06-13 00:67:00",
+        "2022-06-13 00:00:67"
     ]
 )
-def test_cyble_vision_fetch_taxii(requests_mock, page, limit):
-    """
-    Tests the cyble_vision_fetch_taxii command
-
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
-    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
-    the output of the command function with the expected output.
-
-    Uses
-    :param requests_mock:
-    :return:
-    """
-
+def test_cyble_fetch_taxii_error(mocker, begin):
     from CybleThreatIntel import Client, cyble_fetch_taxii
-
-    mock_response = load_json_file("cyble_threat_intel.json")
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
+    client = Client(params)
 
     args = {
-        'token': 'some_random_token',
-        "page": page,
-        "limit": limit,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22",
-        "start_time": "00:00:00",
-        "end_time": "00:00:00",
+        "limit": 5,
+        "begin": begin,
+        "end": "2022-06-13 00:00:00",
+        "collection": "phishing_url"
     }
 
-    response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
-    # assert the response object
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    mocker.patch.object(client, 'get_taxii', return_value=mock_response_1)
+    mocker.patch.object(client, 'build_indicators', return_value=mock_response_2)
+    error_val = None
+    try:
+        cyble_fetch_taxii(client, args).outputs
+    except Exception as e:
+        error_val = e.args[0]
 
-    # check if the response object is a dict
-    assert isinstance(response, dict)
-
-    # each result entry is a list
-    assert isinstance(response['result'], list)
-
-    # check if the result entry is a dict
-    assert isinstance(response['result'][0], dict)
-
-    # assert the entries for indicator key
-    assert isinstance(response['result'][0]['indicator'], dict)
-    assert response['result'][0]['indicator']['type'] == 'some_type'
-    assert response['result'][0]['indicator']['spec_version'] == 'some_spec_version'
-    assert response['result'][0]['indicator']['id'] == 'some_id'
-    assert response['result'][0]['indicator']['created'] == '2022-02-04T22:54:38Z'
-    assert response['result'][0]['indicator']['modified'] == '2022-02-04T22:54:38Z'
-    assert response['result'][0]['indicator']['description'] == ''
-    assert response['result'][0]['indicator']['indicator_types'] == 'some_indicator_type'
-    assert response['result'][0]['indicator']['pattern'] == 'some_pattern'
-    assert response['result'][0]['indicator']['pattern_type'] == 'some_pattern_type'
+    assert "Invalid date format received" in error_val
 
 
-def test_failure_cyble_vision_fetch_taxii(requests_mock):
-    """
-    Tests the cyble_vision_fetch_taxii command failure case
+def test_fetch_indicators(mocker):
+    from CybleThreatIntel import Client, fetch_indicators
+    client = Client(params)
 
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
-    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
-    the output of the command function with the expected output.
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    mocker.patch.object(client, 'get_taxii', return_value=mock_response_1)
+    mocker.patch.object(client, 'build_indicators', return_value=mock_response_2)
+    raw_response = fetch_indicators(client)
 
-    Uses
-    :param requests_mock:
-    :return:
-    """
-
-    from CybleThreatIntel import Client, cyble_fetch_taxii
-
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    args = {
-        'token': 'some_random_token',
-        "page": 1,
-        "limit": 1,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22",
-        "start_time": "00:00:00",
-        "end_time": "00:00:00",
-    }
-
-    response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
-    # assert the response object
-
-    # check if the response object is a dict
-    assert isinstance(response, dict)
-
-    # each result entry is a list
-    assert response == {}
-
-
-def test_failure_fetch_taxii(requests_mock):
-    """
-    Tests the cyble_fetch_taxii command failure case
-
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
-    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
-    the output of the command function with the expected output.
-
-    Uses
-    :param requests_mock:
-    :return:
-    """
-
-    from CybleThreatIntel import Client, cyble_fetch_taxii
-
-    mock_response = load_json_file("cyble_threat_intel.json")
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    args = {
-        "page": 1,
-        "limit": 1,
-        "start_date": "2022-02-22",
-        "end_date": "2022-02-22"
-    }
-
-    response = cyble_fetch_taxii(client=client, method='POST', args=args).outputs
-    # assert the response object
-
-    # check if the response object is a dict
-    assert isinstance(response, dict)
-
-    # each result entry is a list
-    assert response['error'] == 'Invalid Token!!'
-
-
-def test_fail_fetch_taxii(requests_mock):
-    """
-    Tests the cyble_fetch_taxii command failure case
-
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
-    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
-    the output of the command function with the expected output.
-
-    Uses
-    :param requests_mock:
-    :return:
-    """
-
-    from CybleThreatIntel import Client, cyble_fetch_taxii
-
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    response = cyble_fetch_taxii(client=client, method='POST', args={}).outputs
-    # assert the response object
-
-    # check if the response object is a dict
-    assert isinstance(response, dict)
-
-    # each result entry is a list
-    assert response['error'] == 'Invalid Token!!'
-
-
-def test_failure_cyble_fetch_taxii(requests_mock):
-    """
-    Tests the cyble_vision_fetch_taxii command failure case
-
-    Configures requests_mock instance to generate the appropriate cyble_vision_fetch_taxii
-    API response when the correct cyble_vision_fetch_taxii API request is performed. Checks
-    the output of the command function with the expected output.
-
-    Uses
-    :param requests_mock:
-    :return:
-    """
-
-    from CybleThreatIntel import Client, cyble_fetch_taxii
-
-    requests_mock.post('https://test.com/taxii/stix-data/v21/get', json={})
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False
-    )
-
-    response = cyble_fetch_taxii(client=client, method='POST', args={}).outputs
-    # assert the response object
-
-    # check if the response object is a dict
-    assert isinstance(response, dict)
-
-    # each result entry is a list
-    assert response['error'] == 'Invalid Token!!'
-
-
-def test_page_validate_input(capfd):
-    from CybleThreatIntel import validate_input
-
-    args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': datetime.today().strftime('%Y-%m-%d'),
-        'page': '-1',
-        'limit': '1',
-    }
-    with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Parameter should be positive number, page: {args.get('page')}"):
-            validate_input(args=args)
+    assert raw_response == mock_response_2
 
 
 def test_limit_validate_input(capfd):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': datetime.today().strftime('%Y-%m-%d'),
-        'page': '1',
-        'limit': '40',
+        "limit": -5,
+        "begin": "2022-06-11 00:00:00",
+        "end": "2022-06-13 00:00:00",
+        "collection": "phishing_url"
     }
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Limit should be positive number upto 20, limit: {args.get('limit', 0)}"):
+        with pytest.raises(ValueError, match=f"Limit should be positive, limit: {args.get('limit', 0)}"):
             validate_input(args=args)
 
 
@@ -342,14 +243,15 @@ def test_sdate_validate_input(capfd):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': (datetime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-        'end_date': datetime.today().strftime('%Y-%m-%d'),
-        'page': '1',
-        'limit': '1'
+        "limit": 5,
+        "begin": "2022-06-73 00:00:00",
+        "end": "2022-06-13 00:00:00",
+        "collection": "phishing_url"
     }
+
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y-%m-%d')}"):
+                           match="Invalid date format received"):
             validate_input(args=args)
 
 
@@ -357,30 +259,34 @@ def test_edate_validate_input(capfd):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': (datetime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-        'page': '1',
-        'limit': '1'
+        "limit": 5,
+        "begin": "2022-06-13 00:00:00",
+        "end": "2022-06-73 00:00:00",
+        "collection": "phishing_url"
     }
+
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"End date must be a date before or equal to {datetime.today().strftime('%Y-%m-%d')}"):
+                           match="Invalid date format received"):
             validate_input(args=args)
 
 
-def test_date_validate_input(capfd):
+@pytest.mark.parametrize(
+    "limit", [1, 10, 174, 1060]
+)
+def test_date_validate_input(capfd, limit):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': (datetime.today() - timedelta(days=4)).strftime('%Y-%m-%d'),
-        'page': '1',
-        'limit': '1'
+        "limit": limit,
+        "begin": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "end": str((datetime.now(timezone.utc) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "collection": "phishing_url"
     }
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+                           match="Start date cannot be after end date"):
             validate_input(args=args)
 
 
@@ -388,27 +294,53 @@ def test_idate_validate_input(capfd):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': '2001-18-12',
-        'end_date': datetime.today().strftime('%Y-%m-%d')
+        "limit": 5,
+        "begin": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "end": str((datetime.now(timezone.utc) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "collection": "phishing_url"
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match="Invalid date format received"):
+        with pytest.raises(ValueError, match="End date must be a date before or equal to current"):
             validate_input(args=args)
 
 
-def test_time_validate_input(capfd):
+def test_end_date_validate_input(capfd):
     from CybleThreatIntel import validate_input
 
     args = {
-        'start_date': datetime.today().strftime('%Y-%m-%d'),
-        'end_date': datetime.today().strftime('%Y-%m-%d'),
-        'page': '1',
-        'limit': '1',
-        'start_time': '12:34:23',
-        'end_time': '16:83:45'
+        "limit": 5,
+        "begin": str((datetime.now(timezone.utc) + timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "end": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "collection": "phishing_url"
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match="Invalid time format received"):
+        with pytest.raises(ValueError, match="Start date must be a date before or equal to current"):
             validate_input(args=args)
+
+
+def test_collection_validate_input(capfd):
+    from CybleThreatIntel import validate_input
+
+    args = {
+        "limit": 5,
+        "begin": str((datetime.now(timezone.utc) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
+        "end": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
+        "collection": ""
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError, match="Collection Name should be provided: None"):
+            validate_input(args=args)
+
+
+def test_feed_collection(mocker):
+    from CybleThreatIntel import Client, get_feed_collection
+    client = Client(params)
+
+    mock_response_1 = load_json_file("collection.json")
+    mocker.patch.object(client, 'get_services', return_value=mock_response_1)
+    response = get_feed_collection(client).outputs
+    assert isinstance(response, dict)
+    assert response == mock_response_1
