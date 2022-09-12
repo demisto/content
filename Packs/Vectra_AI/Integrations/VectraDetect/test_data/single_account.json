@@ -1,0 +1,133 @@
+{
+    "_doc_modified_ts": "2022-07-08T14:10:34.243153",
+    "account_type": "o365",
+    "certainty": 35,
+    "detection_summaries": [
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 50,
+            "detection_category": "EXFILTRATION",
+            "detection_id": 57,
+            "detection_type": "O365 Suspicious Mail Forwarding",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "description": "This account was seen forwarding mailboxes to external emails, which may be used as a collection or exfiltration channel.",
+                "destination_emails": [
+                    "smtp:audit_corporate@test.com"
+                ],
+                "num_mailboxes_forwarded": 1
+            },
+            "tags": [],
+            "threat": 60
+        },
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 60,
+            "detection_category": "LATERAL MOVEMENT",
+            "detection_id": 56,
+            "detection_type": "O365 Risky Exchange Operation",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "app_name": "Exchange",
+                "description": "This account performed Exchange operations that were unusual for the account and could support malicious activities.",
+                "operations": [
+                    "Set-Mailbox",
+                    "New-InboxRule",
+                    "Enable-InboxRule"
+                ]
+            },
+            "tags": [],
+            "threat": 40
+        },
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 70,
+            "detection_category": "COMMAND & CONTROL",
+            "detection_id": 55,
+            "detection_type": "Azure AD Suspicious Sign-On",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "client_applications": [
+                    "Office 365 Exchange Online"
+                ],
+                "countries": [
+                    "US"
+                ],
+                "description": "A successful but suspicious sign-on to this account was detected.",
+                "mfa_status": [
+                    "notApplied"
+                ],
+                "oss": [
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+                ],
+                "reasons": [
+                    "rare IP",
+                    "rare device",
+                    "rare location",
+                    "concurrent session",
+                    "fast traveler"
+                ],
+                "src_ips": [
+                    "1.1.1.1"
+                ]
+            },
+            "tags": [],
+            "threat": 80
+        },
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 50,
+            "detection_category": "LATERAL MOVEMENT",
+            "detection_id": 54,
+            "detection_type": "Azure AD Successful Brute-Force",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "description": "This account successfully logged in from a suspicious IP address after frequent failed login attempts.",
+                "num_attempts": 67,
+                "operations": [
+                    "UserLoggedIn"
+                ]
+            },
+            "tags": [],
+            "threat": 50
+        }
+    ],
+    "id": 36,
+    "last_detection_timestamp": "2022-07-03T23:34:07Z",
+    "ldap": null,
+    "name": "O365:darcy@corp.example.com",
+    "note": null,
+    "note_modified_by": null,
+    "note_modified_timestamp": null,
+    "privilege_category": null,
+    "privilege_level": null,
+    "probable_home": null,
+    "severity": "High",
+    "state": "active",
+    "tags": [],
+    "threat": 60
+}

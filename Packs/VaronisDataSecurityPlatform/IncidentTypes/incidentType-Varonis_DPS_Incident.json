@@ -1,0 +1,22 @@
+{
+    "fromVersion": "6.0.0",
+    "id": "Varonis DSP Incident",
+    "version": -1,
+    "locked": false,
+    "name": "Varonis DSP Incident",
+    "prevName": "Varonis DSP Incident",
+    "color": "#538eca",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "Varonis DSP Incident"
+}

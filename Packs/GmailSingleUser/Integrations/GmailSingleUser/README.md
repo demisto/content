@@ -206,3 +206,108 @@ There is no context output for this command.
 
 #### Human Readable Output
 Authentication test completed successfully.
+
+### reply-mail
+***
+Replies to a mail using Gmail.
+
+#### Limitations:
+
+The *subject* argument should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
+
+#### Base Command
+
+`reply-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | Email addresses of the recipients. | Required | 
+| from | Email address of the sender. | Optional | 
+| body | The contents (body) of the email to be sent in plain text. | Optional | 
+| subject | Subject of the email to be sent. <br/> Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation. | Required | 
+| inReplyTo | A comma-separated list of message IDs to reply to. | Required | 
+| references | A comma-separated list of message IDs to refer to. | Optional | 
+| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 
+| cc | Additional recipient email addresses (CC). | Optional | 
+| bcc | Additional recipient email addresses (BCC). | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format. | Optional | 
+| replyTo | Address that needs to be used to reply to the message. | Optional | 
+| attachNames | A comma-separated list of new names to rename attachments corresponding to the order in which they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5 | Optional | 
+| attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 
+| transientFile | Textual name for an attached file. Multiple files are supported as a<br/>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz" | Optional | 
+| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz" | Optional | 
+| transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz" | Optional | 
+| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/> Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.SentMail.ID | String | The immutable ID of the message. | 
+| Gmail.SentMail.Labels | String | List of IDs of the labels applied to this message. | 
+| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
+| Gmail.SentMail.To | String | The recipients of the email. | 
+| Gmail.SentMail.From | Unknown | The sender of the email. | 
+| Gmail.SentMail.Cc | String | Additional recipient email addresses \(CC\). | 
+| Gmail.SentMail.Bcc | String | Additional recipient email addresses \(BCC\). | 
+| Gmail.SentMail.Subject | String | The subject of the email. | 
+| Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
+| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
+
+
+#### Command Example
+``` !reply-mail subject="this is the subject" to=test@demistodev.com replyTo=test@demistodev.com body="this is the body" inReplyTo=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com> references=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com>```
+
+#### Context Example
+```
+{
+    "Gmail.SentMail": [
+        {
+            "Bcc": null,
+            "Body": "this is the body",
+            "Cc": null,
+            "From": "admin@demistodev.com",
+            "ID": "16d43287fc29b71a",
+            "Labels": [
+                "SENT"
+            ],
+            "Mailbox": "test@demistodev.com",
+            "Subject": "this is the subject",
+            "ThreadId": "16d43287fc29b71a",
+            "To": "test@demistodev.com",
+            "Type": "Gmail"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+>### Email sent:
+>|Type|ID|To|From|Subject|Body|Labels|ThreadId|
+>|---|---|---|---|---|---|---|---|
+>| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
+
+### gmail-get-attachments
+***
+Retrieves attachments from a sent Gmail message.
+
+
+#### Base Command
+
+`gmail-get-attachments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message-id | The ID of the message to retrieve. | Required | 
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
+
+
+
+#### Command Example
+```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
+
+
