@@ -1,20 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-import json
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -45,33 +28,24 @@ class Client(BaseClient):
     def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
         return self._http_request(method='GET', full_url=full_url, params=params)
 
-    def check_repo(self, repo: str) -> str:
-        if repo:
-            return f'/repositories/{self.workspace}/{repo}'
-        else:
-            if not self.repository:
-                raise Exception("Please provide a repository name")
-            return f'/repositories/{self.workspace}/{self.repository}'
-
     def get_project_list_request(self, params: Dict, project_key: str = None) -> Dict:
         if not project_key:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
         else:
             project_key = project_key.upper()
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/{project_key}'
-
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     def get_open_branch_list_request(self, repo: str, params: Dict) -> Dict:
-        url_suffix = self.check_repo(repo) + '/refs/branches'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def get_branch_request(self, branch_name: str, repo: str = None) -> Dict:
-        url_suffix = self.check_repo(repo) + f'/refs/branches/{branch_name}'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def branch_create_request(self, name: str, target_branch: str, repo: str = None) -> Dict:
-        url_suffix = self.check_repo(repo) + '/refs/branches'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
         body = {
             "target": {
                 "hash": target_branch
@@ -81,54 +55,52 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def branch_delete_request(self, branch_name: str, repo: str = None) -> str:
-        url_suffix = self.check_repo(repo) + f'/refs/branches/{branch_name}'
-        try:
-            self._http_request(method='DELETE', url_suffix=url_suffix)
-        except DemistoException as e:
-            status_code = e.res.status_code
-            if status_code == 204:
-                return str(204)
-            else:
-                return e.message
+        url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
+
+        # response = self._http_request(method='DELETE', url_suffix=url_suffix)
+        # except DemistoException as e:
+        #     status_code = e.res.status_code
+        #     if status_code == 204:
+        #         return str(204)
+        #     else:
+        #         return e.message
 
     def commit_create_request(self, body: Dict, repo: str = None):
-        url_suffix = self.check_repo(repo) + '/src'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
                                   data=body,
                                   resp_type='response')
 
-    def add_branches_url(self, action: str, l: list, url: str) -> str:
-        url = url + '?'
-        for branch in l:
-            url = url + f'{action}={branch}&'
-        return url[:-1]
-
     def commit_list_request(self, repo: str, params: Dict, excluded_list: list = None,
                             included_list: list = None) -> Dict:
-        url_suffix = self.check_repo(repo) + '/commits'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/commits'
+        param_list = ""
         if excluded_list:
-            url_suffix = self.add_branches_url('exclude', excluded_list, url_suffix)
+            for branch in excluded_list:
+                param_list = f'{param_list}exclude={branch}&'
         if included_list:
-            url_suffix = self.add_branches_url('include', included_list, url_suffix)
-        response = self._http_request(method='POST',
-                                      url_suffix=url_suffix,
-                                      params=params)
-        return response
+            for branch in included_list:
+                param_list = f'{param_list}include={branch}&'
+        if excluded_list or included_list:
+            url_suffix = f'{url_suffix}?{param_list[:-1]}'
+        return self._http_request(method='POST',
+                                  url_suffix=url_suffix,
+                                  params=params)
 
     def file_delete_request(self, body: Dict, repo: str = None) -> Dict:
-        url_suffix = self.check_repo(repo) + '/src'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
                                   data=body,
                                   resp_type='response')
 
     def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Dict:
-        url_suffix = self.check_repo(repo) + f'/src/{commit_hash}/{file_path}'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
     def issue_create_request(self, repo: str, body: dict) -> Dict:
-        url_suffix = self.check_repo(repo) + '/issues'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def issue_list_request(self, repo: str, params: Dict, issue_id: str) -> Dict:
@@ -142,7 +114,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + '/issues/'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/'
         if issue_id:
             url_suffix = f'{url_suffix}{issue_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -157,7 +129,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
@@ -169,7 +141,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/pullrequests endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/pullrequests'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def pull_request_update_request(self, repo: str, body: Dict, pr_id: str) -> Dict:
@@ -182,7 +154,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_list_request(self, repo: str, pr_id: str, params: Dict) -> Dict:
@@ -197,7 +169,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + '/pullrequests'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
         if pr_id:
             url_suffix = f'{url_suffix}/{pr_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -213,7 +185,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def issue_comment_delete_request(self, repo: str, issue_id: str, comment_id: str) -> Dict:
@@ -227,7 +199,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/{comment_id}'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
     def issue_comment_update_request(self, repo: str, issue_id: str, comment_id: str, body: Dict) -> Dict:
@@ -242,7 +214,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/{comment_id}'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, params: Dict) -> Dict:
@@ -258,7 +230,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/issues/{issue_id}/{comment_id} endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/issues/{issue_id}/comments/'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/'
         if comment_id:
             url_suffix = f'{url_suffix}{comment_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -275,7 +247,7 @@ class Client(BaseClient):
             :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint
             :rtype Dict[str, Any]
         """
-        url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}/comments'
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
 
@@ -294,7 +266,7 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
 def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     results = []
     arr: List[Dict] = response.get('values', [])
-    isNext = response.get('next', None)
+    is_next = response.get('next', None)
     while response:
         for value in arr:
             if limit > 0:
@@ -302,9 +274,9 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
                 limit = limit - 1
             else:
                 break
-        if limit > 0 and isNext:
-            response = client.get_full_url(full_url=isNext)
-            isNext = response.get('next', None)
+        if limit > 0 and is_next:
+            response = client.get_full_url(full_url=is_next)  # TODO update
+            is_next = response.get('next', None)
             arr = response.get('values', [])
         else:
             return results
@@ -413,6 +385,8 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     page_size = min(100, limit)
     params = {'page': page,
               'pagelen': page_size}
+    if not repo:
+        repo = client.repository
     response = client.get_open_branch_list_request(repo, params)
     results = check_pagination(client, response, limit)
 
@@ -442,6 +416,8 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
 def branch_get_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     branch_name = args.get('branch_name', None)
+    if not repo:
+        repo = client.repository
     response = client.get_branch_request(branch_name, repo)
     human_readable = {'Name': response.get('name'),
                       'LastCommitHash': demisto.get(response, 'target.hash'),
@@ -465,7 +441,9 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
 def branch_create_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     name = args.get('name', None)
-    target_branch = args.get('target_branch', None)
+    target_branch = args.get('target_branch')
+    if not repo:
+        repo = client.repository
     response = client.branch_create_request(name, target_branch, repo)
     return CommandResults(
         readable_output=f'The branch {name} was created successfully.',
@@ -478,6 +456,8 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
 def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     branch_name = args.get('branch_name', None)
+    if not repo:
+        repo = client.repository
     response = client.branch_delete_request(branch_name, repo)
     if response == '204':
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
@@ -511,6 +491,8 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     }
     if author_name and author_email:
         body["author"] = f'{author_name} <{author_email}>'
+    if not repo:
+        repo = client.repository
     response = client.commit_create_request(body, repo)
     if response.status_code == 201:
         return CommandResults(readable_output=f'The commit was created successfully.')
@@ -538,7 +520,8 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
         excluded_list = excluded_branches.split(',')
     if included_branches:
         included_list = included_branches.split(',')
-
+    if not repo:
+        repo = client.repository
     response = client.commit_list_request(repo, params, excluded_list, included_list)
     results = check_pagination(client, response, limit)
     human_readable = []
@@ -578,6 +561,8 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     }
     if author_name and author_email:
         body['author'] = f'{author_name} <{author_email}>'
+    if not repo:
+        repo = client.repository
     response = client.file_delete_request(body, repo)
     if response.status_code == 201:
         return CommandResults(readable_output=f'The file was deleted successfully.')
@@ -591,6 +576,8 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
     params = {
         'path': file_path
     }
+    if not repo:
+        repo = client.repository
     commit_list = client.commit_list_request(repo=repo, params=params)
 
     if len(commit_list.get('values')) == 0:
@@ -636,6 +623,8 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
             "account_id": assignee_id,
             "username": assignee_user_name
         }
+    if not repo:
+        repo = client.repository
     response = client.issue_create_request(repo, body)
     return CommandResults(readable_output=f'The issue "{title}" was created successfully',
                           outputs_prefix='Bitbucket.Issue',
@@ -661,6 +650,8 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         'page': page,
         'pagelen': page_size
     }
+    if not repo:
+        repo = client.repository
     response = client.issue_list_request(repo, params, issue_id)
     if issue_id:
         results = [response]
@@ -731,6 +722,8 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
             "account_id": assignee_id,
             "username": assignee_user_name
         }
+    if not repo:
+        repo = client.repository
     response = client.issue_update_request(repo, body, issue_id)
     return CommandResults(readable_output=f'The issue with id "{issue_id}" was updated successfully',
                           outputs_prefix='Bitbucket.Issue',
@@ -753,7 +746,10 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
     close_source_branch = args.get('close_source_branch', None)
-    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
+    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
+                                    close_source_branch)
+    if not repo:
+        repo = client.repository
     response = client.pull_request_create_request(repo, body)
     return CommandResults(readable_output=f'The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
@@ -777,7 +773,10 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
     close_source_branch = args.get('close_source_branch', None)
-    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
+    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
+                                    close_source_branch)
+    if not repo:
+        repo = client.repository
     response = client.pull_request_update_request(repo, body, pull_request_id)
     return CommandResults(readable_output=f'The pull request {pull_request_id} was updated successfully',
                           outputs_prefix='Bitbucket.PullRequest',
@@ -808,6 +807,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
     }
     if state:
         params["state"] = state
+    if not repo:
+        repo = client.repository
     response = client.pull_request_list_request(repo, pull_request_id, params)
     if pull_request_id:
         results = [response]
@@ -828,7 +829,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
              }
         human_readable.append(d)
 
-    headers = ['Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt', 'UpdatedAt']
+    headers = ['Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt',
+               'UpdatedAt']
     readable_output = tableToMarkdown(
         name=hr_title,
         t=human_readable,
@@ -861,6 +863,8 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
             "raw": content
         }
     }
+    if not repo:
+        repo = client.repository
     response = client.issue_comment_create_request(repo, issue_id, body)
     return CommandResults(readable_output=f'The comment on the issue {issue_id} was created successfully',
                           outputs_prefix='Bitbucket.IssueComment',
@@ -879,11 +883,14 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     issue_id = args.get('issue_id', None)
     comment_id = args.get('comment_id', None)
+    if not repo:
+        repo = client.repository
     response = client.issue_comment_delete_request(repo, issue_id, comment_id)
-    return CommandResults(readable_output=f'The comment number {comment_id} on the issue number {issue_id} was deleted successfully',
-                          outputs_prefix='Bitbucket.IssueComment',
-                          outputs={},
-                          raw_response={})
+    return CommandResults(
+        readable_output=f'The comment number {comment_id} on the issue number {issue_id} was deleted successfully',
+        outputs_prefix='Bitbucket.IssueComment',
+        outputs={},
+        raw_response={})
 
 
 def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
@@ -903,6 +910,8 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
             'raw': content
         }
     }
+    if not repo:
+        repo = client.repository
     response = client.issue_comment_update_request(repo, issue_id, comment_id, body)
     return CommandResults(readable_output=f'The comment "{comment_id}" on issue "{issue_id}" was updated successfully',
                           outputs_prefix='Bitbucket.IssueComment',
@@ -929,6 +938,8 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         'page': page,
         'pagelen': page_size
     }
+    if not repo:
+        repo = client.repository
     response = client.issue_comment_list_request(repo, issue_id, comment_id, params)
     if comment_id:
         results = [response]
@@ -964,12 +975,12 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_comment_create_command(client: Client, args: Dict) -> CommandResults:
-    """ Returns a list of comments.
+    """ Creates a comment in a pull request.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
     Returns:
-        A CommandResult object with a success message, in case of a successful deletion.
+        A CommandResult object with a success message, in case of a successful creation of a comment.
     """
     repo = args.get('repo', None)
     pr_id = arg_to_number(args.get('pull_request_id', None))
@@ -979,11 +990,25 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
             'raw': content
         }
     }
+    if not repo:
+        repo = client.repository
     response = client.pull_request_comment_create_request(repo, pr_id, body)
     return CommandResults(readable_output=f'The comment on the pull request "{pr_id}" was created successfully',
                           outputs_prefix='Bitbucket.PullRequestComment',
                           outputs=[response],
                           raw_response=[response])
+
+
+def pull_request_comment_list(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of pull request comments.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a list of the comments or a single comment on a specific issue.
+    """
+    repo = args.get('repo', None)
+    pr_id = arg_to_number(args.get('pull_request_id', None))
 
 
 ''' MAIN FUNCTION '''
@@ -996,11 +1021,11 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
 
-    workspace = demisto.params().get('Workspace', "")
-    server_url = demisto.params().get('ServerUrl', "")
-    user_name = demisto.params().get('UserName', "").get('identifier', "")
-    app_password = demisto.params().get('UserName', "").get('password', "")
-    repository = demisto.params().get('Repository', "")
+    workspace = demisto.params().get('workspace', "")
+    server_url = demisto.params().get('server_url', "")
+    user_name = demisto.params().get('user_name', "").get('identifier', "")
+    app_password = demisto.params().get('user_name', "").get('password', "")
+    repository = demisto.params().get('repository', "")
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     auth = (user_name, app_password)

@@ -7,26 +7,26 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Pack for handling Bitbucket operations
 configuration:
-  - name: Workspace
+  - name: workspace
     display: Workspace
     required: true
     defaultvalue: null
     type: 0
     additionalinfo: null
-  - name: ServerUrl
+  - name: server_url
     display: Server Url
     required: true
     defaultvalue: https://api.bitbucket.org/2.0
     type: 0
     additionalinfo: null
-  - name: UserName
+  - name: user_name
     display: User Name
     required: true
     defaultvalue: null
     type: 9
     additionalinfo: <a href="https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords" target="_blank">click to open a link to create the app password</a>
     displaypassword: App Password
-  - name: Repository
+  - name: repository
     display: Repository
     required: false
     defaultvalue: null
@@ -932,7 +932,7 @@ script:
           description: The repository name or slug.
           isArray: false
         - name: title
-          required: true
+          required: false
           description: The title of the new issue.
           isArray: false
         - name: issue_id
