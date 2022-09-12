@@ -4618,7 +4618,16 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "OpenLDAP"
-            ]
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
+        },
+        {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
             "playbookID": "Splunk-Test",
@@ -5178,6 +5187,21 @@
         {
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
+            "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate File - SecneurX Analysis - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
         },
         {
