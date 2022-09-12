@@ -93,7 +93,7 @@ script:
   commands:
   - arguments:
     - defaultValue: "10"
-      description: The maximum number of results to return.
+      description: The maximum number of IP indicators to return.
       name: limit
     description: Gets indicators from the feed.
     name: snort-get-ip-blocklist-indicators
