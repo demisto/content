@@ -1650,7 +1650,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     """
     offense_id = str(offense['id'])
     events_count = offense.get('event_count', 0)
-    expected_events = min(events_limit, events_count)
     events: List[dict] = []
     failure_message = ''
     is_success = True
@@ -1662,9 +1661,11 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
             failure_message = 'Search for events was failed.'
         else:
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
-        events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
+        events_fetched = get_num_events(events)
         offense['events_fetched'] = events_fetched
         offense['events'] = events
+        event_count = client.offenses_list(offense_id=int(offense_id)).get('event_count', 0)
+        expected_events = min(event_count, events_limit)
         print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
         if fetch_mode == FetchMode.all_events.value and events_fetched >= expected_events:
             break
@@ -1691,6 +1692,10 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     offense['mirroring_events_message'] = mirroring_events_message
 
     return offense, is_success
+
+
+def get_num_events(events) -> int:
+    return sum(int(event.get('eventcount', 1)) for event in events)
 
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
@@ -3306,7 +3311,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = sum(int(event.get('eventcount', 1)) for event in final_offense_data.get('events', []))
+    events_mirrored = get_num_events(final_offense_data.get('events', []))
     print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
     events_message = update_events_mirror_message(
         mirror_options=mirror_options,
@@ -3503,13 +3508,22 @@ def qradar_search_retrieve_events_command(
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
-        return CommandResults(outputs_prefix='QRadar.SearchEvents',
-                              outputs_key_field='ID',
-                              outputs={'Events': events, 'ID': search_id},
-                              readable_output=tableToMarkdown(f'Events returned from search_id {search_id}',
-                                                              events,
-                                                              )
-                              )
+        if offense_id := args.get('offense_id', ''):
+            events_count = client.offenses_list(offense_id=offense_id).get('event_count', 0)
+            event_limit = int(params.get('event_limit', 0))
+            expected_events = min(events_count, event_limit) if event_limit else events_count
+            if (num_events_fetched := get_num_events(events)) < expected_events:
+                print_debug_msg(f'Returned {num_events_fetched}/{expected_events}. Searching again.')
+                search_command_results = qradar_search_create_command(client, params, args)
+                search_id = search_command_results.outputs[0].get('ID')  # type: ignore
+            else:
+                return CommandResults(outputs_prefix='QRadar.SearchEvents',
+                                    outputs_key_field='ID',
+                                    outputs={'Events': events, 'ID': search_id},
+                                    readable_output=tableToMarkdown(f'Events returned from search_id {search_id}',
+                                                                    events,
+                                                                    )
+                                    )
     print_debug_msg(f'Still polling for search results for search ID: {search_id}.')
     polling_args = {
         'search_id': search_id,
