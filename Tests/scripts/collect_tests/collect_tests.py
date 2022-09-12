@@ -465,7 +465,7 @@ class BranchTestCollector(TestCollector):
             branch_name: str,
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
-            private_pack_path: Optional[Path] = None,
+            private_pack_path: Optional[str] = None,
     ):
         """
 
@@ -478,7 +478,7 @@ class BranchTestCollector(TestCollector):
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
-        self.private_pack_path: Optional[Path] = private_pack_path
+        self.private_pack_path: Optional[Path] = Path(private_pack_path) if private_pack_path else None
 
     def _get_private_pack_files(self) -> tuple[str, ...]:
         if not self.private_pack_path:
