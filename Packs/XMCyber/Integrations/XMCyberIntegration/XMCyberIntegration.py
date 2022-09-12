@@ -114,11 +114,11 @@ class URLS:
 
 
 class EVENT_NAME:
-    EventPrefix = "XM "
-    RiskScore = "Security score"
-    AssetAtRisk = "Asset at risk"
-    ChokePoint = "Choke point"
-    TopTechnique = "Top technique"
+    EventPrefix = "XM Cyber "
+    RiskScore = "security score"
+    AssetAtRisk = "critical asset at risk"
+    ChokePoint = "choke point"
+    TopTechnique = "technique impact"
 
 
 class SEVERITY:

@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2022-09-11T16:25:14.951273619Z",
-    "name": "XM Cyber Report",
+    "name": "XM Cyber report",
     "ownerOnly": false,
     "cliName": "xmcyberreport",
     "type": "url",

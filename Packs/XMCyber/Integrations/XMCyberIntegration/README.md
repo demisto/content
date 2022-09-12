@@ -1,4 +1,4 @@
-XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
+The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber’s insights.
 This integration was integrated and tested with version 1.43.0.355 of XMCyber
 
 ## Configure XM Cyber on Cortex XSOAR
@@ -46,7 +46,7 @@ List critical assets at risk from an entity and the complexity of the attack
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
-| XMCyber.Entity.criticalAssetsAtRiskList.name | String | Compromising Technique Name | 
+| XMCyber.Entity.criticalAssetsAtRiskList.name | String | Compromising Technique name | 
 | XMCyber.Entity.criticalAssetsAtRiskList.average | Number | Average attack complexity | 
 | XMCyber.Entity.criticalAssetsAtRiskList.minimum | Number | Minimum attack complexity | 
 

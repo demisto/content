@@ -498,15 +498,6 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "averagecomplexitylevel",
-								"height": 22,
-								"id": "8f7e1c50-31e2-11ed-996f-7bcf12d73325",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
 								"endCol": 4,
 								"fieldId": "avgcomplexitylevel",
 								"height": 22,

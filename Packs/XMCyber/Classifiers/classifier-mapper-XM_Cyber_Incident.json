@@ -245,10 +245,10 @@
 				"Technique Best Practice": {
 					"simple": "bestPractice"
 				},
-				"Technique Name": {
+				"Technique name": {
 					"simple": "displayName"
 				},
-				"XM Cyber Report": {
+				"XM Cyber report": {
 					"complex": {
 						"filters": [],
 						"root": "linkToReport",
