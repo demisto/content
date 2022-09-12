@@ -1,0 +1,17 @@
+commonfields:
+  id: api-void-script
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.6.33415
+name: api-void-script
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
