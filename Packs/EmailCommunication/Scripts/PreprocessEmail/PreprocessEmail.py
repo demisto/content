@@ -397,7 +397,7 @@ def main():
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
-        email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
+        email_original_subject = email_subject.split('<')[0].split('>')[0].strip()
 
         email_related_incident = get_email_related_incident_id(email_related_incident_code, email_original_subject)
         update_latest_message_field(email_related_incident, email_latest_message)
