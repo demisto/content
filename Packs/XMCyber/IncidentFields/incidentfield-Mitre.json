@@ -1,11 +1,11 @@
 {
-    "id": "incident_techniquemitre",
+    "id": "incident_mitre",
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-26T16:28:47.957122695Z",
-    "name": "Technique Mitre",
+    "name": "MITRE",
     "ownerOnly": false,
-    "cliName": "techniquemitre",
+    "cliName": "mitre",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -28,7 +28,7 @@
     "columns": [
         {
             "key": "name",
-            "displayName": "name",
+            "displayName": "MITRE",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,7 +40,7 @@
         },
         {
             "key": "link",
-            "displayName": "link",
+            "displayName": "Link",
             "type": "url",
             "required": false,
             "script": "",

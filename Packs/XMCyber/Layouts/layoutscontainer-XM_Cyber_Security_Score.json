@@ -359,7 +359,7 @@
                 "name": "XMCyber",
                 "sections": [
                     {
-                        "displayType": "CARD",
+                        "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
                         "i": "xydqfplfnc-050c22c0-0b3f-11ed-8ea9-3545be33955a",
@@ -375,7 +375,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcybersecurityscore",
+                                "fieldId": "currentsecurityscore",
                                 "height": 53,
                                 "id": "1010b910-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 1,
@@ -384,7 +384,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcybersecurityscoretrend",
+                                "fieldId": "securityscoretrend",
                                 "height": 53,
                                 "id": "125c2fb0-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 2,
@@ -393,7 +393,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xmcybersecurityscoregrade",
+                                "fieldId": "securityscoregrade",
                                 "height": 22,
                                 "id": "15a39280-0b3f-11ed-8ea9-3545be33955a",
                                 "index": 3,

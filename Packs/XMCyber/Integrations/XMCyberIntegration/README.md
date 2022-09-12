@@ -266,12 +266,12 @@ Return data on Entity by IP from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 
@@ -301,12 +301,12 @@ Return data on Entity by entityId from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 
@@ -335,12 +335,12 @@ Return data on Entity by hostname from XM Cyber
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 
@@ -370,12 +370,12 @@ Return data on an XM entity
 | --- | --- | --- |
 | XMCyber.Entity.id | String | XMCyber Entity ID | 
 | XMCyber.Entity.name | String | Entity Name | 
-| XMCyber.Entity.isAsset | Boolean | Is Entity a Critical Asset | 
+| XMCyber.Entity.isAsset | Boolean | Entity is a critical asset | 
 | XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | XMCyber.Entity.averageComplexity | Number | Average complexity to compromise this entity | 
 | XMCyber.Entity.criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | XMCyber.Entity.averageComplexityLevel | String | Level of the average complexity to compromise this entity | 
-| XMCyber.Entity.compromisingTechniques.name | String | Technique compromising this entity | 
+| XMCyber.Entity.compromisingTechniques.technique | String | Technique compromising this entity | 
 | XMCyber.Entity.compromisingTechniques.count | Number | Number of vectors with this technique compromising this entity | 
 | XMCyber.Entity.type | String | Entity Type | 
 | XMCyber.Entity.report | String | Link to the Entity Report | 

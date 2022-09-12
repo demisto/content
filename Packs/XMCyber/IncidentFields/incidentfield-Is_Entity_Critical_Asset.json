@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-20T20:59:26.189346971Z",
-    "name": "Is Entity Critical Asset",
+    "name": "Entity is a critical asset",
     "ownerOnly": false,
     "cliName": "criticalasset",
     "type": "boolean",

@@ -162,7 +162,7 @@ script:
       description: Entity Name
       type: String
     - contextPath: XMCyber.Entity.isAsset
-      description: Is Entity a Critical Asset
+      description: Entity is a critical asset
       type: Boolean
     - contextPath: XMCyber.Entity.affectedEntities
       description: Number of unique entities at risk from this entity
@@ -176,7 +176,7 @@ script:
     - contextPath: XMCyber.Entity.averageComplexityLevel
       description: Level of the average complexity to compromise this entity
       type: String
-    - contextPath: XMCyber.Entity.compromisingTechniques.name
+    - contextPath: XMCyber.Entity.compromisingTechniques.technique
       description: Technique compromising this entity
       type: String
     - contextPath: XMCyber.Entity.compromisingTechniques.count
@@ -219,7 +219,7 @@ script:
       description: Entity Name
       type: String
     - contextPath: XMCyber.Entity.isAsset
-      description: Is Entity a Critical Asset
+      description: Entity is a critical asset
       type: Boolean
     - contextPath: XMCyber.Entity.affectedEntities
       description: Number of unique entities at risk from this entity
@@ -233,7 +233,7 @@ script:
     - contextPath: XMCyber.Entity.averageComplexityLevel
       description: Level of the average complexity to compromise this entity
       type: String
-    - contextPath: XMCyber.Entity.compromisingTechniques.name
+    - contextPath: XMCyber.Entity.compromisingTechniques.technique
       description: Technique compromising this entity
       type: String
     - contextPath: XMCyber.Entity.compromisingTechniques.count
@@ -273,7 +273,7 @@ script:
       description: Entity Name
       type: String
     - contextPath: XMCyber.Entity.isAsset
-      description: Is Entity a Critical Asset
+      description: Entity is a critical asset
       type: Boolean
     - contextPath: XMCyber.Entity.affectedEntities
       description: Number of unique entities at risk from this entity
@@ -287,7 +287,7 @@ script:
     - contextPath: XMCyber.Entity.averageComplexityLevel
       description: Level of the average complexity to compromise this entity
       type: String
-    - contextPath: XMCyber.Entity.compromisingTechniques.name
+    - contextPath: XMCyber.Entity.compromisingTechniques.technique
       description: Technique compromising this entity
       type: String
     - contextPath: XMCyber.Entity.compromisingTechniques.count
@@ -333,7 +333,7 @@ script:
       description: Entity Name
       type: String
     - contextPath: XMCyber.Entity.isAsset
-      description: Is Entity a Critical Asset
+      description: Entity is a critical asset
       type: Boolean
     - contextPath: XMCyber.Entity.affectedEntities
       description: Number of unique entities at risk from this entity
@@ -347,7 +347,7 @@ script:
     - contextPath: XMCyber.Entity.averageComplexityLevel
       description: Level of the average complexity to compromise this entity
       type: String
-    - contextPath: XMCyber.Entity.compromisingTechniques.name
+    - contextPath: XMCyber.Entity.compromisingTechniques.technique
       description: Technique compromising this entity
       type: String
     - contextPath: XMCyber.Entity.compromisingTechniques.count

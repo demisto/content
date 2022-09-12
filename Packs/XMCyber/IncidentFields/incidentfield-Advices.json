@@ -1,11 +1,11 @@
 {
-    "id": "incident_techniqueadvices",
+    "id": "incident_advices",
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-27T07:36:08.425425618Z",
-    "name": "Technique Advices",
+    "name": "Advices",
     "ownerOnly": false,
-    "cliName": "techniqueadvices",
+    "cliName": "advices",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -28,7 +28,7 @@
     "columns": [
         {
             "key": "type",
-            "displayName": "type",
+            "displayName": "Type",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,7 +40,7 @@
         },
         {
             "key": "text",
-            "displayName": "text",
+            "displayName": "Description",
             "type": "shortText",
             "required": false,
             "script": "",
