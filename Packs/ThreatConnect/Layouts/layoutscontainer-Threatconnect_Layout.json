@@ -1,5 +1,5 @@
 {
-  "cacheVersn": 0,
+  "fromVersion": "6.5.0",
   "close": {
     "sections": [
       {
@@ -16,7 +16,7 @@
         ],
         "isVisible": true,
         "name": "Basic Information",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -25,7 +25,7 @@
         "description": "",
         "isVisible": true,
         "name": "Custom Fields",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -34,8 +34,7 @@
   },
   "definitionId": "",
   "description": "",
-  "detached": false,
-  "details": null,
+  "details": "",
   "detailsV2": {
     "TypeName": "",
     "tabs": [
@@ -602,7 +601,7 @@
         ],
         "isVisible": true,
         "name": "Basic Information",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -1313,7 +1312,7 @@
         ],
         "isVisible": true,
         "name": "Custom Fields",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -1323,11 +1322,11 @@
   "fromServerVersion": "",
   "group": "incident",
   "id": "b67c5159-fd5f-4ff4-8e40-289a73638b03",
-  "indicatorsDetails": null,
-  "indicatorsQuickView": null,
+  "indicatorsDetails": "",
+  "indicatorsQuickView": "",
   "itemVersion": "",
   "locked": false,
-  "mobile": null,
+  "mobile": "",
   "name": "Threatconnect Layout",
   "packID": "",
   "propagationLabels": [
@@ -1377,7 +1376,7 @@
         ],
         "isVisible": true,
         "name": "Basic Information",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -1408,7 +1407,7 @@
         ],
         "isVisible": true,
         "name": "Timeline Information",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -2131,7 +2130,7 @@
         ],
         "isVisible": true,
         "name": "Custom Fields",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": false,
         "type": ""
@@ -2146,14 +2145,14 @@
         ],
         "isVisible": true,
         "name": "Labels",
-        "query": null,
+        "query": "",
         "queryType": "",
         "readOnly": true,
         "type": "labels"
       }
     ]
   },
-  "quickViewV2": null,
+  "quickViewV2": "",
   "system": false,
   "toServerVersion": "",
   "version": -1

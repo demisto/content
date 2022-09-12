@@ -74,13 +74,6 @@
                         ]
                     }
                 },
-                "Threatconnect Created by": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdBy",
-                        "transformers": []
-                    }
-                },
                 "Threatconnect Security Labels": {
                     "complex": {
                         "accessor": "data",
