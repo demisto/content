@@ -652,15 +652,15 @@ def get_machine_module_command():
         args.get('moduleID')
     )
 
-    readable = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED}
-    context = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED_CONTEXT}
-    context['MachineGUID'] = machine_id
     file = {
         'Name': module.get('Name'),
         'MD5': module.get('HashMD5'),
         'SHA1': module.get('SHA1'),
         'Path': module.get('FullPath')
     }
+    readable = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED}
+    context = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED_CONTEXT}
+    context['MachineGUID'] = machine_id
     entry = {
         'Type': entryTypes['note'],
         'Contents': module,
