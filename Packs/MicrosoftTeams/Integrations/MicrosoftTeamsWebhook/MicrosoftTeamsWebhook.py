@@ -63,7 +63,7 @@ def send_teams_message_command(webhook, message, serverurls):
         return_error(e)
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     """
     Grab the params and the server urls, and send the message, or test message.
     """
