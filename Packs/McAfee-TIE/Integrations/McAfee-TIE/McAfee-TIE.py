@@ -1,6 +1,5 @@
 import abc
 import contextlib
-import demistomock as demisto
 import tempfile
 from CommonServerPython import *
 from dxlclient.client_config import DxlClientConfig
@@ -56,12 +55,6 @@ class GeneralFileReputationParser(abc.ABC):
         FileReputationProp.TRUST_LEVEL: "Trust Level",
         FileReputationProp.CREATE_DATE: "Create Date",
     }
-
-    # PROVOIDERS_FILE_REPUTATION_PARSER = {
-    #     FileProvider.GTI: GtiFileReputationParser,
-    #     FileProvider.ENTERPRISE: EnterpriseFileReputationParser,
-    #     FileProvider.ATD: AtdFileReputationParser,
-    # }
 
     @staticmethod
     def init(provider: int):
@@ -304,7 +297,6 @@ def trust_level_to_score(trust_level):
 def test_module(dxl_client: DxlClient):
     """Tests if there is a connection with DxlClient(which is used for connection with McAfee TIE, instead of the Client class)"""
     dxl_client.connect()
-    # client.disconnect()
     return 'ok'
 
 
@@ -319,7 +311,10 @@ def safe_get_file_reputation(tie_client: TieClient, api_input: Dict[str, str]):
 
 def get_hash_type_key(file_hash: str):
     hash_type = get_hash_type(file_hash)
-    return HASH_TYPE_KEYS.get(hash_type, None)
+    hash_type_key = HASH_TYPE_KEYS.get(hash_type, None)
+    if not hash_type_key:
+        raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
+    return hash_type_key
 
 
 # def get_lowest_trust_level_and_score(reputations):
@@ -350,6 +345,7 @@ def get_file_instance(dbot_score: Union[Common.DBotScore, None], file_hash: str,
                        md5=file_hash if hash_type_key == HashType.MD5 else None,
                        sha1=file_hash if hash_type_key == HashType.SHA1 else None,
                        sha256=file_hash if hash_type_key == HashType.SHA256 else None)
+
 
 def parse_reputation(provider_id: int, reputation: Dict):
     # TODO Check if we should keep provider_id int or Any
@@ -391,10 +387,6 @@ def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_ty
                                   score=lowest_tl_score[LOWEST_SCORE_KEY],
                                   )
 
-    # file_instance = Common.File(dbot_score=dbot_score,
-    #                             md5=file_hash if hash_type_key == HashType.MD5 else None,
-    #                             sha1=file_hash if hash_type_key == HashType.SHA1 else None,
-    #                             sha256=file_hash if hash_type_key == HashType.SHA256 else None)
     file_instance = get_file_instance(dbot_score=dbot_score,
                                       file_hash=file_hash,
                                       hash_type_key=hash_type_key)
@@ -415,9 +407,8 @@ def file(hashes: List[str], tie_client: TieClient, reliability: str) -> List[Com
     command_results: List[CommandResults] = []
     for file_hash in hashes:
         hash_type_key = get_hash_type_key(file_hash=file_hash)
-        if not hash_type_key:
-            # TODO Check if I should raise Exception or DemistoException
-            raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
+        # if not hash_type_key:
+        #     raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
         api_input = {hash_type_key: file_hash}
         raw_result = safe_get_file_reputation(tie_client, api_input)
 
@@ -425,18 +416,14 @@ def file(hashes: List[str], tie_client: TieClient, reliability: str) -> List[Com
             dbot_score = Common.DBotScore(indicator=file_hash,
                                           indicator_type=DBotScoreType.FILE,
                                           reliability=reliability,
-                                          integration_name=VENDOR_NAME,
                                           score=Common.DBotScore.NONE,
                                           )
 
-            # file_instance = Common.File(dbot_score=dbot_score,
-            #                             md5=file_hash if hash_type_key == HashType.MD5 else None,
-            #                             sha1=file_hash if hash_type_key == HashType.SHA1 else None,
-            #                             sha256=file_hash if hash_type_key == HashType.SHA256 else None)
             file_instance = get_file_instance(dbot_score=dbot_score,
                                               file_hash=file_hash,
                                               hash_type_key=hash_type_key)
-            command_result = CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputations For {file_hash}:', None),
+
+            command_result = CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputation For {file_hash}:', None),
                                             raw_response=raw_result,
                                             outputs_prefix=OUTPUT_PREFIX,
                                             indicator=file_instance,
@@ -457,8 +444,8 @@ def file_references(hashes: List[str], tie_client: TieClient) -> List[CommandRes
     command_results: List[CommandResults] = []
     for file_hash in hashes:
         hash_type_key = get_hash_type_key(file_hash=file_hash)
-        if not hash_type_key:
-            raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
+        # if not hash_type_key:
+        #     raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
         api_input = {}
         api_input[hash_type_key] = file_hash
@@ -473,7 +460,7 @@ def file_references(hashes: List[str], tie_client: TieClient) -> List[CommandRes
         context_data = {}
 
         context_data['References'] = table
-        command_results.append(CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputations For {file_hash}:', table),
+        command_results.append(CommandResults(readable_output=tableToMarkdown(f'References for hash {file_hash}:', table),
                                               raw_response=raw_result,
                                               outputs_prefix=OUTPUT_PREFIX,
                                               indicator=file_instance,
@@ -490,22 +477,26 @@ def file_references(hashes: List[str], tie_client: TieClient) -> List[CommandRes
     # }
 
 
-def set_file_reputation(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
-    # find trust_level key
+def get_trust_level_key(trust_level: str):
     trust_level_key = None
     for k, v in TRUST_LEVELS.items():
         if v == trust_level:
             trust_level_key = k
             break
+    return trust_level_key
+
+
+def set_file_reputation(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
+    # find trust_level key
+    trust_level_key = get_trust_level_key(trust_level=trust_level)
 
     if not trust_level_key:
-        # TODO Maybe print the acceptable trust levels?
         raise Exception(f'Illegal argument trust_level {trust_level}. Choose value from predefined values')
 
     for file_hash in hashes:
         hash_type_key = get_hash_type_key(file_hash=file_hash)
-        if not hash_type_key:
-            raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
+        # if not hash_type_key:
+        #     raise Exception('The file format must be of type SHA-1, SHA-256 or MD5')
 
         api_input = {}
         api_input[hash_type_key] = file_hash
@@ -523,7 +514,7 @@ def create_temp_credentials(temp_file: tempfile._TemporaryFileWrapper, parameter
 
 
 @contextlib.contextmanager
-def create_dxl_config():
+def create_dxl_config() -> DxlClientConfig:
     with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file,\
          tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file,\
          tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.key') as private_key_file:
