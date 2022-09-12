@@ -24,7 +24,7 @@ def arguments_handler():
     parser.add_argument('-l', '--pr_link', help='The PR url.')
     parser.add_argument('-n', '--pr_num', help='The PR number.')
     parser.add_argument('-t', '--pr_title', help='The PR Title.')
-    parser.add_argument('-b', '--pr_body', help='the content of the PR description.')
+    parser.add_argument('-b', '--pr_body', help='The content of the PR description.')
     parser.add_argument('-m', '--is_merged', help='boolean. Whether the PR was merged or not.')
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
