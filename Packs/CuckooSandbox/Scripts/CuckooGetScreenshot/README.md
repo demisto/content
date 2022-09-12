@@ -1,4 +1,7 @@
-Gets the report of a completed analysis.
+Deprecated. Use 'cuckoo-task-screenshot' command instead.
+
+Retrieves screenshots taken during a task analysis
+
 ## Script Data
 ---
 
@@ -11,14 +14,15 @@ Gets the report of a completed analysis.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cuckoo-get-task-report
+* cuckoo-task-screenshot
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| taskID | The ID of the task in Cuckoo. |
+| id | The ID of the task that generated the screenshot. |
+| screenshot | The numerical identifier of a single screenshot. For example, 0001, 0002. (optional). |
 
 ## Outputs
 ---

@@ -1,4 +1,6 @@
-Retrieves screenshots taken during a task analysis
+Deprecated. Use the 'cuckoo-view-task' command instead.
+
+Checks the current status of a task in Cuckoo sandbox.
 
 ## Script Data
 ---
@@ -12,15 +14,14 @@ Retrieves screenshots taken during a task analysis
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cuckoo-task-screenshot
+* cuckoo-view-task
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| id | The ID of the task that generated the screenshot. |
-| screenshot | The numerical identifier of a single screenshot. For example, 0001, 0002. (optional). |
+| taskID | The ID of the task to check. |
 
 ## Outputs
 ---

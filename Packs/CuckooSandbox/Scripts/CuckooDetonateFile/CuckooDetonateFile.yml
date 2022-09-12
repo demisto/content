@@ -2,23 +2,13 @@ commonfields:
   id: CuckooDetonateFile
   version: -1
 name: CuckooDetonateFile
-script: >-
-  res =  demisto.executeCommand("cuckoo-create-task-from-file", demisto.args())
-
-  if isError(res[0]):
-      demisto.results(res)
-  else:
-      taskid = demisto.get(res[0], 'Contents.task_id')
-      if taskid:
-          demisto.setContext('CuckooTaskID', str(taskid))
-          demisto.results('Task #' + str(taskid) + " added.")
-      else:
-          demisto.results( res + [{ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No taskID returned.' }] )
+script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - cuckoo
-comment: Adds a file to the list of pending tasks. Returns the ID of the newly created task.
+comment: Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
+deprecated: true
 system: false
 args:
 - name: entryID
@@ -49,4 +39,4 @@ timeout: 0s
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415
