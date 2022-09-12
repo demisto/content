@@ -203,7 +203,7 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def demisto_ioc_to_xdr(ioc: Dict, severity_field: str) -> Dict:
+def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
@@ -233,7 +233,7 @@ def demisto_ioc_to_xdr(ioc: Dict, severity_field: str) -> Dict:
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
 
-        if severity := custom_fields.get(severity_field):
+        if severity := custom_fields.get(Client.severity_field):
             xdr_ioc['severity'] = severity
 
         return xdr_ioc
