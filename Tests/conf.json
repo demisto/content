@@ -1,6 +1,21 @@
 {
     "available_tests_fields": {
-        "has_api": "Determines whether a test playbook uses API, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false."
+        "context_print_dt": "",
+        "external_playbook_config": "",
+        "fromversion": "Server version to start testing from.",
+        "has_api": "Determines whether a test playbook uses API, to decide if to run it on nightly. Default value for integrations is true, and for scripts is false.",
+        "instance_configuration": "",
+        "instance_names": "Specific instance names the test should run on. Can hold a list.",
+        "integrations": "Integrations that the test uses. Can hold a list.",
+        "is_mockable": "Determines whether the results can be mocked in the test. A boolean.",
+        "memory_threshold": "Test specific memory threshold. A number.",
+        "nightly": "Determines whether the test will run only on a nightly build. Relevant only for nightly packs. A boolean.",
+        "pid_threshold": "Test specific pid threshold. A number.",
+        "playbookID": "ID of the playbook that is being tested.",
+        "runnable_on_docker_only": "Determines whether the test is runnable on docker only. A boolean.",
+        "scripts": "Scripts that the test uses. Can hold a list.",
+        "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
+        "toversion": "Server version to test up to it."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -147,7 +162,8 @@
         },
         {
             "integrations": "XsoarPowershellTesting",
-            "playbookID": "XsoarPowershellTesting-Test"
+            "playbookID": "XsoarPowershellTesting-Test",
+            "has_api": false
         },
         {
             "integrations": "Palo Alto Networks Threat Vault",
@@ -182,22 +198,22 @@
         {
             "integrations": "Azure Storage Container",
             "playbookID": "playbook-AzureStorageContainer-Test",
-            "fromVersion": "6.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure Storage FileShare",
             "playbookID": "playbook-AzureStorageFileShare-Test",
-            "fromVersion": "6.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure Storage Queue",
             "playbookID": "playbook-AzureStorageQueue-Test",
-            "fromVersion": "6.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure Storage Table",
             "playbookID": "playbook-AzureStorageTable-Test",
-            "fromVersion": "6.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "EwsExtension",
@@ -1770,7 +1786,7 @@
         {
             "integrations": "ServiceNow IAM",
             "playbookID": "ServiceNow IAM - Test Playbook",
-            "instance_name": "snow_basic_auth",
+            "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0"
         },
         {
@@ -2546,10 +2562,12 @@
             "playbookID": "Symantec ATP Test"
         },
         {
-            "playbookID": "HTTPListRedirects - Test SSL"
+            "playbookID": "HTTPListRedirects - Test SSL",
+            "has_api": true
         },
         {
-            "playbookID": "HTTPListRedirects Basic Test"
+            "playbookID": "HTTPListRedirects Basic Test",
+            "has_api": true
         },
         {
             "playbookID": "CheckDockerImageAvailableTest",
