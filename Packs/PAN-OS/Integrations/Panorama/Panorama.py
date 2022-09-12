@@ -11268,6 +11268,15 @@ def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> 
     ]
 
 
+def do_pagination(entries, page: Optional[int], page_size: int = 50, limit: int = 50):
+    if page is not None:
+        if page <= 0:
+            raise DemistoException(f'page {page} must be a positive number')
+        return entries[(page - 1) * page_size:page_size * page]  # do pagination
+    else:
+        return entries[:limit]
+
+
 def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
@@ -11284,14 +11293,9 @@ def pan_os_list_nat_rules_command(args):
     if not name:
         # filter the nat-rules by limit - name means we get only a single entry anyway.
         page = arg_to_number(args.get('page'))
-        if page is not None:
-            if page <= 0:
-                raise DemistoException(f'page {page} must be a positive number')
-            page_size = arg_to_number(args.get('page_size')) or 50
-            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-        else:
-            limit = arg_to_number(args.get('limit')) or 50
-            entries = entries[:limit]
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
 
