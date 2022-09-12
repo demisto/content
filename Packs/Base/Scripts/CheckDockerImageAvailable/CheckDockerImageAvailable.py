@@ -86,7 +86,8 @@ def main():
     args = demisto.args()
 
     if args.get('use_system_proxy') == 'no':
-        handle_proxy()
+        for key in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+            del os.environ[key]
 
     verify_ssl = args.get('trust_any_certificate') != 'yes'
     docker_full_name = args['input']
