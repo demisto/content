@@ -1,4 +1,4 @@
-This is the Snort IP Block List feed obtained from https://snort.org/
+Use the Snort IP Block List feed integration to fetch IP indicators from [Snort](https://snort.org/).
 ## Configure Snort IP Blocklist on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
