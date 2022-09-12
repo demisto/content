@@ -114,9 +114,9 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
 
 
 def translate_severity(sev):
-    if sev == 'high':
+    if sev.lower() == 'high':
         return 3
-    elif sev == 'low':
+    elif sev.lower() == 'low':
         return 1
     return 0
 
