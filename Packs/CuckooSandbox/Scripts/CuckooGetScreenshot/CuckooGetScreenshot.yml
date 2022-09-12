@@ -2,13 +2,13 @@ commonfields:
   id: CuckooGetScreenshot
   version: -1
 name: CuckooGetScreenshot
-script: >-
-  demisto.results(demisto.executeCommand("cuckoo-task-screenshot", demisto.args()))
+script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - cuckoo
-comment: Detonate the file in Cuckoo sandbox.
+comment: Deprecated. Use 'cuckoo-task-screenshot' command instead.
+deprecated: true
 system: true
 args:
 - name: id
@@ -25,4 +25,4 @@ timeout: 0s
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415

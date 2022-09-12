@@ -1,4 +1,6 @@
-Detonates a URL in the Cuckoo sandbox.
+Deprecated. Use the 'cuckoo-get-task-report' command instead.
+
+Gets the report of a completed analysis.
 ## Script Data
 ---
 
@@ -11,14 +13,14 @@ Detonates a URL in the Cuckoo sandbox.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cuckoo-create-task-from-url
+* cuckoo-get-task-report
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| url | The URL to check. |
+| taskID | The ID of the task in Cuckoo. |
 
 ## Outputs
 ---
