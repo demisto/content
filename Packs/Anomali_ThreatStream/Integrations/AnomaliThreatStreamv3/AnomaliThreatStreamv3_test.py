@@ -58,7 +58,7 @@ class TestReputationCommands:
     """
 
     def mocked_http_request_ioc(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
-                            resp_type='json'):
+                                resp_type='json'):
         if 'associated_with_intelligence' in url_suffix:
             if 'actor' in url_suffix:
                 mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
@@ -68,13 +68,13 @@ class TestReputationCommands:
                 return mocked_empty_result
         else:
             if params.get('type', '') == DBotScoreType.IP:
-                mocked_ioc_file_path = f'test_data/mocked_ip_response.json'
+                mocked_ioc_file_path = 'test_data/mocked_ip_response.json'
             elif params.get('type', '') == "md5":
-                mocked_ioc_file_path = f'test_data/mocked_file_response.json'
+                mocked_ioc_file_path = 'test_data/mocked_file_response.json'
             elif params.get('type', '') == DBotScoreType.DOMAIN:
-                mocked_ioc_file_path = f'test_data/mocked_domain_response.json'
+                mocked_ioc_file_path = 'test_data/mocked_domain_response.json'
             else:
-                mocked_ioc_file_path = f'test_data/mocked_url_response.json'
+                mocked_ioc_file_path = 'test_data/mocked_url_response.json'
 
             mocked_ioc_result = util_load_json(mocked_ioc_file_path)
             return mocked_ioc_result
@@ -107,7 +107,8 @@ class TestReputationCommands:
         mocked_ioc_result = util_load_json(mocked_ioc_file_path)
 
         mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request_ioc)
-        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active', 'threat_model_association': 'True'})
+        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active',
+                                                           'threat_model_association': 'True'})
         mocker.patch.object(demisto, 'command', return_value=command)
         mocker.patch.object(demisto, 'results')
 
@@ -127,7 +128,6 @@ class TestReputationCommands:
             assert all(expected_value in threat_stream_context for expected_value in expected_values)
             assert f'{ioc_type} reputation for: {iocs[i]}' in human_readable
             assert mocked_ioc == contents
-            
             assert isinstance(command_result['Relationships'], list)
             for entry in command_result['Relationships']:
                 assert entry.get('entityBType') == 'Threat Actor'
@@ -166,7 +166,7 @@ class TestReputationCommands:
         assert not outputs.get('Campaign')
         assert intelligence_relationships
 
-    @pytest.mark.parametrize("should_create_relationships",[(True), (False)])
+    @pytest.mark.parametrize("should_create_relationships", [(True), (False)])
     def test_get_intelligence_with_false_create_relationships(self, mocker, should_create_relationships):
         """
         Given:
