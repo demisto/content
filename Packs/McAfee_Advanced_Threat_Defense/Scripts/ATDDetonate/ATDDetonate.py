@@ -58,7 +58,7 @@ def main():
         # continue loop
         else:
             sec += interval
-            sleep(interval)
+            sleep(interval) # pylint: disable=sleep-exists
     # Get results ############
     if not atdDone:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
