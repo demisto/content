@@ -234,7 +234,7 @@ MODULE_DATA_EXTENDED_CONTEXT = [
 
 
 def is_html_response(response):
-    if 'text\html' in response.headers.get('Content-Type', ''):
+    if 'text\html' in response.headers.get('Content-Type', '').lower():
         return True
     # look for an html tag in the response text
     # if re.search("<[^>]+>", response.text):
@@ -244,8 +244,8 @@ def is_html_response(response):
 
 def get_html_from_response(response):
     text = response.text
-    open_tag = text.find('<html')
-    close_tag = text.find('</html>')
+    open_tag = text.lower().find('<html')
+    close_tag = text.lower().find('</html>')
     return text[open_tag: close_tag + len('</html>')]
 
 
@@ -261,12 +261,12 @@ def parse_error_response(error_response):
     # NetWitness has fixed structure for
     try:
         error = error_response.json()
-        return 'Request failed with status code: {}\nReason: {}\n{}'.format(error_response.status_code,
+        return f'Request failed with status code: {error_response.status_code}\nReason: {error.ResponseStatus.ErrorCode}\n{error.ResponseStatus.Message}'
                                                                             error.ResponseStatus.ErrorCode,
                                                                             error.ResponseStatus.Message)
     except Exception as e:
         demisto.debug(e)
-        return 'Request failed with status code: {}\n{}'.format(error_response.status_code, error_response.content)
+        return f'Request failed with status code: {error_response.status_code}\n{error_response.content}'
 
 
 def http_request(method, url, data=None, headers={'Accept': 'application/json'}, url_params=None):
@@ -274,7 +274,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
     # uses basic auth
     # returns the http response
 
-    LOG('Attempting {} request to {}'.format(method, url))
+    LOG(f'Attempting {method} request to {url}')
     try:
         response = requests.request(
             method,
@@ -295,7 +295,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
         demisto.results(html_error_entry(html_body))
         raise ValueError('Caught HTML response, please verify server url.')
 
-    if response.status_code != 200:
+    if response.status_code < 200 or response.status_code >= 300:
         msg = parse_error_response(response)
         raise ValueError(msg)
 
@@ -307,7 +307,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
 
 
 def login():
-    url = '{}/auth'.format(BASE_PATH)
+    url = f'{BASE_PATH}/auth'
     # this call will raise an exception on wrong credential
     http_request('GET', url)
 
