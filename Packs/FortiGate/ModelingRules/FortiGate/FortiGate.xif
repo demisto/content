@@ -25,6 +25,5 @@ XDM.Network.Destination.bytes=to_number("in"),
 XDM.Network.Source.process.executable.filename=fname,
 XDM.Network.Source.process.name=sproc,
 XDM.Network.Source.user.username=suser,
-XDM.Network.threat.category=FTNTFGTdtype,
 XDM.Network.threat.description=FTNTFGTref,
 XDM.Network.threat.severity=cefSeverity;
