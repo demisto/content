@@ -1,0 +1,23 @@
+{
+    "name": "IgnoreFields",
+    "description": "A transformer to remove selected fields from the JSON object.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Anil Agrawal",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "anagrawal@paloaltonetworks.com"
+    ],
+    "githubUser": []
+}
