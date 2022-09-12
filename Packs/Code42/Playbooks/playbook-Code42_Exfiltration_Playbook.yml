@@ -1,9 +1,7 @@
 id: Code42 Exfiltration Playbook
 version: -1
 name: Code42 Exfiltration Playbook
-description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
-  file event data, and allows security teams to remediate file exfiltration events
-  by revoking access rights to cloud files or containing endpoints.
+description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves file event data, and allows security teams to remediate file exfiltration events by revoking access rights to cloud files or containing endpoints.
 starttaskid: "0"
 tasks:
   "0":
@@ -520,7 +518,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "26":
     id: "26"
@@ -873,8 +871,7 @@ tasks:
       id: 136e95ff-4954-4036-89c4-503b5298c61f
       version: -1
       name: Code42 File Download
-      description: This playbook downloads a file via Code42 by either MD5 or SHA256
-        hash.
+      description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
       playbookName: Code42 File Download
       type: playbook
       iscommand: false
@@ -952,31 +949,31 @@ inputs:
     simple: Security
   required: false
   description: Jira Project for created incident ticket
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: JiraType
   value:
     simple: Investigation
   required: false
   description: Type of Jira ticket to create
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: JiraSummary
   value:
     simple: Code42 Security Alert for Demisto Incident ${incident.id}
   required: false
   description: Summary to use with Jira ticket creation
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ContainHostsMax
   value:
     simple: "2"
   required: false
   description: Maximum number of network hosts to contain.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DemistoInstanceURL
   value:
     simple: https://example.com/
   required: false
   description: URL of Demisto instance for emails.
-  playbookInputQuery: null
+  playbookInputQuery:
 fromversion: "5.0.0"
 tests:
 - No Test
