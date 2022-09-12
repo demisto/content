@@ -3791,7 +3791,7 @@ class TestPanOSEditPBFRule:
             )
         ]
     )
-    def test_pan_os_edit_redistribution_profile_command_main_flow(self, mocker, args, params, expected_url_params):
+    def test_pan_os_edit_pbf_rule_command_main_flow(self, mocker, args, params, expected_url_params):
         """
         Given:
         - Panorama instance configuration and egress-interface object of a pbf-rule to edit.
@@ -3819,3 +3819,61 @@ class TestPanOSEditPBFRule:
         main()
 
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'rulename': 'test',
+                'pre_post': 'pre-rulebase'
+            },
+            integration_panorama_params,
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                         "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+            }
+        ),
+        pytest.param(
+            {
+                'rulename': 'test'
+            },
+            integration_firewall_params,
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                         "[@name='vsys1']/rulebase/pbf/rules/entry[@name='test']"
+            }
+        )
+    ]
+)
+def test_pan_os_delete_pbf_rule_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance configuration with a specific rulename.
+     - Firewall instance configuration with a specific rulename.
+
+    When:
+     - running the pan-os-delete-pbf-rule through the main flow.
+
+    Then:
+     - make sure the xpath/element and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-pbf-rule')
+
+    main()
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

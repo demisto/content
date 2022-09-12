@@ -7598,3 +7598,28 @@ There is no context output for this command.
 #### Human Readable Output
 
 >PBF test4 was edited successfully.
+### pan-os-delete-pbf-rule
+***
+Deletes a PBF rule.
+
+
+#### Base Command
+
+`pan-os-delete-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to delete. | Required | 
+| device-group | The device-group in which the pbf-rule should be deleted from. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF rule test4 was deleted successfully.

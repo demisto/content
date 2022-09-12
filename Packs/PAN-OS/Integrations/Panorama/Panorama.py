@@ -11499,6 +11499,32 @@ def pan_os_edit_pbf_rule_command(args):
     )
 
 
+def pan_os_delete_pbf_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_pbf_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+
+    raw_response = pan_os_delete_pbf_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was deleted successfully.'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -12155,6 +12181,8 @@ def main():
             return_results(pan_os_create_pbf_rule_command(args))
         elif command == 'pan-os-edit-pbf-rule':
             return_results(pan_os_edit_pbf_rule_command(args))
+        elif command == 'pan-os-delete-pbf-rule':
+            return_results(pan_os_delete_pbf_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

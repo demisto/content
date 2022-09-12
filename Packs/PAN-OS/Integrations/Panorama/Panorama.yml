@@ -8284,7 +8284,7 @@ script:
       isArray: true
       name: nexthop_address_list
       required: false
-    description: Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+    description: Creates a new policy-based-forwarding (PBF) rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
     name: pan-os-create-pbf-rule
     outputs: []
   - arguments:
@@ -8326,8 +8326,25 @@ script:
       isArray: true
       name: element_value
       required: true
-    description: Edits a redistribution-profile in a virtual-router.
+    description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
+  - arguments:
+    - description: The name of the pbf-rule to delete.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group in which the pbf-rule should be deleted from. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Deletes a PBF rule.
+    name: pan-os-delete-pbf-rule
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

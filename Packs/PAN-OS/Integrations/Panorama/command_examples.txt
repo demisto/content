@@ -123,3 +123,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test
 !pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https
 !pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"
+!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"
