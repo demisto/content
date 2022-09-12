@@ -1,0 +1,6 @@
+!get-adapters
+!get-connections page=1
+!get-discoveries page=1
+!get-last-discovery
+!search-devices query="Adapters = active-directory AND Hostname = a*"
+!get-device hostname="octoxlabs01"

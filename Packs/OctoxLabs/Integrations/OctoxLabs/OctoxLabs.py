@@ -1,0 +1,219 @@
+"""Base Integration for Cortex XSOAR (aka Demisto)
+
+This is an empty Integration with some basic structure according
+to the code conventions.
+
+Developer Documentation: https://xsoar.pan.dev/docs/welcome
+Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
+Linting: https://xsoar.pan.dev/docs/integrations/linting
+
+This is an empty structure file. Check an example at;
+https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
+
+"""
+from octoxlabs import OctoxLabs
+
+import requests
+from typing import Any, Dict, List
+
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+
+""" CONSTANTS """
+""" HELPER FUNCTIONS """
+
+
+def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
+    return {k: getattr(obj, k, None) for k in keys}
+
+
+def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]):
+    commands = {
+        "test-module": test_module,
+        "get-adapters": get_adapters,
+        "get-connections": get_connections,
+        "get-discoveries": get_discoveries,
+        "get-last-discovery": get_last_discovery,
+        "search-devices": search_devices,
+        "get-device": get_device,
+    }
+    command_function = commands.get(command_name, None)
+    if command_function:
+        return command_function(octox=octox, args=args)
+    raise Exception("No command.")
+
+
+""" COMMAND FUNCTIONS """
+
+
+def test_module(octox: OctoxLabs, *_, **__) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type octox: ``octoxlabs.OctoxLabs``
+    :param octoxlabs.OctoxLabs: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    octox.ping()
+    return "ok"
+
+
+def get_adapters(octox: OctoxLabs, *_, **__) -> CommandResults:
+    count, adapters = octox.get_adapters()
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Adapters",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    obj=a,
+                    keys=[
+                        "id",
+                        "name",
+                        "slug",
+                        "description",
+                        "groups",
+                        "beta",
+                        "status",
+                        "hr_status",
+                    ],
+                )
+                for a in adapters
+            ],
+        },
+    )
+
+
+def get_connections(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    page = args.get("page", 1)
+    count, connections = octox.get_connections(page=page)
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Connections",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    obj=c,
+                    keys=[
+                        "id",
+                        "adapter_id",
+                        "adapter_name",
+                        "name",
+                        "status",
+                        "description",
+                        "enabled",
+                    ],
+                )
+                for c in connections
+            ],
+        },
+    )
+
+
+def get_discoveries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    page = args.get("page", 1)
+    count, discoveries = octox.get_discoveries(page=page)
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Discoveries",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    d,
+                    keys=[
+                        "id",
+                        "start_time",
+                        "end_time",
+                        "status",
+                        "hr_status",
+                        "progress",
+                    ],
+                )
+                for d in discoveries
+            ],
+        },
+    )
+
+
+def get_last_discovery(octox: OctoxLabs, *_, **__) -> CommandResults:
+    discovery = octox.get_last_discovery()
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Discovery",
+        outputs=convert_to_json(
+            obj=discovery,
+            keys=["id", "start_time", "end_time", "status", "hr_status", "progress"],
+        ),
+    )
+
+
+def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, devices = octox.search_assets(
+        query=args.get("query", ""),
+        fields=args.get("fields", None),
+        page=args.get("page", 1),
+        size=args.get("size", 50),
+        discovery_id=args.get("discovery_id", None),
+    )
+
+    return CommandResults(
+        output_prefix="OctoxLabs.Devices",
+        outputs={
+            "count": count,
+            "results": devices,
+        },
+    )
+
+
+def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    device = octox.get_asset_detail(
+        hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
+    )
+    return CommandResults(output_prefix="OctoxLabs.Device", outputs=device)
+
+
+""" MAIN FUNCTION """
+
+
+def main() -> None:
+    """main function, parses params and runs command functions
+
+    :return:
+    :rtype:
+    """
+    ip = demisto.params().get("octox_ip")
+    token = demisto.params().get("octox_token")
+
+    demisto.debug(f"Command being called is {demisto.command()}")
+    try:
+        octox = OctoxLabs(ip=ip, token=token)
+        return_results(
+            run_command(
+                octox=octox, command_name=demisto.command(), args=demisto.args()
+            )
+        )
+
+    # Log exceptions and return errors
+    except Exception as e:
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
+
+
+""" ENTRY POINT """
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
