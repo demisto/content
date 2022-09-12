@@ -274,7 +274,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
     # uses basic auth
     # returns the http response
 
-    LOG('Attempting {} request to {}'.format(method, url))
+    LOG(f'Attempting {method} request to {url}')
     try:
         response = requests.request(
             method,
