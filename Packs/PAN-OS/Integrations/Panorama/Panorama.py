@@ -11313,8 +11313,8 @@ def pan_os_list_nat_rules_command(args):
     )
 
 
-def json_to_xml(_json):
-    return re.sub('<\/*xml2json>', '', json2xml({'xml2json': _json}).decode('utf-8'))
+def dict_to_xml(_dictionary):
+    return re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
 
 
 def create_nat_rule(args):
@@ -11425,7 +11425,7 @@ def create_nat_rule(args):
 
     params = {
         'xpath': build_nat_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
-        'element': json_to_xml(_set_up_body_request()),
+        'element': dict_to_xml(_set_up_body_request()),
         'action': 'set',
         'type': 'config',
         'key': API_KEY
@@ -11515,7 +11515,7 @@ def pan_os_edit_nat_rule(
 
     params = {
         'xpath': xpath,
-        'element': json_to_xml(build_body_request_to_edit_pan_os_object(
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
                 behavior=behavior,
                 object_name=object_name,
                 element_value=element_value,
