@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: Gmail
+  id: Gmail Dev
   version: -1
 configuration:
 - display: Email of user with admin privileges
@@ -45,8 +45,8 @@ configuration:
   type: 0
 description: Gmail API and user management (This integration replaces the Gmail functionality
   in the GoogleApps API and G Suite integration).
-display: Gmail
-name: Gmail
+display: Gmail Dev
+name: Gmail Dev
 script:
   commands:
   - arguments:

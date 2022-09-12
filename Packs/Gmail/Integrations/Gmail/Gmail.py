@@ -1097,58 +1097,93 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts, max_results):
+def support_multithreading_py2():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        if demisto.lock.acquire():  # type: ignore[call-arg,attr-defined]
+            try:
+                return prev_do(cmd)  # type: ignore[call-arg]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_all_mailboxes():
+    all_acounts = []
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
-    accounts_counter = 0
-    msg_counter = 0
-    log_msg_target = max_results
     while True:
         command_args = {
             'maxResults': 100,
             'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
             'pageToken': users_next_page_token
         }
-
         result = service.users().list(**command_args).execute()
+        all_acounts.append(result['users'])
         users_next_page_token = result.get('nextPageToken')
-
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = []
-            entries = []
-            for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail'],
-                                               receive_only_accounts=receive_only_accounts))
-            for future in concurrent.futures.as_completed(futures):
-                accounts_counter += 1
-                entry, num_of_messages = future.result()
-                entries.append(entry)
-                if receive_only_accounts:
-                    if accounts_counter % 100 == 0:
-                        demisto.debug(
-                            'Still searching. Searched {} of total accounts'.format(
-                                accounts_counter),
-                        )
-                else:
-                    msg_counter += num_of_messages
-                    if msg_counter >= log_msg_target or accounts_counter % 100 == 0:
-                        log_msg_target = msg_counter + max_results
-                        demisto.info(
-                            'Still searching. Searched {} of total accounts, and found {} results so far'.format(
-                                accounts_counter,
-                                msg_counter),
-                        )
-
-        if receive_only_accounts:
-            entries = [mailboxes_to_entry(entries)]
-
-        # if these are the final result push - return them
         if users_next_page_token is None:
-            entries.append("Search completed")
-            return entries
+            return result
 
-        # return midway results
-        demisto.results(entries)
+
+def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
+    all_acounts = get_all_mailboxes()
+    demisto.debug('Starts searching in {} accounts'.format(len(all_acounts)))
+    accounts_counter = matching_accounts_counter = msg_counter = 0
+    log_msg_target = max_results
+    support_multithreading_py2()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        entries = []
+        for user in all_acounts:
+            futures.append(executor.submit(search_command, mailbox=user['primaryEmail'],
+                                           receive_only_accounts=receive_only_accounts))
+        for future in concurrent.futures.as_completed(futures):
+            accounts_counter += 1
+            entry, num_of_messages = future.result()
+            if entry:
+                matching_accounts_counter += 1
+                entries.append(entry)
+            if receive_only_accounts:
+                if accounts_counter % writing_to_logs == 0:
+                    demisto.debug(
+                        'Still searching. Searched {} of total accounts'.format(
+                            accounts_counter),
+                    )
+            else:
+                msg_counter += num_of_messages
+                if msg_counter >= log_msg_target:
+                    log_msg_target = msg_counter + max_results
+                    demisto.info(
+                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
+                            accounts_counter,
+                            msg_counter),
+                    )
+                elif accounts_counter % 100 == 0:
+                    demisto.info(
+                        'Still searching. Searched {} of total accounts, and found {} results so far'.format(
+                            accounts_counter,
+                            msg_counter),
+                    )
+                    
+            if receive_only_accounts:
+                entries = [mailboxes_to_entry(entries)]
+            # return midway results
+            if accounts_counter % 100:
+                demisto.results(entries)
+        # if these are the final result push - return them
+        entries.append("Search completed")
+        return entries
 
 
 def search_command(mailbox=None, receive_only_accounts=False):
