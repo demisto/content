@@ -18,3 +18,4 @@ python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_M
 #3. check how to both print logs and return final result in create_test_branch
 #4. add image testing
 #2. fix new pack not working
+#5. add all content items to new packs

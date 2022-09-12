@@ -419,7 +419,7 @@ test_upload_flow:
   tags:
     - gke
   rules:
-    - # TODO: fix
+    - # TODO: fix - checkg inside job, exit 0 if not this case
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
     GCS_MARKET_KEY: "$GCS_MARKET_KEY"
@@ -428,11 +428,11 @@ test_upload_flow:
   stage: test-upload-flow
   script:
     - section_start "Create Testing Branch"
-    - CURRENT_BRANCH=upload_testing_flow_upload_test_branch_8879413d379f3deef1add8558e6a12b0dfb359fe_1662984470.4172218
-    # CURRENT_BRANCH=$(python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFCATS_FOLDER)
+    - #CURRENT_BRANCH=upload_testing_flow_upload_test_branch_8879413d379f3deef1add8558e6a12b0dfb359fe_1662984470.4172218
+    - CURRENT_BRANCH=python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFCATS_FOLDER | tee <path> # TODO: retreive from file using tail 1
     - section_end "Create Testing Branch"
     - section_start "Wait For GitLab Mirroring"
-    - Sleep 5m
+    - Sleep 5m # TODO: push to gitlab push to new remote in gitlab instead of origin
     - section_end "Wait For GitLab Mirroring"
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - pipeline_id=echo ./Utils/trigger_test_upload_flow.sh -ct $GITLAB_TOKEN -g | jq .id
@@ -440,7 +440,7 @@ test_upload_flow:
     - section_start "Verify Created Testing Bucket"
     - test_upload_storage_base_path=upload-flow/builds
     - current_storage_base_path="$test_upload_storage_base_path/$CURRENT_BRANCH/$pipeline_id/content/packs"
-    - #Sleep 1h 30m
+    - #Sleep 1h 30m TODO: polling on specific pipeline like in private
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-dist-dev' -sb $current_storage_base_path
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-v2-dist-dev' -sb $current_storage_base_path
     - section_end "Verify Created Testing Bucket"
