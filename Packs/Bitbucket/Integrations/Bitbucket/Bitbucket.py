@@ -263,6 +263,21 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}{comment_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
+    def pull_request_comment_create_request(self, repo: str, pr_id: int, body: Dict) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint to get
+            information about a specific comment to an issue. if there is no comment_id than Makes a GET request
+            /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific issue.
+            :param repo: str - The repository the user entered, if he did.
+            :param pr_id: str - an id to a specific pull request to add a comment to.
+            :param body: Dict - a dictionary containing information about the content of the comment.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = self.check_repo(repo) + f'/pullrequests/{pr_id}/comments'
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -901,7 +916,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         client: A Bitbucket client.
         args: Demisto args.
     Returns:
-        A CommandResult object with a success message, in case of a successful deletion.
+        A CommandResult object with a list of the comments or a single comment on a specific issue.
     """
     repo = args.get('repo', None)
     issue_id = args.get('issue_id', None)  # TODO make sure that it is ok to make it a required field
@@ -946,6 +961,29 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+def pull_request_comment_create_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of comments.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful deletion.
+    """
+    repo = args.get('repo', None)
+    pr_id = arg_to_number(args.get('pull_request_id', None))
+    content = args.get('content', None)
+    body = {
+        'content': {
+            'raw': content
+        }
+    }
+    response = client.pull_request_comment_create_request(repo, pr_id, body)
+    return CommandResults(readable_output=f'The comment on the pull request "{pr_id}" was created successfully',
+                          outputs_prefix='Bitbucket.PullRequestComment',
+                          outputs=[response],
+                          raw_response=[response])
 
 
 ''' MAIN FUNCTION '''
@@ -1038,6 +1076,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-issue-comment-list':
             result = issue_comment_list_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-comment-create':
+            result = pull_request_comment_create_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
