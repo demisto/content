@@ -1,25 +1,25 @@
-Returns the details of the open sockets from a remote system using OSQuery.
+Deprecated. Use ADGetUser instead.
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
-| Tags | OSQuery |
-
+| Script Type | python2 |
+| Tags | enhancement, active directory, user |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* OSQueryBasicQuery
+* ad-search
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| system | The system to remote execute on. Can be a list of systems. |
+| name | Name of user |
 
 ## Outputs
 ---
