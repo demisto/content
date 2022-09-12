@@ -3,25 +3,25 @@ commonfields:
   id: Microsoft Teams via Webhook
   version: -1
 configuration:
-- additionalinfo: The webhook URL in the Teams Channel
+- additionalinfo: The webhook URL in the Teams channel.
   display: Microsoft Webhook URL
   name: webhookurl
   required: true
   type: 0
-description: 'Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook. '
+description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook. 
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
 script:
   commands:
   - arguments:
     - defaultValue: None
-      description: The message to send.  i.e. "This is a message from Cortex XSOAR"
+      description: 'The message to send.  For example: "This is a message from Cortex XSOAR,"'
       name: message
-    - description: Pass in the alternative webhook for a different team.  If not the default in the integration is used.
+    - description: The alternative webhook for a different team.  If not defined, the integration's default webhook is used.
       name: team_webhook
-    description: Send a message to Microsoft Teams  via Incoming Webhook
+    description: Send a message to Microsoft Teams via Incoming Webhook
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
   runonce: false
   script: ''
   subtype: python3
