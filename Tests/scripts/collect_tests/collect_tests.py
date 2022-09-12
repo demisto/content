@@ -58,7 +58,7 @@ class CollectionReason(str, Enum):
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
-    # these may be used without an id_set or conf.json object, see _validate_args.
+    # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
     CollectionReason.ALWAYS_INSTALLED_PACKS
 }
@@ -98,7 +98,7 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
+            self._validate_collection(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
 
         except NonXsoarSupportedPackException:
             if test:
@@ -123,10 +123,18 @@ class CollectionResult:
             logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
-    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
-                       id_set: Optional[IdSet], is_sanity: bool):
+    def _validate_collection(
+            pack: Optional[str],
+            test: Optional[str],
+            reason: CollectionReason,
+            conf: Optional[TestConf],
+            id_set: Optional[IdSet],
+            is_sanity: bool
+    ):
         """
         Validates the arguments of the constructor.
+        NOTE: Here, we only validate information regarding the test and pack directly.
+                For validations regarding contentItem or IdSetItem objects, see __validate_compatibility.
         """
         if reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF:
             for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
@@ -341,7 +349,16 @@ class TestCollector(ABC):
             version_range: Optional[VersionRange],
             is_integration: bool,
     ):
-        # exception order matters: important tests come first
+        # exception order matters: important tests come first.
+        """
+        NOTE:
+            Here, we validate information that indirectly effecting the collection
+            (information regarding IdSet or ContentItem objects, based on which we collect tests or packs)
+            e.g. skipped integrations, marketplace compatibility, support level.
+
+            For validating the pack/test directly, see _validate_collection.
+        """
+
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
