@@ -1,14 +1,14 @@
 [MODEL: dataset="aws_guard_duty_raw", model="Endpoint"]
 alter
-    XDM.Endpoint.original_event_type = json_extract_scalar(Resource, "$.resourceType"),
+    XDM.Endpoint.original_event_type = json_extract_scalar(Resource, "$.ResourceType"),
     XDM.Endpoint.original_event_sub_type = Type,
     XDM.Endpoint.event_timestamp = UpdatedAt,
     XDM.Endpoint.original_event_description = Description,
     XDM.Endpoint.reason = Title,
     XDM.Endpoint.threat.severity = to_string(Severity),
-    XDM.Endpoint.Target.host.hostname = json_extract(Resource, "$.eksClusterDetails.name"),
-    XDM.Endpoint.Actor.user.username = json_extract(Resource, "$.kubernetesDetails.kubernetesUserDetails.username"),
-    XDM.Endpoint.Actor.user.user_type = json_extract(Resource, "$.accessKeyDetails.userType"),
-    XDM.Endpoint.Actor.user.employee_id = json_extract(Resource, "$.accessKeyDetails.principalId"),
-    XDM.Endpoint.Target.process.name = json_extract(Service, "$.serviceName"),
-    XDM.Endpoint.Actor.host.ipv4_addresses = json_extract_array(Service, "$.Action.AwsApiCallAction.IpAddressV4");
+    XDM.Endpoint.Target.host.hostname = json_extract(Resource, "$.EksClusterDetails.Name"),
+    XDM.Endpoint.Actor.user.username = json_extract(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),
+    XDM.Endpoint.Actor.user.user_type = json_extract(Resource, "$.AccessKeyDetails.UserType"),
+    XDM.Endpoint.Actor.user.employee_id = json_extract(Resource, "$.AccessKeyDetails.PrincipalId"),
+    XDM.Endpoint.Target.process.name = json_extract(Service, "$.ServiceName"),
+    XDM.Endpoint.Actor.host.ipv4_addresses = arraycreate(coalesce(json_extract(Service, "$.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4"), ""));
