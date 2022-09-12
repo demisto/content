@@ -404,7 +404,7 @@ def test_get_users_notification_command(mocker, requests_mock):
     assert '### User notification rules' in res.get('HumanReadable')
 
 
-@pytest.mark.parametrize('severity, expected_result', [('high', 3), ('Low', 1), ('other_severity', 0)])
+@pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
 def test_translate_severity(mocker, severity, expected_result):
     """
     Given:
