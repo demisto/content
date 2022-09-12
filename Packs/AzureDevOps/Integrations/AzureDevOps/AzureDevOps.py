@@ -1,7 +1,7 @@
 # type: ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
 from typing import Callable
@@ -14,29 +14,39 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'repository_id': 'The repository ID of the pull request target branch.',
                             'pull_request_id': 'the ID of the pull request'}
 
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+SCOPE_BY_CONNECTION = {'Device Code': "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access",
+                       'Authorization Code': "https://management.azure.com/.default"}
+
 
 class Client:
     """
     API Client to communicate with AzureDevOps.
     """
 
-    def __init__(self, client_id: str, organization: str, verify: bool, proxy: bool):
+    def __init__(self, client_id: str, organization: str, verify: bool, proxy: bool, auth_type: str,
+                 tenant_id: str = None, enc_key: str = None, auth_code: str = None, redirect_uri: str = None):
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
-
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope='499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access')
+            scope=SCOPE_BY_CONNECTION[auth_type],
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri)
+        self.ms_client = MicrosoftClient(**client_args)
         self.organization = organization
+        self.connection_type = auth_type
 
     def pipeline_run_request(self, project: str, pipeline_id: str, branch_name: str) -> dict:
         """
@@ -1559,6 +1569,32 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
     demisto.incidents(incidents)
 
 
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if "Device" in client.connection_type:
+        raise DemistoException("Please enable the integration and run `!azure-devops-auth-start`"
+                               "and `!azure-deops-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-devops-auth-test`\n"
+                               "For more details press the (?) button.")
+
+    else:
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-devops-auth-test command in order to test it")
+
+
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
@@ -1567,6 +1603,11 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     is_mirroring = params.get('is_mirroring', False)
+    tenant_id = params.get('tenant_id')
+    auth_type = params.get('auth_type', 'Device')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri')
+    enc_key = params.get('credentials', {}).get('password', '')
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -1577,7 +1618,8 @@ def main() -> None:
             client_id=client_id,
             organization=organization,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy, auth_type=auth_type, tenant_id=tenant_id,
+            enc_key=enc_key, auth_code=auth_code, redirect_uri=redirect_uri)
 
         if command == 'azure-devops-auth-start':
             return_results(start_auth(client))
@@ -1628,9 +1670,7 @@ def main() -> None:
             return_results(branch_list_command(client, args))
 
         elif command == 'test-module':
-            return_results(
-                'The test module is not functional, '
-                'run the azure-devops-auth-test command instead.')
+            return_results(test_module(client))
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
@@ -1657,8 +1697,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         return_error(str(e))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

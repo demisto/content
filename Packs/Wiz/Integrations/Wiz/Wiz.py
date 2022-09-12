@@ -1,6 +1,6 @@
 import json
-import demistomock as demisto
 from CommonServerPython import *
+import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -14,24 +14,74 @@ HEADERS_AUTH = dict()
 HEADERS_AUTH["Content-Type"] = "application/x-www-form-urlencoded"
 HEADERS = dict()
 HEADERS["Content-Type"] = "application/json"
+
 TOKEN = None
 URL = ''
+AUTH_E = ''
+AUTH_DEFAULT = "auth"  # NEED TO BE REMOVED AFTER THAT AUTH0 IS DEPRECATED
+COGNITO_PREFIX = [
+    "auth.app",
+    "auth.gov",
+    "auth.test"
+]
+AUTH0_PREFIX = [
+    "auth",
+    "auth0.gov",
+    "auth0.test"
+]
+URL_SUFFIX = 'wiz.io/oauth/token'
+
+
+def set_authentication_endpoint(auth_endpoint):
+    global AUTH_E
+    if auth_endpoint == '':
+        AUTH_E = generate_auth_urls(AUTH_DEFAULT)[1]
+    else:
+        AUTH_E = auth_endpoint
+
+
+def set_api_endpoint(api_endpoint):
+    global URL
+    URL = api_endpoint
+
+
+def generate_auth_urls(prefix):
+    auth_url = f"{prefix}.{URL_SUFFIX}"
+    http_auth_url = f"https://{auth_url}"
+    return auth_url, http_auth_url
 
 
 def get_token():
     """
     Retrieve the token using the credentials
     """
+    audience = ''
+    cognito_list = []
+    for cognito_prefix in COGNITO_PREFIX:
+        cognito_list.extend(generate_auth_urls(cognito_prefix))
+
+    auth0_list = []
+    for auth0_prefix in AUTH0_PREFIX:
+        auth0_list.extend(generate_auth_urls(auth0_prefix))
+
+    # check Wiz portal auth endpoint - Cognito or Auth0
+    if AUTH_E in cognito_list:
+        audience = 'wiz-api'
+    elif AUTH_E in auth0_list:
+        audience = 'beyond-api'
+    else:
+        raise Exception('Not a valid authentication endpoint')
+
     demisto_params = demisto.params()
     said = demisto_params.get('credentials').get('identifier')
     sasecret = demisto_params.get('credentials').get('password')
     auth_payload = parse.urlencode({
         'grant_type': 'client_credentials',
-        'audience': 'beyond-api',
+        'audience': audience,
         'client_id': said,
         'client_secret': sasecret
     })
-    response = requests.post("https://auth.wiz.io/oauth/token", headers=HEADERS_AUTH, data=auth_payload)
+    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
 
     if response.status_code != requests.codes.ok:
         raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
@@ -150,6 +200,7 @@ def fetch_issues(max_fetch):
                 name
                 query
                 description
+                resolutionRecommendation
             }
             createdAt
             updatedAt
@@ -1365,9 +1416,9 @@ def get_project_team(project_name):
 
 
 def main():
-    global URL
     params = demisto.params()
-    URL = params.get('api_endpoint')
+    set_authentication_endpoint(params.get('auth_endpoint'))
+    set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
         if command == 'test-module':
