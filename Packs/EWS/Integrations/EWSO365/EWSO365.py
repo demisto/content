@@ -1928,6 +1928,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None):
+    global return_outputs
+    return_outputs = return_outputs_dev
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -2348,6 +2350,60 @@ def test_module(client: EWSClient, max_fetch):
             )
 
     return "ok"
+
+
+def return_outputs_dev(readable_output, outputs=None, raw_response=None, timeline=None, ignore_auto_extract=False):
+    """
+    DEPRECATED: use return_results() instead
+
+    This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
+
+    :type readable_output: ``str`` | ``int``
+    :param readable_output: markdown string that will be presented in the warroom, should be human readable -
+        (HumanReadable)
+
+    :type outputs: ``dict``
+    :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+
+    :type raw_response: ``dict`` | ``list`` | ``str``
+    :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
+        raw response from the 3rd party service (originally Contents)
+
+    :type timeline: ``dict`` | ``list``
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
+        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
+        be be added to the dict(s) with its value set to 'Integration Update'.
+
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+
+    :return: None
+    :rtype: ``None``
+    """
+    timeline_list = [timeline] if isinstance(timeline, dict) else timeline
+    if timeline_list:
+        for tl_obj in timeline_list:
+            if 'Category' not in tl_obj.keys():
+                tl_obj['Category'] = 'Integration Update'
+
+    return_entry = {
+        "Type": entryTypes["note"],
+        "HumanReadable": readable_output,
+        "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
+        "Contents": raw_response,
+        "EntryContext": outputs,
+        'IgnoreAutoExtract': ignore_auto_extract,
+        "IndicatorTimeline": timeline_list
+    }
+    # Return 'readable_output' only if needed
+    if readable_output and not outputs and not raw_response:
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
+    elif outputs and raw_response is None:
+        # if raw_response was not provided but outputs were provided then set Contents as outputs
+        return_entry["Contents"] = outputs
+    demisto.debug(f'{return_entry=}')
+    demisto.results(return_entry)
 
 
 def sub_main():
