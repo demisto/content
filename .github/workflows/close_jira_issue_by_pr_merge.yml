@@ -21,7 +21,7 @@ jobs:
         uses: Gr1N/setup-poetry@v7
       - uses: actions/cache@v2
         with:
-          path: ~/.cache/pypoetry/virtualenvs
+          path: .venv
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - name: Install Python Dependencies
         run: |
