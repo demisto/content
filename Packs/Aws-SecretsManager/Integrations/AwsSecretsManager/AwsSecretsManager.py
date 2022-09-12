@@ -241,7 +241,7 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cov
         })
     demisto.credentials(credentials)
 
-def main() -> None # pragma: no cover:
+def main(): # pragma: no cover:
     try:
         params = demisto.params()
         aws_default_region = params.get('defaultRegion')
