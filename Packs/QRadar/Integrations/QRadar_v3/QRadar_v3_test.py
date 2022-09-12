@@ -31,7 +31,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     migrate_integration_ctx, enrich_offense_with_events, \
-    perform_long_running_loop, validate_integration_context
+    perform_long_running_loop, validate_integration_context, FetchMode
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -438,25 +438,25 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
     [
         # success cases
         (command_test_data['offenses_list']['response'][0],
-         'correlations_events_only',
+         FetchMode.correlations_events_only.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'correlations_events_only',
+         FetchMode.correlations_events_only.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          2,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'all_events',
+         FetchMode.all_events.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'all_events',
+         FetchMode.all_events.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          1,
@@ -464,25 +464,25 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
 
         # failure cases
         (command_test_data['offenses_list']['response'][0],
-         'correlations_events_only',
+         FetchMode.correlations_events_only.value,
          None,
          None,
          3,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'correlations_events_only',
+         FetchMode.correlations_events_only.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'all_events',
+         FetchMode.all_events.value,
          None,
          None,
          3,
          ),
         (command_test_data['offenses_list']['response'][0],
-         'all_events',
+         FetchMode.all_events.value,
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3,
@@ -550,7 +550,8 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     assert 'mirroring_events_message' in enriched_offense
     del enriched_offense['mirroring_events_message']
     if mock_search_response:
-        assert is_success == (offense['event_count'] <= num_events)
+        assert is_success == (num_events >= min(offense['event_count'], events_limit)) or \
+                             (fetch_mode == FetchMode.correlations_events_only.value)
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     else:
         assert not is_success

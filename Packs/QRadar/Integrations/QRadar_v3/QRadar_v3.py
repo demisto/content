@@ -1650,6 +1650,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     """
     offense_id = str(offense['id'])
     events_count = offense.get('event_count', 0)
+    expected_events = min(events_limit, events_count)
     events: List[dict] = []
     failure_message = ''
     is_success = True
@@ -1665,7 +1666,9 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         offense['events_fetched'] = events_fetched
         offense['events'] = events
         print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
-        if events_count <= events_fetched:
+        if fetch_mode == FetchMode.all_events.value and events_fetched >= expected_events:
+            break
+        if fetch_mode == FetchMode.correlations_events_only.value and events_fetched > 0:
             break
         print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
                         f'Retry {retry+1}/{MAX_FETCH_EVENT_RETRIES}')
