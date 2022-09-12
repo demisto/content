@@ -23,8 +23,8 @@ def team_cymru_ip(client: Client, ip: str) -> Dict[str, str]:
     :return: dict containing the result of the lookup action as returned from the API (asn, cc, owner, etc.)
     :rtype: Dict[str, str]
     """
-
-    return vars(client.lookup(ip))
+    raw_result = client.lookup(ip)
+    return vars(raw_result) if raw_result else None
 
 
 def team_cymru_bulk_whois(client: Client, bulk: []) -> Dict[str, str]:
@@ -168,12 +168,14 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     ip = args.get('ip')
     if not ip:
-        raise ValueError('Ip not specified')
+        raise ValueError('IP not specified')
     if not is_ip_valid(ip):
-        raise ValueError(f"Error: The given IP address: {ip} is not valid")
+        raise ValueError(f"The given IP address: {ip} is not valid")
 
     # Call the Client function and get the raw response
     result = team_cymru_ip(client, ip)
+    if not result:
+        return CommandResults()
     indicator, entry_context = parse_ip_result(ip, result)
 
     headers = ['ip', 'asn', 'owner', 'cc', 'prefix']
@@ -218,6 +220,8 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     invalid_ips, valid_ips = validate_ip_addresses(bulk_list)
     results = team_cymru_bulk_whois(client, valid_ips)
+    if not results:
+        return CommandResults()
     results = {k: vars(results[k]) for k in results}
     contents, indicators = [], []
     for ip, ip_data in results.items():
