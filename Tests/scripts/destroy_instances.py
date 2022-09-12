@@ -1,12 +1,14 @@
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
 
 from Tests.scripts.utils.log_util import install_logging
+import demisto_client
 
 
 def main():
@@ -46,7 +48,13 @@ def main():
 
         try:
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
+            dmst_client = demisto_client.configure(base_url=f'{env["InstanceDNS"]}:{env["TunnelPort"]}')
             server_ip = env["InstanceDNS"].split('.')[0]
+
+            tmp_file_path ,_, _ = dmst_client.generic_request('/log/bundle', 'GET', response_type='file')
+            logs_dst = f"{circle_aritfact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"
+            result = shutil.copy(tmp_file_path, logs_dst)
+            
             subprocess.check_output(
                 scp_string.format(
                     env["SSHuser"],
