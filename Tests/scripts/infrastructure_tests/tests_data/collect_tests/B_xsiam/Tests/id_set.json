@@ -1,0 +1,34 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myXSIAMOnlyPack",
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      },
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myXSIAMOnlyPack",
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      },
+      "Sanity Test - Playbook with Unmockable Whois Integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with Unmockable Whois Integration.yml",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      }
+    }
+  ],
+  "Packs": {}
+}

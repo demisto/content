@@ -1010,6 +1010,8 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     class Service:
         def __init__(self):
             self.token = 'fake_token'
+            self.basic = True
+            self._auth_headers = [('Authentication', self.token)]
 
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')

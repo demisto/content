@@ -20,7 +20,7 @@ CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
 CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
 CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
 CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 EMAIL_DATA_MAPPING = {
     'id': 'ID',
@@ -70,7 +70,7 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 display_full_email_body=False):
+                 display_full_email_body=False, look_back=0):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -83,6 +83,7 @@ class MsGraphClient:
         self._emails_fetch_limit = emails_fetch_limit
         # whether to display the full email body for the fetch-incidents
         self.display_full_email_body = display_full_email_body
+        self.look_back = look_back
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -680,28 +681,8 @@ class MsGraphClient:
             # didn't reach the end of the loop, set the current_directory_level_folders to folder children
             current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''))
 
-    def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
-        """
-        Fetches emails from given folder that were modified after specific datetime (last_fetch).
+    def get_emails(self, exclude_ids, last_fetch, folder_id):
 
-        All fields are fetched for given email using select=* clause,
-        for more information https://docs.microsoft.com/en-us/graph/query-parameters.
-        The email will be excluded from returned results if it's id is presented in exclude_ids.
-        Number of fetched emails is limited by _emails_fetch_limit parameter.
-        The filtering and ordering is done based on modified time.
-
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-
-        :type last_fetch: ``str``
-        :param last_fetch: Previous fetch date
-
-        :type exclude_ids: ``list``
-        :param exclude_ids: List of previous fetch email ids to exclude in current run
-
-        :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
-        :rtype: ``list`` and ``list``
-        """
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
@@ -712,16 +693,34 @@ class MsGraphClient:
             "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
-        fetched_emails = self.ms_client.http_request(
-            'GET', suffix_endpoint, params=params
-        ).get('value', [])
+        return self.ms_client.http_request('GET', suffix_endpoint, params=params).get('value') or []
+
+    def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
+        """
+        Fetches emails from given folder that were modified after specific datetime (last_fetch).
+        All fields are fetched for given email using select=* clause,
+        for more information https://docs.microsoft.com/en-us/graph/query-parameters.
+        The email will be excluded from returned results if it's id is presented in exclude_ids.
+        Number of fetched emails is limited by _emails_fetch_limit parameter.
+        The filtering and ordering is done based on modified time.
+        :type folder_id: ``str``
+        :param folder_id: Folder id
+        :type last_fetch: ``str``
+        :param last_fetch: Previous fetch date
+        :type exclude_ids: ``list``
+        :param exclude_ids: List of previous fetch email ids to exclude in current run
+        :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
+        :rtype: ``list`` and ``list``
+        """
+        demisto.debug(f'fetching emails since {last_fetch}')
+        fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch, folder_id=folder_id)
 
         fetched_emails_ids = {email.get('id') for email in fetched_emails}
         exclude_ids_set = set(exclude_ids)
         if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
             demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
-            return [], exclude_ids, last_fetch
+            return [], exclude_ids
         new_emails = [mail for mail in fetched_emails
                       if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
@@ -733,7 +732,7 @@ class MsGraphClient:
             excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
                                         email.get('receivedDateTime') == last_email_time]
 
-        return new_emails, excluded_ids_for_nextrun, last_email_time
+        return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -866,12 +865,13 @@ class MsGraphClient:
             body = get_text_from_html(parsed_email.get('Body') or '')
 
         incident = {
-            'name': parsed_email['Subject'],
+            'name': parsed_email.get('Subject'),
             'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
-            'occurred': parsed_email['ModifiedTime'],
+            'occurred': parsed_email.get('ModifiedTime'),
             'attachment': parsed_email.get('Attachments', []),
-            'rawJSON': json.dumps(parsed_email)
+            'rawJSON': json.dumps(parsed_email),
+            'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
         }
 
         return incident
@@ -880,17 +880,30 @@ class MsGraphClient:
     def fetch_incidents(self, last_run):
         """
         Fetches emails from office 365 mailbox and creates incidents of parsed emails.
-
         :type last_run: ``dict``
         :param last_run:
             Previous fetch run data that holds the fetch time in utc Y-m-dTH:M:SZ format,
             ids of fetched emails, id and path of folder to fetch incidents from
-
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        last_fetch = last_run.get('LAST_RUN_TIME')
+        if 'time' not in last_run and (last_run_time := last_run.get('LAST_RUN_TIME')):
+            last_run['time'] = last_run_time.replace('Z', '')
+
+        if 'time' in last_run:
+            last_run['time'] = last_run['time'].replace('Z', '')
+
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+            last_run=last_run,
+            first_fetch=self._first_fetch_interval,
+            look_back=self.look_back,
+            date_format=API_DATE_FORMAT
+        )
+
+        demisto.debug(f'{start_fetch_time=}, {end_fetch_time=}')
+
         exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
+
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -899,27 +912,57 @@ class MsGraphClient:
         if folder_path_changed or mailbox_to_fetch_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
-            demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
+            demisto.info("MS-Graph-Listener: detected file path change, ignored LAST_RUN_FOLDER_ID from last run.")
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
             folder_id = last_run.get('LAST_RUN_FOLDER_ID')
 
-        if not last_fetch or folder_path_changed:  # initialized fetch
-            last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
-            demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
+        fetched_emails, exclude_ids = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=start_fetch_time, exclude_ids=exclude_ids)
 
-        fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
-            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
-        incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run = {
-            'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': exclude_ids,
-            'LAST_RUN_FOLDER_ID': folder_id,
-            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
-            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
-        }
+        demisto.debug(
+            f'fetched email IDs before removing duplications - {[email.get("id") for email in fetched_emails]}'
+        )
+
+        # remove duplicate incidents which were already fetched
+        incidents = filter_incidents_by_duplicates_and_limit(
+            incidents_res=list(map(self._parse_email_as_incident, fetched_emails)),
+            last_run=last_run,
+            fetch_limit=self._emails_fetch_limit,
+            id_field='ID'
+        )
+
+        demisto.debug(
+            f'fetched email IDs after removing duplications - {[email.get("ID") for email in incidents]}'
+        )
+
+        next_run = update_last_run_object(
+            last_run=last_run,
+            incidents=incidents,
+            fetch_limit=self._emails_fetch_limit,
+            start_fetch_time=start_fetch_time,
+            end_fetch_time=end_fetch_time,
+            look_back=self.look_back,
+            created_time_field='occurred',
+            id_field='ID',
+            date_format=API_DATE_FORMAT,
+            increase_last_run_time=True
+        )
+
+        next_run.update(
+            {
+                'LAST_RUN_IDS': exclude_ids,
+                'LAST_RUN_FOLDER_ID': folder_id,
+                'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
+                'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
+            }
+        )
+
+        for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
+            incident.pop('ID', None)
+
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
-        demisto.debug(next_run)
+        demisto.debug(f"{next_run=}")
 
         return next_run, incidents
 
@@ -1169,7 +1212,7 @@ def get_now_utc():
     :return: String format of current UTC time
     :rtype: ``str``
     """
-    return datetime.utcnow().strftime(DATE_FORMAT)
+    return datetime.utcnow().strftime(API_DATE_FORMAT)
 
 
 def read_file(attach_id):
@@ -1920,12 +1963,15 @@ def main():
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
     display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
+    look_back = arg_to_number(params.get('look_back', 0))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key, display_full_email_body=display_full_email_body
+                                          private_key=private_key,
+                                          display_full_email_body=display_full_email_body,
+                                          look_back=look_back
                                           )
 
     command = demisto.command()

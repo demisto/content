@@ -2065,7 +2065,7 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.32234
+  dockerimage: demisto/google-api-py3:1.0.0.33017
   feed: false
   isfetch: false
   longRunning: false

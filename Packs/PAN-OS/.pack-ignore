@@ -26,3 +26,5 @@ ignore=auto-test
 pcaps
 FW
 dst
+feedExpirationPolicy
+feedExpirationInterval

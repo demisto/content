@@ -10,7 +10,7 @@
 				"path": "/bin/zsh"
 			}
 		},
-		"python.defaultInterpreterPath": "/usr/local/bin/python",
+		"python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
 		"python.linting.mypyEnabled": true,
@@ -27,7 +27,7 @@
 		"python.testing.pytestArgs": [
 			"."
 		],
-		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+		"python.testing.cwd": "${containerWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
@@ -62,9 +62,7 @@
 	"features": {
 		"docker-in-docker": "latest",
 		"git": "os-provided",
-		"github-cli": "latest",
-		"powershell": "latest"
+		"github-cli": "latest"
 	},
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc",
-	"postCreateCommand": "poetry install"
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
 }

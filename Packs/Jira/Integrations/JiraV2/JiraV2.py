@@ -1242,7 +1242,9 @@ def update_remote_system_command(args):
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
-            edit_issue_command(remote_id, mirroring=True, **remote_args.delta)
+            # take the val from data as it's the updated value
+            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '

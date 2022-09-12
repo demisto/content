@@ -7,6 +7,8 @@ from collections.abc import Generator
 from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
+VENDOR = 'github'
+PRODUCT = 'github-audit'
 
 
 def get_github_timestamp_format(value):
@@ -114,7 +116,7 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                send_events_to_xsiam(events, 'github', demisto_params.get('product'))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(GithubGetEvents.get_last_run(events))
 
             elif command == 'github-get-events':
@@ -127,7 +129,7 @@ def main():
                 )
                 return_results(command_results)
                 if should_push_events:
-                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
         return_error(str(e))

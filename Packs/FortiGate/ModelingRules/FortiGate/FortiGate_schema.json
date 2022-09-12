@@ -13,7 +13,7 @@
       "is_array": false
     },
     "dhost": {
-      "type": "number",
+      "type": "string",
       "is_array": false
     },
     "dst": {

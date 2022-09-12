@@ -9,12 +9,14 @@ from decimal import Decimal
 import requests
 from azure.kusto.data.response import KustoResponseDataSet, KustoResponseDataSetV1
 from datetime import datetime
+from MicrosoftApiModule import *  # noqa: E402
 
 ''' CONSTANTS '''
 DEFAULT_PAGE_NUMBER = '1'
 DEFAULT_LIMIT = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 REQUEST_BASE_TIMEOUT = 20
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 
 
 class DataExplorerClient:
@@ -22,7 +24,9 @@ class DataExplorerClient:
         Azure Data Explorer API Client.
     """
 
-    def __init__(self, cluster_url: str, client_id: str, client_activity_prefix: str, verify: bool, proxy: bool):
+    def __init__(self, cluster_url: str, client_id: str, client_activity_prefix: str, verify: bool,
+                 proxy: bool, connection_type: str, tenant_id: str = None, enc_key: str = None,
+                 auth_code: str = None, redirect_uri: str = None):
 
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
@@ -37,18 +41,25 @@ class DataExplorerClient:
 
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
-        self.scope = f'{cluster_url}/user_impersonation offline_access user.read'
+        self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Authorization' not in connection_type \
+            else 'https://management.azure.com/.default'
         self.client_activity_prefix = client_activity_prefix
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url=cluster_url,
             verify=verify,
             proxy=proxy,
-            scope=self.scope
+            scope=self.scope,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri
         )
+        self.ms_client = MicrosoftClient(**client_args)
+        self.connection_type = connection_type
 
     def http_request(self, method, url_suffix: str = None, full_url: str = None, params: dict = None, headers=None,
                      data=None, timeout: int = REQUEST_BASE_TIMEOUT):
@@ -538,6 +549,31 @@ def test_connection(client: DataExplorerClient) -> str:
     return '✅ Success!'
 
 
+def test_module(client: DataExplorerClient) -> str:
+    """Tests API connectivity and authentication for client credentials only.
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type client: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if 'Authorization' not in client.connection_type:
+        raise DemistoException(
+            "Please enable the integration and run `!azure-data-explorer-auth-start`"
+            "and `!azure-data-explorer-auth-complete` to log in."
+            "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
+            "For more details press the (?) button.")
+
+    else:
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the "
+                        "!azure-data-explorer-auth-test command in order to test it")
+
+
 def main() -> None:
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -549,6 +585,11 @@ def main() -> None:
     client_activity_prefix = params.get('client_activity_prefix')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    enc_key = (params.get('credentials', {})).get('password')
+    tenant_id = params.get('tenant_id')
+    connection_type = params.get('authentication_type', 'Device Code')
+    auth_code = (params.get('auth_code', {})).get('password')
+    redirect_uri = params.get('redirect_uri')
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -556,8 +597,8 @@ def main() -> None:
     try:
         requests.packages.urllib3.disable_warnings()
         client: DataExplorerClient = DataExplorerClient(cluster_url, client_id, client_activity_prefix,
-                                                        verify_certificate,
-                                                        proxy)
+                                                        verify_certificate, proxy, connection_type,
+                                                        tenant_id, enc_key, auth_code, redirect_uri)
 
         commands = {
             'azure-data-explorer-search-query-execute': search_query_execute_command,
@@ -567,9 +608,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            return_results(
-                'The test module is not functional,'
-                ' run the azure-data-explorer-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'azure-data-explorer-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-data-explorer-auth-complete':
@@ -595,7 +634,5 @@ def main() -> None:
         return_error(f'Failed to execute {command} command.\nError:\n{error_text}')
 
 
-from MicrosoftApiModule import *  # noqa: E402
-
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
