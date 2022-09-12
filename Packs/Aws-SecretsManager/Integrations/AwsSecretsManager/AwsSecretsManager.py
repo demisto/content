@@ -97,6 +97,7 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     return_results(CommandResults(
         outputs_prefix='AWS.SecretsManager.Secret',
         outputs=response,
+        outputs_key_field='Name',
         readable_output=human_readable
     ))
 
@@ -141,10 +142,11 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
     return_results(CommandResults(
         outputs_prefix='AWS.SecretsManager.Secret.SecretValue',
         outputs=response,
+        outputs_key_field='Name',
         readable_output=human_readable
     ))
 
-def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -161,14 +163,14 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str,
     if args.get('delete_immediately') is not None:
         if args.get('days_of_recovery'):
             return_error('Delete command cannot be executed with both args: delete_immediately and days_of_recovery')
-        kwargs['ForceDeleteWithoutRecovery'] = args.get('delete_immediately', False) == True
+        kwargs['ForceDeleteWithoutRecovery'] = argToBoolean(args.get('delete_immediately')) == True
 
     response = client.delete_secret(**kwargs)
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Secret was Deleted")
 
-def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -177,7 +179,7 @@ def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str
     )
 
     if not args.get('secret_id'):
-        return_error('secret_id is mandatory inorder to run this command!')
+        raise Exception('secret_id is mandatory inorder to run this command!')
 
     response = client.restore_secret(SecretId=args.get('secret_id'))
 
@@ -208,6 +210,7 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
     return_results(CommandResults(
         outputs_prefix='AWS.SecretsManager.Policy',
         outputs=response,
+        outputs_key_field='Name',
         readable_output=human_readable
     ))
 
@@ -248,7 +251,7 @@ def main() -> None:
         aws_role_policy = None
         aws_access_key_id = params.get('access_key')
         aws_secret_access_key = params.get('credentials').get('password')
-        verify_certificate = not params.get('insecure', True)
+        verify_certificate = not argToBoolean(params.get('insecure'))
         timeout = params.get('timeout')
         retries = int(params.get('retries')) if params.get('retries') else 5
 
