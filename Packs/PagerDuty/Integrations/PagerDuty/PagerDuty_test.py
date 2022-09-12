@@ -2,6 +2,7 @@
 from CommonServerPython import *
 import pytest
 
+
 def load_mock_response(file_name):
     """
     Load mock file that simulates an API response.
