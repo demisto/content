@@ -2,8 +2,24 @@ import argparse
 import json
 import tempfile
 
+
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_services import *
+import functools
+
+
+def logger(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        print(f'Starting {func.__name__}')
+        try:
+            result, pack_id = func(self, *args, **kwargs)
+            self.is_valid = self.is_valid and result
+            print(f'Result of {func.__name__} for {pack_id} is {result}')
+        except FileNotFoundError as e:
+            print(f'Result of {func.__name__} is False: {e}')
+            self.is_valid = False
+    return wrapper
 
 
 class BucketVerifier:
@@ -12,49 +28,60 @@ class BucketVerifier:
         self.versions = versions_dict
         self.is_valid = True
 
+    @logger
     def verify_new_pack(self, pack_id, pack_items):
         # verify in index, verify version 1.0.0 exists in packs path
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
-        self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
+        return all(version_exists) and all(items_exists), pack_id
 
+    @logger
     def verify_modified_pack(self, pack_id, pack_items):
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         version_exists = [self.gcp.is_in_index(pack_id), pack_path]
-        items_exists = [self.gcp.get_items_dict(pack_path, pack_id) == pack_items]
-        self.is_valid = self.is_valid and all(version_exists) and all(items_exists)
+        items_exists = [get_items_dict(pack_path, pack_id) == pack_items]
+        return all(version_exists) and all(items_exists), pack_id
 
+    @logger
     def verify_new_version(self, pack_id, rn):
         # check: RN, new version exists
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id)
-        self.is_valid = self.is_valid and all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata])
+        return all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]), pack_id
 
+    @logger
     def verify_rn(self, pack_id, rn):
         # verify by version the content of the RN
-        self.is_valid = self.is_valid and rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
+        return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id
 
+    @logger
     def verify_hidden(self, pack_id):
         # verify not in index
-        self.is_valid = self.is_valid and not self.gcp.is_in_index(pack_id)
+        return not self.gcp.is_in_index(pack_id), pack_id
 
+    @logger
     def verify_readme(self, pack_id, readme):
         # verify readme content, no version bump
-        self.is_valid = self.is_valid and gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md')
+        return gcp.get_max_version(pack_id) and readme in \
+               self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md'), pack_id
 
+    @logger
     def verify_failed_pack(self, pack_id):
         # verify commit hash is not updated
-        self.is_valid = self.is_valid and self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit')
+        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
+    @logger
     def verify_modified_path(self, pack_id, item_type, item_file_name, extension):
         # verify the path of the item is modified
-        self.is_valid = self.is_valid and self.gcp.is_item_in_pack(pack_id, item_type, item_file_name, extension)
+        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        return self.gcp.is_item_in_pack(pack_id, item_type, item_file_name, extension), pack_id
 
+    @logger
     def verify_dependency(self, pack_id, dependency_id):
         # verify the new dependency is in the metadata
-        self.is_valid = self.is_valid and dependency_id in \
-                        self.gcp.get_pack_metadata(pack_id).get('dependencies').keys()
+        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies').keys(), pack_id
 
 
 class GCP:
@@ -67,15 +94,15 @@ class GCP:
 
     def download_and_extract_pack(self, pack_id, pack_version):
         pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
-        pack = self.storage_bucket.blob(pack_path) # verify if given bad path what happens
-        download_pack_path = os.path.join(self.extracting_destination, f"{pack_id}.zip")
-        pack.download_to_filename(download_pack_path)
-        if os.path.exists(download_pack_path):
+        pack = self.storage_bucket.blob(pack_path)
+        if pack.exists():
+            download_pack_path = os.path.join(self.extracting_destination, f"{pack_id}.zip")
+            pack.download_to_filename(download_pack_path)
             with ZipFile(download_pack_path, 'r') as pack_zip:
-                pack_zip.extractall(self.extracting_destination)
+                pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
             return os.path.join(self.extracting_destination, pack_id)
         else:
-            return None
+            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket')
 
     def is_in_index(self, pack_id):
         pack_path = os.path.join(self.index_path, pack_id)
@@ -83,17 +110,15 @@ class GCP:
 
     def get_changelog_rn_by_version(self, pack_id, version):
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
-        with open(changelog_path, 'r') as changelog_file:
-            changelog = json.load(changelog_file)
-        return changelog.get(version, '').get('releaseNotes')
+        changelog = read_json(changelog_path)
+        return changelog.get(version, {}).get('releaseNotes')
 
     def get_pack_metadata(self, pack_id):
         """
         returns the metadata.json of the latest pack version from the pack's zip
         """
         metadata_path = os.path.join(self.extracting_destination, pack_id, 'metadata.json')
-        with open(metadata_path, 'r') as metadata_file:
-            return json.load(metadata_file)
+        return read_json(metadata_path)
 
     def is_item_in_pack(self, pack_id, item_type, item_file_name, extension):
         """
@@ -101,15 +126,17 @@ class GCP:
         have a subfolder (for example: Integrations/ObjectName/integration-ObjectName.yml
         """
         return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name,
-                                           f'{item_type.to_lower()[:-1]}-{item_file_name}.{extension}'))
+                                           f'{item_type.lower()[:-1]}-{item_file_name}.{extension}'))
 
     def get_index_json(self):
         index_json_path = os.path.join(storage_base_path, 'index.json')
         index_json = self.storage_bucket.blob(index_json_path)
-        download_index_path = os.path.join(self.extracting_destination, 'index.json')
-        index_json.download_to_filename(download_index_path)
-        with open(download_index_path, 'r') as index_json_file:
-            return json.load(index_json_file)
+        if index_json.exists():
+            download_index_path = os.path.join(self.extracting_destination, 'index.json')
+            index_json.download_to_filename(download_index_path)
+            return read_json(download_index_path)
+        else:
+            raise FileNotFoundError('index.json was not found in the bucket')
 
     def get_flow_commit_hash(self):
         index_json = self.get_index_json()
@@ -121,35 +148,37 @@ class GCP:
 
     def get_changelog(self, pack_id):
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
-        with open(changelog_path, 'r') as changelog_file:
-            return json.load(changelog_file)
+        return read_json(changelog_path)
 
-    def get_pack_item(self, pack_id, item_type, item_file_name):
-        item_path = os.path.join(self.extracting_destination, pack_id, item_type, item_file_name)
+    def get_pack_item(self, pack_id, version, item_type, item_file_name):
+        item_path = os.path.join(self.extracting_destination, pack_id, version, item_type, item_file_name)
         with open(item_path, 'r') as f:
             return f.read()
 
-    def get_items_dict(self, pack_path, pack_id):
-        pack = Pack(pack_id, pack_path)
-        pack.collect_content_items()
-        return pack._content_items
+
+def get_items_dict(pack_path, pack_id):
+    pack = Pack(pack_id, pack_path)
+    pack.collect_content_items()
+    return pack._content_items
 
 
 def get_args():
-    """Validates and parses script arguments.
-
-    Returns:
-        Namespace: Parsed arguments object.
-
-    """
     parser = argparse.ArgumentParser(description="Check if the created bucket is valid")
     parser.add_argument('-s', '--service_account', help="Path to gcloud service account", required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Path to storage under the marketplace-dist-dev bucket",
                         required=False)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", default='marketplace-dist-dev')
-    parser.add_argument('-p', '--packs_dict', help="Dict of pack names and versions to verify", default='marketplace-dist-dev')
+    parser.add_argument('-a', '--artifacts_path', help="path to artifacts from the script creating the test branch, "
+                                                       "should contain json with dict of pack names and items to verify"
+                                                       "and json with dict of pack names and versions to verify",
+                        required=False)
 
     return parser.parse_args()
+
+
+def read_json(path):
+    with open(path, 'r') as file:
+        return json.load(file)
 
 
 if __name__ == "__main__":
@@ -157,16 +186,16 @@ if __name__ == "__main__":
     storage_base_path = args.storage_base_path
     service_account = args.service_account
     storage_bucket_name = args.bucket_name
-    versions_dict = args.version_dict  # TODO: verify parsing, should be pack_id: version of the modified pack or RN
-    items_dict = args.items_dict  # TODO: verify parsing, should be pack_id: {item_type: item_id} of the modified pack or RN
+    versions_dict = read_json(os.path.join(args.artifacts_path, 'versions_dict.json'))
+    items_dict = read_json(os.path.join(args.artifacts_path, 'packs_items.json'))
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
     bv = BucketVerifier(gcp, versions_dict)
-    # verify new pack - TestUploadFlow
-    bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
-
-    # verify dependencies handling
-    bv.verify_dependency('Armis', 'TestUploadFlow')
+    # # verify new pack - TestUploadFlow
+    # bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
+    #
+    # # verify dependencies handling
+    # bv.verify_dependency('Armis', 'TestUploadFlow')
 
     # verify new version
     expected_rn = 'testing adding new RN'
@@ -195,10 +224,13 @@ if __name__ == "__main__":
     bv.verify_failed_pack('Absolute')
 
     # verify path modification
-    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'yml')
-    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'jsom')
-    bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'xif')
+    if 'v2' in gcp.storage_bucket.name:
+        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'yml')
+        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'jsom')
+        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'xif')
 
     # verify modified pack
     bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 
+    is_valid = 'valid' if bv.is_valid else 'not valid'
+    print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')

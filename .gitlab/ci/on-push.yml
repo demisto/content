@@ -414,3 +414,7 @@ xsiam_server_master:
     INSTANCE_ROLE: "XSIAM Master"
     GCS_QUEUE_FILE: "queue-master"
     TEST_MACHINES_LIST: "test-machines-master"
+
+test_upload_flow:
+  rules:
+    - # TODO: fix

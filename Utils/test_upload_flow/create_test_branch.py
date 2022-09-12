@@ -9,6 +9,7 @@ import json
 from Tests.Marketplace.marketplace_services import *
 versions_dict = {}
 pack_items_dict = {}
+changed_packs = set()
 
 def add_changed_pack(func):
     def wrapper(*args, **kwargs):
@@ -18,9 +19,9 @@ def add_changed_pack(func):
         print(f'Running {func.__name__}', end=" ")
         pack, version, pack_items = func(*args, **kwargs)
         changed_packs.add(pack)
-        versions_dict[pack] = version
-        if pack_items_dict:
-            pack_items[pack] = pack_items_dict
+        versions_dict[str(pack.name)] = version
+        if pack_items:
+            pack_items_dict[str(pack.name)] = pack_items
         print("Done")
 
         return pack, version, pack_items
@@ -177,6 +178,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.", default='.')
     parser.add_argument("-cb", "--content-branch", nargs="?",
                         help="The content branch name, if empty will run on current branch.")
+    parser.add_argument("-a", "--artifacts_path", help="Path to store the script's output")
     return parser.parse_args()
 
 
@@ -210,12 +212,12 @@ if __name__ == "__main__":
         create_failing_pack(packs_path / 'Absolute/Integrations/Absolute/Absolute.py')
         modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
         modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.xif',
-                         'Alibaba.xif', 'AlibabaActionTrail')
+                         'Alibaba.xif', packs_path / 'AlibabaActionTrail')
         modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.yml',
-                         'Alibaba.yml', 'AlibabaActionTrail')
+                         'Alibaba.yml', packs_path / 'AlibabaActionTrail')
         modify_item_path(packs_path /
                          'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
-                         'Alibaba_schema.json', 'AlibabaActionTrail')
+                         'Alibaba_schema.json', packs_path / 'AlibabaActionTrail')
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
@@ -229,4 +231,8 @@ if __name__ == "__main__":
         repo.git.checkout(original_branch)
         if branch:
             repo.delete_head(branch, force=True)
+        json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
+        json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
+
+        print(versions_dict, pack_items_dict)
 
