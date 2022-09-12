@@ -353,7 +353,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     if odata:
         try:
             odata = json.loads(odata)
-        except:
+        except JSONDecodeError:
             return_error(f"Can't parse odata argument as JSON array.\nvalue: {odata}")
 
     response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to,
