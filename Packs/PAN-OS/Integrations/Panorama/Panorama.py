@@ -11133,10 +11133,12 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
-def build_pbf_xpath(name, pre_post):
+def build_pbf_xpath(name, pre_post, element_to_change=None):
     _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
     if name:
         _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    if element_to_change:
+        _xpath = f'{_xpath}/{element_to_change}'
     return _xpath
 
 
@@ -11385,6 +11387,115 @@ def pan_os_create_pbf_rule_command(args):
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'PBF rule {rule_name} was created successfully.'
+    )
+
+
+def build_body_request_to_edit_pan_os_object(
+    behavior, object_name, element_value, is_listable, xpath='', should_contain_entries=True
+):
+    """
+    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
+    the requested behavior and a full xpath to the object.
+
+    Args:
+        behavior (str): must be one of add/remove/replace.
+        object_name (str): the name of the object that needs to be updated.
+        element_value (str): the value of the new element.
+        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
+        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
+        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+
+    Returns:
+        dict: a body request for the new object to update it.
+    """
+
+    if behavior not in {'replace', 'remove', 'add'}:
+        raise ValueError(f'behavior argument must be one of replace/remove/add values')
+
+    if behavior == 'replace':
+        element = add_fields_as_json(object_name, element_value, is_list=is_listable)
+    else:  # add or remove is only for listable objects.
+        current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
+        if behavior == 'add':
+            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
+        else:  # remove
+            updated_object_items = [item for item in current_objects_items if item not in element_value]
+            if not updated_object_items and should_contain_entries:
+                raise DemistoException(f'The object: {object_name} must have at least one item.')
+
+        element = add_fields_as_json(object_name, updated_object_items, is_list=True)
+
+    return element
+
+
+def pan_os_edit_pbf_rule(rule_name, element_value, pre_post, element_to_change, object_name, is_listable):
+    params = {
+        'xpath': build_pbf_xpath(
+            name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
+        ),
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+            behavior='replace', object_name=object_name, element_value=element_value, is_listable=is_listable),
+            contains_xml_chars=True
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_pbf_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'action_forward_discard': ('action', 'action', False),
+        'action_forward_no_pbf': ('action', 'action', False),
+        'action_forward_nexthop_ip': ('action/forward/nexthop/ip-address', 'ip-address', False),
+        'action_forward_nexthop_fqdn': ('action/forward/nexthop/fqdn', 'fqdn', False),
+        'action_forward_egress_interface': ('action/forward/egress-interface', 'egress-interface', False),
+        'source_zone': ('from/zone', 'zone', True),
+        'enforce_symmetric_return': ('enforce-symmetric-return/enabled', 'enabled', False),
+        'nexthop_address_list': ('enforce-symmetric-return/nexthop-address-list', 'nexthop-address-list', False),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination_address', True),
+        'source_user': ('source-user', 'source-user', True),
+        'application': ('application', 'application', True),
+        'service': ('service', 'service', True),
+        'description': ('description', 'description', False),
+        'negate_source': ('negate-source', 'negate-source', False),
+        'negate_destination': ('negate-destination', 'negate-destination', False)
+    }
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    if element_to_change == 'action_forward_no_pbf':
+        element_value = '<no-pbf/>'
+
+    if element_to_change == 'action_forward_discard':
+        element_value = '<discard/>'
+
+    if element_to_change == 'nexthop_address_list':
+        element_value = ''.join(
+            f'<entry name="{address}"/>' for address in argToList(element_value)
+        )
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_pbf_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF {rule_name} was edited successfully.'
     )
 
 
@@ -12042,6 +12153,8 @@ def main():
             return_results(pan_os_list_pbf_rules_command(args))
         elif command == 'pan-os-create-pbf-rule':
             return_results(pan_os_create_pbf_rule_command(args))
+        elif command == 'pan-os-edit-pbf-rule':
+            return_results(pan_os_edit_pbf_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

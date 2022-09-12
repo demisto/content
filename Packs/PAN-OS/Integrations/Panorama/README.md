@@ -7571,3 +7571,30 @@ There is no context output for this command.
 #### Human Readable Output
 
 >PBF rule test4 was created successfully.
+### pan-os-edit-pbf-rule
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF rule to edit. | Required | 
+| device-group | The device-group in which the PBF rule is in. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_value | The value of the element to change. Can be a list for some of the elements. when element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF test4 was edited successfully.

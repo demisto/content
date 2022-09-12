@@ -8287,6 +8287,47 @@ script:
     description: Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
     name: pan-os-create-pbf-rule
     outputs: []
+  - arguments:
+    - description: The name of the PBF rule to edit.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group in which the PBF rule is in.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - source_zone
+      - source_address
+      - source_user
+      - service
+      - destination_address
+      - application
+      - negate_source
+      - negate_destination
+      - nexthop_address_list
+      - enforce_symmetric_return
+      - action_forward_egress_interface
+      - action_forward_nexthop_ip
+      - action_forward_nexthop_fqdn
+      - action_forward_discard
+      - action_forward_no_pbf
+    - description: The value of the element to change. Can be a list for some of the elements. when element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
+      isArray: true
+      name: element_value
+      required: true
+    description: Edits a redistribution-profile in a virtual-router.
+    name: pan-os-edit-pbf-rule
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

@@ -3708,3 +3708,114 @@ class TestCreatePBFRuleCommand:
 
         main()
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSEditPBFRule:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test', 'element_to_change': 'action_forward_egress_interface',
+                    'element_value': 'interface-1', 'pre_post': 'pre-rulebase'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<egress-interface>interface-1</egress-interface>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']/"
+                             "action/forward/egress-interface"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test', 'element_to_change': 'action_forward_no_pbf', 'pre_post': 'pre-rulebase'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<action><no-pbf/></action>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']/action"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test', 'element_to_change': 'action_forward_discard', 'pre_post': 'pre-rulebase'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<action><discard/></action>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']/action"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test', 'element_to_change': 'nexthop_address_list', 'element_value': '1.1.1.1,2.2.2.2'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<nexthop-address-list><entry name="1.1.1.1"/><entry '
+                               'name="2.2.2.2"/></nexthop-address-list>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
+                             "entry[@name='vsys1']/rulebase/pbf/rules/entry[@name='test']"
+                             "/enforce-symmetric-return/nexthop-address-list"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test', 'element_to_change': 'source_zone', 'element_value': '1.1.1.1,2.2.2.2'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<zone><member>1.1.1.1</member><member>2.2.2.2</member></zone>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                             "[@name='vsys1']/rulebase/pbf/rules/entry[@name='test']/from/zone"
+                }
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+        - Panorama instance configuration and egress-interface object of a pbf-rule to edit.
+        - Panorama instance configuration and action='no-pbf' object of a pbf-rule to edit.
+        - Panorama instance configuration and action='discard' object of a pbf-rule to edit.
+        - Firewall instance configuration and nexthop_address_list object of a pbf-rule to edit.
+        - Firewall instance configuration and source_zone object of a pbf-rule to edit.
+
+        When:
+        - running the pan-os-edit-pbf-rule through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-pbf-rule')
+
+        main()
+
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
