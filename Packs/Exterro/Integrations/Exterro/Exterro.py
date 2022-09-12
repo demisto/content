@@ -21,7 +21,7 @@ def _trigger_workflow(client, **kwargs):
                           outputs=result)
 
 
-def _test_module(client):
+def _test_module(client):  # pragma: no cover
     # test the client can reach the case list
     try:
         client.cases
