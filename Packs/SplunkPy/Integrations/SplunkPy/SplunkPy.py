@@ -570,6 +570,7 @@ class Notable:
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
+        incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
 
         return incident
 

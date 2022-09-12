@@ -518,7 +518,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       indicatorsValues:
-        simple: ${Indicators to block.Questions.0}
+        simple: ${Indicators to Allow.Answers.0}
       tags:
         simple: ${inputs.AllowTag}
     separatecontext: false
