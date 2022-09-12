@@ -328,89 +328,89 @@ xsoar_server_master:
 #     SLACK_JOB: 'true'
 
 
-.test_content_on_xsiam_server_instances_base:
-  tags:
-    - gke
-    - us-west1
-  extends:
-    - .default-job-settings
-    - .push-rule
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
-    SERVER_TYPE: "XSIAM"
-  needs: ["prepare-testing-bucket-mpv2"]
-  stage: run-instances
-  script:
-    - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+# .test_content_on_xsiam_server_instances_base:
+#   tags:
+#     - gke
+#     - us-west1
+#   extends:
+#     - .default-job-settings
+#     - .push-rule
+#   variables:
+#     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+#     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+#     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+#     SERVER_TYPE: "XSIAM"
+#   needs: ["prepare-testing-bucket-mpv2"]
+#   stage: run-instances
+#   script:
+#     - EXIT_CODE=0
+#     - !reference [.download-demisto-conf]
 
-    - section_start "Are there tests to run?" --collapsed
-    - |
-      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
-        # The files are empty.
-        echo "Not running XSIAM instance flow, no tests to run were found."
-        exit $EXIT_CODE
-      fi
-    - section_end "Are there tests to run?"
+#     - section_start "Are there tests to run?" --collapsed
+#     - |
+#       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+#         # The files are empty.
+#         echo "Not running XSIAM instance flow, no tests to run were found."
+#         exit $EXIT_CODE
+#       fi
+#     - section_end "Are there tests to run?"
 
-    - section_start "Lock XSIAM Machine" --collapsed
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
-    - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+#     - section_start "Lock XSIAM Machine" --collapsed
+#     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+#     - echo "Authenticating GCP"
+#     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+#     - echo "Auth done successfully"
+#     - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+#     - source XSIAMEnvVariables
+#     - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
+#     - section_end "Lock XSIAM Machine"
 
-    - section_start "Clean XSIAM Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+#     - section_start "Clean XSIAM Machine" --collapsed
+#     - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
+#     - section_end "Clean XSIAM Machine"
 
-    - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
-    - section_end "Install Packs and run Test-Module"
+#     - section_start "Install Packs and run Test-Module"
+#     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+#     - section_end "Install Packs and run Test-Module"
 
-    - section_start "Run Tests"
-    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
-    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - |
-      if [[ -f ./Tests/failed_tests.txt ]]; then
-        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
-      fi
-    - |
-      if [[ -f ./Tests/succeeded_tests.txt ]]; then
-        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
-      fi
-    - section_end "Run Tests"
+#     - section_start "Run Tests"
+#     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+#     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+#     - |
+#       if [[ -f ./Tests/failed_tests.txt ]]; then
+#         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+#       fi
+#     - |
+#       if [[ -f ./Tests/succeeded_tests.txt ]]; then
+#         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+#       fi
+#     - section_end "Run Tests"
 
-    - section_start "XSIAM Machine information"
-    - ./Tests/scripts/print_xsiam_machine_details.sh
-    - section_end "XSIAM Machine information"
+#     - section_start "XSIAM Machine information"
+#     - ./Tests/scripts/print_xsiam_machine_details.sh
+#     - section_end "XSIAM Machine information"
 
-    - section_start "After script" --collapsed
-    - |
-      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
-      then
-        echo "Job finished, removing lock file"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
-        echo "Finished removing lock file"
-      fi
-    - section_end "After script"
-    - exit $EXIT_CODE
+#     - section_start "After script" --collapsed
+#     - |
+#       if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+#       then
+#         echo "Job finished, removing lock file"
+#         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+#         gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+#         echo "Finished removing lock file"
+#       fi
+#     - section_end "After script"
+#     - exit $EXIT_CODE
 
 
-xsiam_server_master:
-  extends:
-    - .test_content_on_xsiam_server_instances_base
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-    - if: '$NIGHTLY'
-      when: always
-  variables:
-    INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-master"
-    TEST_MACHINES_LIST: "test-machines-master"
+# xsiam_server_master:
+#   extends:
+#     - .test_content_on_xsiam_server_instances_base
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+#     - if: '$NIGHTLY'
+#       when: always
+#   variables:
+#     INSTANCE_ROLE: "XSIAM Master"
+#     GCS_QUEUE_FILE: "queue-master"
+#     TEST_MACHINES_LIST: "test-machines-master"
