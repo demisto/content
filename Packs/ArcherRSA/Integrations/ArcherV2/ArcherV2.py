@@ -965,7 +965,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
     context: dict = {
         'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return_outputs(ec, context, {})
+    return_outputs(ec, context, json.loads(xml2json(raw_res)))
 
 
 def search_options_command(client: Client, args: Dict[str, str]):
