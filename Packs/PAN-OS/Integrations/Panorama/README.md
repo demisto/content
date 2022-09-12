@@ -7788,7 +7788,7 @@ There is no context output for this command.
 >Redistribution profile test was created successfully.
 ### pan-os-edit-redistribution-profile
 ***
-Edits a redistribution-profile.
+Edits a redistribution-profile in a virtual-router.
 
 
 #### Base Command
@@ -7803,6 +7803,7 @@ Edits a redistribution-profile.
 | template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
 | element_to_change | The element to change. Possible values are: filter_type, filter_destination, filter_nexthop, filter_interface, priority, action, filter_ospf_area, filter_ospf_tag, filter_ospf_path_type, filter_bgp_community, filter_bgp_extended_community. | Required | 
 | element_value | The value of the element to change. Can be a list for all the elements except priority and action. | Required | 
+| behavior | The operation to perform on the profile. Possible values are: replace, add, remove. Default is replace. | Optional | 
 
 
 #### Context Output
@@ -7813,6 +7814,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Redistribution profile test was edited successfully.
+
 ### pan-os-delete-redistribution-profile
 ***
 Deletes a redistribution-profile from a virtual-router.

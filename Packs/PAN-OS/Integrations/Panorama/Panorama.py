@@ -11475,15 +11475,29 @@ def pan_os_create_redistribution_profile_command(args):
 
 
 def pan_os_edit_redistribution_profile(
-    virtual_router_name, redistribution_profile_name, element_to_change, element_value, object_name, is_listable
+    virtual_router_name,
+    redistribution_profile_name,
+    element_to_change,
+    element_value,
+    object_name,
+    is_listable,
+    behavior
 ):
 
-    params = {
-        'xpath': build_redistribution_profile_xpath(
+    xpath = build_redistribution_profile_xpath(
             virtual_router_name, redistribution_profile_name, element=element_to_change
-        ),
+        )
+
+    params = {
+        'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior='replace', object_name=object_name, element_value=element_value, is_listable=is_listable)
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=False
+            )
         ),
         'action': 'edit',
         'type': 'config',
@@ -11534,6 +11548,12 @@ def build_body_request_to_edit_pan_os_object(
 def pan_os_edit_redistribution_profile_command(args):
     virtual_router_name, redistribution_profile_name = args.get('virtual_router'), args.get('name')
     element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {'priority', 'action',}
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
 
     elements_to_change_mapping_pan_os_paths = {
         'filter_type': ('filter/type', 'type', True),
@@ -11557,7 +11577,8 @@ def pan_os_edit_redistribution_profile_command(args):
         element_to_change=element_to_change,
         element_value=element_value,
         object_name=object_name,
-        is_listable=is_listable
+        is_listable=is_listable,
+        behavior=behavior
     )
 
     return CommandResults(

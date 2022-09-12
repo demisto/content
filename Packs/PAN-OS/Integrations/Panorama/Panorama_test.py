@@ -3678,7 +3678,7 @@ class TestPanOSEditRedistributionProfile:
             pytest.param(
                 {
                     'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
-                    'element_to_change': 'priority', 'element_value': '50'
+                    'element_to_change': 'priority', 'element_value': '50', 'behavior': 'replace'
                 },
                 integration_panorama_params,
                 {
@@ -3693,7 +3693,7 @@ class TestPanOSEditRedistributionProfile:
             pytest.param(
                 {
                     'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
-                    'element_to_change': 'filter_type', 'element_value': 'bgp,ospf'
+                    'element_to_change': 'filter_type', 'element_value': 'bgp,ospf', 'behavior': 'replace'
                 },
                 integration_panorama_params,
                 {
@@ -3708,7 +3708,8 @@ class TestPanOSEditRedistributionProfile:
             pytest.param(
                 {
                     'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
-                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1,2.2.2.2,3.3.3.3'
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1,2.2.2.2,3.3.3.3',
+                    'behavior': 'replace'
                 },
                 integration_panorama_params,
                 {
@@ -3723,7 +3724,8 @@ class TestPanOSEditRedistributionProfile:
             pytest.param(
                 {
                     'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
-                    'element_to_change': 'filter_bgp_extended_community', 'element_value': '0x4164ACFCE33404EA'
+                    'element_to_change': 'filter_bgp_extended_community', 'element_value': '0x4164ACFCE33404EA',
+                    'behavior': 'replace'
                 },
                 integration_firewall_params,
                 {
@@ -3737,7 +3739,8 @@ class TestPanOSEditRedistributionProfile:
             pytest.param(
                 {
                     'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
-                    'element_to_change': 'filter_destination', 'element_value': '1.1.1.1,2.2.2.2'
+                    'element_to_change': 'filter_destination', 'element_value': '1.1.1.1,2.2.2.2',
+                    'behavior': 'replace'
                 },
                 integration_firewall_params,
                 {
@@ -3750,8 +3753,12 @@ class TestPanOSEditRedistributionProfile:
             )
         ]
     )
-    def test_pan_os_edit_redistribution_profile_command_main_flow(self, mocker, args, params, expected_url_params):
+    def test_pan_os_edit_redistribution_profile_command_replace_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
         """
+        Tests several cases where behavior == 'replace'
+
         Given:
         - Panorama instance configuration and priority object of a redistribution-profile to edit.
         - Panorama instance configuration and filter_type object of a redistribution-profile to edit.
@@ -3777,6 +3784,154 @@ class TestPanOSEditRedistributionProfile:
 
         main()
 
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_nexthop', 'element_value': '2.2.2.2,3.3.3.3', 'behavior': 'add'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='virtual-router']/protocol/redist-profile/entry"
+                             "[@name='redistribution-profile']/filter/nexthop",
+                    'element': '<nexthop><member>1.1.1.1</member><member>3.3.3.3</member'
+                               '><member>2.2.2.2</member></nexthop>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_nexthop', 'element_value': '2.2.2.2,3.3.3.3', 'behavior': 'add'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/nexthop",
+                    'element': '<nexthop><member>1.1.1.1</member><member>2.2.2.2</'
+                               'member><member>3.3.3.3</member></nexthop>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_add_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Tests cases where behavior == 'add'
+
+        Given:
+        - Panorama instance configuration and nexthop object of a redistribution-profile to add.
+        - Firewall instance configuration and nexthop object of a redistribution-profile to add.
+
+        When:
+        - running the pan-os-edit-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'nexthop': {'member': '1.1.1.1'}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-redistribution-profile')
+
+        main()
+        assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
+        assert '1.1.1.1' in mock_request.call_args.kwargs['params']['element']
+        assert '2.2.2.2' in mock_request.call_args.kwargs['params']['element']
+        assert '3.3.3.3' in mock_request.call_args.kwargs['params']['element']
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1', 'behavior': 'remove'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry"
+                             "[@name='redistribution-profile']/filter/ospf/area",
+                    'element': '<area />',
+                    'action': 'edit',
+                    'type': 'config',
+                    'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1', 'behavior': 'remove'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/ospf/area",
+                    'element': '<area />',
+                    'action': 'edit',
+                    'type': 'config',
+                    'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_remove_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Tests cases where behavior == 'remove'
+
+        Given:
+        - Panorama instance configuration and area object of a redistribution-profile to remove.
+        - Firewall instance configuration and area object of a redistribution-profile to remove.
+
+        When:
+        - running the pan-os-edit-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'area': {'member': ['1.1.1.1']}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-redistribution-profile')
+
+        main()
         assert mock_request.call_args.kwargs['params'] == expected_url_params
 
 
