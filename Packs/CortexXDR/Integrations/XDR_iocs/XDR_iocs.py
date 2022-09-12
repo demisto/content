@@ -45,6 +45,7 @@ def batch_iocs(generator, batch_size=200):
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
+    severity_field: str = 'sourceoriginalseverity'
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
@@ -202,11 +203,11 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
+def demisto_ioc_to_xdr(ioc: Dict, severity_field: str) -> Dict:
     try:
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
-            'severity': Client.severity,  # may be overwritten with the value from custom_fields/xdrseverity
+            'severity': Client.severity,  # may be overwritten with the value from the severity_field
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
@@ -232,7 +233,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
 
-        if severity := custom_fields.get('xdrseverity'):
+        if severity := custom_fields.get(severity_field):
             xdr_ioc['severity'] = severity
 
         return xdr_ioc
@@ -366,6 +367,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
+            Client.severity_field: ioc['severity'],
         },
         "rawJSON": ioc
     }
@@ -381,8 +383,7 @@ def get_changes(client: Client):
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
     requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
-    iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
-    if iocs:
+    if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
         set_integration_context(from_time)
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
@@ -479,11 +480,9 @@ def get_sync_file():
 
 
 def main():   # pragma: no cover
-    # """
-    # Executes an integration command
-    # """
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
+    Client.severity_field = params.get('severity_field', 'sourceoriginalseverity')
     Client.query = params.get('query', Client.query)
     Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     Client.tlp_color = params.get('tlp_color')
