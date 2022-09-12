@@ -86,13 +86,55 @@ def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
     sha256 = analysis.get('sha256')
     md5 = analysis.get('md5')
     tags = analysis.get('tags')
-    hr_analysis = {'ID': analysis.get('webid'), 'SampleName': file_name, 'Status': analysis.get('status'),
+    hr_analysis = {'Id': analysis.get('webid'), 'SampleName': file_name, 'Status': analysis.get('status'),
                    'Time': analysis.get('time'), 'MD5': md5, 'SHA1': sha1, 'SHA256': sha256,
                    'Systems': list(set([run.get('system') for run in analysis.get('runs', [])])),
                    'Result': list(set([run.get('detection') for run in analysis.get('runs', [])])), 'Tags': tags,
                    'Errors': list(set([run.get('error') for run in analysis.get('runs', [])])),
                    'Comments': analysis.get('comments'), }
     return hr_analysis
+
+
+def build_search_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
+    """
+           Helper function that supports the building of the human-readable output for search command.
+
+           Args:
+              analysis: Dict(str, any): Analysis result returned by the API.
+
+           Returns:
+               result: Dict(str, any): The analysis human-readable entry.
+      """
+    file_name = analysis.get('filename')
+    web_id = analysis.get('webid')
+    sha1 = analysis.get('sha1')
+    sha256 = analysis.get('sha256')
+    md5 = analysis.get('md5')
+    tags = analysis.get('tags')
+    hr_analysis = {'Id': web_id, 'Name': file_name, 'MD5': md5, 'SHA1': sha1, 'SHA256': sha256, 'Tags': tags}
+    return hr_analysis
+
+
+def build_quota_hr(res: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    """
+         Helper function that supports the building of the human-readable output for quota command.
+
+         Args:
+            res: Dict(str, any): Quota result returned by the API.
+
+         Returns:
+             result: Tuple(Dict(str,Any), List(str)): The quota human-readable entry.
+    """
+
+    headers = ['Quota Type', 'Daily Quota Current', 'Daily Quota Limit', 'Daily Quote Remaining',
+               'Monthly Quota Current', 'Monthly Quota Limit', 'Monthly Quota Remaining']
+    hr = {'Quota Type': res.get('type'), 'Daily Quota Current': res.get('quota', {}).get('daily', {}).get('current', 0),
+          'Daily Quota Limit': res.get('quota', {}).get('daily', {}).get('limit', 0),
+          'Daily Quote Remaining': res.get('quota', {}).get('daily', {}).get('remaining', 0),
+          'Monthly Quota Current': res.get('quota', {}).get('monthly', {}).get('current', 0),
+          'Monthly Quota Limit': res.get('quota', {}).get('monthly', {}).get('limit', 0),
+          'Monthly Quota Remaining': res.get('quota', {}).get('monthly', {}).get('remaining', 0)}
+    return hr, headers
 
 
 def build_reputation_hr(analysis: Dict[str, Any], command: str) -> Dict[str, Any]:
@@ -272,32 +314,23 @@ def build_non_indicator_object(analysis: Dict[str, Any], non_indicator_dict: Dic
         update_non_indicator_dict({'Data': analysis.get('filename')}, non_indicator_dict, 'URL')
 
 
-# def build_search_command_result(client: Client, analyses: List[Dict[str, Any]]) -> List[CommandResults]:
-#     """
-#          Helper function that parses the analysis result object.
-#
-#          Args:
-#             client (Client): The client class.
-#             analyses: (List(Dict(str, any))): The analyses result returned by the API.
-#          Returns:
-#              result: (CommandResults) The parsed CommandResults object.
-#     """
-#     hr_headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors',
-#                   'Comments']
-#     command_res_ls = []
-#     hr_analysis_ls = []
-#     relationships = []
-#     for analysis in analyses:
-#         hr_analysis_ls.append(build_analysis_hr(analysis))
-#         command_res, relationship = build_indicator_object(client, analysis)
-#         command_res_ls.append(command_res)
-#         if relationship:
-#             relationships.append(relationship)
-#     command_res_ls.append(CommandResults(outputs=analyses,
-#                                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls,
-#                                                                          hr_headers), outputs_prefix='Joe.Analysis',
-#                                          relationships=relationships))
-#     return command_res_ls
+def build_search_command_result(analyses: List[Dict[str, Any]]) -> CommandResults:
+    """
+         Helper function that parses the search result object.
+
+         Args:
+            analyses: (List(Dict(str, any))): The analyses result returned by the API.
+         Returns:
+             result: (CommandResults) The parsed CommandResults object.
+    """
+    hr_headers = ['Id', 'Name', 'SHA256', 'SHA1', 'MD5', 'Tags']
+    hr_analysis_ls = []
+    for analysis in analyses:
+        hr_analysis_ls.append(build_search_hr(analysis))
+
+    return CommandResults(outputs=analyses,
+                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls, hr_headers),
+                          outputs_prefix='Joe.Analysis', outputs_key_field='Id')
 
 
 def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]) -> List[CommandResults]:
@@ -310,7 +343,7 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
          Returns:
              result: (CommandResults) The parsed CommandResults object.
     """
-    hr_headers = ['ID', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors',
+    hr_headers = ['Id', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors',
                   'Comments']
     command_res_ls = []
     hr_analysis_ls = []
@@ -326,6 +359,7 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
                                                                          hr_headers), outputs_prefix='Joe.Analysis',
                                          relationships=relationships))
     return command_res_ls
+
 
 
 def build_reputiation_command_result(client: Client, analyses: List[Dict[str, Any]]) -> List[CommandResults]:
@@ -361,7 +395,7 @@ def filter_result(analyses: List[Dict[str, Any]], filter_by: str) -> List[Dict[s
     existing_files = []
     analyses.reverse()  # In case of duplication, take the must updated run. (The last one)
     for analysis in analyses:
-        # In the case of url command (filter by filename), ignore files if they were queried.
+        # In the case of url command (filter by filename), ignore files if they were queried (free query can retrieve also url).
         if filter_by == 'filename' and analysis.get('sha256'):
             continue
         unique_field = analysis.get(filter_by)
@@ -476,7 +510,7 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     result = client.analysis_search(query=query)
     if result:
-        return build_analysis_command_result(client, result)[0]
+        return build_search_command_result(result)
     return CommandResults(readable_output='No Results were found.')
 
 
@@ -521,7 +555,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return build_reputiation_command_result(client, filter_result(analyses, filter_by='filename'))
 
 
-def list_lia_countries(client: Client) -> CommandResults:
+def list_lia_countries_command(client: Client) -> CommandResults:
     """
         Retrieve a list of localized internet anonymization countries.
 
@@ -540,7 +574,7 @@ def list_lia_countries(client: Client) -> CommandResults:
     return CommandResults(readable_output='No Results were found.')
 
 
-def lis_lang_locales(client: Client) -> CommandResults:
+def lis_lang_locales_command(client: Client) -> CommandResults:
     """
         Retrieve a list of available language and locale combinations.
 
@@ -556,6 +590,24 @@ def lis_lang_locales(client: Client) -> CommandResults:
         data = [lang.get('name') for lang in res]
         return CommandResults(outputs_prefix='Joe.LangLocale', outputs=data,
                               readable_output=tableToMarkdown('Results:', {'Name': data}))
+    return CommandResults(readable_output='No Results were found.')
+
+
+def get_account_quota_command(client: Client) -> CommandResults:
+    """
+        Retrieve the quota for the current account.
+
+         Args:
+            client: (Client) The client class.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    res = client.account_info()
+    if res:
+        hr, headers = build_quota_hr(res)
+        return CommandResults(outputs_prefix='Joe.AccountQuota', outputs=res,
+                              readable_output=tableToMarkdown('Results:', hr, headers=headers))
     return CommandResults(readable_output='No Results were found.')
 
 
@@ -599,9 +651,13 @@ def main() -> None:  # pragma: no cover
         elif command == 'url':
             return_results(url_command(client, args))
         elif command == 'joe-list–lia-countries':
-            return_results(list_lia_countries(client))
+            return_results(list_lia_countries_command(client))
         elif command == 'joe-list-lang-locales':
-            return_results(lis_lang_locales(client))
+            return_results(lis_lang_locales_command(client))
+        elif command == 'joe-get-account-quota':
+            return_results(get_account_quota_command(client))
+
+
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

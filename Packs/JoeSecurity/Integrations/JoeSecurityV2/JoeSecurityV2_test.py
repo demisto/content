@@ -10,10 +10,10 @@ def util_load_json(path: str) -> Any:
         return json.loads(f.read())
 
 
-def mock_client():
+@pytest.fixture()
+def client():
     from JoeSecurityV2 import Client
-    client = Client(base_url='https://test.com', apikey="mockkey")
-    return client
+    return Client(base_url='https://test.com', apikey="mockkey")
 
 
 def mock_gen():
@@ -21,16 +21,10 @@ def mock_gen():
         yield i
 
 
-PAGINATION_SUCCESS = [
-    ({'limit': '0'}, []),
-    ({'limit': '1'}, [0]),
-    ({'limit': '50'}, [i for i in range(0, 50)]),
-    ({}, [i for i in range(0, 50)]),
-    ({'page': '1', 'page_size': '1'}, [0]),
-    ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]),
-    ({'page': '11', 'page_size': '10'}, []),
-    ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])
-]
+PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, [i for i in range(0, 50)]),
+    ({}, [i for i in range(0, 50)]), ({'page': '1', 'page_size': '1'}, [0]),
+    ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]), ({'page': '11', 'page_size': '10'}, []),
+    ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_SUCCESS)
@@ -50,12 +44,8 @@ def test_paginate_success(args, excepted):
     assert result == excepted
 
 
-PAGINATION_FAILURE = [
-    ({'limit': '-1'}, ValueError),
-    ({'page': '1'}, DemistoException),
-    ({'page_size': '1'}, DemistoException),
-    ({'page': '-1', 'page_size': '1'}, ValueError),
-]
+PAGINATION_FAILURE = [({'limit': '-1'}, ValueError), ({'page': '1'}, DemistoException),
+    ({'page_size': '1'}, DemistoException), ({'page': '-1', 'page_size': '1'}, ValueError), ]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_FAILURE)
@@ -78,7 +68,7 @@ def test_paginate_failure(args, excepted):
 
 
 @pytest.mark.parametrize('result,excepted', [({'online': True}, 'online'), ({'online': False}, 'offline')])
-def test_is_online_command(mocker, result, excepted):
+def test_is_online_command(mocker, client, result, excepted):
     """
     Given:
         - A Joe sever status (online/offline).
@@ -89,13 +79,12 @@ def test_is_online_command(mocker, result, excepted):
     """
     from JoeSecurityV2 import is_online_command
 
-    client = mock_client()
     mocker.patch.object(client, 'server_online', return_value=result)
     response = is_online_command(client)
     assert response.readable_output == f'Joe server is {excepted}'
 
 
-def test_list_analysis_command(mocker):
+def test_list_analysis_command(mocker, client):
     """
     Given:
         - A list of Joe analysis.
@@ -109,7 +98,6 @@ def test_list_analysis_command(mocker):
     result = util_load_json('test_data/list_analysis_raw_response.json')
     excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
-    client = mock_client()
     mocker.patch.object(client, 'analysis_list_paged', return_value=[])
     mocker.patch.object(client, 'analysis_info', return_value={})
     mocker.patch.object(client, 'analysis_info_list', return_value=result)
@@ -126,7 +114,7 @@ def test_list_analysis_command(mocker):
 
 
 @pytest.mark.parametrize('web_id,file_type', [('1', 'html'), ('2', 'json'), ('3', 'pcap')])
-def test_download_report_command(mocker, web_id, file_type):
+def test_download_report_command(mocker, client, web_id, file_type):
     """
     Given:
         - An app client object, web id and file type.
@@ -137,14 +125,12 @@ def test_download_report_command(mocker, web_id, file_type):
     """
     from JoeSecurityV2 import download_report_command
 
-    client = mock_client()
-
     mocker.patch.object(client, 'analysis_download', return_value=('test_report', 'html_test_report'))
     response = download_report_command(client, {'webid': web_id, 'type': file_type})
     assert response.get('File') == f'{web_id}_report.{file_type}'
 
 
-def test_download_sample_command(mocker):
+def test_download_sample_command(mocker, client):
     """
     Given:
         - An app client object and web id.
@@ -155,7 +141,6 @@ def test_download_sample_command(mocker):
     """
     from JoeSecurityV2 import download_sample_command
 
-    client = mock_client()
     mocker.patch.object(client, 'analysis_download', return_value=('test_sample', 'test_sample'))
 
     for web_id in range(0, 3):
@@ -163,7 +148,7 @@ def test_download_sample_command(mocker):
         assert response.get('File') == f'{web_id}.dontrun'
 
 
-def test_search_command(mocker):
+def test_search_command(mocker, client):
     """
     Given:
         - A query.
@@ -174,14 +159,12 @@ def test_search_command(mocker):
     """
     from JoeSecurityV2 import search_command
 
-    client = mock_client()
-
     mocker.patch.object(client, 'analysis_search', return_value=[])
     response = search_command(client, {'query': 'test.com'})
     assert not response.outputs
 
 
-def test_file_command(mocker):
+def test_file_command(mocker, client):
     """
     Given:
         - An app client object and files for reputation command.
@@ -195,7 +178,6 @@ def test_file_command(mocker):
     result = util_load_json('test_data/list_analysis_raw_response.json')[:-1]
     excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
-    client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=result)
 
     response = file_command(client, {'file': '1.pdf,test_2.jbs,test_3.jbs'})
@@ -206,7 +188,7 @@ def test_file_command(mocker):
             assert command_res.indicator.sha1 == excepted.get('File')[index].get('SHA1')
 
 
-def test_url_command(mocker):
+def test_url_command(mocker, client):
     """
     Given:
         - An app client object and urls for reputation command.
@@ -220,7 +202,6 @@ def test_url_command(mocker):
     result = util_load_json('test_data/list_analysis_raw_response.json')[-1]
     excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
-    client = mock_client()
     mocker.patch.object(client, 'analysis_search', return_value=[result])
     command_res = url_command(client, {'url': 'test_url'})[0]
 
