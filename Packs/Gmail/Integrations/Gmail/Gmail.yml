@@ -653,6 +653,12 @@ script:
       - "true"
       required: false
       secret: false
+    - name: writing-to-logs
+      required: false
+      secret: false
+      description: The number of accounts that when the command reaches it information will be written to the logs. Default
+        is 100.
+      default: false
     deprecated: false
     description: Searches the Gmail records for all Google users.
     execution: false

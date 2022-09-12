@@ -1130,16 +1130,16 @@ def get_all_mailboxes():
             'pageToken': users_next_page_token
         }
         result = service.users().list(**command_args).execute()
-        all_acounts.append(result['users'])
+        all_acounts.extend(result['users'])
         users_next_page_token = result.get('nextPageToken')
         if users_next_page_token is None:
-            return result
+            return all_acounts
 
 
 def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
     all_acounts = get_all_mailboxes()
     demisto.debug('Starts searching in {} accounts'.format(len(all_acounts)))
-    accounts_counter = matching_accounts_counter = msg_counter = 0
+    accounts_counter, matching_accounts_counter, msg_counter = 0, 0, 0
     log_msg_target = max_results
     support_multithreading_py2()
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -1158,9 +1158,9 @@ def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
                 if accounts_counter % writing_to_logs == 0:
                     demisto.info(
                         'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
-                            int((accounts_counter / all_acounts) * 100),
+                            int((float(accounts_counter) / len(all_acounts)) * 100),
                             accounts_counter,
-                            all_acounts,
+                            len(all_acounts),
                             matching_accounts_counter),
                     )
             else:
@@ -1169,27 +1169,29 @@ def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
                     log_msg_target = msg_counter + max_results
                     demisto.info(
                         'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((accounts_counter / all_acounts) * 100),
+                            int((float(accounts_counter) / len(all_acounts)) * 100),
                             accounts_counter,
-                            all_acounts,
+                            len(all_acounts),
                             msg_counter),
                     )
-                elif accounts_counter % 100 == 0:
+                elif accounts_counter % writing_to_logs == 0:
                     demisto.info(
                         'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((accounts_counter / all_acounts) * 100),
+                            int((float(accounts_counter) / len(all_acounts)) * 100),
                             accounts_counter,
-                            all_acounts,
+                            len(all_acounts),
                             msg_counter),
                     )
 
-            if receive_only_accounts:
-                entries = [mailboxes_to_entry(entries)]
             # return midway results
-            if accounts_counter % 100:
+            if accounts_counter % 100 == 0:
+                if receive_only_accounts:
+                    entries = [mailboxes_to_entry(entries)]
                 demisto.results(entries)
                 entries = []
         # if these are the final result push - return them
+        if receive_only_accounts and entries:
+            entries = [mailboxes_to_entry(entries)]
         entries.append("Search completed")
         return entries
 
@@ -2246,7 +2248,7 @@ def main():
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
                 max_results = arg_to_number(demisto.args().get('max-results', 100))
-                writing_to_logs = arg_to_number(demisto.args().get('writing-to-logs', 10))
+                writing_to_logs = arg_to_number(demisto.args().get('writing-to-logs', 100))
                 demisto.results(cmd_func(receive_only_accounts, max_results, writing_to_logs))  # type: ignore
             elif command == 'gmail-search':
                 demisto.results(cmd_func()[0])  # type: ignore
