@@ -7,7 +7,7 @@ configuration:
   name: defaultRegion
   required: true
   type: 0
-- display: Role Arn
+- display: Role ARN
   name: roleArn
   required: false
   type: 0
@@ -30,7 +30,7 @@ configuration:
   type: 9
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+  additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout preceded by a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
   defaultvalue: 60,10
   required: false
   type: 0
@@ -53,7 +53,7 @@ configuration:
 - display: Guard Duty Severity level
   name: gd_severity
   required: true
-  additionalinfo: The minimum severity of the events to fetch. (inclusive).
+  additionalinfo: The minimum severity of the events to fetch (inclusive).
   options:
     - 'Low'
     - 'Medium'
@@ -80,7 +80,7 @@ configuration:
   name: vendor
   required: false
   type: 0
-description: Amazon Web Services Guard Duty Service (gd) event collector integration for XSIAM.
+description: Amazon Web Services Guard Duty Service (gd) event collector integration for Cortex XSIAM.
 display: AWS - GuardDuty Event Collector
 name: AWS - GuardDuty Event Collector
 script:
@@ -90,7 +90,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:
@@ -99,7 +99,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'Low'
-      description: The minimum severity of the events to fetch. (inclusive).
+      description: The minimum severity of the events to fetch (inclusive).
       isArray: false
       name: severity
       predefined:
@@ -108,17 +108,17 @@ script:
       - 'High'
       required: true
     - default: false
-      description: 'The date to start collecting the events from.'
+      description: The date to start collecting the events from.
       isArray: false
       name: collect_from
       required: false
     - default: false
-      description: 'The maximum amount of events to return.'
+      description: The maximum amount of events to return.
       isArray: false
       name: limit
       required: false
     deprecated: false
-    description: Manual command to fetch events and display them.
+    description: Manual command used to fetch events and display them.
     execution: false
     name: aws-gd-get-events
   dockerimage: demisto/boto3py3:1.0.0.33854
