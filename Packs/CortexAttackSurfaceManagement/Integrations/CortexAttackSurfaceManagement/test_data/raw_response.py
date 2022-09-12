@@ -1,5 +1,6 @@
 #adding so null don't get seen as variable.
 null = None
+false = False
 
 EXTERNAL_SERVICES_RESPONSE = {
     "reply": {
@@ -474,6 +475,272 @@ EXTERNAL_RANGES_RESPONSE = {
                     "AR17615-RIPE",
                     "JW372-RIPE"
                 ]
+            }
+        ]
+    }
+}
+
+EXTERNAL_RANGE_RESPONSE = {
+    "reply": {
+        "details": [
+            {
+                "range_id": "4da29b7f-3086-3b52-981b-aa8ee5da1e60",
+                "first_ip": "220.241.52.192",
+                "last_ip": "220.241.52.255",
+                "ips_count": 64,
+                "active_responsive_ips_count": 0,
+                "date_added": 1662988031334,
+                "business_units": [
+                    "jwilkes test - VanDelay Industries"
+                ],
+                "organization_handles": [
+                    "MAINT-HK-PCCW-BIA-CS",
+                    "TA66-AP",
+                    "BNA2-AP"
+                ],
+                "details": {
+                    "networkRecords": [
+                        {
+                            "handle": "220.241.52.192 - 220.241.52.255",
+                            "firstIp": "220.241.52.192",
+                            "lastIp": "220.241.52.255",
+                            "name": "SEARS-HK",
+                            "whoIsServer": "whois.apnic.net",
+                            "lastChanged": 1662987151163,
+                            "organizationRecords": [
+                                {
+                                    "handle": "MAINT-HK-PCCW-BIA-CS",
+                                    "dateAdded": 1662986267926,
+                                    "address": "",
+                                    "email": "noc@imsbiz.com",
+                                    "phone": "",
+                                    "org": "",
+                                    "formattedName": "",
+                                    "kind": "group",
+                                    "roles": [
+                                        "registrant"
+                                    ],
+                                    "lastChanged": null,
+                                    "firstRegistered": null,
+                                    "remarks": ""
+                                },
+                                {
+                                    "handle": "TA66-AP",
+                                    "dateAdded": 1662986267926,
+                                    "address": "HKT Limited\nPO Box 9896 GPO          ",
+                                    "email": "noc@imsbiz.com",
+                                    "phone": "+852-2883-5151",
+                                    "org": "",
+                                    "formattedName": "TECHNICAL ADMINISTRATORS",
+                                    "kind": "group",
+                                    "roles": [
+                                        "technical"
+                                    ],
+                                    "lastChanged": 1468555410000,
+                                    "firstRegistered": 1220514856000,
+                                    "remarks": ""
+                                },
+                                {
+                                    "handle": "BNA2-AP",
+                                    "dateAdded": 1662986267926,
+                                    "address": "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ",
+                                    "email": "cs@imsbiz.com",
+                                    "phone": "+852-2888-6932",
+                                    "org": "",
+                                    "formattedName": "BIZ NETVIGATOR ADMINISTRATORS",
+                                    "kind": "group",
+                                    "roles": [
+                                        "administrative"
+                                    ],
+                                    "lastChanged": 1514892767000,
+                                    "firstRegistered": 1220514857000,
+                                    "remarks": ""
+                                }
+                            ],
+                            "remarks": "Sears Holdings Global Sourcing Ltd"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+
+
+EXTERNAL_EXPOSURES_RESPONSE = {
+    "reply": {
+        "total_count": 1591,
+        "result_count": 2,
+        "assets_internet_exposure": [
+            {
+                "asm_ids": [
+                    "3c176460-8735-333c-b618-8262e2fb660c"
+                ],
+                "name": "*.babiesrus.com",
+                "asset_type": "CERTIFICATE",
+                "cloud_provider": null,
+                "externally_detected_providers": [],
+                "region": null,
+                "ips": [],
+                "business_units": [
+                    "jwilkes - Toys R US"
+                ],
+                "management_status": [],
+                "iot_model": null,
+                "iot_category": null,
+                "iot_profile": null,
+                "sensor": [
+                    "XPANSE"
+                ],
+                "service_type": [],
+                "last_observed": null,
+                "first_observed": null,
+                "has_active_externally_services": false,
+                "has_xdr_agent": "NA",
+                "certificate_classifications": [
+                    "Wildcard",
+                    "Expired",
+                    "InsecureSignature"
+                ],
+                "certificate_issuer": "Thawte",
+                "certificate_algorithm": "SHA1withRSA",
+                "mac_addresses": [],
+                "cloud_id": null,
+                "ip_ranges": [],
+                "domain_resolves": false,
+                "operation_system": null,
+                "asm_va_score": null,
+                "externally_inferred_cves": [],
+                "agent_id": null
+            },
+            {
+                "asm_ids": [
+                    "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
+                ],
+                "name": "*.ch3.intra.kmart.com",
+                "asset_type": "CERTIFICATE",
+                "cloud_provider": null,
+                "externally_detected_providers": [],
+                "region": null,
+                "ips": [],
+                "business_units": [
+                    "jwilkes test - VanDelay Industries"
+                ],
+                "management_status": [],
+                "iot_model": null,
+                "iot_category": null,
+                "iot_profile": null,
+                "sensor": [
+                    "XPANSE"
+                ],
+                "service_type": [],
+                "last_observed": null,
+                "first_observed": null,
+                "has_active_externally_services": false,
+                "has_xdr_agent": "NA",
+                "certificate_classifications": [
+                    "Wildcard",
+                    "Expired"
+                ],
+                "certificate_issuer": "COMODO",
+                "certificate_algorithm": "SHA256withRSA",
+                "mac_addresses": [],
+                "cloud_id": null,
+                "ip_ranges": [],
+                "domain_resolves": false,
+                "operation_system": null,
+                "asm_va_score": null,
+                "externally_inferred_cves": [],
+                "agent_id": null
+            }
+        ]
+    }
+}
+
+EXTERNAL_EXPOSURE_RESPONSE = {
+    "reply": {
+        "details": [
+            {
+                "asm_ids": "3c176460-8735-333c-b618-8262e2fb660c",
+                "name": "*.babiesrus.com",
+                "type": "Certificate",
+                "last_observed": null,
+                "first_observed": null,
+                "externally_detected_providers": [],
+                "created": 1662987013779,
+                "ips": [],
+                "business_units": [
+                    "jwilkes - Toys R US"
+                ],
+                "active_service_ids": [],
+                "all_service_ids": [],
+                "active_external_services_types": [],
+                "domain": null,
+                "certificate_issuer": "Thawte",
+                "certificate_algorithm": "SHA1withRSA",
+                "certificate_classifications": [
+                    "Wildcard",
+                    "Expired",
+                    "InsecureSignature"
+                ],
+                "resolves": false,
+                "details": {
+                    "providerDetails": [],
+                    "domain": null,
+                    "topLevelAssetMapperDomain": null,
+                    "domainAssetType": null,
+                    "isPaidLevelDomain": false,
+                    "domainDetails": null,
+                    "dnsZone": null,
+                    "latestSampledIp": null,
+                    "subdomainMetadata": null,
+                    "recentIps": [],
+                    "businessUnits": [
+                        {
+                            "name": "jwilkes - Toys R US"
+                        }
+                    ],
+                    "certificateDetails": {
+                        "issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA",
+                        "issuerAlternativeNames": "",
+                        "issuerCountry": "US",
+                        "issuerEmail": null,
+                        "issuerLocality": null,
+                        "issuerName": "Thawte SSL CA",
+                        "issuerOrg": "Thawte\\\\, Inc.",
+                        "formattedIssuerOrg": "Thawte",
+                        "issuerOrgUnit": null,
+                        "issuerState": null,
+                        "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB",
+                        "publicKeyAlgorithm": "RSA",
+                        "publicKeyRsaExponent": 65537,
+                        "signatureAlgorithm": "SHA1withRSA",
+                        "subject": "C=US,ST=New Jersey,L=Wayne,O=Toys R Us,OU=MIS,CN=*.babiesrus.com",
+                        "subjectAlternativeNames": "*.babiesrus.com",
+                        "subjectCountry": "US",
+                        "subjectEmail": null,
+                        "subjectLocality": "Wayne",
+                        "subjectName": "*.babiesrus.com",
+                        "subjectOrg": "Toys R Us",
+                        "subjectOrgUnit": "MIS",
+                        "subjectState": "New Jersey",
+                        "serialNumber": "91384582774546160650506315451812470612",
+                        "validNotBefore": 1413158400000,
+                        "validNotAfter": 1444780799000,
+                        "version": "3",
+                        "publicKeyBits": 2048,
+                        "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d",
+                        "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=",
+                        "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb",
+                        "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8",
+                        "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"
+                    },
+                    "inferredCvesObserved": [],
+                    "ip_ranges": {}
+                },
+                "external_services": [],
+                "externally_inferred_vulnerability_score": null,
+                "externally_inferred_cves": []
             }
         ]
     }
