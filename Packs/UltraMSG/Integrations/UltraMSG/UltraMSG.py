@@ -11,9 +11,9 @@ def send_whatsapp(token, instance, t_id, text):
         payload = "token=" + token + "&to=" + t_id + "&body=" + text + "&priority=1"
         headers = {'content-type': "application/x-www-form-urlencoded"}
         conn.request("POST", "/" + instance + "/messages/chat", payload, headers)
-        demisto.results(f'Task send_whatsapp successfully added to project')
+        return_results('Task send_whatsapp successfully added to project')
     except Exception:
-        demisto.results('Task creation failed')
+        return_results('Task creation failed')
 
 
 def test_module(token, instance):
