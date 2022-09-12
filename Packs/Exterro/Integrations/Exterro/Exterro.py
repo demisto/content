@@ -33,7 +33,7 @@ def _test_module(client):
     return "ok"
 
 
-def main():
+def main():  # pragma: no cover
     # gather parameters
     params = demisto.params()
 
