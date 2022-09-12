@@ -2,7 +2,7 @@
     "id": "incident_threatconnectattributes",
     "version": -1,
     "modified": "2022-09-11T08:42:10.229106Z",
-    "name": "Threatconnect Attributes",
+    "name": "ThreatConnect Attributes",
     "ownerOnly": false,
     "cliName": "threatconnectattributes",
     "type": "grid",
