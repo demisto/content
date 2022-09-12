@@ -1,13 +1,13 @@
-Returns processes details from a remote system using OSQuery.
+Deprecated. Use OSQueryBasicQuery with query='select * from users;' instead.
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python2 |
 | Tags | OSQuery |
-
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
@@ -19,7 +19,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| system | The system to remote execute on. Can be, a list of systems. |
+| system | The System to remote execute on, can be a list of systems |
 
 ## Outputs
 ---
