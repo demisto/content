@@ -1,0 +1,3 @@
+<p><b>From:</b> xxxxxx <br><b>Sent:</b> 2022-07-07T11:45:18.122757213Z <br><b>To:</b> xxxxxx <br><b>CC:</b> xxxxxx <br><b>Subject:</b> test_subject <br></p>Attachments: ['image.png']
+
+test_body

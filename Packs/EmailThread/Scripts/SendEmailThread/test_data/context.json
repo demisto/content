@@ -1,0 +1,968 @@
+{
+    "Account": {
+        "Email": [
+            {
+                "Address": "xxxxxx"
+            },
+            {
+                "Address": "xxxxxx"
+            }
+        ]
+    },
+    "DBotScore": [
+        {
+            "Indicator": "innothings.vn",
+            "Reliability": "C - Fairly reliable",
+            "Score": 1,
+            "Type": "domain",
+            "Vendor": "VirusTotal (API v3)"
+        },
+        {
+            "Indicator": "gmail.com",
+            "Reliability": "C - Fairly reliable",
+            "Score": 1,
+            "Type": "domain",
+            "Vendor": "VirusTotal (API v3)"
+        }
+    ],
+    "Domain": [
+        {
+            "Name": "innothings.vn",
+            "Relationships": [
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "7617662889d34340186715248818525f7a339d5ee35bac19d877c6cfaf74022e",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "295ee4d0647a4014a59ba2e26b56fb83744765f0d583b8ef3ec6046123235839",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "9a3207d5280bd732c800c89b5ca756b233c526d720c771737379e2c549d0e350",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "1b5c0b4aa110e5518675b833bd2acf3f8a2afdf1aec9d07aa597f282d6051769",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "ab69fe4bf36779c3a3ae0495b2299cb3e1ad2328aeb61c6f419f90d210eff410",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "691bb6788cff0069ba5615cc620c02ad502f6ef12c36f0e5df15ee0a7d96063a",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "c8f4f9424c9c8e2ed43fb841457c7fecc2ee583c5e8ecf6bdc12a67782d7ad9e",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "262d0029c88e6e6d3537d3ff869795f30edf92cf471ca31d81903cc24789ce9a",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "7c473c5fb459a5ae6bd9310fb956655f6e961532e90fc1b1be3e1cdeae1cf200",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "0fc5afb521b471b77262b0a03a0c7b42c68c1fe05237b8d520605e18bc20ebe5",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "7b42f52bffaf5506837f9cbb0ea2ab9fbf574425618605ae613987ced61391bd",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt1.aspmx.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt2.aspmx.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt3.aspmx.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt4.aspmx.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "aspmx.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "innothings-vn.mail.protection.outlook.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "hostmaster.innothings.vn",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns1.website500k.vn",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns2.website500k.vn",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns3.website500k.vn",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "innothings.vn",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns1.website500k.vn",
+                    "EntityBType": "Domain",
+                    "Relationship": "is-also"
+                }
+            ]
+        },
+        {
+            "CreationDate": "1995-08-13T04:00:00Z",
+            "ExpirationDate": "2023-08-12T04:00:00Z",
+            "Name": "gmail.com",
+            "NameServers": [
+                "NS1.GOOGLE.COM",
+                "NS2.GOOGLE.COM",
+                "NS3.GOOGLE.COM",
+                "NS4.GOOGLE.COM"
+            ],
+            "Registrar": {
+                "AbuseEmail": "xxxxxx",
+                "AbusePhone": "+1.2086851750",
+                "Name": "MarkMonitor Inc."
+            },
+            "Relationships": [
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "pki.goog",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00006c253a740edec1256df498e04f509a7565612c830d2c746df700c153323b",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00006c76cf528b598ee9553e995c39dc342394ce4096acaa3fdc07f5410263a9",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00007f653234aff42333b6a83e5b33109ae575058a725b93f0f8406ac36c1ff6",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00009e39e9272c2c4ee87d3e2f57b5e71c0029ebc9f5fb5c033fbbac029195e7",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "000105e9c8d938ce6eeadbfaf39a69772e1132d1eaae7c6bcbe06a115520a0f3",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00010ef6f744710a82be63d2eade353d3362b4468c83ef9997bd7c79656b2cf7",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0001389891b1c541933c4fec8d9d74699890c80fc3f0b37d445341057eeb32ce",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "000144a47c295be3cb7485db59f0111bef7519ab67ef9b5305f04cbf1286515d",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0001d0976909bc43920a1784ab7eed1c0f812f043f60162e33bd8c2d57635ecd",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0001d7fe1cb06a6f55f2852efbdc11333130642c511ce02a5504850deb3e2f5e",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0001ee22e6a021d5a835fcd232d8f1380feefcc7da21e1ccf74629d6ebd036d9",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00020cfe58fe9be476347ffb8318f9bcd031aef36ea71b2f5fab95d6507e71fd",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00022899f2c2892f3ae2071fd7fb47b3ae4431106e4695c957d7d1c66534958c",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00022c2b1d5eac8a33740782a7fabc9be3c0bfd6731292f070832ef49f6c52c4",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00023930e13d40a3d8e2bef5a96c43f998927400e7fd284f37e427cf183dd091",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0002550f83c2429e58ad5cbc10c582a57b6c1fcff0779e79d5c32891091d6bc9",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0002788ee21e78feb33f2fbafc67ac7508e4894083c5b2a8702948c929d5f34c",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00028a6a8afdef1ae3703e818ba5e9b64245863f0d2dda34e3110e9b11c81212",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "00029e18d3be11250d0721f502bb761bf7a4574b791842ed76616397f5258df6",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0002a43916013b2f861905c782adf9733aae5fa77f9911d0af59117b832cf92f",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "769620ae4bec25f166c4138c7416114e8c83ed4f18f7d01fc8c8c822227d70bd",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "bb9d83491e9c9cb85bcbf4c7751e65d2bb96b3844fcf1abc9b6be09881d6d5ce",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "2dd4ed37fbfa6478a49a85b9d2df7856f6df8420c6b0a535f2b9d8a4657e4abf",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "29cf8edc641d20dbce6a4e2cb220ef972cf0c6a6a0d67ce3d09a7f2fb4e32b8c",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "2c5b569c94cd723061228ffa50f32a1cd08862d053edbd422ed224955b6c0f43",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "08a1a845aff40e1224e2716691540250eb0540668b738cb4c29b65d06cc1c311",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "f7e92231eadc2bcf30a9efb426534a7b0fda4931ead6d90b57a3daae50255d17",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "a8c467151bcf356a8548d35b17ca46d92f14924e8e8f52ed8f93ba4b2006aa36",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ead3d095e934d948d1483860b835dea1ca26301da36557b2ee74f8a42e38aa41",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "f58bccc0f5f3e5f83803e727f372309810860b6fd0b020100b40fc6707ab9db5",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "664bb1a986d1cb476490cce5cafc4c334b0378ddce8078165a895a72a56b46e0",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "dae03fe2d0c1f68cd3efd2b406fc577698ef0d79e5d721cc92d327ce56681704",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "5abb75e6cf60c9dd6bbcc51d5c8a326cae7cdf99a95e4f7be2279ea3ab64c092",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "f5b79d97a4a18d48b8b6a629709413ecfe034f8f022c23d4df7ab36b9ea16246",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "9627a83773f2ff17fd4cc8c318dd0efcbbc417ecbdad856c85b074c4d9299fa7",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "2aa3bdb189de2173ff60aec39c46fc9e35e468f3d97c894295228b811953ee48",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "c06d610a0300089021ffcc6546f4ef963453e94a324960fce7903c0c3e4d0e6c",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "0a98fa7875da43f0e00c46331aeaa96a5b69c429491f295634f8281249f764ba",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "72eac8f55bba86e71f22d4dddf176aabac6d2cd52a254c2a9f73acba56a0d0dc",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "64b6ffef2c753e4f16d75595db43ad3b3331fb68ce21c3e771c86d023e673dc7",
+                    "EntityBType": "File",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "84083613caa29941cdda62924af09b1a42f0f2d86ea86286022e6466e3619e90",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "7f25fd0260c4ef8c26a87a5a126634e846ba539c75e5d508103f4d98831654a5",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "a436b7f6f195f9adc3130175f922e45bfab42077bedde95321cc3d12d3f5733c",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "f615186ced81cc51f0111c9201351885570794c809aa0be128f33bfcb9a80f6d",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "8457f7e1a51271939fe883994f9fbf9ed7f39354862b82458958739d2cb84aaf",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "3eaf4a2647d953127b4df42680b0656113ce2687fd6402524b634b26af16d219",
+                    "EntityBType": "File",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "xxxxxx",
+                    "EntityBType": "URL",
+                    "Relationship": "hosts"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt1.gmail-smtp-in.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt2.gmail-smtp-in.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt3.gmail-smtp-in.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt4.gmail-smtp-in.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "gmail-smtp-in.l.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "related-to"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "smtp.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "www.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "imap.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "pop.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "smtp-relay.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "multisend-unsubscribe.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "m.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt010023.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt21898718821145.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt10815.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt11722088270121650.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt7831932884.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt711811314892810745.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt8723.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "mta-sts.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt43.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt818.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt912.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt8872.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "alt28.gmail.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "supra-domain-of"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns1.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns2.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns3.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns4.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "drops"
+                },
+                {
+                    "EntityA": "gmail.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "ns1.google.com",
+                    "EntityBType": "Domain",
+                    "Relationship": "is-also"
+                }
+            ],
+            "UpdatedDate": "2022-07-11T09:25:59Z",
+            "WHOIS": {
+                "CreationDate": "1995-08-13T04:00:00Z",
+                "ExpirationDate": "2023-08-12T04:00:00Z",
+                "NameServers": [
+                    "NS1.GOOGLE.COM",
+                    "NS2.GOOGLE.COM",
+                    "NS3.GOOGLE.COM",
+                    "NS4.GOOGLE.COM"
+                ],
+                "Registrar": {
+                    "AbuseEmail": "xxxxxx",
+                    "AbusePhone": "+1.2086851750",
+                    "Name": "MarkMonitor Inc."
+                },
+                "UpdatedDate": "2022-07-11T09:25:59Z"
+            }
+        }
+    ],
+    "EmailCommunication": {
+        "This_is_a_new_test": {
+            "bcc": null,
+            "cc": null,
+            "content": "\u003cp\u003e\u003cb\u003eFrom: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSent: \u003c/b\u003e2022-08-18 01:56:39\u003cbr\u003e\u003cb\u003eTo: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSubject: \u003c/b\u003e This is a new test \u003cbr\u003e\u003c/p\u003e\u003cp\u003eTest continue 2\u003c/p\u003e\u003cblockquote style=\"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex;\"\u003e\u003cp\u003e\u003cb\u003eFrom: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSent: \u003c/b\u003e2022-08-18 01:27:34\u003cbr\u003e\u003cb\u003eTo: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSubject: \u003c/b\u003e This is a new test \u003cbr\u003e\u003c/p\u003e\u003cp\u003eTest continue\u003c/p\u003e\u003cblockquote style=\"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex;\"\u003e\u003cp\u003e\u003cb\u003eFrom: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSent: \u003c/b\u003e2022-08-18 00:59:35\u003cbr\u003e\u003cb\u003eTo: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSubject: \u003c/b\u003e This is a new test \u003cbr\u003e\u003c/p\u003e\u003cp\u003eTest email reply\u003c/p\u003e\u003cblockquote style=\"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex;\"\u003e\u003cp\u003e\u003cb\u003eFrom: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSent: \u003c/b\u003e2022-08-18 00:21:04\u003cbr\u003e\u003cb\u003eTo: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSubject: \u003c/b\u003e This is a new test \u003cbr\u003e\u003c/p\u003e\u003cp\u003e\u003cstrong\u003eHi, this is a new body\u003c/strong\u003e\n+Test HTML Convert+\u003c/p\u003e\u003cblockquote style=\"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex;\"\u003e\u003cp\u003e\u003cb\u003eFrom: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSent: \u003c/b\u003e2022-08-17 23:45:30\u003cbr\u003e\u003cb\u003eTo: \u003c/b\u003e xxxxxx \u003cbr\u003e\u003cb\u003eSubject: \u003c/b\u003e This is a new test \u003cbr\u003e\u003c/p\u003e\u003cp\u003eHi, pls check these attachments\u003c/p\u003e\u003c/blockquote\u003e\u003c/blockquote\u003e\u003c/blockquote\u003e\u003c/blockquote\u003e",
+            "message_id": null,
+            "subject": "This is a new test",
+            "team": "",
+            "to": "xxxxxx"
+        }
+    },
+    "File": [
+        {
+            "EntryID": "6@405",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "MD5": "c4546b849c80cf0fe3121d7fdd6b1825",
+            "Name": "XSOAR-server-info.txt",
+            "SHA1": "74ed8af4838a46e560f4289c741f02c7cc191755",
+            "SHA256": "13bda8522b80017bb14ae74ba22a1e98c9bc9bc71ed48c143927ca8a15208768",
+            "SHA512": "b14471e8063525e1fa2a1015265310e86b69b417ab65682747be74dacfd67ed77cb388005797466fac6f485f49d7f71c897a56a402bea2e66d5de3e0ebe15c8c",
+            "SSDeep": "384:PYUFUiXwnZkPYxs5Y8oIiEcXzcphdZSmx+ENAlm/UxoUrc6R1:wUFUiXwnZkPYxs5YfIiEcXzcphPpkxok",
+            "Size": 13180,
+            "Type": "ASCII text, with very long lines, with CRLF, NEL line terminators"
+        },
+        {
+            "EntryID": "8@405",
+            "Extension": "tf",
+            "Info": "tf",
+            "MD5": "225550da2ca0e9e2ba38b006125e765a",
+            "Name": "terraform.tf",
+            "SHA1": "5680c5cfa1a29fc98ca766a05bc9f71c0e84fc5b",
+            "SHA256": "9a2695f491a10e3484821221f8de0700799407784f73f6359b3ff1f71d99f798",
+            "SHA512": "be4957c128920b226d14904d5260b06d38a914f4794b99bc1cc1bd444474171bd1179bffdbc735330aeed3277aca7d6bd67c629ba928a1a5160c0fd6bdef2bb6",
+            "SSDeep": "192:BmJ826AJ5cU84Soo0Xi89tKfOZJPoU5IuPtNB4PpH68eJNWipMSIrYtPh:pStZ9o0Xi0K2ZrGcqfeJ7mf+",
+            "Size": 19795,
+            "Type": "ASCII text, with very long lines"
+        },
+        {
+            "EntryID": "22@405",
+            "Extension": "tf",
+            "Info": "tf",
+            "MD5": "225550da2ca0e9e2ba38b006125e765a",
+            "Name": "terraform.tf",
+            "SHA1": "5680c5cfa1a29fc98ca766a05bc9f71c0e84fc5b",
+            "SHA256": "9a2695f491a10e3484821221f8de0700799407784f73f6359b3ff1f71d99f798",
+            "SHA512": "be4957c128920b226d14904d5260b06d38a914f4794b99bc1cc1bd444474171bd1179bffdbc735330aeed3277aca7d6bd67c629ba928a1a5160c0fd6bdef2bb6",
+            "SSDeep": "192:BmJ826AJ5cU84Soo0Xi89tKfOZJPoU5IuPtNB4PpH68eJNWipMSIrYtPh:pStZ9o0Xi0K2ZrGcqfeJ7mf+",
+            "Size": 19795,
+            "Type": "ASCII text, with very long lines"
+        },
+        {
+            "EntryID": "24@405",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "MD5": "c4546b849c80cf0fe3121d7fdd6b1825",
+            "Name": "XSOAR-server-info.txt",
+            "SHA1": "74ed8af4838a46e560f4289c741f02c7cc191755",
+            "SHA256": "13bda8522b80017bb14ae74ba22a1e98c9bc9bc71ed48c143927ca8a15208768",
+            "SHA512": "b14471e8063525e1fa2a1015265310e86b69b417ab65682747be74dacfd67ed77cb388005797466fac6f485f49d7f71c897a56a402bea2e66d5de3e0ebe15c8c",
+            "SSDeep": "384:PYUFUiXwnZkPYxs5Y8oIiEcXzcphdZSmx+ENAlm/UxoUrc6R1:wUFUiXwnZkPYxs5YfIiEcXzcphPpkxok",
+            "Size": 13180,
+            "Type": "ASCII text, with very long lines, with CRLF, NEL line terminators"
+        }
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "File": [
+        {
+            "EntryID": "26@394",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "MD5": "1421e7aad5918ff08f36926e977e45d6",
+            "Name": "3 Incidents.txt",
+            "SHA1": "19ff7b6f724909c29c659f1dbc2737d6b68b2754",
+            "SHA256": "fa7fcb7a71d9b6bdf147d5052544b240a89c2d9c84bf1b20db88f8e7950c6e6c",
+            "SHA512": "2fad2531164c475b3ec1b619dd4b0d5a79970010fcb9d9d48b0b1d7afcaa31528d786421c709dfaba1f5a8480b4bfaa2b0cdc3452e50028f0996ef9f2efe6230",
+            "SSDeep": "96:bEkMDyMDMU+M8aTSWSS01LBe2LB7LBYLBsqLBf7JLBARLBz9LBE5eVU6:bhLCARqNn2XVabHCRF9o4x",
+            "Size": 3427,
+            "Type": "UTF-8 Unicode text"
+        },
+        {
+            "EntryID": "27@394",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "MD5": "dc03082bc482662253f96d294f3277e5",
+            "Name": "adblock.txt",
+            "SHA1": "4288d5425473b6a0cb232747cda039db884cc900",
+            "SHA256": "655db30f9e9acf242efb3cd4db2eaf8fce69021c6b3a008e7e3fc6f25efd64d4",
+            "SHA512": "2903a155bcbe8d6b7e59e378225e27788b13f77bec6ab04616a497ce8b559452c5dadbda640c87c65e285458c3bc91a3ea05f5c05cf34abe4f2572d4dc4b7cf0",
+            "SSDeep": "768:wCuUAKIRQygXUwfDnc5wd4bizjYOjanXZv8qM9fzY0G5Cha2Y+wyVakhg8vfo8IF:wbYmwfrc5MqizEOGnm9bYAhPePN",
+            "Size": 53012,
+            "Type": "ASCII text"
+        },
+        {
+            "EntryID": "34@394",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "MD5": "c39b316065eab0e76c3eff578abe675d",
+            "Name": "After retstart.txt",
+            "SHA1": "b91ee4347eba6172fd20193763e3f4007ea7f0ae",
+            "SHA256": "9065fb5b685670956903cba7f832f17569c9fd106af146bc6b0cf93902f189d5",
+            "SHA512": "27d674f95f6b875d1be69f95dac860cd7ef8d4f781e948bf4a15f9a1f0c23d819e41069bbeafad12fdaf8a78b1d8e4a0eae9f7bc2dd8a91622edd7851c5ace78",
+            "SSDeep": "768:BoC5PjPX6mYOZ1boxhCjESGrJJsgBY9i7CgNQBrgIEsZBc+ZMPaCZhndHzAIoA:eCzdoxTAIoA",
+            "Size": 30535,
+            "Type": "UTF-8 Unicode text"
+        },
+        {
+            "EntryID": "35@394",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "9d157d5629f126aa93ac8d5c3aee19a0",
+            "Name": "image.png",
+            "SHA1": "da0a7cdfe6e90929a53a63491beffa630aeea5d2",
+            "SHA256": "ee8fe25c93dc3df9e43ca7f8d9227a8e1c23222143c6fb3abf896a030c9e17f4",
+            "SHA512": "08efa8471f30f4ca9aabafdb541e90841662d11979fe0bb808f2f67307dd911f8d8d032306601e095a89de7214d6b62e05f460aebb10e8eb0d46558f5b830cdf",
+            "SSDeep": "768:PwNn9xSVscqD+HOdi6grPbc/trdUWbMo/KQtTC89Kfi61pf51NpCF5GE53lblXMO:yn9pYPzI/7UWfC89KfHH5npeGEJv+W",
+            "Size": 47648,
+            "Type": "PNG image data, 625 x 165, 8-bit/color RGBA, non-interlaced"
+        }
+    ]
+}

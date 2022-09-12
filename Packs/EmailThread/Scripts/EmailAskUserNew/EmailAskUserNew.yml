@@ -1,0 +1,252 @@
+commonfields:
+  id: EmailAskUserNew
+  version: -1
+name: EmailAskUserNew
+script: |
+  // email body type
+  var bodyType = 'text';
+  if (args.bodyType === 'html') {
+      bodyType = 'html';
+  }
+
+  // Get Email From from integration name
+  var email_from = '';
+  var contents = executeCommand("demisto-api-post", {"uri":"/settings/integration/search", "body": {"size":1}})[0].Contents.response.instances;
+
+  for (let i = 0; i < contents.length; i++){
+      var obj = contents[i];
+      if (obj.name === args.integrationName && obj.enabled === "true") {
+        if (obj.brand === "EWS Mail Sender") {
+          email_from = obj.configvalues.mailbox;
+        } else if ((obj.brand === "EWSO365") || (obj.brand === "EWSO365DeviceCodeFlow")) {
+          email_from = obj.configvalues.default_target_mailbox;
+        } else if (obj.brand === "Mail Sender (New)") {
+          email_from = obj.configvalues.from;
+        } else {
+          email_from = ""
+        } 
+        break;
+      }
+  }
+
+
+  // Get entitlement
+  var entitlement;
+  var retries = parseInt(args.retries) || 10;
+  for (i = 0 ; i < retries; i++) {
+      res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
+      if (isError(res[0])) {
+          if (res[0].Contents.contains('[investigations] [investigation] (15)')) {
+              wait(1);
+              continue;
+          }
+          return res;
+      }
+      entitlement = res[0].Contents;
+      log(entitlement)
+      break;
+  }
+
+  // Create email subject
+  var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
+  if (args.task) {
+      subjectSuffix += ' #' + args.task;
+      if (args.playbookTaskID && args.playbookTaskID != 'all' && args.playbookTaskID.trim().length > 0) {
+          subjectSuffix += ' #' + args.playbookTaskID;
+      }
+  }
+  var origin_subject = args.subject;
+
+  var subject = args.subject + subjectSuffix;
+
+  // Handle options
+  var reply = args.replyAddress;
+  var option1 = args.option1;
+  if (!option1) {
+      option1 = 'yes';
+  }
+  var option2 = args.option2;
+  if (!option2) {
+      option2 = 'no';
+  }
+  var additionalOptions = [];
+  if (args.additionalOptions) {
+      additionalOptions = args.additionalOptions.split(',');
+  }
+  var additionalOptionsHTML = [];
+  if (reply && bodyType === 'html') {
+      option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
+      option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
+      for (var i=0; i<additionalOptions.length; i++) {
+          additionalOptionsHTML.push('<a href="mailto:' + reply + '?subject=' + subject + '&body=' + additionalOptions[i] + '">' + additionalOptions[i] + '</a>');
+      }
+  }
+
+  // Create email body
+  var message = args.message;
+  if (bodyType === 'html') {
+      message += '<br/><br/>';
+  } else {
+      message += '\n\n';
+  }
+  message += 'Please reply with either ' + option1 + ' or ' + option2;
+  if (additionalOptions.length > 0) {
+      message += ' or ' + (additionalOptionsHTML.length > 0 ? additionalOptionsHTML.join(' or ') : additionalOptions.join(' or '));
+  }
+
+  // Get email recipients
+  var addresses = [];
+  if (args.roles) {
+      var usersRes = executeCommand('getUsers', { 'roles': args.roles });
+      if (usersRes[0].Contents.length > 0) {
+          addresses = addresses.concat(dq(usersRes, 'Contents.email'));
+      }
+  }
+  var email = args.email;
+  if (email) {
+      addresses = addresses.concat(email.split(','));
+  }
+
+  var topic = {}
+
+  if (addresses.length > 0) {
+      // prepare args and run send-mail
+      emailArgs = args;
+      emailArgs.to = addresses.join(',');
+      topic.to = emailArgs.to;
+      emailArgs.subject = subject;
+      topic.subject = origin_subject;
+      emailArgs.using = args.integrationName;
+
+      if (bodyType === 'html') {
+          emailArgs.htmlBody = message;
+          topic.content = message;
+      } else {
+          emailArgs.body = message;
+          topic.content = message;
+      }
+      if (args.attachIds) {
+          emailArgs.attachIDs = args.attachIds;
+      }
+      if (reply) {
+          emailArgs.replyTo = reply;
+      }
+      if (args.cc) {
+          emailArgs.cc = args.cc;
+          topic.cc = args.cc;
+      }
+      if (args.bcc) {
+          emailArgs.bcc = args.bcc;
+      }
+      // Store topics
+      var inc = incidents[0].CustomFields;
+      var final_topics = []
+      var found_subject = false;
+      if ("emailtopicslist" in inc) {
+          for (let t in inc.emailtopicslist) {
+            final_topics.push(inc.emailtopicslist[t]);
+            if (origin_subject === inc.emailtopicslist[t]) {
+              found_subject = true;
+            }
+          }
+      }
+
+      if (!found_subject) {
+          final_topics.push(origin_subject);
+      }
+
+      executeCommand("setIncident", {
+          "emailtopicslist": final_topics,
+          "emailtopiccurrent": origin_subject.replace(/ /gi,"_").replace(/\./gi,"[dot]"),
+          "emailfrom": email_from
+      });
+
+      // Store email content to war room
+      var current = new Date();
+      var dd = String(current.getDate());
+      var mm = String(current.getMonth() + 1);
+      var yyyy = String(current.getFullYear());
+      var HH = String(current.getHours());
+      var MM = String(current.getMinutes());
+      var SS = String(current.getSeconds());
+
+      var currentStr = dd + '-' + mm + '-' + yyyy + 'T' + HH + ':' + MM + ':' + SS;
+      var email_thread = "<p><b>From: </b>" + email_from + "<br>";
+      email_thread += "<b>Sent: </b>" + currentStr + "<br>";
+      email_thread += "<b>To: </b>" + topic.to + "<br><br>";
+      email_thread += topic.content + "<br>";
+      //var email_thread = `<p><b>Date: </b> ${currentStr}<br><b>To: </b> ${topic.to}</p><p>${topic.content}</p>`;
+      var entries_str = JSON.stringify([{"Type": 1, "ContentsFormat": "html", "Contents": email_thread, "tags": [origin_subject.replace(/ /gi,"_").replace(/\./gi,"[dot]")]}]);
+      executeCommand("addEntries", {"entries": entries_str});
+      var context_toppic_key = "EmailCommunication." + origin_subject.replace(/ /gi,"_").replace(/\./gi,"[dot]")
+      setContext(context_toppic_key, topic);
+
+      // Send mail
+      return executeCommand('send-mail', emailArgs);
+  } else {
+      return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
+  }
+type: javascript
+tags:
+- email
+- emailthread
+comment: Ask a user a question via email and process the reply directly into the investigation.
+enabled: true
+args:
+- name: email
+  default: true
+  description: The email of the user to ask
+- name: subject
+  required: true
+  description: The subject for the email
+- name: message
+  required: true
+  description: The message to the user to ask
+- name: option1
+  description: First option for a user reply. "yes" is the default.
+- name: option2
+  description: Second option for the user reply. "no" is the default.
+- name: additionalOptions
+  description: A comma delimited list of additional options if you have more than 2
+- name: task
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+- name: roles
+  description: Send mail to all users of these roles (csv list)
+- name: attachIds
+  description: Attachments
+- name: bodyType
+  auto: PREDEFINED
+  predefined:
+  - text
+  - html
+  description: Type of email body to send - text ot HTML
+  defaultValue: text
+- name: replyAddress
+  description: Address of reply for html links
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
+- name: persistent
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
+  defaultValue: "false"
+- name: retries
+  description: Indicates how many times to try and create an entitlement in case of failure
+  defaultValue: "10"
+- name: cc
+  description: The CC email address
+- name: bcc
+  description: The BCC email address
+- name: playbookTaskID
+  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all` to complete all tasks from all plabooks
+  defaultValue: ${currentPlaybookID}
+- name: integrationName
+  description: Name of the email integration used to send email
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,20 @@
+[
+    {
+       "Category":"Builtin",
+       "Relationships":"None",
+       "ModuleName":"InnerServicesModule",
+       "System":"",
+       "PollingCommand":"",
+       "Note":false,
+       "Version":0,
+       "PollingArgs":"None",
+       "ReadableContentsFormat":"",
+       "Type":1,
+       "Metadata":{
+          "reputationSize":0,
+          "startDate":"0001-01-01T00:00:00Z",
+          "recurrent":false,
+          "InstanceID":"InternalModule"
+       }
+    }
+ ]

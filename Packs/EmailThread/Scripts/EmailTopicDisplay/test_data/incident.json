@@ -1,0 +1,159 @@
+[
+   {
+      "CustomFields":{
+         "actionsoncampaignincidents":"Close",
+         "actionsonlowsimilarityincidents":"Add To Campaign",
+         "campaignemailsenderinstance":"EWSO365_instance_1_analyst5",
+         "dbotpredictionprobability":0,
+         "detectionsla":{
+            "accumulatedPause":0,
+            "breachTriggered":false,
+            "dueDate":"0001-01-01T00:00:00Z",
+            "endDate":"0001-01-01T00:00:00Z",
+            "lastPauseDate":"0001-01-01T00:00:00Z",
+            "runStatus":"idle",
+            "sla":20,
+            "slaStatus":-1,
+            "startDate":"0001-01-01T00:00:00Z",
+            "totalDuration":0
+         },
+         "emailbcc":"",
+         "emailcc":"xxxxxx",
+         "emaildeletefrombrand":"EWSO365",
+         "emaildeletetype":"soft",
+         "emaileditor":"",
+         "emailentryid":"28@394",
+         "emailfrom":"xxxxxx",
+         "emailheaders":[
+            
+         ],
+         "emailshowtrigger":"821#This is test xxxxxx",
+         "emailsubject":"This is test 1",
+         "emailthreadhtml":"<h2>This is test 1</h2><br><p><b>From:</b> xxxxxx <br><b>Sent:</b> 2022-08-03T04:28:40Z <br><b>To:</b> xxxxxx <br><b>CC:</b> xxxxxx <br><b>Subject:</b> This is test 1 <br></p>Attachments:<br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/26%40394\" target=\"_blank\" rel=\"nofollow noopener\">3 Incidents.txt</a><br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/27%40394\" target=\"_blank\" rel=\"nofollow noopener\">adblock.txt</a><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\">Please check these attachments</div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div id=\"appendonsend\"></div><hr style=\"display:inline-block;width:98%;\"><div id=\"divRplyFwdMsg\" dir=\"ltr\"><b>From:</b> Hiep Nguyen xxxxxx Wednesday, August 3, 2022 2:27 PM<br><b>To:</b> Phishing Report Mailbox xxxxxx xxxxxx xxxxxx [SOC #394] This is test 1<div></div></div><div><p>Hi please check this</p></div><hr><hr><hr><br><br><blockquote style=\"margin:0px 0px 0px 0.8ex;border-left:2px solid rgb(204,204,204);padding-left:1ex;\"><p><b>From: </b> xxxxxx <br><b>Sent: </b>2022-08-03 04:27:12<br><b>To: </b> xxxxxx <br><b>CC: </b> xxxxxx <br><b>Subject: </b> This is test 1 <br></p><p>Hi please check this</p></blockquote><hr><hr><hr><br><br><blockquote style=\"margin:0px 0px 0px 0.8ex;border-left:2px solid rgb(204,204,204);padding-left:1ex;\"><p><b>From:</b> xxxxxx <br><b>Sent:</b> 2022-08-03T04:28:40Z <br><b>To:</b> xxxxxx <br><b>CC:</b> xxxxxx <br><b>Subject:</b> This is test 1 <br></p>Attachments:<br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/26%40394\" target=\"_blank\" rel=\"nofollow noopener\">3 Incidents.txt</a><br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/27%40394\" target=\"_blank\" rel=\"nofollow noopener\">adblock.txt</a><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\">Please check these attachments</div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div id=\"appendonsend\"></div><hr style=\"display:inline-block;width:98%;\"><div id=\"divRplyFwdMsg\" dir=\"ltr\"><b>From:</b> Hiep Nguyen xxxxxx Wednesday, August 3, 2022 2:27 PM<br><b>To:</b> Phishing Report Mailbox xxxxxx xxxxxx xxxxxx [SOC #394] This is test 1<div></div></div><div><p>Hi please check this</p></div></blockquote><hr><hr><hr><br><br><blockquote style=\"margin:0px 0px 0px 0.8ex;border-left:2px solid rgb(204,204,204);padding-left:1ex;\"><p><b>From:</b> xxxxxx <br><b>Sent:</b> 2022-08-03T04:28:40Z <br><b>To:</b> xxxxxx <br><b>CC:</b> xxxxxx <br><b>Subject:</b> This is test 1 <br></p>Attachments:<br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/26%40394\" target=\"_blank\" rel=\"nofollow noopener\">3 Incidents.txt</a><br><a href=\"https://xsoar-kt.southeastasia.cloudapp.azure.com/entry/download/27%40394\" target=\"_blank\" rel=\"nofollow noopener\">adblock.txt</a><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\">Please check these attachments</div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\" class=\"elementToProof\"><br></div><div id=\"appendonsend\"></div><hr style=\"display:inline-block;width:98%;\"><div id=\"divRplyFwdMsg\" dir=\"ltr\"><b>From:</b> Hiep Nguyen xxxxxx Wednesday, August 3, 2022 2:27 PM<br><b>To:</b> Phishing Report Mailbox xxxxxx xxxxxx xxxxxx [SOC #394] This is test 1<div></div></div><div><p>Hi please check this</p></div><hr><hr><hr><br><br><blockquote style=\"margin:0px 0px 0px 0.8ex;border-left:2px solid rgb(204,204,204);padding-left:1ex;\"><p><b>From: </b> xxxxxx <br><b>Sent: </b>2022-08-03 04:27:12<br><b>To: </b> xxxxxx <br><b>CC: </b> xxxxxx <br><b>Subject: </b> This is test 1 <br></p><p>Hi please check this</p></blockquote></blockquote>",
+         "emailto":"xxxxxx",
+         "emailtopic":"This is test 1",
+         "emailtopicslist":[
+            "This is test 1",
+            "This is test 2"
+         ],
+         "endpoint":[
+            {
+               
+            }
+         ],
+         "healthcheckriskyindexedfields":[
+            {
+               
+            },
+            {
+               
+            },
+            {
+               
+            }
+         ],
+         "isactive":"true",
+         "remediationsla":{
+            "accumulatedPause":0,
+            "breachTriggered":false,
+            "dueDate":"0001-01-01T00:00:00Z",
+            "endDate":"0001-01-01T00:00:00Z",
+            "lastPauseDate":"0001-01-01T00:00:00Z",
+            "runStatus":"idle",
+            "sla":7200,
+            "slaStatus":-1,
+            "startDate":"0001-01-01T00:00:00Z",
+            "totalDuration":0
+         },
+         "selectaction":"Close",
+         "similarincidentsdbot":[
+            {
+               
+            }
+         ],
+         "timetoassignment":{
+            "accumulatedPause":0,
+            "breachTriggered":false,
+            "dueDate":"0001-01-01T00:00:00Z",
+            "endDate":"0001-01-01T00:00:00Z",
+            "lastPauseDate":"0001-01-01T00:00:00Z",
+            "runStatus":"idle",
+            "sla":0,
+            "slaStatus":-1,
+            "startDate":"0001-01-01T00:00:00Z",
+            "totalDuration":0
+         },
+         "urlsslverification":[
+            
+         ],
+         "xdrstarred":false
+      },
+      "account":"",
+      "activated":"0001-01-01T00:00:00Z",
+      "attachment":"None",
+      "autime":1659500779760293097,
+      "cacheVersn":0,
+      "canvases":"None",
+      "category":"",
+      "closeNotes":"",
+      "closeReason":"",
+      "closed":"0001-01-01T00:00:00Z",
+      "closingUserId":"",
+      "created":"2022-08-03T04:26:19.760293097Z",
+      "dbotCreatedBy":"admin",
+      "dbotCurrentDirtyFields":"None",
+      "dbotDirtyFields":"None",
+      "dbotMirrorDirection":"",
+      "dbotMirrorId":"",
+      "dbotMirrorInstance":"",
+      "dbotMirrorLastSync":"0001-01-01T00:00:00Z",
+      "dbotMirrorTags":"None",
+      "details":"",
+      "droppedCount":0,
+      "dueDate":"0001-01-01T00:00:00Z",
+      "feedBased":false,
+      "id":"394",
+      "investigationId":"394",
+      "isDebug":false,
+      "isPlayground":false,
+      "labels":[
+         {
+            "type":"Instance",
+            "value":"admin"
+         },
+         {
+            "type":"Brand",
+            "value":"Manual"
+         }
+      ],
+      "lastJobRunTime":"0001-01-01T00:00:00Z",
+      "lastOpen":"0001-01-01T00:00:00Z",
+      "linkedCount":0,
+      "linkedIncidents":"None",
+      "modified":"2022-08-03T04:43:13.023476087Z",
+      "name":"Email Comm test 03 Aug",
+      "notifyTime":"0001-01-01T00:00:00Z",
+      "occurred":"2022-08-03T04:26:19.760288997Z",
+      "openDuration":0,
+      "owner":"admin",
+      "parent":"",
+      "phase":"",
+      "playbookId":"",
+      "rawCategory":"",
+      "rawCloseReason":"",
+      "rawJSON":"",
+      "rawName":"Email Comm test 03 Aug",
+      "rawPhase":"",
+      "rawType":"Email Communication",
+      "reason":"",
+      "reminder":"0001-01-01T00:00:00Z",
+      "runStatus":"",
+      "severity":0,
+      "sla":0,
+      "sourceBrand":"Manual",
+      "sourceInstance":"admin",
+      "status":1,
+      "type":"Email Communication",
+      "version":18
+   }
+]

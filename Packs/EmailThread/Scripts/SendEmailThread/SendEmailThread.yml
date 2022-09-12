@@ -1,0 +1,51 @@
+commonfields:
+  id: SendEmailThread
+  version: -1
+name: SendEmailThread
+script: '-'
+type: python
+tags:
+- emailthread
+comment: Send email reply
+enabled: true
+args:
+- name: files
+  description: Files
+  isArray: true
+  defaultValue: ${File}
+- name: attachment
+  description: Attachment
+  isArray: true
+  defaultValue: ${incident.attachment}
+- name: email_to
+  description: Email To
+  required: true
+  defaultValue: ${incident.emailto}
+- name: email_cc
+  description: Email CC
+  defaultValue: ${incident.emailcc}
+- name: email_bcc
+  description: Email BCC
+  defaultValue: ${incident.emailbcc}
+- name: email_subject
+  description: Email Subject
+  required: true
+  defaultValue: ${incident.emailsubject}
+- name: email_body
+  description: Email Body
+  defaultValue: ${incident.emaileditor}
+- name: email_from
+  description: Email From
+- name: email_body_html
+  description: Email body in HTML
+- name: integration_name
+  description: Integration instance name which XSOAR uses to send email
+  required: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.6.33415
+runas: Administrator
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,71 @@
+commonfields:
+  id: EmailAskUserResponseNew
+  version: -1
+name: EmailAskUserResponseNew
+script: |
+  var res = executeCommand("getEntry", {"id":args.responseEntryId});
+  log(args.responseEntryId);
+  var inc = incidents[0].CustomFields;
+  var email_from = res[0].Metadata.User;
+  var email_date = res[0].Metadata.Created;
+  var email_to = inc.emailfrom;
+
+  if (res[0].Type==entryTypes.note || res[0].Type==entryTypes.file) {
+      text = res[0].Contents;
+      topic = inc.emailtopiccurrent;
+      // Build email content to store and display
+      var last_email_entry = executeCommand("getEntries", {'filter': {'tags': [topic]}});
+      var last_email = last_email_entry[last_email_entry.length - 1].Contents;
+      var title_topic = topic.replace(/_/gi,' ').replace(/\./gi,"[dot]");
+      var title_html = "<h2>" + title_topic + "</h2><br>";
+      var body_html = "<p><b>From: </b>" + email_from + "<br>";
+      body_html += "<b>Sent: </b>" + email_date + "<br>";
+      body_html += "<b>To: </b>" + email_to + "<br>";
+      body_html += text + "<br>";
+      body_html += '<blockquote style="margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex;">'
+      body_html += last_email + '</blockquote>'
+
+      // If email topic is selected
+      if ("emailtopic" in inc) {
+          var viewEmailTopic = inc.emailtopic;
+          if (viewEmailTopic.length !== 0) {
+              if (viewEmailTopic.replace(/ /gi,"_").replace(/\./gi,"[dot]") === topic) {
+                  executeCommand("setIncident", {"emailthreadhtml": title_html + body_html });
+              }
+          }
+      }
+      // Store email thread
+      let entries_str = JSON.stringify([{"Type": 1, "ContentsFormat": "html", "Contents": body_html, "tags": [topic]}]);
+      executeCommand("addEntries", {"entries": entries_str});
+      // Original function
+      text = text.replace(/<br\/?>/gi,'\n')
+                  .replace(/\r/g,'')
+                  .replace(/\n/g,'__NL__')
+                  .replace(/<script .+?<\/script>/g,'')
+                  .replace(/<style .+?<\/style>/g,'')
+                  .replace(/__NL____NL__/g,'')
+                  .replace(/__NL__/g,'\n');
+
+      response = text.replace(/<(?:.|\n)*?>/gm, '').trim("\n").split("\n")[0].trim();
+      setContext('EmailAskUserResponse', response);
+      return response;
+  } else {
+      return res;
+  }
+type: javascript
+tags:
+- Condition
+- emailthread
+comment: Extract user's response from EmailAskUser reply. Returns the first textual response line of the provided entry that contains the reply body. Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing the user's reply.
+enabled: true
+args:
+- name: responseEntryId
+  required: true
+  default: true
+  description: Entry ID where EmailAskUser will complete when user replies
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
