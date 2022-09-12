@@ -27,7 +27,7 @@
                 "ThreatConnect Id": {
                     "simple": "id"
                 },
-                "Threatconnect Associated Indicators": {
+                "ThreatConnect Associated Indicators": {
                     "complex": {
                         "accessor": "data",
                         "filters": [],
@@ -39,7 +39,7 @@
                         ]
                     }
                 },
-                "Threatconnect AssociatedGroups": {
+                "ThreatConnect AssociatedGroups": {
                     "complex": {
                         "accessor": "data",
                         "filters": [],
@@ -51,7 +51,7 @@
                         ]
                     }
                 },
-                "Threatconnect Attributes": {
+                "ThreatConnect Attributes": {
                     "complex": {
                         "accessor": "data",
                         "filters": [],
@@ -63,7 +63,7 @@
                         ]
                     }
                 },
-                "Threatconnect Created By": {
+                "ThreatConnect Created By": {
                     "complex": {
                         "filters": [],
                         "root": "createdBy",
@@ -74,7 +74,7 @@
                         ]
                     }
                 },
-                "Threatconnect Security Labels": {
+                "ThreatConnect Security Labels": {
                     "complex": {
                         "accessor": "data",
                         "filters": [],
@@ -86,7 +86,7 @@
                         ]
                     }
                 },
-                "Threatconnect Victim Assets": {
+                "ThreatConnect Victim Assets": {
                     "complex": {
                         "accessor": "data",
                         "filters": [],

@@ -36,7 +36,6 @@
   "description": "",
   "details": {},
   "detailsV2": {
-    "TypeName": "ThreatConnect",
     "tabs": [
       {
         "id": "summary",
@@ -1319,19 +1318,12 @@
       }
     ]
   },
-  "fromServerVersion": "6.0.0",
   "group": "incident",
   "id": "b67c5159-fd5f-4ff4-8e40-289a73638b03",
   "indicatorsDetails": {},
   "indicatorsQuickView": {},
-  "itemVersion": "",
-  "locked": false,
   "mobile": {},
   "name": "Threatconnect Layout",
-  "packID": "ThreatConnect",
-  "propagationLabels": [
-    "all"
-  ],
   "quickView": {
     "sections": [
       {
@@ -2153,6 +2145,5 @@
     ]
   },
   "system": false,
-  "toServerVersion": "6.5.0",
   "version": -1
 }
