@@ -63,6 +63,8 @@ class IdSetItem(DictBased):
 
         except NotUnderPackException:
             if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                logger.info(f'{path=} is not under a pack, '
+                            'but is part of SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, skipping')
                 return None
             else:
                 raise
@@ -78,6 +80,7 @@ class IdSet(DictFileBased):
         self.marketplace = marketplace
 
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
+        self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
