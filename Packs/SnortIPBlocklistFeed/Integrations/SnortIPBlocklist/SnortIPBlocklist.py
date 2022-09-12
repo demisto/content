@@ -178,8 +178,6 @@ def main():
     # the Client constructor
     insecure = not params.get('insecure', False)
 
-    # If your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
 
     command = demisto.command()
