@@ -234,7 +234,7 @@ MODULE_DATA_EXTENDED_CONTEXT = [
 
 
 def is_html_response(response):
-    if 'text\html' in response.headers.get('Content-Type', ''):
+    if 'text\html' in response.headers.get('Content-Type', '').lower():
         return True
     # look for an html tag in the response text
     # if re.search("<[^>]+>", response.text):
