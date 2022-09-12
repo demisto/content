@@ -1,25 +1,25 @@
-Enriches the user name from Active Directory data. This is an enhancement automation for user type indicator.
+Deprecated. Use OSQueryBasicQuery with query='select * from processes'.
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
-| Tags | enhancement, active directory, user |
-
+| Script Type | python2 |
+| Tags | OSQuery |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* ad-search
+* OSQueryBasicQuery
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| name | The name of user. |
+| system | The System to remote execute on, can be a list of systems |
 
 ## Outputs
 ---
