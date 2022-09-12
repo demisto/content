@@ -24,6 +24,7 @@ GD_SEVERITY_DICT = {
 
 
 class DatetimeEncoder(json.JSONEncoder):
+    """Json encoder class for encoding datetime objects. Use with json.dumps method."""
     def default(self, obj):
         if isinstance(obj, datetime) or isinstance(obj, date):
             return obj.strftime('%Y-%m-%dT%H:%M:%S.%f')
@@ -41,7 +42,9 @@ def convert_events_with_datetime_to_str(events: list) -> list:
     """
     output_events = []
     for event in events:
+        # Encode the datetime fields of the event to str using json dumps.
         output = json.dumps(event, cls=DatetimeEncoder)
+        # Load the event with datetime fields converted to str.
         output_events.append(json.loads(output))
     return output_events
 

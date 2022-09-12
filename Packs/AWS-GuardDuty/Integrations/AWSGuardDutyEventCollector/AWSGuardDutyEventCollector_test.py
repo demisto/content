@@ -125,7 +125,8 @@ def test_test_module(mocker):
                                                                               max_results=1,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [FINDING_OUTPUT], id='simple, no next tokens, low severity'),
+                                       [FINDING_OUTPUT],
+                                       id='simple, no next tokens, low severity'),
                           pytest.param(10, 'Low', [{"DetectorIds": ["detector_id1"], "NextToken": "next"},
                                                    {"DetectorIds": ["detector_id2"]}],
                                        [{"FindingIds": ["finding_id1"]}, {"FindingIds": ["finding_id2"]}],
@@ -210,7 +211,8 @@ def test_test_module(mocker):
                                                                               max_results=1,
                                                                               next_token=None))],
                                        [call(DetectorId='detector_id1', FindingIds=['finding_id1'])],
-                                       [FINDING_OUTPUT], id='simple, no next tokens, high severity')
+                                       [FINDING_OUTPUT],
+                                       id='simple, no next tokens, high severity')
 
                           ])
 def test_get_events_command(mocker, limit, severity, list_detectors_res, list_finding_ids_res, findings_res,
