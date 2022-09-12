@@ -2,10 +2,10 @@ commonfields:
   id: malwr
   version: -1
 name: malwr
-display: malwr
+display: malwr (Deprecated)
 fromversion: 5.0.0
 category: Forensics & Malware Analysis
-description: Analyze files using the malwr sandbox
+description: Deprecated. The site at malwr.com is no longer available. No available replacement.
 configuration:
 - display: URL
   name: server
@@ -92,5 +92,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
   dockerimage: demisto/bs4-py3:1.0.0.32198
+deprecated: true
 tests:
 - No tests
