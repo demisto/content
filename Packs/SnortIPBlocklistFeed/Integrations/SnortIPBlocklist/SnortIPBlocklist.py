@@ -183,11 +183,6 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
     demisto.debug(f'Command being called is {command}')
 
     try:
