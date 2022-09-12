@@ -418,3 +418,7 @@ xsiam_server_master:
 test_upload_flow:
   rules:
     - # TODO: fix
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
+    GCS_MARKET_KEY: "$GCS_MARKET_KEY"
+
