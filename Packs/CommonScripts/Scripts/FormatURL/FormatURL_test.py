@@ -180,13 +180,13 @@ FAILS = [
      pytest.raises(URLError)),  # Invalid character in scheme
     ('https://',  # disable-secrets-detection
      pytest.raises(URLError)),  # Only scheme
-    ('https://test@/test', # disable-secrets-detection
+    ('https://test@/test',  # disable-secrets-detection
      pytest.raises(URLError)),  # No host data, only scheme and user info
     ('https://www.te$t.com/',  # disable-secrets-detection
      pytest.raises(URLError)),  # Bad chars in host
     ('https://www.[test].com/',  # disable-secrets-detection
      pytest.raises(URLError)),  # Invalid square brackets
-    ('https://www.te]st.com/', # disable-secrets-detection
+    ('https://www.te]st.com/',  # disable-secrets-detection
      pytest.raises(URLError)),  # Square brackets closing without opening
     ('https://[192.168.1.1]',  # disable-secrets-detection
      pytest.raises(URLError)),  # Only IPv6 allowed in square brackets
