@@ -1126,7 +1126,7 @@ tasks:
           accessor: agentid
       timeRange:
         simple: 2 hours ago
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ''
@@ -1623,8 +1623,8 @@ tasks:
     task:
       id: a953691c-5334-47a3-821f-304f8ed1fbfd
       version: -1
-      name: is Manual Review required?
-      description: "Should we wait for manual review"
+      name: Is manual review required?
+      description: "Checks whether the playbook should wait for manual review"
       type: condition
       iscommand: false
       brand: ""
@@ -1858,7 +1858,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to ask for manual review before FP handling, should be True or False
+  description: Whether to ask for manual review before false positive handling, should be True or False
   playbookInputQuery:
 outputs: []
 tests:

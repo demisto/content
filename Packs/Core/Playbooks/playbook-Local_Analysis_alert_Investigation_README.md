@@ -73,7 +73,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoRecovery | Whether to execute the Recovery playbook. | False | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | ShouldRescanBenign | Whether to rescan \(Using WildFire detonate file\) benign files. | True | Optional |
-| ShouldManualReviewFP | Whether to ask for manual review before FP handling, should be True or False | False | Optional |
+| ShouldManualReviewFP | Whether to ask for manual review before false positive handling, should be True or False | False | Optional |
 
 ## Playbook Outputs
 ---
