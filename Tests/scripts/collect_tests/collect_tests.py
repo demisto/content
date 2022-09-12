@@ -7,7 +7,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, TESTS_AND_DOC_DIRECTORIES
+from demisto_sdk.commands.common.constants import (TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
@@ -459,11 +461,11 @@ class TestCollector(ABC):
             case MarketplaceVersions.MarketplaceV2:
                 if content_item_marketplaces != (self.marketplace,):
                     # marketplacev2 must be the only value in order to be collected
-                    raise IncompatibleMarketplaceException(content_item_path)
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
 
             case MarketplaceVersions.XSOAR:
                 if self.marketplace not in content_item_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item_path)
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
 
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
@@ -630,16 +632,8 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self._validate_content_item_compatibility(content_item, is_integration=file_type == FileType.INTEGRATION)
-
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
-        except NonXsoarSupportedPackException as e:
-            return self._collect_pack(
-                pack_id=find_pack_folder(path).name,
-                reason=CollectionReason.NON_XSOAR_SUPPORTED,
-                reason_description=e.support_level,
-            )
 
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
@@ -651,8 +645,27 @@ class BranchTestCollector(TestCollector):
                 reason_description=reason_description,
                 content_item_range=content_item.version_range if content_item else None
             )
+        if content_item:
+            try:
+                '''
+                Upon reaching this part, we know the file is a content item (and not release note config, scheme, etc.)
+                so _validate_content_item can be called (which we can't do to non-content files, often lacking an id).
 
-        elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
+                when content_item *is* None, the same validations are called either in _collect_yml or _collect_pack.
+
+                '''
+                self._validate_content_item_compatibility(
+                    content_item,
+                    is_integration=file_type == FileType.INTEGRATION,
+                )
+            except NonXsoarSupportedPackException as e:
+                return self._collect_pack(
+                    pack_id=find_pack_folder(path).name,
+                    reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                    reason_description=e.support_level,
+                )
+
+        if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
             return self._collect_yml(path)
