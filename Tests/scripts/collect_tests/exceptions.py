@@ -1,42 +1,48 @@
 from pathlib import Path
 from typing import Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
 
-class InvalidPackException(Exception):
+from Tests.scripts.collect_tests.version_range import VersionRange
+
+
+class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
-        self.message = f'invalid pack {pack_name}: {reason}'
+        self.message = f'Unsupported pack {pack_name}: {reason}'
 
     def __str__(self):
         return self.message
 
 
-class BlankPackNameException(InvalidPackException):
+class BlankPackNameException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Blank pack name')
 
 
-class NonexistentPackException(InvalidPackException):
+class NonexistentPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Nonexistent pack name')
 
 
-class UnsupportedPackException(InvalidPackException):
-    def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'pack support level is not XSOAR')
+class NonXsoarSupportedPackException(UnsupportedPackException):
+    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
+        self.support_level = support_level
+        self.content_version_range = content_version_range
+        super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 
-class DeprecatedPackException(InvalidPackException):
+class DeprecatedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is deprecated')
 
 
-class SkippedPackException(InvalidPackException):
+class SkippedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is skipped')
 
 
 class NonDictException(Exception):
-    def __init__(self, path: Path):
+    def __init__(self, path: Optional[Path]):
         self.message = path
         super().__init__(self.message)
 
@@ -72,6 +78,11 @@ class NothingToCollectException(Exception):
 
     def __str__(self):
         return self.message
+
+
+class IncompatibleMarketplaceException(NothingToCollectException):
+    def __init__(self, content_path: Path, expected_marketplace: MarketplaceVersions):
+        super().__init__(content_path, f'is not compatible with {expected_marketplace=}')
 
 
 class InvalidTestException(Exception):

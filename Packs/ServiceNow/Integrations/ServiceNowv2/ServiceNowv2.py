@@ -1,6 +1,5 @@
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
-from urllib import parse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,8 +10,6 @@ requests.packages.urllib3.disable_warnings()
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
-
-SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -111,9 +108,6 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
-                  'priority', 'state', 'urgency', 'severity', 'closed_at',
-                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -483,37 +477,6 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
                 dic_fields[field[0]] = field[1]
 
     return dic_fields
-
-
-def build_query_for_request_params(query):
-    """Split query that contains '&' to a list of queries.
-
-    Args:
-        query: query (Example: "id=5&status=1")
-
-    Returns:
-        List of sub queries. (Example: ["id=5", "status=1"])
-    """
-
-    if '&' in query:
-        query_params = []  # type: ignore
-        query_args = parse.parse_qsl(query)
-        for arg in query_args:
-            query_params.append(parse.urlencode([arg]))  # type: ignore
-        return query_params
-    else:
-        return query
-
-
-def parse_build_query(sys_param_query, parse_amp=True):
-    """
-      Used to parse build the query parameters or ignore parsing.
-    """
-
-    if sys_param_query:
-        if parse_amp:
-            return build_query_for_request_params(sys_param_query)
-    return sys_param_query
 
 
 class Client(BaseClient):
@@ -930,7 +893,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None, parse_amp: bool = True) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -940,7 +903,6 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
-        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
@@ -948,7 +910,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = parse_build_query(sys_param_query, parse_amp)
+            query_params['sysparm_query'] = sys_param_query
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
@@ -1535,10 +1497,11 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
     fields_delimiter = args.get('fields_delimiter', ';')
+    fields = get_ticket_fields(args, ticket_type=table_name)
 
-    fields = {}
     if fields_str:
-        fields = split_fields(fields_str, fields_delimiter)
+        additional_fields = split_fields(fields_str, fields_delimiter)
+        fields.update(additional_fields)
     custom_fields = {}
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str, fields_delimiter)
@@ -1715,7 +1678,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query, parse_amp=False)
+        result = client.query(table_name, limit, offset, group_query)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False
@@ -2456,8 +2419,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
-    for field in out_fields:
+    for field in SNOW_ARGS:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()

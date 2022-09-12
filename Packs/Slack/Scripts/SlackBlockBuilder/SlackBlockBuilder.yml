@@ -1,0 +1,110 @@
+commonfields:
+  id: SlackBlockBuilder
+  version: -1
+name: SlackBlockBuilder
+script: '-'
+type: python
+tags:
+- slack
+enabled: true
+comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. 
+  The script will also send the block to the given destination.
+args:
+- default: false
+  description: The URL copied from Slack's Block Builder.
+  isArray: false
+  name: blocks_url
+  required: false
+  secret: false
+- default: false
+  description: The name of the Cortex XSOAR list to use as the block's input.
+  isArray: false
+  name: list_name
+  required: false
+  secret: false
+- default: false
+  description: The Slack user to send the message to. Can be either an email
+    address or a Slack user name.
+  isArray: false
+  name: user
+  required: false
+  secret: false
+- default: false
+  description: The Slack channel to send the message to.
+  isArray: false
+  name: channel
+  required: false
+  secret: false
+- default: false
+  description: The Slack channel ID to send the message to.
+  isArray: false
+  name: channel_id
+  required: false
+  secret: false
+- default: false
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
+  isArray: false
+  name: task
+  required: false
+  secret: false
+- default: false
+  description: Tag to add to email reply entries.
+  isArray: false
+  name: replyEntriesTag
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: Thank you for your response.
+  description: The reply to send to the user. Use the templates {user} and {response}
+    to incorporate these in the reply. (i.e., "Thank you {user}. You have answered
+    {response}.")
+  isArray: false
+  name: reply
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
+  isArray: false
+  name: lifetime
+  required: false
+  secret: false
+- default: false
+  description: Default response in case the question expires.
+  isArray: false
+  name: defaultResponse
+  required: false
+  secret: false
+  defaultValue: NoResponse
+- default: false
+  description: The instance of SlackV3 this script should use.
+  isArray: false
+  name: slackInstance
+  required: false
+  secret: false
+outputs:
+- contextPath: SlackBlockState
+  type: unknown
+  description: The state of the response from the user will be stored under this context path.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+dependson:
+  must:
+  - SlackV3|||send-notification
+fromversion: 6.2.0
