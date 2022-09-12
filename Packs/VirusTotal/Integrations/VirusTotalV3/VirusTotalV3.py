@@ -1318,6 +1318,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         geo_country=attributes.get('country'),
         detection_engines=detection_engines,
         positive_engines=positive_engines,
+        as_owner=attributes.get('as_owner'),
         relationships=relationships_list,
         dbot_score=Common.DBotScore(
             ip,
@@ -1342,7 +1343,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
                 'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_engines}/{detection_engines}'
             },
-            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives'],
+            headers=['id', 'network', 'country', 'as_owner', 'last_modified', 'reputation', 'positives'],
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
