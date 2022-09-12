@@ -60,12 +60,6 @@ inputs:
   required: false
   value:
     simple: ${incident.filesha256}
-- key: GenerateAlert
-  value:
-    simple: "False"
-  required: false
-  description: ""
-  playbookInputQuery:
 name: MDE - False Positive Incident Handling
 outputs: []
 starttaskid: '0'
