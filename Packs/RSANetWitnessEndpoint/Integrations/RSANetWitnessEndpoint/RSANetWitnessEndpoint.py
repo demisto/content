@@ -295,7 +295,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
         demisto.results(html_error_entry(html_body))
         raise ValueError('Caught HTML response, please verify server url.')
 
-    if response.status_code != 200:
+    if response.status_code < 200 or response.status_code >= 300:
         msg = parse_error_response(response)
         raise ValueError(msg)
 
