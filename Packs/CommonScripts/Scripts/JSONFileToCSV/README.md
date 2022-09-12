@@ -1,11 +1,11 @@
-Script to convert a JSON File waroom output to a CSV file.
+Script to convert a War Room output JSON File to a CSV file.
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python2 |
+| Script Type | python3 |
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
@@ -13,9 +13,9 @@ Script to convert a JSON File waroom output to a CSV file.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| entryid | entry id of json |
-| filename | output csv filename |
-| delimiter | CSV Delimiter. |
+| entryid | Entry ID of json |
+| filename | Output CSV filename |
+| delimiter | CSV delimiter. |
 
 ## Outputs
 ---
