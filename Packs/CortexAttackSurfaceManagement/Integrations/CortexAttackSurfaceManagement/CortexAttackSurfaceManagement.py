@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 
-
 class Client(BaseClient):
     """
     Client class to interact with the service API.
@@ -19,7 +18,7 @@ class Client(BaseClient):
 
         Args:
             search_params (list): list of search parameters to add to the API call body.
-        
+
         Returns:
             dict: dict containing list of external services.
         """
@@ -33,10 +32,10 @@ class Client(BaseClient):
 
     def getexternalservice_request(self, service_id_list):
         """Get service details using the '/assets/get_external_service/' endpoint.
-        
+
         Args:
             service_id_list (list): single service id in list format.
-        
+
         Returns:
             dict: dict containing information on single external service.
         """
@@ -50,10 +49,10 @@ class Client(BaseClient):
 
     def getexternalipaddressranges_request(self):
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
-        
+
         Args:
             None
-        
+
         Returns:
             dict: dict containing list of external ip address ranges.
         """
@@ -67,10 +66,10 @@ class Client(BaseClient):
 
     def getexternalipaddressrange_request(self, range_id_list):
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
-        
+
         Args:
             range_id_list (list): single range id in list format.
-        
+
         Returns:
             dict: dict containing information on external ip address range.
         """
@@ -84,10 +83,10 @@ class Client(BaseClient):
 
     def getassetsinternetexposure_request(self, search_params):
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
-        
+
         Args:
             search_params (list): list of search parameters to add to the API call body.
-        
+
         Returns:
             dict: dict containing list of internet exposure assets.
         """
@@ -101,10 +100,10 @@ class Client(BaseClient):
 
     def getassetinternetexposure_request(self, asm_id_list):
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
-        
+
         Args:
             asm_id_list (list): single attack surface management id in list format.
-        
+
         Returns:
             dict: dict containing information on an internet exposure asset.
         """
@@ -172,7 +171,8 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
             ``args['service_id']`` A string represenng the service ID you want get details for.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external service information.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains external service information.
     """
     # assume that only one service_id was passed in or fail.
     service_id = str(args.get('service_id'))
@@ -204,7 +204,8 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
             No subkeys of args used.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external IP address ranges.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains external IP address ranges.
     """
     response = client.getexternalipaddressranges_request()
     parsed = response['reply']['external_ip_address_ranges']
@@ -231,7 +232,8 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
             ``args['range_id']`` A string representing the range ID for which you want to get the details for.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external ip range information.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains external ip range information.
     """
     # assume that only one range_id was passed in or fail.
     range_id = str(args.get('range_id'))
@@ -266,7 +268,8 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
             ``args['has_active_external_services']`` if the internet exposure have an active external service.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external internet exposures.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains external internet exposures.
     """
     ip_address = args.get('ip_address')
     name = args.get('name')
@@ -308,7 +311,8 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
             ``args['asm_id']`` A string representing the asset ID for which you want to get the details for.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains internet exposure information.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains internet exposure information.
     """
     # assume that only one asm_id was passed in or fail.
     asm_id = str(args.get('asm_id'))
@@ -344,7 +348,7 @@ def test_module(client: Client) -> None:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        response = client.getexternalservices_request([])
+        client.getexternalservices_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
@@ -357,7 +361,6 @@ def main() -> None:
     """
     main function
     """
-    params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
     command = demisto.command()
@@ -399,6 +402,7 @@ def main() -> None:
 
     except Exception as e:
         return_error(str(e))
+
 
 ''' ENTRY POINT '''
 
