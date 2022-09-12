@@ -1,5 +1,6 @@
-Checks the current status of a task in Cuckoo sandbox.
+Deprecated. Use 'cuckoo-create-task-from-url' instead.
 
+Detonates a URL in the Cuckoo sandbox.
 ## Script Data
 ---
 
@@ -12,14 +13,14 @@ Checks the current status of a task in Cuckoo sandbox.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cuckoo-view-task
+* cuckoo-create-task-from-url
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| taskID | The ID of the task to check. |
+| url | The URL to check. |
 
 ## Outputs
 ---

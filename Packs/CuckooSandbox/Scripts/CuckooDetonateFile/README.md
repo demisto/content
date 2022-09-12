@@ -1,3 +1,5 @@
+Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
+
 Adds a file to the list of pending tasks. Returns the ID of the newly created task.
 
 ## Script Data
