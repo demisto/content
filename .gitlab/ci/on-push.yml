@@ -3,24 +3,24 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-trigger-private-build:
-  tags:
-    - gke
-  needs: []
-  stage: unittests-and-validations
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-  script:
-    - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-    - sleep 60
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-  timeout: 2 hours
+# trigger-private-build:
+#   tags:
+#     - gke
+#   needs: []
+#   stage: unittests-and-validations
+#   extends:
+#     - .default-job-settings
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+#       when: never
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#     - if: '$NIGHTLY'
+#   script:
+#     - echo "====Trigger Private Build===="
+#     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+#     - sleep 60
+#     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+#   timeout: 2 hours
 
 
 .create-release-notes-and-common-docs:
@@ -32,49 +32,49 @@ trigger-private-build:
   - section_end "Create Release Notes and Common Server Documentation"
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
-run-unittests-and-lint:
-  extends:
-    - .run-unittests-and-lint
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+# run-unittests-and-lint:
+#   extends:
+#     - .run-unittests-and-lint
+#   rules:
+#     - if: '$BUCKET_UPLOAD == "true"'
+#       when: never
+#     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
-run-validations:
-  extends:
-    - .run-validations
-  rules:
-    - if: '$NIGHTLY'
+# run-validations:
+#   extends:
+#     - .run-validations
+#   rules:
+#     - if: '$NIGHTLY'
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
-validate-content-conf:
-  tags:
-    - gke
-  stage: unittests-and-validations
-  needs: []
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  script:
-    - section_start "Validate content-test-conf Branch Merged"
-    - |
-      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
-        echo "Skipping, Should not run on master branch."
-      else
-        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
-        if [ "$RESP" != "[]" ]; then
-            echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
-            echo "Merge it in order to merge the current branch into content repo."
-            exit 1
-        fi
-            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
-      fi
-    - section_end "Validate content-tesgt-conf Branch Merged"
+# validate-content-conf:
+#   tags:
+#     - gke
+#   stage: unittests-and-validations
+#   needs: []
+#   extends:
+#     - .default-job-settings
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+#   script:
+#     - section_start "Validate content-test-conf Branch Merged"
+#     - |
+#       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
+#         echo "Skipping, Should not run on master branch."
+#       else
+#         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
+#         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
+#         RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
+#         if [ "$RESP" != "[]" ]; then
+#             echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
+#             echo "Merge it in order to merge the current branch into content repo."
+#             exit 1
+#         fi
+#             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
+#       fi
+#     - section_end "Validate content-tesgt-conf Branch Merged"
 
 create-instances:
   tags:
@@ -146,67 +146,67 @@ create-instances:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
-prepare-testing-bucket-mpv2:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-  cache:
-    policy: pull-push
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    KUBERNETES_CPU_REQUEST: 1000m
-  needs: []
-  stage: create-instances
-  script:
-    - !reference [.download-demisto-conf]
-    - !reference [.create-id-set-mp-v2]
-    - !reference [.create-release-notes-and-common-docs]
+# prepare-testing-bucket-mpv2:
+#   tags:
+#     - gke
+#   extends:
+#     - .default-job-settings
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#     - if: '$NIGHTLY'
+#   cache:
+#     policy: pull-push
+#   variables:
+#     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+#     KUBERNETES_CPU_REQUEST: 1000m
+#   needs: []
+#   stage: create-instances
+#   script:
+#     - !reference [.download-demisto-conf]
+#     - !reference [.create-id-set-mp-v2]
+#     - !reference [.create-release-notes-and-common-docs]
 
-    - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
-    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - section_end "Create Content Artifacts and Update Conf"
+#     - section_start "Create Content Artifacts and Update Conf" --collapsed
+#     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+#     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
+#     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+#     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+#     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Calculate Packs Dependencies" --collapsed
-    - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
-    - section_end "Calculate Packs Dependencies"
+#     - section_start "Calculate Packs Dependencies" --collapsed
+#     - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
+#     - section_end "Calculate Packs Dependencies"
 
-    - section_start "Replace Cortex XSOAR" --collapsed
-    - pushd "$ARTIFACTS_FOLDER"
-    - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
-    - pushd content_packs; zip -r ../content_packs.zip *; popd
-    - pushd all_content; zip -r ../all_content.zip *; popd
-    - pushd content_new; zip -r ../content_new.zip *; popd
-    - pushd content_test; zip -r ../content_test.zip *; popd
-    - rm -rf content_packs all_content content_new content_test
-    - popd
-    - section_end "Replace Cortex XSOAR"
+#     - section_start "Replace Cortex XSOAR" --collapsed
+#     - pushd "$ARTIFACTS_FOLDER"
+#     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+#     - pushd content_packs; zip -r ../content_packs.zip *; popd
+#     - pushd all_content; zip -r ../all_content.zip *; popd
+#     - pushd content_new; zip -r ../content_new.zip *; popd
+#     - pushd content_test; zip -r ../content_test.zip *; popd
+#     - rm -rf content_packs all_content content_new content_test
+#     - popd
+#     - section_end "Replace Cortex XSOAR"
 
-    - section_start "Collect Tests and Content Packs"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests and Content Packs"
+#     - section_start "Collect Tests and Content Packs"
+#     - |
+#       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+#       python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+#     - section_end "Collect Tests and Content Packs"
     
-    - section_start "Collect Tests V2"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests V2"
+#     - section_start "Collect Tests V2"
+#     - |
+#       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+#       python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+#     - section_end "Collect Tests V2"
 
-    - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
-    - section_end "Prepare Content Packs for Testing"
+#     - section_start "Prepare Content Packs for Testing"
+#     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+#     - section_end "Prepare Content Packs for Testing"
 
-    - section_start "Upload Artifacts to GCP" --collapsed
-    - ./Tests/scripts/upload_artifacts.sh
-    - section_end "Upload Artifacts to GCP"
+#     - section_start "Upload Artifacts to GCP" --collapsed
+#     - ./Tests/scripts/upload_artifacts.sh
+#     - section_end "Upload Artifacts to GCP"
 
 .test_content_on_xsoar_server_instances_base:
   tags:
@@ -301,31 +301,31 @@ xsoar_server_master:
     INSTANCE_ROLE: "Server Master"
 
 
-fan-in-nightly:
-  tags:
-    - gke
-  stage: fan-in
-  rules:
-    - if: '$NIGHTLY'
-      when: always
-  script:
-    - echo "fan in"
+# fan-in-nightly:
+#   tags:
+#     - gke
+#   stage: fan-in
+#   rules:
+#     - if: '$NIGHTLY'
+#       when: always
+#   script:
+#     - echo "fan in"
 
 
-slack-notify-nightly-build:
-  extends:
-    - .trigger-slack-notification
-  rules:
-    - if: '$NIGHTLY'
-      when: always
-  variables:
-    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Content Nightly'
-    JOB_NAME: 'fan-in-nightly'
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
+# slack-notify-nightly-build:
+#   extends:
+#     - .trigger-slack-notification
+#   rules:
+#     - if: '$NIGHTLY'
+#       when: always
+#   variables:
+#     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+#     WORKFLOW: 'Content Nightly'
+#     JOB_NAME: 'fan-in-nightly'
+#     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+#     # when triggering pipeline with alternate env variable value passed in the API call
+#     SLACK_CHANNEL: $SLACK_CHANNEL
+#     SLACK_JOB: 'true'
 
 
 .test_content_on_xsiam_server_instances_base:
