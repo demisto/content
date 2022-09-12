@@ -245,7 +245,7 @@ def is_html_response(response):
 def get_html_from_response(response):
     text = response.text
     open_tag = text.lower().find('<html')
-    close_tag = text.find('</html>')
+    close_tag = text.lower().find('</html>')
     return text[open_tag: close_tag + len('</html>')]
 
 
