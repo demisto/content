@@ -12,7 +12,8 @@ import hashlib
 import requests
 
 from datetime import timedelta
-from urllib2 import HTTPError
+from urllib.error import HTTPError
+from typing import Dict, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,19 +22,23 @@ requests.packages.urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey')
+SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
 APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey')
+APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
-FETCH_URL = demisto.params().get('fetchURL')
-FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
-FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
+FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+FETCH_ALL = 'All' in FETCH_PARAMS
+FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email')
-PASSWORD = demisto.params().get('password')
+EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+
 
 LOG("command is {}".format(demisto.command()))
 
@@ -62,6 +67,340 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
         <route/>\n\
     </muse>\n\
 </xmlquery>"
+
+''' API COMMUNICATION FUNCTIONS'''
+
+
+def request_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+                            page: int = None,
+                            page_size: int = None, use_headers: bool = False, is_file: bool = False):
+    """
+
+    Creates paging response for relevant commands.
+
+    """
+    headers = None
+    if page and page_size:
+        limit = page * page_size
+    pagination = {'page_size': limit}
+    payload = {
+        'meta': {
+            'pagination': pagination
+        },
+        'data': data
+    }  # type: Dict[str, Any]
+
+    if use_headers:
+        headers = generate_user_auth_headers(api_endpoint)
+    response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
+
+    next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+    len_of_results = 0
+    results = []
+    while True:
+        if response.get('fail'):
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+        if response_param:
+            response_data = response.get('data')[0].get(response_param)
+        else:
+            response_data = response.get('data')
+        for entry in response_data:
+            # If returning this log will not exceed the specified limit
+            if not limit or len_of_results < limit:
+                len_of_results += 1
+                results.append(entry)
+        # If limit is reached or there are no more pages
+        if not next_page or (limit and len_of_results >= limit):
+            break
+        pagination = {'page_size': page_size,  # type: ignore
+                      'pageToken': next_page}  # type: ignore
+        payload['meta']['pagination'] = pagination
+        response = http_request('POST', api_endpoint, payload, headers=headers)
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+    if page and page_size:
+        return results[(-1 * page_size):], page_size
+
+    return results, len_of_results
+
+
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
+    is_user_auth = True
+    url = BASE_URL + api_endpoint
+    # 2 types of auth, user and non user, mostly user is needed
+    if user_auth:
+        headers = headers or generate_user_auth_headers(api_endpoint)
+
+    else:
+        # This type of auth is only supported for basic commands: login/discover/refresh-token
+        is_user_auth = False
+        auth = base64.b64encode((EMAIL_ADDRESS + ':' + PASSWORD).encode("utf-8")).decode()
+        auth_type = 'Basic-Cloud'
+        auth_header = auth_type + ' ' + auth
+        headers = {
+            'x-mc-app-id': APP_ID,
+            'Content-Type': 'application/json',
+            'Authorization': auth_header
+        }
+
+    LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
+        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    try:
+        res = requests.request(
+            method,
+            url,
+            verify=USE_SSL,
+            params=params,
+            headers=headers,
+            json=payload
+        )
+
+        res.raise_for_status()
+        if is_file:
+            return res
+        return res.json()
+
+    except HTTPError as e:
+        LOG(e)
+        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+            if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
+                raise Exception(
+                    'Credentials provided are expired, could not automatically refresh tokens.'
+                    ' App ID + Email Address '
+                    '+ Password are required.')
+        else:
+            raise
+
+    except Exception as e:
+        LOG(e)
+        raise
+
+
+def search_message_request(args):
+    """
+    Builds payload for the request of search message command.
+    Args:
+        args: arguments given to command.
+
+    Returns: the payload to be sent to the API.
+
+    """
+    search_reason = args.get('search_reason')
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
+    message_id = args.get('message_id')
+    advanced = {
+        'senderIP': args.get('sender_ip'),
+        'to': args.get('to'),
+        'from': args.get('from'),
+        'subject': args.get('subject'),
+        'route': args.get('route')
+    }
+    advanced_is_none = all(value is None for value in advanced.values())
+    payload = {'data': [
+        {
+            'start': from_date,
+            'end': to_date,
+            'searchReason': search_reason
+        }
+    ]}
+    if advanced_is_none and message_id is None:
+        raise Exception('Advanced Track And Trace Options or message ID must be given in order to execute the command.')
+    elif advanced_is_none:
+        payload.get('data')[0].update({'messageId': message_id})  # type: ignore
+    elif message_id is None:
+        payload.get('data')[0].update({'advancedTrackAndTraceOptions': advanced})  # type: ignore
+    else:
+        raise Exception('Only one of message id and advance options can contain value.')
+
+    return http_request(method='POST',
+                        api_endpoint='/api/message-finder/search',
+                        payload=payload)
+
+
+def get_message_info_request(id):
+    """
+
+    Builds payload for the request of get message info command.
+    Args:
+        args: arguments given to command.
+
+    Returns: the payload to be sent to the API.
+
+
+    """
+
+    payload = {
+        'data': [
+            {
+                'id': id
+            }
+        ]
+    }
+    return http_request(method='POST',
+                        api_endpoint='/api/message-finder/get-message-info',
+                        payload=payload)
+
+
+def list_held_messages_request(args):
+    """
+
+        Builds payload for the request of list hold messages command.
+        Args:
+            args: arguments given to command.
+
+        Returns: the payload to be sent to the API.
+
+
+        """
+    admin = argToBoolean(args.get('admin'))
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
+    value = args.get('value', '')
+    field_name = args.get('field_name', '')
+    limit = arg_to_number(args.get('limit')) or 20
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    data = [
+        {
+            'admin': admin,
+            'start': from_date,
+            'end': to_date
+        }
+    ]
+    if field_name or value:
+        data[0].update({'searchBy': {
+            'fieldName': field_name,
+            'value': value
+        }})
+    return request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+                                   data=data,
+                                   limit=limit,
+                                   page=page,
+                                   page_size=page_size)
+
+
+def reject_held_message_request(args):
+    """
+
+        Builds payload for the request of reject hold messages command.
+        Args:
+            args: arguments given to command.
+
+        Returns: the payload to be sent to the API.
+
+
+    """
+    ids = argToList(args.get('ids'))
+    message = args.get('message')
+    reason_type = args.get('reason_type')
+    notify = argToBoolean(args.get('notify'))
+    payload = {'data': [
+        {
+            'message': message,
+            'ids': ids,
+            'reasonType': reason_type,
+            'notify': notify
+        }
+    ]
+    }
+    return http_request('POST',
+                        api_endpoint='/api/gateway/hold-reject',
+                        payload=payload)
+
+
+def release_held_message_request(id):
+    """
+
+      Builds payload for the request of release hold messages command.
+      Args:
+          args: arguments given to command.
+
+      Returns: the payload to be sent to the API.
+
+      """
+    payload = {
+        'data': [
+            {
+                'id': id
+            }
+        ]
+    }
+    return http_request('POST',
+                        api_endpoint='/api/gateway/hold-release',
+                        payload=payload)
+
+
+def search_processing_message_request(args):
+    """
+
+      Builds payload for the request of search processing message command.
+      Args:
+          args: arguments given to command.
+
+      Returns: the payload to be sent to the API.
+
+      """
+    sort_order = args.get('sort_order')
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
+    attachments = argToBoolean(args.get('attachments')) if args.get('attachments') else None
+    value = args.get('value')
+    field_name = args.get('field_name')
+    route = args.get('route')
+    limit = arg_to_number(args.get('limit')) or 20
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    data = [
+        {
+            'sortOrder': sort_order,
+        }
+    ]
+    if to_date:
+        data[0].update({'end': to_date})
+    if from_date:
+        data[0].update({'start': from_date})
+    if value or field_name:
+        data[0].update({'searchBy': {
+            'fieldName': field_name,
+            'value': value
+        }})
+    if attachments or route:
+        data[0].update({'filterBy': [
+            {
+                'attachments': attachments,
+                'route': route
+            }
+        ]})
+    return request_with_pagination(api_endpoint='/api/gateway/find-processing-messages',
+                                   data=data,
+                                   response_param='messages',
+                                   limit=limit,
+                                   page=page,
+                                   page_size=page_size)
+
+
+def list_email_queues_request(args):
+    """
+
+      Builds payload for the request of list email queues command.
+      Args:
+          args: arguments given to command.
+
+      Returns: the payload to be sent to the API.
+
+      """
+
+    from_date = arg_to_datetime(args.get('from_date')).isoformat() if args.get('from_date') else None  # type: ignore
+    to_date = arg_to_datetime(args.get('to_date')).isoformat() if args.get('to_date') else None  # type: ignore
+    payload = {'data': [{
+        'start': from_date,
+        'end': to_date
+    }]}
+
+    return http_request('POST',
+                        api_endpoint='/api/email/get-email-queues',
+                        payload=payload)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -100,58 +439,6 @@ def auto_refresh_token():
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
-    is_user_auth = True
-    url = BASE_URL + api_endpoint
-    # 2 types of auth, user and non user, mostly user is needed
-    if user_auth:
-        headers = headers or generate_user_auth_headers(api_endpoint)
-
-    else:
-        # This type of auth is only supported for basic commands: login/discover/refresh-token
-        is_user_auth = False
-        auth = base64.b64encode(EMAIL_ADDRESS + ':' + PASSWORD)
-        auth_type = 'Basic-Cloud'
-        auth_header = auth_type + ' ' + auth
-        headers = {
-            'x-mc-app-id': APP_ID,
-            'Content-Type': 'application/json',
-            'Authorization': auth_header
-        }
-
-    LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
-        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            params=params,
-            headers=headers,
-            data=payload
-        )
-
-        res.raise_for_status()
-        if is_file:
-            return res
-        return res.json()
-
-    except HTTPError as e:
-        LOG(e)
-        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
-            if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
-                return_error(
-                    'Credentials provided are expired, could not automatically refresh tokens.'
-                    ' App ID + Email Address '
-                    '+ Password are required.')
-        else:
-            raise
-
-    except Exception as e:
-        LOG(e)
-        raise
-
-
 def generate_user_auth_headers(api_endpoint):
     # type: (str) -> dict
     """
@@ -165,15 +452,18 @@ def generate_user_auth_headers(api_endpoint):
     # Generate request header values
     request_id = str(uuid.uuid4())
     hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
+
+    # DataToSign is used in hmac_sha1
+    dataToSign = ':'.join([hdr_date, request_id, api_endpoint, APP_KEY])
+
     # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
-    hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
-                         # type: ignore
-                         digestmod=hashlib.sha1).digest()
+    hmac_sha1 = hmac.new(base64.b64decode(SECRET_KEY), dataToSign.encode(), digestmod=hashlib.sha1).digest()
+
     # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
-    signature = base64.encodestring(hmac_sha1).rstrip()
+    signature = base64.b64encode(hmac_sha1).rstrip()
     # Create request headers
     headers = {
-        'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
+        'Authorization': 'MC ' + ACCESS_KEY + ':' + signature.decode(),
         'x-mc-app-id': APP_ID,
         'x-mc-date': hdr_date,
         'x-mc-req-id': request_id,
@@ -200,7 +490,7 @@ def parse_query_args(args):
         query_xml = query_xml.replace('<date select=\"last_year\"/>', '<date select=\"' + args.get('date') + '\"/>')
 
         if args.get('dateTo') or args.get('dateFrom'):
-            return_error('Cannot use both date and dateFrom/dateTo arguments')
+            raise Exception('Cannot use both date and dateFrom/dateTo arguments')
 
     date_to = ""
     date_from = ""
@@ -233,12 +523,188 @@ def parse_query_args(args):
     return query_xml
 
 
+def build_recipient_info(recipient_info: Dict):
+    """
+    Builds markdown table for recipient info part of the response for get-message-info command
+
+    """
+    message_info = recipient_info.get('messageInfo', {})
+    meta_info = recipient_info.get('recipientMetaInfo', {})
+    message_info.update(meta_info)
+
+    headers = {'fromEnv': 'From (Header)',
+               'remoteIp': 'Remote Ip',
+               'senderIP': 'IP Address',
+               'remoteHost': 'Remote Host',
+               'encryptionInfo': 'Recipient Encryption Info'}
+    return tableToMarkdown('Recipient Info', t=message_info,
+                           headerTransform=lambda header: headers.get(
+                               header) if header in headers.keys() else header.capitalize(), removeNull=True,
+                           headers=['fromHeader', 'subject', 'sent', 'remoteIp', 'remoteHost', 'encryptionInfo'])
+
+
+def build_delivered_message(delivered_messgae: Dict, to: List):
+    """
+    Builds markdown table for delivered message part of the response for get-message-info command
+    Args:
+        to: list of recipients that received the message.
+
+
+
+    """
+    markdown_per_recipient = '### Delivered Message Info\n'
+    for to_mail in to:
+        delivered = delivered_messgae.get(to_mail, {})
+        message_info = delivered.get('messageInfo', {})
+        to_cc_transformer = JsonTransformer(func=lambda data: ', '.join(data))
+        table_json_transformer = {'to': to_cc_transformer,
+                                  'cc': to_cc_transformer
+                                  }
+        markdown_per_recipient += tableToMarkdown(to_mail, t=message_info,
+                                                  headerTransform=lambda header: header.capitalize(),
+                                                  json_transform_mapping=table_json_transformer,
+                                                  removeNull=True,
+                                                  headers=['to', 'cc', 'subject', 'sent'])
+
+    return markdown_per_recipient
+
+
+def build_retention_info(retention_info: Dict):
+    """
+    Builds markdown table for retention info part of the response for get-message-info command
+    """
+    arr_transformer = JsonTransformer(func=lambda arr: ', '.join(arr))
+    table_json_transformer = {'litigationHoldInfo': arr_transformer,
+                              'fbrStamps': arr_transformer,
+                              'smartTags': arr_transformer,
+                              'fbrExpireCheck': arr_transformer,
+                              'audits': arr_transformer
+                              }
+
+    return tableToMarkdown('Retention Info', t=retention_info,
+                           headerTransform=string_to_table_header,
+                           json_transform_mapping=table_json_transformer,
+                           removeNull=True)
+
+
+def build_spam_info(spam_info: Dict):
+    """
+    Builds markdown table for spam info part of the response for get-message-info command
+
+    """
+    spam_processing_detail = spam_info.get('spamProcessingDetail', {})
+    spam_info.update(spam_processing_detail)
+    spam_info.pop('spamProcessingDetail', None)
+
+    headers = {'spamScore': 'Spam Score',
+               'detectionLevel': 'Spam Detection Level',
+               'permittedSender': 'PermittedSender'
+               }
+    return tableToMarkdown('Spam Info', t=spam_info,
+                           headerTransform=lambda header: headers.get(
+                               header) if header in headers.keys() else header.capitalize(),
+                           removeNull=True,
+                           )
+
+
+def transformer_get_value(value):
+    """
+    Returns a transformer function to use in table_to_markdown function to get a value from a dict in a cell.
+    Args:
+        value: the value key to get his value from the dict.
+
+    Returns: transformer function
+
+    """
+
+    def transformer(dict_value):
+        return dict_value.get(value)
+
+    return transformer
+
+
+def build_get_message_info_outputs(outputs: dict):
+    """
+
+    Args:
+        response: response from API
+
+    Returns: outputs dictionary without dynamic keys.
+
+    """
+
+    delivered_message = outputs.get('deliveredMessage', {})
+    result_emails = []
+    for email in delivered_message.keys():
+        info_for_mail = delivered_message.get(email)
+        info_for_mail.update({'mail_address': email})
+        result_emails.append(info_for_mail)
+    outputs.update({'deliveredMessage': result_emails})
+
+
+def build_get_message_info_for_specific_id(id, show_recipient_info, show_delivered_message, show_retention_info,
+                                           show_spam_info):
+    """
+
+    Args:
+        id: message id to search.
+        show_recipient_info: boolean deciding if to show recipient info in the readable output.
+        show_delivered_message: boolean deciding if to show delivered info in the readable output.
+        show_retention_info: boolean deciding if to show terention info in the readable output.
+        show_spam_info: boolean deciding if to show spam info in the readable output.
+
+    Returns:
+        CommandResults object with data for the specific id.
+
+    """
+    total_markdown = ''
+    outputs = {}
+
+    response = get_message_info_request(id)
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    response_data = response.get('data')[0]
+    recipient_info = response_data.get('recipientInfo', {})
+    delivered_message = response_data.get('deliveredMessage', {})
+    retention_info = response_data.get('retentionInfo', {})
+    spam_info = response_data.get('spamInfo', {})
+    to_list = recipient_info.get('messageInfo', {}).get('to', [])
+
+    outputs.update({'status': response_data.get('status', '')})
+    outputs.update({'id': response_data.get('id', '')})
+    total_markdown += tableToMarkdown('Message Information', t=outputs)
+    if show_recipient_info:
+        total_markdown += build_recipient_info(recipient_info)
+        outputs.update({'recipientInfo': recipient_info})
+    if show_delivered_message:
+        total_markdown += build_delivered_message(delivered_message, to_list)
+        outputs.update({'deliveredMessage': delivered_message})
+    if show_retention_info:
+        total_markdown += build_retention_info(retention_info)
+        outputs.update({'retentionInfo': retention_info})
+    if show_spam_info:
+        total_markdown += build_spam_info(spam_info)
+        outputs.update({'spamInfo': spam_info})
+
+    build_get_message_info_outputs(outputs)
+
+    return CommandResults(
+        outputs_prefix='Mimecast.MessageInfo',
+        outputs_key_field='id',
+        readable_output=total_markdown,
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 '''COMMANDS '''
 
 
 def test_module():
     if not ACCESS_KEY:
-        return_error('Cannot test valid connection without the Access Key parameter.')
+        raise Exception('Cannot test valid connection without the Access Key parameter.')
     list_managed_url()
 
 
@@ -247,6 +713,10 @@ def query():
     contents = []
     context = {}
     messages_context = []
+    limit = arg_to_number(demisto.args().get('limit')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('page_size'))
+
     query_xml = ''
 
     if demisto.args().get('queryXml'):
@@ -256,7 +726,18 @@ def query():
     if demisto.args().get('dryRun') == 'true':
         return query_xml
 
-    messages = query_request(query_xml)
+    # API request demands admin boolean, since we don't have any other support but admin we simply pass true.
+    data = [{
+        'admin': True,
+        'query': query_xml
+    }]
+    messages, _ = request_with_pagination(api_endpoint='/api/archive/search',
+                                          data=data,
+                                          response_param='items',
+                                          limit=limit,
+                                          page=page,
+                                          page_size=page_size)
+
     for message in messages:
         contents.append({
             'Subject': message.get('subject'),
@@ -293,27 +774,11 @@ def query():
     return results
 
 
-def query_request(query_xml):
-    api_endpoint = '/api/archive/search'
-    # API request demands admin boolean, since we don't have any other support but admin we simply pass true.
-    data = [{
-        'admin': True,
-        'query': query_xml
-    }]
-    payload = {
-        'data': data
-    }
-    response = http_request('POST', api_endpoint, json.dumps(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('items')
-
-
 def url_decode():
     headers = []  # type: List[str]
     contents = {}
     context = {}
-    protected_url = demisto.args().get('url').encode('utf-8')
+    protected_url = demisto.args().get('url')
     decoded_url = url_decode_request(protected_url)
     contents['Decoded URL'] = decoded_url
     context[outputPaths['url']] = {
@@ -345,9 +810,11 @@ def url_decode_request(url):
             }
         ]
     }
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     if not response.get('data')[0].get('url'):
-        return_error('No URL has been returned from the service')
+        raise Exception('No URL has been returned from the service')
     return response.get('data')[0].get('url')
 
 
@@ -358,7 +825,6 @@ def get_policy():
     title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
     policy_id = demisto.args().get('policyID')
     if policy_id:
-        policy_id = policy_id.encode('utf-8')
         title = 'Mimecast Get Policy'
 
     policies_list = get_policy_request(policy_id)
@@ -430,9 +896,9 @@ def get_policy_request(policy_id=None):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')
 
 
@@ -446,13 +912,13 @@ def get_arguments_for_policy_command(args):
           tuple. policy arguments, and option to choose from the policy configuration.
      """
 
-    description = args.get('description', '').encode('utf-8')
-    from_part = args.get('fromPart', '').encode('utf-8')
-    from_type = args.get('fromType', '').encode('utf-8')
-    from_value = args.get('fromValue', '').encode('utf-8')
-    to_type = args.get('toType', '').encode('utf-8')
-    to_value = args.get('toValue', '').encode('utf-8')
-    option = str(args.get('option', '').encode('utf-8'))
+    description = args.get('description', '')
+    from_part = args.get('fromPart', '')
+    from_type = args.get('fromType', '')
+    from_value = args.get('fromValue', '')
+    to_type = args.get('toType', '')
+    to_value = args.get('toValue', '')
+    option = str(args.get('option', ''))
     policy_obj = {
         'description': description,
         'fromPart': from_part,
@@ -567,9 +1033,9 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
         policy_details = get_policy_request(policy_id)[0]
         for arg in empty_args_list:
             if arg == "option":
-                option = policy_details["option"].encode("utf-8")
+                option = policy_details["option"]
             else:
-                policy_obj[arg] = policy_details["policy"][arg].encode("utf-8")
+                policy_obj[arg] = policy_details["policy"][arg]
 
     return policy_obj, option, policy_id
 
@@ -582,9 +1048,9 @@ def update_policy():
     context = {}
     policy_args = demisto.args()
     policy_obj, option = get_arguments_for_policy_command(policy_args)
-    policy_id = str(policy_args.get('policy_id', '').encode('utf-8'))
+    policy_id = str(policy_args.get('policy_id', ''))
     if not policy_id:
-        return_error("You need to enter policy ID")
+        raise Exception("You need to enter policy ID")
     policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
     response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
     policy = response.get('policy')
@@ -658,16 +1124,16 @@ def create_or_update_policy_request(policy, option, policy_id=None):
     # write a policy ID on update policy command
     if policy_id:
         payload['data'][0]['id'] = policy_id
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
 def delete_policy():
     contents = []  # type: List[Any]
     context = {}
-    policy_id = demisto.args().get('policyID').encode('utf-8')
+    policy_id = demisto.args().get('policyID')
 
     delete_policy_request(policy_id)
 
@@ -698,20 +1164,20 @@ def delete_policy_request(policy_id=None):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     if response.get('data')[0].get('id') != policy_id:
-        return_error('Policy was not deleted.')
+        raise Exception('Policy was not deleted.')
     return response.get('data')[0]
 
 
 def manage_sender():
     headers = []  # type: List[str]
     context = {}
-    sender = demisto.args().get('sender').encode('utf-8')
-    recipient = demisto.args().get('recipient').encode('utf-8')
-    action = demisto.args().get('action').encode('utf-8')
+    sender = demisto.args().get('sender')
+    recipient = demisto.args().get('recipient')
+    action = demisto.args().get('action')
     title_action = 'permitted' if action == 'permit' else 'blocked'
     title = 'Mimecast messages from {} to {} will now be {}!'.format(sender, recipient, title_action)
 
@@ -758,9 +1224,9 @@ def manage_sender_request(req_obj):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -771,8 +1237,6 @@ def list_managed_url():
     managed_urls_context = []
     full_url_response = ''
     url = demisto.args().get('url')
-    if url:
-        url = url.encode('utf-8')
 
     managed_urls = list_managed_url_request()
     for managed_url in managed_urls:
@@ -823,9 +1287,9 @@ def list_managed_url_request():
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')
 
 
@@ -833,15 +1297,13 @@ def create_managed_url():
     context = {}
     contents = {}  # type: Dict[Any, Any]
     managed_urls_context = []
-    url = demisto.args().get('url').encode('utf-8')
-    action = demisto.args().get('action').encode('utf-8')
-    match_type = demisto.args().get('matchType').encode('utf-8')
-    disable_rewrite = demisto.args().get('disableRewrite').encode('utf-8')
-    disable_user_awareness = demisto.args().get('disableUserAwareness').encode('utf-8')
-    disable_log_click = demisto.args().get('disableLogClick').encode('utf-8')
+    url = demisto.args().get('url')
+    action = demisto.args().get('action')
+    match_type = demisto.args().get('matchType')
+    disable_rewrite = demisto.args().get('disableRewrite')
+    disable_user_awareness = demisto.args().get('disableUserAwareness')
+    disable_log_click = demisto.args().get('disableLogClick')
     comment = demisto.args().get('comment')
-    if comment:
-        comment = comment.encode('utf-8')
 
     url_req_obj = {
         'comment': comment,
@@ -887,9 +1349,9 @@ def create_managed_url_request(url_obj):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -900,23 +1362,30 @@ def list_messages():
     messages_context = []
     search_params = {}
 
+    limit = arg_to_number(demisto.args().get('limit')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('page_size'))
+
     # can't send null values for keys, so if optional value not sent by user, do not add to request.
-    mailbox = demisto.args().get('mailbox', '').encode('utf-8')
+    mailbox = demisto.args().get('mailbox', '')
     if mailbox:
         search_params['mailbox'] = mailbox
-    view = demisto.args().get('view', '').encode('utf-8')
+    view = demisto.args().get('view', '')
     if view:
         search_params['view'] = view
-    end_time = demisto.args().get('endTime', '').encode('utf-8')
+    end_time = demisto.args().get('endTime', '')
     if end_time:
         search_params['end'] = end_time
-    start_time = demisto.args().get('startTime', '').encode('utf-8')
+    start_time = demisto.args().get('startTime', '')
     if start_time:
         search_params['start'] = start_time
     subject = demisto.args().get('subject')
 
-    messages_list = list_messages_request(search_params)
-
+    messages_list, _ = request_with_pagination(api_endpoint='/api/archive/get-message-list',
+                                               data=[search_params],
+                                               limit=limit,
+                                               page=page,
+                                               page_size=page_size)
     for message in messages_list:
         if subject == message.get('subject') or not subject:
             contents.append({
@@ -950,35 +1419,25 @@ def list_messages():
     return results
 
 
-def list_messages_request(search_params):
-    # Setup required variables
-    api_endpoint = '/api/archive/get-message-list'
-    data = []
-    data.append(search_params)
-    payload = {
-        'meta': {
-            'pagination': {
-            }
-        },
-        'data': data
-    }
-
-    response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')
-
-
 def get_url_logs():
+    """
+    Getting logs using pagination as specified here
+    https://www.mimecast.com/tech-connect/documentation/endpoint-reference/logs-and-statistics/get-ttp-url-logs/
+
+    Returns: TTP URl logs command results
+
+    """
     headers = []  # type: List[Any]
     contents = []
     context = {}
     url_logs_context = []
     search_params = {}
-    from_date = demisto.args().get('fromDate', '').encode('utf-8')
-    to_date = demisto.args().get('toDate', '').encode('utf-8')
-    scan_result = demisto.args().get('resultType', '').encode('utf-8')
-    limit = int(demisto.args().get('limit', 100))
+    from_date = demisto.args().get('fromDate', '')
+    to_date = demisto.args().get('toDate', '')
+    scan_result = demisto.args().get('resultType', '')
+    limit = arg_to_number(demisto.args().get('limit')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('page_size'))
 
     if from_date:
         search_params['from'] = from_date
@@ -986,8 +1445,12 @@ def get_url_logs():
         search_params['to'] = to_date
     if scan_result:
         search_params['scanResult'] = scan_result
-
-    url_logs = get_url_logs_request(search_params, limit=limit)
+    url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+                                          data=[search_params],
+                                          response_param='clickLogs',
+                                          limit=limit,
+                                          page=page,
+                                          page_size=page_size)
     for url_log in url_logs:
         contents.append({
             'Action': url_log.get('action'),
@@ -1028,61 +1491,18 @@ def get_url_logs():
     return results
 
 
-def get_url_logs_request(search_params, limit=None):
-    """
-    Getting logs using pagination as specified here
-    https://www.mimecast.com/tech-connect/documentation/endpoint-reference/logs-and-statistics/get-ttp-url-logs/
-    Args:
-        search_params: The search parameter
-        limit: The maximum number of logs to return
-
-    Returns:
-        A generator of logs
-    """
-    # Setup required variables
-    page_size = 100
-    api_endpoint = '/api/ttp/url/get-logs'
-    pagination = {'page_size': page_size}
-    payload = {
-        'meta': {
-            'pagination': pagination
-        },
-        'data': [search_params]
-    }  # type: Dict[str, Any]
-    headers = generate_user_auth_headers(api_endpoint)
-    response = http_request('POST', api_endpoint, str(payload), headers=headers)
-    next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-    logs_counter = 0
-    while True:
-        if response.get('fail'):
-            return_error(json.dumps(response.get('fail')[0].get('errors')))
-        logs = response.get('data')[0].get('clickLogs')
-        for log in logs:
-            # If returning this log will not exceed the specified limit
-            if not limit or logs_counter < limit:
-                logs_counter += 1
-                yield log
-        # If limit is reached or there are no more pages
-        if not next_page or (limit and logs_counter >= limit):
-            break
-        pagination = {'page_size': page_size,
-                      'pageToken': next_page}  # type: ignore
-        payload['meta']['pagination'] = pagination
-        response = http_request('POST', api_endpoint, str(payload), headers=headers)
-        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-
-
 def get_attachment_logs():
     headers = []  # type: List[Any]
     contents = []
     context = {}
     attachment_logs_context = []
     search_params = {}
-    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
-    from_date = demisto.args().get('fromDate', '').encode('utf-8')
-    to_date = demisto.args().get('toDate', '').encode('utf-8')
-    result = demisto.args().get('resultType', '').encode('utf-8')
-    limit = int(demisto.args().get('limit', 100))
+    from_date = demisto.args().get('fromDate', '')
+    to_date = demisto.args().get('toDate', '')
+    result = demisto.args().get('resultType', '')
+    limit = arg_to_number(demisto.args().get('limit')) or arg_to_number(demisto.args().get('resultsNumber')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('page_size'))
 
     if from_date:
         search_params['from'] = from_date
@@ -1091,9 +1511,13 @@ def get_attachment_logs():
     if result:
         search_params['result'] = result
 
-    attachment_logs = get_attachment_logs_request(search_params, result_number)
-    if limit:
-        attachment_logs = attachment_logs[:limit]
+    attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+                                                 data=[search_params],
+                                                 response_param='attachmentLogs',
+                                                 limit=limit,
+                                                 page=page,
+                                                 page_size=page_size)
+
     for attachment_log in attachment_logs:
         contents.append({
             'Result': attachment_log.get('result'),
@@ -1132,40 +1556,22 @@ def get_attachment_logs():
     return results
 
 
-def get_attachment_logs_request(search_params, result_number=None):
-    # Setup required variables
-    api_endpoint = '/api/ttp/attachment/get-logs'
-    pagination = {}  # type: Dict[Any, Any]
-    if result_number:
-        pagination = {'page_size': result_number}
-    payload = {
-        'meta': {
-            'pagination': pagination
-        },
-        'data': [search_params]
-    }
-
-    response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('attachmentLogs')
-
-
 def get_impersonation_logs():
     headers = []  # type: List[Any]
     contents = []
     context = {}
     impersonation_logs_context = []
     search_params = {}
-    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
-    from_date = demisto.args().get('fromDate', '').encode('utf-8')
-    to_date = demisto.args().get('toDate', '').encode('utf-8')
-    tagged_malicious = demisto.args().get('taggedMalicious', '').encode('utf-8')
-    search_field = demisto.args().get('searchField', '').encode('utf-8')
-    query = demisto.args().get('query', '').encode('utf-8')
-    identifiers = argToList(demisto.args().get('identifiers', '').encode('utf-8'))
-    actions = argToList(demisto.args().get('actions', '').encode('utf-8'))
-    limit = int(demisto.args().get('limit', 100))
+    from_date = demisto.args().get('fromDate', '')
+    to_date = demisto.args().get('toDate', '')
+    tagged_malicious = demisto.args().get('taggedMalicious', '')
+    search_field = demisto.args().get('searchField', '')
+    query = demisto.args().get('query', '')
+    identifiers = argToList(demisto.args().get('identifiers', ''))
+    actions = argToList(demisto.args().get('actions', ''))
+    limit = arg_to_number(demisto.args().get('limit')) or arg_to_number(demisto.args().get('resultsNumber')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('pageSize'))
 
     if from_date:
         search_params['from'] = from_date
@@ -1182,9 +1588,13 @@ def get_impersonation_logs():
     if actions:
         search_params['actions'] = actions
 
-    impersonation_logs, result_count = get_impersonation_logs_request(search_params, result_number)
-    if limit:
-        impersonation_logs = impersonation_logs[:limit]
+    impersonation_logs, result_count = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+                                                               data=[search_params],
+                                                               response_param='impersonationLogs',
+                                                               limit=limit,
+                                                               page=page,
+                                                               page_size=page_size)
+
     for impersonation_log in impersonation_logs:
         contents.append({
             'Result Count': result_count,
@@ -1231,25 +1641,6 @@ def get_impersonation_logs():
     return results
 
 
-def get_impersonation_logs_request(search_params, result_number=None):
-    # Setup required variables
-    api_endpoint = '/api/ttp/impersonation/get-logs'
-    pagination = {}  # type: Dict[Any, Any]
-    if result_number:
-        pagination = {'page_size': result_number}
-    payload = {
-        'meta': {
-            'pagination': pagination
-        },
-        'data': [search_params]
-    }
-
-    response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('impersonationLogs'), response.get('data')[0].get('resultCount')
-
-
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -1269,7 +1660,9 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'scanResult': 'malicious'
         }
-        url_logs = get_url_logs_request(search_params)
+        url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
+                                              data=[search_params],
+                                              response_param='clickLogs')
         for url_log in url_logs:
             incident = url_to_incident(url_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1286,7 +1679,9 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'result': 'malicious'
         }
-        attachment_logs = get_attachment_logs_request(search_params)
+        attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
+                                                     data=[search_params],
+                                                     response_param='attachmentLogs')
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1304,9 +1699,29 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'taggedMalicious': True
         }
-        impersonation_logs, _ = get_impersonation_logs_request(search_params)
+        impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
+                                                        data=[search_params],
+                                                        response_param='impersonationLogs')
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
+            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+
+            # update last run
+            if temp_date > last_fetch:
+                last_fetch = temp_date + timedelta(seconds=1)
+
+            # avoid duplication due to weak time query
+            if temp_date > current_fetch:
+                incidents.append(incident)
+    if FETCH_HELD_MESSAGES:
+        search_params = {
+            'start': last_fetch_date_time,
+            'admin': True
+        }
+        held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
+                                                   data=[search_params])
+        for held_message in held_messages:
+            incident = held_to_incident(held_message)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
@@ -1342,6 +1757,16 @@ def impersonation_to_incident(impersonation_log):
     incident['name'] = 'Mimecast malicious impersonation: ' + impersonation_log.get('subject')
     incident['occurred'] = impersonation_log.get('eventTime').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(impersonation_log)
+    incident['dbotMirrorId'] = impersonation_log.get('id')
+    return incident
+
+
+def held_to_incident(held_message):
+    incident = {}
+    incident['name'] = f'Mimecast held message: {held_message.get("subject")}'
+    incident['occurred'] = held_message.get('dateReceived').replace('+0000', 'Z')
+    incident['rawJSON'] = json.dumps(held_message)
+    incident['dbotMirrorId'] = held_message.get('id')
     return incident
 
 
@@ -1381,8 +1806,8 @@ def discover():
 
 def discover_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to discover account\'s auth types, account\'s email is required.')
-    email = EMAIL_ADDRESS.encode('utf-8')
+        raise Exception('In order to discover account\'s auth types, account\'s email is required.')
+    email = EMAIL_ADDRESS
     # Setup required variables
     api_endpoint = '/api/login/discover-authentication'
     payload = {
@@ -1390,9 +1815,9 @@ def discover_request():
             'emailAddress': email
         }]
     }
-    response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+    response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1412,11 +1837,11 @@ def refresh_token():
 
 def refresh_token_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to refresh a token validty duration, account\'s email is required.')
+        raise Exception('In order to refresh a token validty duration, account\'s email is required.')
     if not ACCESS_KEY:
-        return_error('In order to refresh a token validty duration, account\'s access key is required.')
-    email = EMAIL_ADDRESS.encode('utf-8')
-    access_key = ACCESS_KEY.encode('utf-8')
+        raise Exception('In order to refresh a token validty duration, account\'s access key is required.')
+    email = EMAIL_ADDRESS
+    access_key = ACCESS_KEY
     # Setup required variables
     api_endpoint = '/api/login/login'
     payload = {
@@ -1425,9 +1850,9 @@ def refresh_token_request():
             'accessKey': access_key
         }]
     }
-    response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+    response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1456,8 +1881,8 @@ def login():
 
 def login_request():
     if not EMAIL_ADDRESS:
-        return_error('In order to refresh a token validty duration, account\'s email is required.')
-    email = EMAIL_ADDRESS.encode('utf-8')
+        raise Exception('In order to refresh a token validty duration, account\'s email is required.')
+    email = EMAIL_ADDRESS
     # Setup required variables
     api_endpoint = '/api/login/login'
     payload = {
@@ -1465,9 +1890,9 @@ def login_request():
             'userName': email
         }]
     }
-    response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+    response = http_request('POST', api_endpoint, payload, {}, user_auth=False)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
@@ -1476,9 +1901,9 @@ def get_message():
     contents = {}  # type: Dict[Any, Any]
     metadata_context = {}  # type: Dict[Any, Any]
     results = []
-    message_id = demisto.args().get('messageID').encode('utf-8')
-    message_context = demisto.args().get('context').encode('utf-8')
-    message_type = demisto.args().get('type').encode('utf-8')
+    message_id = demisto.args().get('messageID')
+    message_context = demisto.args().get('context')
+    message_type = demisto.args().get('type')
     message_part = demisto.args().get('part')
 
     if message_part == 'all' or message_part == 'metadata':
@@ -1515,9 +1940,9 @@ def get_message_body_content_request(message_id, message_context, message_type):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload), is_file=True)
+    response = http_request('POST', api_endpoint, payload, is_file=True)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response.content
 
 
@@ -1553,7 +1978,7 @@ def get_message_metadata(message_id):
     headers_context = []
     for header in response_headers:
         values = header.get('values')
-        values = [value.encode('utf-8') for value in values]
+        values = [value for value in values]
         headers_context.append({
             'Name': header.get('name'),
             'Values': values
@@ -1623,14 +2048,14 @@ def get_message_metadata_request(message_id):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
 def download_attachment():
-    attachment_id = demisto.args().get('attachmentID').encode('utf-8')
+    attachment_id = demisto.args().get('attachmentID')
     attachment_file = download_attachment_request(attachment_id)
     return fileResult(attachment_id, attachment_file)
 
@@ -1646,11 +2071,11 @@ def download_attachment_request(attachment_id):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint, str(payload), is_file=True)
+    response = http_request('POST', api_endpoint, payload, is_file=True)
     try:
         json_response = response.json()
         if json_response.get('fail'):
-            return_error(json_response.get('fail', [{}])[0].get('errors'))
+            raise Exception(json_response.get('fail', [{}])[0].get('errors'))
     except ValueError:
         pass
     return response.content
@@ -1667,8 +2092,8 @@ def find_groups():
 
 def create_find_groups_request():
     api_endpoint = '/api/directory/find-groups'
-    query_string = demisto.args().get('query_string', '').encode('utf-8')
-    query_source = demisto.args().get('query_source', '').encode('utf-8')
+    query_string = demisto.args().get('query_string', '')
+    query_source = demisto.args().get('query_source', '')
     limit = demisto.args().get('limit')
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
@@ -1689,9 +2114,9 @@ def create_find_groups_request():
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -1770,7 +2195,7 @@ def get_group_members():
 
 def create_get_group_members_request(group_id=-1, limit=100):
     api_endpoint = '/api/directory/get-group-members'
-    group_id = demisto.args().get('group_id', group_id).encode('utf-8')
+    group_id = demisto.args().get('group_id', group_id)
     limit = demisto.args().get('limit', limit)
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
@@ -1788,9 +2213,9 @@ def create_get_group_members_request(group_id=-1, limit=100):
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -1895,9 +2320,9 @@ def create_add_remove_group_member_request(api_endpoint):
     Returns:
         response from API
     """
-    group_id = demisto.args().get('group_id', '').encode('utf-8')
-    email = demisto.args().get('email_address', '').encode('utf-8')
-    domain = demisto.args().get('domain_address', '').encode('utf-8')
+    group_id = demisto.args().get('group_id', '')
+    email = demisto.args().get('email_address', '')
+    domain = demisto.args().get('domain_address', '')
 
     data = {
         'id': group_id,
@@ -1913,9 +2338,9 @@ def create_add_remove_group_member_request(api_endpoint):
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -1994,23 +2419,23 @@ def create_group():
 
 def create_group_request():
     api_endpoint = '/api/directory/create-group'
-    group_name = demisto.args().get('group_name', '').encode('utf-8')
-    parent_id = demisto.args().get('parent_id', '-1').encode('utf-8')
+    group_name = demisto.args().get('group_name', '')
+    parent_id = demisto.args().get('parent_id', '-1')
 
     data = {
         'description': group_name,
     }
 
-    if parent_id != '-1'.encode('utf-8'):
+    if parent_id != '-1':
         data['parentId'] = parent_id
 
     payload = {
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2053,9 +2478,9 @@ def update_group():
 
 def create_update_group_request():
     api_endpoint = '/api/directory/update-group'
-    group_name = demisto.args().get('group_name', '').encode('utf-8')
-    group_id = demisto.args().get('group_id', '').encode('utf-8')
-    parent_id = demisto.args().get('parent_id', '').encode('utf-8')
+    group_name = demisto.args().get('group_name', '')
+    group_id = demisto.args().get('group_id', '')
+    parent_id = demisto.args().get('parent_id', '')
 
     data = {
         'id': group_id
@@ -2071,9 +2496,9 @@ def create_update_group_request():
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2104,11 +2529,11 @@ def create_mimecast_incident():
 
 def create_mimecast_incident_request():
     api_endpoint = '/api/ttp/remediation/create'
-    reason = demisto.args().get('reason', '').encode('utf-8')
-    start_date = demisto.args().get('start_date', '').encode('utf-8')
-    end_date = demisto.args().get('end_date', '').encode('utf-8')
-    search_by = demisto.args().get('search_by', 'hash').encode('utf-8')
-    hash_or_message_id = demisto.args().get('hash_message_id', '').encode('utf-8')
+    reason = demisto.args().get('reason', '')
+    start_date = demisto.args().get('start_date', '')
+    end_date = demisto.args().get('end_date', '')
+    search_by = demisto.args().get('search_by', 'hash')
+    hash_or_message_id = demisto.args().get('hash_message_id', '')
 
     if search_by == 'hash':
         get_hash_type(hash_or_message_id)
@@ -2134,9 +2559,9 @@ def create_mimecast_incident_request():
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2151,7 +2576,7 @@ def get_mimecast_incident():
 
 def get_mimecast_incident_request():
     api_endpoint = '/api/ttp/remediation/get-incident'
-    incident_id = demisto.args().get('incident_id', '').encode('utf-8')
+    incident_id = demisto.args().get('incident_id', '')
 
     data = {
         'id': incident_id
@@ -2161,9 +2586,9 @@ def get_mimecast_incident_request():
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2256,7 +2681,7 @@ def search_file_hash():
 
 def create_search_file_hash_request():
     api_endpoint = '/api/ttp/remediation/search-hash'
-    hashes_to_search = argToList(demisto.args().get('hashes_to_search').encode('utf-8'))
+    hashes_to_search = argToList(demisto.args().get('hashes_to_search'))
 
     data = {
         'hashes': hashes_to_search
@@ -2266,9 +2691,9 @@ def create_search_file_hash_request():
         'data': [data]
     }
 
-    response = http_request('POST', api_endpoint, str(payload))
+    response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response
 
 
@@ -2308,14 +2733,264 @@ def search_file_hash_api_response_to_context(api_response):
     return None
 
 
+def search_message_command(args):
+    """
+    Getting message info for specific messages id.
+    Args:
+        args: input arguments for the command.
+
+    """
+    response = search_message_request(args)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    tracked_emails = response.get('data')[0].get('trackedEmails')
+
+    to_transformer = JsonTransformer(func=lambda to_data: ', '.join([to.get('emailAddress', '') for to in to_data]))
+    from_env_transformer = JsonTransformer(func=lambda env: env.get('emailAddress', ''))
+    from_hdr_transformer = JsonTransformer(func=lambda hdr: hdr.get('displayableName', ''))
+    table_json_transformer = {'to': to_transformer,
+                              'fromEnv': from_env_transformer,
+                              'fromHdr': from_hdr_transformer
+                              }
+    headers = {'fromEnv': 'From (Envelope)',
+               'fromHdr': 'From (Header)',
+               'received': 'Date/Time',
+               'senderIP': 'IP Address',
+               'spamScore': 'Spam Score',
+               'detectionLevel': 'Spam Detection'}
+    readable_output = tableToMarkdown('Tracked Emails', t=tracked_emails,
+                                      headerTransform=lambda header: headers.get(
+                                          header) if header in headers.keys() else header.capitalize(),
+                                      removeNull=True, json_transform_mapping=table_json_transformer)
+
+    return CommandResults(
+        outputs_prefix='Mimecast.SearchMessage',
+        outputs_key_field='id',
+        readable_output=readable_output,
+        outputs=tracked_emails,
+        raw_response=response
+    )
+
+
+def held_message_summary_command():
+    """
+    Getting counts of currently held messages for each hold reason.
+    Args:
+        args: input arguments for the command.
+
+    """
+    response = http_request('POST', api_endpoint='/api/gateway/get-hold-summary-list', payload={'data': []})
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    summary_list = response.get('data')
+
+    headers = {'policyInfo': 'Held Reason',
+               'numberOfItems': 'Number Of Items'
+               }
+    readable_output = tableToMarkdown('Message Summary', t=summary_list,
+                                      headerTransform=lambda header: headers.get(header),
+                                      removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='Mimecast.HeldMessageSummary',
+        outputs_key_field='policyInfo',
+        readable_output=readable_output,
+        outputs=summary_list,
+        raw_response=response
+    )
+
+
+def get_message_info_command(args):
+    """
+    Getting message info for specific messages ids.
+    Args:
+        args: input arguments for the command.
+
+    """
+    show_recipient_info = argToBoolean(args.get('show_recipient_info', True))
+    show_delivered_message = argToBoolean(args.get('show_delivered_message', False))
+    show_retention_info = argToBoolean(args.get('show_retention_info', True))
+    show_spam_info = argToBoolean(args.get('show_spam_info', True))
+    ids = argToList(args.get('ids', ''))
+    results = []
+
+    for id in ids:
+        results.append(
+            build_get_message_info_for_specific_id(id, show_recipient_info, show_delivered_message, show_retention_info,
+                                                   show_spam_info))
+
+    return results
+
+
+def list_held_messages_command(args):
+    """
+        Getting hold messages list.
+        Args:
+            args: input arguments for the command.
+
+    """
+    response, _ = list_held_messages_request(args)
+    from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
+    table_json_transformer = {'to': from_transformer,
+                              'from': from_transformer,
+                              'fromHeader': from_transformer
+                              }
+    headers = {'from': 'From (Envelope)',
+               'fromHeader': 'From (Header)',
+               'policyInfo': 'Held Reason',
+               'dateReceived': 'Held Since',
+               'hasAttachments': 'Has Attachments',
+               'reasonCode': 'Reason Code',
+               'reasonId': 'reason Id'
+               }
+    readable_output = tableToMarkdown('Held Messages', t=response,
+                                      headerTransform=lambda header: headers.get(
+                                          header) if header in headers.keys() else header.capitalize(),
+                                      removeNull=True, json_transform_mapping=table_json_transformer,
+                                      headers=['id', 'dateReceived', 'from', 'fromHeader', 'hasAttachments',
+                                               'policyInfo', 'reason', 'reasonCode', 'reasonId',
+                                               'route', 'size', 'subject', 'to'],
+                                      metadata=f'Showing page number {args.get("page", "1")}')
+
+    return CommandResults(
+        outputs_prefix='Mimecast.HeldMessage',
+        outputs_key_field='id',
+        readable_output=readable_output,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def reject_held_message_command(args):
+    """
+
+    Rejecting hold messages.
+    Args:
+        args: input arguments for the command.
+
+    """
+    response = reject_held_message_request(args)
+    readable_output = ''
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    for message in response.get('data', []):
+        if not message.get('reject', False):
+            raise Exception(f'Held message with id {message.get("id")} rejection failed.')
+        else:
+            readable_output += f'Held message with id {message.get("id")} was rejected successfully.\n'
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def release_held_message_command(args):
+    """
+
+        Rejecting hold messages.
+        Args:
+            args: input arguments for the command.
+
+        """
+    id = args.get('id')
+    response = release_held_message_request(id)
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    if not response.get('data', [])[0].get('release', False):
+        raise Exception('Message release has failed.')
+    else:
+        readable_output = f'Held message with id {id} was released successfully'
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def search_processing_message_command(args):
+    """
+
+    Searching for message being processed.
+    Args:
+        args: input arguments for the command.
+
+    """
+    response, _ = search_processing_message_request(args)
+    from_transformer = JsonTransformer(func=transformer_get_value('emailAddress'))
+
+    table_json_transformer = {'to': from_transformer,
+                              'fromHeader': from_transformer,
+                              'fromEnv': from_transformer
+                              }
+    headers = {'fromEnv': 'From (Envelope)',
+               'fromHeader': 'From (Header)',
+               'routing': 'Route',
+               'created': 'Date/Time',
+               'remoteIp': 'IP Address',
+               'nextAttempt': 'Next Attempt'
+               }
+    readable_output = tableToMarkdown('Processing Messages', t=response,
+                                      headerTransform=lambda header: headers.get(
+                                          header) if header in headers.keys() else header.capitalize(),
+                                      removeNull=True, json_transform_mapping=table_json_transformer)
+
+    return CommandResults(
+        outputs_prefix='Mimecast.ProcessingMessage',
+        readable_output=readable_output,
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def list_email_queues_command(args):
+    """
+
+    Listing email queue (Inbound and Outbound).
+    Args:
+        args: input arguments for the command.
+
+    """
+    response = list_email_queues_request(args)
+    response_data = response.get('data')[0]
+    inbound_data = response_data.get('inboundEmailQueue')
+    outbound_data = response_data.get('outboundEmailQueue')
+
+    headers = {
+        'date': 'Email Queue Date',
+        'count': 'Email Queue Count'
+    }
+
+    total_markdown = tableToMarkdown('Inbound Email Queue', t=inbound_data,
+                                     headerTransform=lambda header: f'Inbound {headers.get(header)}'
+                                     if header in headers.keys() else header.capitalize(),
+                                     removeNull=True)
+    total_markdown += tableToMarkdown('Outbound Email Queue', t=outbound_data,
+                                      headerTransform=lambda header: f'Outbound {headers.get(header)}'
+                                      if header in headers.keys() else header.capitalize(),
+                                      removeNull=True)
+    return CommandResults(
+        outputs_prefix='Mimecast.EmailQueue',
+        readable_output=total_markdown,
+        outputs=response.get('data'),
+        raw_response=response
+    )
+
+
 def main():
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
     try:
         handle_proxy()
         determine_ssl_usage()
         if ACCESS_KEY:
             auto_refresh_token()
+        args = demisto.args()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
@@ -2378,11 +3053,25 @@ def main():
             get_mimecast_incident()
         elif demisto.command() == 'mimecast-search-file-hash':
             search_file_hash()
+        elif demisto.command() == 'mimecast-search-message':
+            return_results(search_message_command(args))
+        elif demisto.command() == 'mimecast-held-message-summary':
+            return_results(held_message_summary_command())
+        elif demisto.command() == 'mimecast-get-message-info':
+            return_results(get_message_info_command(args))
+        elif demisto.command() == 'mimecast-list-held-message':
+            return_results(list_held_messages_command(args))
+        elif demisto.command() == 'mimecast-reject-held-message':
+            return_results(reject_held_message_command(args))
+        elif demisto.command() == 'mimecast-release-held-message':
+            return_results(release_held_message_command(args))
+        elif demisto.command() == 'mimecast-search-processing-message':
+            return_results(search_processing_message_command(args))
+        elif demisto.command() == 'mimecast-list-email-queues':
+            return_results(list_email_queues_command(args))
 
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
+        return_error(e)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
