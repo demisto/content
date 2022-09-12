@@ -1253,7 +1253,7 @@ def panorama_get_address_command(args: dict):
 
 @logger
 def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
-                            description: str = None, tags: list = None):
+                            description: str = None, tags: list = None, ip_wildcard: str = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
@@ -1261,6 +1261,7 @@ def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str
               'element': (add_argument(fqdn, 'fqdn', False)
                           + add_argument(ip_netmask, 'ip-netmask', False)
                           + add_argument(ip_range, 'ip-range', False)
+                          + add_argument(ip_wildcard, 'ip-wildcard', False)
                           + add_argument(description, 'description', False)
                           + add_argument_list(tags, 'tag', True))
               }
@@ -1283,14 +1284,14 @@ def panorama_create_address_command(args: dict):
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
     ip_range = args.get('ip_range')
+    ip_wildcard = args.get('ip_wildcard')
 
-    if not fqdn and not ip_netmask and not ip_range:
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+    if not ((fqdn is not None) ^ (ip_netmask is not None) ^ (ip_range is not None) ^ (ip_wildcard is not None)):
+        raise DemistoException(
+            f'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
+        )
 
-    if (fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range):
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
-
-    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags)
+    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags, ip_wildcard)
 
     address_output = {'Name': address_name}
     if DEVICE_GROUP:

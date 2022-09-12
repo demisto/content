@@ -3774,6 +3774,8 @@ script:
       name: ip_netmask
     - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
       name: ip_range
+    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255
+      name: ip_wildcard
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag for the new address.
