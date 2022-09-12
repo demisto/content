@@ -307,7 +307,7 @@ def http_request(method, url, data=None, headers={'Accept': 'application/json'},
 
 
 def login():
-    url = '{}/auth'.format(BASE_PATH)
+    url = f'{BASE_PATH}/auth'
     # this call will raise an exception on wrong credential
     http_request('GET', url)
 
