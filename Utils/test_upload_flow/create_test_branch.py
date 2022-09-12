@@ -178,7 +178,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.", default='.')
     parser.add_argument("-cb", "--content-branch", nargs="?",
                         help="The content branch name, if empty will run on current branch.")
-    parser.add_argument("-a", "--artifacts_path", help="Path to store the script's output")
+    parser.add_argument("-a", "--artifacts_path", help="Path to store the script's output", default=".")
     return parser.parse_args()
 
 
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     else:
         original_branch = repo.active_branch
     try:
-        new_branch_name = f"{original_branch}_upload_test_branch_{repo.active_branch.object.hexsha}_{time.time()}"
+        new_branch_name = f"{original_branch}_upload_test_branch_{time.time()}"
         content_path = Path(__file__).parent.parent.parent
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
@@ -234,5 +234,5 @@ if __name__ == "__main__":
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
-        print(versions_dict, pack_items_dict)
+        print(new_branch_name)
 
