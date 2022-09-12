@@ -21,7 +21,7 @@ script:
       name: team_webhook
     description: Send a message to Microsoft Teams  via Incoming Webhook
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   runonce: false
   script: ''
   subtype: python3

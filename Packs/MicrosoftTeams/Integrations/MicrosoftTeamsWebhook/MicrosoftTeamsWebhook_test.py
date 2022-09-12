@@ -24,5 +24,5 @@ def test_test_module(requests_mock):
 def test_send_teams_message_command(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200)
 
-    res = send_teams_message_command(WEBHOOK,MESSAGE,SERVERURLS)
+    res = send_teams_message_command(WEBHOOK, MESSAGE, SERVERURLS)
     assert res == 'message sent successfully'
