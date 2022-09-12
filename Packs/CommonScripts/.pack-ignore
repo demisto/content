@@ -82,3 +82,6 @@ msg
 lastCompletedTaskEntries
 cgroups
 AttachmentFile
+formatter
+FPs
+GetIndicatorDBotScore
