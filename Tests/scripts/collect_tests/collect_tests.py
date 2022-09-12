@@ -7,7 +7,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import (TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
@@ -49,7 +51,7 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
-    PACK_TEST_DEPENDS_ON = 'packs under which integrations are stored, on which a test depends'
+    PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
 
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
@@ -272,35 +274,53 @@ class TestCollector(ABC):
                 # todo prevent this case, see CIAC-4006
                 continue
 
+            # collect the pack containing the test playbook
+            pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
+            result.append(self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.PACK_TEST_DEPENDS_ON,
+                reason_description=f'test {test_id} is saved under pack {pack_id}',
+                content_item_range=test_object.version_range,
+                allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
+            ))
+
+            # collect integrations used in the test
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
-                    result.append(self._collect_test_dependency(dependency=integration,
-                                                                test_id=test_id,
-                                                                pack_id=integration_object.pack_id,
-                                                                ))
+                    result.append(self._collect_test_dependency(
+                        dependency_name=integration,
+                        test_id=test_id,
+                        pack_id=integration_object.pack_id,
+                        dependency_type='integration',
+                    ))
                 else:
                     logger.warning(f'could not find integration {integration} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
 
+            # collect scripts used in the test
             for script in test_object.scripts:
                 if script_object := self.id_set.id_to_script.get(script):
-                    result.append(self._collect_test_dependency(dependency=script,
-                                                                test_id=test_id,
-                                                                pack_id=script_object.pack_id,
-                                                                ))
+                    result.append(self._collect_test_dependency(
+                        dependency_name=script,
+                        test_id=test_id,
+                        pack_id=script_object.pack_id,
+                        dependency_type='script',
+                    ))
                 else:
                     logger.warning(f'Could not find script {script} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
 
         return CollectionResult.union(tuple(result))
 
-    def _collect_test_dependency(self, dependency: str, test_id: str, pack_id: str) -> CollectionResult:
+    def _collect_test_dependency(
+            self, dependency_name: str, test_id: str, pack_id: str, dependency_type: str
+    ) -> CollectionResult:
         return CollectionResult(
             test=None,
             pack=pack_id,
             reason=CollectionReason.PACK_TEST_DEPENDS_ON,
             version_range=None,
-            reason_description=f'{test_id} depends on {dependency} from {pack_id}',
+            reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
         )
@@ -399,7 +419,11 @@ class TestCollector(ABC):
     @staticmethod
     def __validate_not_ignored_file(path: Path):
         if path in PATHS.files_to_ignore:
-            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests')
+            raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests)')
+
+        if set(PACK_MANAGER.relative_to_packs(path).parts).intersection(TESTS_AND_DOC_DIRECTORIES):
+            raise NothingToCollectException(path, 'file under test_data or documentation folder,'
+                                                  ' (not triggering sanity tests)')
 
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
@@ -420,11 +444,11 @@ class TestCollector(ABC):
             case MarketplaceVersions.MarketplaceV2:
                 if content_item_marketplaces != (self.marketplace,):
                     # marketplacev2 must be the only value in order to be collected
-                    raise IncompatibleMarketplaceException(content_item_path)
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
 
             case MarketplaceVersions.XSOAR:
                 if self.marketplace not in content_item_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item_path)
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
 
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
@@ -590,16 +614,8 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self._validate_content_item_compatibility(content_item, is_integration=file_type == FileType.INTEGRATION)
-
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
-        except NonXsoarSupportedPackException as e:
-            return self._collect_pack(
-                pack_id=find_pack_folder(path).name,
-                reason=CollectionReason.NON_XSOAR_SUPPORTED,
-                reason_description=e.support_level,
-            )
 
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
@@ -611,8 +627,27 @@ class BranchTestCollector(TestCollector):
                 reason_description=reason_description,
                 content_item_range=content_item.version_range if content_item else None
             )
+        if content_item:
+            try:
+                '''
+                Upon reaching this part, we know the file is a content item (and not release note config, scheme, etc.)
+                so _validate_content_item can be called (which we can't do to non-content files, often lacking an id).
 
-        elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
+                when content_item *is* None, the same validations are called either in _collect_yml or _collect_pack.
+
+                '''
+                self._validate_content_item_compatibility(
+                    content_item,
+                    is_integration=file_type == FileType.INTEGRATION,
+                )
+            except NonXsoarSupportedPackException as e:
+                return self._collect_pack(
+                    pack_id=find_pack_folder(path).name,
+                    reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                    reason_description=e.support_level,
+                )
+
+        if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
             return self._collect_yml(path)
