@@ -77,9 +77,9 @@ class CollectionResult:
             is_sanity: bool = False,
     ):
         """
-        Collected test playbook, and/or pack to install.
+        Collected test playbook, and/or a pack to install.
 
-        NOTE:   the constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
+        NOTE:   The constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
                 This is done to require a reason for every collection, which is logged.
                 Use the + operator or CollectedTests.union() to join two or more objects and hold multiple tests.
 
@@ -158,16 +158,16 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
-                for integration in test_playbook.integrations:
+                for integration in test_playbook.implementing_integrations:
                     if reason := conf.skipped_integrations.get(integration):
                         raise SkippedTestException(
-                            test,
-                            'conf.json (integrations)',
-                            skip_reason=f'{test=} uses {integration=}, which is skipped with {reason=}'
+                            test_name=test,
+                            skip_place='conf.json (integrations)',
+                            skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)

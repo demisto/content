@@ -90,6 +90,7 @@ class MockerCases:
     M1 = CollectTestsMocker(TEST_DATA / 'M1')
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
+    O = CollectTestsMocker(TEST_DATA / 'O')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -280,6 +281,9 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
      (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',)),
+
+     (MockerCases.O, None, ('myPack',), None, XSOAR_BRANCH_ARGS, ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',))
+
      ))
 def test_branch(
         monkeypatch,

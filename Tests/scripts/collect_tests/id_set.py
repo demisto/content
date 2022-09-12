@@ -71,10 +71,15 @@ class IdSetItem(DictBased):
 
     @property
     def implementing_integrations(self) -> tuple[str, ...]:
-        result = set()
-        # command_to_integrations is {command: [integration, ...]}
+        result: set[str] = set()
+        # command_to_integrations maps commands to either a single integration, or a list of them
+        # e.g. { command1: integration1,
+        #        command2: [integration1, integration2, ...] }
         for command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
-            result.update(integrations)
+            result.update(
+                (integrations,) if isinstance(integrations, str)
+                else integrations
+            )
         return tuple(sorted(result))
 
 
