@@ -45,17 +45,11 @@ def test_ip_command(mocker):
     from TeamCymru import ip_command
 
     mock_args = {'ip': '8.8.8.8'}
-    mock_response = util_load_json('test_data/ip_8.8.8.8_response.json')
-
-    client = Client(api_key='',
-                    base_url='https://ipinfo.io',
-                    verify_certificate=False,
-                    proxy=False,
-                    reliability=DBotScoreReliability.C)
-    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    test_data = util_load_json('test_data/test_search_ip.json')
+    mocker.patch.object('team_cymru_ip', return_value=mock_response)
 
     command_results = mocker.patch('ipinfo_v2.CommandResults')
-    ipinfo_ip_command(client, ip)
+    ip_command(client, mock_args)
 
     expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
     assert command_results.call_args[1].get("readable_output") == expected_parsed_context[1].get("HumanReadable")
