@@ -11551,7 +11551,7 @@ def pan_os_edit_redistribution_profile_command(args):
     element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
     behavior = args.get('behavior')
 
-    un_listable_objects = {'priority', 'action',}
+    un_listable_objects = {'priority', 'action'}
 
     if behavior != 'replace' and element_to_change in un_listable_objects:
         raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
