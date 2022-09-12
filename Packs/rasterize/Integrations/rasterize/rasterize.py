@@ -298,7 +298,7 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
     :param wait_time: time in seconds to wait before taking a screenshot
     :param include_url: when set to True, will include the URL bar in the image result
     """
-
+    driver, display = None, None
     try:
         driver, display = init_driver_and_display(width, height, offline_mode, include_url)
 
