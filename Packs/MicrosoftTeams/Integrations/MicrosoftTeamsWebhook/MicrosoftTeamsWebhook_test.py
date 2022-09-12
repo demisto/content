@@ -1,4 +1,4 @@
-from MicrosoftTeamsWebhook import create_teams_message, test_module, send_teams_message_command
+from MicrosoftTeamsWebhook import create_teams_message, send_teams_message_command
 
 WEBHOOK = "https://readywebookone"
 MESSAGE = "Hello from XSOAR"
@@ -15,6 +15,7 @@ def test_create_teams_message():
 
 
 def test_test_module(requests_mock):
+    from MicrosoftTeamsWebhook import test_module
     requests_mock.post(WEBHOOK, status_code=200)
 
     res = test_module(WEBHOOK)
