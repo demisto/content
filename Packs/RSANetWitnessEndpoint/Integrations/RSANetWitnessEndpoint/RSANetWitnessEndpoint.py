@@ -266,7 +266,7 @@ def parse_error_response(error_response):
                                                                             error.ResponseStatus.Message)
     except Exception as e:
         demisto.debug(e)
-        return 'Request failed with status code: {}\n{}'.format(error_response.status_code, error_response.content)
+        return f'Request failed with status code: {error_response.status_code}\n{error_response.content}'
 
 
 def http_request(method, url, data=None, headers={'Accept': 'application/json'}, url_params=None):
