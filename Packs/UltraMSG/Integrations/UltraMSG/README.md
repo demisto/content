@@ -7,8 +7,8 @@ This is the UltraMSG integration for getting started made by Trustnet
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Token | When you creating an Instamce you'll get an Token Example: ty49xcwlhiogro9x | True |
-    | Instance | When you creating an Instamce you'll get an instance id. Example: instance12345 | True |
+    | Token | When creating an instance, you'll get a token Example: ty37deadbeef37xx | True |
+    | Instance | When creating an instance, you'll get an instance id. Example: instance12345 | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
