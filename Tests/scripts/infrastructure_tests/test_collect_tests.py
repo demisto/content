@@ -112,7 +112,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
     """
     monkeypatch.chdir(case_mocker.path_manager.content_path)
     with case_mocker:
-        collector = collector_class(*collector_class_args)
+        collector = collector_class(*collector_class_args + (case_mocker.path_manager,))
         collected = collector.collect()
 
     if not any((expected_tests, expected_packs, expected_machines)):
