@@ -173,9 +173,6 @@ def main():
     # Get the service API url
     base_url = params.get('url')
 
-    # If your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     insecure = not params.get('insecure', False)
 
     proxy = params.get('proxy', False)
