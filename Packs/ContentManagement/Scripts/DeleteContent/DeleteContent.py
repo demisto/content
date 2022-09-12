@@ -37,6 +37,71 @@ class EntityAPI(ABC):
         pass
 
 
+class PlaybookAPI(EntityAPI):
+    name = 'playbook'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/playbook/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-post',
+                               {'uri': '/playbook/search',
+                                'body': {'page': 0, 'size': 100}},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-post',
+                               {'uri': '/playbook/delete',
+                                'body': {'id': specific_id}},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        if type(response) is dict:
+            if not response or not response.get("id"):
+                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
+                return False
+            return response.get("id")
+        return False
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
+
+
+class IntegrationAPI(EntityAPI):
+    # TODO: check
+    name = 'integration'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-post',
+                               {'uri': '/settings/integration/search',
+                                'body': {'page': 0, 'size': 1, 'query': f'id:"{specific_id}"'}},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-post',
+                               {'uri': '/settings/integration/search',
+                                'body': {'page': 0, 'size': 100}},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/settings/integration/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        if type(response) is dict:
+            if not response or not response.get("id"):
+                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
+                return False
+            return response.get("id")
+        return False
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
+
+
 class JobAPI(EntityAPI):
     name = 'job'
 
@@ -83,7 +148,7 @@ class ListAPI(EntityAPI):
 
     def search_all(self):
         return execute_command('demisto-api-get',
-                               {'uri': '/lists/names'},
+                               {'uri': '/playbook/search'},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str):
@@ -292,7 +357,10 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
     include_ids = json.loads(args.get('include_ids_dict')) if type(args.get('include_ids_dict')) == str else args.get('include_ids_dict')
     exclude_ids = json.loads(args.get('exclude_ids_dict')) if type(args.get('exclude_ids_dict')) == str else args.get('exclude_ids_dict')
 
-    entities_to_delete = [JobAPI(), ListAPI(), InstalledPackAPI()]
+    entities_to_delete = [InstalledPackAPI(), IntegrationAPI(), ScriptAPI(), PlaybookAPI(), IncidentFieldAPI(),
+                          PreProcessingRuleAPI(),
+                          WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(), IncidentTypeAPI(),
+                          ClassifierAPI(), ReputationAPI(), AgentToolAPI(), LayoutAPI()]
 
     all_deleted: dict = dict()
     all_not_deleted: dict = dict()
