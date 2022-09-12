@@ -814,7 +814,7 @@ def search_group_members(default_base_dn, page_size):
         query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn,
                                                                                   account_name)
     else:
-        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))" \
+        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
             .format(member_type, nested_search, group_dn, account_name)
 
     size_limit = int(args.get('limit', '0'))
