@@ -203,11 +203,18 @@ def quit_driver_and_display_and_reap_children(driver, display):
     demisto.debug(f'Quitting driver session: {driver.session_id}')
 
     try:
-        if driver:
-            driver.quit()
 
-        if display:
-            display.stop()
+        try:
+            if driver:
+                driver.quit()
+        except Exception as edr:
+            demisto.error(f"Failed to quit driver. Error: {edr}")
+
+        try:
+            if display:
+                display.stop()
+        except Exception as edr:
+            demisto.error(f"Failed to stop display. Error: {edr}")
 
         zombies, ps_out = find_zombie_processes()
         if zombies:
