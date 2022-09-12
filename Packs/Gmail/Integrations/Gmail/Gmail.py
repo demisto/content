@@ -26,7 +26,7 @@ import random
 import string
 from apiclient import discovery
 from oauth2client import service_account
-import itertools as it
+import itertools as itgi
 import concurrent.futures
 
 ''' GLOBAL VARS '''
@@ -50,7 +50,7 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):  # noqa: F841
+    def handle_starttag(self, tag, attrs):  # noqa: F841¥
         if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):

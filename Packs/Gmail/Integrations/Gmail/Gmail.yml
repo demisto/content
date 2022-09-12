@@ -2286,13 +2286,13 @@ script:
       description: A name that appears in the "From:" header for email sent using
         this alias.
       type: String
-  dockerimage: demisto/google-api:1.0.0.27615
+  dockerimage: demisto/google-api-py3:1.0.0.33791
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - Gmail Convert Html Test
