@@ -212,7 +212,7 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
     markdown = tableToMarkdown('External IP Address Ranges', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRanges',
-        outputs_key_field='',
+        outputs_key_field='range_id',
         outputs=parsed,
         raw_response=parsed,
         readable_output=markdown
