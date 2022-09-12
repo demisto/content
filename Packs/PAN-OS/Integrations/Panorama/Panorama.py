@@ -11247,6 +11247,15 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
     return human_readable, context
 
 
+def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
+    if page is not None:
+        if page <= 0:
+            raise DemistoException(f'page {page} must be a positive number')
+        return entries[(page - 1) * page_size:page_size * page]  # do pagination
+    else:
+        return entries[:limit]
+
+
 def pan_os_list_virtual_routers_command(args):
     name = args.get('virtual_router')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
@@ -11261,14 +11270,9 @@ def pan_os_list_virtual_routers_command(args):
     if not name:
         # if name was provided, api returns one entry so no need to do limit/pagination
         page = arg_to_number(args.get('page'))
-        if page is not None:
-            if page <= 0:
-                raise DemistoException(f'page {page} must be a positive number')
-            page_size = arg_to_number(args.get('page_size')) or 50
-            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-        else:
-            limit = arg_to_number(args.get('limit')) or 50
-            entries = entries[:limit]
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
 
@@ -11329,10 +11333,10 @@ def parse_pan_os_list_redistribution_profiles(entries):
             'FilterDestination': extract_objects_info_by_key(entry.get('filter', {}), 'destination'),
             'FilterNextHop': extract_objects_info_by_key(entry.get('filter', {}), 'nexthop'),
             'BGP': extract_bgp_and_ospf_filters(
-                entry.get('filter', {}).get('bgp'), ['community', 'extended-community']
+                entry.get('filter', {}).get('bgp'), _filters_types=['community', 'extended-community']
             ),
             'OSPF': extract_bgp_and_ospf_filters(
-                entry.get('filter', {}).get('ospf'), ['path-type', 'area', 'tag']
+                entry.get('filter', {}).get('ospf'), _filters_types=['path-type', 'area', 'tag']
             )
         } for entry in entries
     ]
@@ -11351,7 +11355,7 @@ def pan_os_list_redistribution_profile_command(args):
 
     if not redistribution_profile_name:
         limit = arg_to_number(args.get('limit')) or 50
-        entries = entries[:limit]
+        entries = do_pagination(entries, limit=limit)
 
     redistribution_profiles = parse_pan_os_list_redistribution_profiles(entries)
 
