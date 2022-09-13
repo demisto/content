@@ -3622,7 +3622,6 @@ class TestPanOSCreateRedistributionProfile:
                                '</member><member>ospf</member></type></filter>',
                     'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
                 }
-
             ),
             pytest.param(
                 {
