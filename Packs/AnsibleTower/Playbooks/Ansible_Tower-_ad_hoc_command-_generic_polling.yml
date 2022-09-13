@@ -40,6 +40,7 @@ tasks:
       id: 7630373a-14c4-483f-8ba6-838382463465
       version: -1
       name: Is Ansible Tower enabled?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -264,6 +265,7 @@ view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
+      "dimensions": {
       "dimensions": {
         "height": 1405,
         "width": 740,
