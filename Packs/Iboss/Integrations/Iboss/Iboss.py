@@ -9,6 +9,7 @@ import requests
 import re
 from typing import Dict, Any
 from functools import wraps
+import copy
 
 COMMAND_PREFIX = 'iboss'
 VENDOR_NAME = 'iboss Zero Trust Secure Service Edge'
@@ -184,6 +185,7 @@ def set_auth(method):
     expired by the server.) The `_auth()` method is called to establish/re-establish a valid session.
     This wrapper is applied to any functions that interact with the iboss API.
     """
+
     @wraps(method)
     def _impl(self, *method_args, **method_kwargs):
         if not self.expiration or self.expiration < datetime.utcnow().timestamp():
@@ -466,6 +468,139 @@ class Client(BaseClient):
         )
         return result
 
+    @set_auth
+    def get_policy_layers(self):
+        result = self._http_request(
+            method="get",
+            url_suffix="/json/controls/policyLayers/all"
+        )
+        return result
+
+    @set_auth
+    def get_policy_layer_by_name(self, name):
+        data = self.get_policy_layers()
+        entries = data.get('entries', [])
+        entry = next(filter(lambda d: d.get('customCategoryName', '') == name, entries), None)
+
+        if not entry:
+            raise Exception(f"Policy layer with name `{name}` not found")
+
+        return entry
+
+    @set_auth
+    def add_entity_to_policy_layer_list(
+            self, custom_category_id, custom_category_number, url, direction=2, end_port=0, is_regex=0,
+            do_dlp_scan=1, do_malware_scan=1, note="", priority="", start_port=0, time_url_expires_in_seconds=0):
+
+        json_data = {
+            "customCategoryId": custom_category_id,
+            "customCategoryNumber": custom_category_number,
+            "url": url,
+            "applyKeyword": 0,
+            "applyKeywordAndSafeSearch": 0,
+            "priority": priority,
+            "direction": direction,
+            "doDlpScan": do_dlp_scan,
+            "doMalwareScan": do_malware_scan,
+            "startPort": start_port,
+            "endPort": end_port,
+            "isRegex": is_regex,
+            "timedUrl": time_url_expires_in_seconds,
+            "note": note,
+        }
+
+        result = self._http_request(
+            method="put",
+            url_suffix="/json/controls/policyLayers/urls",
+            json_data=json_data,
+            error_handler=self._list_error_handler,
+            ok_codes=(200, 201, 202, 204, 422)
+        )
+        return result
+
+    @set_auth
+    def remove_entity_from_policy_layer_list(
+            self, custom_category_id, custom_category_number, url, direction=2, end_port=0, is_regex=0,
+            do_dlp_scan=1, do_malware_scan=1, note="", priority="", start_port=0, time_url_expires_in_seconds=0):
+
+        params = {
+            "customCategoryId": custom_category_id,
+            "customCategoryNumber": custom_category_number,
+            "url": url,
+            "applyKeyword": 0,
+            "applyKeywordAndSafeSearch": 0,
+            "priority": priority,
+            "direction": direction,
+            "doDlpScan": do_dlp_scan,
+            "doMalwareScan": do_malware_scan,
+            "startPort": start_port,
+            "endPort": end_port,
+            "isRegex": is_regex,
+            "timedUrl": time_url_expires_in_seconds,
+            "note": note,
+        }
+
+        result = self._http_request(
+            method="delete",
+            url_suffix="/json/controls/policyLayers/urls",
+            params=params,
+            error_handler=self._list_error_handler,
+            ok_codes=(200, 201, 202, 204, 422)
+        )
+        return result
+
+    @set_auth
+    def get_policy_layer_list_entries(self, custom_category_id):
+        params = {
+            'customCategoryId': custom_category_id,
+        }
+        result = self._http_request(
+            method="get",
+            url_suffix="/json/controls/policyLayers/urls",
+            params=params,
+            ok_codes=(200, 201, 202, 204)
+        )
+        return result
+
+    def update_entity_in_policy_layer_list(
+            self, original_entity, custom_category_id, custom_category_number, url, direction=2, end_port=0, is_regex=0,
+            do_dlp_scan=1, do_malware_scan=1, note="", priority="", start_port=0, time_url_expires_in_seconds=0):
+
+        new_entity = {
+            "customCategoryId": custom_category_id,
+            "customCategoryNumber": custom_category_number,
+            "url": url,
+            "applyKeyword": "0",
+            "applyKeywordAndSafeSearch": "0",
+            "priority": priority,
+            "direction": direction,
+            "doDlpScan": do_dlp_scan,
+            "doMalwareScan": do_malware_scan,
+            "startPort": start_port,
+            "endPort": end_port,
+            "isRegex": is_regex,
+            "timedUrl": time_url_expires_in_seconds,
+            "note": note,
+            "isUpdate": 1,
+        }
+
+        # Add isUpdate = 0 to indicate original indicator
+        # Add customCategoryNumber if not returned in original indicator
+        _original_entity = copy.deepcopy(original_entity)
+        _original_entity.update({"isUpdate": 0, "customCategoryNumber": custom_category_number})
+
+        json_data = {
+            "customCategoryId": custom_category_id,
+            "urls": [new_entity, _original_entity],
+        }
+
+        result = self._http_request(
+            method="post",
+            url_suffix="/json/controls/policyLayers/urls",
+            json_data=json_data,
+        )
+        return result
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -474,6 +609,13 @@ def _iboss_entity_lookup(client, entity):
     response = client.get_url_reputation(entity)
     response['categories'] = [URL_CATEGORIES_DICT[i] for i in range(0, 81) if "1" == response.get('categories', '')[i]]
     return response
+
+
+def _iboss_find_matching_policy_layer_list_entry(entries, url, start_port, end_port):
+    for entry in entries:
+        if entry['url'] == url and entry['startPort'] == int(start_port) and entry['endPort'] == int(end_port):
+            return entry
+    return None
 
 
 def reputation_calculate_dbot_score(reputation_data) -> int:
@@ -1498,6 +1640,157 @@ def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
+def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    policy_layer_name = _get_validate_argument(
+        "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+
+    urls = _get_validate_argument(
+        "entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+
+    start_port = _get_validate_argument(
+        "start_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    end_port = _get_validate_argument(
+        "end_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    direction = _get_validate_argument(
+        "direction", args, validator=lambda x: x in [0, 1, 2], message="value must be 0, 1, or 2", return_type=int)
+
+    do_dlp_scan = _get_validate_argument(
+        "do_dlp_scan", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    do_malware_scan = _get_validate_argument(
+        "do_malware_scan", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    note = _get_validate_argument("note", args)
+
+    priority = _get_validate_argument(
+        "priority", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    upsert = _get_validate_argument(
+        "upsert", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    time_url_expires_in_seconds = _get_validate_argument(
+        "time_url_expires_in_seconds", args, validator=lambda x: (x or x == 0) and x >= 0,
+        message="value must be >= 0", return_type=int)
+
+    is_regex = _get_validate_argument(
+        "is_regex", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    policy_layer = client.get_policy_layer_by_name(policy_layer_name)
+    custom_category_id = policy_layer.get("customCategoryId", None)
+    custom_category_number = policy_layer.get("customCategoryNumber", None)
+
+    results = []
+    for url in argToList(urls):
+        result = client.add_entity_to_policy_layer_list(
+            url=url, custom_category_id=custom_category_id, custom_category_number=custom_category_number,
+            start_port=start_port, end_port=end_port, direction=direction, do_dlp_scan=do_dlp_scan,
+            do_malware_scan=do_malware_scan, note=note, priority=priority,
+            time_url_expires_in_seconds=time_url_expires_in_seconds, is_regex=is_regex)
+
+        # Update with friendlier message when user attempts to remove entry that is not present on list
+        message = result.get('message', '')
+        if 'No changes made to list' in message:
+            result["message"] = f'{url} is already in policy layer `{policy_layer_name}` and covers ' \
+                                f'the domain entry being added. No changes made to list. '
+        elif "success" in message.lower():
+            result["message"] = f'{url} successfully added to policy layer `{policy_layer_name}`.'
+
+        # Update entity if upsert is enabled and entity already exists in policy layer
+        if 'No changes made to list' in message and upsert == 1:
+            policy_layer_list_entries = client.get_policy_layer_list_entries(custom_category_id)
+            policy_layer_list_entries = policy_layer_list_entries['entries']
+
+            original_entry = _iboss_find_matching_policy_layer_list_entry(
+                entries=policy_layer_list_entries, url=url, start_port=start_port, end_port=end_port)
+
+            result = client.update_entity_in_policy_layer_list(
+                original_entity=original_entry, url=url, custom_category_id=custom_category_id,
+                custom_category_number=custom_category_number,
+                start_port=start_port, end_port=end_port, direction=direction,
+                do_dlp_scan=do_dlp_scan,
+                do_malware_scan=do_malware_scan, note=note, priority=priority,
+                time_url_expires_in_seconds=time_url_expires_in_seconds,
+                is_regex=is_regex)
+
+            if 'Successfully' in result['message']:
+                result['message'] = f'Successfully updated {url} in policy layer `{policy_layer_name}`.'
+        result['entity'] = url
+        results.append(result)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']),  # result["message"],
+        outputs_prefix="iboss.AddEntityToPolicyLayerList",
+        outputs_key_field="message",
+        outputs=results,
+    )
+
+
+def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    policy_layer_name = _get_validate_argument(
+        "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+
+    urls = _get_validate_argument(
+        "entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+
+    start_port = _get_validate_argument(
+        "start_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    end_port = _get_validate_argument(
+        "end_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    direction = _get_validate_argument(
+        "direction", args, validator=lambda x: x in [0, 1, 2], message="value must be 0, 1, or 2", return_type=int)
+
+    do_dlp_scan = _get_validate_argument(
+        "do_dlp_scan", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    do_malware_scan = _get_validate_argument(
+        "do_malware_scan", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    note = _get_validate_argument("note", args)
+
+    priority = _get_validate_argument(
+        "priority", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    time_url_expires_in_seconds = _get_validate_argument(
+        "time_url_expires_in_seconds", args, validator=lambda x: (x or x == 0) and x >= 0,
+        message="value must be >= 0", return_type=int)
+
+    is_regex = _get_validate_argument(
+        "is_regex", args, validator=lambda x: x in [0, 1], message="value must be 0 or 1", return_type=int)
+
+    policy_layer = client.get_policy_layer_by_name(policy_layer_name)
+    custom_category_id = policy_layer.get("customCategoryId", None)
+    custom_category_number = policy_layer.get("customCategoryNumber", None)
+
+    results = []
+    for url in argToList(urls):
+        result = client.remove_entity_from_policy_layer_list(
+            url=url, custom_category_id=custom_category_id, custom_category_number=custom_category_number,
+            start_port=start_port, end_port=end_port, direction=direction, do_dlp_scan=do_dlp_scan,
+            do_malware_scan=do_malware_scan, note=note, priority=priority,
+            time_url_expires_in_seconds=time_url_expires_in_seconds, is_regex=is_regex)
+
+        # Update with friendlier message when user attempts to remove entry that is not present on list
+        message = result.get('message', '')
+        if result.get("errorCode", -1) == 0 and "failed to remove" in message.lower():
+            result["message"] = f"{url} not found in policy layer `{policy_layer_name}`."
+        elif "success" in message:
+            result["message"] = f"{url} removed from policy layer `{policy_layer_name}`."
+
+        result['entity'] = url
+        results.append(result)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Results', results, headers=['entity', 'message']),  # result["message"],
+        outputs_prefix="iboss.AddEntityToPolicyLayerList",
+        outputs_key_field="message",
+        outputs=results,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1543,6 +1836,10 @@ def main() -> None:
             return_results(add_entity_to_allow_list_command(client, args))
         elif command == 'iboss-remove-entity-from-allow-list':
             return_results(remove_entity_from_allow_list_command(client, args))
+        elif command == 'iboss-add-entity-to-policy-layer-list':
+            return_results(add_entity_to_policy_layer_list_command(client, args))
+        elif command == 'iboss-remove-entity-from-policy-layer-list':
+            return_results(remove_entity_from_policy_layer_list_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
