@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -799,22 +800,45 @@ def redlock_get_scan_results():
         })
 
 
+def expire_stored_ids(fetched_ids):
+    """
+    Expires stored ids after 2 hours.
+
+    Args:
+        fetched_ids: list of fetched ids.
+
+    Returns:
+        The list of fetched ids.
+
+    """
+    cleaned_cache = []
+
+    two_hours = timedelta(hours=2).total_seconds() * 1000
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+
+    for i in range(len(fetched_ids)):
+        fetch_time = list(fetched_ids[i].values())[0]
+        timediff = now - fetch_time
+        if timediff < two_hours:
+            cleaned_cache.append(fetched_ids[i])
+    return cleaned_cache
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run = demisto.getLastRun().get('time')
-    if not last_run:  # first time fetch
-        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
-
-    payload = {'timeRange': {
-        'type': 'absolute',
+    fetched_ids = demisto.getLastRun().get('fetched_ids')
+    time_range = {
+        'type': 'relative',
         'value': {
-            'startTime': last_run,
-            'endTime': now
+            "amount": 1,
+            "unit": "hour"
         }
-    }, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
+    }
+
+    payload = {"timeRange": time_range, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('ruleName')})
@@ -828,16 +852,19 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
     for alert in response:
-        if alert.get('firstSeen') < last_run:
+        if any(alert.get('id') in x for x in fetched_ids):
+            demisto.debug(f"Fetched {alert.get('id')} already. Skipping")
             continue
+        demisto.debug(f"{alert.get('id')} has not been fetched. Processing.")
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
+        fetched_ids.append({alert.get('id'): now})
 
-    return incidents, now
+    return incidents, fetched_ids
 
 
 def main():
@@ -880,9 +907,10 @@ def main():
         elif command == 'redlock-get-scan-results':
             redlock_get_scan_results()
         elif command == 'fetch-incidents':
-            incidents, new_run = fetch_incidents()
+            incidents, fetched_ids = fetch_incidents()
             demisto.incidents(incidents)
-            demisto.setLastRun({'time': new_run})
+            ids_to_insert = expire_stored_ids(fetched_ids)
+            demisto.setLastRun({'fetched_ids': ids_to_insert})
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
