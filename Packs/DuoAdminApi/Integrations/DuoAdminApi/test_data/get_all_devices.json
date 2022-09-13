@@ -1,0 +1,42 @@
+{
+  "activated": true,
+  "capabilities": [
+    "auto",
+    "push",
+    "sms",
+    "phone",
+    "mobile_otp"
+  ],
+  "extension": "",
+  "last_seen": "2020-02-25T09:13:50",
+  "model": "Oneplus",
+  "name": "",
+  "number": "+972111111111",
+  "phone_id": "1",
+  "platform": "Google Android",
+  "postdelay": "0",
+  "predelay": "0",
+  "sms_passcodes_sent": true,
+  "type": "Mobile",
+  "users": [
+    {
+      "alias1": null,
+      "alias2": null,
+      "alias3": null,
+      "alias4": null,
+      "aliases": {},
+      "created": 1559487539,
+      "email": "test.1@demisto.com",
+      "firstname": null,
+      "is_enrolled": false,
+      "last_directory_sync": null,
+      "last_login": 1559493327,
+      "lastname": null,
+      "notes": "",
+      "realname": "",
+      "status": "locked out",
+      "user_id": "1",
+      "username": "test1"
+    }
+  ]
+}

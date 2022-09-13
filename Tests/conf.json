@@ -2365,6 +2365,16 @@
             "instance_names": "active_directory_ninja"
         },
         {
+            "playbookID": "Active Directory - manual pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+                {
+            "playbookID": "Active Directory - automatic pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+        {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
@@ -5188,6 +5198,11 @@
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Secneurx Analysis",
