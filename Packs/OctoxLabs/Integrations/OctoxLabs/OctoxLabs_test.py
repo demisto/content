@@ -67,6 +67,11 @@ def test_run_command_exception(octox_client):
         run_command(octox=octox_client, command_name="no-command", args={})
 
 
+def test_test_module(requests_mock, octox_client):
+    requests_mock.get("/api/ping", json={"pong": "ok"})
+    assert run_command(octox=octox_client, command_name="test-module", args={}) == "ok"
+
+
 def test_get_adapters(requests_mock, octox_client):
     adapter_data = util_load_json(path="test_data/get_adapters.json")
     requests_mock.get("/adapters/adapters", json=adapter_data)
