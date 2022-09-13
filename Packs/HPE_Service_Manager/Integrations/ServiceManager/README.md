@@ -81,7 +81,6 @@ Updates existing incident (beta).
 | HPSM.Incidents.UpdatedTime | unknown | Incident update time. | 
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
-
 ### hpsm-create-incident
 ***
 Creates a new incident.
@@ -144,7 +143,6 @@ Creates a new incident.
 | HPSM.Incidents.UpdatedTime | unknown | Incident update time. | 
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
-
 ### hpsm-list-incidents
 ***
 Returns all incidents.
@@ -165,7 +163,6 @@ Returns all incidents.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.IncidentIDs | unknown | An array of incident IDs. | 
-
 
 ### hpsm-get-incident-by-id
 ***
@@ -214,7 +211,6 @@ Returns a single incident by ID. If no incident exists with the specified ID, an
 | HPSM.Incidents.UpdatedBy | unknown | The last user who updated the incident. | 
 | HPSM.Incidents.UpdatedTime | unknown | Incident update time. | 
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
-
 
 ### hpsm-create-resource
 ***
@@ -280,7 +276,6 @@ Updates the existing resource (beta).
 | HPSM.Resources.UpdatedTime | unknown | Resource update time. | 
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
-
 ### hpsm-update-resource
 ***
 Creates a new resource.
@@ -345,7 +340,6 @@ Creates a new resource.
 | HPSM.Resources.UpdatedTime | unknown | Resource update time. | 
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
-
 ### hpsm-list-resources
 ***
 Returns all resources (beta).
@@ -367,7 +361,6 @@ Returns all resources (beta).
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.ResourceIDs | unknown | An array of resource IDs. | 
-
 
 ### hpsm-get-resource-by-id
 ***
@@ -418,7 +411,6 @@ Returns a single resource by ID. If no resource exists with the specified ID, an
 | HPSM.Resources.UpdatedTime | unknown | Resource update time. | 
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
-
 ### hpsm-list-devices
 ***
 Returns a list of devices, filtered according to query.
@@ -439,7 +431,6 @@ Returns a list of devices, filtered according to query.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.DeviceIDs | unknown | The IDs \(configuration items\) of the devices. | 
-
 
 ### hpsm-get-device
 ***
@@ -474,5 +465,30 @@ Find and return a device by ID.
 | HPSM.Devices.Status | unknown | Device status. | 
 | HPSM.Devices.UpdatedBy | unknown | The last user who updated the device. | 
 
+### hpsm-create-request
+***
+Creates a new service request
 
 
+#### Base Command
+
+`hpsm-create-request`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | The title of the request. | Required | 
+| purpose | The purpose of the request. | Required | 
+| callbackcontactname | Who created/opened the service request. | Optional | 
+| contactname | Incident contact details. | Required | 
+| resourceName | The resource name (API URI) that will be used. For example: "incidents". | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HPSM.ServiceRequest.ContactName | unknown | Who created/opened the service request | 
+| HPSM.ServiceRequest.ID | unknown | The id of the service request | 
+| HPSM.ServiceRequest.CallbackContactName | unknown | Incident contact details | 
+| HPSM.ServiceRequest.Title | unknown | Incident title | 
