@@ -62,9 +62,9 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     tag_value = args.get('tag_value')
     general_search = args.get('general_search')
     sort = args.get('sort', 'desc')
-    limit = args.get('limit', 50)
-    page = args.get('page', 1)
-    page_size = args.get('page_size', 50)
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1)) - 1
+    page_size = int(args.get('page_size', 50))
 
     offset = page_size * page
     end = page_size * page + page_size
