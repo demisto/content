@@ -29,7 +29,7 @@ EXTERNAL_SERVICES_RESPONSE = {
                 ],
                 "discovery_type": "ColocatedOnIp",
                 "business_units": [
-                    "jwilkes - Toys R US"
+                    "Acme"
                 ],
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": []
@@ -57,7 +57,7 @@ EXTERNAL_SERVICES_RESPONSE = {
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
                 "business_units": [
-                    "jwilkes test - VanDelay Industries"
+                    "VanDelay Industries"
                 ],
                 "externally_inferred_vulnerability_score": 9.8,
                 "externally_inferred_cves": [
@@ -126,7 +126,7 @@ EXTERNAL_SERVICE_RESPONSE = {
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
                 "business_units": [
-                    "jwilkes - Toys R US"
+                    "Acme"
                 ],
                 "externally_inferred_vulnerability_score": 7.8,
                 "externally_inferred_cves": [
@@ -147,7 +147,7 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "serviceKeyType": "IP",
                     "businessUnits": [
                         {
-                            "name": "jwilkes - Toys R US"
+                            "name": "Acme"
                         }
                     ],
                     "providerDetails": [
@@ -451,7 +451,7 @@ EXTERNAL_RANGES_RESPONSE = {
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
                 "business_units": [
-                    "jwilkes test - VanDelay Industries"
+                    "VanDelay Industries"
                 ],
                 "organization_handles": [
                     "MAINT-HK-PCCW-BIA-CS",
@@ -467,7 +467,7 @@ EXTERNAL_RANGES_RESPONSE = {
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
                 "business_units": [
-                    "jwilkes test - VanDelay Industries"
+                    "VanDelay Industries"
                 ],
                 "organization_handles": [
                     "EH92-RIPE",
@@ -491,7 +491,7 @@ EXTERNAL_RANGE_RESPONSE = {
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
                 "business_units": [
-                    "jwilkes test - VanDelay Industries"
+                    "VanDelay Industries"
                 ],
                 "organization_handles": [
                     "MAINT-HK-PCCW-BIA-CS",
@@ -512,7 +512,7 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "handle": "MAINT-HK-PCCW-BIA-CS",
                                     "dateAdded": 1662986267926,
                                     "address": "",
-                                    "email": "noc@imsbiz.com",
+                                    "email": "noc@acme.com",
                                     "phone": "",
                                     "org": "",
                                     "formattedName": "",
@@ -528,7 +528,7 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "handle": "TA66-AP",
                                     "dateAdded": 1662986267926,
                                     "address": "HKT Limited\nPO Box 9896 GPO          ",
-                                    "email": "noc@imsbiz.com",
+                                    "email": "noc@acme.com",
                                     "phone": "+852-2883-5151",
                                     "org": "",
                                     "formattedName": "TECHNICAL ADMINISTRATORS",
@@ -544,7 +544,7 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "handle": "BNA2-AP",
                                     "dateAdded": 1662986267926,
                                     "address": "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ",
-                                    "email": "cs@imsbiz.com",
+                                    "email": "cs@acme.com",
                                     "phone": "+852-2888-6932",
                                     "org": "",
                                     "formattedName": "BIZ NETVIGATOR ADMINISTRATORS",
@@ -576,14 +576,14 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "asm_ids": [
                     "3c176460-8735-333c-b618-8262e2fb660c"
                 ],
-                "name": "*.babiesrus.com",
+                "name": "*.acme.com",
                 "asset_type": "CERTIFICATE",
                 "cloud_provider": null,
                 "externally_detected_providers": [],
                 "region": null,
                 "ips": [],
                 "business_units": [
-                    "jwilkes - Toys R US"
+                    "Acme"
                 ],
                 "management_status": [],
                 "iot_model": null,
@@ -624,7 +624,7 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "region": null,
                 "ips": [],
                 "business_units": [
-                    "jwilkes test - VanDelay Industries"
+                    "VanDelay Industries"
                 ],
                 "management_status": [],
                 "iot_model": null,
@@ -662,7 +662,7 @@ EXTERNAL_EXPOSURE_RESPONSE = {
         "details": [
             {
                 "asm_ids": "3c176460-8735-333c-b618-8262e2fb660c",
-                "name": "*.babiesrus.com",
+                "name": "*.acme.com",
                 "type": "Certificate",
                 "last_observed": null,
                 "first_observed": null,
@@ -670,7 +670,7 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                 "created": 1662987013779,
                 "ips": [],
                 "business_units": [
-                    "jwilkes - Toys R US"
+                    "Acme"
                 ],
                 "active_service_ids": [],
                 "all_service_ids": [],
@@ -697,7 +697,7 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                     "recentIps": [],
                     "businessUnits": [
                         {
-                            "name": "jwilkes - Toys R US"
+                            "name": "Acme"
                         }
                     ],
                     "certificateDetails": {
@@ -715,13 +715,13 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                         "publicKeyAlgorithm": "RSA",
                         "publicKeyRsaExponent": 65537,
                         "signatureAlgorithm": "SHA1withRSA",
-                        "subject": "C=US,ST=New Jersey,L=Wayne,O=Toys R Us,OU=MIS,CN=*.babiesrus.com",
-                        "subjectAlternativeNames": "*.babiesrus.com",
+                        "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com",
+                        "subjectAlternativeNames": "*.acme.com",
                         "subjectCountry": "US",
                         "subjectEmail": null,
                         "subjectLocality": "Wayne",
-                        "subjectName": "*.babiesrus.com",
-                        "subjectOrg": "Toys R Us",
+                        "subjectName": "*.acme.com",
+                        "subjectOrg": "Acme",
                         "subjectOrgUnit": "MIS",
                         "subjectState": "New Jersey",
                         "serialNumber": "91384582774546160650506315451812470612",
