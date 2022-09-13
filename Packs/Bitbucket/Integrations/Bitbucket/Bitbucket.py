@@ -581,7 +581,7 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
         return CommandResults(readable_output=response)
 
 
-def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
+def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
     repo = args.get('repo', None)
     file_path = args.get('file_path', None)
     branch = args.get('branch', None)
@@ -597,7 +597,7 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
     commit_list = client.commit_list_request(repo=repo, params=params, included_list=including_list)
 
     if len(commit_list.get('values')) == 0:
-        return CommandResults(readable_output=f'The file {file_path} does not exist')
+        return [CommandResults(readable_output=f'The file {file_path} does not exist')]
 
     commit_hash = commit_list.get('values')[0].get('hash')
     response = client.raw_file_get_request(repo, file_path, commit_hash)
@@ -606,13 +606,14 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
         'file_content': response.text
     }
     if response.status_code == 200:
-        return CommandResults(readable_output=f'The content of the file "{file_path}" is: {response.text}',
-                              outputs_prefix='Bitbucket.RawFile',
-                              outputs=output)
+        file = fileResult(filename=file_path, data=response.text)
+        return [CommandResults(readable_output=f'The content of the file "{file_path}" is: {response.text}',
+                               outputs_prefix='Bitbucket.RawFile',
+                               outputs=output), file]
     else:
-        return CommandResults(readable_output='The command failed.',
-                              outputs_prefix='Bitbucket.RawFile',
-                              outputs=output)
+        return [CommandResults(readable_output='The command failed.',
+                               outputs_prefix='Bitbucket.RawFile',
+                               outputs=output)]
 
 
 def issue_create_command(client: Client, args: Dict) -> CommandResults:
