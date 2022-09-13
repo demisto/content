@@ -2178,6 +2178,21 @@ script:
         - contextPath: Bitbucket.PullRequestComment.pullrequest.links
           description: 'Links to information about the pull request.'
           type: String
+    - name: bitbucket-pull-request-comment-delete
+      description: deletes a comment in a specific pull request.
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: pull_request_id
+          required: true
+          description: The id of the pull request.
+          isArray: false
+        - name: comment_id
+          required: true
+          description: The id of the comment.
+          isArray: false
   isfetch: false
   runonce: false
   script: "-"

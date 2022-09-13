@@ -264,9 +264,9 @@ class Client(BaseClient):
         """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
             to update a specific comment in a pull request.
             :param repo: str - The repository the user entered, if he did.
-            :param pr_id: str - an id to a specific pull request to add a comment to.
+            :param pr_id: str - an id to a specific pull.
             :param body: Dict - a dictionary with the updated content of the comment.
-            :param comment_id: str - an id to a specific comment, in order to get info about it.
+            :param comment_id: str - an id to a specific comment to update.
 
             Creates the url and makes the api call
             :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
@@ -274,6 +274,20 @@ class Client(BaseClient):
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+
+    def pull_request_comment_delete_request(self, repo: str, pr_id: int, comment_id: str) -> Dict:
+        """ Makes a DELETE request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            to delete a specific comment in a pull request.
+            :param repo: str - The repository the user entered, if he did.
+            :param pr_id: str - an id to a specific pull request to add a comment to.
+            :param comment_id: str - an id to a specific comment to delete.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
+        return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
 
 ''' HELPER FUNCTIONS '''
@@ -1062,16 +1076,23 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         results = check_pagination(client, response, limit)
         hr_title = f'List of the comments on pull request number "{pr_id}"'
     human_readable = []
+    records_to_delete = []
     for value in results:
-        d = {'Id': value.get('id'),
-             'Content': demisto.get(value, 'content.raw'),
-             'CreatedBy': demisto.get(value, 'user.display_name'),
-             'CreatedAt': value.get('created_on'),
-             'UpdatedAt': value.get('updated_on'),
-             'IssueId': demisto.get(value, 'issue.id'),
-             'IssueTitle': demisto.get(value, 'issue.title'),
-             }
-        human_readable.append(d)
+        if not demisto.get(value, 'content.raw') == "":
+            d = {'Id': value.get('id'),
+                 'Content': demisto.get(value, 'content.raw'),
+                 'CreatedBy': demisto.get(value, 'user.display_name'),
+                 'CreatedAt': value.get('created_on'),
+                 'UpdatedAt': value.get('updated_on'),
+                 'IssueId': demisto.get(value, 'issue.id'),
+                 'IssueTitle': demisto.get(value, 'issue.title'),
+                 }
+            human_readable.append(d)
+        else:
+            records_to_delete.append(value)
+    if len(records_to_delete) > 0:
+        for item in records_to_delete:
+            results.remove(item)
 
     headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
     readable_output = tableToMarkdown(
@@ -1108,10 +1129,31 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
         }
     }
     response = client.pull_request_comment_update_request(repo, pr_id, body, comment_id)
-    return CommandResults(readable_output=f'The comment "{comment_id}" on the pull request "{pr_id}" was updated successfully',
-                          outputs_prefix='Bitbucket.PullRequestComment',
-                          outputs=[response],
-                          raw_response=[response])
+    return CommandResults(
+        readable_output=f'The comment "{comment_id}" on the pull request "{pr_id}" was updated successfully',
+        outputs_prefix='Bitbucket.PullRequestComment',
+        outputs=[response],
+        raw_response=[response])
+
+
+def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandResults:
+    """ Deletes a comment in a pull request.
+        Args:
+            client: A Bitbucket client.
+            args: Demisto args.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    repo = args.get('repo', None)
+    pr_id = arg_to_number(args.get('pull_request_id'))
+    comment_id = args.get('comment_id', None)
+    if not repo:
+        repo = client.repository
+    response = client.pull_request_comment_delete_request(repo, pr_id, comment_id)
+    if response.status_code == 204:
+        return CommandResults(readable_output=f'The comment on pull request number {pr_id} was deleted successfully.')
+    else:
+        return CommandResults(readable_output=response.text)
 
 
 ''' MAIN FUNCTION '''
@@ -1213,6 +1255,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-comment-update':
             result = pull_request_comment_update_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-comment-delete':
+            result = pull_request_comment_delete_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
