@@ -26,14 +26,14 @@ def main():
         try:
             logging.info('line 50')
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            dmst_client = demisto_client.configure(base_url=f'https://{env["InstanceDNS"]}:{env["TunnelPort"]}')
+            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}')
             server_ip = env["InstanceDNS"].split('.')[0]
 
             logging.info('line 55')            
             tmp_file_path ,_, _ = dmst_client.generic_request('/log/bundle', 'GET', response_type='file')
             logs_dst = f"{circle_aritfact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"
-            result = shutil.copy(tmp_file_path, logs_dst)
-            logging.info(f'line 59 {result}')
+            copy_dst = shutil.copy(tmp_file_path, logs_dst)
+            logging.info(f'Logs saved in: {copy_dst}')
 
 
         except Exception:
