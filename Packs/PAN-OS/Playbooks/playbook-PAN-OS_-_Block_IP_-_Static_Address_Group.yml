@@ -571,11 +571,6 @@ inputs:
   required: false
   description: IP address to block
   playbookInputQuery:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Panorama log forwarding object name
-  playbookInputQuery:
 - key: AddressGroupName
   value:
     simple: Demisto Remediation - Static Address Group
