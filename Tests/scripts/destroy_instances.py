@@ -26,7 +26,7 @@ def main():
         try:
             logging.info('line 50')
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}')
+            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}', verify_ssl=False)
             server_ip = env["InstanceDNS"].split('.')[0]
 
             logging.info('line 55')            
