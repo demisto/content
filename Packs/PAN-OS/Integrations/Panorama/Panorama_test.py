@@ -3624,9 +3624,9 @@ class TestCreatePBFRuleCommand:
                                '</nexthop-address-list></enforce-symmetric-return><description>test'
                                '</description><from><zone><member>1.1.1.1'
                                '</member><member>2.2.2.2</member></zone></from>',
-                     'key': 'thisisabogusAPIKEY!',
-                     'type': 'config',
-                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
                               "/rulebase/pbf/rules/entry[@name='test']"
                 }
             ),
@@ -3652,9 +3652,9 @@ class TestCreatePBFRuleCommand:
                                '</enforce-symmetric-return><destination>'
                                '<member>1.1.1.1</member><member>2.2.2.2</member>'
                                '</destination><description>test</description>',
-                     'key': 'thisisabogusAPIKEY!',
-                     'type': 'config',
-                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
                               "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
                 }
             ),

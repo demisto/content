@@ -11319,7 +11319,7 @@ def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False
 def pan_os_create_pbf_rule(args):
     def _set_up_body_request():
         def _set_up_action_body_request():
-            _action_body_request = {}
+            _action_body_request = {}  # type: ignore[var-annotated]
             if action := args.get('action'):
                 if action == 'forward':
                     _action_body_request['action'] = {'forward': {}}
