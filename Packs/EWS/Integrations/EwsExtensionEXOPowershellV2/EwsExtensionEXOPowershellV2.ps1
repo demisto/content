@@ -295,7 +295,7 @@ class ExchangeOnlinePowershellV2Client
             [int]$limit
     )
     {
-        $cmd_params = @{ }
+        $cmd_params = @{ Properties="Guid" }
         if ($identity)
         {
             $cmd_params.Identity = $identity
@@ -687,9 +687,9 @@ function Main
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
 
-    if ($integration_params.certificate.password)
+    if ($integration_params.password.password)
     {
-        $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
+        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
     }
     else
     {
@@ -700,7 +700,7 @@ function Main
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $integration_params.certificate.identifier,
+            $integration_params.certificate.password,
             $password
     )
     try

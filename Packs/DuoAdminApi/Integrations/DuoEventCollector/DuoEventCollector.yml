@@ -10,8 +10,7 @@ configuration:
   name: host
   type: 0
   required: true
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   type: 0
   required: true
@@ -20,7 +19,7 @@ configuration:
   name: integration_key
   type: 0
   required: true
-- displaypassword:  Secret key
+- displaypassword: Secret key
   name: secret_key
   hiddenusername: true
   type: 9
@@ -34,16 +33,6 @@ configuration:
   name: retries
   type: 0
   defaultvalue: 5
-  required: false
-- display: The vendor corresponding to the integration that originated the events
-  name: vendor
-  type: 0
-  defaultvalue: duo
-  required: false
-- display: The product corresponding to the integration that originated the events
-  name: product
-  type: 0
-  defaultvalue: duo
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -60,14 +49,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.29891
+  dockerimage: demisto/duoadmin3:1.0.0.32862
   runonce: false
   isfetchevents: true
   subtype: python3

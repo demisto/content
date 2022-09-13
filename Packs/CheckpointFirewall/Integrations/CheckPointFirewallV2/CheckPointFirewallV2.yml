@@ -28,8 +28,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use this integration to read information and send commands to the Check
-  Point Firewall server.
+description: Use this integration to read information and send commands to the Check Point Firewall server.
 display: CheckPoint Firewall v2
 name: CheckPointFirewall_v2
 script:
@@ -189,16 +188,14 @@ script:
       name: comments
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "False".
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "False".
       name: ignore_warnings
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to ignore errors when applying the updates. Can be "True"
-        or "False". Default is "False".
+      description: Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
       name: ignore_errors
       predefined:
       - 'true'
@@ -422,8 +419,7 @@ script:
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       name: ignore_warnings
       predefined:
       - 'true'
@@ -446,13 +442,13 @@ script:
       isArray: true
       name: members
     - auto: PREDEFINED
-      defaultValue: 'modify'
+      defaultValue: modify
       description: The action that should be taken towards the values.
       name: action
       predefined:
-      - 'add'
-      - 'remove'
-      - 'modify'
+      - add
+      - remove
+      - modify
     description: Updates the specified group object.
     name: checkpoint-group-update
     outputs:
@@ -532,16 +528,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to update objects with the same identifier. Can be "true"
-        or "false". Default is "false".
+      description: Whether to update objects with the same identifier. Can be "true" or "false". Default is "false".
       name: set_if_exists
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       name: ignore_warnings
       predefined:
       - 'true'
@@ -622,8 +616,7 @@ script:
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       name: ignore_warnings
       predefined:
       - 'true'
@@ -762,8 +755,7 @@ script:
     - description: Name for the new threat indicator.
       name: name
       required: true
-    - description: The indicator's observable or the contents of a file containing
-        the indicator's observables.
+    - description: The indicator's observable or the contents of a file containing the indicator's observables.
       isArray: true
       name: observables
       required: true
@@ -940,8 +932,7 @@ script:
       name: name
     - auto: PREDEFINED
       defaultValue: Drop
-      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer,
-        Ask and Info. Default value is Drop.'
+      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer, Ask and Info. Default value is Drop.'
       name: action
       predefined:
       - Accept
@@ -990,8 +981,7 @@ script:
       description: Indicates if the rule is enabled or disabled.
       type: Boolean
     - contextPath: CheckPoint.AccessRule.layer
-      description: Layer to which the rule was assigned, identified by the name or
-        UID.
+      description: Layer to which the rule was assigned, identified by the name or UID.
       type: String
     - contextPath: CheckPoint.AccessRule.creator
       description: The object creator.
@@ -1025,13 +1015,11 @@ script:
     - defaultValue: None
       description: New name of the object.
       name: new_name
-    - description: New position in the rulebase. Value can be "int" to set a specific
-        position, or str- 'top' or 'bottom'.
+    - description: New position in the rulebase. Value can be "int" to set a specific position, or str- 'top' or 'bottom'.
       name: new_position
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       name: ignore_warnings
       predefined:
       - 'true'
@@ -1142,8 +1130,7 @@ script:
     - description: Object name. Must be unique in the domain
       name: name
       required: true
-    - description: Each application is assigned to one primary category based on its
-        most defining aspect.
+    - description: Each application is assigned to one primary category based on its most defining aspect.
       name: primary_category
       required: true
     - description: |-
@@ -1205,8 +1192,7 @@ script:
       required: true
     - description: A description of the application.
       name: description
-    - description: Each application is assigned to one primary category based on its
-        most defining aspect.
+    - description: Each application is assigned to one primary category based on its most defining aspect.
       name: primary_category
     - description: Application signature generated by Signature Tool.
       isArray: true
@@ -1215,14 +1201,12 @@ script:
       name: new_name
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: If "True", the URL is defined as a Regular Expression. Default
-        is "True".
+      description: If "True", the URL is defined as a Regular Expression. Default is "True".
       name: urls_defined_as_regular_expression
       predefined:
       - 'true'
       - 'false'
-    - description: URLs that determine this particular application. This will replace
-        the current url collection.
+    - description: URLs that determine this particular application. This will replace the current url collection.
       isArray: true
       name: url_list
     - description: Adds to collection of URLs.
@@ -1231,16 +1215,13 @@ script:
     - description: Removes from collection of URLs.
       isArray: true
       name: url_list_to_remove
-    - description: Collection of group identifiers. Can be a single group or a list
-        of groups.
+    - description: Collection of group identifiers. Can be a single group or a list of groups.
       isArray: true
       name: groups
     - description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    description: "Edits an existing application using the object name or UID. \nIt's\
-      \ impossible to set 'application-signature' when the application was initialized\
-      \ with 'url-list' and vice-versa."
+    description: "Edits an existing application using the object name or UID. \nIt's impossible to set 'application-signature' when the application was initialized with 'url-list' and vice-versa."
     name: checkpoint-application-site-update
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
@@ -1285,8 +1266,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    description: Deletes an existing application site object using the object name
-      or UID.
+    description: Deletes an existing application site object using the object name or UID.
     name: checkpoint-application-site-delete
     outputs:
     - contextPath: CheckPoint.ApplicationSite.message
@@ -1307,8 +1287,7 @@ script:
     - description: The name of the Policy Package to install.
       name: policy_package
       required: true
-    - description: The targets on which to execute this command. Targets can be identified
-        by their name, or object unique identifier.
+    - description: The targets on which to execute this command. Targets can be identified by their name, or object unique identifier.
       name: targets
       required: true
     - auto: PREDEFINED
@@ -1369,8 +1348,7 @@ script:
       type: Boolean
   - arguments:
     - defaultValue: '600'
-      description: Session expiration timeout in seconds. Default is 600 seconds.
-        Session timeout range is between 600 to 3600 seconds.
+      description: Session expiration timeout in seconds. Default is 600 seconds. Session timeout range is between 600 to 3600 seconds.
       name: session_timeout
     - description: Optional domain to start session in, for use with MDS login only.
       name: domain
@@ -1574,23 +1552,17 @@ script:
       description: Number of the results to initially skip. Default is 0.
       name: offset
     - defaultValue: None
-      description: Search expression to filter objects by. The provided text should
-        be exactly the same as it would be given in Smart Console. The logical operators
-        in the expression ('AND', 'OR') should be provided in capital letters. By
-        default, the search involves both a textual search and a IP search. To use
-        IP search only, set the "ip-only" parameter to true.
+      description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. By default, the search involves both a textual search and a IP search. To use IP search only, set the "ip-only" parameter to true.
       name: filter_search
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If using "filter", use this field to search objects by their IP
-        address only, without involving the textual search.
+      description: If using "filter", use this field to search objects by their IP address only, without involving the textual search.
       name: ip_only
       predefined:
       - 'true'
       - 'false'
     - defaultValue: object
-      description: 'The object type, e.g.: host, service-tcp, network, address-range.
-        Default value is object.'
+      description: 'The object type, e.g.: host, service-tcp, network, address-range. Default value is object.'
       name: object_type
     - defaultValue: None
       description: Executes the command with the specified session ID.
@@ -1681,10 +1653,7 @@ script:
       isArray: true
       name: name
       required: true
-    description: 'Creates new objects in batch. To achieve optimum performance when
-      adding more than one object, use this API. Note: Errors and warnings are ignored
-      when using this API, operation will apply changes while ignoring errors. It
-      is not possible to publish changes that contain validations errors.'
+    description: 'Creates new objects in batch. To achieve optimum performance when adding more than one object, use this API. Note: Errors and warnings are ignored when using this API, operation will apply changes while ignoring errors. It is not possible to publish changes that contain validations errors.'
     name: checkpoint-add-objects-batch
     outputs:
     - contextPath: CheckPoint.AddObjectBatch.task-id
@@ -1702,14 +1671,156 @@ script:
       description: Type of objects to be deleted.
       name: object_type
       required: true
-    description: Deletes existing objects in batch using object name or uid. To achieve
-      optimum performance when deleting more than one object, use this API.
+    description: Deletes existing objects in batch using object name or uid. To achieve optimum performance when deleting more than one object, use this API.
     name: checkpoint-delete-objects-batch
     outputs:
     - contextPath: CheckPoint.DeleteObjectsBatch.task-id
       description: Task id of the delete-objects-batch command.
       type: string
-  dockerimage: demisto/python3:3.9.9.25564
+  - arguments:
+    - name: uid
+      description: ''
+    - name: name
+      description: ''
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: showProfiles
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: additionalProperties
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    description: Shows an existing threat protection using object name or uid
+    name: checkpoint-show-threat-protection
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtection
+      description: ''
+  - arguments:
+    - name: filter
+      description: ''
+    - name: limit
+      description: ''
+    - name: offset
+      description: ''
+    - name: order
+      description: ''
+    description: Shows existing threat protections using a filter
+    name: checkpoint-show-threat-protections
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtections
+      description: ''
+  - arguments:
+    - name: uid
+      description: ''
+    - name: name
+      description: ''
+    - name: comments
+      description: ''
+    - auto: PREDEFINED
+      name: follow_up
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    - name: action
+      description: ''
+    - auto: PREDEFINED
+      name: track
+      description: ''
+      predefined:
+      - None
+      - Log
+      - SNMP-Trap
+      - Mail
+      - Alert
+      - User-Alert
+      - User-Alert-2
+      - User-Alert-3
+    - name: capturePackets
+      description: ''
+    - name: profiles
+      description: ''
+    description: Edit existing object using object name or uid.
+    name: checkpoint-set-threat-protection
+    outputs:
+    - contextPath: CheckPoint.SetThreatProtections
+      description: ''
+  - arguments:
+    - name: name
+      required: true
+      description: ''
+    - name: active_protections_performance_impact
+      description: ''
+    - name: active_protections_severity
+      description: ''
+    - name: confidence_level_high
+      description: ''
+    - name: confidence_level_low
+      description: ''
+    - name: confidence_level_medium
+      description: ''
+    - name: ips_settings
+      description: ''
+    - name: tags
+      description: ''
+    - name: use_indicators
+      description: ''
+    - name: anti_bot
+      description: ''
+    - name: anti_virus
+      description: ''
+    - name: ips
+      description: ''
+    - name: threat_emulation
+      description: ''
+    - name: exclude_protection_with_performance_impact
+      description: ''
+    - auto: PREDEFINED
+      name: exclude_protection_with_performance_impact_mode
+      description: ''
+      predefined:
+      - very low
+      - low or very low
+      - medium or lower
+      - high or lower
+    - name: exclude_protection_with_severity
+      description: ''
+    - auto: PREDEFINED
+      name: exclude_protection_with_severity_mode
+      description: ''
+      predefined:
+      - low or above
+      - medium or above
+      - high or above
+      - critical
+    - auto: PREDEFINED
+      name: newly_updated_protections
+      description: ''
+      predefined:
+      - active
+      - inactive
+      - staging
+    description: Add a new threat profile
+    name: checkpoint-add-threat-profile
+    outputs:
+    - contextPath: CheckPoint.AddedThreatProfiles
+      description: ''
+  - arguments:
+    - description: Valid response is "snort"
+      name: packageFormat
+      required: true
+    description: Deletes threat protections.
+    name: checkpoint-delete-threat-protections
+    outputs:
+    - contextPath: CheckPoint.DeletedThreatProtections
+      description: ''
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
   subtype: python3

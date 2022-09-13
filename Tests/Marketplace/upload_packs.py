@@ -576,6 +576,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
                     'vendorId': metadata.get('vendorId', ""),
                     'partnerId': metadata.get('partnerId', ""),
                     'partnerName': metadata.get('partnerName', ""),
+                    'disableMonthly': metadata.get('disableMonthly', False),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
@@ -1138,9 +1139,9 @@ def main():
         if is_bucket_upload_flow:
             task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
 
-            if not task_status:
-                pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-                continue
+            # if not task_status:
+            #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+            #     continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1162,7 +1163,7 @@ def main():
         if is_bucket_upload_flow:
             task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
                                                                         modified_rn_files_paths,
-                                                                        modified_files_data, marketplace)
+                                                                        modified_files_data, marketplace, id_set)
 
             if not task_status:
                 pack.status = PackStatus.FAILED_RELEASE_NOTES.name

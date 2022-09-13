@@ -391,6 +391,7 @@ def test_update_remote_system_delta(mocker):
     Then:
         - The issue in Jira has the new summary.
     """
+    import JiraV2
     from JiraV2 import update_remote_system_command
 
     mocker.patch("JiraV2.edit_issue_command", return_value="")
@@ -400,10 +401,12 @@ def test_update_remote_system_delta(mocker):
         {
             "incidentChanged": "17757",
             "remoteId": "17757",
+            "data": {"summary": "data", "not_changes_key": "not_changes_val"},
             "delta": {"summary": "changes"},
         }
     )
     assert res == "17757"
+    assert JiraV2.edit_issue_command.call_args[1]['summary'] == 'data'
 
 
 def test_get_mapping_fields(mocker):

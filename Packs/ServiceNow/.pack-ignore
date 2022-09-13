@@ -1,5 +1,5 @@
 [file:ServiceNowv2.yml]
-ignore=IN126,IN135
+ignore=IN126,IN135,IN124
 
 [file:playbook-Create_ServiceNow_Ticket.yml]
 ignore=PB106
@@ -33,6 +33,10 @@ ignore=IF100
 [known_words]
 lookback
 InfoFile
+params
+README
+ampersand
+concat
 
 [file:classifier-ServiceNow.json]
 ignore=BA101

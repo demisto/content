@@ -103,3 +103,47 @@ def test_resume_scan_command(mocker, requests_mock):
     assert 'scan was resumed successfully' in results[0]['HumanReadable']
     assert entry_context['Id'] == '25'
     assert entry_context['Status'] == 'Resuming'
+
+
+def test_get_vulnerability_details_command(mocker, requests_mock):
+    mock_demisto(mocker, {'vulnerabilityId': '1', 'dateRange': '3'})
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/vulnerabilities/1/info',
+                      json={'info': {'Id': '1'}})
+    from Tenable_io import get_vulnerability_details_command
+
+    results = get_vulnerability_details_command()
+    entry_context = results['EntryContext']['TenableIO.Vulnerabilities']
+
+    assert 'Vulnerability details' in results['HumanReadable']
+    assert entry_context['Id'] == '1'
+
+
+def test_get_scans_command(mocker, requests_mock):
+    mock_demisto(mocker, {'folderId': '1'})
+    requests_mock.get(MOCK_PARAMS['url'] + 'scans/?folder_id=1',
+                      json={'scans': [{'status': 'running', 'id': '1'}],
+                            'info': {'id': '1'}})
+    requests_mock.get(MOCK_PARAMS['url'] + 'scans/1', json={'info': {'status': 'paused'}})
+
+    from Tenable_io import get_scans_command
+
+    results = get_scans_command()
+    entry_context = results[0]['EntryContext']['TenableIO.Scan(val.Id && val.Id === obj.Id)']
+
+    assert 'Tenable.io - List of Scans' in results[0]['HumanReadable']
+    assert entry_context[0]['Id'] == '1'
+
+
+def test_launch_scan_command(mocker, requests_mock):
+    mock_demisto(mocker, {'scanId': '1', 'scanTargets': 'target1,target2'})
+    requests_mock.get(MOCK_PARAMS['url'] + 'scans/1', json={'info': {'status': 'paused'}})
+    requests_mock.post(MOCK_PARAMS['url'] + 'scans/1/launch',
+                       json={})
+
+    from Tenable_io import launch_scan_command
+
+    results = launch_scan_command()
+    entry_context = results['EntryContext']['TenableIO.Scan(val.Id && val.Id === obj.Id)']
+
+    assert 'The requested scan was launched successfully' in results['HumanReadable']
+    assert entry_context['Id'] == '1'

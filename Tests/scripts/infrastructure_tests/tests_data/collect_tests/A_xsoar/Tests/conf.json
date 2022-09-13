@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "integrations": [
+        "myIntegration"
+      ],
+      "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
+    }
+  ],
+  "skipped_tests": {},
+  "skipped_integrations": {},
+  "unmockable_integrations": {},
+  "nightly_integrations": [],
+  "parallel_integrations": [],
+  "private_tests": [],
+  "test_marketplacev2": []
+}
