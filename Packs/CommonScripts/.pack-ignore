@@ -46,7 +46,7 @@ ignore=RM106
 [file:pack_metadata.json]
 ignore=PA129
 
-[file:script-ChangeRemediationSLAOnSevChange.yml]
+[file:ChangeRemediationSLAOnSevChange.yml]
 ignore=SC106
 
 [file:ExtractIndicatorsFromWordFile.yml]
