@@ -844,7 +844,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS Create Or Edit Rule Test
-- PAN-OS DAG Configuration Test
+- PAN-OS - Block URL - Custom URL Category Test
 contentitemexportablefields:
   contentitemfields: {}

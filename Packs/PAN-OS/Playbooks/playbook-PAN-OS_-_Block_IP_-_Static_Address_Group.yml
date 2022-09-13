@@ -587,7 +587,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS Create Or Edit Rule Test
-- PAN-OS DAG Configuration Test
+- PAN-OS - Block IP - Static Address Group Test
 contentitemexportablefields:
   contentitemfields: {}
