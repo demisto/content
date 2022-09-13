@@ -17,14 +17,14 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 1 day.
+- additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 days, 2 months, 2 years). Default is 1 day.
   defaultvalue: 1 day
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's a 10 call daily-limit for basic api key.
+- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's an api-calls daily-limit for the basic api key.
   defaultvalue: 300
   display: Events Fetch Interval
   hidden: false
@@ -39,7 +39,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: KnowBe4_KMSAT Allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
 script:
