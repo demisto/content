@@ -99,9 +99,6 @@ SUSPICIOUS = [r"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\UrlSearch
               r"HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Windows\load",
               r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler"]
 
-# registry keys are case insensative: https://docs.microsoft.com/en-us/windows/desktop/sysinfo/structure-of-the-registry
-reg_path = NormalizeRegistryPath(demisto.args()['input'].upper())
-
 
 def check_reg_in_list(path, list_to_check):
     for key in list_to_check:
@@ -110,27 +107,36 @@ def check_reg_in_list(path, list_to_check):
     return False
 
 
-if check_reg_in_list(reg_path, WHITELIST):
-    score = 1
-elif check_reg_in_list(reg_path, BLACKLIST):
-    score = 3
-elif check_reg_in_list(reg_path, SUSPICIOUS):
-    score = 2
-else:
-    score = 0
+def main():
+    # registry keys are case insensative: https://docs.microsoft.com/en-us/windows/desktop/sysinfo/structure-of-the
+    # -registry
+    reg_path = NormalizeRegistryPath(demisto.args()['input'].upper())
 
-outputs = {
-    'Path': reg_path,
-    'Score': score
-}
+    if check_reg_in_list(reg_path, WHITELIST):
+        score = 1
+    elif check_reg_in_list(reg_path, BLACKLIST):
+        score = 3
+    elif check_reg_in_list(reg_path, SUSPICIOUS):
+        score = 2
+    else:
+        score = 0
 
-demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['json'],
-    'Contents': score,
-    'ReadableContentsFormat': formats['text'],
-    'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),
-    'EntryContext': {
-        'RegistryKey(val.Path == obj.Path)': outputs
+    outputs = {
+        'Path': reg_path,
+        'Score': score
     }
-})
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': score,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),
+        'EntryContext': {
+            'RegistryKey(val.Path == obj.Path)': outputs
+        }
+    })
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

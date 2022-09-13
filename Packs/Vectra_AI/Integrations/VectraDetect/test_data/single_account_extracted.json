@@ -1,0 +1,28 @@
+{
+    "account_extract": {
+        "AssignedDate": null,
+        "Assignee": null,
+        "CertaintyScore": 35,
+        "ID": 36,
+        "State": "active",
+        "Tags": [],
+        "ThreatScore": 60,
+
+        "LastDetectionTimestamp" :  "2022-07-03T23:34:07.000Z",
+        "PrivilegeLevel": null,
+        "PrivilegeCategory": null,
+        "Severity":  "High",
+        "Type": "o365",
+        "URL": "https://vectra.test/accounts/36",
+        "Username": "O365:darcy@corp.example.com"
+    },
+    "common_extract": {
+        "AssignedDate": null,
+        "Assignee": null,
+        "CertaintyScore": 35,
+        "ID": 36,
+        "State": "active",
+        "Tags": [],
+        "ThreatScore": 60
+    }
+}

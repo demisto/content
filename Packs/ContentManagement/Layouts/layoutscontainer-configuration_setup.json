@@ -227,6 +227,10 @@
                     {
                         "fieldId": "incident_branchname",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cicds3bucketname",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,

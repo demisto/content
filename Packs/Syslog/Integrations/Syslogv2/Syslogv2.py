@@ -34,6 +34,26 @@ class SyslogMessageExtract:
     occurred: Optional[str]
 
 
+def parse_no_length_limit(data: bytes) -> syslogmp.parser.Message:
+    """
+    Parse a syslog message with no length limit.
+    """
+    parser = syslogmp.parser._Parser(b'')
+    parser.stream = syslogmp.parser.Stream(data)
+
+    priority_value = parser._parse_pri_part()
+    timestamp, hostname = parser._parse_header_part()
+    message = parser._parse_msg_part()
+
+    return syslogmp.parser.Message(
+        facility=priority_value.facility,
+        severity=priority_value.severity,
+        timestamp=timestamp,
+        hostname=hostname,
+        message=message,
+    )
+
+
 def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     Receives a log message which is in RFC 3164 format. Parses it into SyslogMessageExtract data class object
@@ -44,8 +64,9 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         (Optional[SyslogMessageExtract]): Extraction data class
     """
     try:
-        syslog_message: syslogmp.Message = syslogmp.parse(log_message)
-    except syslogmp.parser.MessageFormatError:
+        syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
+    except syslogmp.parser.MessageFormatError as e:
+        demisto.debug(f'Could not parse the log message, got MessageFormatError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=None,
@@ -74,7 +95,8 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     try:
         syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
-    except ParseError:
+    except ParseError as e:
+        demisto.debug(f'Could not parse the log message, got ParseError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
@@ -93,7 +115,7 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
 
 def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
-    Receives a log message which is in RFC 5424 format. Parses it into SyslogMessageExtract data class object
+    Receives a log message which is in RFC 6587 format. Parses it into SyslogMessageExtract data class object
     Args:
         log_message (bytes): Syslog message.
 
@@ -114,7 +136,8 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
             extracted_message = format_func(encoded_msg)
             if extracted_message:
                 return extracted_message
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(f'Could not parse the log message, got ValueError. Error was: {e}')
         return None
     return None
 
@@ -205,6 +228,7 @@ def perform_long_running_loop(socket_data: bytes):
     for format_func in format_funcs:
         extracted_message = format_func(socket_data)
         if extracted_message:
+            demisto.debug(f'Succeeded in parsing the message with {format_func}')
             break
     if not extracted_message:
         raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')

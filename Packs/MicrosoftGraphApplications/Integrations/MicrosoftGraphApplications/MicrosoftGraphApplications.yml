@@ -5,13 +5,12 @@ commonfields:
 configuration:
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
   display: Application ID
-  hidden: false
   name: app_id
   required: true
   type: 0
+  additionalinfo:
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
@@ -25,35 +24,66 @@ configuration:
   name: insecure
   required: false
   type: 8
+  defaultvalue: 'false'
+  additionalinfo:
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Use the Azure Active Directory Applications integration to manage authorized
-  applications.
+  defaultvalue: "false"
+  additionalinfo:
+- name: authentication_type
+  display: Authentication Type
+  required: false
+  defaultvalue: Device Code
+  type: 15
+  additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Flow
+  options:
+  - Device Code
+  - Client Credentials
+- name: tenant_id
+  display: Tenant ID (for Client Credentials mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: credentials
+  hiddenusername: true
+  displaypassword: Client Secret (for Client Credentials mode)
+  display: Client Secret (for Client Credentials mode)
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: ""
+description: Use the Azure Active Directory Applications integration to manage authorized applications.
 display: Azure Active Directory Applications
 name: MicrosoftGraphApplications
 script:
   commands:
   - deprecated: false
-    description: Run this command to start the authorization process and follow the
-      instructions in the command results.
+    description: Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: msgraph-apps-auth-start
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Run this command to complete the authorization process. Should be
-      used after running the msgraph-apps-auth-start command.
+    description: Run this command to complete the authorization process. Should be used after running the msgraph-apps-auth-start command.
     execution: false
     name: msgraph-apps-auth-complete
+    arguments: []
+    outputs: []
   - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
+    description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: msgraph-apps-auth-reset
+    arguments: []
+    outputs: []
   - deprecated: false
     description: Tests connectivity to Microsoft.
     execution: false
     name: msgraph-apps-auth-test
+    arguments: []
+    outputs: []
   - deprecated: false
     description: Retrieves a list of applications.
     execution: false
@@ -83,20 +113,13 @@ script:
       description: The certificate's raw data in byte array converted to Base64 string.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.usage
-      description: A string that describes the purpose for which the key can be used;
-        for example, “Verify”.
+      description: A string that describes the purpose for which the key can be used; for example, “Verify”.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.startDateTime
-      description: "The date and time at which the credential expires.The Timestamp\
-        \ type represents date and time information using ISO 8601 format and is always\
-        \ in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this:\
-        \ '2014-01-01T00:00:00Z'"
+      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.endDateTime
-      description: "The date and time at which the credential becomes valid.The Timestamp\
-        \ type represents date and time information using ISO 8601 format and is always\
-        \ in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this:\
-        \ '2014-01-01T00:00:00Z'"
+      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
       type: Date
     - contextPath: MSGraphApplication.accountEnabled
       description: 'true if the application account is enabled; otherwise, false.'
@@ -108,21 +131,16 @@ script:
       description: The display name exposed by the associated application.
       type: String
     - contextPath: MSGraphApplication.appId
-      description: The unique identifier for the associated application (its appId
-        property).
+      description: The unique identifier for the associated application (its appId property).
       type: String
     - contextPath: MSGraphApplication.appOwnerOrganizationId
-      description: Contains the tenant ID where the application is registered. This
-        is applicable only to service principals backed by applications.
+      description: Contains the tenant ID where the application is registered. This is applicable only to service principals backed by applications.
       type: String
     - contextPath: MSGraphApplication.appRoleAssignmentRequired
-      description: Whether users or other service principals need to be granted an
-        application role assignment for this service principal before users can sign
-        in or apps can get tokens. Default is false.
+      description: Whether users or other service principals need to be granted an application role assignment for this service principal before users can sign in or apps can get tokens. Default is false.
       type: Boolean
     - contextPath: MSGraphApplication.applicationTemplateId
-      description: Unique identifier of the application template that the service
-        principal was created from.
+      description: Unique identifier of the application template that the service principal was created from.
       type: String
     - contextPath: MSGraphApplication.createdDateTime
       description: Time the application was created.
@@ -158,42 +176,31 @@ script:
       description: Link to the application's terms of service statement.
       type: String
     - contextPath: MSGraphApplication.loginUrl
-      description: The URL where the service provider redirects the user to Azure
-        AD to authenticate. Azure AD uses the URL to launch the application from Microsoft
-        365 or the Azure AD My Apps.
+      description: The URL where the service provider redirects the user to Azure AD to authenticate. Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps.
       type: String
     - contextPath: MSGraphApplication.logoutUrl
-      description: Specifies the URL that will be used by Microsoft's authorization
-        service to log out an user.
+      description: Specifies the URL that will be used by Microsoft's authorization service to log out an user.
       type: String
     - contextPath: MSGraphApplication.notes
       description: The application's notes.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.adminConsentDescription
-      description: A description of the delegated permissions, intended to be read
-        by an administrator granting the permission on behalf of all users. This text
-        appears in tenant-wide admin consent experiences.
+      description: A description of the delegated permissions, intended to be read by an administrator granting the permission on behalf of all users. This text appears in tenant-wide admin consent experiences.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.adminConsentDisplayName
-      description: The permission's title, intended to be read by an administrator
-        granting the permission on behalf of all users.
+      description: The permission's title, intended to be read by an administrator granting the permission on behalf of all users.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.id
-      description: Unique delegated permission identifier inside the collection of
-        delegated permissions defined for a resource application.
+      description: Unique delegated permission identifier inside the collection of delegated permissions defined for a resource application.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.isEnabled
       description: Whether OAuth 2.0 permission scopes are enabled.
       type: Boolean
     - contextPath: MSGraphApplication.oauth2PermissionScopes.type
-      description: Whether this delegated permission should be considered safe for
-        non-admin users to consent to on behalf of themselves, or whether an administrator
-        should be required for consent to the permissions.
+      description: Whether this delegated permission should be considered safe for non-admin users to consent to on behalf of themselves, or whether an administrator should be required for consent to the permissions.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.userConsentDescription
-      description: A description of the delegated permissions, intended to be read
-        by a user granting the permission on their own behalf. This text appears in
-        consent experiences where the user is consenting only on behalf of themselves.
+      description: A description of the delegated permissions, intended to be read by a user granting the permission on their own behalf. This text appears in consent experiences where the user is consenting only on behalf of themselves.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.userConsentDisplayName
       description: A title for the permission.
@@ -202,18 +209,13 @@ script:
       description: The value to include in the scope claim in access tokens.
       type: String
     - contextPath: MSGraphApplication.preferredSingleSignOnMode
-      description: The single sign-on mode configured for this application. Azure
-        AD uses the preferred single sign-on mode to launch the application from Microsoft
-        365 or the Azure AD My Apps. The supported values are password, SAML, external,
-        and OIDC.
+      description: The single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, SAML, external, and OIDC.
       type: String
     - contextPath: MSGraphApplication.preferredTokenSigningKeyThumbprint
       description: Thumbprint of preferred certificate to sign the token.
       type: String
     - contextPath: MSGraphApplication.replyUrls
-      description: The URLs that user tokens are sent to for signing in with the associated
-        application, or the redirect URIs that OAuth 2.0 authorization codes and access
-        tokens are sent to for the associated application.
+      description: The URLs that user tokens are sent to for signing in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application.
       type: String
     - contextPath: MSGraphApplication.samlSingleSignOnSettings
       description: The collection for settings related to SAML single sign-on.
@@ -222,8 +224,7 @@ script:
       description: The list of identifier URIs.
       type: String
     - contextPath: MSGraphApplication.servicePrincipalType
-      description: Identifies if the service principal represents an application or
-        a managed identity.
+      description: Identifies if the service principal represents an application or a managed identity.
       type: String
     - contextPath: MSGraphApplication.signInAudience
       description: The audience that can sign in.
@@ -232,16 +233,13 @@ script:
       description: The key ID of a public key from the key credentials.
       type: String
     - contextPath: MSGraphApplication.verifiedPublisher.addedDateTime
-      description: The timestamp when the verified publisher was first added or most
-        recently updated.
+      description: The timestamp when the verified publisher was first added or most recently updated.
       type: Date
     - contextPath: MSGraphApplication.verifiedPublisher.displayName
-      description: The verified publisher name from the application publisher's Partner
-        Center account.
+      description: The verified publisher name from the application publisher's Partner Center account.
       type: String
     - contextPath: MSGraphApplication.verifiedPublisher.verifiedPublisherId
-      description: The ID of the verified publisher from the application publisher's
-        Partner Center account.
+      description: The ID of the verified publisher from the application publisher's Partner Center account.
       type: String
   - deprecated: false
     description: Removes an application from the directory.
@@ -250,11 +248,11 @@ script:
     arguments:
     - name: id
       default: false
-      description: The ID of the application to remove. Can be retrieved via the msgraph-apps-service-principal-remove
-        command.
+      description: The ID of the application to remove. Can be retrieved via the msgraph-apps-service-principal-remove command.
       isArray: false
       required: true
       secret: false
+    outputs: []
   isfetch: false
   runonce: false
   script: '-'

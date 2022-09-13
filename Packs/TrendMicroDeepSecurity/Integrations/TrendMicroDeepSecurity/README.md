@@ -1,6 +1,47 @@
 Trend Micro Deep Security
 This integration was integrated and tested with version 20.0 of Trend Micro Deep Security, and v1 of the API.
 
+## Changes compared to TrendMicroDsm
+# Changes in commands
+1. trendmicro-create-computer - New command.
+2. trendmicro-search-computers - New command.
+3. trendmicro-get-computer - New command.
+4. trendmicro-list-computers - New command.
+5. trendmicro-modify-computer - New command.
+6. trendmicro-delete-computer - New command.
+7. trendmicro-get-computer-setting - New command.
+8. trendmicro-modify-computer-setting - New command.
+9. trendmicro-reset-computer-setting - New command.
+10. trendmicro-list-computer-groups - New command.
+11. trendmicro-create-computer-group - New command.
+12. trendmicro-search-computer-groups - New command.
+13. trendmicro-get-computer-group - New command.
+14. trendmicro-modify-computer-group - New command.
+15. trendmicro-delete-computer-group - New command.
+16. trendmicro-search-firewall-rules - New command.
+17. trendmicro-list-firewall-rules - New command.
+18. trendmicro-create-firewall-rule - New command.
+19. trendmicro-get-firewall-rule - New command.
+20. trendmicro-modify-firewall-rule - New command.
+21. trendmicro-delete-firewall-rule - New command.
+22. trendmicro-list-firewall-rule-ids-of-computer - New command.
+23. trendmicro-add-firewall-rule-ids-to-computer - New command.
+24. trendmicro-set-firewall-rule-ids-to-computer - New command.
+25. trendmicro-get-policy - New command.
+26. trendmicro-modify-policy - New command.
+27. trendmicro-delete-policy - New command.
+28. trendmicro-get-policy-setting - New command.
+29. trendmicro-modify-policy-setting - New command.
+30. trendmicro-reset-policy-setting - New command.
+31. trendmicro-list-policies - New command.
+32. trendmicro-search-policies - New command.
+33. trendmicro-create-policy - New command.
+34. trendmicro-remove-firewall-rule-id-from-computer - New command.
+35. trendmicro-list-default-policy-settings - New command.
+36. trendmicro-get-default-policy-setting - New command.
+37. trendmicro-modify-default-policy-setting - New command.
+38. trendmicro-reset-default-policy-setting - New command.
+
 ## Configure Trend Micro Deep Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -14,36 +14,26 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- defaultvalue: slack
-  display: The product name corresponding to the integration that originated the events
-  name: product
-  required: false
-  type: 0
-- defaultvalue: slack
-  display: The vendor name corresponding to the integration that originated the events
-  name: vendor
-  required: false
-  type: 0
-- display: The maximum number of audit logs to fetch
+- defaultvalue: 1000
+  display: The maximum number of audit logs to fetch
   name: limit
-  type: 0
-  defaultvalue: 1000
   required: false
-- display: First fetch time interval
+  type: 0
+- defaultvalue: 3 days ago
+  display: First fetch time interval
   name: oldest
+  required: false
   type: 0
-  defaultvalue: 3 days ago
-  required: false
   additionalinfo: Data is not available prior to March 2018.
-- name: insecure
-  display: Trust any certificate (not secure)
-  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
   type: 8
+  required: false
   additionalinfo:
-- name: proxy
-  display: Use system proxy settings
-  required: false
+- display: Use system proxy settings
+  name: proxy
   type: 8
+  required: false
   additionalinfo:
 description: Slack logs event collector integration for XSIAM.
 display: Slack Event Collector
@@ -113,7 +103,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
 marketplaces:
 - marketplacev2

@@ -1,5 +1,6 @@
 [MODEL: dataset=duo_duo_raw, model=Auth]
-alter XDM.Auth.Client.host.hostname = json_extract_scalar(access_device, "$.hostname"),
+filter eventtype = "authentication"
+| alter XDM.Auth.Client.host.hostname = json_extract_scalar(access_device, "$.hostname"),
 XDM.Auth.Client.host.ipv4_addresses = arraycreate(json_extract_scalar(access_device, "$.ip")),
 XDM.Auth.Client.location.city = json_extract_scalar(access_device, "$.location.city"),
 XDM.Auth.Client.location.country = json_extract_scalar(access_device, "$.location.country"),
@@ -10,7 +11,8 @@ XDM.Auth.auth_method = factor,
 XDM.Auth.event_timestamp = to_timestamp(to_integer(timestamp), "SECONDS");
 
 [MODEL: dataset=duo_duo_raw, model=Audit]
-alter XDM.Audit.operation = action,
+filter eventtype = "administrator"
+| alter XDM.Audit.operation = action,
 XDM.Audit.original_event_description = description,
 XDM.Audit.audited_resource.name = object,
 XDM.Audit.event_timestamp = to_timestamp(to_integer(timestamp), "SECONDS"),
