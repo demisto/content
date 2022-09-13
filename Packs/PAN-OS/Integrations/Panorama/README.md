@@ -711,6 +711,34 @@ Creates an address object.
 
 >Address was created successfully.
 
+
+### pan-os-edit-address
+***
+Edits an address object.
+
+
+#### Base Command
+
+`pan-os-edit-address`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the address to edit. | Required | 
+| device-group | The device-group in which the address is in. | Optional | 
+| element_to_change | The element to change. Possible values are: fqdn, ip_netmask, ip_range, ip_wildcard, description, tag. | Required | 
+| element_value | the value of the element that needs to be changed. Can be a list when element_to_change == 'tag' only. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-address name=test4 element_to_change=ip_range element_value="10.0.0.1-10.0.0.4"```
+#### Human Readable Output
+
+>Address test4 was edited successfully.
+
 ### pan-os-delete-address
 ***
 Delete an address object

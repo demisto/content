@@ -3806,6 +3806,31 @@ script:
       description: The address tag.
       type: String
   - arguments:
+    - description: The name of the address to edit.
+      isArray: false
+      name: name
+      required: true
+    - description: The device-group in which the address is in.
+      isArray: false
+      name: device-group
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - fqdn
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - description
+      - tag
+    - description: the value of the element that needs to be changed. Can be a list when element_to_change == 'tag' only.
+      isArray: true
+      name: element_value
+      required: true
+    description: Edits an address object.
+    name: pan-os-edit-address
+  - arguments:
     - description: The name of the address to delete.
       name: name
       required: true

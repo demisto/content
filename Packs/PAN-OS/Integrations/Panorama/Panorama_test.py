@@ -3426,3 +3426,73 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'name': 'address', 'element_to_change': 'fqdn', 'element_value': '1.1.1.1'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']/address'
+                             '/entry[@name="address"]/fqdn',
+                    'element': '<fqdn>1.1.1.1</fqdn>', 'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            ),
+            pytest.param(
+                {
+                    'name': 'address', 'element_to_change': 'ip_range', 'element_value': '1.1.1.1-1.1.1.8'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']'
+                             '/address/entry[@name="address"]/ip-range',
+                    'element': '<ip-range>1.1.1.1-1.1.1.8</ip-range>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            ),
+            pytest.param(
+                {
+                    'name': 'address', 'element_to_change': 'tag', 'element_value': 'tag1,tag2'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': '/config/devices/entry/vsys/entry[@name=\'vsys1\']/address/entry[@name="address"]/tag',
+                    'element': '<tag><member>tag1</member><member>tag2</member></tag>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            )
+        ]
+    )
+def test_pan_os_edit_address_group_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+    - Panorama instance configuration and fqdn object of an address to edit.
+    - Panorama instance configuration and ip-range object of an address to edit.
+    - Firewall instance configuration and tag object of an address to edit.
+
+    When:
+    - running the pan-os-edit-address through the main flow.
+
+    Then:
+    - make sure the xpath and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address')
+
+    main()
+
+    assert mock_request.call_args.kwargs['params'] == expected_url_params
