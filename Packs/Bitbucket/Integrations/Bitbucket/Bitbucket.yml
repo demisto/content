@@ -7,7 +7,7 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Pack for handling Bitbucket operations
 configuration:
-  - name: workspace
+  - name: Workspace
     display: Workspace
     required: true
     defaultvalue: null
@@ -19,7 +19,7 @@ configuration:
     defaultvalue: https://api.bitbucket.org/2.0
     type: 0
     additionalinfo: null
-  - name: user_name
+  - name: UserName
     display: User Name
     required: true
     defaultvalue: null
@@ -620,6 +620,10 @@ script:
           required: true
           description: The path of the needed file.
           isArray: false
+        - name: branch
+          required: false
+          description: The branch of the file. If a branch isn't given, by default the command will return the content of the last edited file with the same file_path.
+          isArray: false
       outputs:
         - contextPath: Bitbucket.RawFile.file_path
           description: 'The path of the file.'
@@ -937,7 +941,7 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to update.
+          description: The id of the issue to update. To get the issue id, use the command bitbucket-issue-list
           isArray: false
         - name: state
           auto: PREDEFINED
@@ -1122,9 +1126,13 @@ script:
           description: A description of the pull request.
           isArray: false
         - name: close_source_branch
+          auto: PREDEFINED
           required: false
           description: Should the source branch be closed after the pull request.
           isArray: false
+          predefined:
+            - yes
+            - no
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
           description: 'How many comments there are in the pull request.'
@@ -1284,14 +1292,14 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request to update.
+          description: The id of the pull request to update. In order to get the pull_request_id, use the command bitbucket-pull-request-list
           isArray: false
         - name: title
-          required: true
+          required: false
           description: The title of the new pull request.
           isArray: false
         - name: source_branch
-          required: true
+          required: false
           description: The branch to merge.
           isArray: false
         - name: destination_branch
@@ -1751,7 +1759,7 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to comment on.
+          description: The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list.
           isArray: false
         - name: comment_id
           required: false
@@ -1847,11 +1855,11 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to comment on.
+          description: The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list.
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment to delete.
+          description: The id of the comment to delete. In order to get the issue_id please use the command bitbucket-issue-comment-list.
           isArray: false
         - name: content
           required: true
@@ -1945,6 +1953,90 @@ script:
           required: true
           description: The content of the comment.
           isArray: false
+      outputs:
+        - contextPath: Bitbucket.PullRequestComment.id
+          description: 'The action id.'
+          type: Number
+        - contextPath: Bitbucket.PullRequestComment.created_on
+          description: 'The creation date of the pull request comment.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.updated_on
+          description: 'The update date of the pull request comment.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.content.type
+          description: 'The type of the content, like rendered.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.content.raw
+          description: 'The actual content of the comment.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.content.markup
+          description: 'The text styling type, such as markdown.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.content.html
+          description: 'The content of the comment in html format.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.display_name
+          description: 'The display name of the user who created the comment.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.links
+          description: 'Links to information about the user'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.type
+          description: 'The type of the user.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.uuid
+          description: 'The unique id of the user.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.account_id
+          description: 'The account id of the user.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.user.nickname
+          description: 'The nickname of the user.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.deleted
+          description: 'Is the comment deleted.'
+          type: Boolean
+        - contextPath: Bitbucket.PullRequestComment.type
+          description: 'The type of the action.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.links
+          description: 'Links to information about the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.pullrequest.type
+          description: 'The type of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.pullrequest.id
+          description: 'The id of the pull request.'
+          type: Number
+        - contextPath: Bitbucket.PullRequestComment.pullrequest.title
+          description: 'The title of the pull request.'
+          type: String
+        - contextPath: Bitbucket.PullRequestComment.pullrequest.links
+          description: 'Links to information about the pull request.'
+          type: String
+    - name: bitbucket-pull-request-comment-list
+      description: returns a list of comments of a specific pull request.
+      arguments:
+        - name: repo
+          required: false
+          description: The repository name or slug.
+          isArray: false
+        - name: pull_request_id
+          required: true
+          description: The id of the pull request.
+          isArray: false
+        - name: comment_id
+          required: false
+          description: The id of the comment.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of items in the list.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
           description: 'The action id.'

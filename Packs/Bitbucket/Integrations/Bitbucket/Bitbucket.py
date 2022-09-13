@@ -56,14 +56,7 @@ class Client(BaseClient):
 
     def branch_delete_request(self, branch_name: str, repo: str = None) -> str:
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
-
-        # response = self._http_request(method='DELETE', url_suffix=url_suffix)
-        # except DemistoException as e:
-        #     status_code = e.res.status_code
-        #     if status_code == 204:
-        #         return str(204)
-        #     else:
-        #         return e.message
+        return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
     def commit_create_request(self, body: Dict, repo: str = None):
         url_suffix = f'/repositories/{self.workspace}/{repo}/src'
@@ -236,9 +229,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def pull_request_comment_create_request(self, repo: str, pr_id: int, body: Dict) -> Dict:
-        """ Makes a GET request /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint to get
-            information about a specific comment to an issue. if there is no comment_id than Makes a GET request
-            /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific issue.
+        """ Makes a POST request /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint to create
+            a new pull request.
             :param repo: str - The repository the user entered, if he did.
             :param pr_id: str - an id to a specific pull request to add a comment to.
             :param body: Dict - a dictionary containing information about the content of the comment.
@@ -249,6 +241,24 @@ class Client(BaseClient):
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+    def pull_request_comment_list(self, repo: str, pr_id: int, params: Dict, comment_id: str) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            to get information about a specific comment of a pull request. If there is no comment_id than Makes a GET request
+            /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific pull request.
+            :param repo: str - The repository the user entered, if he did.
+            :param pr_id: str - an id to a specific pull request to add a comment to.
+            :param params: Dict - a dictionary containing information about the pagination, if needed.
+            :param comment_id: str - an id to a specific comment, in order to get info about it.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
+        if comment_id:
+            url_suffix = f'{url_suffix}/{comment_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -292,14 +302,15 @@ def check_args(limit: int, page: int):
 
 def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
                              description: str, close_source_branch: str) -> Dict:
-    body = {
-        "title": title,
-        "source": {
+    body = {}
+    if title:
+        body["title"] = title
+    if source_branch:
+        body["source"] = {
             "branch": {
                 "name": source_branch
             }
         }
-    }
     if destination_branch:
         body["destination"] = {
             "branch": {
@@ -459,7 +470,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     if not repo:
         repo = client.repository
     response = client.branch_delete_request(branch_name, repo)
-    if response == '204':
+    if response.status_code == 204:
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
     else:
         return CommandResults(readable_output=response)
@@ -573,12 +584,17 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
 def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     file_path = args.get('file_path', None)
+    branch = args.get('branch', None)
     params = {
         'path': file_path
     }
     if not repo:
         repo = client.repository
-    commit_list = client.commit_list_request(repo=repo, params=params)
+    if branch:
+        including_list = [branch]
+    else:
+        including_list = None
+    commit_list = client.commit_list_request(repo=repo, params=params, included_list=including_list)
 
     if len(commit_list.get('values')) == 0:
         return CommandResults(readable_output=f'The file {file_path} does not exist')
@@ -590,7 +606,7 @@ def raw_file_get_command(client: Client, args: Dict) -> CommandResults:
         'file_content': response.text
     }
     if response.status_code == 200:
-        return CommandResults(readable_output=f'The file {file_path} content is: {response.text}',
+        return CommandResults(readable_output=f'The content of the file "{file_path}" is: {response.text}',
                               outputs_prefix='Bitbucket.RawFile',
                               outputs=output)
     else:
@@ -661,7 +677,8 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         hr_title = f'List of the issues'
     human_readable = []
     for value in results:
-        d = {'Title': value.get('title'),
+        d = {'Id': value.get('id'),
+             'Title': value.get('title'),
              'Type': value.get('kind'),
              'Priority': value.get('priority'),
              'Status': value.get('state'),
@@ -672,7 +689,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
              }
         human_readable.append(d)
 
-    headers = ['Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']
+    headers = ['Id', 'Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']
     readable_output = tableToMarkdown(
         name=hr_title,
         t=human_readable,
@@ -818,7 +835,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         hr_title = f'List of the pull requests'
     human_readable = []
     for value in results:
-        d = {'Title': value.get('title'),
+        d = {'Id': value.get('id'),
+             'Title': value.get('title'),
              'Description': value.get('description'),
              'SourceBranch': demisto.get(value, 'source.branch.name'),
              'DestinationBranch': demisto.get(value, 'destination.branch.name'),
@@ -829,7 +847,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
              }
         human_readable.append(d)
 
-    headers = ['Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt',
+    headers = ['Id', 'Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt',
                'UpdatedAt']
     readable_output = tableToMarkdown(
         name=hr_title,
@@ -887,7 +905,7 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
         repo = client.repository
     response = client.issue_comment_delete_request(repo, issue_id, comment_id)
     return CommandResults(
-        readable_output=f'The comment number {comment_id} on the issue number {issue_id} was deleted successfully',
+        readable_output=f'The comment on issue number {issue_id} was deleted successfully',
         outputs_prefix='Bitbucket.IssueComment',
         outputs={},
         raw_response={})
@@ -1008,7 +1026,50 @@ def pull_request_comment_list(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with a list of the comments or a single comment on a specific issue.
     """
     repo = args.get('repo', None)
-    pr_id = arg_to_number(args.get('pull_request_id', None))
+    pr_id = arg_to_number(args.get('pull_request_id'))
+    comment_id = args.get('comment_id', None)
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'page': page,
+        'pagelen': page_size
+    }
+    if not repo:
+        repo = client.repository
+    response = client.pull_request_comment_list(repo, pr_id, params, comment_id)
+    if comment_id:
+        results = [response]
+        hr_title = f'The information about the comment "{comment_id}"'
+    else:
+        results = check_pagination(client, response, limit)
+        hr_title = f'List of the comments on pull request number "{pr_id}"'
+    human_readable = []
+    for value in results:
+        d = {'Id': value.get('id'),
+             'Content': demisto.get(value, 'content.raw'),
+             'CreatedBy': demisto.get(value, 'user.display_name'),
+             'CreatedAt': value.get('created_on'),
+             'UpdatedAt': value.get('updated_on'),
+             'IssueId': demisto.get(value, 'issue.id'),
+             'IssueTitle': demisto.get(value, 'issue.title'),
+             }
+        human_readable.append(d)
+
+    headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
+    readable_output = tableToMarkdown(
+        name=hr_title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.PullRequestComment',
+        outputs=results,
+        raw_response=results
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -1021,10 +1082,10 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
 
-    workspace = demisto.params().get('workspace', "")
+    workspace = demisto.params().get('Workspace', "")
     server_url = demisto.params().get('server_url', "")
-    user_name = demisto.params().get('user_name', "").get('identifier', "")
-    app_password = demisto.params().get('user_name', "").get('password', "")
+    user_name = demisto.params().get('UserName', "").get('identifier', "")
+    app_password = demisto.params().get('UserName', "").get('password', "")
     repository = demisto.params().get('repository', "")
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -1104,6 +1165,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-comment-create':
             result = pull_request_comment_create_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-comment-list':
+            result = pull_request_comment_list(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
