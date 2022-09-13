@@ -6,7 +6,7 @@ EXTERNAL_SERVICES_RESULTS = [
     {
         "active_classifications": [],
         "business_units": [
-            "jwilkes - Toys R US"
+            "Acme"
         ],
         "discovery_type": "ColocatedOnIp",
         "domain": [],
@@ -36,7 +36,7 @@ EXTERNAL_SERVICES_RESULTS = [
             "ISCBIND9"
         ],
         "business_units": [
-            "jwilkes test - VanDelay Industries"
+            "VanDelay Industries"
         ],
         "discovery_type": "ColocatedOnIp",
         "domain": [],
@@ -101,12 +101,12 @@ EXTERNAL_SERVICE_RESULTS = [
             "OpenSSH"
         ],
         "business_units": [
-            "jwilkes - Toys R US"
+            "Acme"
         ],
         "details": {
             "businessUnits": [
                 {
-                    "name": "jwilkes - Toys R US"
+                    "name": "Acme"
                 }
             ],
             "certificates": [],
@@ -432,7 +432,7 @@ EXTERNAL_RANGES_RESULTS = [
     {
         "active_responsive_ips_count": 0,
         "business_units": [
-            "jwilkes test - VanDelay Industries"
+            "VanDelay Industries"
         ],
         "date_added": 1662988031334,
         "first_ip": "220.241.52.192",
@@ -448,7 +448,7 @@ EXTERNAL_RANGES_RESULTS = [
     {
         "active_responsive_ips_count": 0,
         "business_units": [
-            "jwilkes test - VanDelay Industries"
+            "VanDelay Industries"
         ],
         "date_added": 1662988031334,
         "first_ip": "217.206.176.80",
@@ -468,7 +468,7 @@ EXTERNAL_RANGE_RESULTS = [
     {
         "active_responsive_ips_count": 0,
         "business_units": [
-            "jwilkes test - VanDelay Industries"
+            "VanDelay Industries"
         ],
         "date_added": 1662988031334,
         "details": {
@@ -483,7 +483,7 @@ EXTERNAL_RANGE_RESULTS = [
                         {
                             "address": "",
                             "dateAdded": 1662986267926,
-                            "email": "noc@imsbiz.com",
+                            "email": "noc@acme.com",
                             "firstRegistered": null,
                             "formattedName": "",
                             "handle": "MAINT-HK-PCCW-BIA-CS",
@@ -499,7 +499,7 @@ EXTERNAL_RANGE_RESULTS = [
                         {
                             "address": "HKT Limited\nPO Box 9896 GPO          ",
                             "dateAdded": 1662986267926,
-                            "email": "noc@imsbiz.com",
+                            "email": "noc@acme.com",
                             "firstRegistered": 1220514856000,
                             "formattedName": "TECHNICAL ADMINISTRATORS",
                             "handle": "TA66-AP",
@@ -515,7 +515,7 @@ EXTERNAL_RANGE_RESULTS = [
                         {
                             "address": "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ",
                             "dateAdded": 1662986267926,
-                            "email": "cs@imsbiz.com",
+                            "email": "cs@acme.com",
                             "firstRegistered": 1220514857000,
                             "formattedName": "BIZ NETVIGATOR ADMINISTRATORS",
                             "handle": "BNA2-AP",
@@ -555,7 +555,7 @@ EXTERNAL_EXPOSURES_RESULTS = [
         "asm_va_score": null,
         "asset_type": "CERTIFICATE",
         "business_units": [
-            "jwilkes - Toys R US"
+            "Acme"
         ],
         "certificate_algorithm": "SHA1withRSA",
         "certificate_classifications": [
@@ -580,7 +580,7 @@ EXTERNAL_EXPOSURES_RESULTS = [
         "last_observed": null,
         "mac_addresses": [],
         "management_status": [],
-        "name": "*.babiesrus.com",
+        "name": "*.acme.com",
         "operation_system": null,
         "region": null,
         "sensor": [
@@ -596,7 +596,7 @@ EXTERNAL_EXPOSURES_RESULTS = [
         "asm_va_score": null,
         "asset_type": "CERTIFICATE",
         "business_units": [
-            "jwilkes test - VanDelay Industries"
+            "VanDelay Industries"
         ],
         "certificate_algorithm": "SHA256withRSA",
         "certificate_classifications": [
@@ -637,7 +637,7 @@ EXTERNAL_EXPOSURE_RESULTS = [
         "all_service_ids": [],
         "asm_ids": "3c176460-8735-333c-b618-8262e2fb660c",
         "business_units": [
-            "jwilkes - Toys R US"
+            "Acme"
         ],
         "certificate_algorithm": "SHA1withRSA",
         "certificate_classifications": [
@@ -650,7 +650,7 @@ EXTERNAL_EXPOSURE_RESULTS = [
         "details": {
             "businessUnits": [
                 {
-                    "name": "jwilkes - Toys R US"
+                    "name": "Acme"
                 }
             ],
             "certificateDetails": {
@@ -675,13 +675,13 @@ EXTERNAL_EXPOSURE_RESULTS = [
                 "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb",
                 "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8",
                 "signatureAlgorithm": "SHA1withRSA",
-                "subject": "C=US,ST=New Jersey,L=Wayne,O=Toys R Us,OU=MIS,CN=*.babiesrus.com",
-                "subjectAlternativeNames": "*.babiesrus.com",
+                "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com",
+                "subjectAlternativeNames": "*.acme.com",
                 "subjectCountry": "US",
                 "subjectEmail": null,
                 "subjectLocality": "Wayne",
-                "subjectName": "*.babiesrus.com",
-                "subjectOrg": "Toys R Us",
+                "subjectName": "*.acme.com",
+                "subjectOrg": "Acme",
                 "subjectOrgUnit": "MIS",
                 "subjectState": "New Jersey",
                 "validNotAfter": 1444780799000,
@@ -709,7 +709,7 @@ EXTERNAL_EXPOSURE_RESULTS = [
         "first_observed": null,
         "ips": [],
         "last_observed": null,
-        "name": "*.babiesrus.com",
+        "name": "*.acme.com",
         "resolves": false,
         "type": "Certificate"
     }
