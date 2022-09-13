@@ -12,6 +12,22 @@ ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboa
                    'DefaultPlaybook', 'DemistoLocking']
 
 
+def verify_search_response_in_list(response: Union[dict, str, list], name: str):
+    if type(response) is list:
+        for entity in response:
+            if entity.get("id") == name:
+                return entity.get("id")
+    return False
+
+
+def verify_search_response_in_dict(response: Union[dict, str, list]):
+    if type(response) is dict:
+        if not response or not response.get("id"):
+            return False
+        return response.get("id")
+    return False
+
+
 class EntityAPI(ABC):
     """Abstract class for APIs of different content entities."""
     name = ''
@@ -32,9 +48,8 @@ class EntityAPI(ABC):
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
         pass
 
-    @abstractmethod
     def parse_all_entities_response(self, response: Union[dict, str, list]):
-        pass
+        return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
 class PlaybookAPI(EntityAPI):
@@ -51,33 +66,29 @@ class PlaybookAPI(EntityAPI):
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str):  # TODO: check
         return execute_command('demisto-api-post',
                                {'uri': '/playbook/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
-        if type(response) is dict:
-            if not response or not response.get("id"):
-                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
-                return False
-            return response.get("id")
-        return False
+        return verify_search_response_in_dict(response)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
         return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
 
 
 class IntegrationAPI(EntityAPI):
-    # TODO: check
+
     name = 'integration'
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration/search',
-                                'body': {'page': 0, 'size': 1, 'query': f'id:"{specific_id}"'}},
+                                'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
+    # TODO: doesn't work
 
     def search_all(self):
         return execute_command('demisto-api-post',
@@ -85,21 +96,262 @@ class IntegrationAPI(EntityAPI):
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
+    # TODO: doesn't work
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-delete',
                                {'uri': f'/settings/integration/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: Union[dict, str], name: str):
-        if type(response) is dict:
-            if not response or not response.get("id"):
-                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
-                return False
-            return response.get("id")
-        return False
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        integrations = response.get('configurations', []) if type(response) is dict else response
+        return verify_search_response_in_list(integrations, name)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
-        return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
+        integrations = response.get('configurations', []) if response is dict else response
+        return [entity.get('id') for entity in integrations] if type(integrations) is list else []
+
+
+class ScriptAPI(EntityAPI):  # TODO: check
+    name = 'script'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': '/automation/search',
+                                'body': {'page': 0, 'size': 100}},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-post',
+                               {'uri': '/automation/search',
+                                'body': {'page': 0, 'size': 100}},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-post',
+                               {'uri': '/automation/delete',
+                                'body': {'id': specific_id}},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        scripts = response.get('scripts') if type(response) is dict else response
+        return verify_search_response_in_list(scripts, name)
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        return [entity.get('id', '') for entity in response.get('scripts', [])] if type(response) is dict else []
+
+
+class IncidentFieldAPI(EntityAPI):
+    name = 'incidentfield'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': '/incidentfields'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/incidentfields'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):  # TODO: check
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/incidentfield/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        return verify_search_response_in_list(response, name)
+
+
+class PreProcessingRuleAPI(EntityAPI):  # TODO: check
+    name = 'preprocess rule'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/preprocess/rules'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/preprocess/rules'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/preprocess/rule/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        return verify_search_response_in_list(response, name)
+
+
+class WidgetAPI(EntityAPI):  # TODO: check
+    name = 'widget'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/widgets/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/widgets'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/widgets/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        return verify_search_response_in_dict(response)
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        if response is dict:
+            return list(response.keys())
+        return [entity.get('id', '') for entity in response] if type(response) is list else []
+
+
+class DashboardAPI(EntityAPI):  # TODO: check
+    name = 'dashboard'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/dashboards/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/dashboards'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/dashboards/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        verify_search_response_in_dict(response)
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        if response is dict:
+            return list(response.keys())
+        return [entity.get('id', '') for entity in response] if type(response) is list else []
+
+
+class ReportAPI(EntityAPI):
+    name = 'report'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/reports/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/reports'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):   # TODO: check
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/reports/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str], name: str):
+        return verify_search_response_in_dict(response)
+
+
+class IncidentTypeAPI(EntityAPI):
+    name = 'incidenttype'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/incidenttypes/export'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/incidenttypes/export'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):  # TODO: check
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/incidenttype/delete',
+                                'body': {'id': specific_id}},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        return verify_search_response_in_list(response, name)
+
+
+class ClassifierAPI(EntityAPI):  # TODO: check
+    name = 'classifier'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/classifier/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-post',  # TODO: check.
+                               {'uri': '/classifier/search',
+                                'body': {'page': 0, 'size': 100}},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/classifier/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        return verify_search_response_in_dict(response)
+
+    def parse_all_entities_response(self, response: Union[dict, str, list]):
+        classifiers = response.get('classifiers', []) if type(response) is dict else []
+        return [entity.get('id', '') for entity in classifiers] if type(classifiers) is list else []
+
+
+class ReputationAPI(EntityAPI):
+    name = 'reputation'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': '/reputation/export'},
+                               fail_on_error=False)
+
+    def search_all(self):  # TODO: check
+        return execute_command('demisto-api-get',
+                               {'uri': '/reputation/export'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-delete',
+                               {'uri': f'/reputation/{specific_id}'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        return verify_search_response_in_list(response, name)
+
+
+class LayoutAPI(EntityAPI):
+    name = 'layout'
+
+    def search_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-get',
+                               {'uri': f'/layout/{specific_id}'},
+                               fail_on_error=False)
+
+    def search_all(self):
+        return execute_command('demisto-api-get',
+                               {'uri': '/layouts'},
+                               fail_on_error=False)
+
+    def delete_specific_id(self, specific_id: str):  # TODO: check
+        return execute_command('demisto-api-post',
+                               {'uri': f'/layout/{specific_id}/remove'},
+                               fail_on_error=False)
+
+    def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
+        return verify_search_response_in_dict(response)
 
 
 class JobAPI(EntityAPI):
@@ -130,7 +382,6 @@ class JobAPI(EntityAPI):
                 job_params = search_results[0]
 
         if not job_params or not job_params.get("id"):
-            demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
             return False
         return job_params.get("id")
 
@@ -148,7 +399,7 @@ class ListAPI(EntityAPI):
 
     def search_all(self):
         return execute_command('demisto-api-get',
-                               {'uri': '/playbook/search'},
+                               {'uri': '/lists/names'},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str):
@@ -185,16 +436,7 @@ class InstalledPackAPI(EntityAPI):
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
-
-        if type(response) is dict:
-            if not response or not response.get("id"):
-                demisto.debug(f'{SCRIPT_NAME} - {self.name} to delete not found. Aborting.')
-                return False
-            return response.get("id")
-        return False
-
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
-        return [entity.get('id', '') for entity in response] if type(response) is list else []
+        return verify_search_response_in_dict(response)
 
 
 def search_and_delete_existing_entity(name: str, entity_api: EntityAPI, dry_run: bool = True) -> bool:
@@ -317,12 +559,12 @@ def get_deletion_status(excluded: list, included: list, deleted: list, undeleted
 
 
 def handle_content_enitity(entity_api: EntityAPI,
-                           included_ids_dict: dict,
-                           excluded_ids_dict: dict,
+                           included_ids_dict: Optional[dict],
+                           excluded_ids_dict: Optional[dict],
                            dry_run: bool) -> Tuple[bool, dict, dict]:
 
-    excluded_ids = excluded_ids_dict.get(entity_api.name, [])
-    included_ids = included_ids_dict.get(entity_api.name, [])
+    excluded_ids = excluded_ids_dict.get(entity_api.name, []) if excluded_ids_dict else []
+    included_ids = included_ids_dict.get(entity_api.name, []) if included_ids_dict else []
     if entity_api.name == InstalledPackAPI.name:
         excluded_ids += ALWAYS_EXCLUDED
 
@@ -358,9 +600,8 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
     exclude_ids = json.loads(args.get('exclude_ids_dict')) if type(args.get('exclude_ids_dict')) == str else args.get('exclude_ids_dict')
 
     entities_to_delete = [InstalledPackAPI(), IntegrationAPI(), ScriptAPI(), PlaybookAPI(), IncidentFieldAPI(),
-                          PreProcessingRuleAPI(),
-                          WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(), IncidentTypeAPI(),
-                          ClassifierAPI(), ReputationAPI(), AgentToolAPI(), LayoutAPI()]
+                          PreProcessingRuleAPI(), WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(),
+                          IncidentTypeAPI(), ClassifierAPI(), ReputationAPI(), LayoutAPI()]
 
     all_deleted: dict = dict()
     all_not_deleted: dict = dict()
