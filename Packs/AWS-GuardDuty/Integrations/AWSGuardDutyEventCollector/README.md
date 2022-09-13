@@ -1,5 +1,4 @@
 Amazon Web Services Guard Duty Service Event Collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of AWS - GuardDuty Event Collector
 
 ## Configure AWS - GuardDuty Event Collector on Cortex XSOAR
 
