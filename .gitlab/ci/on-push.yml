@@ -302,6 +302,7 @@ xsoar_server_master:
       when: always
   variables:
     INSTANCE_ROLE: "Server Master"
+    KOKO: "koko"
 
 
 # fan-in-nightly:
