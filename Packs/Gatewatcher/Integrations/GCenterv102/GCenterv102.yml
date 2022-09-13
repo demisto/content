@@ -9,7 +9,7 @@ configuration:
   required: true
 - display: GCenter API token
   name: token
-  type: 0
+  type: 4
   required: false
 - display: GCenter username
   displaypassword: GCenter password
@@ -28,340 +28,340 @@ script:
   - name: gw-list-alerts
     description: List all alerts
     outputs:
-    - contextPath: GCenter.Alerts.List.sha256
+    - contextPath: GCenter.Alert.List.sha256
       description: The 256 Shasum Of The File
       type: String
-    - contextPath: GCenter.Alerts.List.id
+    - contextPath: GCenter.Alert.List.id
       description: The Id Of The Inspectra Alert
       type: String
-    - contextPath: GCenter.Alerts.List.flow_id
+    - contextPath: GCenter.Alert.List.flow_id
       description: The Flow Id Of The Alert
       type: Number
-    - contextPath: GCenter.Alerts.List.severity
+    - contextPath: GCenter.Alert.List.severity
       description: The Severity Of The Alert
       type: Number
-    - contextPath: GCenter.Alerts.List.src_ip
+    - contextPath: GCenter.Alert.List.src_ip
       description: The Ip Address Of The Alert'S Source
       type: String
-    - contextPath: GCenter.Alerts.List.dest_ip
+    - contextPath: GCenter.Alert.List.dest_ip
       description: The Ip Address Of The Alert'S Target
       type: String
-    - contextPath: GCenter.Alerts.List.src_port
+    - contextPath: GCenter.Alert.List.src_port
       description: The Port Of The Alert'S Source
       type: Number
-    - contextPath: GCenter.Alerts.List.dest_port
+    - contextPath: GCenter.Alert.List.dest_port
       description: The Port Of The Alert'S Target
       type: Number
-    - contextPath: GCenter.Alerts.List.gcap
+    - contextPath: GCenter.Alert.List.gcap
       description: The Gcap That Raised The Alert
       type: String
-    - contextPath: GCenter.Alerts.List.type
+    - contextPath: GCenter.Alert.List.type
       description: Which Type Of Alert (Sigflow, Codebreaker...)
       type: String
-    - contextPath: GCenter.Alerts.List.proto
+    - contextPath: GCenter.Alert.List.proto
       description: The Protocol Used
       type: String
-    - contextPath: GCenter.Alerts.List.host
+    - contextPath: GCenter.Alert.List.host
       description: The Host Where The Alert Was Found
       type: String
-    - contextPath: GCenter.Alerts.List.app_proto
+    - contextPath: GCenter.Alert.List.app_proto
       description: The Malware Application Prototype
       type: String
-    - contextPath: GCenter.Alerts.List.alert_type
+    - contextPath: GCenter.Alert.List.alert_type
       description: Which Event It Is ?
       type: String
-    - contextPath: GCenter.Alerts.List.state
+    - contextPath: GCenter.Alert.List.state
       description: The State Of The Alert
       type: String
-    - contextPath: GCenter.Alerts.List.matched_event
+    - contextPath: GCenter.Alert.List.matched_event
       description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
-    - contextPath: GCenter.Alerts.List.domain_name
+    - contextPath: GCenter.Alert.List.domain_name
       description: For Dga Alerts Only
       type: String
-    - contextPath: GCenter.Alerts.List.probability
+    - contextPath: GCenter.Alert.List.probability
       description: The Severity Probability
       type: Number
-    - contextPath: GCenter.Alerts.List.timestamp_detected
+    - contextPath: GCenter.Alert.List.timestamp_detected
       description: When The Alert Was Detected
       type: Date
-    - contextPath: GCenter.Alerts.List.timestamp_analyzed
+    - contextPath: GCenter.Alert.List.timestamp_analyzed
       description: When The Alert Was Analysed
       type: Date
-    - contextPath: GCenter.Alerts.List.retrohunt.timestamp_package
+    - contextPath: GCenter.Alert.List.retrohunt.timestamp_package
       description: Utc Date When The Ioc Was Added To The Lastinfosec Update Package
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.ioc_creation_date
+    - contextPath: GCenter.Alert.List.retrohunt.ioc_creation_date
       description: The Ioc Creation Date
       type: Date
-    - contextPath: GCenter.Alerts.List.retrohunt.ioc_updated_date
+    - contextPath: GCenter.Alert.List.retrohunt.ioc_updated_date
       description: The Ioc Updated Date
       type: Date
-    - contextPath: GCenter.Alerts.List.retrohunt.description
+    - contextPath: GCenter.Alert.List.retrohunt.description
       description: The Alert Description
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.ioc_type
+    - contextPath: GCenter.Alert.List.retrohunt.ioc_type
       description: Host, Md5, Sha1, Sha256, Url
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.ioc_value
+    - contextPath: GCenter.Alert.List.retrohunt.ioc_value
       description: Characteristic Value Of The Ioc
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.matched_app_proto
+    - contextPath: GCenter.Alert.List.retrohunt.matched_app_proto
       description: The Sigflow Protocol That Contains This Ioc
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.matched_event_type
+    - contextPath: GCenter.Alert.List.retrohunt.matched_event_type
       description: The Sigflow Event Type That Contains This Ioc
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.case_id
+    - contextPath: GCenter.Alert.List.retrohunt.case_id
       description: Uuid Of The Box To Which The Ioc Belongs
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.ioc_id
+    - contextPath: GCenter.Alert.List.retrohunt.ioc_id
       description: Uuid Of The Ioc
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.risk
+    - contextPath: GCenter.Alert.List.retrohunt.risk
       description: Suspicious, High Suspicious, Malicious
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.usage_mode
+    - contextPath: GCenter.Alert.List.retrohunt.usage_mode
       description: Usage Mode
       type: String
-    - contextPath: GCenter.Alerts.List.retrohunt.tlp
+    - contextPath: GCenter.Alert.List.retrohunt.tlp
       description: Tlp
       type: String
-    - contextPath: GCenter.Alerts.List.powershell.file_id
+    - contextPath: GCenter.Alert.List.powershell.file_id
       description: The File Id
       type: String
-    - contextPath: GCenter.Alerts.List.powershell.scores.proba_obfuscated
+    - contextPath: GCenter.Alert.List.powershell.scores.proba_obfuscated
       description: The Probability It Is Obfuscated
       type: Number
-    - contextPath: GCenter.Alerts.List.powershell.scores.analysis
+    - contextPath: GCenter.Alert.List.powershell.scores.analysis
       description: The Powershell Analysis Score
       type: Number
-    - contextPath: GCenter.Alerts.List.shellcode.file_id
+    - contextPath: GCenter.Alert.List.shellcode.file_id
       description: The File Id
       type: String
-    - contextPath: GCenter.Alerts.List.shellcode.encodings.name
+    - contextPath: GCenter.Alert.List.shellcode.encodings.name
       description: The Name Of The Encoding
       type: String
-    - contextPath: GCenter.Alerts.List.shellcode.encodings.count
+    - contextPath: GCenter.Alert.List.shellcode.encodings.count
       description: The Number Of The Encoding Elements
       type: Number
-    - contextPath: GCenter.Alerts.List.shellcode.calls.call
+    - contextPath: GCenter.Alert.List.shellcode.calls.call
       description: The Name Of The Call Of The Alert
       type: String
-    - contextPath: GCenter.Alerts.List.shellcode.calls.args
+    - contextPath: GCenter.Alert.List.shellcode.calls.args
       description: The Argument Used For The Call
       type: String
-    - contextPath: GCenter.Alerts.List.shellcode.calls.ret
+    - contextPath: GCenter.Alert.List.shellcode.calls.ret
       description: The Retention Of The Call
       type: String
-    - contextPath: GCenter.Alerts.List.shellcode.calls.index
+    - contextPath: GCenter.Alert.List.shellcode.calls.index
       description: The Call Index
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.analyzed_clean
+    - contextPath: GCenter.Alert.List.malware.analyzed_clean
       description: Number Of Engines That Returned A Clean Status
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.analyzed_infected
+    - contextPath: GCenter.Alert.List.malware.analyzed_infected
       description: Number Of Engines That Returned An Infected Status
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.analyzed_suspicious
+    - contextPath: GCenter.Alert.List.malware.analyzed_suspicious
       description: Number Of Engines That Returned A Suspicious Status
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.analyzed_other
+    - contextPath: GCenter.Alert.List.malware.analyzed_other
       description: Number Of Engines That Returned Other Statuses
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.analyzed_error
+    - contextPath: GCenter.Alert.List.malware.analyzed_error
       description: Number Of Engines That Failed To Analyze The File
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.code
+    - contextPath: GCenter.Alert.List.malware.code
       description: The Global Code Result
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.def_time
+    - contextPath: GCenter.Alert.List.malware.def_time
       description: 'When The Last Engines Have Ended The Scan '
       type: Date
-    - contextPath: GCenter.Alerts.List.malware.scan_time
+    - contextPath: GCenter.Alert.List.malware.scan_time
       description: The Scan Time In Ms.
       type: Number
-    - contextPath: GCenter.Alerts.List.malware.threats_found
+    - contextPath: GCenter.Alert.List.malware.threats_found
       description: The Threats Found By The Engines
       type: String
-    - contextPath: GCenter.Alerts.List.malware.reporting_token
+    - contextPath: GCenter.Alert.List.malware.reporting_token
       description: The Reporting Token Returned By The Gbox.
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.0.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.0.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.0.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.0.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.0.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.0.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.1.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.1.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.1.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.1.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.1.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.1.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.2.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.2.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.2.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.2.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.2.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.2.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.3.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.3.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.3.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.3.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.3.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.3.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.4.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.4.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.4.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.4.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.4.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.4.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.5.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.5.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.5.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.5.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.5.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.5.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.6.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.6.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.6.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.6.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.6.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.6.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.7.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.7.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.7.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.7.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.7.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.7.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.8.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.8.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.8.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.8.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.8.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.8.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.9.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.9.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.9.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.9.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.9.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.9.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.10.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.10.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.10.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.10.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.10.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.10.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.11.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.11.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.11.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.11.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.11.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.11.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.12.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.12.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.12.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.12.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.12.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.12.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.13.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.13.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.13.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.13.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.13.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.13.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.14.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.14.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.14.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.14.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.14.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.14.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.15.id
+    - contextPath: GCenter.Alert.List.malware.engines_report.15.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.15.threat_details
+    - contextPath: GCenter.Alert.List.malware.engines_report.15.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.List.malware.engines_report.15.scan_result
+    - contextPath: GCenter.Alert.List.malware.engines_report.15.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.List.malware.magic_details
+    - contextPath: GCenter.Alert.List.malware.magic_details
       description: The File Magic
       type: String
-    - contextPath: GCenter.Alerts.List.malware.total_found
+    - contextPath: GCenter.Alert.List.malware.total_found
       description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.alert.action
+    - contextPath: GCenter.Alert.List.sigflow.alert.action
       description: Action
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.alert.signature_id
+    - contextPath: GCenter.Alert.List.sigflow.alert.signature_id
       description: Signature Id
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.alert.gid
+    - contextPath: GCenter.Alert.List.sigflow.alert.gid
       description: Gid
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.alert.category
+    - contextPath: GCenter.Alert.List.sigflow.alert.category
       description: Category
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.packet
+    - contextPath: GCenter.Alert.List.sigflow.packet
       description: Packet
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.in_iface
+    - contextPath: GCenter.Alert.List.sigflow.in_iface
       description: In Which Interface The Alert Occurred
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.stream
+    - contextPath: GCenter.Alert.List.sigflow.stream
       description: Is It Streaming (!= 0)
       type: Number
-    - contextPath: GCenter.Alerts.List.sigflow.payload
+    - contextPath: GCenter.Alert.List.sigflow.payload
       description: Payload
       type: String
-    - contextPath: GCenter.Alerts.List.sigflow.payload_printable
+    - contextPath: GCenter.Alert.List.sigflow.payload_printable
       description: Payload Printable
       type: String
   - name: gw-get-alert
@@ -371,340 +371,340 @@ script:
       required: true
       description: Alert identifier
     outputs:
-    - contextPath: GCenter.Alerts.Single.sha256
+    - contextPath: GCenter.Alert.Single.sha256
       description: The 256 Shasum Of The File
       type: String
-    - contextPath: GCenter.Alerts.Single.id
+    - contextPath: GCenter.Alert.Single.id
       description: The Id Of The Inspectra Alert
       type: String
-    - contextPath: GCenter.Alerts.Single.flow_id
+    - contextPath: GCenter.Alert.Single.flow_id
       description: The Flow Id Of The Alert
       type: Number
-    - contextPath: GCenter.Alerts.Single.severity
+    - contextPath: GCenter.Alert.Single.severity
       description: The Severity Of The Alert
       type: Number
-    - contextPath: GCenter.Alerts.Single.src_ip
+    - contextPath: GCenter.Alert.Single.src_ip
       description: The Ip Address Of The Alert'S Source
       type: String
-    - contextPath: GCenter.Alerts.Single.dest_ip
+    - contextPath: GCenter.Alert.Single.dest_ip
       description: The Ip Address Of The Alert'S Target
       type: String
-    - contextPath: GCenter.Alerts.Single.src_port
+    - contextPath: GCenter.Alert.Single.src_port
       description: The Port Of The Alert'S Source
       type: Number
-    - contextPath: GCenter.Alerts.Single.dest_port
+    - contextPath: GCenter.Alert.Single.dest_port
       description: The Port Of The Alert'S Target
       type: Number
-    - contextPath: GCenter.Alerts.Single.gcap
+    - contextPath: GCenter.Alert.Single.gcap
       description: The Gcap That Raised The Alert
       type: String
-    - contextPath: GCenter.Alerts.Single.type
+    - contextPath: GCenter.Alert.Single.type
       description: Which Type Of Alert (Sigflow, Codebreaker...)
       type: String
-    - contextPath: GCenter.Alerts.Single.proto
+    - contextPath: GCenter.Alert.Single.proto
       description: The Protocol Used
       type: String
-    - contextPath: GCenter.Alerts.Single.host
+    - contextPath: GCenter.Alert.Single.host
       description: The Host Where The Alert Was Found
       type: String
-    - contextPath: GCenter.Alerts.Single.app_proto
+    - contextPath: GCenter.Alert.Single.app_proto
       description: The Malware Application Prototype
       type: String
-    - contextPath: GCenter.Alerts.Single.alert_type
+    - contextPath: GCenter.Alert.Single.alert_type
       description: Which Event It Is ?
       type: String
-    - contextPath: GCenter.Alerts.Single.state
+    - contextPath: GCenter.Alert.Single.state
       description: The State Of The Alert
       type: String
-    - contextPath: GCenter.Alerts.Single.matched_event
+    - contextPath: GCenter.Alert.Single.matched_event
       description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
-    - contextPath: GCenter.Alerts.Single.domain_name
+    - contextPath: GCenter.Alert.Single.domain_name
       description: For Dga Alerts Only
       type: String
-    - contextPath: GCenter.Alerts.Single.probability
+    - contextPath: GCenter.Alert.Single.probability
       description: The Severity Probability
       type: Number
-    - contextPath: GCenter.Alerts.Single.timestamp_detected
+    - contextPath: GCenter.Alert.Single.timestamp_detected
       description: When The Alert Was Detected
       type: Date
-    - contextPath: GCenter.Alerts.Single.timestamp_analyzed
+    - contextPath: GCenter.Alert.Single.timestamp_analyzed
       description: When The Alert Was Analysed
       type: Date
-    - contextPath: GCenter.Alerts.Single.retrohunt.timestamp_package
+    - contextPath: GCenter.Alert.Single.retrohunt.timestamp_package
       description: Utc Date When The Ioc Was Added To The Lastinfosec Update Package
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.ioc_creation_date
+    - contextPath: GCenter.Alert.Single.retrohunt.ioc_creation_date
       description: The Ioc Creation Date
       type: Date
-    - contextPath: GCenter.Alerts.Single.retrohunt.ioc_updated_date
+    - contextPath: GCenter.Alert.Single.retrohunt.ioc_updated_date
       description: The Ioc Updated Date
       type: Date
-    - contextPath: GCenter.Alerts.Single.retrohunt.description
+    - contextPath: GCenter.Alert.Single.retrohunt.description
       description: The Alert Description
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.ioc_type
+    - contextPath: GCenter.Alert.Single.retrohunt.ioc_type
       description: Host, Md5, Sha1, Sha256, Url
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.ioc_value
+    - contextPath: GCenter.Alert.Single.retrohunt.ioc_value
       description: Characteristic Value Of The Ioc
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.matched_app_proto
+    - contextPath: GCenter.Alert.Single.retrohunt.matched_app_proto
       description: The Sigflow Protocol That Contains This Ioc
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.matched_event_type
+    - contextPath: GCenter.Alert.Single.retrohunt.matched_event_type
       description: The Sigflow Event Type That Contains This Ioc
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.case_id
+    - contextPath: GCenter.Alert.Single.retrohunt.case_id
       description: Uuid Of The Box To Which The Ioc Belongs
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.ioc_id
+    - contextPath: GCenter.Alert.Single.retrohunt.ioc_id
       description: Uuid Of The Ioc
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.risk
+    - contextPath: GCenter.Alert.Single.retrohunt.risk
       description: Suspicious, High Suspicious, Malicious
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.usage_mode
+    - contextPath: GCenter.Alert.Single.retrohunt.usage_mode
       description: Usage Mode
       type: String
-    - contextPath: GCenter.Alerts.Single.retrohunt.tlp
+    - contextPath: GCenter.Alert.Single.retrohunt.tlp
       description: Tlp
       type: String
-    - contextPath: GCenter.Alerts.Single.powershell.file_id
+    - contextPath: GCenter.Alert.Single.powershell.file_id
       description: The File Id
       type: String
-    - contextPath: GCenter.Alerts.Single.powershell.scores.proba_obfuscated
+    - contextPath: GCenter.Alert.Single.powershell.scores.proba_obfuscated
       description: The Probability It Is Obfuscated
       type: Number
-    - contextPath: GCenter.Alerts.Single.powershell.scores.analysis
+    - contextPath: GCenter.Alert.Single.powershell.scores.analysis
       description: The Powershell Analysis Score
       type: Number
-    - contextPath: GCenter.Alerts.Single.shellcode.file_id
+    - contextPath: GCenter.Alert.Single.shellcode.file_id
       description: The File Id
       type: String
-    - contextPath: GCenter.Alerts.Single.shellcode.encodings.name
+    - contextPath: GCenter.Alert.Single.shellcode.encodings.name
       description: The Name Of The Encoding
       type: String
-    - contextPath: GCenter.Alerts.Single.shellcode.encodings.count
+    - contextPath: GCenter.Alert.Single.shellcode.encodings.count
       description: The Number Of The Encoding Elements
       type: Number
-    - contextPath: GCenter.Alerts.Single.shellcode.calls.call
+    - contextPath: GCenter.Alert.Single.shellcode.calls.call
       description: The Name Of The Call Of The Alert
       type: String
-    - contextPath: GCenter.Alerts.Single.shellcode.calls.args
+    - contextPath: GCenter.Alert.Single.shellcode.calls.args
       description: The Argument Used For The Call
       type: String
-    - contextPath: GCenter.Alerts.Single.shellcode.calls.ret
+    - contextPath: GCenter.Alert.Single.shellcode.calls.ret
       description: The Retention Of The Call
       type: String
-    - contextPath: GCenter.Alerts.Single.shellcode.calls.index
+    - contextPath: GCenter.Alert.Single.shellcode.calls.index
       description: The Call Index
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.analyzed_clean
+    - contextPath: GCenter.Alert.Single.malware.analyzed_clean
       description: Number Of Engines That Returned A Clean Status
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.analyzed_infected
+    - contextPath: GCenter.Alert.Single.malware.analyzed_infected
       description: Number Of Engines That Returned An Infected Status
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.analyzed_suspicious
+    - contextPath: GCenter.Alert.Single.malware.analyzed_suspicious
       description: Number Of Engines That Returned A Suspicious Status
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.analyzed_other
+    - contextPath: GCenter.Alert.Single.malware.analyzed_other
       description: Number Of Engines That Returned Other Statuses
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.analyzed_error
+    - contextPath: GCenter.Alert.Single.malware.analyzed_error
       description: Number Of Engines That Failed To Analyze The File
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.code
+    - contextPath: GCenter.Alert.Single.malware.code
       description: The Global Code Result
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.def_time
+    - contextPath: GCenter.Alert.Single.malware.def_time
       description: 'When The Last Engines Have Ended The Scan '
       type: Date
-    - contextPath: GCenter.Alerts.Single.malware.scan_time
+    - contextPath: GCenter.Alert.Single.malware.scan_time
       description: The Scan Time In Ms.
       type: Number
-    - contextPath: GCenter.Alerts.Single.malware.threats_found
+    - contextPath: GCenter.Alert.Single.malware.threats_found
       description: The Threats Found By The Engines
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.reporting_token
+    - contextPath: GCenter.Alert.Single.malware.reporting_token
       description: The Reporting Token Returned By The Gbox.
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.0.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.0.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.0.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.0.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.0.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.0.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.1.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.1.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.1.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.1.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.2.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.2.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.2.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.2.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.3.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.3.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.3.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.3.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.4.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.4.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.4.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.4.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.5.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.5.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.5.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.5.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.6.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.6.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.6.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.6.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.7.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.7.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.7.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.7.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.8.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.8.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.8.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.8.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.9.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.9.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.9.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.9.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.10.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.10.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.10.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.10.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.11.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.11.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.11.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.11.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.12.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.12.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.12.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.12.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.13.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.13.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.13.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.13.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.14.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.14.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.14.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.14.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.id
+    - contextPath: GCenter.Alert.Single.malware.engines_report.15.id
       description: The Hash Pf The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.threat_details
+    - contextPath: GCenter.Alert.Single.malware.engines_report.15.threat_details
       description: The Threat Found By The Engine
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.engines_report.15.scan_result
+    - contextPath: GCenter.Alert.Single.malware.engines_report.15.scan_result
       description: Analysis Result
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.magic_details
+    - contextPath: GCenter.Alert.Single.malware.magic_details
       description: The File Magic
       type: String
-    - contextPath: GCenter.Alerts.Single.malware.total_found
+    - contextPath: GCenter.Alert.Single.malware.total_found
       description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.alert.action
+    - contextPath: GCenter.Alert.Single.sigflow.alert.action
       description: Action
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.alert.signature_id
+    - contextPath: GCenter.Alert.Single.sigflow.alert.signature_id
       description: Signature Id
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.alert.gid
+    - contextPath: GCenter.Alert.Single.sigflow.alert.gid
       description: Gid
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.alert.category
+    - contextPath: GCenter.Alert.Single.sigflow.alert.category
       description: Category
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.packet
+    - contextPath: GCenter.Alert.Single.sigflow.packet
       description: Packet
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.in_iface
+    - contextPath: GCenter.Alert.Single.sigflow.in_iface
       description: In Which Interface The Alert Occurred
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.stream
+    - contextPath: GCenter.Alert.Single.sigflow.stream
       description: Is It Streaming (!= 0)
       type: Number
-    - contextPath: GCenter.Alerts.Single.sigflow.payload
+    - contextPath: GCenter.Alert.Single.sigflow.payload
       description: Payload
       type: String
-    - contextPath: GCenter.Alerts.Single.sigflow.payload_printable
+    - contextPath: GCenter.Alert.Single.sigflow.payload_printable
       description: Payload Printable
       type: String
   - name: gw-es-query
@@ -1113,7 +1113,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.7.33922
 fromversion: 6.2.0
 tests:
 - No tests

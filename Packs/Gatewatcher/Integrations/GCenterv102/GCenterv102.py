@@ -811,13 +811,13 @@ def gw_list_alerts(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandR
         args: Command arguments.
 
     Returns:
-        CommandResults object with the "GCenter.Alerts.List" prefix.
+        CommandResults object with the "GCenter.Alert.List" prefix.
     """
     result = client.list_alerts()
     readable_result = tableToMarkdown("Elasticsearch alerts list", result)
     return CommandResults(
         readable_output=readable_result,
-        outputs_prefix="GCenter.Alerts.List",
+        outputs_prefix="GCenter.Alert.List",
         outputs_key_field="id",
         outputs=result,
         raw_response=result
@@ -832,7 +832,7 @@ def gw_get_alert(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandRes
         args: Command arguments.
 
     Returns:
-        CommandResults object with the "GCenter.Alerts.Single" prefix.
+        CommandResults object with the "GCenter.Alert.Single" prefix.
     """
     result = client.get_alert(
         uid=args.get("uid")  # type: ignore
@@ -840,7 +840,7 @@ def gw_get_alert(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandRes
     readable_result = tableToMarkdown("Elasticsearch alert entry", result)
     return CommandResults(
         readable_output=readable_result,
-        outputs_prefix="GCenter.Alerts.Single",
+        outputs_prefix="GCenter.Alert.Single",
         outputs_key_field="id",
         outputs=result,
         raw_response=result

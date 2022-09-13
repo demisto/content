@@ -95,8 +95,8 @@ def send_shellcode():
 @pytest.fixture
 def prefix_mapping():
     return {
-        "gw_list_alerts": "GCenter.Alerts.List",
-        "gw_get_alert": "GCenter.Alerts.Single",
+        "gw_list_alerts": "GCenter.Alert.List",
+        "gw_get_alert": "GCenter.Alert.Single",
         "gw_add_malcore_list_entry": "GCenter.Malcore",
         "gw_del_malcore_list_entry": "GCenter.Malcore",
         "gw_add_dga_list_entry": "GCenter.Dga",

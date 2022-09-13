@@ -36,118 +36,118 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Alerts.List.sha256 | String | The 256 Shasum Of The File | 
-| GCenter.Alerts.List.id | String | The Id Of The Inspectra Alert | 
-| GCenter.Alerts.List.flow_id | Number | The Flow Id Of The Alert | 
-| GCenter.Alerts.List.severity | Number | The Severity Of The Alert | 
-| GCenter.Alerts.List.src_ip | String | The Ip Address Of The Alert'S Source | 
-| GCenter.Alerts.List.dest_ip | String | The Ip Address Of The Alert'S Target | 
-| GCenter.Alerts.List.src_port | Number | The Port Of The Alert'S Source | 
-| GCenter.Alerts.List.dest_port | Number | The Port Of The Alert'S Target | 
-| GCenter.Alerts.List.gcap | String | The Gcap That Raised The Alert | 
-| GCenter.Alerts.List.type | String | Which Type Of Alert \(Sigflow, Codebreaker...\) | 
-| GCenter.Alerts.List.proto | String | The Protocol Used | 
-| GCenter.Alerts.List.host | String | The Host Where The Alert Was Found | 
-| GCenter.Alerts.List.app_proto | String | The Malware Application Prototype | 
-| GCenter.Alerts.List.alert_type | String | Which Event It Is ? | 
-| GCenter.Alerts.List.state | String | The State Of The Alert | 
-| GCenter.Alerts.List.matched_event | String | Value Of The Id Of An Other Alert That Matched \(Allows The Correlation Between Alerts\) | 
-| GCenter.Alerts.List.domain_name | String | For Dga Alerts Only | 
-| GCenter.Alerts.List.probability | Number | The Severity Probability | 
-| GCenter.Alerts.List.timestamp_detected | Date | When The Alert Was Detected | 
-| GCenter.Alerts.List.timestamp_analyzed | Date | When The Alert Was Analysed | 
-| GCenter.Alerts.List.retrohunt.timestamp_package | String | Utc Date When The Ioc Was Added To The Lastinfosec Update Package | 
-| GCenter.Alerts.List.retrohunt.ioc_creation_date | Date | The Ioc Creation Date | 
-| GCenter.Alerts.List.retrohunt.ioc_updated_date | Date | The Ioc Updated Date | 
-| GCenter.Alerts.List.retrohunt.description | String | The Alert Description | 
-| GCenter.Alerts.List.retrohunt.ioc_type | String | Host, Md5, Sha1, Sha256, Url | 
-| GCenter.Alerts.List.retrohunt.ioc_value | String | Characteristic Value Of The Ioc | 
-| GCenter.Alerts.List.retrohunt.matched_app_proto | String | The Sigflow Protocol That Contains This Ioc | 
-| GCenter.Alerts.List.retrohunt.matched_event_type | String | The Sigflow Event Type That Contains This Ioc | 
-| GCenter.Alerts.List.retrohunt.case_id | String | Uuid Of The Box To Which The Ioc Belongs | 
-| GCenter.Alerts.List.retrohunt.ioc_id | String | Uuid Of The Ioc | 
-| GCenter.Alerts.List.retrohunt.risk | String | Suspicious, High Suspicious, Malicious | 
-| GCenter.Alerts.List.retrohunt.usage_mode | String | Usage Mode | 
-| GCenter.Alerts.List.retrohunt.tlp | String | Tlp | 
-| GCenter.Alerts.List.powershell.file_id | String | The File Id | 
-| GCenter.Alerts.List.powershell.scores.proba_obfuscated | Number | The Probability It Is Obfuscated | 
-| GCenter.Alerts.List.powershell.scores.analysis | Number | The Powershell Analysis Score | 
-| GCenter.Alerts.List.shellcode.file_id | String | The File Id | 
-| GCenter.Alerts.List.shellcode.encodings.name | String | The Name Of The Encoding | 
-| GCenter.Alerts.List.shellcode.encodings.count | Number | The Number Of The Encoding Elements | 
-| GCenter.Alerts.List.shellcode.calls.call | String | The Name Of The Call Of The Alert | 
-| GCenter.Alerts.List.shellcode.calls.args | String | The Argument Used For The Call | 
-| GCenter.Alerts.List.shellcode.calls.ret | String | The Retention Of The Call | 
-| GCenter.Alerts.List.shellcode.calls.index | Number | The Call Index | 
-| GCenter.Alerts.List.malware.analyzed_clean | Number | Number Of Engines That Returned A Clean Status | 
-| GCenter.Alerts.List.malware.analyzed_infected | Number | Number Of Engines That Returned An Infected Status | 
-| GCenter.Alerts.List.malware.analyzed_suspicious | Number | Number Of Engines That Returned A Suspicious Status | 
-| GCenter.Alerts.List.malware.analyzed_other | Number | Number Of Engines That Returned Other Statuses | 
-| GCenter.Alerts.List.malware.analyzed_error | Number | Number Of Engines That Failed To Analyze The File | 
-| GCenter.Alerts.List.malware.code | Number | The Global Code Result | 
-| GCenter.Alerts.List.malware.def_time | Date | When The Last Engines Have Ended The Scan  | 
-| GCenter.Alerts.List.malware.scan_time | Number | The Scan Time In Ms. | 
-| GCenter.Alerts.List.malware.threats_found | String | The Threats Found By The Engines | 
-| GCenter.Alerts.List.malware.reporting_token | String | The Reporting Token Returned By The Gbox. | 
-| GCenter.Alerts.List.malware.engines_report.0.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.0.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.1.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.1.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.2.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.2.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.3.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.3.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.4.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.4.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.5.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.5.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.6.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.6.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.7.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.7.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.8.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.8.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.9.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.9.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.10.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.10.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.11.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.11.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.12.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.12.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.13.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.13.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.14.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.14.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.engines_report.15.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.List.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.List.malware.engines_report.15.scan_result | String | Analysis Result | 
-| GCenter.Alerts.List.malware.magic_details | String | The File Magic | 
-| GCenter.Alerts.List.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
-| GCenter.Alerts.List.sigflow.alert.action | String | Action | 
-| GCenter.Alerts.List.sigflow.alert.signature_id | String | Signature Id | 
-| GCenter.Alerts.List.sigflow.alert.gid | String | Gid | 
-| GCenter.Alerts.List.sigflow.alert.category | String | Category | 
-| GCenter.Alerts.List.sigflow.packet | String | Packet | 
-| GCenter.Alerts.List.sigflow.in_iface | String | In Which Interface The Alert Occurred | 
-| GCenter.Alerts.List.sigflow.stream | Number | Is It Streaming \(\!= 0\) | 
-| GCenter.Alerts.List.sigflow.payload | String | Payload | 
-| GCenter.Alerts.List.sigflow.payload_printable | String | Payload Printable | 
+| GCenter.Alert.List.sha256 | String | The 256 Shasum Of The File | 
+| GCenter.Alert.List.id | String | The Id Of The Inspectra Alert | 
+| GCenter.Alert.List.flow_id | Number | The Flow Id Of The Alert | 
+| GCenter.Alert.List.severity | Number | The Severity Of The Alert | 
+| GCenter.Alert.List.src_ip | String | The Ip Address Of The Alert'S Source | 
+| GCenter.Alert.List.dest_ip | String | The Ip Address Of The Alert'S Target | 
+| GCenter.Alert.List.src_port | Number | The Port Of The Alert'S Source | 
+| GCenter.Alert.List.dest_port | Number | The Port Of The Alert'S Target | 
+| GCenter.Alert.List.gcap | String | The Gcap That Raised The Alert | 
+| GCenter.Alert.List.type | String | Which Type Of Alert \(Sigflow, Codebreaker...\) | 
+| GCenter.Alert.List.proto | String | The Protocol Used | 
+| GCenter.Alert.List.host | String | The Host Where The Alert Was Found | 
+| GCenter.Alert.List.app_proto | String | The Malware Application Prototype | 
+| GCenter.Alert.List.alert_type | String | Which Event It Is ? | 
+| GCenter.Alert.List.state | String | The State Of The Alert | 
+| GCenter.Alert.List.matched_event | String | Value Of The Id Of An Other Alert That Matched \(Allows The Correlation Between Alerts\) | 
+| GCenter.Alert.List.domain_name | String | For Dga Alerts Only | 
+| GCenter.Alert.List.probability | Number | The Severity Probability | 
+| GCenter.Alert.List.timestamp_detected | Date | When The Alert Was Detected | 
+| GCenter.Alert.List.timestamp_analyzed | Date | When The Alert Was Analysed | 
+| GCenter.Alert.List.retrohunt.timestamp_package | String | Utc Date When The Ioc Was Added To The Lastinfosec Update Package | 
+| GCenter.Alert.List.retrohunt.ioc_creation_date | Date | The Ioc Creation Date | 
+| GCenter.Alert.List.retrohunt.ioc_updated_date | Date | The Ioc Updated Date | 
+| GCenter.Alert.List.retrohunt.description | String | The Alert Description | 
+| GCenter.Alert.List.retrohunt.ioc_type | String | Host, Md5, Sha1, Sha256, Url | 
+| GCenter.Alert.List.retrohunt.ioc_value | String | Characteristic Value Of The Ioc | 
+| GCenter.Alert.List.retrohunt.matched_app_proto | String | The Sigflow Protocol That Contains This Ioc | 
+| GCenter.Alert.List.retrohunt.matched_event_type | String | The Sigflow Event Type That Contains This Ioc | 
+| GCenter.Alert.List.retrohunt.case_id | String | Uuid Of The Box To Which The Ioc Belongs | 
+| GCenter.Alert.List.retrohunt.ioc_id | String | Uuid Of The Ioc | 
+| GCenter.Alert.List.retrohunt.risk | String | Suspicious, High Suspicious, Malicious | 
+| GCenter.Alert.List.retrohunt.usage_mode | String | Usage Mode | 
+| GCenter.Alert.List.retrohunt.tlp | String | Tlp | 
+| GCenter.Alert.List.powershell.file_id | String | The File Id | 
+| GCenter.Alert.List.powershell.scores.proba_obfuscated | Number | The Probability It Is Obfuscated | 
+| GCenter.Alert.List.powershell.scores.analysis | Number | The Powershell Analysis Score | 
+| GCenter.Alert.List.shellcode.file_id | String | The File Id | 
+| GCenter.Alert.List.shellcode.encodings.name | String | The Name Of The Encoding | 
+| GCenter.Alert.List.shellcode.encodings.count | Number | The Number Of The Encoding Elements | 
+| GCenter.Alert.List.shellcode.calls.call | String | The Name Of The Call Of The Alert | 
+| GCenter.Alert.List.shellcode.calls.args | String | The Argument Used For The Call | 
+| GCenter.Alert.List.shellcode.calls.ret | String | The Retention Of The Call | 
+| GCenter.Alert.List.shellcode.calls.index | Number | The Call Index | 
+| GCenter.Alert.List.malware.analyzed_clean | Number | Number Of Engines That Returned A Clean Status | 
+| GCenter.Alert.List.malware.analyzed_infected | Number | Number Of Engines That Returned An Infected Status | 
+| GCenter.Alert.List.malware.analyzed_suspicious | Number | Number Of Engines That Returned A Suspicious Status | 
+| GCenter.Alert.List.malware.analyzed_other | Number | Number Of Engines That Returned Other Statuses | 
+| GCenter.Alert.List.malware.analyzed_error | Number | Number Of Engines That Failed To Analyze The File | 
+| GCenter.Alert.List.malware.code | Number | The Global Code Result | 
+| GCenter.Alert.List.malware.def_time | Date | When The Last Engines Have Ended The Scan  | 
+| GCenter.Alert.List.malware.scan_time | Number | The Scan Time In Ms. | 
+| GCenter.Alert.List.malware.threats_found | String | The Threats Found By The Engines | 
+| GCenter.Alert.List.malware.reporting_token | String | The Reporting Token Returned By The Gbox. | 
+| GCenter.Alert.List.malware.engines_report.0.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.0.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.1.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.1.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.2.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.2.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.3.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.3.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.4.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.4.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.5.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.5.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.6.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.6.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.7.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.7.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.8.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.8.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.9.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.9.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.10.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.10.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.11.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.11.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.12.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.12.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.13.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.13.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.14.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.14.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.engines_report.15.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.List.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.List.malware.engines_report.15.scan_result | String | Analysis Result | 
+| GCenter.Alert.List.malware.magic_details | String | The File Magic | 
+| GCenter.Alert.List.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
+| GCenter.Alert.List.sigflow.alert.action | String | Action | 
+| GCenter.Alert.List.sigflow.alert.signature_id | String | Signature Id | 
+| GCenter.Alert.List.sigflow.alert.gid | String | Gid | 
+| GCenter.Alert.List.sigflow.alert.category | String | Category | 
+| GCenter.Alert.List.sigflow.packet | String | Packet | 
+| GCenter.Alert.List.sigflow.in_iface | String | In Which Interface The Alert Occurred | 
+| GCenter.Alert.List.sigflow.stream | Number | Is It Streaming \(\!= 0\) | 
+| GCenter.Alert.List.sigflow.payload | String | Payload | 
+| GCenter.Alert.List.sigflow.payload_printable | String | Payload Printable | 
 
 ##### Command Example
 
@@ -297,118 +297,118 @@ Get an alert by it's uid
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Alerts.Single.sha256 | String | The 256 Shasum Of The File | 
-| GCenter.Alerts.Single.id | String | The Id Of The Inspectra Alert | 
-| GCenter.Alerts.Single.flow_id | Number | The Flow Id Of The Alert | 
-| GCenter.Alerts.Single.severity | Number | The Severity Of The Alert | 
-| GCenter.Alerts.Single.src_ip | String | The Ip Address Of The Alert'S Source | 
-| GCenter.Alerts.Single.dest_ip | String | The Ip Address Of The Alert'S Target | 
-| GCenter.Alerts.Single.src_port | Number | The Port Of The Alert'S Source | 
-| GCenter.Alerts.Single.dest_port | Number | The Port Of The Alert'S Target | 
-| GCenter.Alerts.Single.gcap | String | The Gcap That Raised The Alert | 
-| GCenter.Alerts.Single.type | String | Which Type Of Alert \(Sigflow, Codebreaker...\) | 
-| GCenter.Alerts.Single.proto | String | The Protocol Used | 
-| GCenter.Alerts.Single.host | String | The Host Where The Alert Was Found | 
-| GCenter.Alerts.Single.app_proto | String | The Malware Application Prototype | 
-| GCenter.Alerts.Single.alert_type | String | Which Event It Is ? | 
-| GCenter.Alerts.Single.state | String | The State Of The Alert | 
-| GCenter.Alerts.Single.matched_event | String | Value Of The Id Of An Other Alert That Matched \(Allows The Correlation Between Alerts\) | 
-| GCenter.Alerts.Single.domain_name | String | For Dga Alerts Only | 
-| GCenter.Alerts.Single.probability | Number | The Severity Probability | 
-| GCenter.Alerts.Single.timestamp_detected | Date | When The Alert Was Detected | 
-| GCenter.Alerts.Single.timestamp_analyzed | Date | When The Alert Was Analysed | 
-| GCenter.Alerts.Single.retrohunt.timestamp_package | String | Utc Date When The Ioc Was Added To The Lastinfosec Update Package | 
-| GCenter.Alerts.Single.retrohunt.ioc_creation_date | Date | The Ioc Creation Date | 
-| GCenter.Alerts.Single.retrohunt.ioc_updated_date | Date | The Ioc Updated Date | 
-| GCenter.Alerts.Single.retrohunt.description | String | The Alert Description | 
-| GCenter.Alerts.Single.retrohunt.ioc_type | String | Host, Md5, Sha1, Sha256, Url | 
-| GCenter.Alerts.Single.retrohunt.ioc_value | String | Characteristic Value Of The Ioc | 
-| GCenter.Alerts.Single.retrohunt.matched_app_proto | String | The Sigflow Protocol That Contains This Ioc | 
-| GCenter.Alerts.Single.retrohunt.matched_event_type | String | The Sigflow Event Type That Contains This Ioc | 
-| GCenter.Alerts.Single.retrohunt.case_id | String | Uuid Of The Box To Which The Ioc Belongs | 
-| GCenter.Alerts.Single.retrohunt.ioc_id | String | Uuid Of The Ioc | 
-| GCenter.Alerts.Single.retrohunt.risk | String | Suspicious, High Suspicious, Malicious | 
-| GCenter.Alerts.Single.retrohunt.usage_mode | String | Usage Mode | 
-| GCenter.Alerts.Single.retrohunt.tlp | String | Tlp | 
-| GCenter.Alerts.Single.powershell.file_id | String | The File Id | 
-| GCenter.Alerts.Single.powershell.scores.proba_obfuscated | Number | The Probability It Is Obfuscated | 
-| GCenter.Alerts.Single.powershell.scores.analysis | Number | The Powershell Analysis Score | 
-| GCenter.Alerts.Single.shellcode.file_id | String | The File Id | 
-| GCenter.Alerts.Single.shellcode.encodings.name | String | The Name Of The Encoding | 
-| GCenter.Alerts.Single.shellcode.encodings.count | Number | The Number Of The Encoding Elements | 
-| GCenter.Alerts.Single.shellcode.calls.call | String | The Name Of The Call Of The Alert | 
-| GCenter.Alerts.Single.shellcode.calls.args | String | The Argument Used For The Call | 
-| GCenter.Alerts.Single.shellcode.calls.ret | String | The Retention Of The Call | 
-| GCenter.Alerts.Single.shellcode.calls.index | Number | The Call Index | 
-| GCenter.Alerts.Single.malware.analyzed_clean | Number | Number Of Engines That Returned A Clean Status | 
-| GCenter.Alerts.Single.malware.analyzed_infected | Number | Number Of Engines That Returned An Infected Status | 
-| GCenter.Alerts.Single.malware.analyzed_suspicious | Number | Number Of Engines That Returned A Suspicious Status | 
-| GCenter.Alerts.Single.malware.analyzed_other | Number | Number Of Engines That Returned Other Statuses | 
-| GCenter.Alerts.Single.malware.analyzed_error | Number | Number Of Engines That Failed To Analyze The File | 
-| GCenter.Alerts.Single.malware.code | Number | The Global Code Result | 
-| GCenter.Alerts.Single.malware.def_time | Date | When The Last Engines Have Ended The Scan  | 
-| GCenter.Alerts.Single.malware.scan_time | Number | The Scan Time In Ms. | 
-| GCenter.Alerts.Single.malware.threats_found | String | The Threats Found By The Engines | 
-| GCenter.Alerts.Single.malware.reporting_token | String | The Reporting Token Returned By The Gbox. | 
-| GCenter.Alerts.Single.malware.engines_report.0.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.0.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.1.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.1.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.2.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.2.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.3.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.3.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.4.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.4.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.5.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.5.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.6.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.6.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.7.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.7.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.8.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.8.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.9.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.9.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.10.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.10.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.11.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.11.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.12.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.12.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.13.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.13.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.14.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.14.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.engines_report.15.id | String | The Hash Pf The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
-| GCenter.Alerts.Single.malware.engines_report.15.scan_result | String | Analysis Result | 
-| GCenter.Alerts.Single.malware.magic_details | String | The File Magic | 
-| GCenter.Alerts.Single.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
-| GCenter.Alerts.Single.sigflow.alert.action | String | Action | 
-| GCenter.Alerts.Single.sigflow.alert.signature_id | String | Signature Id | 
-| GCenter.Alerts.Single.sigflow.alert.gid | String | Gid | 
-| GCenter.Alerts.Single.sigflow.alert.category | String | Category | 
-| GCenter.Alerts.Single.sigflow.packet | String | Packet | 
-| GCenter.Alerts.Single.sigflow.in_iface | String | In Which Interface The Alert Occurred | 
-| GCenter.Alerts.Single.sigflow.stream | Number | Is It Streaming \(\!= 0\) | 
-| GCenter.Alerts.Single.sigflow.payload | String | Payload | 
-| GCenter.Alerts.Single.sigflow.payload_printable | String | Payload Printable | 
+| GCenter.Alert.Single.sha256 | String | The 256 Shasum Of The File | 
+| GCenter.Alert.Single.id | String | The Id Of The Inspectra Alert | 
+| GCenter.Alert.Single.flow_id | Number | The Flow Id Of The Alert | 
+| GCenter.Alert.Single.severity | Number | The Severity Of The Alert | 
+| GCenter.Alert.Single.src_ip | String | The Ip Address Of The Alert'S Source | 
+| GCenter.Alert.Single.dest_ip | String | The Ip Address Of The Alert'S Target | 
+| GCenter.Alert.Single.src_port | Number | The Port Of The Alert'S Source | 
+| GCenter.Alert.Single.dest_port | Number | The Port Of The Alert'S Target | 
+| GCenter.Alert.Single.gcap | String | The Gcap That Raised The Alert | 
+| GCenter.Alert.Single.type | String | Which Type Of Alert \(Sigflow, Codebreaker...\) | 
+| GCenter.Alert.Single.proto | String | The Protocol Used | 
+| GCenter.Alert.Single.host | String | The Host Where The Alert Was Found | 
+| GCenter.Alert.Single.app_proto | String | The Malware Application Prototype | 
+| GCenter.Alert.Single.alert_type | String | Which Event It Is ? | 
+| GCenter.Alert.Single.state | String | The State Of The Alert | 
+| GCenter.Alert.Single.matched_event | String | Value Of The Id Of An Other Alert That Matched \(Allows The Correlation Between Alerts\) | 
+| GCenter.Alert.Single.domain_name | String | For Dga Alerts Only | 
+| GCenter.Alert.Single.probability | Number | The Severity Probability | 
+| GCenter.Alert.Single.timestamp_detected | Date | When The Alert Was Detected | 
+| GCenter.Alert.Single.timestamp_analyzed | Date | When The Alert Was Analysed | 
+| GCenter.Alert.Single.retrohunt.timestamp_package | String | Utc Date When The Ioc Was Added To The Lastinfosec Update Package | 
+| GCenter.Alert.Single.retrohunt.ioc_creation_date | Date | The Ioc Creation Date | 
+| GCenter.Alert.Single.retrohunt.ioc_updated_date | Date | The Ioc Updated Date | 
+| GCenter.Alert.Single.retrohunt.description | String | The Alert Description | 
+| GCenter.Alert.Single.retrohunt.ioc_type | String | Host, Md5, Sha1, Sha256, Url | 
+| GCenter.Alert.Single.retrohunt.ioc_value | String | Characteristic Value Of The Ioc | 
+| GCenter.Alert.Single.retrohunt.matched_app_proto | String | The Sigflow Protocol That Contains This Ioc | 
+| GCenter.Alert.Single.retrohunt.matched_event_type | String | The Sigflow Event Type That Contains This Ioc | 
+| GCenter.Alert.Single.retrohunt.case_id | String | Uuid Of The Box To Which The Ioc Belongs | 
+| GCenter.Alert.Single.retrohunt.ioc_id | String | Uuid Of The Ioc | 
+| GCenter.Alert.Single.retrohunt.risk | String | Suspicious, High Suspicious, Malicious | 
+| GCenter.Alert.Single.retrohunt.usage_mode | String | Usage Mode | 
+| GCenter.Alert.Single.retrohunt.tlp | String | Tlp | 
+| GCenter.Alert.Single.powershell.file_id | String | The File Id | 
+| GCenter.Alert.Single.powershell.scores.proba_obfuscated | Number | The Probability It Is Obfuscated | 
+| GCenter.Alert.Single.powershell.scores.analysis | Number | The Powershell Analysis Score | 
+| GCenter.Alert.Single.shellcode.file_id | String | The File Id | 
+| GCenter.Alert.Single.shellcode.encodings.name | String | The Name Of The Encoding | 
+| GCenter.Alert.Single.shellcode.encodings.count | Number | The Number Of The Encoding Elements | 
+| GCenter.Alert.Single.shellcode.calls.call | String | The Name Of The Call Of The Alert | 
+| GCenter.Alert.Single.shellcode.calls.args | String | The Argument Used For The Call | 
+| GCenter.Alert.Single.shellcode.calls.ret | String | The Retention Of The Call | 
+| GCenter.Alert.Single.shellcode.calls.index | Number | The Call Index | 
+| GCenter.Alert.Single.malware.analyzed_clean | Number | Number Of Engines That Returned A Clean Status | 
+| GCenter.Alert.Single.malware.analyzed_infected | Number | Number Of Engines That Returned An Infected Status | 
+| GCenter.Alert.Single.malware.analyzed_suspicious | Number | Number Of Engines That Returned A Suspicious Status | 
+| GCenter.Alert.Single.malware.analyzed_other | Number | Number Of Engines That Returned Other Statuses | 
+| GCenter.Alert.Single.malware.analyzed_error | Number | Number Of Engines That Failed To Analyze The File | 
+| GCenter.Alert.Single.malware.code | Number | The Global Code Result | 
+| GCenter.Alert.Single.malware.def_time | Date | When The Last Engines Have Ended The Scan  | 
+| GCenter.Alert.Single.malware.scan_time | Number | The Scan Time In Ms. | 
+| GCenter.Alert.Single.malware.threats_found | String | The Threats Found By The Engines | 
+| GCenter.Alert.Single.malware.reporting_token | String | The Reporting Token Returned By The Gbox. | 
+| GCenter.Alert.Single.malware.engines_report.0.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.0.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.0.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.1.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.1.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.1.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.2.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.2.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.2.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.3.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.3.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.3.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.4.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.4.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.4.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.5.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.5.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.5.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.6.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.6.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.6.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.7.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.7.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.7.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.8.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.8.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.8.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.9.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.9.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.9.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.10.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.10.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.10.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.11.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.11.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.11.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.12.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.12.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.12.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.13.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.13.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.13.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.14.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.14.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.14.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.engines_report.15.id | String | The Hash Pf The Engine | 
+| GCenter.Alert.Single.malware.engines_report.15.threat_details | String | The Threat Found By The Engine | 
+| GCenter.Alert.Single.malware.engines_report.15.scan_result | String | Analysis Result | 
+| GCenter.Alert.Single.malware.magic_details | String | The File Magic | 
+| GCenter.Alert.Single.malware.total_found | String | The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines | 
+| GCenter.Alert.Single.sigflow.alert.action | String | Action | 
+| GCenter.Alert.Single.sigflow.alert.signature_id | String | Signature Id | 
+| GCenter.Alert.Single.sigflow.alert.gid | String | Gid | 
+| GCenter.Alert.Single.sigflow.alert.category | String | Category | 
+| GCenter.Alert.Single.sigflow.packet | String | Packet | 
+| GCenter.Alert.Single.sigflow.in_iface | String | In Which Interface The Alert Occurred | 
+| GCenter.Alert.Single.sigflow.stream | Number | Is It Streaming \(\!= 0\) | 
+| GCenter.Alert.Single.sigflow.payload | String | Payload | 
+| GCenter.Alert.Single.sigflow.payload_printable | String | Payload Printable | 
 
 ##### Command Example
 
