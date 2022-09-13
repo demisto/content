@@ -40,7 +40,6 @@ def create_new_pack():
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
-    #subprocess.call(['demisto-sdk', 'format', '-i', dest_path], stdout=subprocess.DEVNULL) TODO: verify
     return dest_path, '1.0.0', {'Integrations': 'TestUploadFlow', 'Playbooks': 'TestUploadFlow'}
 
 
