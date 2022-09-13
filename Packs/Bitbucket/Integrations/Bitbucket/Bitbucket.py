@@ -242,7 +242,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def pull_request_comment_list(self, repo: str, pr_id: int, params: Dict, comment_id: str) -> Dict:
+    def pull_request_comment_list_request(self, repo: str, pr_id: int, params: Dict, comment_id: str) -> Dict:
         """ Makes a GET request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
             to get information about a specific comment of a pull request. If there is no comment_id than Makes a GET request
             /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific pull request.
@@ -259,6 +259,21 @@ class Client(BaseClient):
         if comment_id:
             url_suffix = f'{url_suffix}/{comment_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def pull_request_comment_update_request(self, repo: str, pr_id: int, body: Dict, comment_id: str) -> Dict:
+        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            to update a specific comment in a pull request.
+            :param repo: str - The repository the user entered, if he did.
+            :param pr_id: str - an id to a specific pull request to add a comment to.
+            :param body: Dict - a dictionary with the updated content of the comment.
+            :param comment_id: str - an id to a specific comment, in order to get info about it.
+
+            Creates the url and makes the api call
+            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -1018,7 +1033,7 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
                           raw_response=[response])
 
 
-def pull_request_comment_list(client: Client, args: Dict) -> CommandResults:
+def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResults:
     """ Returns a list of pull request comments.
     Args:
         client: A Bitbucket client.
@@ -1039,7 +1054,7 @@ def pull_request_comment_list(client: Client, args: Dict) -> CommandResults:
     }
     if not repo:
         repo = client.repository
-    response = client.pull_request_comment_list(repo, pr_id, params, comment_id)
+    response = client.pull_request_comment_list_request(repo, pr_id, params, comment_id)
     if comment_id:
         results = [response]
         hr_title = f'The information about the comment "{comment_id}"'
@@ -1071,6 +1086,32 @@ def pull_request_comment_list(client: Client, args: Dict) -> CommandResults:
         outputs=results,
         raw_response=results
     )
+
+
+def pull_request_comment_update_command(client: Client, args: Dict) -> CommandResults:
+    """ Updates a comment in a pull request.
+        Args:
+            client: A Bitbucket client.
+            args: Demisto args.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    repo = args.get('repo', None)
+    pr_id = arg_to_number(args.get('pull_request_id'))
+    comment_id = args.get('comment_id', None)
+    content = args.get('content')
+    if not repo:
+        repo = client.repository
+    body = {
+        'content': {
+            'raw': content
+        }
+    }
+    response = client.pull_request_comment_update_request(repo, pr_id, body, comment_id)
+    return CommandResults(readable_output=f'The comment "{comment_id}" on the pull request "{pr_id}" was updated successfully',
+                          outputs_prefix='Bitbucket.PullRequestComment',
+                          outputs=[response],
+                          raw_response=[response])
 
 
 ''' MAIN FUNCTION '''
@@ -1168,7 +1209,10 @@ def main() -> None:  # pragma: no cover
             result = pull_request_comment_create_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-comment-list':
-            result = pull_request_comment_list(client, demisto.args())
+            result = pull_request_comment_list_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-pull-request-comment-update':
+            result = pull_request_comment_update_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
