@@ -2993,7 +2993,6 @@ class Pack(object):
             Returns:
                 bool: whether the operation succeeded.
         """
-        logging.info('\nEntering the upload README.md images part\n')
         task_status = True
 
         try:
@@ -3006,7 +3005,7 @@ class Pack(object):
 
             if not detect_changes or any(self.is_raedme_file(file.a_path) for file in diff_files_list):
                 # detect added/modified integration readme files
-
+                logging.info(f'found a pack: {self._pack_name} with changes in README')
                 readme_images_storage_paths = self.collect_images_from_readme_and_replace_with_storage_path(
                     pack_readme_path, storage_pack_path)
 
@@ -3084,7 +3083,7 @@ class Pack(object):
 
         """
         # Open the url image, set stream to True, this will return the stream content.
-        r = requests.get(readme_original_url, stream=True)
+        r = requests.get(readme_original_url, stream=True, verify=False)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
@@ -3107,7 +3106,7 @@ class Pack(object):
             logging.info(f'Image sucessfully Downloaded: {image_name}')
             return True
         else:
-            logging.error(f'Image {image_name} Couldn\'t be retreived')
+            logging.error(f'Image {image_name} Couldn\'t be retreived status code {r.status_code}')
             return False
 
     def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
