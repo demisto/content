@@ -452,12 +452,18 @@ def getIncidents(result, last_fetch) -> Tuple[Dict[str, int], List[dict[str, Any
         severity = mapSeverity(detection['rule_severity'])
 
         incident = {
-            'name': detection['rule_name'],
+            'name': 'Gigamon ThreatINSIGHT - ' + detection['rule_name'],
             'occurred': detection['first_seen'],
             'severity': severity,
             'details': detection['rule_description'],
             'dbotMirrorId': detection['uuid'],
             'rawJSON': json.dumps(detection),
+            'type': 'Gigamon ThreatINSIGHT Detection',
+            'CustomFields': {  # Map specific XSOAR Custom Fields
+                'threatinsightcategory': detection['rule_category'],
+                'threatinsightconfidence': detection['rule_confidence'],
+                'threatinsightstatus': detection['status'],
+            }
         }
 
         incidents.append(incident)
