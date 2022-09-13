@@ -5,7 +5,6 @@ from AWSApiModule import *  # noqa: E402
 from typing import Tuple
 from datetime import datetime, date
 
-import traceback
 import urllib3.util
 import boto3
 import json
@@ -166,8 +165,8 @@ def main():  # pragma: no cover
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier')
+    aws_secret_access_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
@@ -236,14 +235,13 @@ def main():  # pragma: no cover
                 })
 
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
-                send_events_to_xsiam(events, params.get('vendor', 'AWS'), params.get('product', 'GuardDuty'))
+                send_events_to_xsiam(events, 'aws', 'guard_duty')
 
         elif command != 'test-module':
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}'
-                     f'\nTraceback:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

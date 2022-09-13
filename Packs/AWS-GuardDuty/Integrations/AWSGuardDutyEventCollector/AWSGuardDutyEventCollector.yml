@@ -20,13 +20,9 @@ configuration:
   required: false
   type: 0
 - display: Access Key
-  name: access_key
+  name: credentials
+  displaypassword: Secret Key
   required: false
-  type: 0
-- display: Secret Key
-  name: secret_key
-  required: false
-  hiddenusername: true
   type: 9
 - display: Timeout
   name: timeout
@@ -70,16 +66,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: guard_duty
-  display: The product corresponding to the integration that originated the events.
-  name: product
-  type: 0
-  required: false
-- defaultvalue: aws
-  display: The vendor name corresponding to the integration that originated the events.
-  name: vendor
-  required: false
-  type: 0
 description: Amazon Web Services Guard Duty Service (gd) event collector integration for Cortex XSIAM.
 display: AWS - GuardDuty Event Collector
 name: AWS - GuardDuty Event Collector
