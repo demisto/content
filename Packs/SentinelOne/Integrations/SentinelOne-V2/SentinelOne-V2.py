@@ -2043,7 +2043,8 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> List[Optional[str]]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
-
+    Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked. 
+    Currently there are only three platforms it is acceptable for a hash to be blocked 3 times but if more results are returned an error will be thrown. 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
     item_ids = []
