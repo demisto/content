@@ -53,7 +53,7 @@ configuration:
   name: block_site_ids
   required: false
   type: 0
-  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. Leave blank to block hashes globally.
+  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. Leave blank to block hashes globally. If left empty, hashes will be blocked using global scope.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
