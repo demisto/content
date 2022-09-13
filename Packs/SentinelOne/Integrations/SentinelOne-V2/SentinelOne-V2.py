@@ -20,6 +20,7 @@ requests.packages.urllib3.disable_warnings()
 IS_VERSION_2_1: bool
 GLOBAL_BLOCK: bool
 BLOCK_SITEIDS: str
+OS_COUNT: int
 ''' HELPER FUNCTIONS '''
 
 
@@ -2042,14 +2043,14 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
     item_ids = []
-    limit = 4
+    limit = OS_COUNT + 1
     white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item)
     demisto.debug(f'white_list: {white_list}')
 
     ret = []
 
     # Validation check first
-    if len(white_list) > 3:
+    if len(white_list) > limit:
         raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
 
     for entry in white_list:
@@ -2897,6 +2898,7 @@ def main():
     proxy = params.get('proxy', False)
     BLOCK_SITEIDS = params.get('block_site_ids', 'None')
     GLOBAL_BLOCK = BLOCK_SITEIDS == 'None'
+    OS_COUNT = 4
 
     IS_VERSION_2_1 = api_version == '2.1'
 
