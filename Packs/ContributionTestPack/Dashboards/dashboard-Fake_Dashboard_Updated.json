@@ -1,7 +1,7 @@
 {
     "fromDate": "0001-01-01T00:00:00Z",
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "Fake Dashboard",
+    "id": "Fake Dashboard Updated",
     "layout": [
         {
             "forceRange": false,
@@ -324,7 +324,7 @@
             "y": 3
         }
     ],
-    "name": "Fake Dashboard",
+    "name": "Fake Dashboard Updated",
     "period": {
         "by": "",
         "byFrom": "days",
