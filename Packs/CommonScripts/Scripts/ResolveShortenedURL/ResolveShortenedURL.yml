@@ -16,8 +16,8 @@ args:
   description: URL to resolve
 - name: insecure
   required: false
-  type: 8
-  defaultValue: false
+  type: Boolean
+  defaultValue: "false"
   description: Trust any certificate (not secure)
 outputs:
 - contextPath: URL.Data
