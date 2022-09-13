@@ -352,7 +352,7 @@ class TestCollector(ABC):
         # exception order matters: important tests come first.
         """
         NOTE:
-            Here, we validate information that indirectly effecting the collection
+            Here, we validate information that indirectly affects the collection
             (information regarding IdSet or ContentItem objects, based on which we collect tests or packs)
             e.g. skipped integrations, marketplace compatibility, support level.
 
