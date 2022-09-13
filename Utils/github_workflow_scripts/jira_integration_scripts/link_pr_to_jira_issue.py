@@ -87,6 +87,13 @@ def trigger_generic_webhook(options):
             f" Gold has status code of {res.status_code}")
         sys.exit(1)
 
+    res_json = res.json()
+    if res_json and isinstance(res_json, list):
+        res_json_response_data = res.json()[0]
+        if res_json_response_data:
+            investigation_id = res_json_response_data.get("id")
+            print(f'{investigation_id=}')
+
 
 def main():
     options = arguments_handler()
