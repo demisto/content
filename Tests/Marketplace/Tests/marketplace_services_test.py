@@ -1653,9 +1653,6 @@ class TestImagesUpload:
     def test_is_file_readme(self, dummy_pack, path, expected_res):
         assert expected_res == dummy_pack.is_raedme_file(path)
 
-    def test_download_readme_image_from_url_and_upload_to_gcs(self, dummy_pack):
-        dummy_pack.download_readme_image_from_url_and_upload_to_gcs()
-
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
