@@ -8326,6 +8326,16 @@ script:
       isArray: true
       name: element_value
       required: true
+    - auto: PREDEFINED
+      description: The operation to perform on the PBF rule.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+    defaultValue: 'replace'
     description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
   - arguments:

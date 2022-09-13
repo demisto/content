@@ -285,7 +285,9 @@ def http_request(uri: str, method: str, headers: dict = {},
                 error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
                                   f' The available Device Groups for this instance:'
                                   f' {", ".join(device_group_names)}.')
-                raise PAN_OS_Not_Found(error_message)
+            xpath = params.get('xpath') or body.get('xpath')
+            demisto.debug(f'Object with {xpath=} was not found')
+            raise PAN_OS_Not_Found(error_message)
         return_warning('List not found and might be empty', True)
     if json_result['response']['@code'] not in ['19', '20']:
         # error code non exist in dict and not of success
@@ -3356,10 +3358,17 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         LOG(f'Found uncommitted item:\n{result}')
         raise DemistoException('Please commit the instance prior to editing the Security rule.')
 
+    current_objects_items = []
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
         current_objects_items = argToList(current_object.get('member'))
+    elif 'entry' in current_object:
+        entries = current_object['entry']
+        if not isinstance(entries, list):
+            entries = [entries]
+        current_objects_items = [entry.get('@name') for entry in entries]
 
     return current_objects_items
 
@@ -11299,7 +11308,11 @@ def dict_to_xml(_dictionary, contains_xml_chars=False):
     return xml
 
 
-def add_fields_as_json(key, value, is_list=True):
+def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
+    if is_entry:
+        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
+    if is_empty_tag:
+        return {key: f'<{value}/>'}
     return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
@@ -11321,7 +11334,9 @@ def pan_os_create_pbf_rule(args):
                     else:
                         raise DemistoException(f'egress_interface argument must be set when action == forward')
                 else:
-                    _action_body_request['action'] = f'<{action}/>'
+                    _action_body_request.update(
+                        prepare_pan_os_objects_body_request('action', action, is_empty_tag=True)
+                    )
             return _action_body_request
 
         def _set_up_enforce_symmetric_return_body_request():
@@ -11331,8 +11346,8 @@ def pan_os_create_pbf_rule(args):
             _enforce_symmetric_return_body_request['enforce-symmetric-return'] = {'enabled': enforce_symmetric_return}
 
             if enforce_symmetric_return == 'yes' and (nexthop_address_list := args.get('nexthop_address_list')):
-                _enforce_symmetric_return_body_request['enforce-symmetric-return']['nexthop-address-list'] = ''.join(
-                    f'<entry name="{address}"/>' for address in argToList(nexthop_address_list)
+                _enforce_symmetric_return_body_request['enforce-symmetric-return'].update(
+                    prepare_pan_os_objects_body_request('nexthop-address-list', nexthop_address_list, is_entry=True)
                 )
             return _enforce_symmetric_return_body_request
 
@@ -11352,7 +11367,7 @@ def pan_os_create_pbf_rule(args):
             for argument, (pan_os_object_path, is_listable) in objects_mapping_pan_os.items():
                 if argument_value := args.get(argument):
                     _general_rule_body_request.update(
-                        add_fields_as_json(pan_os_object_path, argument_value, is_list=is_listable)
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable)
                     )
             return _general_rule_body_request
 
@@ -11362,7 +11377,7 @@ def pan_os_create_pbf_rule(args):
         _body_request.update(_setup_general_rule_body_request())
 
         if source_zone := args.get('source_zone'):
-            _body_request['from'] = add_fields_as_json('zone', source_zone)
+            _body_request['from'] = prepare_pan_os_objects_body_request('zone', source_zone)
 
         return _body_request
 
@@ -11391,7 +11406,14 @@ def pan_os_create_pbf_rule_command(args):
 
 
 def build_body_request_to_edit_pan_os_object(
-    behavior, object_name, element_value, is_listable, xpath='', should_contain_entries=True
+    behavior,
+    object_name,
+    element_value,
+    is_listable,
+    xpath='',
+    should_contain_entries=True,
+    is_entry=False,
+    is_empty_tag=False
 ):
     """
     This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
@@ -11404,6 +11426,9 @@ def build_body_request_to_edit_pan_os_object(
         is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
         xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
         should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+        is_entry (bool): whether the element should be of the following form:
+            <entry name="{entry_name}"/>
+        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
 
     Returns:
         dict: a body request for the new object to update it.
@@ -11413,7 +11438,9 @@ def build_body_request_to_edit_pan_os_object(
         raise ValueError(f'behavior argument must be one of replace/remove/add values')
 
     if behavior == 'replace':
-        element = add_fields_as_json(object_name, element_value, is_list=is_listable)
+        element = prepare_pan_os_objects_body_request(
+            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
     else:  # add or remove is only for listable objects.
         current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
         if behavior == 'add':
@@ -11423,18 +11450,31 @@ def build_body_request_to_edit_pan_os_object(
             if not updated_object_items and should_contain_entries:
                 raise DemistoException(f'The object: {object_name} must have at least one item.')
 
-        element = add_fields_as_json(object_name, updated_object_items, is_list=True)
+        element = prepare_pan_os_objects_body_request(
+            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
 
     return element
 
 
-def pan_os_edit_pbf_rule(rule_name, element_value, pre_post, element_to_change, object_name, is_listable):
-    params = {
-        'xpath': build_pbf_xpath(
+def pan_os_edit_pbf_rule(
+    rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
+):
+    xpath = build_pbf_xpath(
             name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
-        ),
+        )
+
+    params = {
+        'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior='replace', object_name=object_name, element_value=element_value, is_listable=is_listable),
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
             contains_xml_chars=True
         ),
         'action': 'edit',
@@ -11448,6 +11488,16 @@ def pan_os_edit_pbf_rule(rule_name, element_value, pre_post, element_to_change, 
 def pan_os_edit_pbf_rule_command(args):
     rule_name, pre_post = args.get('rulename'), args.get('pre_post')
     element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {
+        'action_forward_no_pbf', 'action_forward_discard', 'description', 'negate_source', 'negate_destination',
+        'enforce_symmetric_return', 'action_forward_egress_interface', 'action_forward_nexthop_fqdn',
+        'action_forward_nexthop_ip', 'action_forward_no_pbf', 'action_forward_discard'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
 
     elements_to_change_mapping_pan_os_paths = {
         'action_forward_discard': ('action', 'action', False),
@@ -11472,15 +11522,10 @@ def pan_os_edit_pbf_rule_command(args):
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
 
     if element_to_change == 'action_forward_no_pbf':
-        element_value = '<no-pbf/>'
+        element_value = 'no-pbf'
 
     if element_to_change == 'action_forward_discard':
-        element_value = '<discard/>'
-
-    if element_to_change == 'nexthop_address_list':
-        element_value = ''.join(
-            f'<entry name="{address}"/>' for address in argToList(element_value)
-        )
+        element_value = 'discard'
 
     element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
@@ -11490,7 +11535,8 @@ def pan_os_edit_pbf_rule_command(args):
         element_to_change=element_to_change,
         element_value=element_value,
         object_name=object_name,
-        is_listable=is_listable
+        is_listable=is_listable,
+        behavior=behavior
     )
 
     return CommandResults(
