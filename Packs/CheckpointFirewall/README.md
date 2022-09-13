@@ -5,7 +5,7 @@ This pack includes XSIAM content
 #### Go to Checkpoint Log Export, and follow the instructions under "Basic Deployment" to set up the connection using the following guidelines:
 1. If you use version R77.30 or R80.10, follow the instructions to install a Log Exporter.
 2. Set the Syslog port to 514 or your agent port.
-3. Replace the "name" and "<target-server IP address>" in the CLI with the broker VM name and IP address.
+3. Replace the "name" and "\<target-server IP address\>" in the CLI with the broker VM name and IP address.
 Set the format to CEF.
 ## Collect Events from Vendor
 
