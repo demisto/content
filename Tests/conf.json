@@ -5226,7 +5226,7 @@
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
-======= }
+        }
     ],
     "skipped_tests": {
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
