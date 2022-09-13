@@ -27,3 +27,5 @@ ignore=BA101
 [known_words]
 resourceType
 resourceID
+codeRepo
+registryImage
