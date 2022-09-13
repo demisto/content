@@ -3529,8 +3529,7 @@ def qradar_search_retrieve_events_command(
     events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
     if is_last_run:
         # if last run, we want to get the events that were fetched in the previous calls
-        events = events or args.get('events', [])
-        if events:
+        if args.get('success'):
             status = QueryStatus.SUCCESS.value
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
@@ -3539,20 +3538,26 @@ def qradar_search_retrieve_events_command(
         offense_id = args.get('offense_id', '')
         events_limit = int(args.get('events_limit', params.get('events_limit')))
         fetch_mode: FetchMode = args.get('fetch_mode', params.get('fetch_mode'))
-        if args.get('poll_for_all_events') and not is_last_run and not is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
+        if argToBoolean(args.get('retry_if_not_all_fetched')) and  \
+            not is_last_run and not \
+                is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
             # return scheduled command result without search id to search again
             polling_args = {
                 'interval_in_seconds': interval_in_secs,
-                'events': events,
+                'success': True,
                 **args
             }
+
             scheduled_command = ScheduledCommand(
                 command='qradar-search-retrieve-events',
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
             )
             return CommandResults(scheduled_command=scheduled_command,
-                                  readable_output='Events were not fetched completely. Searching again.',
+                                  readable_output='Not all events were fetched. Searching again.',
+                                  outputs_prefix='QRadar.SearchEvents',
+                                  outputs_key_field='ID',
+                                  outputs={'Events': events, 'ID': search_id},
                                   )
 
         else:
