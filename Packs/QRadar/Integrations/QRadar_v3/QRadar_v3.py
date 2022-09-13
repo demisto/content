@@ -24,7 +24,6 @@ OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense with rule names
-MAX_FETCH_EVENT_RETRIES = 3  # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETRIES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
 DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
@@ -36,9 +35,9 @@ SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
-EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
-EVENTS_SEARCH_POLLING_RETRIES = 10  # number of consecutive failures events polling will tolerate
-EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to poll offense events
+EVENTS_SEARCH_RETRIES = 3  # number of retries for creating a new search
+EVENTS_POLLING_RETRIES = 10  # number of retries for events polling
+EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -47,15 +46,14 @@ ADVANCED_PARAMETERS_STRING_NAMES = [
 ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
     'MAX_SEARCHES_QUEUE',
-    'EVENTS_SEARCH_FAILURE_LIMIT',
-    'EVENTS_SEARCH_POLLING_RETRIES',
+    'EVENTS_SEARCH_RETRIES',
+    'EVENTS_POLLING_RETRIES',
     'EVENTS_SEARCH_RETRY_SECONDS',
     'FAILURE_SLEEP',
     'FETCH_SLEEP',
     'BATCH_SIZE',
     'OFF_ENRCH_LIMIT',
     'MAX_WORKERS',
-    'MAX_FETCH_EVENT_RETRIES',
     'SLEEP_FETCH_EVENT_RETRIES',
     'DEFAULT_EVENTS_TIMEOUT',
     'PROFILING_DUMP_ROWS_LIMIT',
@@ -330,7 +328,7 @@ LONG_RUNNING_REQUIRED_PARAMS = {'fetch_mode': 'Fetch mode',
 ''' ENUMS '''
 
 
-class FetchMode(Enum):
+class FetchMode(str, Enum):
     """
     Enums for the options of fetching the incidents.
     """
@@ -339,7 +337,7 @@ class FetchMode(Enum):
     correlations_events_only = 'Fetch Correlation Events Only'
 
 
-class QueryStatus(Enum):
+class QueryStatus(str, Enum):
     """
     Enums for the options of fetching the events.
     """
@@ -1466,9 +1464,9 @@ def test_module_command(client: Client, params: Dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_FAILURE_LIMIT, EVENTS_SEARCH_POLLING_RETRIES
-    EVENTS_SEARCH_FAILURE_LIMIT = 1
-    EVENTS_SEARCH_POLLING_RETRIES = 1
+    global EVENTS_SEARCH_RETRIES, EVENTS_POLLING_RETRIES
+    EVENTS_SEARCH_RETRIES = 1
+    EVENTS_POLLING_RETRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
@@ -1524,7 +1522,7 @@ def create_search_with_retry(client: Client,
                              offense: Dict,
                              event_columns: str,
                              events_limit: int,
-                             max_retries: int = EVENTS_SEARCH_FAILURE_LIMIT,
+                             max_retries: int = EVENTS_SEARCH_RETRIES,
                              ) -> str:
     """
     Creates a search to retrieve events for an offense.
@@ -1596,7 +1594,7 @@ def poll_offense_events(client: Client,
 def poll_offense_events_with_retry(
     client: Client,
     search_id: str, offense_id: int,
-    max_retries: int = EVENTS_SEARCH_POLLING_RETRIES,
+    max_retries: int = EVENTS_POLLING_RETRIES,
 ) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
@@ -1609,8 +1607,7 @@ def poll_offense_events_with_retry(
         client (Client): Client to perform the API calls.
         search_id (str): ID of the search to poll for its status.
         offense_id (int): ID of the offense to enrich with events returned by search. Used for logging purposes here.
-        max_retries (int): Number of retries. The default is 2 minutes under the `DEFAULT_EVENTS_TIMEOUT`:
-                            (X - 2) minutes for polling events and 2 minutes for the rest of the enrichment
+        max_retries (int): Number of retries.
 
     Returns:
         (List[Dict], str): List of events returned by query. Returns empty list if number of retries exceeded limit,
@@ -1631,7 +1628,7 @@ def poll_offense_events_with_retry(
     return [], 'Fetching events is in progress'
 
 
-def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int):
+def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: FetchMode, events_columns: str, events_limit: int):
     """
     Enriches offense given with events.
     Has retry mechanism for events returned by query to QRadar. This is needed because events might not be
@@ -1653,7 +1650,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     events: List[dict] = []
     failure_message = ''
     is_success = True
-    for retry in range(MAX_FETCH_EVENT_RETRIES):
+    for retry in range(EVENTS_SEARCH_RETRIES):
         start_time = time.time()
         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                              events_limit)
@@ -1664,15 +1661,10 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         events_fetched = get_num_events(events)
         offense['events_fetched'] = events_fetched
         offense['events'] = events
-        event_count = client.offenses_list(offense_id=int(offense_id)).get('event_count', 0)
-        expected_events = min(event_count, events_limit)
-        print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
-        if fetch_mode == FetchMode.all_events.value and events_fetched >= expected_events:
-            break
-        if fetch_mode == FetchMode.correlations_events_only.value and events_fetched > 0:
+        if is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
             break
         print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
-                        f'Retry {retry+1}/{MAX_FETCH_EVENT_RETRIES}')
+                        f'Retry {retry+1}/{EVENTS_SEARCH_RETRIES}')
         time_elapsed = int(time.time() - start_time)
         # wait for the rest of the time
         time.sleep(max(EVENTS_SEARCH_RETRY_SECONDS - time_elapsed, 0))
@@ -1696,6 +1688,30 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
 def get_num_events(events) -> int:
     return sum(int(event.get('eventcount', 1)) for event in events)
+
+
+def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
+    """
+    This function checks if all events were fetched for a specific offense.
+
+    Args:
+        client (Client): QRadar client
+        offense_id (str): offense id of qradar
+        events_limit (int): event limit parameter for the integration
+        events (list[dict]): list of events fetched
+
+    Returns:
+        bool: True if all events were fetched, False otherwise
+    """
+    if not offense_id:
+        # if we don't have offense id, we can't know if we fetched all the events
+        return True
+    events_count = client.offenses_list(offense_id=int(offense_id)).get('event_count', 0)
+    expected_events = min(events_count, events_limit) if events_limit else events_count
+    num_events = get_num_events(events)
+    print_debug_msg(f'Fetched {num_events}/{expected_events} events for offense {offense_id}')
+    # if we're not fetching only correlation events, we can't know if we fetched all the events
+    return num_events >= expected_events if fetch_mode == FetchMode.all_events else num_events > 0
 
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
@@ -3503,27 +3519,52 @@ def qradar_search_retrieve_events_command(
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
         search_id = search_command_results.outputs[0].get('ID')  # type: ignore
-
+    calling_context = demisto.callingContext.get('context', {})
+    sm = get_schedule_metadata(context=calling_context)
+    end_date: datetime | None = dateparser.parse(sm.get('end_date'))
+    if not end_date or end_date.year == 1:
+        end_date = None
+    is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
+        if end_date else False
     events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    if is_last_run:
+        # if last run, we want to get the events that were fetched in the previous calls
+        events = events or args.get('events', [])
+        if events:
+            status = QueryStatus.SUCCESS.value
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
-        if offense_id := args.get('offense_id', ''):
-            events_count = client.offenses_list(offense_id=offense_id).get('event_count', 0)
-            event_limit = int(params.get('event_limit', 0))
-            expected_events = min(events_count, event_limit) if event_limit else events_count
-            if (num_events_fetched := get_num_events(events)) < expected_events:
-                print_debug_msg(f'Returned {num_events_fetched}/{expected_events}. Searching again.')
-                search_command_results = qradar_search_create_command(client, params, args)
-                search_id = search_command_results.outputs[0].get('ID')  # type: ignore
-            else:
-                return CommandResults(outputs_prefix='QRadar.SearchEvents',
-                                    outputs_key_field='ID',
-                                    outputs={'Events': events, 'ID': search_id},
-                                    readable_output=tableToMarkdown(f'Events returned from search_id {search_id}',
-                                                                    events,
-                                                                    )
-                                    )
+        # return the result only if the all events were retrieved, unless for the last call for this function
+        offense_id = args.get('offense_id', '')
+        events_limit = int(args.get('events_limit', params.get('events_limit')))
+        fetch_mode: FetchMode = args.get('fetch_mode', params.get('fetch_mode'))
+        if args.get('poll_for_all_events') and not is_last_run and not is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
+            # return scheduled command result without search id to search again
+            polling_args = {
+                'interval_in_seconds': interval_in_secs,
+                'events': events,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command='qradar-search-retrieve-events',
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+            )
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output='Events were not fetched completely. Searching again.',
+                                  )
+
+        else:
+            return CommandResults(
+                outputs_prefix='QRadar.SearchEvents',
+                outputs_key_field='ID',
+                outputs={'Events': events, 'ID': search_id},
+                readable_output=tableToMarkdown(f'{get_num_events(events)} Events returned from search_id {search_id}',
+                                                events,
+                                                ),
+            )
+
     print_debug_msg(f'Still polling for search results for search ID: {search_id}.')
     polling_args = {
         'search_id': search_id,
