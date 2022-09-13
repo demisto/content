@@ -70,7 +70,8 @@ class Formatter:
         :param extractor: The function to extract a DT value
         :param dx: The context data
         :param si: The index of `source` to start extracting
-        :param end_marker: The end marker to parse a string within a DT. It must be None when the template text is given to `source`.
+        :param end_marker: The end marker to parse a string within a DT.
+                           It must be None when the template text is given to `source`.
         :return: The extracted value and index of `source` when parsing ended.
         """
         out = None
