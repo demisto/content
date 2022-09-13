@@ -12,7 +12,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gigamonthreatinsight_status",
+    "id": "incident_gigamonthreatinsightstatus",
     "isReadOnly": false,
     "locked": false,
     "name": "Gigamon ThreatINSIGHT Status",
