@@ -6,7 +6,6 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-
 ''' IMPORTS '''
 
 # disable insecure warnings
@@ -22,6 +21,7 @@ API_KEY = str(demisto.params()['key'])
 BASE_URL = CLOUD_NAME + '/api/v1'
 USE_SSL = not demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy', True)
+REQUEST_TIMEOUT = int(demisto.params().get('requestTimeout', 15))
 DEFAULT_HEADERS = {
     'content-type': 'application/json'
 }
@@ -87,7 +87,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                verify=USE_SSL,
                                data=data,
                                headers=headers,
-                               timeout=15
+                               timeout=REQUEST_TIMEOUT
                                )
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
