@@ -1,0 +1,12 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "id": "1234",
+            "release": true
+        }
+    ],
+    "fail": []
+}

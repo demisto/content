@@ -2365,6 +2365,16 @@
             "instance_names": "active_directory_ninja"
         },
         {
+            "playbookID": "Active Directory - manual pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+                {
+            "playbookID": "Active Directory - automatic pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+        {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
@@ -2742,7 +2752,7 @@
         },
         {
             "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
+            "playbookID": "GoogleCloudComputeListTest"
         },
         {
             "integrations": "AWS - S3",
@@ -3302,7 +3312,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -4618,7 +4628,16 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "OpenLDAP"
-            ]
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
+        },
+        {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
             "playbookID": "Splunk-Test",
@@ -5174,6 +5193,26 @@
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0",
             "memory_threshold": 95
+        },
+        {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
+            "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate File - SecneurX Analysis - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5319,6 +5358,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
@@ -5373,7 +5413,6 @@
         "Attivo Botsink": "no instance, not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
@@ -5400,6 +5439,7 @@
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
         "ANYRUN": "No instance",
+        "SecneurX Analysis": "No Instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
         "Phish.AI": "Issue 17291",
