@@ -16,6 +16,8 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
+
+
 # #returns a result of a api call
 
 
@@ -97,7 +99,8 @@ def do_ip_command():
     outputs.update(dbot_score.to_context())
 
     headers = ['Address', 'Country', 'Latitude', 'Longitude']
-    human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=headers)
+    human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data,
+                                     headers=headers)
     return_outputs(human_readable, outputs, raw_response)
 
 
@@ -110,10 +113,15 @@ def test_module():
         demisto.results('an error occurred. reason: {}'.format(res.text))
 
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'ip':
-        do_ip_command()
-except Exception as e:
-    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+def main():  # pragma: no cover
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'ip':
+            do_ip_command()
+    except Exception as e:
+        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

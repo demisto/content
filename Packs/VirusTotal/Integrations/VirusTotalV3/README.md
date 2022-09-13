@@ -401,87 +401,97 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required |
-| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional |
+| ip | IP address to check. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | Bad IP address. |
-| IP.Relationships.EntityA | String | The source of the relationship. |
-| IP.Relationships.EntityB | String | The destination of the relationship. |
-| IP.Relationships.Relationship | String | The name of the relationship. |
-| IP.Relationships.EntityAType | String | The type of the source of the relationship. |
-| IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| IP.ASN | unknown | Bad IP ASN. |
-| IP.Geo.Country | unknown | Bad IP country. |
-| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. |
-| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. |
-| DBotScore.Indicator | unknown | The indicator that was tested. |
-| DBotScore.Type | unknown | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. |
-| DBotScore.Score | unknown | The actual score. |
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). |
-| VirusTotal.IP.attributes.jarm | String | JARM data. |
-| VirusTotal.IP.attributes.network | String | Network data. |
-| VirusTotal.IP.attributes.country | String | The country where the IP is located. |
-| VirusTotal.IP.attributes.as_owner | String | IP owner. |
-| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
-| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
-| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
-| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
-| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
-| VirusTotal.IP.attributes.asn | Number | ASN data. |
-| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. |
-| VirusTotal.IP.attributes.reputation | Number | IP reputation. |
-| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. |
-| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. |
-| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. |
-| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. |
-| VirusTotal.IP.attributes.whois | String | whois data. |
-| VirusTotal.IP.type | String | Indicator IP type. |
-| VirusTotal.IP.id | String | ID of the IP. |
+| IP.Address | unknown | Bad IP address. | 
+| IP.ASN | unknown | Bad IP ASN. | 
+| IP.Geo.Country | unknown | Bad IP country. | 
+| IP.Relationships.EntityA | string | The source of the relationship. | 
+| IP.Relationships.EntityB | string | The destination of the relationship. | 
+| IP.Relationships.Relationship | string | The name of the relationship. | 
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. | 
+| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. | 
+| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). | 
+| VirusTotal.IP.attributes.jarm | String | JARM data. | 
+| VirusTotal.IP.attributes.network | String | Network data. | 
+| VirusTotal.IP.attributes.country | String | The country where the IP is located. | 
+| VirusTotal.IP.attributes.as_owner | String | IP owner. | 
+| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
+| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.IP.attributes.asn | Number | ASN data. | 
+| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. | 
+| VirusTotal.IP.attributes.reputation | Number | IP reputation. | 
+| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. | 
+| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. | 
+| VirusTotal.IP.attributes.whois | String | whois data. | 
+| VirusTotal.IP.type | String | Indicator IP type. | 
+| VirusTotal.IP.id | String | ID of the IP. | 
 
-#### Command Example
-
+#### Command example
 ```!ip ip=1.1.1.1```
-
 #### Context Example
-
 ```json
 {
     "DBotScore": {
         "Indicator": "1.1.1.1",
-        "Reliability": "A - Completely reliable",
+        "Reliability": "C - Fairly reliable",
         "Score": 1,
         "Type": "ip",
-        "Vendor": "VirusTotal"
+        "Vendor": "VirusTotal (API v3)"
     },
     "IP": {
         "ASN": 13335,
+        "ASOwner": "CLOUDFLARENET",
         "Address": "1.1.1.1",
-        "DetectionEngines": 82,
-        "Geo": {
-            "Country": "AU"
-        },
-        "PositiveDetections": 1
+        "DetectionEngines": 94,
+        "PositiveDetections": 4,
+        "Relationships": [
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "00000cd773f456da710fa334507f8303e87ee228a0c42e365b0250a9a267e734",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            },
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "0000703e66fe64992425a5a6231671c08a6c3382a28d0efacc7efd3fb289a143",
+                "EntityBType": "File",
+                "Relationship": "communicates-with"
+            }
+        ]
     },
     "VirusTotal": {
         "IP": {
             "attributes": {
                 "as_owner": "CLOUDFLARENET",
                 "asn": 13335,
-                "continent": "OC",
-                "country": "AU",
                 "jarm": "27d3ed3ed0003ed1dc42d43d00041d6183ff1bfae51ebd88d70384363d525c",
                 "last_analysis_stats": {
-                    "harmless": 73,
-                    "malicious": 1,
-                    "suspicious": 1,
+                    "harmless": 80,
+                    "malicious": 4,
+                    "suspicious": 0,
                     "timeout": 0,
-                    "undetected": 7
+                    "undetected": 10
                 },
                 "last_https_certificate": {
                     "cert_signature": {
@@ -525,7 +535,7 @@ Checks the reputation of an IP address.
                             "GGd",
                             "GGd"
                         ],
-                        "subject_key_identifier": "e1b6fc06f9b98b05f4c1e2489b02b90bc1b53d79",
+                        "subject_key_identifier": "19451b2318f874da2214cb466be213b360158240",
                         "tags": []
                     },
                     "issuer": {
@@ -554,27 +564,48 @@ Checks the reputation of an IP address.
                     "thumbprint": "f1b38143b992645497cf452f8c1ac84249794282",
                     "thumbprint_sha256": "fb444eb8e68437bae06232b9f5091bccff62a768ca09e92eb5c9c2cf9d17c426",
                     "validity": {
-                        "not_after": "2022-01-18 23:59:59",
-                        "not_before": "2021-01-11 00:00:00"
+                        "not_after": "2022-10-25 23:59:59",
+                        "not_before": "2021-10-25 00:00:00"
                     },
                     "version": "V3"
                 },
                 "last_https_certificate_date": 1617041198,
                 "last_modification_date": 1617083545,
                 "network": "1.1.1.0/24",
-                "regional_internet_registry": "APNIC",
-                "reputation": 33,
+                "reputation": 134,
                 "tags": [],
                 "total_votes": {
-                    "harmless": 22,
-                    "malicious": 6
-                 },
+                    "harmless": 63,
+                    "malicious": 8
+                },
                 "whois": "**whois string**",
-                "whois_date": 1615771527
+                "whois_date": 1631599972
             },
             "id": "1.1.1.1",
             "links": {
                 "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1"
+            },
+            "relationships": {
+                "communicating_files": {
+                    "data": [
+                        {
+                            "id": "00000cd773f456da710fa334507f8303e87ee228a0c42e365b0250a9a267e734",
+                            "type": "file"
+                        },
+                        {
+                            "id": "0000703e66fe64992425a5a6231671c08a6c3382a28d0efacc7efd3fb289a143",
+                            "type": "file"
+                        }
+                    ],
+                    "links": {
+                        "next": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?cursor=eyJsaW1pdCI6IDIwLCAib2Zmc2V0IjogMjB9&limit=20",
+                        "related": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/communicating_files",
+                        "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?limit=20"
+                    },
+                    "meta": {
+                        "cursor": "eyJsaW1pdCI6IDIwLCAib2Zmc2V0IjogMjB9"
+                    }
+                }
             },
             "type": "ip_address"
         }
@@ -586,9 +617,9 @@ Checks the reputation of an IP address.
 
 >### IP reputation of 1.1.1.1
 >
->|Id|Network|Country|LastModified|Reputation|Positives|
->|---|---|---|---|---|---|
->| 1.1.1.1 | 1.1.1.0/24 | AU | 2021-03-30 05:52:25Z | 33 | 1/82 |
+>|Id|Network|Country|AsOwner|LastModified| Reputation |Positives|
+>|---|---|---|---|---|---|---|
+>| 1.1.1.1 | 1.1.1.0/24 |  | CLOUDFLARENET | 2022-08-29 15:15:41Z | 134        | 4/94 |
 
 ### url
 
