@@ -90,6 +90,10 @@ class MockerCases:
     M1 = CollectTestsMocker(TEST_DATA / 'M1')
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
+    limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
+    non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
+    script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
+    skipped_nightly_test = CollectTestsMocker(TEST_DATA / 'skipped_nightly_test')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -180,7 +184,17 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
      None),
 
-    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None)
+    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None),
+
+    # cases where nightly_packs doesn't hold all packs
+    (MockerCases.limited_nightly_packs, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'}, None),
+
+    (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None),
+
+    (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'}, None),
+
+    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None)
+
 )
 
 
