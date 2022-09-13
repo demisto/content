@@ -20,6 +20,6 @@ args:
   defaultValue: "0.3"
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No tests (auto formatted)
