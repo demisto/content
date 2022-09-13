@@ -20,13 +20,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Create Relationships
-  name: createRelationships
+- display: Create Additional IOCs
+  name: createIOCs
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: If an ANYRUN report contains more than one type of indicator, relationships
-    will be created between them.
+  additionalinfo: If an ANYRUN report contains more than one type of indicator, IOCs and
+    relationships will be created.
 - display: Source Reliability
   name: integrationReliability
   defaultvalue: C - Fairly reliable

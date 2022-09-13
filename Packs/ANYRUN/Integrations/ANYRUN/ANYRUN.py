@@ -397,7 +397,7 @@ def travel_object(obj,
         raise TypeError(err_msg)
 
 
-def generate_dbotscore(response: Dict) -> List[CommandResults]:
+def extract_indicators(response: Dict) -> List[CommandResults]:
     """Creates CommandResult object based on the contents of 'response' argument
         and provides DBotScore objects.
 
@@ -412,7 +412,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
         A list of CommandResults objects.
     """
     params = demisto.params()
-    create_relationships = argToBoolean(params.get('createRelationships', 'true'))
+    create_iocs = argToBoolean(params.get('createIOCs', 'true'))
     source_reliability = params.get('integrationReliability')
     data = response.get('data', {})
     analysis = data.get('analysis', {})
@@ -458,7 +458,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                 'Vendor': 'ANYRUN',
                 'Description': threat_text
             }
-        returned_data.append(CommandResults(
+        main_indicator = CommandResults(
             outputs_prefix='File',
             outputs_key_field=['SHA256'],
             outputs=file_outputs,
@@ -470,8 +470,9 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                 file_type=file_type,
                 associated_file_names=exif.get('OriginalFileName')
             ),
-            readable_output=tableToMarkdown(f"{file_outputs['SHA256']}:", file_outputs)
-        ))
+            readable_output=tableToMarkdown(f"{file_outputs['SHA256']}:", file_outputs),
+            relationships=[]
+        )
 
     else:
         main_entity = main_object.get('url')
@@ -491,7 +492,7 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                 'Vendor': 'ANYRUN',
                 'Description': threat_text
             }
-        returned_data.append(CommandResults(
+        main_indicator = CommandResults(
             outputs_prefix='URL',
             outputs_key_field=['Data'],
             outputs=url_outputs,
@@ -499,44 +500,41 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                 url=main_entity,
                 dbot_score=dbot_score
             ),
-            readable_output=tableToMarkdown(f"{url_outputs['Data']}:", url_outputs)
-        ))
+            readable_output=tableToMarkdown(f"{url_outputs['Data']}:", url_outputs),
+            relationships=[]
+        )
 
-    # Check if network information is available in the report
-    if 'network' in data:
-        network_data = data.get('network', {})
+    # Extract additional IOCs
+    if create_iocs:
+        # Check if network information is available in the report
+        if 'network' in data:
+            network_data = data.get('network', {})
 
-        # Then add all the network-related indicators - 'connections'
-        if 'connections' in network_data:
-            connections = network_data.get('connections')
-            for current_connection in connections:
-                reputation = current_connection.get('Reputation')
-                if score := reputation_map.get(reputation):
-                    current_dbot_score = Common.DBotScore(
-                        indicator=current_connection.get('IP'),
-                        indicator_type=DBotScoreType.IP,
-                        integration_name='ANYRUN',
-                        score=score,
-                        reliability=source_reliability
-                    )
-                    ip_indicator = Common.IP(
-                        ip=current_connection.get('IP'),
-                        asn=current_connection.get('ASN'),
-                        port=current_connection.get('Port'),
-                        geo_country=current_connection.get('Country'),
-                        dbot_score=current_dbot_score
-                    )
-                    ip_connection_command_results = CommandResults(
-                        readable_output=tableToMarkdown(
-                            f"{current_connection.get('IP')}",
-                            [{
-                                "Description": f"This IP was observed after detonation of {main_entity} in ANYRUN"
-                            }]
-                        ),
-                        indicator=ip_indicator
-                    )
-                    if create_relationships:
-                        ip_indicator_relationships = [EntityRelationship(
+            # Then add all the network-related indicators - 'connections'
+            if 'connections' in network_data:
+                connections = network_data.get('connections')
+                for current_connection in connections:
+                    reputation = current_connection.get('Reputation')
+                    if score := reputation_map.get(reputation):
+                        current_dbot_score = Common.DBotScore(
+                            indicator=current_connection.get('IP'),
+                            indicator_type=DBotScoreType.IP,
+                            integration_name='ANYRUN',
+                            score=score,
+                            reliability=source_reliability
+                        )
+                        ip_indicator = Common.IP(
+                            ip=current_connection.get('IP'),
+                            asn=current_connection.get('ASN'),
+                            port=current_connection.get('Port'),
+                            geo_country=current_connection.get('Country'),
+                            dbot_score=current_dbot_score
+                        )
+                        ip_connection_command_results = CommandResults(
+                            readable_output=f"{current_connection.get('IP')} found in '{main_entity}' network communications.",
+                            indicator=ip_indicator
+                        )
+                        ip_indicator_relationship = EntityRelationship(
                             name=EntityRelationship.Relationships.RELATED_TO,
                             entity_a=main_entity,
                             entity_a_type=main_entity_type,
@@ -544,39 +542,32 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             entity_b_type=FeedIndicatorType.IP,
                             brand="ANYRUN",
                             source_reliability=source_reliability
-                        )]
-                        ip_indicator.relationships = ip_indicator_relationships
+                        )
+                        main_indicator.relationships.append(ip_indicator_relationship)
+                        returned_data.append(ip_connection_command_results)
 
-                    returned_data.append(ip_connection_command_results)
+            # Then add all the network-related indicators - 'dnsRequests'
+            if 'dnsRequests' in network_data:
+                for current_dnsRequests in network_data.get('dnsRequests'):
+                    reputation = current_dnsRequests.get('Reputation')
+                    if score:= reputation_map.get(reputation):
+                        current_dbot_score = Common.DBotScore(
+                            indicator=current_dnsRequests.get('Domain'),
+                            indicator_type=DBotScoreType.DOMAIN,
+                            integration_name='ANYRUN',
+                            score=score,
+                            reliability=source_reliability
+                        )
+                        domain_indicator = Common.Domain(
+                            domain=current_dnsRequests.get('Domain'),
+                            dbot_score=current_dbot_score
+                        )
+                        domain_command_results = CommandResults(
+                            readable_output=f"{current_dnsRequests.get('Domain')} found in '{main_entity}' network communications.",
+                            indicator=domain_indicator
+                        )
 
-        # Then add all the network-related indicators - 'dnsRequests'
-        if 'dnsRequests' in network_data:
-            for current_dnsRequests in network_data.get('dnsRequests'):
-                reputation = current_dnsRequests.get('Reputation')
-                if score:= reputation_map.get(reputation):
-                    current_dbot_score = Common.DBotScore(
-                        indicator=current_dnsRequests.get('Domain'),
-                        indicator_type=DBotScoreType.DOMAIN,
-                        integration_name='ANYRUN',
-                        score=score,
-                        reliability=source_reliability
-                    )
-                    domain_indicator = Common.Domain(
-                        domain=current_dnsRequests.get('Domain'),
-                        dbot_score=current_dbot_score
-                    )
-                    domain_command_results = CommandResults(
-                        readable_output=tableToMarkdown(
-                            f"{current_dnsRequests.get('Domain')}",
-                            [{
-                                "Description": f"This domain was observed after detonation of {main_entity} in ANYRUN"
-                            }]
-                        ),
-                        indicator=domain_indicator
-                    )
-
-                    if create_relationships:
-                        domain_relationships = [EntityRelationship(
+                        domain_relationship = EntityRelationship(
                             name=EntityRelationship.Relationships.RELATED_TO,
                             entity_a=main_entity,
                             entity_a_type=main_entity_type,
@@ -584,73 +575,62 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             entity_b_type=FeedIndicatorType.Domain,
                             brand="ANYRUN",
                             source_reliability=source_reliability
-                        )]
-                        domain_indicator.relationships = domain_relationships
-                    returned_data.append(domain_command_results)
+                        )
+                        main_indicator.relationships.append(domain_relationship)
+                        returned_data.append(domain_command_results)
 
-                    if "IP" in current_dnsRequests:
-                        for ip in current_dnsRequests.get('IP', []):
-                            domain_ip_dbot_score = Common.DBotScore(
-                                indicator=ip,
-                                indicator_type=DBotScoreType.IP,
-                                integration_name="ANYRUN",
-                                score=Common.DBotScore.NONE,
-                                reliability=source_reliability
-                            )
-                            domain_ip_indicator = Common.IP(
-                                ip=ip,
-                                dbot_score=domain_ip_dbot_score
-                            )
-                            domain_ip_command_results = CommandResults(
-                                indicator=domain_ip_indicator,
-                                readable_output=tableToMarkdown(
-                                    f"{ip}",
-                                    [{
-                                        "Description": f"This IP was resovled from {current_dnsRequests.get('Domain')}"
-                                    }]
+                        if "IP" in current_dnsRequests:
+                            for ip in current_dnsRequests.get('IP', []):
+                                domain_ip_dbot_score = Common.DBotScore(
+                                    indicator=ip,
+                                    indicator_type=DBotScoreType.IP,
+                                    integration_name="ANYRUN",
+                                    score=Common.DBotScore.NONE,
+                                    reliability=source_reliability
                                 )
-                            )
-                            if create_relationships:
-                                domain_ip_relationships = [EntityRelationship(
+                                domain_ip_indicator = Common.IP(
+                                    ip=ip,
+                                    dbot_score=domain_ip_dbot_score
+                                )
+                                domain_ip_command_results = CommandResults(
+                                    readable_output=f"{ip} resolved from {current_dnsRequests.get('Domain')} in '{main_entity}' network communications.",
+                                    indicator=domain_ip_indicator
+                                )
+
+                                domain_ip_relationship = EntityRelationship(
                                     name=EntityRelationship.Relationships.RESOLVES_TO,
                                     entity_a=current_dnsRequests.get('Domain'),
                                     entity_a_type=FeedIndicatorType.Domain,
                                     entity_b=ip,
                                     entity_b_type=FeedIndicatorType.IP,
                                     source_reliability=source_reliability
-                                )]
-                                domain_ip_indicator.relationships = domain_ip_relationships
-                            returned_data.append(domain_ip_command_results)
+                                )
+                                main_indicator.relationships.append(domain_ip_relationship)
+                                returned_data.append(domain_ip_command_results)
 
-        # Then add all the network-related indicators - 'httpRequests'
-        if 'httpRequests' in network_data:
-            for current_httpRequests in network_data.get('httpRequests'):
-                reputation = current_httpRequests['Reputation']
-                if score:= reputation_map.get(reputation):
-                    current_dbot_score = Common.DBotScore(
-                        indicator=current_httpRequests.get('URL'),
-                        indicator_type=DBotScoreType.URL,
-                        integration_name='ANYRUN',
-                        score=score,
-                        reliability=source_reliability
-                    )
-                    url_indicator = Common.URL(
-                        url=current_httpRequests.get('URL'),
-                        geo_country=current_httpRequests.get('Country'),
-                        port=current_httpRequests.get('Port'),
-                        dbot_score=current_dbot_score
-                    )
-                    url_command_results = CommandResults(
-                        readable_output=tableToMarkdown(
-                            f"{current_httpRequests.get('URL')}",
-                            [{
-                                "Description": f"This URL was observed after detonation of {main_entity} in ANYRUN"
-                            }]
-                        ),
-                        indicator=url_indicator
-                    )
-                    if create_relationships:
-                        url_relationships = [EntityRelationship(
+            # Then add all the network-related indicators - 'httpRequests'
+            if 'httpRequests' in network_data:
+                for current_httpRequests in network_data.get('httpRequests'):
+                    reputation = current_httpRequests['Reputation']
+                    if score:= reputation_map.get(reputation):
+                        current_dbot_score = Common.DBotScore(
+                            indicator=current_httpRequests.get('URL'),
+                            indicator_type=DBotScoreType.URL,
+                            integration_name='ANYRUN',
+                            score=score,
+                            reliability=source_reliability
+                        )
+                        url_indicator = Common.URL(
+                            url=current_httpRequests.get('URL'),
+                            geo_country=current_httpRequests.get('Country'),
+                            port=current_httpRequests.get('Port'),
+                            dbot_score=current_dbot_score
+                        )
+                        url_command_results = CommandResults(
+                            readable_output=f"{current_httpRequests.get('URL')} found in '{main_entity}' network communications.",
+                            indicator=url_indicator
+                        )
+                        url_relationship = EntityRelationship(
                             name=EntityRelationship.Relationships.RELATED_TO,
                             entity_a=main_entity,
                             entity_a_type=main_entity_type,
@@ -658,41 +638,36 @@ def generate_dbotscore(response: Dict) -> List[CommandResults]:
                             entity_b_type=FeedIndicatorType.URL,
                             brand="ANYRUN",
                             source_reliability=source_reliability
-                        )]
-                        url_indicator.relationships=url_relationships
-                    
-                    returned_data.append(url_command_results)
+                        )
+                        main_indicator.relationships.append(url_relationship)
+                        
+                        returned_data.append(url_command_results)
 
-    if 'mitre' in data:
-        mitre_data = data.get('mitre')
-        for item in mitre_data:
-            attack_indicator = Common.AttackPattern(
-                stix_id='',
-                value=item.get('name'),
-                mitre_id=item.get('id')
-            )
-            attack_command_results = CommandResults(
-                readable_output=tableToMarkdown(
-                    f"{item.get('name')}",
-                    [{
-                        "Description": f"This Attack Pattern was observed after detonation of {main_entity} in ANYRUN"
-                    }]
-                ),
-                indicator=attack_indicator
-            )
-            if create_relationships:
-                attack_relationships = [EntityRelationship(
+        if 'mitre' in data:
+            mitre_data = data.get('mitre')
+            for item in mitre_data:
+                attack_indicator = Common.AttackPattern(
+                    stix_id='',
+                    value=item.get('name'),
+                    mitre_id=item.get('id')
+                )
+                attack_command_results = CommandResults(
+                    readable_output=f"{item.get('name')} identified in '{main_entity}' MITRE information.",
+                    indicator=attack_indicator
+                )
+                attack_relationship = EntityRelationship(
                     name=EntityRelationship.Relationships.USED_BY,
                     entity_a=item.get('name'),
                     entity_a_type='Attack Pattern',
                     entity_b=main_entity,
                     entity_b_type=main_entity_type,
                     source_reliability=source_reliability
-                )]
-                attack_command_results.relationships=attack_relationships
-            
-            returned_data.append(attack_command_results)
+                )
+                main_indicator.relationships.append(attack_relationship)
+                
+                returned_data.append(attack_command_results)
 
+    returned_data.append(main_indicator)
     return returned_data
 
 
@@ -1126,7 +1101,7 @@ def get_report_command(args: Dict, client: Client):
     formatted_contents = travel_object(contents)
     formatted_contents['Reports'] = reports
 
-    dbot_scores: List[CommandResults] = generate_dbotscore(response)
+    dbot_scores: List[CommandResults] = extract_indicators(response)
     returned_results = [CommandResults(     # noqa: E9007
         outputs_prefix='ANYRUN.Task',
         outputs_key_field='ID',
@@ -1210,7 +1185,7 @@ def run_analysis_command(args: Dict, client: Client):
                 humanreadable_from_report_contents(formatted_contents)
             )
         )]
-        indicators = generate_dbotscore(response)
+        indicators = extract_indicators(response)
         for indicator in indicators:
             submit_output.append(indicator)
         images = client.get_images_from_report(response)
