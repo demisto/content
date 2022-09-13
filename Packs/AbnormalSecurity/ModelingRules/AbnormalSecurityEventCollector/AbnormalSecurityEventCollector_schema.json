@@ -1,0 +1,8 @@
+{
+    "abnormal_security_email_protection_raw": {
+        "sentTime": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
