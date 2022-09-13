@@ -134,8 +134,17 @@ def test_module(client: Client) -> str:
     """
     Testing we have a valid connection to Saas-Security.
     """
-    client.get_events_request()
-    return 'ok'
+    try:
+        client.get_events_request()
+        return 'ok'
+    except Exception as e:
+        if 'Limit Exceeded' in str(e):
+            raise DemistoException("You've reached the daily api-call limit for your key.\n"
+                                   "Please wait for tomorrow to reset your calls limit or upgrade your key.")
+        elif "Internal Server Error" in str(e):
+            raise DemistoException("Please make sure you've entered a valid api-key and chose the right server url.")
+        else:
+            raise DemistoException(str(e))
 
 
 def get_events_command(client: Client, args: Dict, vendor: str, product: str) -> Union[str, CommandResults]:
