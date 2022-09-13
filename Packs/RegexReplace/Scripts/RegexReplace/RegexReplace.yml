@@ -7,15 +7,29 @@ args:
   required: true
 - description: Template string to format patterns matched with regex
   name: output_format
-  required: true
 - auto: PREDEFINED
-  defaultValue: "false"
-  description: True if the pattern matching is case insensitive, otherwise
-    False.
+  defaultValue: 'false'
+  description: Whether character matching will be case-insensitive. Default is "false".
   name: ignore_case
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
+- name: multi_line
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Process value in multiline mode.  See more information on re.MULTILINE, see https://docs.python.org/3/library/re.html.
+  defaultValue: 'false'
+- name: period_matches_newline
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Whether to make the '.' character also match a new line. Default is "false".
+  defaultValue: 'false'
+- name: action_dt
+  description: The last action for each matched value to transform
 comment: |-
   Format patterns matched with regex. If the regex does not match any pattern, the original value is returned.
 
@@ -33,7 +47,7 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
@@ -48,3 +62,6 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
