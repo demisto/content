@@ -7,23 +7,21 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
-from typing import List
 
 from OctoxLabs import convert_to_json
-
-
-class FakeAdapter:
-    id: int = 1
-    name: str = "Active Directory"
-    slug: str = "active-directory"
-    description: str = "Active directory description"
-    groups: List[str] = ["ad"]
-    beta: bool = False
-    status: int = 1
+from octoxlabs.models.adapter import Adapter
 
 
 def test_convert_to_json():
-    adapter = FakeAdapter()
+    adapter = Adapter(
+        id=1,
+        name="Active Directory",
+        slug="active-directory",
+        description="Active directory description",
+        groups=["ad"],
+        beta=False,
+        status=1
+    )
     data = convert_to_json(
         obj=adapter,
         keys=[

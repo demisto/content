@@ -11,14 +11,15 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-from octoxlabs import OctoxLabs
-
-import requests
-from typing import Any, Dict, List
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+''' IMPORTS '''
+from octoxlabs import OctoxLabs
+
+import requests
+from typing import Any, Dict, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -160,16 +161,20 @@ def get_last_discovery(octox: OctoxLabs, *_, **__) -> CommandResults:
 
 
 def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    fields = args.get("fields", None)
+    if isinstance(fields, str):
+        fields = [f.strip() for f in fields.split(",")]
+
     count, devices = octox.search_assets(
         query=args.get("query", ""),
-        fields=args.get("fields", None),
+        fields=fields,
         page=args.get("page", 1),
         size=args.get("size", 50),
         discovery_id=args.get("discovery_id", None),
     )
 
     return CommandResults(
-        output_prefix="OctoxLabs.Devices",
+        outputs_prefix="OctoxLabs.Devices",
         outputs={
             "count": count,
             "results": devices,
@@ -181,7 +186,7 @@ def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     device = octox.get_asset_detail(
         hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
     )
-    return CommandResults(output_prefix="OctoxLabs.Device", outputs=device)
+    return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)
 
 
 """ MAIN FUNCTION """
@@ -208,7 +213,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)} \nArgs:\n{demisto.args()}"
         )
 
 
