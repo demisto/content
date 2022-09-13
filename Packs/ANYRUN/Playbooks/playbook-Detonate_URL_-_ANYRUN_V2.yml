@@ -1,6 +1,6 @@
-id: Detonate URL - ANYRUN V2
+id: Detonate URL - ANYRUN
 version: -1
-name: Detonate URL - ANYRUN V2
+name: Detonate URL - ANYRUN
 description: |-
   Detonates one or more URLs using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and url reputations to the context data.
@@ -403,4 +403,4 @@ outputs:
   type: String
 tests:
 - Detonate URL - ANYRUN - Test
-fromversion: 6.5.0
+fromversion: 6.2.0

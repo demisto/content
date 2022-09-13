@@ -1,6 +1,6 @@
-id: Detonate File - ANYRUN V2
+id: Detonate File - ANYRUN
 version: -1
-name: Detonate File - ANYRUN V2
+name: Detonate File - ANYRUN
 description: |-
   Detonates one or more files using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
@@ -430,4 +430,4 @@ outputs:
   type: String
 tests:
 - Detonate File - ANYRUN - Test
-fromversion: 6.5.0
+fromversion: 6.2.0
