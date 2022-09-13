@@ -1,0 +1,103 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmservicedetection",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "ScanNum",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "scannum",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ScanDone",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "scandone",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ScanResult",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "scanresult",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "open",
+                "closed",
+                "other"
+            ],
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "TimeStamp",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "timestamp",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ScanState",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "scanstate",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "description": "Pre/Post remediation scan to check if service is still detectable",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmservicedetection",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Service Detection",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
