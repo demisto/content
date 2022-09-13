@@ -1,9 +1,10 @@
 [MODEL: dataset=atlassian_jira_raw]
-alter xdm.event.operation = summary,
+alter
+    xdm.event.operation = summary,
+	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", arrayindex(split(created, "+"), 0)),
 	xdm.source.ipv4 = remoteAddress,
 	xdm.source.user.username = authorKey,
 	xdm.source.user.identifier = authorAccountId,
-	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", arrayindex(split(created, "+"), 0)),
 	xdm.event.operation_sub_type = category,
 	xdm.target.user.identifier = json_extract_scalar(objectItem, "$.id"),
 	xdm.target.user.username = json_extract_scalar(objectItem, "$.name"),

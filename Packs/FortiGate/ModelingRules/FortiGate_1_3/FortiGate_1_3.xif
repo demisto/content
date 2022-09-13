@@ -1,10 +1,8 @@
 [MODEL: dataset="fortinet_fortigate_raw"]
-// create timestamp field
-alter time_p1 = arrayindex(regextract(to_string(_time),"(\w+\s\d+)"),0)
-| alter time_p2 = arrayindex(regextract(to_string(_time),"(\d{4}\s\d+:\d+:\d+)"),0)
-| alter timestamp = parse_timestamp("%b %d %Y %H:%M:%S", concat(time_p1, " ", time_p2))
-// end timestamp field
-| alter xdm.network.application_protocol = app,
+alter
+    timestamp = _time
+| alter
+    xdm.network.application_protocol = app,
 	xdm.network.application_protocol_category = FTNTFGTcat,
 	xdm.target.host.fqdn = dhost,
 	xdm.target.ipv4 = dst,
@@ -26,10 +24,9 @@ alter time_p1 = arrayindex(regextract(to_string(_time),"(\w+\s\d+)"),0)
 	xdm.source.host.fqdn = shost,
 	xdm.source.ipv4 = src,
 	xdm.source.port = to_number(spt),
-	xdm.target.sent_bytes = to_number("in"),
+	xdm.target.sent_bytes = to_number(`in`),
 	xdm.source.process.executable.filename = fname,
 	xdm.source.process.name = sproc,
 	xdm.source.user.username = suser,
-	xdm.alert.category = FTNTFGTdtype,
 	xdm.alert.description = FTNTFGTref,
 	xdm.alert.severity = cefSeverity;
