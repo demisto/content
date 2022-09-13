@@ -50,15 +50,15 @@ class Client:
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
-             + 'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. '
+             'This can indicate an incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
         404: 'XDR Not found: The provided URL may not be of an active XDR server.',
         413: 'Request entity too large. Please reach out to the XDR support team.'
     }
 
-    def __init__(self, params: Dict):
+    def __init__(self, params: dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
@@ -151,7 +151,7 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 
 def get_iocs_generator(size=200, query=None) -> Iterable:
-    query = query if query else Client.query
+    query = query or Client.query
     query = f'expirationStatus:active AND ({query})'
     try:
         for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
@@ -213,13 +213,14 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
         }
         # get last 'IndicatorCommentRegular'
-        comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
+        comment: Dict = next(
+            filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {}
+        )
         if comment:
             xdr_ioc['comment'] = comment.get('content')
-        if ioc.get('aggregatedReliability'):
-            xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
-        vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
-        if vendors:
+        if aggregated_reliability := ioc.get('aggregatedReliability'):
+            xdr_ioc['reliability'] = aggregated_reliability[0]
+        if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
 
         custom_fields = ioc.get('CustomFields', {})
@@ -330,7 +331,7 @@ def iocs_command(client: Client):
     indicators = demisto.args().get('indicator', '')
     if command == 'enable':
         path, iocs = prepare_enable_iocs(indicators)
-    else:   # command == 'disable'
+    else:  # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
     requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
@@ -479,13 +480,19 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def main():   # pragma: no cover
+def main():  # pragma: no cover
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
-    Client.severity_field = params.get('severity_field', 'sourceoriginalseverity')
-    Client.query = params.get('query', Client.query)
-    Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     Client.tlp_color = params.get('tlp_color')
+
+    # In this integration, arguments are set in the *class level*, the defaults are in the class definition.
+    if query := params.get('query'):
+        Client.query = query
+    if severity_field := params.get('severity_field'):
+        Client.severity_field = severity_field
+    if raw_tags := (params.get('feedTags') or params.get('tag')):
+        Client.tag = set(raw_tags.split(','))
+
     client = Client(params)
     commands = {
         'test-module': module_test,
