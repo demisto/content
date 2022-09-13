@@ -206,7 +206,7 @@ class WidgetAPI(EntityAPI):  # TODO: check
         return verify_search_response_in_dict(response)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
-        if response is dict:
+        if type(response) is dict:
             return list(response.keys())
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
@@ -233,7 +233,7 @@ class DashboardAPI(EntityAPI):  # TODO: check
         verify_search_response_in_dict(response)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
-        if response is dict:
+        if type(response) is dict:
             return list(response.keys())
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
