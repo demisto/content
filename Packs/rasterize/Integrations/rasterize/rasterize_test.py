@@ -1,5 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, init_driver_and_display)
+                       RasterizeMode, RasterizeType, init_driver)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -294,7 +294,7 @@ class TestRasterizeIncludeUrl:
         mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
         mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
 
-        driver, _ = init_driver_and_display(width=250, height=250, include_url=include_url)
+        driver = init_driver(include_url=include_url)
 
         assert not ('--headless' in driver.options) == include_url
 

@@ -27,6 +27,7 @@ from selenium.common.exceptions import (InvalidArgumentException,
 handle_proxy()
 # Make sure our python code doesn't go through a proxy when communicating with chrome webdriver
 os.environ['no_proxy'] = 'localhost,127.0.0.1'
+# Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ['HOME'] = tempfile.gettempdir()
 
 WITH_ERRORS = demisto.params().get('with_error', True)
@@ -146,7 +147,7 @@ def init_display(width: int, height: int):
         The  display session
     """
     try:
-        demisto.debug("Starting display")
+        demisto.debug(f"Starting display with width: {width}, and height: {height}.")
         os.environ['DISPLAY'] = ':0'
         display = Display(visible=0, size=(width, height), backend='xvnc')
         display.start()
@@ -225,14 +226,14 @@ def quit_driver_and_display_and_reap_children(driver, display):
                 demisto.debug(f'Quitting driver session: {driver.session_id}')
                 driver.quit()
         except Exception as edr:
-            demisto.error(f"Failed to quit driver. Error: {edr}")
+            demisto.error(f"Failed to quit driver. Error: {edr}. Trace: {traceback.format_exc()}")
 
         try:
             if display:
                 demisto.debug("Stopping display")
                 display.stop()
         except Exception as edr:
-            demisto.error(f"Failed to stop display. Error: {edr}")
+            demisto.error(f"Failed to stop display. Error: {edr}. Trace: {traceback.format_exc()}")
 
         zombies, ps_out = find_zombie_processes()
         if zombies:
