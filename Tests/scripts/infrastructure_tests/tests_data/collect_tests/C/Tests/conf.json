@@ -1,5 +1,21 @@
 {
-  "tests": [],
+  "tests": [
+    {
+      "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
+    },
+    {
+      "playbookID": "myXSOAROnlyTestPlaybook"
+    },
+    {
+      "playbookID": "myXSIAMOnlyTestPlaybook"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration"
+    }
+  ],
   "skipped_tests": {},
   "skipped_integrations": {},
   "unmockable_integrations": {},
