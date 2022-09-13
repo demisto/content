@@ -289,6 +289,18 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
+    def workspace_member_list_request(self, params: Dict) -> Dict:
+        """ Makes a GET request /workspaces/{workspace}/members endpoint
+            to return a list of the members in the workspace.
+            :param params: Dict - The pagination params if needed
+
+            Creates the url and makes the api call
+            :return JSON response from /workspaces/{workspace}/members endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = f'/workspaces/{self.workspace}/members'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1156,6 +1168,46 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
         return CommandResults(readable_output=response.text)
 
 
+def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of all the members in the requested workspace.
+        Args:
+            client: A Bitbucket client.
+            args: Demisto args.
+        Returns:
+            A CommandResult object with the requested list.
+    """
+    limit = arg_to_number(args.get('limit', 50))
+    page: int = arg_to_number(args.get('page', 1))
+    check_args(limit, page)
+    page_size = min(100, limit)
+    params = {
+        'page': page,
+        'pagelen': page_size
+    }
+    response = client.workspace_member_list_request(params)
+    results = check_pagination(client, response, limit)
+    human_readable = []
+    for value in results:
+        d = {'Name': demisto.get(value, 'user.display_name'),
+             'AccountId': demisto.get(value, 'user.account_id')
+             }
+        human_readable.append(d)
+    print(human_readable)
+    headers = ['Name', 'AccountId']
+    readable_output = tableToMarkdown(
+        name='The list of all the workspace members',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Bitbucket.IssueComment',
+        outputs=results,
+        raw_response=results
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1258,6 +1310,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'bitbucket-pull-request-comment-delete':
             result = pull_request_comment_delete_command(client, demisto.args())
+            return_results(result)
+        elif demisto.command() == 'bitbucket-workspace-member-list':
+            result = workspace_member_list_command(client, demisto.args())
             return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')

@@ -2193,6 +2193,17 @@ script:
           required: true
           description: The id of the comment.
           isArray: false
+    - name: bitbucket-workspace-member-list
+      description: returns a list of all the members in the workspace.
+      arguments:
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of items in the list.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
   isfetch: false
   runonce: false
   script: "-"
