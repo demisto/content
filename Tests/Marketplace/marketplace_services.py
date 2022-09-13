@@ -3084,7 +3084,7 @@ class Pack(object):
 
         """
         # Open the url image, set stream to True, this will return the stream content.
-        r = requests.get(readme_original_url, stream=True, verify=False)
+        r = requests.get(readme_original_url, stream=True)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
