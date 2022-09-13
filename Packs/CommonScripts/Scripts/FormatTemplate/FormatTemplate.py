@@ -64,6 +64,15 @@ class Formatter:
                   dx: Optional[ContextData],
                   si: int,
                   end_marker: Optional[str]) -> Tuple[Any, Optional[int]]:
+        """ Extract a template text, or a string within a DT syntax
+
+        :param source: The template text, or the string starts with the next charactor of a start marker
+        :param extractor: The function to extract a DT value
+        :param dx: The context data
+        :param si: The index of `source` to start extracting
+        :param end_marker: The end marker to parse a string within a DT. It must be None when the template text is given to `source`.
+        :return: The extracted value and index of `source` when parsing ended.
+        """
         out = None
         ci = si
         while ci < len(source):
