@@ -29,7 +29,7 @@ Test Collection Unit-Test cases
 - `G` has objects that trigger collection of the pack (without tests).
 - `H` has a single file, that is not a content item, and find_type is mocked to test ONLY_INSTALL_PACK.
 - `I` has a single pack with two test playbooks, one of which is ignored in .pack_ignore.
-- `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json, 
+- `J` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json,
       and a folder named Samples (should be ignored).
 - `K` has a single pack with two integrations, with mySkippedIntegration's TPB skipped in conf.json.
 - `L` has a single pack with a Wizard content item.
