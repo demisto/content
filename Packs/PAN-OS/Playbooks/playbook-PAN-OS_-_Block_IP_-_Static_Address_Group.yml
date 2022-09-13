@@ -46,6 +46,7 @@ tasks:
       id: 480942ef-335c-4e66-87f7-dc2b3ada2048
       version: -1
       name: Palo Alto Networks PAN-OS enabled?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -104,6 +105,7 @@ tasks:
       id: 1ecb1e3c-a84b-40ce-8975-79f309bd0b07
       version: -1
       name: Is there an IP to block?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -205,6 +207,7 @@ tasks:
       id: 435dfd22-d2d5-4ccb-8116-20e0c9dab09f
       version: -1
       name: Check if the malicious IPs already exist in the address group
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -393,6 +396,7 @@ tasks:
       id: 52739aac-151a-484e-8ca0-cb85200d4a9b
       version: -1
       name: AutoCommit defined?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -436,6 +440,7 @@ tasks:
       id: 32cbe912-af9b-416f-8c8a-e54b58a88558
       version: -1
       name: Commit PAN-OS Instance manually
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -511,6 +516,7 @@ tasks:
       id: 8a034a0d-ebea-401c-8b9d-e7e708d94fdb
       version: -1
       name: Commit PAN-OS Instance manually
+      description: ""
       type: regular
       iscommand: false
       brand: ""

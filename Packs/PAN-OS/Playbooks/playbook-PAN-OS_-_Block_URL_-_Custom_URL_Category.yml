@@ -632,6 +632,7 @@ tasks:
       id: 73abf18f-a70f-4c67-81a3-3e9724cc9c5e
       version: -1
       name: Commit PAN-OS Instance manually
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -715,6 +716,7 @@ tasks:
       id: ae0d8023-81e3-4c95-8ccb-08f02de687e7
       version: -1
       name: Commit PAN-OS Instance manually
+      description: ""
       type: regular
       iscommand: false
       brand: ""
