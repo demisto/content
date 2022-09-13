@@ -3496,3 +3496,60 @@ def test_pan_os_edit_address_group_command_main_flow(mocker, args, params, expec
     main()
 
     assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'show_uncommitted': 'true'
+                },
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/application-group"
+                }
+            ),
+            pytest.param(
+                {
+                    'show_uncommitted': 'true'
+                },
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group"
+                }
+            )
+        ]
+    )
+def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance configuration to retrieve all un-committed applications-groups.
+     - Firewall instance configuration to retrieve all un-committed applications-groups.
+
+    When:
+     - running the pan-os-list-application-groups through the main flow.
+
+    Then:
+     - make sure the context output is parsed correctly for both un-committed and committed cases.
+     - make sure the xpath and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request", return_value=load_json('test_data/list_application_groups_un_committed.json')
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-list-application-groups')
+    result = mocker.patch('demistomock.results')
+
+    main()
+
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+        {'Name': 'test', 'Applications': 'application-3'},
+        {'Name': 'test-2', 'Applications': ['application-1', 'application-2']}
+    ]
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

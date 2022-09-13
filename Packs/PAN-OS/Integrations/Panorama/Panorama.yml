@@ -8127,6 +8127,46 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
+  - arguments:
+    - description: The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules.
+      isArray: false
+      name: name
+      required: false
+    - description: The device-group in which the nat-rules are part of.
+      isArray: false
+      name: device-group
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed application-groups or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: The maximum number of application-groups to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the application-groups to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing application-groups, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of application-groups of either Panorama/firewall instance.
+    name: pan-os-list-application-groups
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false

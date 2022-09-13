@@ -7464,3 +7464,61 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-application-groups
+***
+Returns a list of application-groups of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-application-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
+| device-group | The device-group in which the nat-rules are part of. | Optional | 
+| show_uncommitted | Whether to show the un-committed application-groups or not. can be true or false. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of application-groups to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the application-groups to return. Default is 50. | Optional | 
+| page | The page at which to start listing application-groups, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+
+#### Command example
+```!pan-os-list-application-groups show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": [
+            {
+                "Applications": "1c-enterprise",
+                "Name": "test"
+            },
+            {
+                "Applications": [
+                    "2ch-base",
+                    "4shared"
+                ],
+                "Name": "test-2"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Application groups:
+>|Applications|Name|
+>|---|---|
+>| 1c-enterprise | test |
+>| 2ch-base,<br/>4shared | test-2 |
+

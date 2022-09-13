@@ -11243,6 +11243,136 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
+    if page is not None:
+        if page <= 0:
+            raise DemistoException(f'page {page} must be a positive number')
+        return entries[(page - 1) * page_size:page_size * page]  # do pagination
+    else:
+        return entries[:limit]
+
+
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
+
+    for key in keys_to_remove:
+        if key in dictionary:
+            del dictionary[key]
+
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            parse_pan_os_un_committed_data(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
+
+
+def extract_objects_info_by_key(_entry, _key):
+    if isinstance(_entry, dict):
+        key_info = _entry.get(_key)
+        if not key_info:  # api could not return the key
+            return None
+
+        if isinstance(key_info, dict) and (_member := key_info.get('member')):
+            return _member
+        elif isinstance(key_info, str):
+            return key_info
+    elif isinstance(_entry, list):
+        return [item.get(_key) for item in _entry]
+    return None
+
+
+def build_application_groups_xpath(name: Optional[str], element: Optional[str] = None):
+    _xpath = f'{XPATH_OBJECTS}application-group'
+    if name:
+        _xpath = f'{_xpath}/entry[@name="{name}"'
+    if element:
+        _xpath = f'{_xpath}/{element}'
+    return _xpath
+
+
+def pan_os_list_application_groups(name: Optional[str], show_uncommitted: bool):
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_application_groups_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_list_application_groups_command(args):
+    name = args.get('name')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_application_groups(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = result.get('application-group', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId'])
+
+    application_groups = [
+        {
+            'Name': extract_objects_info_by_key(entry, '@name'),
+            'Applications': extract_objects_info_by_key(entry, 'members')
+        } for entry in entries
+    ]
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=application_groups,
+        readable_output=tableToMarkdown(
+            f'Application groups:',
+            application_groups,
+            removeNull=True
+        ),
+        outputs_prefix='Panorama.ApplicationGroup',
+        outputs_key_field='Name'
+    )
+
+
+    print()
+    # table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
+    #
+    # return CommandResults(
+    #     raw_response=raw_response,
+    #     outputs=context,
+    #     readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
+    #     outputs_prefix='Panorama.VirtualRouter',
+    #     outputs_key_field='Name'
+    # )
+
+
 def main():
     try:
         args = demisto.args()
@@ -11896,6 +12026,8 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-application-groups':
+            return_results(pan_os_list_application_groups_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
