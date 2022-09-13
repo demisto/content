@@ -18,7 +18,7 @@ from CommonServerUserPython import *  # noqa
 from octoxlabs import OctoxLabs
 
 import requests
-from typing import Any, Dict, List, Callable
+from typing import Any, Dict, List, Callable, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -42,7 +42,7 @@ def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]) -> Co
         "search-devices": search_devices,
         "get-device": get_device,
     }
-    command_function: Callable = commands.get(command_name, None)
+    command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:
         return command_function(octox=octox, args=args)
     raise Exception("No command.")

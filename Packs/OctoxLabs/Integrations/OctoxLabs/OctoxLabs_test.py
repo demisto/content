@@ -11,6 +11,7 @@ you are implementing with your integration
 import io
 import json
 import pytest
+import requests_mock as rm
 
 from octoxlabs import OctoxLabs
 from octoxlabs.models.adapter import Adapter
@@ -61,18 +62,44 @@ def test_convert_to_json():
     assert data["hr_status"] == "Done"
 
 
+def test_run_command_exception(octox_client):
+    with pytest.raises(Exception):
+        run_command(octox=octox_client, command_name="no-command", args={})
+
+
 def test_get_adapters(requests_mock, octox_client):
     adapter_data = util_load_json(path="test_data/get_adapters.json")
     requests_mock.get("/adapters/adapters", json=adapter_data)
 
     result = run_command(octox=octox_client, command_name="get-adapters", args={})
-    data = result.outputs["OctoxLabs"]["Adapters"]
+    data = result.outputs
 
     assert data["count"] == 2
     assert data["results"][0]["name"] == "Netskope"
 
 
-def test_run_command_exception(octox_client):
-    with pytest.raises(Exception):
-        run_command(octox=octox_client, command_name="no-command", args={})
+def test_get_connections(requests_mock, octox_client):
+    connections_data = util_load_json(path="test_data/get_connections.json")
+    requests_mock.get("/adapters/connections", json=connections_data)
 
+    result = run_command(octox=octox_client, command_name="get-connections", args={})
+    data = result.outputs
+
+    assert data["count"] == 2
+    assert data["results"][0]["adapter_name"] == "Active Directory"
+    assert data["results"][0]["name"] == "Insecure AD"
+
+
+def test_search_devices_parameters(octox_client):
+    with rm.mock() as m:
+        m.post("/assets/assets", json={"count": 0, "results": []})
+        run_command(octox=octox_client, command_name="search-devices", args={"fields": "Adapters, Hostname"})
+        run_command(octox=octox_client, command_name="search-devices", args={})
+
+    first_request = m.request_history[0]
+    first_data = first_request.json()
+    assert first_data["fields"] == ["Adapters", "Hostname"]
+
+    last_request = m.request_history[1]
+    last_data = last_request.json()
+    assert last_data["fields"] is None
