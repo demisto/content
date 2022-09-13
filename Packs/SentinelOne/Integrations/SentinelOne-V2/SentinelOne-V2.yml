@@ -195,7 +195,7 @@ script:
     - description: A comma-separated list of site IDs by which to filter.
       isArray: true
       name: site_ids
-      required: true
+      required: false
     description: Creates an exclusion item that matches the specified input filter.
     name: sentinelone-create-white-list-item
     outputs:
