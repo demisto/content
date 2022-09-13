@@ -1,9 +1,18 @@
 id: Splunk Indicator Hunting
-version: -1
+version: 5
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: SplunkPy
+    packName: Splunk
+    itemVersion: 2.4.12
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Splunk Indicator Hunting
-description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
+description: This playbook queries Splunk for indicators such as file hashes, IP addresses,
+  domains, or urls. It outputs detected users, ip addresses, and hostnames related
+  to the indicators.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,11 +25,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "54"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,7 +44,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 9dd2e0ca-2b1f-4f73-8bfb-019540e5b2f9
@@ -47,11 +55,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,7 +74,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: cece138b-9b8e-4227-8f30-df121b32b2a5
@@ -78,11 +85,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,7 +104,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 32b954e1-13a3-4ad0-850c-0da6d85df323
@@ -109,11 +115,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -128,7 +134,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 3b810ab0-fa13-4c0f-843a-8bd9c41f0abd
@@ -155,6 +160,7 @@ tasks:
             value:
               simple: inputs.IPAddress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -169,7 +175,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 9fe62da8-c3ff-4857-8cbf-107a460b3769
@@ -208,6 +213,7 @@ tasks:
             value:
               simple: inputs.SHA256
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -222,7 +228,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 7a980f98-9398-410c-8999-83634bdb290e
@@ -249,6 +254,7 @@ tasks:
             value:
               simple: inputs.URLDomain
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -263,7 +269,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 408b9ad3-8041-4087-8ed6-ca8bff8b8303
@@ -288,8 +293,9 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.SplunkURLDomainField
+              simple: inputs.URLDomainField
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -304,7 +310,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 995c1f61-e31d-419e-8483-f24c474fe032
@@ -336,6 +341,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -350,7 +356,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
     taskid: bb8c1514-4c47-4e3b-8760-3efd46ae9fc5
@@ -377,6 +382,7 @@ tasks:
             value:
               simple: inputs.SplunkMD5Field
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -391,7 +397,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 79861dce-e4fa-4c6e-857b-7421cc285cdf
@@ -418,6 +423,7 @@ tasks:
             value:
               simple: inputs.MD5
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -432,7 +438,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
     taskid: c3559eab-0438-4e18-8fa9-779588ef1b2a
@@ -444,11 +449,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -463,7 +468,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
     taskid: bb0c3fab-62b6-430e-8b43-28e8270d4274
@@ -475,11 +479,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "29"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -494,7 +498,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 97959f35-e288-4d03-86a0-385efcaebae7
@@ -521,6 +524,7 @@ tasks:
             value:
               simple: inputs.SHA1
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -535,7 +539,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
     taskid: ad012562-482d-466f-855b-691797adad4c
@@ -563,6 +566,7 @@ tasks:
               complex:
                 root: inputs.SplunkSHA1Field
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -577,7 +581,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 1d9bf6ee-8637-4da9-8c31-8b368ff5b2f9
@@ -589,11 +592,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -608,7 +611,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "39":
     id: "39"
     taskid: 77b76600-1062-43f7-874e-e51bb764277d
@@ -635,6 +637,7 @@ tasks:
             value:
               simple: inputs.SHA256
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -649,7 +652,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "41":
     id: "41"
     taskid: d90ad2cb-c6a5-4d2a-8206-76ec8df2058c
@@ -677,6 +679,7 @@ tasks:
               complex:
                 root: inputs.SplunkSHA256Field
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -691,7 +694,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "48":
     id: "48"
     taskid: 2b4d9f60-e913-47bf-816e-177b48d6d69e
@@ -703,11 +705,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "107"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -722,7 +724,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 80cfe8d1-e4fb-4d02-8cff-4552d1417cd4
@@ -750,6 +751,7 @@ tasks:
               complex:
                 root: inputs.SplunkIPField
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -764,7 +766,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 686ecff8-7171-428e-8c32-f7ef1d729212
@@ -811,6 +812,7 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -825,13 +827,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "57":
     id: "57"
-    taskid: c7bd0094-d296-46aa-84fc-7ae09b8967d6
+    taskid: 7596ee18-8727-4dfb-866c-714fd898b7b2
     type: regular
     task:
-      id: c7bd0094-d296-46aa-84fc-7ae09b8967d6
+      id: 7596ee18-8727-4dfb-866c-714fd898b7b2
       version: -1
       name: Splunk search with custom fields
       description: Search Splunk for events using custom fields.
@@ -853,7 +854,7 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: inputs.DomainURL
+          root: inputs.URLDomainField
           transformers:
           - operator: ProductJoin
             args:
@@ -955,6 +956,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -963,19 +965,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "64":
     id: "64"
-    taskid: 8dc066f1-f9b2-499a-8959-947d1ee6884e
+    taskid: b4e5b9eb-0112-4833-8bbf-d4aba5d2df03
     type: regular
     task:
-      id: 8dc066f1-f9b2-499a-8959-947d1ee6884e
+      id: b4e5b9eb-0112-4833-8bbf-d4aba5d2df03
       version: -1
       name: Splunk search with custom fields
       description: Search Splunk for events using custom fields.
@@ -1003,7 +1008,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: '='
+                  simple: =
               list2:
                 value:
                   simple: inputs.IPAddress
@@ -1091,6 +1096,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1099,19 +1105,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "69":
     id: "69"
-    taskid: 58f6d66c-6537-46ce-8004-0ac2ab516f52
+    taskid: ce1a0fc1-6855-4037-8532-8ba57c3fedce
     type: regular
     task:
-      id: 58f6d66c-6537-46ce-8004-0ac2ab516f52
+      id: ce1a0fc1-6855-4037-8532-8ba57c3fedce
       version: -1
       name: Splunk search without custom fields
       description: Search Splunk for events without using custom fields.
@@ -1218,6 +1227,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1226,19 +1236,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results.
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "71":
     id: "71"
-    taskid: 22ebd6cb-4be7-4938-879e-c1507ab047c7
+    taskid: 751a2763-0efc-44b1-895d-914cd88354de
     type: regular
     task:
-      id: 22ebd6cb-4be7-4938-879e-c1507ab047c7
+      id: 751a2763-0efc-44b1-895d-914cd88354de
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
@@ -1345,6 +1358,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1353,19 +1367,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "72":
     id: "72"
-    taskid: a1f76752-1c10-4e3a-872c-a824c4f05cc7
+    taskid: c37977c9-cd6e-4c8a-8f66-d2bd0bfadb35
     type: regular
     task:
-      id: a1f76752-1c10-4e3a-872c-a824c4f05cc7
+      id: c37977c9-cd6e-4c8a-8f66-d2bd0bfadb35
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
@@ -1472,6 +1489,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1480,19 +1498,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "74":
     id: "74"
-    taskid: 65ef6f2e-9815-4be7-8b1f-273dae13d80f
+    taskid: c4e54ccb-4aba-4081-822e-4eb14578c2e9
     type: regular
     task:
-      id: 65ef6f2e-9815-4be7-8b1f-273dae13d80f
+      id: c4e54ccb-4aba-4081-822e-4eb14578c2e9
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
@@ -1607,6 +1628,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1615,19 +1637,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "78":
     id: "78"
-    taskid: efa2e0f8-a482-492e-8958-341d8387c957
+    taskid: 88048c43-28ad-416f-8231-ad6fbe25995d
     type: regular
     task:
-      id: efa2e0f8-a482-492e-8958-341d8387c957
+      id: 88048c43-28ad-416f-8231-ad6fbe25995d
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
@@ -1655,7 +1680,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: '='
+                  simple: =
               list2:
                 value:
                   simple: inputs.SHA1
@@ -1743,6 +1768,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1751,19 +1777,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "79":
     id: "79"
-    taskid: 352c49c7-81d3-4010-87d1-c566fcbae5c0
+    taskid: 496973d6-a6f4-497f-8664-d2b715fc1ac3
     type: regular
     task:
-      id: 352c49c7-81d3-4010-87d1-c566fcbae5c0
+      id: 496973d6-a6f4-497f-8664-d2b715fc1ac3
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
@@ -1791,7 +1820,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: '='
+                  simple: =
               list2:
                 value:
                   simple: inputs.SHA256
@@ -1879,6 +1908,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1887,19 +1917,22 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "80":
     id: "80"
-    taskid: 53d3bf8e-976a-41e3-8a56-79b0d64cf542
+    taskid: 7d7af565-85c8-4e6d-8684-ef0badadee86
     type: regular
     task:
-      id: 53d3bf8e-976a-41e3-8a56-79b0d64cf542
+      id: 7d7af565-85c8-4e6d-8684-ef0badadee86
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -2006,6 +2039,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2014,13 +2048,16 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "81":
     id: "81"
     taskid: a460d968-b21e-4560-8904-e91172dd8f50
@@ -2032,11 +2069,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "122"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2051,7 +2088,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "82":
     id: "82"
     taskid: 874f982c-7c14-4c4a-80b1-ce0b06fc12c6
@@ -2063,11 +2099,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2082,7 +2118,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "83":
     id: "83"
     taskid: 78020ff1-a587-4479-8c95-0bb03f9e6ace
@@ -2094,11 +2129,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "78"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2113,7 +2148,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "84":
     id: "84"
     taskid: b77258be-0d37-4adf-8d46-7abcd45ae834
@@ -2125,11 +2159,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "112"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2144,7 +2178,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "85":
     id: "85"
     taskid: 8f2c1cc4-1bc1-4fb8-8f2d-469b6a64646d
@@ -2156,11 +2189,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "79"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2175,7 +2208,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "86":
     id: "86"
     taskid: 40e20f5c-d512-4f09-8819-0ff00575e505
@@ -2187,11 +2219,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "113"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2206,7 +2238,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "87":
     id: "87"
     taskid: ae105610-32c4-44ba-8b7f-c9bc3b8be0c1
@@ -2218,11 +2249,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "64"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2237,7 +2268,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "88":
     id: "88"
     taskid: 66259488-2ddd-48b9-83d2-3e756291fe8e
@@ -2249,11 +2279,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "114"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2268,7 +2298,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "89":
     id: "89"
     taskid: 4e260a76-f248-438e-8506-d6a50ef9698a
@@ -2280,11 +2309,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "115"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2299,7 +2328,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "90":
     id: "90"
     taskid: 2f14773a-41a5-4f64-8ba3-d1470884d2f2
@@ -2311,11 +2339,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "57"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2330,7 +2358,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "107":
     id: "107"
     taskid: f0e75230-31e4-47ce-82e4-edfdb8fc643a
@@ -2357,6 +2384,7 @@ tasks:
             value:
               simple: Splunk.Result
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2371,7 +2399,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "108":
     id: "108"
     taskid: 83c25e49-c267-4cb0-839a-f76e16bb31ef
@@ -2380,7 +2407,9 @@ tasks:
       id: 83c25e49-c267-4cb0-839a-f76e16bb31ef
       version: -1
       name: Set detected IP addresses
-      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned, they are set in Context. Otherwise, no value is set.
+      description: Checks if the IP addresses were returned in the search results.
+        If the IP addresses were returned, they are set in Context. Otherwise, no
+        value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2409,6 +2438,7 @@ tasks:
                   simple: inputs.IPFieldsToReturn
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2423,7 +2453,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "109":
     id: "109"
     taskid: 7a1c9314-ffe0-45d7-8679-a4287c1be666
@@ -2432,7 +2461,9 @@ tasks:
       id: 7a1c9314-ffe0-45d7-8679-a4287c1be666
       version: -1
       name: Set detected user names
-      description: Checks if the user names were returned in the search results. If the user names were returned, they are set in Context. Otherwise, no value is set.
+      description: Checks if the user names were returned in the search results. If
+        the user names were returned, they are set in Context. Otherwise, no value
+        is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2461,6 +2492,7 @@ tasks:
                   simple: inputs.UserFieldsToReturn
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2475,7 +2507,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "110":
     id: "110"
     taskid: 4e7f15e5-94b0-48ed-8d59-063556a3afdc
@@ -2484,7 +2515,8 @@ tasks:
       id: 4e7f15e5-94b0-48ed-8d59-063556a3afdc
       version: -1
       name: Set detected host names
-      description: Checks if host names were returned in the search results. If host names were returned, they are set in Context. Otherwise, no value is set.
+      description: Checks if host names were returned in the search results. If host
+        names were returned, they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2513,6 +2545,7 @@ tasks:
                   simple: inputs.HostFieldsToReturn
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2527,7 +2560,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "112":
     id: "112"
     taskid: bae26731-6c85-4c18-88cf-97082ed68410
@@ -2536,7 +2568,8 @@ tasks:
       id: bae26731-6c85-4c18-88cf-97082ed68410
       version: -1
       name: Set a SHA1 hash to array
-      description: Sets a SHA1 hash value into the context with the given context key.
+      description: Sets a SHA1 hash value into the context with the given context
+        key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2559,6 +2592,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2573,7 +2607,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "113":
     id: "113"
     taskid: 1ebf3a16-3fd7-4e5e-8c0b-0592a517e26c
@@ -2582,7 +2615,8 @@ tasks:
       id: 1ebf3a16-3fd7-4e5e-8c0b-0592a517e26c
       version: -1
       name: Set a SHA256 hash to array
-      description: Sets a SHA256 hash value into the context with the given context key.
+      description: Sets a SHA256 hash value into the context with the given context
+        key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2605,6 +2639,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2619,7 +2654,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "114":
     id: "114"
     taskid: 454c062c-5a6b-4445-8f26-cf7adec60d8b
@@ -2628,7 +2662,8 @@ tasks:
       id: 454c062c-5a6b-4445-8f26-cf7adec60d8b
       version: -1
       name: Set an IP address to array
-      description: Sets a value for an IP address into the context with the given context key.
+      description: Sets a value for an IP address into the context with the given
+        context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2651,6 +2686,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2665,7 +2701,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "115":
     id: "115"
     taskid: d969dec2-158b-4b1b-87fd-619ba8c44286
@@ -2674,7 +2709,8 @@ tasks:
       id: d969dec2-158b-4b1b-87fd-619ba8c44286
       version: -1
       name: Set DomainUrl to array
-      description: Sets a Domain or URL value into the context with the given context key.
+      description: Sets a Domain or URL value into the context with the given context
+        key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2697,6 +2733,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2711,7 +2748,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "116":
     id: "116"
     taskid: 94701cbb-3c79-4bd6-8b8e-c4f476d08018
@@ -2723,11 +2759,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "117"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2742,7 +2778,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "117":
     id: "117"
     taskid: 43f8f37e-2771-4084-8f4d-d8ad4b5cf3c7
@@ -2769,6 +2804,7 @@ tasks:
             value:
               simple: Splunk.DetectedIPs
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2783,7 +2819,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "118":
     id: "118"
     taskid: e3b8232b-eee8-42b6-8762-c517c65e8d52
@@ -2792,7 +2827,8 @@ tasks:
       id: e3b8232b-eee8-42b6-8762-c517c65e8d52
       version: -1
       name: Determine whether the IP address is internal or external
-      description: If the IP address is in one of the ranges provided, a yes value is returned. Otherwise, a no is returned.
+      description: If the IP address is in one of the ranges provided, a yes value
+        is returned. Otherwise, a no is returned.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -2804,8 +2840,9 @@ tasks:
       ip:
         simple: ${Splunk.DetectedIPs}
       ipRanges:
-        simple: ${inputs.InternalIPRange}
+        simple: ${inputs.InternalRange}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2820,7 +2857,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "119":
     id: "119"
     taskid: ede48e1d-c9d5-4f4a-8371-7abd66130e62
@@ -2829,7 +2865,8 @@ tasks:
       id: ede48e1d-c9d5-4f4a-8371-7abd66130e62
       version: -1
       name: Set detected IP addresses as internal
-      description: IP addresses that were found to be internal, are written to the Splunk.DetectedInternalIPs context key.
+      description: IP addresses that were found to be internal, are written to the
+        Splunk.DetectedInternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2858,6 +2895,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2872,7 +2910,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "120":
     id: "120"
     taskid: f95fab26-3f29-4fc9-80f2-852af16dc321
@@ -2881,7 +2918,8 @@ tasks:
       id: f95fab26-3f29-4fc9-80f2-852af16dc321
       version: -1
       name: Set detected IP addresses as external
-      description: IP addresses that were found to be external, are written to the Splunk.DetectedExternalIPs context key.
+      description: IP addresses that were found to be external, are written to the
+        Splunk.DetectedExternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2910,6 +2948,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2924,7 +2963,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "121":
     id: "121"
     taskid: 81b349f7-49e5-4ace-8904-191a038cff4d
@@ -2936,11 +2974,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "127"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2955,13 +2993,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "122":
     id: "122"
-    taskid: ff298126-1698-433c-80a0-9c398780be14
+    taskid: ea997c7a-3a29-41fe-8133-737024d9fc59
     type: regular
     task:
-      id: ff298126-1698-433c-80a0-9c398780be14
+      id: ea997c7a-3a29-41fe-8133-737024d9fc59
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
@@ -2989,7 +3026,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: '='
+                  simple: =
               list2:
                 value:
                   simple: inputs.MD5
@@ -3077,6 +3114,7 @@ tasks:
                   simple: index=
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3085,13 +3123,16 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Splunk search results
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "123":
     id: "123"
     taskid: eae4ef10-2763-4d01-8a7e-f8dad5db561d
@@ -3103,13 +3144,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "135"
       - "136"
       - "137"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3124,7 +3165,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "124":
     id: "124"
     taskid: f88e73b5-b0b9-416e-8d29-f828e02f8a8b
@@ -3151,6 +3191,7 @@ tasks:
             value:
               simple: inputs.IPFieldsToReturn
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3165,7 +3206,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "125":
     id: "125"
     taskid: 053f5f90-6842-4aba-88ad-1269529b1293
@@ -3192,6 +3232,7 @@ tasks:
             value:
               simple: inputs.HostFieldsToReturn
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3206,7 +3247,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "126":
     id: "126"
     taskid: cf612468-89a5-460c-83d7-8cc84d04456c
@@ -3233,6 +3273,7 @@ tasks:
             value:
               simple: inputs.UserFieldsToReturn
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3247,7 +3288,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "127":
     id: "127"
     taskid: 4173da23-64e4-40d5-8f82-41b40b6562fc
@@ -3259,8 +3299,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3275,7 +3315,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "129":
     id: "129"
     taskid: 9d168d0e-9ca5-4da6-88d2-645d8e99bf1b
@@ -3284,7 +3323,9 @@ tasks:
       id: 9d168d0e-9ca5-4da6-88d2-645d8e99bf1b
       version: -1
       name: Manually list detected IP addresses
-      description: Provide a list of comma separated IP addresses in the input screen. This task is relevant if you have not entered any values in the IP investigation fields.
+      description: Provide a list of comma separated IP addresses in the input screen.
+        This task is relevant if you have not entered any values in the IP investigation
+        fields.
       type: regular
       iscommand: false
       brand: ""
@@ -3292,6 +3333,7 @@ tasks:
       '#none#':
       - "130"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3306,7 +3348,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "130":
     id: "130"
     taskid: 55a7a15a-0ed4-4961-8a2d-d40f4eee920f
@@ -3331,6 +3372,7 @@ tasks:
       listSeperator:
         simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3345,7 +3387,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "131":
     id: "131"
     taskid: 9d479d9b-8344-4503-8df2-2be1faa6be49
@@ -3354,7 +3395,9 @@ tasks:
       id: 9d479d9b-8344-4503-8df2-2be1faa6be49
       version: -1
       name: Manually list detected user names
-      description: Provide a list of comma separated user names in the input screen. This task is relevant if you have not entered any values in the user name investigation fields.
+      description: Provide a list of comma separated user names in the input screen.
+        This task is relevant if you have not entered any values in the user name
+        investigation fields.
       type: regular
       iscommand: false
       brand: ""
@@ -3362,6 +3405,7 @@ tasks:
       '#none#':
       - "132"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3376,7 +3420,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "132":
     id: "132"
     taskid: 691b6764-e453-4369-81a5-57c55d90d09d
@@ -3401,6 +3444,7 @@ tasks:
       listSeperator:
         simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3415,7 +3459,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "133":
     id: "133"
     taskid: cf2b7d98-132d-4903-84bb-3b16f48bdfc8
@@ -3424,7 +3467,9 @@ tasks:
       id: cf2b7d98-132d-4903-84bb-3b16f48bdfc8
       version: -1
       name: Manually list detected host names
-      description: Provide a list of comma separated host names in the input screen. This task is relevant if you have not entered any values in the host names investigation fields.
+      description: Provide a list of comma separated host names in the input screen.
+        This task is relevant if you have not entered any values in the host names
+        investigation fields.
       type: regular
       iscommand: false
       brand: ""
@@ -3432,6 +3477,7 @@ tasks:
       '#none#':
       - "134"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3446,7 +3492,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "134":
     id: "134"
     taskid: 4052430e-6fcd-4073-832e-2ef9b2f9016d
@@ -3471,6 +3516,7 @@ tasks:
       listSeperator:
         simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3485,7 +3531,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "135":
     id: "135"
     taskid: 617d2894-f629-4061-8b4c-ec31440f0c7d
@@ -3497,11 +3542,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "126"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3516,7 +3561,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "136":
     id: "136"
     taskid: 64012f63-5c91-4b23-86f8-3cae9ffc9d17
@@ -3528,11 +3572,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "125"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3547,7 +3591,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "137":
     id: "137"
     taskid: c297e2f5-150f-42c6-8d07-16c920c7b4f7
@@ -3559,11 +3602,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "124"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3578,7 +3621,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "138":
     id: "138"
     taskid: c02f7075-e5da-4829-89e9-487a957ef08c
@@ -3590,11 +3632,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "139"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3609,7 +3651,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "139":
     id: "139"
     taskid: afe9c679-5d6b-4ea0-8870-6d034dbfadeb
@@ -3636,6 +3677,7 @@ tasks:
             value:
               simple: Splunk.DetectedHosts
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3650,7 +3692,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "140":
     id: "140"
     taskid: dbc3d952-1313-4344-81dc-12d46fda425d
@@ -3659,7 +3700,8 @@ tasks:
       id: dbc3d952-1313-4344-81dc-12d46fda425d
       version: -1
       name: Determine whether the host names are internal or external
-      description: Returns yes if the host name provided matches the organizations internal nameing convenstion.
+      description: Returns yes if the host name provided matches the organizations
+        internal nameing convenstion.
       scriptName: IsInternalHostName
       type: regular
       iscommand: false
@@ -3677,6 +3719,7 @@ tasks:
       internalRegex:
         simple: ${inputs.InternalHostRegex}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3691,7 +3734,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "141":
     id: "141"
     taskid: 1bdf7891-8309-491d-833f-08801905ef93
@@ -3703,11 +3745,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "127"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3722,7 +3764,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "142":
     id: "142"
     taskid: 1459cc81-34e2-46a9-82fc-a3b59ff5723e
@@ -3731,7 +3772,8 @@ tasks:
       id: 1459cc81-34e2-46a9-82fc-a3b59ff5723e
       version: -1
       name: Set detected host names as internal
-      description: Host names that were found to be internal, are written to the Splunk.DetectedInternalHosts context key.
+      description: Host names that were found to be internal, are written to the Splunk.DetectedInternalHosts
+        context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3760,6 +3802,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3774,7 +3817,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "143":
     id: "143"
     taskid: c8e6de4d-504c-40c6-8053-4aab8ce6f943
@@ -3783,7 +3825,8 @@ tasks:
       id: c8e6de4d-504c-40c6-8053-4aab8ce6f943
       version: -1
       name: Set detected host names as external
-      description: Host names that were found to be external, are written to the Splunk.DetectedExternalHosts context key.
+      description: Host names that were found to be external, are written to the Splunk.DetectedExternalHosts
+        context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3812,6 +3855,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3826,7 +3870,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "144":
     id: "144"
     taskid: f104fc3c-f2bd-4d75-8a2a-5991ea8962bb
@@ -3854,6 +3897,7 @@ tasks:
               complex:
                 root: inputs.InternalDomainName
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3868,7 +3912,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "145":
     id: "145"
     taskid: 08b05df0-d433-4cab-819a-8a0a708f6cdb
@@ -3877,7 +3920,9 @@ tasks:
       id: 08b05df0-d433-4cab-819a-8a0a708f6cdb
       version: -1
       name: Set detected host names as internal
-      description: Hostnames that were detected as internal according to the inputs are set to the Splunk.DetectedInternalHosts key. In case the domain name was not provided in the inputs all host names will be set as internal.
+      description: Hostnames that were detected as internal according to the inputs
+        are set to the Splunk.DetectedInternalHosts key. In case the domain name was
+        not provided in the inputs all host names will be set as internal.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3893,6 +3938,7 @@ tasks:
       value:
         simple: Splunk.DetectedHosts
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3907,7 +3953,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
 system: true
 view: |-
   {
@@ -3926,54 +3971,64 @@ inputs:
   value: {}
   required: false
   description: MD5 hash file or an array of hashes for which to search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkMD5Field
   value: {}
   required: false
-  description: The name of the fields, in Splunk, in which to find the MD5 hash. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
+  description: The name of the fields, in Splunk, in which to find the MD5 hash. You
+    can enter multiple field names using a comma-separated format. If no field is
+    specified, the search uses quick filter.
+  playbookInputQuery: null
 - key: SHA1
   value: {}
   required: false
   description: SHA1 hash file or an array of hashes on which to search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkSHA1Field
   value: {}
   required: false
-  description: The name of the fields, in Splunk, in which to find the SHA1 field. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
+  description: The name of the fields, in Splunk, in which to find the SHA1 field.
+    You can enter multiple field names using a comma-separated format. If no field
+    is specified, the search uses quick filter.
+  playbookInputQuery: null
 - key: SHA256
   value: {}
   required: false
   description: SHA256 hash file or an array of hashes on which to search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkSHA256Field
   value: {}
   required: false
-  description: The name of the fields, in Splunk, in which to find the SHA256. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
+  description: The name of the fields, in Splunk, in which to find the SHA256. You
+    can enter multiple field names using a comma-separated format. If no field is
+    specified, the search uses quick filter.
+  playbookInputQuery: null
 - key: IPAddress
   value: {}
   required: false
   description: |
     Source or destination IP on which to search. Can be a single address or an array of addresses.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkIPField
   value: {}
   required: false
-  description: The name of the fields, in Splunk, in which to find the IP addresses. You can enter multiple field names using a comma-separated format. For example, sourceip,destinationip.
-  playbookInputQuery:
+  description: The name of the fields, in Splunk, in which to find the IP addresses.
+    You can enter multiple field names using a comma-separated format. For example,
+    sourceip,destinationip.
+  playbookInputQuery: null
 - key: URLDomain
   value: {}
   required: false
   description: |
     Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkURLDomainField
   value: {}
   required: false
-  description: The name of the fields, in Splunk, in which to find the URL/Domain. If no field is specified, the search uses quick filter. Only one field can be used in this parameter.
-  playbookInputQuery:
+  description: The name of the fields, in Splunk, in which to find the URL/Domain.
+    If no field is specified, the search uses quick filter. Only one field can be
+    used in this parameter.
+  playbookInputQuery: null
 - key: earliest_time
   value:
     simple: -1d
@@ -3992,7 +4047,7 @@ inputs:
     https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
 
     It is recommended to set a limit for the time frame.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: latest_time
   value: {}
   required: false
@@ -4010,55 +4065,78 @@ inputs:
     https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
 
     It is recommended to set a limit for the time frame.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: event_limit
   value:
     simple: "100"
   required: true
-  description: Limit the number of events returned by query. This argument is not mandatory for the command, but is mandatory for the playbook.
-  playbookInputQuery:
+  description: Limit the number of events returned by query. This argument is not
+    mandatory for the command, but is mandatory for the playbook.
+  playbookInputQuery: null
 - key: IPFieldsToReturn
   value: {}
   required: false
-  description: The value of the IP fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.
-  playbookInputQuery:
+  description: The value of the IP fields to return from Splunk when the specified
+    indicator is found. These values are used as inputs in the Setting IP addresses
+    section. For example, src,src_ip,dst,dst_ip.
+  playbookInputQuery: null
 - key: UserFieldsToReturn
   value: {}
   required: false
-  description: The value of the username fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.
-  playbookInputQuery:
+  description: The value of the username fields to return from Splunk when the specified
+    indicator is found. These values are used as inputs in the Setting user names
+    section. For example, username,src_username,dst_username.
+  playbookInputQuery: null
 - key: HostFieldsToReturn
   value: {}
   required: false
-  description: The value of the hostname fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.
-  playbookInputQuery:
+  description: The value of the hostname fields to return from Splunk when the specified
+    indicator is found. These values are used as inputs in the Setting host names
+    section. For example, hostname,src_hostname, dst_hostname.
+  playbookInputQuery: null
 - key: InternalIPRange
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR format, separated by commas. An example of a list of ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges is not provided, the list provided in the IsIPInRanges script (the known IPv4 private address ranges) is used by default.'
-  playbookInputQuery:
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR format, separated by commas. An example of a list of
+    ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
+    is not provided, the list provided in the IsIPInRanges script (the known IPv4
+    private address ranges) is used by default.'
+  playbookInputQuery: null
 - key: IndexName
   value:
     simple: '*'
   required: true
   description: A single Spunk index to use in the search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SelectFields
   value:
     simple: source,timestamp
   required: true
-  description: Use this field to include additional enrichment data for the Splunk query. If you have defined one or more investigation fields, the SelectField should not include those fields. If there are no other investigation fields defined, the SelectField must contain some value. Enter a comma-separated list of field names as they appear in Splunk. * is valid value, but not recommended since it creates large output.
-  playbookInputQuery:
+  description: Use this field to include additional enrichment data for the Splunk
+    query. If you have defined one or more investigation fields, the SelectField should
+    not include those fields. If there are no other investigation fields defined,
+    the SelectField must contain some value. Enter a comma-separated list of field
+    names as they appear in Splunk. * is valid value, but not recommended since it
+    creates large output.
+  playbookInputQuery: null
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
-  playbookInputQuery:
+  description: The organizations internal domain name. This is provided for the script
+    IsInternalHostName that checks if the detected host names are internal or external
+    if the hosts contain the internal domains suffix. For example demisto.com. If
+    there is more than one domain, use the | character to separate values such as
+    (demisto.com|test.com)
+  playbookInputQuery: null
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. if the hosts match the organizations naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
-  playbookInputQuery:
+  description: This is provided for the script IsInternalHostName that checks if the
+    detected host names are internal or external. if the hosts match the organizations
+    naming convention. For example the host testpc1 will have the following regex
+    \w{6}\d{1}
+  playbookInputQuery: null
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
@@ -4075,8 +4153,3 @@ outputs:
 - contextPath: Splunk.DetectedExternalHosts
   description: External host names detected based on the fields in your search.
   type: string
-tests:
-- Splunk-Test
-- Splunk Indicator Hunting Test
-- SplunkPy-Test-V2
-fromversion: 5.0.0
