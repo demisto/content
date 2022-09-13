@@ -288,7 +288,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.URLDomainField
+              simple: inputs.SplunkURLDomainField
             iscontext: true
     view: |-
       {
@@ -853,7 +853,7 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: inputs.URLDomainField
+          root: inputs.DomainURL
           transformers:
           - operator: ProductJoin
             args:
@@ -2804,7 +2804,7 @@ tasks:
       ip:
         simple: ${Splunk.DetectedIPs}
       ipRanges:
-        simple: ${inputs.InternalRange}
+        simple: ${inputs.InternalIPRange}
     separatecontext: false
     view: |-
       {
