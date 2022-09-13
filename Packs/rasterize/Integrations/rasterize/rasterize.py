@@ -27,6 +27,7 @@ from selenium.common.exceptions import (InvalidArgumentException,
 handle_proxy()
 # Make sure our python code doesn't go through a proxy when communicating with chrome webdriver
 os.environ['no_proxy'] = 'localhost,127.0.0.1'
+os.environ['HOME'] = tempfile.gettempdir()
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
@@ -133,27 +134,43 @@ def check_response(driver):
         return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)
 
 
-def init_driver_and_display(width: int, height: int, offline_mode=False, include_url=False):
+def init_display(width: int, height: int):
     """
-    Creates headless Google Chrome Web Driver and virtual display if include_url is set to True.
+    Creates virtual display if include_url is set to True
 
     Args:
         width: desired snapshot width in pixels
         height: desired snapshot height in pixels
+
+    Returns:
+        The  display session
+    """
+    try:
+        demisto.debug("Starting display")
+        os.environ['DISPLAY'] = ':0'
+        display = Display(visible=0, size=(width, height), backend='xvnc')
+        display.start()
+
+    except Exception as ex:
+        raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+
+    demisto.debug('Creating display - COMPLETED')
+    return display
+
+
+def init_driver(offline_mode=False, include_url=False):
+    """
+    Creates headless Google Chrome Web Driver
+
+    Args:
         offline_mode: when set to True, will block any outgoing communication
         include_url: when set to True, will include the URL bar in the image result
 
     Returns:
-        The driver and display sessions.
+        The driver session
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
-        os.environ['DISPLAY'] = ':0'
-        display = None
-        if include_url:
-            display = Display(visible=0, size=(width, height), backend='xvnc')
-            display.start()
-
         chrome_options = webdriver.ChromeOptions()
         for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
             chrome_options.add_argument(opt)
@@ -170,7 +187,7 @@ def init_driver_and_display(width: int, height: int, offline_mode=False, include
         raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
-    return driver, display
+    return driver
 
 
 def find_zombie_processes():
@@ -200,18 +217,19 @@ def quit_driver_and_display_and_reap_children(driver, display):
 
     :return: None
     """
-    demisto.debug(f'Quitting driver session: {driver.session_id}')
 
     try:
 
         try:
             if driver:
+                demisto.debug(f'Quitting driver session: {driver.session_id}')
                 driver.quit()
         except Exception as edr:
             demisto.error(f"Failed to quit driver. Error: {edr}")
 
         try:
             if display:
+                demisto.debug("Stopping display")
                 display.stop()
         except Exception as edr:
             demisto.error(f"Failed to stop display. Error: {edr}")
@@ -300,7 +318,11 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
     """
     driver, display = None, None
     try:
-        driver, display = init_driver_and_display(width, height, offline_mode, include_url)
+
+        if include_url:
+            display = init_display(width, height)
+
+        driver = init_driver(offline_mode, include_url)
 
         demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}.'
                       f' page load: {max_page_load_time}')
