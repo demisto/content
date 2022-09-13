@@ -1,57 +1,25 @@
 """TeamCymru for Cortex XSOAR - Unit Tests file"""
 
 import json
-import io
-from CommonServerPython import *
 import demistomock as demisto
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import TeamCymru
 
 client = MagicMock()
+MOCK_ENTRY_ID = '@123'
+MOCK_BULK_LIST = "1.1.1.1, b, 2.2.2, n, 3.3.3.3,2001:0db8:85a3:0000:0000:8a2e:0370:7334,a,\"8.8.8.8\"," \
+                 "4.4.4.4, 1.1.2.2, 6,6.6.6.6, 1.1.2.2"
+MOCK_IPS_LIST = ['1.1.1.1', 'b', '2.2.2', 'n',
+                 '3.3.3.3', '2001:0db8:85a3:0000:0000:8a2e:0370:7334', 'a', '8.8.8.8', '4.4.4.4',
+                 '1.1.2.2', '6', '6.6.6.6', '1.1.2.2']
+MOCK_INVALID_IPS = ['b', '2.2.2', 'n', '2001:0db8:85a3:0000:0000:8a2e:0370:7334', 'a', '6']
+MOCK_VALID_IPS = ['1.1.1.1', '3.3.3.3', '8.8.8.8', '4.4.4.4', '1.1.2.2', '6.6.6.6', '1.1.2.2']
+
 
 def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
-
-# client = None #Client() #TODO IF NEED TO CALL THE CLIENT OF THE IMPORT
-
-# TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
-#
-#     Checks the output of the command function with the expected output.
-#
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
-#
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
-#
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-#
-#     assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
-
-
-# def test_get_whois_ip_proxy_param(mocker):
-#     """
-#     Given:
-#         - valid ip address
-#     When:
-#         - running the ip_command function
-#     Then:
-#         - Verify the function return nothing
-#     """
-#     from TeamCymru import ip_command
-#     mocker.patch("ipwhois.IPWhois.lookup_rdap", return_value=None)
-#     result = ip_command('1.1.1.1')
-#     assert result
 
 
 @pytest.mark.parametrize('args, expected_error',
@@ -90,6 +58,7 @@ def test_ip_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == response.outputs
     assert mock_readable_outputs == response.readable_output
+    assert response.indicator
 
 
 def test_cymru_bulk_whois_command_with_list(mocker):
@@ -100,102 +69,170 @@ def test_cymru_bulk_whois_command_with_list(mocker):
         - Running the cymru_bulk_whois command
     Then:
         - Verify support list of IPs
+        - Verify the result is as expected and returns the expected warning
+    """
+    from TeamCymru import cymru_bulk_whois_command
+    mock_arg = {"bulk-list": MOCK_BULK_LIST}
+    test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
+    return_value = test_data.get('cymru_bulk_whois_command_response')
+    mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
+    warning = mocker.patch.object(TeamCymru, 'return_warning')
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+
+    response = cymru_bulk_whois_command(client, mock_arg)
+    assert warning.call_args[0][0] == test_data.get("warning_message")
+    assert warning.call_args[1] == {'exit': False}
+    for i, res in enumerate(response):
+        assert mock_outputs[i] == res.outputs
+        assert res.indicator
+        assert mock_readable_outputs[i] == res.readable_output
+
+
+def test_cymru_bulk_whois_command_with_file(mocker):
+    """
+    Given:
+        - File of IP addresses
+    When:
+        - Running the cymru_bulk_whois command
+    Then:
+        - Verify support file of IPs
         - Verify the result is as expected
     """
-    from TeamCymru import team_cymru_bulk_whois
+    from TeamCymru import cymru_bulk_whois_command
+    mock_arg = {"bulk-file": MOCK_ENTRY_ID}
+    test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
+    return_value = test_data.get('cymru_bulk_whois_command_response')
+    mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
+
+    mock_file = {
+        'id': 'test_id',
+        'path': 'test_data/test_ips_file.csv',
+        'name': 'test_ips_file.csv',
+    }
+    mocker.patch.object(demisto, 'getFilePath', return_value=mock_file)
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+
+    response = cymru_bulk_whois_command(client, mock_arg)
+
+    for i, res in enumerate(response):
+        assert mock_outputs[i] == res.outputs
+        assert res.indicator
+        assert mock_readable_outputs[i] == res.readable_output  #
 
 
-#
-# def test_cymru_bulk_whois_command_with_file(mocker):
-#     """
-#     Given:
-#         - File of IP addresses
-#     When:
-#         - Running the cymru_bulk_whois command
-#     Then:
-#         - Verify support file of IPs
-#         - Verify the result is as expected
-#     """
-#     from TeamCymru import team_cymru_bulk_whois
-#
-#
-# def test_cymru_bulk_whois_valid_entry(mocker):
-#     """
-#
-#     Given:
-#         - Valid entry id of a file, str
-#     When:
-#         - When the user uploads a file for later conversion via entry
-#     Then:
-#         - Returns the response data
-#
-#     """
-#
-#     client = create_client()
-#     mocker.patch.object(client, 'upload_entry_id',
-#                         return_value=util_load_json('./test_data/upload_entry_response.json'))
-#     results = upload_command(client, {'entry_id': MOCK_ENTRY_ID})
-#     raw_response = util_load_json('./test_data/upload_entry_response.json')
-#     raw_response['data']['operation'] = 'upload/entry'
-#     readable_output = tableToMarkdown('Upload Results',
-#                                       remove_empty_elements(raw_response.get('data')),
-#                                       headers=('id', 'operation', 'created_at', 'status'),
-#                                       headerTransform=string_to_table_header,
-#                                       )
-#
-#     assert results.outputs == remove_empty_elements(raw_response.get('data'))
-#     assert results.readable_output == readable_output
-#
-#
-# def test_cymru_bulk_whois_invalid_entry(mocker):
-#     """
-#
-#     Given:
-#         - Invalid entry id of a file, str
-#     When:
-#         - When the user uploads a file for later conversion via entry
-#     Then:
-#         - Returns the response message of invalid input
-#
-#     """
-#
-#     client = create_client()
-#     mocker.patch.object(demisto, 'getFilePath', return_value=None)
-#     with pytest.raises(ValueError) as e:
-#         upload_command(client, {'entry_id': MOCK_ENTRY_ID})
-#         if not e:
-#             assert False
-#
-#
-# def test_team_cymru_parse_file():
-#     """
-#     Given:
-#         -
-#     When:
-#         -
-#     Then:
-#         -
-#     """
-#
-#
-#
-# def test_team_cymru_validate_ip_addresses():
-#     """
-#     Given:
-#         -
-#     When:
-#         -
-#     Then:
-#         -
-#     """
-#
-#
-# def test_team_cymru_parse_ip_result():
-#     """
-#     Given:
-#         -
-#     When:
-#         -
-#     Then:
-#         -
-#     """
+@pytest.mark.parametrize('args, expected_error',
+                         [({'bulk-list': '1.1.1.1', 'bulk-file': MOCK_ENTRY_ID},
+                           'Both bulk-list and bulk-file were inserted - please insert only one.'),
+                          ({'bulk-file': MOCK_ENTRY_ID}, 'No file was found for given bulk-file'),
+                          ({}, 'No bulk-list or bulk-file specified.')])
+def test_cymru_bulk_whois_invalid_bulk(args, expected_error, mocker):
+    """
+    Given:
+        - Invalid given argument
+    When:
+        - Running the cymru-bulk-whois command
+    Then:
+        - Raise ValueError with the expected value
+    """
+    from TeamCymru import cymru_bulk_whois_command
+    mocker.patch.object(demisto, 'getFilePath', return_value=None)
+    with pytest.raises(ValueError, match=expected_error):
+        cymru_bulk_whois_command(client, args)
+
+
+def test_team_cymru_parse_file():
+    """
+    Given:
+        - get_file_path_res, dict: Object contains file ID, path and name
+    When:
+        - Running the parse_file function
+    Then:
+        - Return list of the elements in the file without spaces
+    """
+    from TeamCymru import parse_file
+    mock_arg = {
+        'id': 'test_id',
+        'path': 'test_data/test_ips_file.csv',
+        'name': 'test_ips_file.csv',
+    }
+    assert parse_file(mock_arg) == MOCK_IPS_LIST
+
+
+def test_team_cymru_validate_ip_addresses():
+    """
+    Given:
+        - Ips list
+    When:
+        - Running the validate_ip_addresses function
+    Then:
+        - Returns two list of invalid and valid IPv4 addresses
+    """
+    from TeamCymru import validate_ip_addresses
+    invalid_ip_addresses, valid_ip_addresses = validate_ip_addresses(MOCK_IPS_LIST)
+    assert invalid_ip_addresses == MOCK_INVALID_IPS
+    assert valid_ip_addresses == MOCK_VALID_IPS
+
+
+def test_team_cymru_parse_ip_result():
+    """
+    Given:
+        - The function arguments: ip, ip_data
+    When:
+        - Running the parse_ip_result function
+    Then:
+        - Validate the returned value (commandResult) compared to the mock output
+    """
+    from TeamCymru import parse_ip_result
+    from CommonServerPython import Common
+
+    test_data = load_test_data('test_data/test_ip_command.json')
+    ip_data = test_data.get('ip_command_response')
+    ip = "8.8.8.8"
+    mock_entry_context = test_data.get('mock_output')
+    mock_readable = test_data.get('mock_readable')
+    command_result = parse_ip_result(ip, ip_data)
+
+    assert command_result.outputs == mock_entry_context
+    assert command_result.readable_output == mock_readable
+    assert command_result.indicator
+    assert command_result.raw_response == ip_data
+    assert isinstance(command_result.indicator, Common.IP)
+
+
+def test_empty_command_result(mocker):
+    """
+    Given:
+        - Valid ip address, running the ip_command and cymru_bulk_whois_command functions
+    When:
+        - team_cymru_ip, team_cymru_bulk_whois functions return None
+    Then:
+        - Verify the functions doesn't fail and returns empty list
+    """
+    from TeamCymru import ip_command, cymru_bulk_whois_command
+    mocker.patch("TeamCymru.team_cymru_ip", return_value=None)
+    result = ip_command(client, {'ip': '1.1.1.1'})
+    assert not result.outputs
+    assert not result.readable_output
+    assert result
+    mocker.patch("TeamCymru.team_cymru_bulk_whois", return_value=None)
+    result = cymru_bulk_whois_command(client, {'bulk-list': '1.1.1.1'})
+    assert not result
+
+
+def assert_results_ok():
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'ok'
+
+
+def test_test_command(mocker):
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    return_value = load_test_data('test_data/test_ip_command.json').get('ip_command_response')
+    mocker.patch("TeamCymru.team_cymru_ip", return_value=return_value)
+    TeamCymru.main()
+    assert_results_ok()

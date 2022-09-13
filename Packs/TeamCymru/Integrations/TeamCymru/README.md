@@ -1,5 +1,173 @@
-This README contains the full documentation for your integration.
+Team Cymru provided various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
+This integration was integrated and tested with version xx of TeamCymru
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure Team Cymru on Cortex XSOAR
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Team Cymru.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### ip
+***
+Checks the reputation of an IP address.
+
+
+#### Base Command
+
+`ip`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | An IPv4 address to query, e.g., 1.1.1.1. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IP.Address | String | IP address | 
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
+| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| IP.Geo.Country | String | The country in which the IP address is located. | 
+| IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| TeamCymru.IP.Address | String | The IP address. | 
+| TeamCymru.IP.ASN | String | The IP ASN. | 
+| TeamCymru.IP.ASOwner | String | The IP AS owner. | 
+| TeamCymru.IP.Geo.Country | String | The IP country. | 
+| TeamCymru.IP.Registrar.Abuse.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
+
+### cymru-bulk-whois
+***
+Look up many ip addresses. Insert CSV file or list of IPv4 addresses. Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
+
+
+#### Base Command
+
+`cymru-bulk-whois`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bulk-list | List of IPv4 addresses to query. | Optional | 
+| bulk-file | The CSV file's War Room entry ID. If a bulk-list is supplied, do not use this argument. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IP.Address | String | IP address | 
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
+| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| IP.Geo.Country | String | The country in which the IP address is located. | 
+| IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| TeamCymru.IP.Address | String | The IP address. | 
+| TeamCymru.IP.ASN | String | The IP ASN. | 
+| TeamCymru.IP.ASOwner | String | The IP AS owner. | 
+| TeamCymru.IP.Geo.Country | String | The IP country. | 
+| TeamCymru.IP.Registrar.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
+
+#### Command example
+```!cymru-bulk-whois bulk-list="1.1.1.1, 8.8.8.8"```
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "8.8.8.8",
+            "Score": 0,
+            "Type": "ip",
+            "Vendor": "TeamCymru"
+        },
+        {
+            "Indicator": "1.1.1.1",
+            "Score": 0,
+            "Type": "ip",
+            "Vendor": "TeamCymru"
+        }
+    ],
+    "IP": [
+        {
+            "ASN": "15169",
+            "ASOwner": "GOOGLE, US",
+            "Address": "8.8.8.8",
+            "Geo": {
+                "Country": "US"
+            },
+            "Registrar": {
+                "Abuse": {
+                    "Network": "8.8.8.0/24"
+                }
+            }
+        },
+        {
+            "ASN": "13335",
+            "ASOwner": "CLOUDFLARENET, US",
+            "Address": "1.1.1.1",
+            "Geo": {
+                "Country": "AU"
+            },
+            "Registrar": {
+                "Abuse": {
+                    "Network": "1.1.1.0/24"
+                }
+            }
+        }
+    ],
+    "TeamCymru": {
+        "IP": [
+            {
+                "ASN": "15169",
+                "ASOwner": "GOOGLE, US",
+                "Address": "8.8.8.8",
+                "Geo": {
+                    "Country": "US"
+                },
+                "Registrar": {
+                    "Network": "8.8.8.0/24"
+                }
+            },
+            {
+                "ASN": "13335",
+                "ASOwner": "CLOUDFLARENET, US",
+                "Address": "1.1.1.1",
+                "Geo": {
+                    "Country": "AU"
+                },
+                "Registrar": {
+                    "Network": "1.1.1.0/24"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Team Cymru results:
+>|IP|ASN|Organization|Country|Range|
+>|---|---|---|---|---|
+>| 8.8.8.8 | 15169 | GOOGLE, US | US | 8.8.8.0/24 |
+>| 1.1.1.1 | 13335 | CLOUDFLARENET, US | AU | 1.1.1.0/24 |
+

@@ -1,2 +1,2 @@
 !ip ip=8.8.8.8
-!cymru-bulk-whois bulk-list="1.1.1.1, 8.8.8.8, 8.8.4.4"
+!cymru-bulk-whois bulk-list="1.1.1.1, 8.8.8.8"

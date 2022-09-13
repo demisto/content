@@ -1,19 +1,26 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+
+'''IMPORTS'''
+
 import requests
-from typing import Dict, Any
 from cymruwhois import Client  # Python interface to whois.cymru.com
 import csv
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
+'''GLOBALS'''
+
+HEADERS = ['ip', 'asn', 'owner', 'cc', 'prefix']
+MAPPING = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
+
 ''' CLIENT COMMANDS '''
 
 
-def team_cymru_ip(client: Client, ip: str) -> Dict[str, str]:
-    """Perform lookups by ip address and return ASN, Country Code, and Netblock Owner.
+def team_cymru_ip(client: Client, ip: str) -> Optional[Dict[str, Any]]:
+    """Perform lookups by ip address and return ASN, Country Code, and Network Owner.
 
     :type client: ``Client``
     :param client: cymruwhois client to use
@@ -21,13 +28,12 @@ def team_cymru_ip(client: Client, ip: str) -> Dict[str, str]:
     :param ip: string to add in the dummy dict that is returned
 
     :return: dict containing the result of the lookup action as returned from the API (asn, cc, owner, etc.)
-    :rtype: Dict[str, str]
     """
     raw_result = client.lookup(ip)
     return vars(raw_result) if raw_result else None
 
 
-def team_cymru_bulk_whois(client: Client, bulk: []) -> Dict[str, str]:
+def team_cymru_bulk_whois(client: Client, bulk: List[str]) -> Optional[Dict[str, Any]]:
     """Perform lookups by bulk of ip addresses, returning a dictionary of ip -> record (ASN, Country Code, and Netblock Owner.)
 
     :type client: ``Client``
@@ -36,7 +42,7 @@ def team_cymru_bulk_whois(client: Client, bulk: []) -> Dict[str, str]:
     :param bulk: list of ip addresses
 
     :return: dict containing the result of the lookupmany action as returned from the API (asn, cc, owner, etc.)
-    :rtype: Dict[ip, record]
+    :rtype: Dict[str, Dict[str, str]]
     """
 
     # raw_result = dict()
@@ -44,18 +50,19 @@ def team_cymru_bulk_whois(client: Client, bulk: []) -> Dict[str, str]:
     #     print(subset_of_ips[0])
     #     raw_result.update(client.lookupmany_dict(subset_of_ips))
     # return raw_result
-    return client.lookupmany_dict(bulk)
+    raw_result = client.lookupmany_dict(bulk)
+    return {k: vars(raw_result[k]) for k in raw_result} if raw_result else None
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def parse_ip_result(ip, ip_data):
+def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
     """
     Arrange the ip's result from the API to the context format
     :param ip: ip address
-    :param ip_data: the ip given data
-    :return: ip_entity, entry_context
+    :param ip_data: the ip given data (as returned from the api call)
+    :return: commandResult of the given IP
     """
     asn = demisto.get(ip_data, 'asn')
     owner = demisto.get(ip_data, 'owner')
@@ -67,7 +74,7 @@ def parse_ip_result(ip, ip_data):
                      'Geo': {'Country': country},
                      'Registrar': {'Network': prefix}
                      }
-    ip_entity = Common.IP(
+    indicator = Common.IP(
         ip=ip,
         asn=asn,
         as_owner=owner,
@@ -76,10 +83,21 @@ def parse_ip_result(ip, ip_data):
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
                                     score=Common.DBotScore.NONE))
-    return ip_entity, entry_context
+
+    human_readable = tableToMarkdown(f'Team Cymru results for {ip}', ip_data, HEADERS,
+                                     headerTransform=lambda header: MAPPING.get(header, header))
+    outputs_key_field = 'ip'  # marks the ip address
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=ip_data,
+        outputs_prefix='TeamCymru.IP',
+        outputs_key_field=outputs_key_field,
+        indicator=indicator,
+        outputs=entry_context
+    )
 
 
-def validate_ip_addresses(ips_list):
+def validate_ip_addresses(ips_list: list[str]):
     """
     Given list of IP addresses, returns the invalid and valid ips.
     :param ips_list: list of ip addresses
@@ -97,7 +115,7 @@ def validate_ip_addresses(ips_list):
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def parse_file(get_file_path_res):
+def parse_file(get_file_path_res: dict[str, str]):
     """
     Parses the given file line by line to list.
     :param get_file_path_res: Object contains file ID, path and name
@@ -107,20 +125,21 @@ def parse_file(get_file_path_res):
     with open(get_file_path_res['path']) as file:
         reader = csv.reader(file, delimiter=',', skipinitialspace=True)
         for row in reader:
-            bulk_list += row
+            for col in row:
+                bulk_list += col.split()
     return bulk_list
 
 
-def split_list_into_chunks(l, sublist_size):
-    """
-    returns successive sublist_size'd chunks from l
-    :param l: list to divide into chunks
-    :param sublist_size: the size of the chunks to divide the list into
-    :return: a generator that when called, gives back lists of
-                 size sublist_size
-    """
-    n = max(1, sublist_size)
-    return (l[i:i + n] for i in range(0, len(l), n))
+# def split_list_into_chunks(l, sublist_size):
+#     """
+#     returns successive sublist_size'd chunks from l
+#     :param l: list to divide into chunks
+#     :param sublist_size: the size of the chunks to divide the list into
+#     :return: a generator that when called, gives back lists of
+#                  size sublist_size
+#     """
+#     n = max(1, sublist_size)
+#     return (l[i:i + n] for i in range(0, len(l), n))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -176,24 +195,10 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = team_cymru_ip(client, ip)
     if not result:
         return CommandResults()
-    indicator, entry_context = parse_ip_result(ip, result)
-
-    headers = ['ip', 'asn', 'owner', 'cc', 'prefix']
-    mapping = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
-    human_readable = tableToMarkdown(f'Team Cymru results for {ip}', result, headers,
-                                     headerTransform=lambda header: mapping.get(header, header))
-    outputs_key_field = 'ip'  # marks the ip address
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=result,
-        outputs_prefix='TeamCymru.IP',
-        outputs_key_field=outputs_key_field,
-        indicator=indicator,
-        outputs=entry_context
-    )
+    return parse_ip_result(ip, result)
 
 
-def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns results of 'cymru-bulk-whois' command
     :type client: ``Client``
@@ -204,6 +209,7 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :return: CommandResults object containing the results of the lookup action as returned from the API
     and its readable output.
     """
+    command_results: List[CommandResults] = []
 
     if args.get('bulk-list'):
         if args.get('bulk-file'):
@@ -219,29 +225,17 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> CommandRes
         raise ValueError('No bulk-list or bulk-file specified.')
 
     invalid_ips, valid_ips = validate_ip_addresses(bulk_list)
+    if invalid_ips:
+        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
+                       exit=len(invalid_ips) == len(bulk_list))
+
     results = team_cymru_bulk_whois(client, valid_ips)
     if not results:
-        return CommandResults()
-    results = {k: vars(results[k]) for k in results}
-    contents, indicators = [], []
+        return command_results
     for ip, ip_data in results.items():
-        indicator, entry_context = parse_ip_result(ip, ip_data)
-        contents.append(entry_context)
-        indicators.append(indicator)
-    headers = ['ip', 'asn', 'owner', 'cc', 'prefix']
-    mapping = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', 'prefix': 'Range'}
-    human_readable = tableToMarkdown(f'Team Cymru results:', list(results.values()), headers,
-                                     headerTransform=lambda header: mapping.get(header, header))
-    invalid_ips = ", ".join(invalid_ips)
-    human_readable += f"The following IP Addresses were found invalid: {invalid_ips}" if invalid_ips else ""
+        command_results.append(parse_ip_result(ip, ip_data))
 
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=results,
-        outputs_prefix='TeamCymru.IP',  # TODO
-        indicators=indicators,
-        outputs=contents
-    )
+    return command_results
 
 
 ''' MAIN FUNCTION '''
@@ -274,10 +268,11 @@ def main() -> None:
             return_results(ip_command(client, demisto.args()))
         elif demisto.command() == 'cymru-bulk-whois':
             return_results(cymru_bulk_whois_command(client, demisto.args()))
+        else:
+            raise NotImplementedError(f"command {demisto.command()} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
-        print(e)
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
