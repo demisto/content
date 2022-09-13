@@ -1,0 +1,27 @@
+commonfields:
+  id: UserEnrichAD
+  version: -1
+name: UserEnrichAD
+script: ''
+type: python
+subtype: python2
+deprecated: true
+comment: 'Deprecated. Use ADGetUser instead.'
+tags:
+- enhancement
+- active directory
+- user
+enabled: true
+args:
+- name: name
+  required: true
+  default: true
+  description: Name of user
+scripttarget: 0
+dependson:
+  must:
+  - activedir|||ad-search
+tests:
+- No test
+fromversion: 6.0.0
+dockerimage: demisto/python:2.7.18.27799
