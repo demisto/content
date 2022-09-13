@@ -3,16 +3,26 @@
     "categories": [
         "Network Security"
     ],
-    "currentVersion": "1.1.0",
     "created": "2022-06-27T10:00:00Z",
+    "currentVersion": "1.1.0",
+    "dependencies": {
+        "CommonTypes": {
+            "display_name": "Common Types",
+            "mandatory": true
+        }
+    },
     "description": "This content pack allows to create incidents based on Vectra Accounts/Hosts/Detections objects.",
     "devEmail": [
         "tme@vectra.ai"
+    ],
+    "displayedImages": [
+        "CommonTypes"
     ],
     "email": "support@vectra.ai",
     "githubUser": [
         "Vectra-ODuda"
     ],
+    "itemPrefix": "Vectra",
     "keywords": [
         "Vectra",
         "Vectra AI"
@@ -31,6 +41,5 @@
     "url": "https://support.vectra.ai",
     "useCases": [
         "Network Security"
-    ],
-    "itemPrefix": "Vectra"
+    ]
 }
