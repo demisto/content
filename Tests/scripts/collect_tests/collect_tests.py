@@ -23,7 +23,8 @@ from Tests.scripts.collect_tests.exceptions import (
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
     NoTestsConfiguredException, NothingToCollectException,
     NotUnderPackException, PrivateTestException, SkippedPackException,
-    SkippedTestException, TestMissingFromIdSetException)
+    SkippedTestException, TestMissingFromIdSetException,
+    NonNightlyPackInNightlyBuildException)
 from Tests.scripts.collect_tests.id_set import IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
@@ -75,6 +76,7 @@ class CollectionResult:
             conf: Optional[TestConf],
             id_set: Optional[IdSet],
             is_sanity: bool = False,
+            is_nightly: bool = False,
     ):
         """
         Collected test playbook, and/or pack to install.
@@ -91,6 +93,7 @@ class CollectionResult:
         :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
+        :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
@@ -98,7 +101,7 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_args(pack, test, reason, conf, id_set, is_sanity)  # raises if invalid
+            self._validate_args(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
 
         except NonXsoarSupportedPackException:
             if test:
@@ -108,6 +111,11 @@ class CollectionResult:
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
             logger.info(f'{str(e)}, not collecting {test}{suffix}')
+            test = None
+
+        except NonNightlyPackInNightlyBuildException as e:
+            test_suffix = f', not collecting {test}' if test else ''
+            logger.info(f'{str(e)}{test_suffix} (pack will be installed)')
             test = None
 
         except (SkippedPackException, DeprecatedPackException,) as e:
@@ -124,7 +132,7 @@ class CollectionResult:
 
     @staticmethod
     def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
-                       id_set: Optional[IdSet], is_sanity: bool):
+                       id_set: Optional[IdSet], is_sanity: bool, is_nightly: bool = False):
         """
         Validates the arguments of the constructor.
         """
@@ -165,6 +173,13 @@ class CollectionResult:
                 if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
                     return
                 raise
+
+        if is_nightly:
+            if test and test in conf.non_api_tests:  # type:ignore[union-attr]
+                return
+
+            if pack and pack not in conf.nightly_packs:  # type:ignore[union-attr]
+                raise NonNightlyPackInNightlyBuildException(pack)
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
@@ -378,6 +393,7 @@ class TestCollector(ABC):
             reason_description: str,
             content_item_range: Optional[VersionRange] = None,
             allow_incompatible_marketplace: bool = False,
+            is_nightly: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
 
@@ -405,6 +421,7 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
+            is_nightly=is_nightly
         )
 
     def __validate_skipped_integration(self, id_: str, path: Path):
@@ -599,7 +616,8 @@ class BranchTestCollector(TestCollector):
                     version_range=yml.version_range,
                     reason_description=f'{yml.id_=} ({relative_yml_path})',
                     conf=self.conf,
-                    id_set=self.id_set
+                    id_set=self.id_set,
+                    is_nightly=False,
                 ) for test in tests))
         else:
             return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
@@ -686,6 +704,7 @@ class BranchTestCollector(TestCollector):
                 reason_description=reason_description,
                 conf=self.conf,
                 id_set=self.id_set,
+                is_nightly=False,
             )
             for test in tests)
         )
@@ -771,6 +790,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     version_range=playbook.version_range,
                     conf=self.conf,
                     id_set=self.id_set,
+                    is_nightly=True,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
@@ -786,6 +806,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
+                    is_nightly=True,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
@@ -826,6 +847,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                     reason_description=f'{item.file_path_str} ({marketplaces_string})',
                     content_item_range=item.version_range,
                     allow_incompatible_marketplace=True,
+                    is_nightly=True,
                 ))
 
             except NotUnderPackException:
