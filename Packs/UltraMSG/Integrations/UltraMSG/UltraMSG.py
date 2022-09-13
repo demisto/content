@@ -1,4 +1,4 @@
-import http.client
+import requests
 import json
 
 import demistomock as demisto  # noqa: F401
@@ -7,10 +7,9 @@ from CommonServerPython import *  # noqa: F401
 
 def send_whatsapp(token, instance, t_id, text):
     try:
-        conn = http.client.HTTPSConnection("api.ultramsg.com")
-        payload = "token=" + token + "&to=" + t_id + "&body=" + text + "&priority=1"
-        headers = {'content-type': "application/x-www-form-urlencoded"}
-        conn.request("POST", "/" + instance + "/messages/chat", payload, headers)
+        payload = 'token={token}&to={t_id}&body={text}&priority=1'
+        headers = {'content-type': 'application/x-www-form-urlencoded'}
+        requests.post(f'api.ultramsg.com/{instance}/messages/chat?{payload}', headers=headers)
         return_results('Task send_whatsapp successfully added to project')
     except Exception:
         return_results('Task creation failed')
@@ -18,15 +17,12 @@ def send_whatsapp(token, instance, t_id, text):
 
 def test_module(token, instance):
     try:
-        conn = http.client.HTTPSConnection("api.ultramsg.com")
-        headers = {'content-type': "application/x-www-form-urlencoded"}
-        url_path = "/" + instance + "/instance/status?token=" + token
-        conn.request("GET", url_path, headers=headers)
-        res = conn.getresponse()
-        data = res.read().decode("utf-8")
-        data_json = json.loads(data)
+        headers = {'content-type': 'application/x-www-form-urlencoded'}
+        url_path = f'api.ultramsg.com/{instance}/instance/status?token={token}'
+        res = requests.get(url_path, headers=headers)
+        data_json = res.json()
         status = data_json['status']['accountStatus']['substatus']
-        if status == "connected":
+        if status == 'connected':
             return 'ok'
         else:
             return "Instance Status is: '" + status + "' Should be 'connected'.Please check your instance"
