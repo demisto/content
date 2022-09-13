@@ -25,8 +25,8 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: If an ANYRUN report contains more than one type of indicator, IOCs and
-    relationships will be created.
+  additionalinfo: If an ANYRUN report contains more than one type of indicator, thses IOCs and
+    relationships will also be created.
 - display: Source Reliability
   name: integrationReliability
   defaultvalue: C - Fairly reliable

@@ -656,11 +656,11 @@ def extract_indicators(response: Dict) -> List[CommandResults]:
                     indicator=attack_indicator
                 )
                 attack_relationship = EntityRelationship(
-                    name=EntityRelationship.Relationships.USED_BY,
-                    entity_a=item.get('name'),
-                    entity_a_type='Attack Pattern',
-                    entity_b=main_entity,
-                    entity_b_type=main_entity_type,
+                    name=EntityRelationship.Relationships.HAS,
+                    entity_a=main_entity,
+                    entity_a_type=main_entity_type,
+                    entity_b=item.get('name'),
+                    entity_b_type='Attack Pattern',
                     source_reliability=source_reliability
                 )
                 main_indicator.relationships.append(attack_relationship)
