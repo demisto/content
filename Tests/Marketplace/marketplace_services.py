@@ -2993,6 +2993,7 @@ class Pack(object):
             Returns:
                 bool: whether the operation succeeded.
         """
+        logging.info('\nEntering the upload README.md images part\n')
         task_status = True
 
         try:
