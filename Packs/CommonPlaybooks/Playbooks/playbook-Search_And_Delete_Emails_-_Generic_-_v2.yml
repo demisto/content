@@ -136,8 +136,7 @@ tasks:
     scriptarguments:
       allow_not_found_exchange_locations:
         complex:
-          root: |
-            inputs.O365AllowNotFoundExchangeLocations
+          root: inputs.O365AllowNotFoundExchangeLocations
       delete_type:
         complex:
           root: inputs.O365DeleteType
@@ -773,7 +772,8 @@ inputs:
   playbookInputQuery:
 - key: O365DeleteType
   value:
-    simple: inputs.O365DeleteType
+    complex:
+      root: inputs.O365DeleteType
   required: false
   description: Used only in O365. The delete type to perform on the search results.
     Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
