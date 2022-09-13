@@ -15,11 +15,10 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-''' IMPORTS '''
 from octoxlabs import OctoxLabs
 
 import requests
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -34,7 +33,7 @@ def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
 
 
 def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]):
-    commands = {
+    commands: Dict[str, Callable] = {
         "test-module": test_module,
         "get-adapters": get_adapters,
         "get-connections": get_connections,
@@ -43,7 +42,7 @@ def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]):
         "search-devices": search_devices,
         "get-device": get_device,
     }
-    command_function = commands.get(command_name, None)
+    command_function: Callable = commands.get(command_name, None)
     if command_function:
         return command_function(octox=octox, args=args)
     raise Exception("No command.")
