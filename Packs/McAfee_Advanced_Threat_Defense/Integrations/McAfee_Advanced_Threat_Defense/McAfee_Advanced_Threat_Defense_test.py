@@ -1,9 +1,11 @@
+import tempfile
+
 import pytest
 
 import demistomock as demisto
 
 integration_params = {
-    'baseUrl': 'demi.demi.com',
+    'baseUrl': ' http://demi.demi.com',
     'username': 'bark',
     'password': 'my_password'
 }
@@ -94,3 +96,233 @@ def test_prettify_task_status_by_taskId_res():
         {'taskid': "41", 'jobid': "42", 'status': "finished", 'filename': "my_name", 'md5': "my_md5",
          'submitTime': "010101"})
     assert expected_rtask_status == prettify_task_status_res
+
+
+def test_get_report_command(mocker, requests_mock):
+    """
+    Given:
+        - The script args.
+    When:
+        - Running get report command.
+    Then:
+        - Validating the outputs as expected.
+    """
+    from McAfee_Advanced_Threat_Defense import get_report_command
+    mocker.patch.object(demisto, 'args', return_value={'taskId': 1,
+                                                       'threshold': 1,
+                                                       'type': 'json'})
+    requests_mock.get(
+        'http://demi.demi.com/php/samplestatus.php?iTaskId=1',
+        json={'results': {'taskid': '1',
+                          'jobid': '1',
+                          'status': 'Completed',
+                          'filename': 'filename',
+                          'md5': 'some_hash',
+                          'submitTime': '01.09.2022'}}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/showreport.php?iTaskId=1&iType=json',
+        json={'Summary': {'Verdict': {'Description': 'desc',
+                                      'Severity': 5},
+                          'Subject': {'Type': 'application/url',
+                                      'md5': 'some_hash',
+                                      'sha-1': 'some_hash',
+                                      'sha-256': 'some_hash',
+                                      'size': 50,
+                                      'Name': 'name',
+                                      'FileType': 'type'},
+                          'Ips': [{'Ipv4': '1.1.1.1'}]
+
+                          }}
+    )
+    results_mock = mocker.patch.object(demisto, 'results')
+    get_report_command()
+    assert 'McAfee ATD Sandbox Report' in results_mock.call_args[0][0]['HumanReadable']
+
+
+def test_detonate_file_command(mocker, requests_mock):
+    """
+    Given:
+        - The script args.
+    When:
+        - Running detonate-file command.
+    Then:
+        - Validating the outputs as expected.
+    """
+    from McAfee_Advanced_Threat_Defense import detonate
+    requests_mock.post(
+        'http://demi.demi.com/php/fileupload.php?',
+        json={'success': 'True',
+              'results': [{'taskId': '1',
+                           'messageId': '1',
+                           'url': 'url.com',
+                           'status': 'Completed',
+                           'filename': 'filename',
+                           'md5': 'some_hash',
+                           'sha1': 'some_hash',
+                           'sha256': 'some_hash',
+                           'srcIp': '1.1.1.1',
+                           'destIp': '1.1.1.1',
+                           'submitTime': '01.09.2022'}]}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/samplestatus.php?iTaskId=1',
+        json={'results': {'taskid': '1',
+                          'jobid': '1',
+                          'status': 'Completed',
+                          'filename': 'filename',
+                          'md5': 'some_hash',
+                          'submitTime': '01.09.2022'}}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/showreport.php?iTaskId=1&iType=json',
+        json={'Summary': {'Verdict': {'Description': 'desc',
+                                      'Severity': 5},
+                          'Subject': {'Type': 'application/url',
+                                      'md5': 'some_hash',
+                                      'sha-1': 'some_hash',
+                                      'sha-256': 'some_hash',
+                                      'size': 50,
+                                      'Name': 'name',
+                                      'FileType': 'type'},
+                          'Ips': [{'Ipv4': '1.1.1.1'}]
+                          }}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/showreport.php?iTaskId=1&iType=sample',
+        json={'Summary': {'Verdict': {'Description': 'desc',
+                                      'Severity': 5}
+                          }}
+    )
+    results_mock = mocker.patch.object(demisto, 'results')
+    f = tempfile.TemporaryFile(mode='w')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f.name})
+    detonate(0, 'sample', '100', 'sample', 1, 'fileName')
+    assert '1.zip' in results_mock.call_args[0][0]['File']
+
+
+def test_list_users_command(mocker, requests_mock):
+    """
+        Given:
+            - The script args.
+        When:
+            - Running list_users command.
+        Then:
+            - Validating the outputs as expected.
+        """
+    from McAfee_Advanced_Threat_Defense import list_users_command
+    mocker.patch.object(demisto, 'args', return_value={'userType': 'userType'})
+    requests_mock.get(
+        'http://demi.demi.com/php/briefUserList.php?userType=userType',
+        json={'results': [{'fullName': 'fullName',
+                           'idx': 'idx',
+                           'loginId': 'loginId',
+                           'userType': 'userType'}]}
+    )
+    results_mock = mocker.patch.object(demisto, 'results')
+    list_users_command()
+    assert 'ATD User List' in results_mock.call_args[0][0]['HumanReadable']
+
+
+def test_detonate_url_command(mocker, requests_mock):
+    """
+    Given:
+        - The script args.
+    When:
+        - Running detonate url command.
+    Then:
+        - Validating the outputs as expected.
+    """
+    from McAfee_Advanced_Threat_Defense import detonate
+    requests_mock.post(
+        'http://demi.demi.com/php/fileupload.php?',
+        json={'success': 'True',
+              'results': [{'taskId': '1',
+                           'messageId': '1',
+                           'url': 'url.com',
+                           'status': 'Completed',
+                           'filename': 'filename',
+                           'md5': 'some_hash',
+                           'sha1': 'some_hash',
+                           'sha256': 'some_hash',
+                           'srcIp': '1.1.1.1',
+                           'destIp': '1.1.1.1',
+                           'submitTime': '01.09.2022'}]}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/samplestatus.php?iTaskId=1',
+        json={'results': {'taskid': '1',
+                          'jobid': '1',
+                          'status': 'Completed',
+                          'filename': 'filename',
+                          'md5': 'some_hash',
+                          'submitTime': '01.09.2022'}}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/showreport.php?iTaskId=1&iType=json',
+        json={'Summary': {'Verdict': {'Description': 'desc',
+                                      'Severity': 5},
+                          'Subject': {'Type': 'application/url',
+                                      'md5': 'some_hash',
+                                      'sha-1': 'some_hash',
+                                      'sha-256': 'some_hash',
+                                      'size': 50,
+                                      'Name': 'name',
+                                      'FileType': 'type'},
+                          'Ips': [{'Ipv4': '1.1.1.1'}]
+                          }}
+    )
+    requests_mock.get(
+        'http://demi.demi.com/php/showreport.php?iTaskId=1&iType=pdf',
+        json={'Summary': {'Verdict': {'Description': 'desc',
+                                      'Severity': 5}
+                          }}
+    )
+    results_mock = mocker.patch.object(demisto, 'results')
+    f = tempfile.TemporaryFile(mode='w')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f.name})
+    detonate(1, 'url.com', '100', 'pdf', 1, 'fileName')
+    assert '1.pdf' in results_mock.call_args[0][0]['File']
+
+
+def test_list_profiles_command(mocker, requests_mock):
+    """
+        Given:
+            - The script args.
+        When:
+            - Running list_profiles command.
+        Then:
+            - Validating the outputs as expected.
+        """
+    from McAfee_Advanced_Threat_Defense import list_profiles_command
+    requests_mock.get(
+        'http://demi.demi.com/php/vmprofiles.php',
+        json={'results': [{'name': 'name',
+                           'vmProfileid': 'vmProfileid',
+                           'vmDesc': 'vmDesc',
+                           'sandbox': 0,
+                           'internet': 0,
+                           'locBlackList': 0}]}
+    )
+    results_mock = mocker.patch.object(demisto, 'results')
+    list_profiles_command()
+    assert 'ATD Analyzers Profile List' in results_mock.call_args[0][0]['HumanReadable']
+
+
+def test_get_headers(requests_mock):
+    """
+        Given:
+            - The script args.
+        When:
+            - Running get_headers function.
+        Then:
+            - Validating the outputs as expected.
+        """
+    from McAfee_Advanced_Threat_Defense import get_headers
+    requests_mock.get(
+        'http://demi.demi.com/php/session.php',
+        json={'results': {'session': 'session',
+                          'userId': 'userId'}}
+    )
+    res = get_headers()
+    assert res.get('VE-SDK-API') == b'c2Vzc2lvbjp1c2VySWQ='
