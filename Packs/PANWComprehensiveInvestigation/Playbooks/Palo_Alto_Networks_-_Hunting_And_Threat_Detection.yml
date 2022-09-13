@@ -835,7 +835,7 @@ tasks:
       fields: {}
       file_name: {}
       file_sha_256:
-        simple: ${File.SHA256}
+        simple: ${inputs.SHA256}
       from_zone: {}
       ip: {}
       limit: {}
@@ -884,7 +884,7 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: File.SHA256
+              simple: inputs.SHA256
             iscontext: true
           right:
             value:
