@@ -16,7 +16,7 @@ args:
   description: URL to resolve
 - name: insecure
   required: false
-  type: 8
+  type: Boolean
   defaultValue: false
   description: Trust any certificate (not secure)
 outputs:
