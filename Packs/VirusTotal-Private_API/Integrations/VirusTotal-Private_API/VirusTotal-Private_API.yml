@@ -59,9 +59,10 @@ configuration:
   name: fullResponseGlobal
   required: false
   type: 8
-description: Analyze suspicious hashes, URLs, domains and IP addresses
-display: VirusTotal - Private API
+description: Deprecated. Use "VirusTotal (API v3)"  or "VirusTotal - Premium (API v3)" integrations instead.
+display: VirusTotal - Private API (Deprecated)
 name: VirusTotal - Private API
+deprecated: true
 script:
   commands:
   - arguments:
