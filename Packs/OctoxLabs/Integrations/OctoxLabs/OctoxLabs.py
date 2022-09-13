@@ -32,7 +32,7 @@ def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
     return {k: getattr(obj, k, None) for k in keys}
 
 
-def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]):
+def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]) -> CommandResults:
     commands: Dict[str, Callable] = {
         "test-module": test_module,
         "get-adapters": get_adapters,

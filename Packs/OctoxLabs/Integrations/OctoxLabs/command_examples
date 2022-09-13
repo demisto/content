@@ -2,5 +2,5 @@
 !get-connections page=1
 !get-discoveries page=1
 !get-last-discovery
-!search-devices query="Adapters = active-directory AND Hostname = a*"
+!search-devices query="Adapters = active-directory AND Hostname = a*" fields="Adapters,Hostname,Groups"
 !get-device hostname="octoxlabs01"
