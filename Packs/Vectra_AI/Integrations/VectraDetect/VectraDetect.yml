@@ -66,7 +66,7 @@ configuration:
   type: 16    # Mutiple select dropdown
   required: false
   additionalinfo: Choose what to fetch - Accounts and/or Hosts and/or Detections.
-    (Default - Hosts)
+    (Default - Accounts,Hosts)
   options:
   - Accounts
   - Hosts
@@ -78,18 +78,18 @@ configuration:
   type: 0    # Short text
   additionalinfo: Only "active" Hosts matching this fetch query will be fetched.
     Will be used only if "Hosts" is selected in the "Entity types to fetch".
-    (default - host.threat:>=50 AND host.certainty:>=50)
+    (default - host.threat:>=50)
   required: false
-  defaultvalue: host.threat:>=50 AND host.certainty:>=50
+  defaultvalue: host.threat:>=50
 
 - display: Accounts fetch query
   name: accounts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Accounts matching this fetch query will be fetched.
     Will be used only if "Accounts" is selected in the "Entity types to fetch".
-    (default - account.threat:>=50 AND account.certainty:>=50)
+    (default - account.threat:>=50)
   required: false
-  defaultvalue: account.threat:>=50 AND account.certainty:>=50
+  defaultvalue: account.threat:>=50
 
 - display: Detections fetch query
   name: detections_fetch_query
