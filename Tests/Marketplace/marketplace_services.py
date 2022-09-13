@@ -3966,11 +3966,3 @@ def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_se
             if list(id_set_entity.values())[0]['display_name'] == display_name:
                 return id_set_entity
     return None
-
-
-def main():
-    print('hello')
-
-
-if __name__ == '__main__':
-    main()
