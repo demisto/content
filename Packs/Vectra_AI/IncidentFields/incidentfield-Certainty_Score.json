@@ -1,6 +1,11 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
+        "C2Communication",
+        "Exfiltration",
+        "Indicator Feed",
+        "Lateral Movement",
+        "Reconnaissance",
         "Vectra Account",
         "Vectra Detection",
         "Vectra Host"
