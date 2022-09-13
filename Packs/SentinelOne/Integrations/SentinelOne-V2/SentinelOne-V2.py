@@ -469,6 +469,10 @@ class Client(BaseClient):
         return response
 
     def get_exclusions_request(self, item_ids=None, os_types=None, exclusion_type: str = None, limit: int = 10, value_contains: str = None):
+        """
+        includeChildren and includeParents are set as True in the params for the API request to return all items in the exclusion list. 
+        If left blank they default to false and the API call will return a subset of the exclusion list.
+        """      
         endpoint_url = 'exclusions'
 
         params = {
