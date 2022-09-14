@@ -79,7 +79,7 @@ class OrcaClient:
 
         if time_from:
             filters.append({
-                "field": "state.created_at",
+                "field": "state.last_updated",
                 "range": {"gte": time_from}
             })
         if fetch_informational:
