@@ -3782,3 +3782,55 @@ class TestPanOSEditApplicationGroupCommand:
 
         main()
         assert mock_request.mock_calls[1].kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/"
+                             "application-group/entry[@name='test']",
+                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
+                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+def test_pan_os_delete_application_group_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance with a name of the application-group to delete.
+     - Firewall instance with a name of the application-group to delete.
+
+    When:
+     - running the pan-os-delete-application-group through the main flow.
+
+    Then:
+     - make sure the xpath/element and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-application-group')
+
+    main()
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

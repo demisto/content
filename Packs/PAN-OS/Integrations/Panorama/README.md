@@ -7629,3 +7629,27 @@ Edits an application-group
 #### Human Readable Output
 
 >application-group test-3 was edited successfully.
+### pan-os-delete-application-group
+***
+Deletes an application-group
+
+
+#### Base Command
+
+`pan-os-delete-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to delete. | Required | 
+| device-group | The device-group in which the application-group is part of. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-application-group name=test-3```
+#### Human Readable Output
+
+>application-group test-3 was deleted successfully.

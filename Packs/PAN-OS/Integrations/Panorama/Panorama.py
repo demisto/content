@@ -11444,6 +11444,28 @@ def pan_os_edit_application_group_command(args):
     )
 
 
+def pan_os_delete_application_group(name):
+    params = {
+        'xpath': build_application_groups_xpath(name),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_application_group_command(args):
+    application_group_name = args.get('name')
+
+    raw_response = pan_os_delete_application_group(application_group_name)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was deleted successfully.'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -12103,6 +12125,8 @@ def main():
             return_results(pan_os_create_application_group_command(args))
         elif command == 'pan-os-edit-application-group':
             return_results(pan_os_edit_application_group_command(args))
+        elif command == 'pan-os-delete-application-group':
+            return_results(pan_os_delete_application_group_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

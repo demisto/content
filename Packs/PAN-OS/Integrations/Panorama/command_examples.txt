@@ -124,3 +124,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-list-application-groups show_uncommitted=true
 !pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared
 !pan-os-edit-application-group name=test-3 action=remove applications=4shared
+!pan-os-delete-application-group name=test-3
