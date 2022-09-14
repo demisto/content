@@ -711,7 +711,7 @@ script:
     description: Get Elasticsearch data
     arguments:
     - name: index
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - suricata
@@ -722,7 +722,7 @@ script:
       description: Index to be queried
       defaultValue: suricata
     - name: query
-      required: true
+      required: false
       description: Elaticsearch query
       defaultValue: '{}'
   - name: gw-add-malcore-list-entry
@@ -950,12 +950,12 @@ script:
   - name: gw-send-malware
     description: Send malware
     arguments:
-    - name: name
+    - name: filename
       required: true
       description: Filename
-    - name: content
+    - name: file_id
       required: true
-      description: File content
+      description: File entry id
     outputs:
     - contextPath: GCenter.Gscan.Malware.id
       description: The Id Of The Gscan History Message
@@ -1008,12 +1008,12 @@ script:
   - name: gw-send-powershell
     description: Send powershell
     arguments:
-    - name: name
+    - name: filename
       required: true
       description: Filename
-    - name: content
+    - name: file_id
       required: true
-      description: File content
+      description: File entry id
     outputs:
     - contextPath: GCenter.Gscan.Powershell.id
       description: The Id Of The Gscan History Message
@@ -1057,18 +1057,18 @@ script:
   - name: gw-send-shellcode
     description: Send shellcode
     arguments:
-    - name: name
+    - name: filename
       required: true
       description: Filename
-    - name: content
+    - name: file_id
       required: true
-      description: File content
+      description: File entry id
     - name: deep
-      required: true
+      required: false
       description: Deep scan
       defaultValue: false
     - name: timeout
-      required: true
+      required: false
       description: Deep scan timeout
       defaultValue: 120
     outputs:

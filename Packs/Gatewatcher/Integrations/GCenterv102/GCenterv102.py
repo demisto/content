@@ -695,12 +695,12 @@ class GwClient(GwRequests):
                 response.text, response.status_code, response.reason
             )
 
-    def send_malware(self, name: str, content: str) -> dict:
+    def send_malware(self, filename: str, file_id: str) -> dict:
         """Send file to the GScan malcore analysis.
 
         Args:
-            name: Filename to be sent.
-            content: File content in string format.
+            filename: Filename to be sent.
+            file_id: The file entry id.
 
         Returns:
             Gscan analysis report.
@@ -708,27 +708,33 @@ class GwClient(GwRequests):
         Raises:
             GwAPIException: If status_code != 201.
         """
+        file = demisto.getFilePath(file_id)
         response = self._post(
             endpoint="/api/gscan/malcore/",
-            files={"file": (name, io.StringIO(content))}
+            files={
+                "file": (
+                    filename,
+                    open(file.get("path"), "rb")
+                )
+            }
         )
         if response.status_code == 201:
             demisto.info(
-                f"Send malcore file {name} on GCenter {self.ip}: [OK]"
+                f"Send malcore file {filename} on GCenter {self.ip}: [OK]"
             )
             return response.json()
         else:
             raise GwAPIException(
-                f"Send malcore file {name} on GCenter {self.ip}: [FAILED]",
+                f"Send malcore file {filename} on GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
 
-    def send_shellcode(self, name: str, content: str, deep: bool = False, timeout: int = None) -> dict:
+    def send_shellcode(self, filename: str, file_id: str, deep: bool = False, timeout: int = None) -> dict:
         """Send file to the GScan shellcode analysis.
 
         Args:
-            name: Filename to be sent.
-            content: File content in string format.
+            filename: Filename to be sent.
+            file_id: The file entry id.
             deep: True to enabled deep scan and False instead.
             timeout: Deep scan timeout.
 
@@ -738,31 +744,35 @@ class GwClient(GwRequests):
         Raises:
             GwAPIException: If status_code != 201.
         """
+        file = demisto.getFilePath(file_id)
         response = self._post(
             endpoint="/api/gscan/shellcode/",
             files={
-                "file": (name, io.StringIO(content)),
+                "file": (
+                    filename,
+                    open(file.get("path"), "rb")
+                ),
                 "deep": deep,
                 "timeout": timeout
             }
         )
         if response.status_code == 201:
             demisto.info(
-                f"Send shellcode file {name} on GCenter {self.ip}: [OK]"
+                f"Send shellcode file {filename} on GCenter {self.ip}: [OK]"
             )
             return response.json()
         else:
             raise GwAPIException(
-                f"Send shellcode file {name} on GCenter {self.ip}: [FAILED]",
+                f"Send shellcode file {filename} on GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
 
-    def send_powershell(self, name: str, content: str) -> dict:
+    def send_powershell(self, filename: str, file_id: str) -> dict:
         """Send file to the GScan powershell analysis.
 
         Args:
-            name: Filename to be sent.
-            content: File content in string format.
+            filename: Filename to be sent.
+            file_id: The file entry id.
 
         Returns:
             Gscan analysis report.
@@ -770,18 +780,24 @@ class GwClient(GwRequests):
         Raises:
             GwAPIException: If status_code != 201.
         """
+        file = demisto.getFilePath(file_id)
         response = self._post(
             endpoint="/api/gscan/powershell/",
-            files={"file": (name, io.StringIO(content))}
+            files={
+                "file": (
+                    filename,
+                    open(file.get("path"), "rb")
+                )
+            }
         )
         if response.status_code == 201:
             demisto.info(
-                f"Send powershell file {name} on GCenter {self.ip}: [OK]"
+                f"Send powershell file {filename} on GCenter {self.ip}: [OK]"
             )
             return response.json()
         else:
             raise GwAPIException(
-                f"Send powershell file {name} on GCenter {self.ip}: [FAILED]",
+                f"Send powershell file {filename} on GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
 
@@ -1168,8 +1184,8 @@ def gw_send_malware(client: GwClient, args: Optional[Dict[Any, Any]]) -> Command
         CommandResults object with the "GCenter.Gscan.Malware" prefix.
     """
     result = client.send_malware(
-        name=args.get("name"),  # type: ignore
-        content=args.get("content")  # type: ignore
+        filename=args.get("filename"),  # type: ignore
+        file_id=args.get("file_id")  # type: ignore
     )
     readable_result = tableToMarkdown("Malcore analysis result", result)
     return CommandResults(
@@ -1192,8 +1208,8 @@ def gw_send_powershell(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comm
         CommandResults object with the "GCenter.Gscan.Powershell" prefix.
     """
     result = client.send_powershell(
-        name=args.get("name"),  # type: ignore
-        content=args.get("content")  # type: ignore
+        filename=args.get("filename"),  # type: ignore
+        file_id=args.get("file_id")  # type: ignore
     )
     readable_result = tableToMarkdown("Powershell analysis result", result)
     return CommandResults(
@@ -1216,8 +1232,8 @@ def gw_send_shellcode(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comma
         CommandResults object with the "GCenter.Gscan.Shellcode" prefix.
     """
     result = client.send_shellcode(
-        name=args.get("name"),  # type: ignore
-        content=args.get("content"),  # type: ignore
+        filename=args.get("filename"),  # type: ignore
+        file_id=args.get("file_id"),  # type: ignore
         deep=args.get("deep"),  # type: ignore
         timeout=int(args.get("timeout"))  # type: ignore
     )

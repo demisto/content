@@ -17,6 +17,6 @@
 !gw-del-ignore-kuser-ip ignore_id=1
 !gw-del-ignore-kuser-name ignore_id=1
 !gw-del-ignore-mac-address ignore_id=1
-!gw-send-malware name="test" content="azerty"
-!gw-send-powershell name="test" content="azerty"
-!gw-send-shellcode name="test" content="azerty" deep=false timeout=120
+!gw-send-malware filename="test" file_id="azerty"
+!gw-send-powershell filename="test" file_id="azerty"
+!gw-send-shellcode filename="test" file_id="azerty" deep=false timeout=120

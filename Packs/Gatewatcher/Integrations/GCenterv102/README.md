@@ -549,8 +549,8 @@ Get Elasticsearch data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| index | Index to be queried. Possible values are: suricata, malware, codebreaker, netdata, syslog. Default is suricata. | Required | 
-| query | Elaticsearch query. Default is {}. | Required | 
+| index | Index to be queried. Possible values are: suricata, malware, codebreaker, netdata, syslog. Default is suricata. | Optional | 
+| query | Elaticsearch query. Default is {}. | Optional | 
 
 
 #### Context Output
@@ -1009,8 +1009,8 @@ Send malware
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filename. | Required | 
-| content | File content. | Required | 
+| filename | Filename. | Required | 
+| file_id | File entry id. | Required | 
 
 
 #### Context Output
@@ -1036,7 +1036,7 @@ Send malware
 
 ##### Command Example
 
-```!gw-send-malware name="test" content="azerty"```
+```!gw-send-malware filename="test" file_id="azerty"```
 
 ##### Context Example
 
@@ -1080,8 +1080,8 @@ Send powershell
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filename. | Required | 
-| content | File content. | Required | 
+| filename | Filename. | Required | 
+| file_id | File entry id. | Required | 
 
 
 #### Context Output
@@ -1104,7 +1104,7 @@ Send powershell
 
 ##### Command Example
 
-```!gw-send-powershell name="test" content="azerty"```
+```!gw-send-powershell filename="test" file_id="azerty"```
 
 ##### Context Example
 
@@ -1145,10 +1145,10 @@ Send shellcode
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filename. | Required | 
-| content | File content. | Required | 
-| deep | Deep scan. | Required | 
-| timeout | Deep scan timeout. Default is 120. | Required | 
+| filename | Filename. | Required | 
+| file_id | File entry id. | Required | 
+| deep | Deep scan. | Optional | 
+| timeout | Deep scan timeout. Default is 120. | Optional | 
 
 
 #### Context Output
@@ -1170,7 +1170,7 @@ Send shellcode
 
 ##### Command Example
 
-```!gw-send-shellcode name="test" content="azerty" deep=false timeout=120```
+```!gw-send-shellcode filename="test" file_id="azerty" deep=false timeout=120```
 
 ##### Context Example
 
