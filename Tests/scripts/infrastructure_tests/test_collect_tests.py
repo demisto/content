@@ -305,6 +305,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # (21) see M3 definition at the top of this file - test playbook is changed
      (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',)),
+
+     # Script changes (old format), expect its test playbook to be collected
+     (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Scripts/script-myScript.yml',)),
+
      ))
 def test_branch(
         monkeypatch,
