@@ -608,25 +608,25 @@ def main() -> None:
         client = Client(credentials=credentials, insecure=insecure)
 
         if command == 'test-module':
-            return return_results(test_module(client))
+            return_results(test_module(client))
         elif command == 'fetch-credentials':
             fetch_credentials(client)
         elif command == 'ksm-list-credentials':
-            return return_results(list_credentials_command(client, demisto.args()))
+            return_results(list_credentials_command(client, demisto.args()))
         elif command == 'ksm-list-records':
-            return return_results(list_records_command(client, demisto.args()))
+            return_results(list_records_command(client, demisto.args()))
         elif command == 'ksm-get-field':
-            return return_results(get_field_command(client, demisto.args()))
+            return_results(get_field_command(client, demisto.args()))
         elif command == 'ksm-list-files':
-            return return_results(list_files_command(client, demisto.args()))
+            return_results(list_files_command(client, demisto.args()))
         elif command == 'ksm-get-file':
-            return return_results(get_file_command(client, demisto.args()))
+            return_results(get_file_command(client, demisto.args()))
         elif command == 'ksm-get-infofile':
-            return return_results(get_infofile_command(client, demisto.args()))
+            return_results(get_infofile_command(client, demisto.args()))
         elif command == 'ksm-find-records':
-            return return_results(find_records_command(client, demisto.args()))
+            return_results(find_records_command(client, demisto.args()))
         elif command == 'ksm-find-files':
-            return return_results(find_files_command(client, demisto.args()))
+            return_results(find_files_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())
