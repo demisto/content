@@ -9,6 +9,8 @@ tags:
 comment: Collect entries matching to the conditions in the war room
 enabled: true
 args:
+- name: id
+  description: Optional incident ID to fetch entries from. If not specified, current incident is used.
 - name: tags
   description: The list of tags
   isArray: true

@@ -5,11 +5,11 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-
-        filter_args = assign_params(tags=argToList(args.get('tags')),
-                                    categories=argToList(args.get('categories')))
-
-        ents = execute_command('getEntries', {'filter': filter_args}, extract_contents=False)
+        ents = execute_command('getEntries',
+                               assign_params(id=args.get('id'),
+                                             filter=assign_params(tags=argToList(args.get('tags')),
+                                                                  categories=argToList(args.get('categories')))),
+                               extract_contents=False)
         if not ents:
             return_results('No matching entries')
         else:

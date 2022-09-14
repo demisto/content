@@ -14,6 +14,7 @@ Collect entries matching to the conditions in the war room
 
 | **Argument Name** | **Description** |
 | --- | --- |
+| id | Optional incident ID to fetch entries from. If not specified, current incident is used. |
 | tags | The list of tags |
 | categories | The list of categories. {commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments} |
 
