@@ -44,7 +44,7 @@ MESSAGE_TYPES: dict = {
 }
 
 if '@' in BOT_ID:
-    demisto.debug("setting tenant id in global")
+    demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
 
