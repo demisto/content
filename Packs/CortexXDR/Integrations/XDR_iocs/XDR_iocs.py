@@ -18,6 +18,13 @@ xdr_types_to_demisto: Dict = {
     "HASH": 'File',
     "IP": 'IP'
 }
+xdr_severity_to_demisto: dict[str, str] = {
+    'SEV_010_INFO': 'info',
+    'SEV_020_LOW': 'low',
+    'SEV_030_MEDIUM': 'medium',
+    'SEV_040_HIGH': 'high',
+    'SEV_090_UNKNOWN': 'unknown',
+}
 xdr_reputation_to_demisto: Dict = {
     'GOOD': 1,
     'SUSPICIOUS': 2,
@@ -368,7 +375,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.xsoar_severity_field: ioc['RULE_SEVERITY'],
+            Client.xsoar_severity_field: xdr_severity_to_demisto[ioc['RULE_SEVERITY']],
         },
         "rawJSON": ioc
     }
