@@ -223,7 +223,7 @@ prepare-testing-bucket-mpv2:
   needs: ["create-instances"]
   stage: run-instances
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "please send job link to esharf" && exit 1)'
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -346,7 +346,7 @@ slack-notify-nightly-build:
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "please send job link to esharf" && exit 1)'
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 
