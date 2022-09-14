@@ -519,7 +519,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'info',
                 }
             }
         ),
@@ -539,7 +540,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'info',
                 }
             }
         ),
@@ -561,7 +563,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'enabled'
+                    'xdrstatus': 'enabled',
+                    'sourceoriginalseverity': 'info',
                 }
             }
         )
