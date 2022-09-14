@@ -38,11 +38,11 @@ It then continues with the following eradication actions:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Containment Plan
-* Endpoint Investigation Plan
-* Eradication Plan
-* Recovery Plan
 * Command-Line Analysis
+* Eradication Plan
+* Endpoint Investigation Plan
+* Containment Plan
+* Recovery Plan
 * Handle False Positive Alerts
 
 ### Integrations
@@ -72,4 +72,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1059 - Command and Scripting Interpreter](https://raw.githubusercontent.com/demisto/content/260a4d094a4db588e37a3763d511b5248cd7049b/Packs/Core/doc_files/T1059_-_Command_and_Scripting_Interpreter.png)
+![T1059 - Command and Scripting Interpreter](../doc_files/T1059_-_Command_and_Scripting_Interpreter.png)

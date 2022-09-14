@@ -839,9 +839,6 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
-      HostAutoContainment:
-        complex:
-          root: inputs.PreHostContainment
       IAMUserDomain:
         simple: '@demisto.com'
       IP:
@@ -930,8 +927,6 @@ tasks:
             - operator: uniq
         FileRemediation:
           simple: Quarantine
-        HostAutoContainment:
-          simple: "false"
         IAMUserDomain:
           simple: '@demisto.com'
         UserContainment:
@@ -1035,9 +1030,6 @@ tasks:
       FileRemediation:
         complex:
           root: inputs.FileRemediation
-      HostAutoContainment:
-        complex:
-          root: inputs.HostAutoContainment
           transformers:
           - operator: SetIfEmpty
             args:
@@ -1103,9 +1095,6 @@ tasks:
         FileRemediation:
           complex:
             root: inputs.FileRemediation
-        HostAutoContainment:
-          complex:
-            root: inputs.HostAutoContainment
         IAMUserDomain:
           simple: '@demisto.com'
         UserContainment:
@@ -1218,3 +1207,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+contentitemexportablefields:
+  contentitemfields: {}
