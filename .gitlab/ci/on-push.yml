@@ -428,7 +428,7 @@ test_upload_flow:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations
   script:
-    - if git diff origin/master upload_testing_flow --name-only | grep "Tests/\|Utils/"; then                                                                            16:33:03
+    - if (git diff origin/master upload_testing_flow --name-only | grep "Tests/\|Utils/"); then                                                                            16:33:03
         section_start "Create Testing Branch"
         python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER | tee "$ARTIFACTS_FOLDER/create_test_branch.log"
         section_end "Create Testing Branch"
