@@ -13,17 +13,12 @@ ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboa
 
 
 def verify_search_response_in_list(response: Union[dict, str, list], name: str):
-    if type(response) is list:
-        for entity in response:
-            if entity.get("id") == name:
-                return entity.get("id")
-    return False
+    ids = [entity.get('id', '') for entity in response] if type(response) is list else []
+    return False if name not in ids else name
 
 
 def verify_search_response_in_dict(response: Union[dict, str, list]):
-    if type(response) is dict:
-        if not response or not response.get("id"):
-            return False
+    if type(response) is dict and response.get("id"):
         return response.get("id")
     return False
 
@@ -88,7 +83,6 @@ class IntegrationAPI(EntityAPI):
                                {'uri': '/settings/integration/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
-    # TODO: doesn't work
 
     def search_all(self):
         return execute_command('demisto-api-post',
@@ -107,7 +101,7 @@ class IntegrationAPI(EntityAPI):
         return verify_search_response_in_list(integrations, name)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
-        integrations = response.get('configurations', []) if response is dict else response
+        integrations = response.get('configurations', []) if type(response) is dict else response
         return [entity.get('id') for entity in integrations] if type(integrations) is list else []
 
 
@@ -115,7 +109,7 @@ class ScriptAPI(EntityAPI):  # TODO: check
     name = 'script'
 
     def search_specific_id(self, specific_id: str):
-        return execute_command('demisto-api-get',
+        return execute_command('demisto-api-post',
                                {'uri': '/automation/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
@@ -126,6 +120,7 @@ class ScriptAPI(EntityAPI):  # TODO: check
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
+    # TODO: doesn't work
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/automation/delete',
@@ -140,7 +135,7 @@ class ScriptAPI(EntityAPI):  # TODO: check
         return [entity.get('id', '') for entity in response.get('scripts', [])] if type(response) is dict else []
 
 
-class IncidentFieldAPI(EntityAPI):
+class IncidentFieldAPI(EntityAPI):  # checked and works
     name = 'incidentfield'
 
     def search_specific_id(self, specific_id: str):
@@ -153,7 +148,7 @@ class IncidentFieldAPI(EntityAPI):
                                {'uri': '/incidentfields'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: check
+    def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-delete',
                                {'uri': f'/incidentfield/{specific_id}'},
                                fail_on_error=False)
@@ -162,7 +157,7 @@ class IncidentFieldAPI(EntityAPI):
         return verify_search_response_in_list(response, name)
 
 
-class PreProcessingRuleAPI(EntityAPI):  # TODO: check
+class PreProcessingRuleAPI(EntityAPI):  # checked and works
     name = 'preprocess rule'
 
     def search_specific_id(self, specific_id: str):
@@ -184,7 +179,7 @@ class PreProcessingRuleAPI(EntityAPI):  # TODO: check
         return verify_search_response_in_list(response, name)
 
 
-class WidgetAPI(EntityAPI):  # TODO: check
+class WidgetAPI(EntityAPI):  # works
     name = 'widget'
 
     def search_specific_id(self, specific_id: str):
@@ -211,7 +206,7 @@ class WidgetAPI(EntityAPI):  # TODO: check
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
-class DashboardAPI(EntityAPI):  # TODO: check
+class DashboardAPI(EntityAPI):  # works
     name = 'dashboard'
 
     def search_specific_id(self, specific_id: str):
@@ -230,7 +225,7 @@ class DashboardAPI(EntityAPI):  # TODO: check
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
-        verify_search_response_in_dict(response)
+        return verify_search_response_in_dict(response)
 
     def parse_all_entities_response(self, response: Union[dict, str, list]):
         if type(response) is dict:
@@ -251,7 +246,7 @@ class ReportAPI(EntityAPI):
                                {'uri': '/reports'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):   # TODO: check
+    def delete_specific_id(self, specific_id: str):   # TODO: doesn't work
         return execute_command('demisto-api-delete',
                                {'uri': f'/reports/{specific_id}'},
                                fail_on_error=False)
@@ -273,7 +268,7 @@ class IncidentTypeAPI(EntityAPI):
                                {'uri': '/incidenttypes/export'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: check
+    def delete_specific_id(self, specific_id: str):  # TODO: doesn't work
         return execute_command('demisto-api-delete',
                                {'uri': f'/incidenttype/delete',
                                 'body': {'id': specific_id}},
@@ -511,6 +506,10 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     """
     succesfully_deleted = []
     not_deleted = []
+
+    if not included_ids and not excluded_ids or \
+            (entity_api.name == 'pack' and excluded_ids == ALWAYS_EXCLUDED and not included_ids):
+        return [], excluded_ids
 
     if included_ids and excluded_ids:
         included_ids = [item for item in included_ids if item not in excluded_ids]
