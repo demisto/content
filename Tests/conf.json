@@ -6,6 +6,10 @@
             "playbookID": "IndicatorFormatterFilterTest"
         },
         {
+            "integrations": "FeedURLhaus",
+            "playbookID": "playbook-urlhaus-feed_Test"
+        },
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
@@ -89,7 +93,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_prod",
+            "instance_names":"azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -615,6 +619,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Whois",
+            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
@@ -700,7 +709,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -1015,24 +1024,10 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 1000
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
             "timeout": 1000
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 2400
         },
         {
             "integrations": "Panorama",
@@ -1407,6 +1402,9 @@
             "playbookID": "PagerDuty Test"
         },
         {
+            "scripts": [
+                "DeleteContext"
+            ],
             "playbookID": "test_delete_context"
         },
         {
@@ -2152,11 +2150,6 @@
             "timeout": 200
         },
         {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 800
-        },
-        {
             "integrations": "FireEyeFeed",
             "playbookID": "playbook-FeedFireEye_test",
             "memory_threshold": 110
@@ -2368,6 +2361,16 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+        {
+            "playbookID": "Active Directory - manual pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
+        },
+                {
+            "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
         },
@@ -2749,7 +2752,7 @@
         },
         {
             "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
+            "playbookID": "GoogleCloudComputeListTest"
         },
         {
             "integrations": "AWS - S3",
@@ -2912,19 +2915,6 @@
             "instance_names": "palo_alto_panorama"
         },
         {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "HybridAnalysis-Test",
-            "timeout": 500,
-            "fromversion": "4.1.0",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v7",
             "playbookID": "Elasticsearch_v2_test"
@@ -2945,6 +2935,11 @@
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v8"
         },
         {
             "integrations": "PolySwarm",
@@ -3322,7 +3317,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Zoom Feed",
+            "integrations": ["Zoom Feed", "Demisto REST API"],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -3493,7 +3488,13 @@
         },
         {
             "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test"
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_device_code"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test",
+            "instance_names": "ms_graph_applications_client_cred"
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
@@ -3626,7 +3627,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 4000
+            "timeout": 3500
         },
         {
             "integrations": "ThreatExchange v2",
@@ -3821,6 +3822,7 @@
         {
             "playbookID": "Azure SQL - Test",
             "fromversion": "5.0.0",
+            "instance_names": "azure_sql_device_code_instance",
             "integrations": [
                 "Azure SQL Management"
             ]
@@ -4052,6 +4054,9 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Defender Advanced Threat Protection"
+            ],
+            "instance_names": [
+                "microsoft_defender_atp_dev_self_deployed"
             ]
         },
         {
@@ -4261,6 +4266,7 @@
         {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
+            "instance_names": "aks_device_code_instance",
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -4404,7 +4410,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 95,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4413,7 +4419,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 91,
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4627,7 +4633,16 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "OpenLDAP"
-            ]
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
+        },
+        {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
             "playbookID": "Splunk-Test",
@@ -5044,7 +5059,14 @@
         {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
-            "integrations": "AzureRiskyUsers"
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Device_Code_Flow"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers",
+            "instance_names": "AzureRiskyUsers_Client_Credentials_Flow"
         },
         {
             "playbookID": "playbook-AzureKeyVault-Test",
@@ -5141,7 +5163,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "TestCloudflareWAFPlaybook",
+            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
             "fromversion": "6.2.0"
         },
         {
@@ -5162,36 +5184,45 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Alibaba Action Trail Event Collector",
-            "playbookID": "Alibaba Event Collector-test",
-            "fromversion": "6.8.0"
+            "playbookID": "playbook-BmcITSM-Test",
+            "fromversion": "6.2.0",
+            "integrations": "BmcITSM"
         },
         {
-            "integrations": "Salesforce Event Collector",
-            "playbookID": "Salesforce Event Collector-test",
-            "fromversion": "6.8.0"
-        },
-        {
-            "integrations": [
-                "Github Event Collector"
-            ],
-            "playbookID": "Github Event Collector-test",
-            "fromversion": "6.8.0"
-        },
-        {
-            "integrations": [
-                "Microsoft Defender for Cloud Apps Event Collector"
-            ],
-            "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
-            "fromversion": "6.8.0"
+            "integrations": "CheckPointSandBlast",
+            "playbookID": "playbook-CheckPointSandBlast_Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Arkime",
             "playbookID": "Arkime Test playbook",
+            "fromversion": "6.2.0",
+            "memory_threshold": 95
+        },
+        {
+            "integrations": "checkpointdome9",
+            "playbookID": "Dome9",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Skyhigh Security",
+            "playbookID": "Skyhigh Security Test Play Book",
+            "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate File - SecneurX Analysis - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Secneurx Analysis",
+            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
+        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
@@ -5273,7 +5304,6 @@
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
@@ -5301,8 +5331,9 @@
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response V2 Test": "Issue 44201",
+        "Tanium Threat Response Test": "Issue CRTX-58729",
+        "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
-        "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
         "GSuiteAdmin-Test": "Issue 34784",
@@ -5327,9 +5358,12 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "Elasticsearch_v2_test-v8": "CRTX-61980",
+        "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
@@ -5384,7 +5418,6 @@
         "Attivo Botsink": "no instance, not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
@@ -5411,6 +5444,7 @@
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
         "ANYRUN": "No instance",
+        "SecneurX Analysis": "No Instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
         "Phish.AI": "Issue 17291",
@@ -5443,14 +5477,9 @@
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "Alibaba Action Trail Event Collector": "XSIAM integration",
-        "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration",
-        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
         "Laline v2",
@@ -5562,7 +5591,8 @@
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
-        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
+        "Cortex XDR - IR": "internal product, no need to mock"
     },
     "parallel_integrations": [
         "AWS - ACM",
@@ -5687,6 +5717,6 @@
         "Sanity Test - Playbook with integration",
         "Sanity Test - Playbook with no integration",
         "Sanity Test - Playbook with mocked integration",
-        "Sanity Test - Playbook with Unmockable Integration"
+        "Sanity Test - Playbook with Unmockable Whois Integration"
     ]
 }

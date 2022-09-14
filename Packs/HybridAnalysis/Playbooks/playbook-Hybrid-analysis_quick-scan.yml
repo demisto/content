@@ -2,7 +2,7 @@ id: Hybrid-analysis quick-scan
 version: -1
 fromversion: 5.0.0
 name: Hybrid-analysis quick-scan
-description: Use this playbook to run quick-scan command with generic-polling
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -200,4 +200,5 @@ outputs:
 - contextPath: HybridAnalysis.URL.SubmissionType
   description: The type of the submission - file or url
 tests:
-- HybridAnalysis-Test
+- No tests (deprecated)
+deprecated: true

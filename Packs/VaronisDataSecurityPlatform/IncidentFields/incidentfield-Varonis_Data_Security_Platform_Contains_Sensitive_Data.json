@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis DSP Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonisdatasecurityplatformcontainssensitivedata",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonisdatasecurityplatformcontainssensitivedata",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis Data Security Platform Contains Sensitive Data",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

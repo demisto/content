@@ -4,14 +4,25 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 import glob
 import os
 from typing import Dict, Set, Optional
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 import demisto_sdk.commands.common.constants as constants
+from demisto_sdk.commands.common.tools import get_content_path
+# TODO: remove try except clause when demisto-sdk 1.7.3 is released
+try:
+    import demisto_sdk.commands.common.content_constant_paths as content_constant_paths
+    IS_UP_TO_DATE = True
+except ImportError:
+    IS_UP_TO_DATE = False
+
 from demisto_sdk.commands.common.constants import FileType
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
     is_code_test_file, checked_type, SECRETS_WHITE_LIST, LANDING_PAGE_SECTIONS_JSON_PATH,
 )
 from demisto_sdk.commands.common import tools
+install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
 
 
 class ModifiedFiles:
@@ -59,7 +70,9 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         FileType. Conf.json and Metadata files.
     """
     # if conf.json file
-    if checked_type(file_path, [constants.CONF_PATH]):
+    # TODO: remove "if" statement when demisto-sdk 1.7.3 is released
+    if checked_type(file_path, [str(content_constant_paths.CONF_PATH.relative_to(get_content_path()))
+                                if IS_UP_TO_DATE else constants.CONF_PATH]):
         return FileType.CONF_JSON
     # landingPage_sections.json file
     if checked_type(file_path, [LANDING_PAGE_SECTIONS_JSON_PATH]):
@@ -166,6 +179,11 @@ def filter_modified_files_for_specific_marketplace_version(files_string: str, id
     out_files_string = ''
     for line in files_string.split("\n"):
         if line:
+            if 'Tests/scripts/collect_tests' in line:  # quick and dirty, for merging the new collect_tests in
+                logging.info(f'>>> skipping {line}')
+                continue
+            else:
+                logging.info(f'>>> not skipping {line}')
             file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
             # also, ignore all files that are not in a pack
@@ -228,6 +246,7 @@ def get_modified_files_for_testing(git_diff: str) -> ModifiedFiles:
     Returns:
         ModifiedFiles instance
     """
+    git_diff = '\n'.join(filter(lambda line: '/collect_tests/' not in line, git_diff.split('\n')))
     types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)  # Mapping of the files FileType: file path
 
     # Checks if any common file exists in types_to_file

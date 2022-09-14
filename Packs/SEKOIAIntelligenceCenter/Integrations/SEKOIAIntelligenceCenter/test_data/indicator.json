@@ -1,0 +1,41 @@
+{
+    "has_more":false,
+    "items": [
+        {
+            "lang": "en",
+            "x_ic_is_in_flint":false,
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "lockheed-martin-cyber-kill-chain",
+                    "phase_name": "delivery"
+                }
+            ],
+            "name": "eicar@sekoia.io",
+            "valid_until": "2022-11-20T23:00:00.000Z",
+            "x_ic_deprecated":false,
+            "x_inthreat_sources_refs": [
+                "identity--357447d7-9229-4ce1-b7fa-f1b83587048e"
+            ],
+            "spec_version": "2.1",
+            "description": "SEKOIA EICAR unit is known to have used in the past this email address to distribute EICAR dropper during phishing campaign.\n",
+            "modified": "2020-06-02T13:29:24.940899Z",
+            "id": "indicator--d394449b-6bc7-4d48-b392-6f898190bd2a",
+            "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+            "pattern": "[email-addr:value = 'eicar@sekoia.io']",
+            "pattern_type": "stix",
+            "valid_from": "2020-05-25T07:18:01.809Z",
+            "x_ic_observable_types": [
+                "email-addr"
+            ],
+            "type": "indicator",
+            "revoked":false,
+            "object_marking_refs": [
+                "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+            ],
+            "created": "2020-05-25T07:18:29.384153Z",
+            "indicator_types": [
+                "benign"
+            ]
+        }
+    ]
+}

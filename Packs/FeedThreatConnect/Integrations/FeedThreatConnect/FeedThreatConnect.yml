@@ -8,29 +8,38 @@ configuration:
   name: tc_api_path
   required: true
   type: 1
+- displaypassword: Secret key
+  additionalinfo: The API ID key
+  display: Access ID
+  name: api_credentials
+  required: true
+  type: 9
 - additionalinfo: API - Access ID
   display: Access ID
   name: api_access_id
-  required: true
   type: 4
+  hidden: true
 - additionalinfo: API - Secret key
   display: Secret key
   name: api_secret_key
-  required: true
   type: 4
-- additionalinfo: Comma-separated list of owners to fetch indicators from. (If
-    not specified will retrieve only indicators owned by account)
-  display: Owners
+  hidden: true
+- additionalinfo: A comma-separated list of tags to filter by.
+  display: Tags to filter results by
+  name: tags
+  required: false
+  type: 0
+- display: Owners
   name: owners
   required: false
   type: 0
+  additionalinfo: A comma-separated list of owners to fetch indicators from.
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: None
   display: Indicator Reputation
   name: feedReputation
@@ -41,8 +50,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
+- additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
   options:
@@ -54,8 +62,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
+  defaultvalue: F - Reliability cannot be judged
+- display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
@@ -64,36 +72,39 @@ configuration:
   - WHITE
   required: false
   type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
 - display: ''
   name: feedExpirationPolicy
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '240'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  defaultvalue: '240'
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
+- display: Tags
   required: false
   type: 0
+  additionalinfo: Supports CSV values.
+  name: feedTags
 description: This integration fetches indicators from ThreatConnect.
 display: ThreatConnect Feed
 name: ThreatConnect Feed
@@ -103,21 +114,21 @@ script:
     - default: false
       description: |
         Comma-separated list of owners to fetch indicators from. (If
-        not specified will retrieve only indicators owned by account. If you supply this argument, it overwrites the "Owners" parameter).
+        not specified will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.)
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of indicators to retreive. Default is 50.
+      description: The maximum number of indicators to retrieve.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The index of the first indicator to fetch. Default is 0.
+      description: The index of the first indicator to fetch.
       isArray: false
       name: offset
       predefined:
@@ -129,10 +140,10 @@ script:
     execution: false
     name: tc-get-indicators
   - deprecated: false
-    description: Get availble indicators owners.
+    description: Get available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/threatconnect-tcex:1.0.0.11353
+  dockerimage: demisto/python3:3.10.5.31928
   feed: true
   isfetch: false
   longRunning: false

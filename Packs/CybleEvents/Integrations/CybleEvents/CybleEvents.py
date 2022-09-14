@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-
 import requests
 import urllib3
 from datetime import date, datetime
@@ -23,7 +22,8 @@ INCIDENT_SEVERITY = {
 }
 
 LIMIT_EVENT_ITEMS = 50
-MAX_EVENT_ITEMS = 50
+MAX_ALERTS = 50
+MAX_EVENT_ITEMS = 1000
 
 
 class Client(BaseClient):
@@ -71,6 +71,7 @@ class Client(BaseClient):
         :return:indicator details as JSON
         """
         ioc_data = {}
+        resp = {}
         token = params.get('token', '')
         payload = {
             'token': '{}'.format(token),
@@ -233,7 +234,7 @@ def cyble_fetch_iocs(client, method, args):
         'start_date': args.get('start_date'),
         'end_date': args.get('end_date'),
         'type': args.get('type') or '',
-        'keyword': args.get('keyword') or '',
+        'keyword': args.get('keyword') or ''
     }
 
     ioc_url = r'/api/iocs'
@@ -306,7 +307,7 @@ def cyble_fetch_alerts(client, method, args):
         'start_date': args.get('start_date'),
         'end_date': args.get('end_date'),
         'order_by': args.get('order_by'),
-        'priority': args.get('priority', ''),
+        'priority': args.get('priority', '')
     }
 
     events_url = r'/api/v2/events/all'
@@ -346,8 +347,9 @@ def fetch_alert_details(client, args):
 
     if offset and offset < 0:
         raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
-    if limit and (limit <= 0 or limit > LIMIT_EVENT_ITEMS):
-        raise ValueError(f"Limit should a positive number upto 50, limit: {arg_to_number(args.get('limit', '1'))}")
+    if limit and (limit <= 0 or limit > MAX_EVENT_ITEMS):
+        raise ValueError(
+            f"Limit should a positive number up to {MAX_EVENT_ITEMS}, limit: {arg_to_number(args.get('limit', '1'))}")
     if not eventtype:
         raise ValueError('Event Type not specified')
     if not eventid:
@@ -358,12 +360,24 @@ def fetch_alert_details(client, args):
     params = {
         'token': args.get('token', None),
         'from': offset,
-        'limit': limit,
+        'limit': limit if limit < LIMIT_EVENT_ITEMS else LIMIT_EVENT_ITEMS,     # type: ignore
     }
+    curr_fetch = 0
+    all_events = []
     if args.get('token'):
-        client.get_event_details("POST", events_url, params, results)
+        while(True):
+            client.get_event_details("POST", events_url, params, results)
+            curr_fetch += len(results['events'])
+            all_events.extend(results['events'])
+            params['from'] = curr_fetch
 
-    markdown = tableToMarkdown('Event Details:', results.get('events', []))
+            topull = limit - curr_fetch     # type: ignore
+            params['limit'] = topull if topull < LIMIT_EVENT_ITEMS else LIMIT_EVENT_ITEMS
+            if topull <= 0 or curr_fetch >= results.get('total_count'):     # type: ignore
+                break
+
+    results['events'] = all_events
+    markdown = tableToMarkdown('Event Details:', results['events'])
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='CybleEvents.Events',
@@ -396,7 +410,7 @@ def fetch_incidents(client, method, token, maxResults):
     params = {
         'token': token,
         'from': arg_to_number(last_run.get('fetched_alert_count', '0')),
-        'limit': int(MAX_EVENT_ITEMS) if maxResults > MAX_EVENT_ITEMS else int(maxResults),
+        'limit': int(MAX_ALERTS) if maxResults > MAX_ALERTS else int(maxResults),
         'start_date': last_run.get('event_pull_start_date', '0'),
         'end_date': date.today().strftime("%Y/%m/%d"),
         'order_by': 'Ascending',

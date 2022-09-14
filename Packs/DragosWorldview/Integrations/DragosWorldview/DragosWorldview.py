@@ -1,22 +1,23 @@
+import json
+from datetime import datetime, timedelta
+from typing import Any, Callable, Dict, Tuple
+
+import dateparser
 import demistomock as demisto  # noqa: F401
+import requests
 from CommonServerPython import *  # noqa: F401
 
+
+
 """Dragos Worldview Integration for XSOAR."""
-from typing import Dict, Any, Tuple, Callable
-from datetime import datetime, timedelta
-import requests
-import json
-import dateparser
 
 # flake8: noqa: F402,F405 lgtm
-
 
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
-
 
 
 class Client(BaseClient):
@@ -28,8 +29,7 @@ class Client(BaseClient):
             timeout=60,
         )
 
-
-    def api_request(self, suffix: str, response_type: str='json'):
+    def api_request(self, suffix: str, response_type: str = 'json'):
         return self._http_request(
             method="get",
             url_suffix=suffix,
@@ -38,7 +38,6 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_TO_RETRY,
             resp_type=response_type
         )
-
 
 
 def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -52,6 +51,7 @@ def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     file_entry = fileResult(filename='report.pdf', data=file)
     return file_entry
 
+
 def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
     if serial is None:
@@ -63,6 +63,7 @@ def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     file_entry = fileResult(filename='indicators.csv', data=file)
 
     return file_entry
+
 
 def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
@@ -76,12 +77,13 @@ def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
     return file_entry
 
+
 def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     serial = args.get('serial')
     if serial:
         api_query = "indicators?serial%5B%5D=" + serial
     else:
-        time = datetime.now() - timedelta(hours = 48)
+        time = datetime.now() - timedelta(hours=48)
         api_query = "indicators?updated_after="
         api_query = api_query + str(time)
         api_query = api_query.replace(":", "%3A")
@@ -90,7 +92,6 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     data = raw_response['indicators']
     page_number = 2
     full_response = raw_response
-
 
     while raw_response['total_pages'] != raw_response['page']:
         if serial:
@@ -119,7 +120,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[list, dict]:
     if last_run == {}:
-        last_fetch = dateparser.parse(first_fetch)    
+        last_fetch = dateparser.parse(first_fetch)
     else:
         last_fetch = last_run.get('time')
         last_fetch = dateparser.parse(str(last_fetch))
@@ -140,21 +141,19 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
         incident_time = dateparser.parse(item['updated_at'])
         incident = {
             'name': item['title'],
-            'occurred': incident_time.strftime('%Y-%m-%dT%H:%M:%SZ'), # type: ignore
+            'occurred': incident_time.strftime('%Y-%m-%dT%H:%M:%SZ'),  # type: ignore
             'rawJSON': json.dumps(item)
         }
 
         incidents.append(incident)
 
-        if incident_time > max_time: # type: ignore
+        if incident_time > max_time:  # type: ignore
             max_time = incident_time
 
-    next_run = {'time': max_time.strftime('%Y-%m-%dT%H:%M:%S')} # type: ignore
+    next_run = {'time': max_time.strftime('%Y-%m-%dT%H:%M:%S')}  # type: ignore
     incidents.reverse()
 
     return incidents, next_run
-
-
 
 
 def main() -> None:
@@ -162,7 +161,7 @@ def main() -> None:
     try:
         demisto_params = demisto.params()
         base_url = demisto_params.get("url", "").rstrip("/")
-        base_url = base_url + "api/v1"
+        base_url = base_url + "/api/v1"
         verify_ssl = not demisto_params.get("insecure", False)
         proxy = demisto_params.get("proxy", False)
         headers = {
@@ -217,3 +216,4 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

@@ -4,13 +4,13 @@ Enrich indicators by providing intelligence and more associated indicators based
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Digital Shadows - IP_IoC Assessment & Enrichment
-* Digital Shadows - SHA1_IoC Assessment & Enrichment
 * Digital Shadows - CVE_IoC Assessment & Enrichment
-* Digital Shadows - MD5_IoC Assessment & Enrichment
-* Digital Shadows - Domain_IoC Assessment & Enrichment
-* Digital Shadows - SHA256_IoC Assessment & Enrichment
 * Digital Shadows - URL_IoC Assessment & Enrichment
+* Digital Shadows - SHA1_IoC Assessment & Enrichment
+* Digital Shadows - MD5_IoC Assessment & Enrichment
+* Digital Shadows - IP_IoC Assessment & Enrichment
+* Digital Shadows - SHA256_IoC Assessment & Enrichment
+* Digital Shadows - Domain_IoC Assessment & Enrichment
 
 ### Integrations
 This playbook does not use any integrations.
@@ -26,13 +26,13 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_IP | An IP address to assess and enrich | IP.Address | Optional |
-| IoC_CVE | A CVE ID to assess and enrich | CVE.ID | Optional |
-| IoC_Domain | A domain name to assess and enrich | Domain.Name.None | Optional |
-| IoC_URL | A URL to assess and enrich | URL.Data.None | Optional |
-| IoC_MD5 | A MD5 hash to assess and enrich | File.MD5 | Optional |
-| IoC_SHA256 | A SHA256 hash to assess and enrich | File.SHA256 | Optional |
-| IoC_SHA1 | A SHA1 hash to assess and enrich | File.SHA1 | Optional |
+| IoC_IP | An IP address for assessment and enrichment | IP.Address | Optional |
+| IoC_CVE | A CVE for assessment and enrichment | CVE.ID | Optional |
+| IoC_Domain | A domain for assessment and enrichment | Domain.Name.None | Optional |
+| IoC_URL | A URL for assessment and enrichment | URL.Data.None | Optional |
+| IoC_MD5 | A MD5 hash for assessment and enrichment | File.MD5 | Optional |
+| IoC_SHA256 | A SHA256 hash for assessment and enrichment | File.SHA256 | Optional |
+| IoC_SHA1 | A SHA1 hash for assessment and enrichment | File.SHA1 | Optional |
 
 ## Playbook Outputs
 ---
