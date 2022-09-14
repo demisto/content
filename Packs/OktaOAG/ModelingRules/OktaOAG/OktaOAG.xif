@@ -4,8 +4,8 @@ hostname=arrayindex(regextract(_raw_log,"^[^ \n]* ([^ ]+)"),0),
 application=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){2}([^ ]+)"),0),
 proc_id=arrayindex(regextract(_raw_log,"^(?:[^\.\n]*\.){3}\w+\s+\w+_\w+\s+(\w+)"),0),
 component=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){4}(\w+)"),0),
-logLevel= if(_raw_log contains "LOG_DOWNLOAD_STATUS" or _raw_log contains "LOG_PREPARE_OPERATION",arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){5}([^ ]+)"),0),_raw_log contains "CHECK_HOST",arrayindex(regextract(_raw_log,"CHECK_HOST\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "CHECK_CONNECTION",arrayindex(regextract(_raw_log,"CHECK_CONNECTION\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "SCRIPT",arrayindex(regextract(_raw_log,"SCRIPT\s*([A-Z]+)\s*"),0),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0)),
-event=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){7}([^ ]+)"),0),
+logLevel= if(_raw_log in("LOG_DOWNLOAD_STATUS","LOG_PREPARE_OPERATION"),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){5}([^ ]+)"),0),_raw_log contains "CHECK_HOST",arrayindex(regextract(_raw_log,"CHECK_HOST\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "CHECK_CONNECTION",arrayindex(regextract(_raw_log,"CHECK_CONNECTION\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "SCRIPT",arrayindex(regextract(_raw_log,"SCRIPT\s*([A-Z]+)\s*"),0),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0)),
+event=if(_raw_log contains "CHECK_CONNECTION",arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){7}([^ ]+)"),0)),
 description=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){8}(.+)"),0),
 sessionID=arrayindex(regextract(_raw_log,"SESSION\_ID\=\"([\w]+)\""),0),
 subject=arrayindex(regextract(_raw_log,"SUBJECT\=\"([^\"]+)\""),0),
@@ -29,6 +29,7 @@ XDM.Auth.reason=reason,
 XDM.Auth.Target.ipv4=remoteIP,
 XDM.Auth.Client.user_agent=userAgent;
 
+
 [MODEL:model="Audit", dataset="okta_oag_raw"]
 alter time=parse_timestamp("%FT%H:%M:%E*S",arrayindex(regextract(_raw_log,"^([^ ]+)-"),0)),
 hostname=arrayindex(regextract(_raw_log,"^[^ \n]* ([^ ]+)"),0),
@@ -45,6 +46,7 @@ XDM.Audit.original_event_description=description,
 XDM.Audit.audited_resource.name=application,
 XDM.Audit.audited_resource.sub_type=component,
 XDM.Audit.threat.severity=logLevel;
+
 
 [MODEL:model="Network", dataset="okta_oag_raw"]
 alter time=parse_timestamp("%FT%H:%M:%E*S",arrayindex(regextract(_raw_log,"^([^ ]+)-"),0)),
