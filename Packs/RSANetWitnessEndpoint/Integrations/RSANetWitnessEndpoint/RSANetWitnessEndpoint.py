@@ -261,7 +261,8 @@ def parse_error_response(error_response):
     # NetWitness has fixed structure for
     try:
         error = error_response.json()
-        return f'Request failed with status code: {error_response.status_code}\nReason: {error.ResponseStatus.ErrorCode}\n{error.ResponseStatus.Message}'
+        return f'Request failed with status code: ' \
+               f'{error_response.status_code}\nReason: {error.ResponseStatus.ErrorCode}\n{error.ResponseStatus.Message}'
     except Exception as e:
         demisto.debug(e)
         return f'Request failed with status code: {error_response.status_code}\n{error_response.content}'
