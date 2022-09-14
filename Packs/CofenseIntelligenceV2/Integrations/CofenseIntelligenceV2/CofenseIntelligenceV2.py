@@ -257,7 +257,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
              int: dbot score
              ip indicator : indicator object with the data collected from the threats
     """
-    block_type = BLOCK_TYPE_MAPPING["ip"]
+    block_type = BLOCK_TYPE_MAPPING.get("ip")
     threshold_score = severity_score.get(threshold, -1)
     if threshold_score < 0 or threshold_score > 3:
         raise Exception(
