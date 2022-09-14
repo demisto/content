@@ -428,16 +428,14 @@ test_upload_flow:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations
   script:
-    - if ! [[ $(git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/") ]] ; then                                                                            16:33:03
+    - |
+      if !$(git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/") ; then                                                                            16:33:03
         echo "No upload related files were modified, skipping upload test."
         exit 0
       fi
     - section_start "Create Testing Branch"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER | tee "$ARTIFACTS_FOLDER/create_test_branch.log"
     - section_end "Create Testing Branch"
-    - section_start "Wait For GitLab Mirroring"
-    - Sleep 5m # TODO: push to gitlab push to new remote in gitlab instead of origin
-    - section_end "Wait For GitLab Mirroring"
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1
     - pipeline_id=echo ./Utils/trigger_test_upload_flow.sh -ct $GITLAB_TOKEN -g | jq .id
@@ -451,4 +449,3 @@ test_upload_flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-dist-dev' -sb $current_storage_base_path
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-v2-dist-dev' -sb $current_storage_base_path
     - section_end "Verify Created Testing Bucket"
-
