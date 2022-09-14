@@ -220,6 +220,8 @@ if __name__ == "__main__":
                          'Alibaba_schema.json', packs_path / 'AlibabaActionTrail')
         for p in changed_packs:
             repo.git.add(f"{p}/*")
+            # push also to gitlab
+
 
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
