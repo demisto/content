@@ -1531,12 +1531,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:
-        logging.info("Creating filter_file.txt")
-        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file.txt'), 'w') as filter_file:
+        logging.info("Creating filter_file_old.txt")
+        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file_old.txt'), 'w') as filter_file:
             filter_file.write(tests_string)
-        # content_packs_to_install.txt is not used in nightly build
-        logging.info("Creating content_packs_to_install.txt")
-        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install.txt'), 'w') as content_packs_to_install:
+        # content_packs_to_install_old.txt is not used in nightly build
+        logging.info("Creating content_packs_to_install_old.txt")
+        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install_old.txt'), 'w') as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:
