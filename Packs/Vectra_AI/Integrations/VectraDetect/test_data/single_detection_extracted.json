@@ -10,8 +10,8 @@
 
         "Category": "COMMAND & CONTROL",
         "Description": "A successful but suspicious sign-on to this account was detected.",
-        "DestinationIPs": null,
-        "DestinationPorts": null,
+        "DestinationIPs": "",
+        "DestinationPorts": "",
         "FirstTimestamp": "2022-07-09T13:42:22.000Z",
         "IsTargetingKeyAsset": false,
         "LastTimestamp": "2022-07-09T13:45:53.000Z",
