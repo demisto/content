@@ -43,7 +43,6 @@ class TestGetEntries:
         entry_context = results.get('EntryContext')
         assert json.dumps(entry_context) == json.dumps(output_ents)
 
-
     def test_main_no_ents(self, mocker):
         original_ents = []
 
