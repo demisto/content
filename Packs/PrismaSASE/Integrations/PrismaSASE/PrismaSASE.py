@@ -746,7 +746,7 @@ def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
 
     raw_response = client.list_config_jobs(tsg_id, query_params)  # type: ignore
 
-    outputs = (raw_response)['data']
+    outputs = raw_response.get('data')
 
     return CommandResults(
         outputs_prefix='PrismaAccess.ConfigJob',
