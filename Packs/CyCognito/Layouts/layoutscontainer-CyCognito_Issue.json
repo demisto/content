@@ -573,9 +573,9 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cycognitothreat",
+                                "fieldId": "cycognitopotentialthreat",
                                 "height": 53,
-                                "id": "446befb0-ddbb-11ec-84dd-d170bcc0dc15",
+                                "id": "24cea5b0-13be-11ed-9530-ed9041cf9387",
                                 "index": 0,
                                 "listId": "caseinfoid-ae79e990-df6c-11ec-84dd-d170bcc0dc15",
                                 "sectionItemType": "field",

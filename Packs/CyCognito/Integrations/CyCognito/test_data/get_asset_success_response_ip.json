@@ -1,5 +1,5 @@
 {
-  "severe_issues_count": 1,
+  "severe_issues": 1,
   "from_rotating": "no",
   "organizations": [
     "Unattributed"
@@ -12,7 +12,7 @@
       "protocol": "tcp"
     }
   ],
-  "security_rating": "F",
+  "security_grade": "F",
   "locations": [
     "USA"
   ],

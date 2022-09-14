@@ -7,7 +7,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-        "threat": "Information Gathering",
+        "potential_threat": "Information Gathering",
         "tags": [],
         "id": "issue/127.0.0.1-test1",
         "organizations": [
@@ -46,7 +46,7 @@
       "https://example2.com",
       "https://example3.com"
     ],
-        "threat": "Information Gathering",
+        "potential_threat": "Information Gathering",
         "tags": [],
         "id": "issue/issue/127.0.0.1-test",
         "organizations": [
@@ -87,7 +87,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-        "threat": "Information Gathering",
+        "potential_threat": "Information Gathering",
         "id": "issue/127.0.0.1-test1",
         "organizations": [
             "Acme Interior Design"
@@ -123,7 +123,7 @@
       "https://example2.com",
       "https://example3.com"
     ],
-        "threat": "Information Gathering",
+        "potential_threat": "Information Gathering",
         "id": "issue/issue/127.0.0.1-test",
         "organizations": [
             "Acme Interior Design"

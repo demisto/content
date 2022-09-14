@@ -78,6 +78,9 @@
                 "CyCognito Potential Impact": {
                     "simple": "potential_impact"
                 },
+                "CyCognito Potential Threat": {
+                    "simple": "potential_threat"
+                },
                 "CyCognito References": {
                     "complex": {
                         "filters": [],
@@ -152,10 +155,7 @@
                     }
                 },
                 "CyCognito Tags": {
-					"simple": "tags"
-				},
-                "CyCognito Threat": {
-                    "simple": "threat"
+                    "simple": "tags"
                 },
                 "First Seen": {
                     "simple": "first_detected"
@@ -222,5 +222,5 @@
     "name": "CyCognito - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }

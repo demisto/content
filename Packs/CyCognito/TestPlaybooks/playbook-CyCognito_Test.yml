@@ -157,11 +157,6 @@ tasks:
             value:
               simple: CyCognito.Issue.first_detected
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyCognito.Issue.issue_status
-            iscontext: true
     view: |-
       {
         "position": {
@@ -577,11 +572,6 @@ tasks:
           left:
             value:
               simple: CyCognito.Issue.first_detected
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyCognito.Issue.issue_status
             iscontext: true
     view: |-
       {

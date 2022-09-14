@@ -6,7 +6,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Information Disclosure",
+    "potential_threat": "Information Disclosure",
     "tags": [
       "Vulnerable Software",
       "Pulse Secure"
@@ -44,7 +44,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Information Disclosure",
+    "potential_threat": "Information Disclosure",
     "tags": [
       "Vulnerable Software",
       "Pulse Secure"

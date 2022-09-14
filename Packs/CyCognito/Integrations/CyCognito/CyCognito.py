@@ -30,7 +30,7 @@ VALID_ISSUE_TYPES = ['Abandoned Asset', 'Certificate Validity', 'Cryptographic V
 VALID_OPERATORS = [
     'is', 'not', 'in', 'not-in', 'key-of', 'not-key-of', 'between', 'not-between', 'within-range', 'not-within-range',
     'contains']
-AVAILABLE_SECURITY_RATING = ["a", "b", "c", "d", "f"]
+AVAILABLE_SECURITY_GRADE = ["a", "b", "c", "d", "f"]
 AVAILABLE_STATUS_TYPES = ["new", "changed", "normal"]
 MIRROR_DIRECTION = {
     'None': None,
@@ -353,7 +353,7 @@ def prepare_hr_for_issue_get(response: Dict) -> str:
             response.get("last_detected")).strftime(HR_DATE_FORMAT),  # type: ignore
         "Organizations": ", ".join(response.get("organizations", [])),
         "Locations": ", ".join(convert_alpha_3_codes_to_country_names(response.get("locations", []))),
-        "Threat": response.get('threat'),
+        "Potential Threat": response.get('potential_threat'),
         "Severity": response.get("severity"),
         ISSUE_TYPE_HR: response.get("issue_type"),
         ISSUE_STATUS_HR: response.get("issue_status"),
@@ -366,7 +366,7 @@ def prepare_hr_for_issue_get(response: Dict) -> str:
     }]
 
     headers = ["Title", AFFECTED_ASSET_HR, "Detection Complexity", INVESTIGATION_STATUS_HR, "Exploitation Score",
-               FIRST_DETECTED_HR, LAST_DETECTED_HR, "Organizations", "Locations", "Threat", "Severity",
+               FIRST_DETECTED_HR, LAST_DETECTED_HR, "Organizations", "Locations", "Potential Threat", "Severity",
                ISSUE_TYPE_HR, ISSUE_STATUS_HR, "Remediation Steps", "Potential Impact", "Tags", "References",
                "Summary", "Link to Platform"]
 
@@ -384,15 +384,15 @@ def prepare_hr_for_asset_get(response) -> str:
     :rtype: ``str``
     :return: Human readable output.
     """
-    first_seen, last_seen, expiration_time = "", "", ""
+    first_seen, last_seen, expiration = "", "", ""
     if response.get('first_seen'):
         first_seen = arg_to_datetime(response.get('first_seen')).strftime(HR_DATE_FORMAT)  # type: ignore
 
     if response.get('last_seen'):
         last_seen = arg_to_datetime(response.get('last_seen')).strftime(HR_DATE_FORMAT)  # type: ignore
 
-    if response.get('expiration_time'):
-        expiration_time = arg_to_datetime(response.get('expiration_time')).strftime(HR_DATE_FORMAT)  # type: ignore
+    if response.get('expiration'):
+        expiration = arg_to_datetime(response.get('expiration')).strftime(HR_DATE_FORMAT)  # type: ignore
 
     hr_output_asset_details = [
         {
@@ -401,17 +401,17 @@ def prepare_hr_for_asset_get(response) -> str:
             HOSTING_TYPE_HR: response.get('hosting_type'),
             'Alive': response.get('alive'),
             'Locations': ", ".join(convert_alpha_3_codes_to_country_names(response.get("locations", []))),
-            'IP Names': response.get('ip_names'),
+            'IP Addresses': response.get('ip_addresses'),
             'First Seen': first_seen,
             'Last Seen': last_seen,
             'Status': response.get('status'),
-            'Security Rating': response.get('security_rating'),
+            'Security Grade': response.get('security_grade'),
             'Tags': response.get('tags'),
             'Sub Domains': response.get('sub_domains'),
             'Domain Names': response.get('domain_names'),
             'Organizations': ", ".join(response.get('organizations', [])),
             INVESTIGATION_STATUS_HR: response.get('investigation_status'),
-            'Severe Issues Count': response.get('severe_issues_count'),
+            'Severe Issues': response.get('severe_issues'),
             'Open Ports': ", ".join(
                 [f"{port_info.get('protocol', '').upper()} - {port_info.get('port')}" for port_info in
                  response.get('open_ports', [])])
@@ -421,7 +421,7 @@ def prepare_hr_for_asset_get(response) -> str:
     hr_output_certificate_details = [
         {
             'Certificate Signature': response.get('id').split('/', 1)[-1],
-            'Expiration Time': expiration_time,
+            'Expiration Time': expiration,
             'Subject Organization Unit': response.get("subject_organization_unit"),
             'Subject Common Name': response.get('subject_common_name'),
             'Subject Locality': response.get('subject_locality'),
@@ -435,9 +435,9 @@ def prepare_hr_for_asset_get(response) -> str:
         }
     ]
 
-    headers_asset = [ASSET_ID_HR, ASSET_TYPE_HR, HOSTING_TYPE_HR, 'Alive', 'Locations', "IP Names", "First Seen",
-                     "Last Seen", "Status", "Security Rating", "Tags", "Sub Domains", "Domain Names",
-                     "Organizations", "Severe Issues Count", INVESTIGATION_STATUS_HR, "Open Ports"]
+    headers_asset = [ASSET_ID_HR, ASSET_TYPE_HR, HOSTING_TYPE_HR, 'Alive', 'Locations', "IP Addresses",
+                     "First Seen", "Last Seen", "Status", "Security Grade", "Tags", "Sub Domains",
+                     "Domain Names", "Organizations", "Severe Issues", INVESTIGATION_STATUS_HR, "Open Ports"]
 
     headers_certificate = ["Certificate Signature", "Expiration Time", "Subject Organization Unit",
                            "Subject Common Name", "Subject Locality", "Subject Organization", "Subject Country",
@@ -605,7 +605,7 @@ def validate_params_for_list_issues(count: Optional[int] = None, sort_order: str
 
 
 def validate_params_for_list_assets(asset_type: str = None, count: Optional[int] = None, sort_order: str = None,
-                                    security_rating: List[str] = None, status: List[str] = None) -> None:
+                                    security_grade: List[str] = None, status: List[str] = None) -> None:
     """Validate arguments for cycognito-assets-list command.
 
     :type asset_type: ``str``
@@ -617,7 +617,7 @@ def validate_params_for_list_assets(asset_type: str = None, count: Optional[int]
     :type sort_order: ``str``
     :param sort_order: Order in which to sort result.
 
-    :type security_rating: ``str``
+    :type security_grade: ``str``
     :param count: Security rating of the asset.
 
     :type status: ``str``
@@ -635,32 +635,12 @@ def validate_params_for_list_assets(asset_type: str = None, count: Optional[int]
     if sort_order and sort_order not in ['asc', 'desc']:
         raise ValueError(ERRORS['INVALID_SINGLE_SELECT_PARAM'].format(sort_order, 'sort_order', ['asc', 'desc']))
 
-    if not set(security_rating).issubset(AVAILABLE_SECURITY_RATING):  # type: ignore
-        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_rating', list(
-            map(lambda x: x.upper(), AVAILABLE_SECURITY_RATING))))
+    if not set(security_grade).issubset(AVAILABLE_SECURITY_GRADE):  # type: ignore
+        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', list(
+            map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))))
 
     if not set(status).issubset(AVAILABLE_STATUS_TYPES):  # type: ignore
         raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES))
-
-
-def map_field_name_for_filter(field_name: str) -> str:
-    """Map field name for body filters and sorting.
-
-    :type field_name: ``str``
-    :param field_name: Field name passed by user.
-
-    :rtype: ``str``
-    :return: Required field name.
-    """
-    if field_name in ['first_detected', 'first-detected']:
-        return 'first-seen'
-    if field_name in ['last_detected', 'last-detected']:
-        return 'last-seen'
-    if field_name in ['issue_status', 'issue-status']:
-        return 'scan_status'
-    if field_name in ['exploitation_method', 'exploitation-method']:
-        return 'exploitation_complexity'
-    return field_name
 
 
 def prepare_body_filters_for_list_issues(advanced_filter: List, organizations: List[str] = None,
@@ -693,8 +673,6 @@ def prepare_body_filters_for_list_issues(advanced_filter: List, organizations: L
     filter_fields = []
 
     for filter_dict in advanced_filter:
-        if filter_dict.get('field'):
-            filter_dict['field'] = map_field_name_for_filter(filter_dict.get('field'))
 
         filter_fields.append(filter_dict.get('field'))
 
@@ -714,7 +692,7 @@ def prepare_body_filters_for_list_issues(advanced_filter: List, organizations: L
 
     if first_detected and first_detected not in filter_fields:
         advanced_filter.append({
-            'field': 'first-seen',
+            'field': 'first_detected',
             'op': 'between',
             'values': [
                 [first_detected, arg_to_datetime(time.time()).strftime(DATE_FORMAT)]  # type: ignore
@@ -723,7 +701,7 @@ def prepare_body_filters_for_list_issues(advanced_filter: List, organizations: L
 
     if last_detected and last_detected not in filter_fields:
         advanced_filter.append({
-            'field': 'last-seen',
+            'field': 'last_detected',
             'op': 'between',
             'values': [
                 [last_detected, arg_to_datetime(time.time()).strftime(DATE_FORMAT)]  # type: ignore
@@ -735,7 +713,7 @@ def prepare_body_filters_for_list_issues(advanced_filter: List, organizations: L
 
 def prepare_body_filters_for_list_assets(asset_type: str, organizations: List[str], locations: List[str],
                                          first_seen: str,
-                                         last_seen: str, security_rating: List[str], status: List[Any],
+                                         last_seen: str, security_grade: List[str], status: List[Any],
                                          advanced_filter: List) -> List[Dict]:
     """Prepare body params for cycognito-assets-list command.
 
@@ -749,13 +727,13 @@ def prepare_body_filters_for_list_assets(asset_type: str, organizations: List[st
     :param locations: To retrieve assets related to specific locations.
 
     :type first_seen: ``str``
-    :param first_seen: To retrieve assets from a specific first detected time.
+    :param first_seen: To retrieve assets from a specific first seen time.
 
     :type last_seen: ``str``
-    :param last_seen: To retrieve assets from a specific last detected time.
+    :param last_seen: To retrieve assets from a specific last seen time.
 
-    :type security_rating: ``List[str]``
-    :param security_rating: To retrieve assets of a specific security rating.
+    :type security_grade: ``List[str]``
+    :param security_grade: To retrieve assets of a specific security rating.
 
     :type status: ``List[str]``
     :param status: To retrieve assets of a specific status.
@@ -772,8 +750,8 @@ def prepare_body_filters_for_list_assets(asset_type: str, organizations: List[st
         if filter_dict.get('op') not in VALID_OPERATORS:
             raise ValueError(ERRORS['INVALID_OPERATOR'].format(filter_dict.get('op'), VALID_OPERATORS))
 
-    fields_with_in_operator = ['organizations', 'locations', 'security_rating', 'status']
-    values_with_in_operator = [organizations, locations, security_rating, status]
+    fields_with_in_operator = ['organizations', 'locations', 'security_grade', 'status']
+    values_with_in_operator = [organizations, locations, security_grade, status]
 
     for field, value in zip(fields_with_in_operator, values_with_in_operator):
         if value and field not in filter_fields:
@@ -868,17 +846,18 @@ def prepare_hr_for_list_assets(response: Dict, asset_type: str) -> str:
             'Last Seen': last_seen,
             'Domain Names': ", ".join(asset.get('domain_names', [])),
             'Domains': ", ".join(asset.get('domains', [])),
-            'Security Grade': asset.get('security_rating'),
+            'Security Grade': asset.get('security_grade'),
             'Common Name': asset.get('subject_common_name'),
             'Status': asset.get('status'),
             'Organizations': ", ".join(asset.get('organizations', [])),
             'Locations': ", ".join(convert_alpha_3_codes_to_country_names(asset.get("locations", []))),
             INVESTIGATION_STATUS_HR: asset.get('investigation_status'),
-            'Severe Issues Count': asset.get('severe_issues_count')
+            'Severe Issues': asset.get('severe_issues')
         })
 
-    headers = [ASSET_ID_HR, "Security Grade", "Status", "Organizations", INVESTIGATION_STATUS_HR, "Severe Issues Count",
-               "Common Name", "Domain Names", "Domains", "First Seen", "Last Seen", HOSTING_TYPE_HR, "Locations"]
+    headers = [ASSET_ID_HR, "Security Grade", "Status", "Organizations", INVESTIGATION_STATUS_HR, "Severe Issues",
+               "Common Name", "Domain Names", "Domains", "First Seen", "Last Seen", HOSTING_TYPE_HR,
+               "Locations"]
 
     return tableToMarkdown(
         f"Asset List:\n Assets Type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}", hr_outputs,
@@ -998,7 +977,8 @@ def fetch_incidents(client: CyCognitoClient, last_run: Dict[str, Any], params: D
     filters = prepare_body_filters_for_list_issues(locations=locations, issue_type=issue_type,
                                                    first_detected=first_detected, advanced_filter=advanced_filter)
 
-    response = client.list_issues(filters=filters, count=count, offset=offset, sort_by='first_seen', sort_order='asc')
+    response = client.list_issues(filters=filters, count=count, offset=offset, sort_by='first_detected',
+                                  sort_order='asc')
     valid_response = validate_response(response)
 
     if is_test:
@@ -1237,9 +1217,6 @@ def cycognito_issues_list_command(client: CyCognitoClient, args: Dict[str, Any])
     if last_detected:
         last_detected = arg_to_datetime(last_detected, arg_name='last_detected').strftime(DATE_FORMAT)  # type: ignore
 
-    if sort_by:
-        sort_by = map_field_name_for_filter(sort_by)
-
     validate_params_for_list_issues(count=count, sort_order=sort_order)
 
     filters = prepare_body_filters_for_list_issues(organizations=organizations, locations=locations,
@@ -1282,7 +1259,7 @@ def cycognito_assets_list_command(client: CyCognitoClient, args: Dict[str, Any])
     first_seen = args.get('first_seen', '')
     last_seen = args.get('last_seen', '')
     organizations = argToList(args.get('organizations', '').lower())
-    security_rating = argToList(args.get('security_rating', '').lower())
+    security_grade = argToList(args.get('security_grade', '').lower())
     status = argToList(args.get('status', '').lower())
     locations = argToList(args.get('locations', ''))
     sort_by = args.get('sort_by', '').lower()
@@ -1297,16 +1274,17 @@ def cycognito_assets_list_command(client: CyCognitoClient, args: Dict[str, Any])
         raise ValueError(ERRORS['INVALID_ADVANCED_FILTER'].format(advanced_filter))
 
     if first_seen:
-        first_seen = arg_to_datetime(first_seen, arg_name='first_seen').strftime(DATE_FORMAT)  # type: ignore
+        first_seen = arg_to_datetime(first_seen, arg_name='first_seen').strftime(  # type: ignore
+            DATE_FORMAT)
     if last_seen:
         last_seen = arg_to_datetime(last_seen, arg_name='last_seen').strftime(DATE_FORMAT)  # type: ignore
 
     validate_params_for_list_assets(asset_type=asset_type, count=count, sort_order=sort_order, status=status,
-                                    security_rating=security_rating)
+                                    security_grade=security_grade)
 
     filters = prepare_body_filters_for_list_assets(asset_type=asset_type, organizations=organizations,
                                                    locations=locations,
-                                                   security_rating=security_rating, status=status,
+                                                   security_grade=security_grade, status=status,
                                                    first_seen=first_seen, last_seen=last_seen,
                                                    advanced_filter=advanced_filter)
     response = client.list_assets(filters=filters, asset_type=asset_type, count=count, offset=offset, search=search,

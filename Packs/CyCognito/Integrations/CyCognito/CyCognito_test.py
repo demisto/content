@@ -7,7 +7,8 @@ from unittest import mock
 import pytest
 from CommonServerPython import DemistoException
 from CyCognito import BASE_URL, ERRORS, VALID_INVESTIGATION_STATUS, VALID_ASSET_TYPES, VALID_OPERATORS, VALID_SEVERITY, \
-    VALID_ISSUE_TYPES, AVAILABLE_STATUS_TYPES, AVAILABLE_SECURITY_RATING, ISSUE_OUTPUT_PREFIX, ASSET_OUTPUT_PREFIX
+    VALID_ISSUE_TYPES, AVAILABLE_STATUS_TYPES, AVAILABLE_SECURITY_GRADE, ISSUE_OUTPUT_PREFIX, ASSET_OUTPUT_PREFIX
+
 DUMMY_ISSUE_INSTANCE_ID = "127.0.0.1-test"
 DUMMY_ORG_NAME = "Acme Interior Design"
 DUMMY_TIMESTAMP = "2020-07-25T16:57:01.565Z"
@@ -614,9 +615,9 @@ def test_list_issues_command_with_empty_response(requests_mock, mock_client):
      ERRORS['INVALID_SINGLE_SELECT_PARAM'].format("incorrect_order", 'sort_order', ["asc", "desc"])),
     ({"first_seen": "20-20-2022", 'asset_type': 'ip'}, 'Invalid date: "first_seen"="20-20-2022"'),
     ({"last_seen": "20-20-2022", 'asset_type': 'ip'}, 'Invalid date: "last_seen"="20-20-2022"'),
-    ({'security_rating': 'dummy', 'asset_type': 'ip'},
-     ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_rating', list(
-         map(lambda x: x.upper(), AVAILABLE_SECURITY_RATING)))),
+    ({'security_grade': 'dummy', 'asset_type': 'ip'},
+     ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', list(
+         map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE)))),
     ({'status': 'dummy', 'asset_type': 'ip'},
      ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES)),
     ({"count": "incorrect_count", 'asset_type': 'ip'}, 'Invalid number: "count"="incorrect_count"'),
@@ -695,8 +696,8 @@ def test_list_assets_command_with_body_params(requests_mock, mock_client):
         "last_seen": "2022-03-24T04:26:03.296Z",
         "organizations": DUMMY_ORG_NAME,
         "locations": "IND",
-        "security_rating": "A",
-        "scan_status": "new",
+        "security_grade": "A",
+        "status": "new",
         "advance_filter": "[{\"field\":\"status\",\"op\": \"in\",\"values\": [\"new\"]}]"
     }
 

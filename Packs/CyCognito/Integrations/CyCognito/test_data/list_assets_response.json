@@ -1,11 +1,11 @@
 [
     {
-        "severe_issues_count": 1,
+        "severe_issues": 1,
         "domain_names": [
             "test-1",
             "test-2"
         ],
-        "from_rotating": "no",
+        "dynamically_resolved": "no",
         "id": "ip/dummy",
         "organizations": [
             "Acme Interior Design"
@@ -88,7 +88,7 @@
                 "protocol": "tcp"
             }
         ],
-        "security_rating": "A",
+        "security_grade": "A",
         "investigation_status": "uninvestigated",
         "locations": [
             "IND"
@@ -114,12 +114,12 @@
         "issues_count": 1
     },
     {
-        "severe_issues_count": 0,
+        "severe_issues": 0,
         "domain_names": [
             "test-3",
             "test-4"
         ],
-        "from_rotating": "no",
+        "dynamically_resolved": "no",
         "id": "ip/dummy-1",
         "organizations": [
             "Acme Interior Design",
@@ -198,7 +198,7 @@
                 "protocol": "tcp"
             }
         ],
-        "security_rating": "A",
+        "security_grade": "A",
         "investigation_status": "uninvestigated",
         "locations": [
             "IND"

@@ -49,7 +49,7 @@ Retrieves information about an issue associated with a particular instance based
 | --- | --- | --- |
 | CyCognito.Issue.id | String | Unique ID of the issue. |
 | CyCognito.Issue.references | Unknown | Issue reference. | 
-| CyCognito.Issue.threat | String | The threat that the issue might cause. | 
+| CyCognito.Issue.potential_threat | String | The threat that the issue might cause. | 
 | CyCognito.Issue.tags | Unknown | Tags of the issue. | 
 | CyCognito.Issue.organizations | Unknown | Organizations of the instance. | 
 | CyCognito.Issue.issue_id | String | Unique ID of the issue. | 
@@ -71,6 +71,7 @@ Retrieves information about an issue associated with a particular instance based
 | CyCognito.Issue.last_detected | Date | The time at which the issue was last detected. | 
 | CyCognito.Issue.first_detected | Date | The time at which the issue was first detected. | 
 | CyCognito.Issue.issue_status | String | Status of the issue found. | 
+| CyCognito.Issue.evidence | Unknown | Provides a reason or proof of why the issue was indeed detected by CyCognito. |
 
 #### Command example
 ```!cycognito-issue-get issue_instance_id=127.0.0.1-cve-2019-00000```
@@ -114,7 +115,7 @@ Retrieves information about an issue associated with a particular instance based
                 "Pulse Secure",
                 "network vulnerabilities"
             ],
-            "threat": "Information Disclosure",
+            "potential_threat": "Information Disclosure",
             "title": "Pulse Secure Arbitrary File Reading"
         }
     }
@@ -124,10 +125,10 @@ Retrieves information about an issue associated with a particular instance based
 #### Human Readable Output
 
 >### Issue detail:
->#### ID: 127.0.0.1-cve-2019-00000
->|Title|Detection Complexity|Investigation Status|Exploitation Score|First Detected|Last Detected|Organizations|Severity|Issue Type|Issue Status|Remediation Steps|Potential Impact|Tags|References|Summary|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Pulse Secure Arbitrary File Reading | Service Detection | investigating | 3 | 31 Mar 2022, 03:39 AM | 31 Mar 2022, 03:39 AM | Acme Interior Design, Acme Corporation | critical | Vulnerable Software | new | Patch the Pulse Secure VPN to the latest version. | Loss of integrity, Loss of confidentiality, Data compromise | Vulnerable Software, Pulse Secure, network vulnerabilities | | The Pulse Secure VPN has been confirmed to be vulnerable to an arbitrary file reading vulnerability. Unauthenticated remote attackers can send the asset a specially crafted URI and thereby access arbitrary sensitive files. Attackers can leverage the harvested information to perform further attacks. |
+>#### ID: 127.0.0.1-test
+>|Title|Affected Asset|Detection Complexity|Investigation Status|Exploitation Score|First Detected|Last Detected|Organizations|Locations|Potential Threat|Severity|Issue Type|Issue Status|Remediation Steps|Potential Impact|Tags|Summary|Link to Platform|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Pulse Secure Arbitrary File Reading | ip/127.0.0.1 | Service Detection | investigating | 3 | 31 Mar 2022, 03:39 AM | 31 Mar 2022, 03:39 AM | Acme Interior Design, Acme Corporation | India | Information Disclosure | critical | Vulnerable Software | new | Patch the Pulse Secure VPN to the latest version. | Loss of integrity, Loss of confidentiality, Data compromise | Vulnerable Software, Pulse Secure, network vulnerabilities | The Pulse Secure VPN has been confirmed to be vulnerable to an arbitrary file reading vulnerability. Unauthenticated remote attackers can send the asset a specially crafted URI and thereby access arbitrary sensitive files. Attackers can leverage the harvested information to perform further attacks. | [Click Here](https://platform.cycognito.com/issues/issue/127.0.0.1-test/info)
 
 
 ### cycognito-asset-get
@@ -159,15 +160,15 @@ Retrieves information about a specific asset according to the specified asset ty
 | CyCognito.Asset.closed_ports.status | String | Status of the closed ports object associated with the asset. | 
 | CyCognito.Asset.closed_ports.port | Number | Port of the closed ports object associated with the asset. | 
 | CyCognito.Asset.closed_ports.protocol | String | Protocol associated with the asset. | 
-| CyCognito.Asset.creation_time | Date | Creation time of the asset. | 
+| CyCognito.Asset.created | Date | Creation time of the asset. | 
 | CyCognito.Asset.domain | String | Domain of the asset. | 
 | CyCognito.Asset.domains | Unknown | List of domains associated with the asset. | 
 | CyCognito.Asset.domain_names | Unknown | List of domain names associated with the asset. | 
-| CyCognito.Asset.expiration_time | Date | The date and time at which the asset expires. | 
+| CyCognito.Asset.expiration | Date | The date and time at which the asset expires. | 
 | CyCognito.Asset.first_seen | Date | The time and date at which the asset was first discovered. | 
 | CyCognito.Asset.hosting_type | String | Hosting type of the asset. | 
 | CyCognito.Asset.ip | String | IP address of the asset. | 
-| CyCognito.Asset.ip_names | Unknown | IP name of the asset. | 
+| CyCognito.Asset.ip_addresses | Unknown | IP name of the asset. | 
 | CyCognito.Asset.issuer_alt_names | Unknown | List of alternative names of the issuers. | 
 | CyCognito.Asset.issuer_common_name | String | Common name of the Issuer. | 
 | CyCognito.Asset.issuer_country | String | Country of the issuer. | 
@@ -183,8 +184,8 @@ Retrieves information about a specific asset according to the specified asset ty
 | CyCognito.Asset.open_ports.protocol | String | Protocol associated with the asset. |  
 | CyCognito.Asset.organizations | Unknown | Organizations of the asset. | 
 | CyCognito.Asset.status | String | Status of the asset. | 
-| CyCognito.Asset.security_rating | String | Security rating of the asset. | 
-| CyCognito.Asset.severe_issues_count | Number | The number of severe issues associated with the asset. | 
+| CyCognito.Asset.security_grade | String | Security rating of the asset. | 
+| CyCognito.Asset.severe_issues | Number | The number of severe issues associated with the asset. | 
 | CyCognito.Asset.signature_algorithm | String | Signature algorithm of the asset. | 
 | CyCognito.Asset.sub_domains | Unknown | Subdomains of the asset. | 
 | CyCognito.Asset.subject_alt_names | Unknown | List of alternate subject names. | 
@@ -195,8 +196,9 @@ Retrieves information about a specific asset according to the specified asset ty
 | CyCognito.Asset.subject_organization_unit | String | The organization unit of the subject. | 
 | CyCognito.Asset.subject_state | String | State of the subject. | 
 | CyCognito.Asset.tags | Unknown | Tags of the asset. | 
-| CyCognito.Asset.from_rotating | String | Whether the asset has a rotating IP address. | 
+| CyCognito.Asset.dynamically_resolved | String | Whether the asset has a rotating IP address. | 
 | CyCognito.Asset.investigation_status | String | Investigation status of the asset. | 
+| CyCognito.Asset.discoverability | String | Quantifies an asset's level of exposure. |
 
 #### Command example
 ```!cycognito-asset-get asset_type=ip asset_id=127.0.0.1```
@@ -274,8 +276,8 @@ Retrieves information about a specific asset according to the specified asset ty
                 "Acme Interior Design",
                 "Acme Corporation"
             ],
-            "security_rating": "B",
-            "severe_issues_count": 0,
+            "security_grade": "B",
+            "severe_issues": 0,
             "status": "new",
             "tags": [
                 "Gateways",
@@ -290,7 +292,7 @@ Retrieves information about a specific asset according to the specified asset ty
 #### Human Readable Output
 
 >### Asset Details:
->|Asset ID|Asset Type|Hosting Type|Alive|Locations|First Seen|Last Seen|Status|Security Rating|Tags|Organizations|Severe Issues Count|Investigation Status|Open Ports|
+>|Asset ID|Asset Type|Hosting Type|Alive|Locations|First Seen|Last Seen|Status|Security Grade|Tags|Organizations|Severe Issues|Investigation Status|Open Ports|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | ip | owned | true | India | 20 Jan 2022, 03:58 AM | 31 Mar 2022, 03:39 AM | new | B | Gateways,<br/>ACME | Acme Interior Design, Acme Corporation | 0 | investigated | TCP - 9999, TCP - 2000 |
 
@@ -423,7 +425,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
 | --- | --- | --- |
 | CyCognito.Issue.id | String | Unique ID of the issue. |
 | CyCognito.Issue.references | Unknown | Reference of the issue. | 
-| CyCognito.Issue.threat | String | The threat that the issue might cause. | 
+| CyCognito.Issue.potential_threat | String | The threat that the issue might cause. | 
 | CyCognito.Issue.tags | Unknown | Tags of the issue. | 
 | CyCognito.Issue.organizations | Unknown | Organizations of the instance. | 
 | CyCognito.Issue.issue_id | String | Unique ID of the issue. | 
@@ -445,6 +447,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
 | CyCognito.Issue.last_detected | Date | The time at which the issue was last detected. | 
 | CyCognito.Issue.first_detected | Date | The time at which the issue was first detected. | 
 | CyCognito.Issue.issue_status | String | Status of the issue found. | 
+| CyCognito.Issue.evidence | Unknown | Provides a reason or proof of why the issue was indeed detected by CyCognito. |
 
 #### Command example
 ```!cycognito-issues-list count=2```
@@ -491,7 +494,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
                 "tags": [
                     "Pulse Secure"
                 ],
-                "threat": "Remote Code Execution",
+                "potential_threat": "Remote Code Execution",
                 "title": "CVE-2019-00000 (Unauthenticated Remote Directory Traversal & Code Execution)"
             },
             {
@@ -526,7 +529,7 @@ Retrieves the list of the issues that meet the specified filter criteria.
                 "severity": "critical",
                 "severity_score": 10,
                 "summary": "The server's HSTS policy is either too short or non-existent. | HTTP Strict Transport Security is an optional HTTP header that instructs browsers to only communicate with the server using HTTPS (and not HTTP) for a certain period of time, thus helping prevent \"SSL-stripping\" attacks.",
-                "threat": "Trust",
+                "potential_threat": "Trust",
                 "title": "Insecure HSTS"
             }
         ]
@@ -561,7 +564,7 @@ Retrieves the list of assets that meet specified filter criteria.
 | search | An Advanced Search parameter to query the response.<br/><br/>Note: Retrieves all the occurrences that are included in the string. | Optional | 
 | status | Filters the assets according to the selected status. Supports comma-separated values.<br/><br/>Supported values: 'changed', 'new', 'normal' | Optional | 
 | organizations | Filters the assets according to the provided organizations. Supports comma-separated values. | Optional | 
-| security_rating | Filters the assets according to the provided security ratings. Supports comma-separated values.<br/><br/>Supported values: 'A', 'B', 'C', 'D', 'F'<br/><br/>Where:<br/>A = Very strong<br/>B = Strong<br/>C = Less vulnerable<br/>D = Vulnerable<br/>F = Highly vulnerable | Optional | 
+| security_grade | Filters the assets according to the provided security ratings. Supports comma-separated values.<br/><br/>Supported values: 'A', 'B', 'C', 'D', 'F'<br/><br/>Where:<br/>A = Very strong<br/>B = Strong<br/>C = Less vulnerable<br/>D = Vulnerable<br/>F = Highly vulnerable | Optional | 
 | locations | The geographical locations in which the asset is found. Supported values contain the three-letter ISO country code for the respective countries'e.g., IND, USA.<br/>Locations are available only for IP, Domain, and Certificate asset types. | Optional | 
 | first_seen | The date and time at which CyCognito first discovered and attributed the asset to the organization.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | Optional | 
 | last_seen | The date and time at which CyCognito most recently attributed the asset to the organization.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | Optional | 
@@ -583,16 +586,16 @@ Retrieves the list of assets that meet specified filter criteria.
 | CyCognito.Asset.closed_ports.status | String | Status of the closed ports object associated with the asset. | 
 | CyCognito.Asset.closed_ports.port | Number | Port of the closed ports object associated with the asset. | 
 | CyCognito.Asset.closed_ports.protocol | String | Protocol associated with the asset. | 
-| CyCognito.Asset.creation_time | Date | Date and time at which the asset was created. | 
+| CyCognito.Asset.created | Date | Date and time at which the asset was created. | 
 | CyCognito.Asset.domain | String | Domain name of the asset. | 
 | CyCognito.Asset.domains | Unknown | Domain of the asset. | 
 | CyCognito.Asset.domain_names | Unknown | List of domain names associated with the asset. | 
-| CyCognito.Asset.expiration_time | Date | Date and time at which the asset is expired. | 
+| CyCognito.Asset.expiration | Date | Date and time at which the asset is expired. | 
 | CyCognito.Asset.first_seen | Date | Time at which an asset was first discovered and attributed to the organization. | 
 | CyCognito.Asset.hosting_type | String | Hosting type of the asset. | 
 | CyCognito.Asset.investigation_status | String | Investigation status of the asset. | 
 | CyCognito.Asset.ip | String | IP of the asset. | 
-| CyCognito.Asset.ip_names | Unknown | List of IP associated with the asset. | 
+| CyCognito.Asset.ip_addresses | Unknown | List of IP associated with the asset. | 
 | CyCognito.Asset.issuer_alt_names | Unknown | List of alternate issuer names. | 
 | CyCognito.Asset.issuer_common_name | String | Common name of the Issuer. | 
 | CyCognito.Asset.issuer_country | String | Country of Issuer. | 
@@ -608,8 +611,8 @@ Retrieves the list of assets that meet specified filter criteria.
 | CyCognito.Asset.open_ports.protocol | String | Protocol associated with the asset. |
 | CyCognito.Asset.organizations | Unknown | List of organizations associated with the asset. | 
 | CyCognito.Asset.status | String | Last status of the asset. | 
-| CyCognito.Asset.security_rating | String | Security rating of the asset based on the number and severity of the associated issues. | 
-| CyCognito.Asset.severe_issues_count | Number | The number of severe issues associated with the asset. | 
+| CyCognito.Asset.security_grade | String | Security rating of the asset based on the number and severity of the associated issues. | 
+| CyCognito.Asset.severe_issues | Number | The number of severe issues associated with the asset. | 
 | CyCognito.Asset.signature_algorithm | String | Signature algorithm associated with the asset. | 
 | CyCognito.Asset.sub_domains | Unknown | List of subdomains associated with the asset. | 
 | CyCognito.Asset.subject_alt_names | Unknown | List of alternate subject names. | 
@@ -620,7 +623,8 @@ Retrieves the list of assets that meet specified filter criteria.
 | CyCognito.Asset.subject_organization_unit | String | The organization unit of the subject. | 
 | CyCognito.Asset.subject_state | String | State of the subject. | 
 | CyCognito.Asset.tags | Unknown | List of tags associated with the asset. | 
-| CyCognito.Asset.from_rotating | String | Whether the asset has a rotating IP address. | 
+| CyCognito.Asset.dynamically_resolved | String | Whether the asset has a rotating IP address. | 
+| CyCognito.Asset.discoverability | String | Quantifies an asset's level of exposure. |
 
 #### Command example
 ```!cycognito-assets-list asset_type=ip count=2```
@@ -704,8 +708,8 @@ Retrieves the list of assets that meet specified filter criteria.
                 "organizations": [
                     "Acme Corporation"
                 ],
-                "security_rating": "F",
-                "severe_issues_count": 1,
+                "security_grade": "F",
+                "severe_issues": 1,
                 "status": "new",
                 "tags": [
                     "Vulnerable Software",
@@ -788,8 +792,8 @@ Retrieves the list of assets that meet specified filter criteria.
                 "organizations": [
                     "Acme Corporation"
                 ],
-                "security_rating": "F",
-                "severe_issues_count": 1,
+                "security_grade": "F",
+                "severe_issues": 1,
                 "status": "new",
                 "tags": [
                     "Block Cipher"
@@ -805,7 +809,7 @@ Retrieves the list of assets that meet specified filter criteria.
 
 >### Asset List:
 >### Assets Type: IP
->|Asset ID|Security Grade|Status|Organizations|Investigation Status|Severe Issues Count|First Seen|Last Seen|Hosting Type|Locations|
+>|Asset ID|Security Grade|Status|Organizations|Investigation Status|Severe Issues|First Seen|Last Seen|Hosting Type|Locations|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | F | new | Acme Corporation | investigated | 1 | 23 Mar 2022, 12:27 PM | 31 Mar 2022, 03:39 AM | owned | Malaysia |
 >| 127.0.0.2 | F | new | Acme Corporation | investigated | 1 | 23 Mar 2022, 12:27 PM | 31 Mar 2022, 03:39 AM | owned | Malaysia |

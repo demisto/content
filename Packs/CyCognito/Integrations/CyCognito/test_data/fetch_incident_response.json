@@ -6,7 +6,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Information Disclosure",
+    "potential_threat": "Information Disclosure",
     "tags": [
       "Vulnerable Software",
       "Pulse Secure"
@@ -49,7 +49,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Remote Code Execution",
+    "potential_threat": "Remote Code Execution",
     "tags": [],
     "id": "issue/127.0.0.2-test-2",
     "organizations": [
@@ -93,7 +93,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Exposed Asset",
+    "potential_threat": "Exposed Asset",
     "tags": [],
     "id": "issue/127.0.0.3-test-3",
     "organizations": [
@@ -136,7 +136,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Vulnerable Software",
+    "potential_threat": "Vulnerable Software",
     "tags": [],
     "id": "issue/127.0.0.4-test-4",
     "organizations": [
@@ -177,7 +177,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Information Disclosure",
+    "potential_threat": "Information Disclosure",
     "tags": [],
     "id": "issue/127.0.0.5-test-5",
     "organizations": [
@@ -216,7 +216,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Remote Code Execution",
+    "potential_threat": "Remote Code Execution",
     "tags": [],
     "id": "issue/127.0.0.6-test-6",
     "organizations": [
@@ -258,7 +258,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Vulnerable Software",
+    "potential_threat": "Vulnerable Software",
     "tags": [],
     "id": "issue/127.0.0.7-test-7",
     "organizations": [
@@ -302,7 +302,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Vulnerable Software",
+    "potential_threat": "Vulnerable Software",
     "tags": [],
     "id": "issue/127.0.0.8-test-8",
     "organizations": [
@@ -342,7 +342,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Vulnerable Software",
+    "potential_threat": "Vulnerable Software",
     "tags": [],
     "id": "issue/127.0.0.9-test-9",
     "organizations": [
@@ -386,7 +386,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-    "threat": "Vulnerable Software",
+    "potential_threat": "Vulnerable Software",
     "tags": [],
     "id": "issue/127.0.0.10-test-10",
     "organizations": [

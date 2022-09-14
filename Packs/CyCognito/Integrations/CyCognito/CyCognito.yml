@@ -202,7 +202,7 @@ script:
     - contextPath: CyCognito.Issue.references
       description: Issue reference.
       type: Unknown
-    - contextPath: CyCognito.Issue.threat
+    - contextPath: CyCognito.Issue.potential_threat
       description: The threat that the issue might cause.
       type: String
     - contextPath: CyCognito.Issue.tags
@@ -271,6 +271,9 @@ script:
     - contextPath: CyCognito.Issue.issue_status
       description: Status of the issue found.
       type: String
+    - contextPath: CyCognito.Issue.evidence
+      description: Provides a reason or proof of why the issue was indeed detected by CyCognito.
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -333,7 +336,7 @@ script:
     - contextPath: CyCognito.Asset.closed_ports.protocol
       description: Protocol associated with the asset.
       type: String
-    - contextPath: CyCognito.Asset.creation_time
+    - contextPath: CyCognito.Asset.created
       description: Creation time of the asset.
       type: Date
     - contextPath: CyCognito.Asset.domain
@@ -345,7 +348,7 @@ script:
     - contextPath: CyCognito.Asset.domain_names
       description: List of domain names associated with the asset.
       type: Unknown
-    - contextPath: CyCognito.Asset.expiration_time
+    - contextPath: CyCognito.Asset.expiration
       description: The date and time at which the asset expires.
       type: Date
     - contextPath: CyCognito.Asset.first_seen
@@ -357,7 +360,7 @@ script:
     - contextPath: CyCognito.Asset.ip
       description: IP address of the asset.
       type: String
-    - contextPath: CyCognito.Asset.ip_names
+    - contextPath: CyCognito.Asset.ip_addresses
       description: IP name of the asset.
       type: Unknown
     - contextPath: CyCognito.Asset.issuer_alt_names
@@ -405,10 +408,10 @@ script:
     - contextPath: CyCognito.Asset.status
       description: Status of the asset.
       type: String
-    - contextPath: CyCognito.Asset.security_rating
+    - contextPath: CyCognito.Asset.security_grade
       description: Security rating of the asset.
       type: String
-    - contextPath: CyCognito.Asset.severe_issues_count
+    - contextPath: CyCognito.Asset.severe_issues
       description: The number of severe issues associated with the asset.
       type: Number
     - contextPath: CyCognito.Asset.signature_algorithm
@@ -441,11 +444,14 @@ script:
     - contextPath: CyCognito.Asset.tags
       description: Tags of the asset.
       type: Unknown
-    - contextPath: CyCognito.Asset.from_rotating
+    - contextPath: CyCognito.Asset.dynamically_resolved
       description: Whether the asset has a rotating IP address.
       type: String
     - contextPath: CyCognito.Asset.investigation_status
       description: Investigation status of the asset.
+      type: String
+    - contextPath: CyCognito.Asset.discoverability
+      description: Quantifies an asset's level of exposure.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -669,7 +675,7 @@ script:
     - contextPath: CyCognito.Issue.references
       description: Reference of the issue.
       type: Unknown
-    - contextPath: CyCognito.Issue.threat
+    - contextPath: CyCognito.Issue.potential_threat
       description: The threat that the issue might cause.
       type: String
     - contextPath: CyCognito.Issue.tags
@@ -737,6 +743,9 @@ script:
     - contextPath: CyCognito.Issue.issue_status
       description: Status of the issue found.
       type: String
+    - contextPath: CyCognito.Issue.evidence
+      description: Provides a reason or proof of why the issue was indeed detected by CyCognito.
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -812,7 +821,7 @@ script:
         D = Vulnerable
         F = Highly vulnerable
       isArray: false
-      name: security_rating
+      name: security_grade
       required: false
       secret: false
     - default: false
@@ -913,7 +922,7 @@ script:
     - contextPath: CyCognito.Asset.closed_ports.protocol
       description: Protocol associated with the asset.
       type: String
-    - contextPath: CyCognito.Asset.creation_time
+    - contextPath: CyCognito.Asset.created
       description: Date and time at which the asset was created.
       type: Date
     - contextPath: CyCognito.Asset.domain
@@ -925,7 +934,7 @@ script:
     - contextPath: CyCognito.Asset.domain_names
       description: List of domain names associated with the asset.
       type: Unknown
-    - contextPath: CyCognito.Asset.expiration_time
+    - contextPath: CyCognito.Asset.expiration
       description: Date and time at which the asset is expired.
       type: Date
     - contextPath: CyCognito.Asset.first_seen
@@ -941,7 +950,7 @@ script:
     - contextPath: CyCognito.Asset.ip
       description: IP of the asset.
       type: String
-    - contextPath: CyCognito.Asset.ip_names
+    - contextPath: CyCognito.Asset.ip_addresses
       description: List of IP associated with the asset.
       type: Unknown
     - contextPath: CyCognito.Asset.issuer_alt_names
@@ -989,11 +998,11 @@ script:
     - contextPath: CyCognito.Asset.status
       description: Last status of the asset.
       type: String
-    - contextPath: CyCognito.Asset.security_rating
+    - contextPath: CyCognito.Asset.security_grade
       description: Security rating of the asset based on the number and severity of
         the associated issues.
       type: String
-    - contextPath: CyCognito.Asset.severe_issues_count
+    - contextPath: CyCognito.Asset.severe_issues
       description: The number of severe issues associated with the asset.
       type: Number
     - contextPath: CyCognito.Asset.signature_algorithm
@@ -1026,8 +1035,11 @@ script:
     - contextPath: CyCognito.Asset.tags
       description: List of tags associated with the asset.
       type: Unknown
-    - contextPath: CyCognito.Asset.from_rotating
+    - contextPath: CyCognito.Asset.dynamically_resolved
       description: Whether the asset has a rotating IP address.
+      type: String
+    - contextPath: CyCognito.Asset.discoverability
+      description: Quantifies an asset's level of exposure.
       type: String
   dockerimage: demisto/pycountry:1.0.0.31623
   feed: false

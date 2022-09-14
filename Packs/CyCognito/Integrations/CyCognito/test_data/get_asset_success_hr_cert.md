@@ -1,5 +1,5 @@
 ### Asset Details:
-|Asset ID|Asset Type|Hosting Type|Locations|IP Names|First Seen|Last Seen|Status|Security Rating|Domain Names|Organizations|Severe Issues Count|
+|Asset ID|Asset Type|Hosting Type|Locations|IP Addresses|First Seen|Last Seen|Status|Security Grade|Domain Names|Organizations|Severe Issues|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | st_ | cert | owned | Malaysia | 0.0.0.0,<br>0.0.0.0,<br>0.0.0.0,<br>0.0.0.0,<br>0.0.0.0 | 26 Jun 2021, 09:22 AM | 24 Mar 2022, 04:26 AM | normal | C | localhost.example.com | Acme Corporation | 0 |
 

@@ -18,9 +18,9 @@ def main():
         asset_end_point = f"https://platform.cycognito.com/assets/{asset_id}/info"
 
         html = "<p style=text-align:left;>For more information on the Issue, " \
-+               f"<a href={issue_end_point}><i>click here</i></a></p>" \
-+               "<p style=text-align:left;>For more information on the Affected Asset, " \
-+               f"<a href={asset_end_point}><i>click here</i></a></p>"
+               f"<a href={issue_end_point}><i>click here</i></a></p>" \
+               "<p style=text-align:left;>For more information on the Affected Asset, " \
+               f"<a href={asset_end_point}><i>click here</i></a></p>"
 
         demisto.results({
             'ContentsFormat': formats['html'],

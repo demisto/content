@@ -7,7 +7,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-      "threat": "Information Disclosure",
+      "potential_threat": "Information Disclosure",
       "tags": [
         "Vulnerable Software",
         "Pulse Secure"
@@ -50,7 +50,7 @@
       "https://example2.com",
       "https://example3.com"
     ],
-      "threat": "Remote Code Execution",
+      "potential_threat": "Remote Code Execution",
       "tags": [],
       "id": "issue/127.0.0.1-test1",
       "organizations": [
@@ -96,7 +96,7 @@
       "https://example1.com",
       "https://example2.com"
     ],
-      "threat": "Information Disclosure",
+      "potential_threat": "Information Disclosure",
       "tags": [
         "Vulnerable Software",
         "Pulse Secure"
@@ -137,7 +137,7 @@
       "https://example2.com",
       "https://example3.com"
     ],
-      "threat": "Remote Code Execution",
+      "potential_threat": "Remote Code Execution",
       "id": "issue/127.0.0.1-test1",
       "organizations": [
         "ACME Ticketing",

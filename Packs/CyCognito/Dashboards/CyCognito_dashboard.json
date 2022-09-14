@@ -524,7 +524,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "cycognitothreat"
+                        "cycognitopotentialthreat"
                     ],
                     "legend": [
                         {
