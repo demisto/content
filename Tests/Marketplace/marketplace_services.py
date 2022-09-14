@@ -3016,8 +3016,8 @@ class Pack(object):
 
                 for image_info in readme_images_storage_paths:
                     readme_original_url = image_info.get('original_read_me_url'),
-                    gcs_storage_path = image_info.get('image_gcp_path'),
-                    image_name = image_info.get('image_name')
+                    gcs_storage_path = str(image_info.get('image_gcp_path')),
+                    image_name = str(image_info.get('image_name'))
 
                     task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url, gcs_storage_path,
                                                                           image_name, storage_bucket)
@@ -3034,6 +3034,7 @@ class Pack(object):
 
         Args:
             pack_readme_path (str): A path to the pack README file.
+            gcs_pack_path (str): A path to the pack in gcs
 
         Returns:
             A list of dicts of all the image urls found in the README.md file with all related data
@@ -3082,8 +3083,10 @@ class Pack(object):
              storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
 
         """
+        logging.info(f'{readme_original_url=}')
         # Open the url image, set stream to True, this will return the stream content.
-        r = requests.get(readme_original_url, stream=True, verify=False)
+        readme_original_url = urllib.parse.urlparse(readme_original_url)
+        r = requests.get(readme_original_url.geturl(), stream=True, verify=False)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:

@@ -1654,6 +1654,11 @@ class TestImagesUpload:
     def test_is_file_readme(self, dummy_pack, path, expected_res):
         assert expected_res == dummy_pack.is_raedme_file(path)
 
+    # def test_the_upload_flow(self, mocker, dummy_pack):
+    #     mocker.patch("Tests.Marketplace.marketplace_services.logging")
+    #     dummy_storage_bucket = mocker.MagicMock()
+    #     dummy_pack.upload_readme_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
+
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
