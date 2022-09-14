@@ -9,7 +9,7 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def IS_2XX(x):
+def IS_2XX(x: int) -> bool:
     return (x / 100) == 2  # Returns true if status code (int) is 2xx
 
 
@@ -53,14 +53,11 @@ class CyberTriageClient(BaseClient):
 def test_connection_command(client: CyberTriageClient) -> str:
     response = client.test_connection()
     response.raise_for_status()
-    if self._is_status_code_valid(response):
-        return 'ok'
-    else:
-        return response.text
+    return 'ok'
 
 
 def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
-    def is_true(x):
+    def is_true(x: str) -> bool:
         return x == 'yes'
     is_hash_upload_on = is_true(args.get('malware_hash_upload', ''))  # arg value = 'yes' or 'no'
     is_file_upload_on = is_true(args.get('malware_file_upload', ''))  # arg value = 'yes' or 'no'
@@ -118,6 +115,8 @@ def main() -> None:
         # This is the call made when pressing the integration test button.
         elif command == 'test-module':
             return_results(test_connection_command(client))
+        else:
+            raise NotImplementedError(f'command={command} not implemented in this integration')
     except Exception as e:
         return_error(
             f"Failed to execute {command} command.\nError: {str(e)}"
