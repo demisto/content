@@ -96,10 +96,19 @@ class Client:
     def __init__(self, credentials: str, insecure: bool):
         self.credentials = credentials
         self.verify_ssl_certs = False if insecure else True
-        self.secrets_manager = SecretsManager(
-            config=InMemoryKeyValueStorage(credentials),
-            verify_ssl_certs=self.verify_ssl_certs
-        )
+        try:
+            config=InMemoryKeyValueStorage(credentials)
+        except Exception:
+            demisto.debug("Failed to initialize KSM configuration. Invalid credentials.")
+            raise ValueError("Failed to initialize KSM configuration. Invalid credentials.")
+        try:
+            self.secrets_manager = SecretsManager(
+                config=config,
+                verify_ssl_certs=self.verify_ssl_certs
+            )
+        except Exception as e:
+            demisto.debug("Failed to initialize KSM Client. " + str(e))
+            raise
 
     def ksm_get_field(self, notation: str) -> str:
         """Returns a simple python dict with the information provided
