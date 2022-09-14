@@ -67,6 +67,7 @@ def trigger_generic_webhook(options):
 
     if not issues_in_pr:
         print("No linked issues were found in PR. Make sure you correctly linked issues.")
+        return
 
     print(f"found issues in PR: {issues_in_pr}")
 
