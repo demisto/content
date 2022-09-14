@@ -14,7 +14,7 @@ python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_M
 python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-v2-dist-dev' -sb $current_storage_base_path
 
 #Left TODO:
-#1. fix rule for job
+#1. fix rule for job - done
 #3. check how to both print logs and return final result in create_test_branch - done
 #4. add image testing - done
 #2. fix new pack not working - done

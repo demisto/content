@@ -197,8 +197,8 @@ if __name__ == "__main__":
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
 
-        # new_pack_path = create_new_pack()
-        # add_dependency(packs_path / 'Armis', new_pack_path)
+        new_pack_path = create_new_pack()[0]
+        add_dependency(packs_path / 'Armis', new_pack_path)
         enhance_release_notes(packs_path / 'ZeroFox')
         change_image(packs_path / 'Armis')
 
