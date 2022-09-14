@@ -45,7 +45,7 @@ def batch_iocs(generator, batch_size=200):
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
-    severity_field: str = 'sourceoriginalseverity'
+    xsoar_severity_field: str = 'sourceoriginalseverity'
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
@@ -234,7 +234,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
 
-        if severity := custom_fields.get(Client.severity_field):
+        if severity := custom_fields.get(Client.xsoar_severity_field):
             xdr_ioc['severity'] = severity
 
         return xdr_ioc
@@ -368,7 +368,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.severity_field: ioc['severity'],
+            Client.xsoar_severity_field: ioc['RULE_SEVERITY'],
         },
         "rawJSON": ioc
     }
@@ -488,8 +488,8 @@ def main():  # pragma: no cover
     # In this integration, arguments are set in the *class level*, the defaults are in the class definition.
     if query := params.get('query'):
         Client.query = query
-    if severity_field := params.get('severity_field'):
-        Client.severity_field = severity_field
+    if xsoar_severity_field := params.get('xsoar_severity_field'):
+        Client.xsoar_severity_field = xsoar_severity_field
     if raw_tags := (params.get('feedTags') or params.get('tag')):
         Client.tag = set(raw_tags.split(','))
 

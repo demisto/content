@@ -117,9 +117,10 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- defaultvalue: 'sourceoriginalseverity'
-  display: Severity Field
-  name: severity_field
+- additionalinfo: The XSOAR indicator field used as severity.
+  defaultvalue: 'sourceoriginalseverity'
+  display: XSOAR Severity Field
+  name: xsoar_severity_field
   required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
