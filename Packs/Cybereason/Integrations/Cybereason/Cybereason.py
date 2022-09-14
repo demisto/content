@@ -290,16 +290,16 @@ def query_processes_command(client: Client, args: dict):
         if not isinstance(item, dict):
             raise ValueError("Cybereason raw response is not valid, item in elements is not a dict")
 
-            simple_values = item.get('simpleValues', {})
-            element_values = item.get('elementValues', {})
+        simple_values = item.get('simpleValues', {})
+        element_values = item.get('elementValues', {})
 
-            output = {}
-            for info in PROCESS_INFO:
-                if info.get('type') == 'filterData':
-                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+        output = {}
+        for info in PROCESS_INFO:
+            if info.get('type') == 'filterData':
+                output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
 
-            output = update_output(output, simple_values, element_values, PROCESS_INFO)
-            outputs.append(output)
+        output = update_output(output, simple_values, element_values, PROCESS_INFO)
+        outputs.append(output)
 
     context = []
     for output in outputs:
@@ -667,9 +667,6 @@ def malop_processes_command(client: Client, args: dict):
 
             if not wanted_machine:
                 continue
-
-                if not wanted_machine:
-                    continue
 
             output = {}
             for info in PROCESS_INFO:
