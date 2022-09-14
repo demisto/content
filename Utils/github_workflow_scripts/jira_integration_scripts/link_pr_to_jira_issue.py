@@ -65,6 +65,9 @@ def trigger_generic_webhook(options):
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
+    if not issues_in_pr:
+        print("No linked issues were found in PR. Make sure you correctly linked issues.")
+
     print(f"found issues in PR: {issues_in_pr}")
 
     body = {
