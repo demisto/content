@@ -42,12 +42,7 @@
             "accessor": "",
             "filters": [],
             "root": "start_time",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "TimeStampToDate"
-              }
-            ]
+            "transformers": []
           },
           "simple": ""
         }

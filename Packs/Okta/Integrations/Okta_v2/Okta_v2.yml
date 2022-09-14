@@ -398,9 +398,15 @@ script:
     deprecated: false
     execution: false
   - arguments:
-    - description: The maximum number of results to return.
+    - description: "The cursor in which to retrive the results from and on.\
+        \ if the query didn't reach the end of results,\
+        \ the tag can be obtained from the bottom of the grid in the readable output,\
+        \ or in the context path Okta.User.tag."
+      name: after
+    - description: The maximum number of results to return, the default is 200.
       name: limit
-      default: false
+      default: true
+      defaultValue: '200'
       isArray: false
       required: false
       secret: false
@@ -415,6 +421,18 @@ script:
       isArray: false
       required: false
       secret: false
+    - description: Searches the name property of groups for matching values.
+      name: query
+    - description: "Useful for performing structured queries where constraints on\
+        \ group attribute values can be explicitly targeted. \nThe following expressions\
+        \ are supported(among others) for groups with the filter query parameter:\
+        \ \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated\
+        \ lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before\
+        \ a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\"\
+        \ - Groups with memberships last updated at a specific timestamp; id eq \"\
+        00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about\
+        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      name: filter
     description: Lists users in your organization.
     name: okta-list-users
     outputs:
@@ -445,6 +463,9 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Okta.User.tag
+      description: The location of the next item, used with after param. 
+      type: String
     deprecated: false
     execution: false
   - arguments:

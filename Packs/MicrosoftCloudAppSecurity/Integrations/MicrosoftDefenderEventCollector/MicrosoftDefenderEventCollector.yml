@@ -36,21 +36,8 @@ configuration:
   name: after
   required: false
   type: 0
-- defaultvalue: Microsoft
-  additionalinfo: The vendor name to be used in the dataset name, in this format <vendor>_<product>_raw.
-  display: Vendor
-  hidden: false
-  name: vendor
-  required: false
-  type: 0
-- defaultvalue: defender_cloud_apps
-  display: Product
-  hidden: false
-  name: product
-  required: false
-  type: 0
-- additionalinfo: Due to API limitations, the maximum is 10,000.
-  defaultvalue: '1000'
+- defaultvalue: '1000'
+  additionalinfo: Due to API limitations, the maximum is 10,000.
   display: Number of alerts for each fetch.
   hidden: false
   name: limit
@@ -60,11 +47,11 @@ configuration:
   name: isFetchEvents
   required: false
   type: 8
-- display: Verify SSL Certificate
+- defaultvalue: 'true'
+  display: Verify SSL Certificate
   hidden: false
   name: verify
   required: false
-  defaultvalue: 'true'
   type: 8
 - display: Use system proxy settings
   name: proxy
@@ -109,9 +96,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.29883
+  dockerimage: demisto/pydantic-jwt3:1.0.0.32858
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
 tests:
-- Microsoft Defender for Cloud Apps Event Collector-test
+- No Tests

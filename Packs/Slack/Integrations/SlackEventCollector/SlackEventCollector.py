@@ -5,6 +5,9 @@ from typing import Tuple
 
 requests.packages.urllib3.disable_warnings()
 
+VENDOR = "slack"
+PRODUCT = "slack"
+
 
 def arg_to_timestamp(value: Any) -> Optional[int]:
     if isinstance(value, int):
@@ -215,15 +218,14 @@ def main() -> None:  # pragma: no cover
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
                     events,
-                    params.get('vendor', 'slack'),
-                    params.get('product', 'slack')
+                    vendor=VENDOR,
+                    product=PRODUCT
                 )
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

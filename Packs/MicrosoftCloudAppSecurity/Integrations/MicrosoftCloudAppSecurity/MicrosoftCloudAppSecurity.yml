@@ -1172,7 +1172,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

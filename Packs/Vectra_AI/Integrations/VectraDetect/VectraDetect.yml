@@ -1,0 +1,553 @@
+commonfields:
+  id: Vectra_Detect
+  version: -1
+
+beta: true
+name: Vectra_Detect
+display: Vectra Detect (Beta)
+description: This integration allows to create incidents based on Vectra Detections/Hosts objects
+category: Network Security
+defaultclassifier: Vectra Detect
+defaultmapperin: Vectra Detect - Incoming Mapper
+fromversion: 6.5.0
+
+configuration:
+- display: Vectra Detect FQDN or IP
+  name: server_fqdn
+  type: 0    # Short Text
+  additionalinfo: Enter the FQDN or IP to reach the Vectra Detect API.
+    (e.g. "my-vectra-box.local" or "192.168.1.1")
+  required: true
+  defaultvalue: ''
+
+- display: API Token
+  name: credentials
+  type: 9    # Authentication text - allows switching to credentials
+  additionalinfo: Enter the API token that can be retrieved from the Vectra UI > My Profile > General (tab) > API Token.
+    You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password.
+  required: true
+  hiddenusername: true
+  displaypassword: API Token
+
+- display: Trust any certificate (not secure)
+  name: insecure    # Do not change
+  type: 8    # Boolean checkbox
+  additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra Detect API.
+    It's insecure.
+    (Default - unchecked)
+  required: false
+
+- display: Use system proxy settings
+  name: use_proxy    # Do not change
+  type: 8    # Boolean checkbox
+  additionalinfo: Use the system proxy settings to reach with the Vectra Detect API.
+  required: false
+
+- display: Fetch incidents
+  name: isFetch    # Do not change
+  type: 8    # Boolean checkbox
+  required: false
+
+- display: Incident type
+  name: incidentType    # Do not change
+  type: 13    # special use - automatically added - Incident type single select dropdown
+  required: false
+
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch    # Do not change
+  type: 0    # Short Text
+  additionalinfo: How far back in time you want to fetch alerts.
+    (default - 7 days)
+  required: false
+  defaultvalue: 7 days
+
+- display: Entity types to fetch
+  name: fetch_entity_types
+  type: 16    # Mutiple select dropdown
+  required: false
+  additionalinfo: Choose what to fetch - Hosts and/or Detections.
+    (Default - Hosts)
+  options:
+  - Hosts
+  - Detections
+  defaultvalue: Hosts
+
+- display: Hosts fetch query
+  name: hosts_fetch_query
+  type: 0    # Short text
+  additionalinfo: Only "active" Hosts matching this fetch query will be fetched.
+    Will be used only if "Hosts" is selected in the "Entity types to fetch".
+    (default - host.threat:>=50 AND host.certainty:>=50)
+  required: false
+  defaultvalue: host.threat:>=50 AND host.certainty:>=50
+
+- display: Detections fetch query
+  name: detections_fetch_query
+  type: 0    # Short text
+  additionalinfo: Only "active" Detections matching this fetch query will be fetched.
+    Will be used only if "Detections" is selected in the "Entity types to fetch".
+    (default - detection.threat:>=50 AND detection.certainty:>=50)
+  required: false
+  defaultvalue: detection.threat:>=50 AND detection.certainty:>=50
+
+- display: Max created incidents per fetch
+  name: max_fetch
+  type: 0    # Short Text
+  additionalinfo: How many new incidents do you want to create at max per fetch.
+    This value would be split between selected "Entity types to fetch".
+    (Default - 50)
+  required: false
+  defaultvalue: 50
+
+
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.5.31928
+  isfetch: true
+  runonce: false
+  commands:
+    # Search Accounts / Hosts / Detections
+    # Get single account / host / detection by ID
+    # Get detection PCAP
+    # Add tags to an account / host / detection
+    # Remove tags to an account / host / detection
+
+  # - name: vectra-search-accounts
+  #   description: Returns a list of Account objects.
+  #     All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+  #   execution: false   # This command is not harmful
+  #   arguments:
+  #   - name: min_id
+  #     description: Returns Accounts with an ID greater than or equal to the specified ID.
+  #   - name: max_id
+  #     description: Returns Accounts with an ID less than or equal to the specified ID.
+  #   - name: min_threat
+  #     description: Returns Accounts with a threat score greater than or equal to the specified score.
+  #   - name: max_threat
+  #     description: Returns Accounts with a threat score less than or equal to the specified score.
+  #   - name: min_certainty
+  #     description: Returns Accounts with a certainty score greater than or equal to the specified score.
+  #   - name: max_certainty
+  #     description: Returns Accounts with a certainty score less than or equal to the specified score.
+  #   - name: state
+  #     description: Filters by state ('active', 'inactive').
+  #     auto: PREDEFINED
+  #     predefined:
+  #       - active
+  #       - inactive
+  #   - name: search_query
+  #     description: Search query in Lucene query syntax.
+  #   - name: search_query_only
+  #     description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+        # # - name: privilege_level
+        # #   description: Filters by the privilege level equals the one provided.
+        # - name: min_privilege_level
+        #   description: Returns entries with a  privilege level greater than or equal to the specified score.
+        # - name: max_privilege_level
+        #   description: Returns entries with a  privilege level greater than or equal to the specified score.
+        # - name: privilege_category
+        #   description: Filters by the privilege category ("low", "medium", "high") provided.
+        # - name: tags
+        #   description: Filters by a tag or a comma-separated list tags. # TODO Check how to use that in the XSOAR CLI
+    # outputs:  &accountOutput
+    # - contextPath: Vectra.Account.Assignee
+    #   type: String
+    #   description: Vectra user account this Account is assigned to
+    # - contextPath: Vectra.Account.AssignedDate
+    #   type: String
+    #   description: Assignment date
+    # - contextPath: Vectra.Account.CertaintyScore
+    #   type: Number
+    #   description: Account certainty score
+    # - contextPath: Vectra.Account.ID
+    #   type: Number
+    #   description: Account ID (unique)
+    # - contextPath: Vectra.Account.LastDetectionTimestamp
+    #   type: String
+    #   description: Last time a detection linked to this account has been seen
+    # - contextPath: Vectra.Account.PrivilegeLevel
+    #   type: Number
+    #   description: Account privilege level (from 1 to 10)
+    # - contextPath: Vectra.Account.PrivilegeCategory
+    #   type: String
+    #   description: Account privilege category (Either 'Low', 'Medium' or 'High' -
+    #     Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
+    # - contextPath: Vectra.Account.Severity
+    #   type: String
+    #   description: Account severity according to scores ('Low', 'Medium', 'High', 'Critical')
+    # - contextPath: Vectra.Account.State
+    #   type: String
+    #   description: Account state ('active', 'inactive')
+    # - contextPath: Vectra.Account.Tags
+    #   type: String
+    #   description: Account tags
+    # - contextPath: Vectra.Account.ThreatScore
+    #   type: Number
+    #   description: Account threat score
+    # - contextPath: Vectra.Account.Type
+    #   type: String
+    #   description: Account type ('kerberos' or 'o365')
+    # - contextPath: Vectra.Account.URL
+    #   type: String
+    #   description: Account URL to pivot to Vectra UI
+    # - contextPath: Vectra.Account.Name
+    #   type: String
+    #   description: The username of the account
+
+  - name: vectra-search-hosts
+    description: Returns a list of Host objects.
+      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: min_id
+      description: Returns Hosts with an ID greater than or equal to the specified ID.
+    - name: max_id
+      description: Returns Hosts with an ID less than or equal to the specified ID.
+    - name: min_threat
+      description: Returns Hosts with a threat score greater than or equal to the specified score.
+    - name: max_threat
+      description: Returns Hosts with a threat score less than or equal to the specified score.
+    - name: min_certainty
+      description: Returns Hosts with a certainty score greater than or equal to the specified score.
+    - name: max_certainty
+      description: Returns Hosts with a certainty score less than or equal to the specified score.
+    - name: state
+      description: Filters by state ('active', 'inactive').
+      auto: PREDEFINED
+      predefined:
+        - active
+        - inactive
+    - name: search_query
+      description: Search query in Lucene query syntax.
+    - name: search_query_only
+      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+    outputs:  &hostOutput
+    - contextPath: Vectra.Host.Assignee
+      type: String
+      description: Vectra user account this Host is assigned to
+    - contextPath: Vectra.Host.AssignedDate
+      type: String
+      description: Assignment date
+    - contextPath: Vectra.Host.CertaintyScore
+      type: Number
+      description: Host certainty score
+    - contextPath: Vectra.Host.HasActiveTraffic
+      type: Boolean
+      description: Whether this Host has active traffic
+    - contextPath: Vectra.Host.Hostname
+      type: String
+      description: Host name
+    - contextPath: Vectra.Host.ID
+      type: Number
+      description: Host ID (Unique)
+    - contextPath: Vectra.Host.IP
+      type: String
+      description: Host IP address
+    - contextPath: Vectra.Host.IsKeyAsset
+      type: Boolean
+      description: Whether this Host is seen as a key asset
+    - contextPath: Vectra.Host.IsTargetingKeyAsset
+      type: Boolean
+      description: Whether this Host is targeting a key asset
+    - contextPath: Vectra.Host.PrivilegeLevel
+      type: Number
+      description: Host privilege level (from 1 to 10)
+    - contextPath: Vectra.Host.PrivilegeCategory
+      type: String
+      description: Host privilege category. (Either 'Low', 'Medium' or 'High' -
+        Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
+    - contextPath: Vectra.Host.ProbableOwner
+      type: String
+      description: Host probable owner
+    - contextPath: Vectra.Host.SensorLUID
+      type: String
+      description: Sensor LUID that saw this Host
+    - contextPath: Vectra.Host.SensorName
+      type: String
+      description: Sensor Name that saw this Host
+    - contextPath: Vectra.Host.Sensor
+      type: String
+      description: Sensor details that have seen this Host
+    - contextPath: Vectra.Host.Severity
+      type: String
+      description: Host severity according to scores ('Low', 'Medium', 'High', 'Critical')
+    - contextPath: Vectra.Host.State
+      type: String
+      description: Host state ('active', 'inactive')
+    - contextPath: Vectra.Host.Tags
+      type: String
+      description: Host tags
+    - contextPath: Vectra.Host.ThreatScore
+      type: Number
+      description: Host threat score
+    - contextPath: Vectra.Host.URL
+      type: String
+      description: Host URL to pivot to Vectra UI
+
+  - name: vectra-search-detections
+    description: Returns a list of Detection objects.
+      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: min_id
+      description: Returns Detections with an ID greater than or equal to the specified ID.
+    - name: max_id
+      description: Returns Detections with an ID less than or equal to the specified ID.
+    - name: min_threat
+      description: Returns Detections with a threat score greater than or equal to the specified score.
+    - name: max_threat
+      description: Returns Detections with a threat score less than or equal to the specified score.
+    - name: min_certainty
+      description: Returns Detections with a certainty score greater than or equal to the specified score.
+    - name: max_certainty
+      description: Returns Detections with a certainty score less than or equal to the specified score.
+    - name: state
+      description: Filters by state ('active', 'inactive').
+      auto: PREDEFINED
+      predefined:
+        - active
+        - inactive
+    - name: search_query
+      description: Search query in Lucene query syntax.
+    - name: search_query_only
+      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+    outputs:  &detectionOutput
+    - contextPath: Vectra.Detection.Assignee
+      type: String
+      description: Vectra user account this detection is assigned to
+    - contextPath: Vectra.Detection.AssignedDate
+      type: String
+      description: Assignment date
+    - contextPath: Vectra.Detection.Category
+      type: String
+      description: Detection category (Lateral, Exfil, ...)
+    - contextPath: Vectra.Detection.CertaintyScore
+      type: Number
+      description: Detection certainty score
+    - contextPath: Vectra.Detection.Description
+      type: String
+      description: Detection description
+    - contextPath: Vectra.Detection.FirstTimestamp
+      type: String
+      description: First time this detection has been seen
+    - contextPath: Vectra.Detection.ID
+      type: Number
+      description: Detection ID (unique)
+    - contextPath: Vectra.Detection.IsTargetingKeyAsset
+      type: Boolean
+      description: Whether this detection is targeting a key asset
+    - contextPath: Vectra.Detection.LastTimestamp
+      type: String
+      description: Last time this detection has been seen
+    - contextPath: Vectra.Detection.Name
+      type: String
+      description: The name of the detection. Would be a user defined name if this detection is triaged or the default type name instead
+    - contextPath: Vectra.Detection.Severity
+      type: String
+      description: Detection severity according to scores ('Low', 'Medium', 'High', 'Critical')
+    - contextPath: Vectra.Detection.SensorLUID
+      type: String
+      description: Sensor LUID that saw this etection
+    - contextPath: Vectra.Detection.SensorName
+      type: String
+      description: Sensor Name that saw this Detection
+    - contextPath: Vectra.Detection.SourceAccountID
+      type: String
+      description: Account ID relating to this detection
+    - contextPath: Vectra.Detection.SourceHostID
+      type: String
+      description: Host ID relating to this detection
+    - contextPath: Vectra.Detection.SourceIP
+      type: String
+      description: Source IP relating to this detection
+    - contextPath: Vectra.Detection.State
+      type: String
+      description: Detection state ('active', 'inactive')
+    - contextPath: Vectra.Detection.Tags
+      type: String
+      description: Detection tags
+    - contextPath: Vectra.Detection.ThreatScore
+      type: Number
+      description: Detection threat score
+    - contextPath: Vectra.Detection.TriageRuleID
+      type: String
+      description: Triage rule ID related to this detection
+    - contextPath: Vectra.Detection.Type
+      type: String
+      description: Detection type (Brute Force, Port Sweep, ...)
+    - contextPath: Vectra.Detection.URL
+      type: String
+      description: Detection URL to pivot to Vectra UI
+
+    # - name: vectra-add-tags
+    #   description: Add tags to an Account/Detection/Host
+    #   execution: true  # This command modifies the Vectra system
+    #   arguments:
+    #     - name: type
+    #       description: Object type ("account", "detection", "host")
+    #       auto: PREDEFINED
+    #       predefined:
+    #         - account
+    #         - detection
+    #         - host
+    #     - name: id
+    #       description: Onject ID we want to add tags on
+    #     - name: tags
+    #       description: The tags list (comma separated)
+    #       isArray: true
+    # - name: vectra-del-tags
+    #   description: Del tags to an Account/Detection/Host
+    #   execution: true # This command affects the Vectra system
+    #   arguments:
+    #     - name: type
+    #       description: Object type ("account", "detection", "host")
+    #       auto: PREDEFINED
+    #       predefined:
+    #         - account
+    #         - detection
+    #         - host
+    #     - name: id
+    #       description: Onject ID we want to del tags from
+    #     - name: tags
+    #       description: The tags list (comma separated)
+    #       isArray: true
+
+  ######
+  ### Accounts
+  #
+  # - name: vectra-account-describe
+  #   description: Returns a single Account details
+  #   execution: false    # This command is not harmful
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to get details on
+  #   outputs: *accountOutput
+
+  # - name: vectra-account-add-tags
+  #   description: Add tags to an Account
+  #   execution: true    # This command modifies the Vectra system
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to add tags on
+  #   - name: tags
+  #     description: The tags list (comma separated)
+  #     isArray: true
+  #   outputs: []
+
+  # - name: vectra-account-del-tags
+  #   description: Delete tags from an Account
+  #   execution: true   # This command affects the Vectra system
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to del tags from
+  #   - name: tags
+  #     description: The tags list (comma separated)
+  #     isArray: true
+  #   outputs: []
+
+    ######
+    ### Hosts
+    #
+  - name: vectra-host-describe
+    description: Returns a single Host details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Host ID you want to get details on
+    # - name: name
+    #   description: Returns Hosts having this name
+    # - name: ip
+    #   description: Returns Hosts having this IP address
+    outputs: *hostOutput
+  - name: vectra-host-add-tags
+    description: Add tags to an Host
+    execution: true    # This command modifies the Vectra system
+    arguments:
+    - name: id
+      default: true
+      description: Host ID you want to add tags on
+    - name: tags
+      description: The tags list (comma separated)
+      isArray: true
+    outputs: []
+
+  - name: vectra-host-del-tags
+    description: Delete tags from an Host
+    execution: true   # This command affects the Vectra system
+    arguments:
+    - name: id
+      default: true
+      description: Host ID you want to del tags from
+    - name: tags
+      description: The tags list (comma separated)
+      isArray: true
+    outputs: []
+
+    ######
+    ### Detections
+    #
+  - name: vectra-detection-describe
+    description: Returns a single detection details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Detection ID you want to get details on
+    outputs: *detectionOutput
+
+  - name: vectra-detection-get-pcap
+    description: Returns a Detection's PCAP file (if available)
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: The Detection ID you want to get the PCAP file from
+    outputs: []
+
+  - name: vectra-detection-markasfixed
+    description: Marks/Unmarks a Detection as fixed by providing the Detection ID
+    execution: true    # This command modifies the Vectra system
+    arguments:
+    - name: id
+      default: true
+      description: Detection ID you want to mark/unmark as fixed
+    - name: fixed
+      description: The wanted detection status ("true", "false"). No default value
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    outputs: []
+  - name: vectra-detection-add-tags
+    description: Add tags to a Detection
+    execution: true    # This command modifies the Vectra system
+    arguments:
+    - name: id
+      default: true
+      description: Detection ID you want to add tags on
+    - name: tags
+      description: The tags list (comma separated)
+      isArray: true
+    outputs: []
+
+  - name: vectra-detection-del-tags
+    description: Delete tags from a Detection
+    execution: true   # This command affects the Vectra system
+    arguments:
+    - name: id
+      default: true
+      description: Detection ID you want to del tags from
+    - name: tags
+      description: The tags list (comma separated)
+      isArray: true
+    outputs: []
+
+
+tests:
+- No tests - Not dev yet

@@ -191,7 +191,7 @@
             "y": 0,
             "i": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
             "w": 4,
-            "h": 3,
+            "h": 2,
             "widget": {
                 "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
                 "version": 4,
@@ -440,10 +440,10 @@
             "id": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
             "x": 8,
-            "y": 3,
+            "y": 2,
             "i": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
             "w": 4,
-            "h": 3,
+            "h": 2,
             "widget": {
                 "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
                 "version": 5,
@@ -553,6 +553,117 @@
                         "type": "max"
                     },
                     "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "8b31f630-0e60-11ed-b4a8-951e9f9a3725",
+            "forceRange": false,
+            "x": 8,
+            "y": 4,
+            "i": "8b31f630-0e60-11ed-b4a8-951e9f9a3725",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-07-28T07:14:16.55383798Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "API Call Results for Cisco Umbrella Investigate",
+                "prevName": "API Call Results for Cisco Umbrella Investigate",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"Cisco Umbrella Investigate_instance_1\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 0,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(d)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {
+                        "type": "max"
+                    },
+                    "showOthers": false,
+                    "timeFrame": "days",
                     "valuesFormat": "abbreviated",
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"

@@ -1,3 +1,4 @@
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook handles incident ingestion from the SIEM. The user provides the field for the incident ID or detection ID as well as the field indicating whether the ingested item is an incident or detection. This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
 
 ## Dependencies

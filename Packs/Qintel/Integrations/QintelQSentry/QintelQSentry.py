@@ -107,6 +107,7 @@ def _make_dbot_score(itype, i, data):
         integration_name=VENDOR,
         score=score,
         malicious_description=mal_desc,
+        reliability=demisto.params().get('integrationReliability')
     )
 
 

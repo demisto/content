@@ -16,6 +16,35 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 defaultclassifier: 'null'
 description: Enrich indicators by obtaining enhanced information and reputation via
   ThreatFusion of SOCRadar.
@@ -665,7 +694,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

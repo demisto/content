@@ -71,7 +71,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username / API Key (see '?')
+- display: Username / API Key
   name: credentials
   required: false
   type: 9
@@ -132,6 +132,16 @@ configuration:
   - tool
   - threat-actor
   - infrastructure
+  - autonomous-system
+  - domain-name
+  - email-addr
+  - file
+  - ipv4-addr
+  - ipv6-addr
+  - mutex
+  - url
+  - user-account
+  - windows-registry-key
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
@@ -175,6 +185,11 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
+  display: Default API Root to use
+  name: default_api_root
   required: false
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
