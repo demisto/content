@@ -486,7 +486,7 @@ types-python-dateutil = "^2.8.10"
 types-pytz = "^2021.3.6"
 types-pyvmomi = "^7.0.6"
 types-PyYAML = "^6.0.5"
-types-requests = "2.26.3"
+types-requests = "2.28.10"
 types-six = "^1.16.12"
 types-tabulate = "^0.8.6"
 typing-extensions = "^4.1.1"
@@ -502,8 +502,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "27e7130abb46875323e5069b7186cca54b29e543"
-resolved_reference = "27e7130abb46875323e5069b7186cca54b29e543"
+reference = "503f54e4f2256dbdb88cd903d88e53907ba36d01"
+resolved_reference = "503f54e4f2256dbdb88cd903d88e53907ba36d01"
 
 [[package]]
 name = "Deprecated"
@@ -2046,11 +2046,14 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.26.3"
+version = "2.28.10"
 description = "Typing stubs for requests"
 category = "main"
 optional = false
 python-versions = "*"
+
+[package.dependencies]
+types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-six"
@@ -2064,6 +2067,14 @@ python-versions = "*"
 name = "types-tabulate"
 version = "0.8.11"
 description = "Typing stubs for tabulate"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-urllib3"
+version = "1.26.24"
+description = "Typing stubs for urllib3"
 category = "main"
 optional = false
 python-versions = "*"
@@ -2247,7 +2258,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "baea9fd36a5f4d9906ae4de6ce2e846e435e33f09a2368bdc077261d8f1b40ca"
+content-hash = "5bf3d34db2e35e067146b3ed404216d4a6f47c5e0cc9281d12642526053d1980"
 
 [metadata.files]
 aiohttp = [
@@ -3781,8 +3792,8 @@ types-PyYAML = [
     {file = "types_PyYAML-6.0.11-py3-none-any.whl", hash = "sha256:8f890028123607379c63550179ddaec4517dc751f4c527a52bb61934bf495989"},
 ]
 types-requests = [
-    {file = "types-requests-2.26.3.tar.gz", hash = "sha256:d63fa617846dcefff5aa2d59e47ab4ffd806e4bb0567115f7adbb5e438302fe4"},
-    {file = "types_requests-2.26.3-py3-none-any.whl", hash = "sha256:ad18284931c5ddbf050ccdd138f200d18fd56f88aa3567019d8da9b2d4fe0344"},
+    {file = "types-requests-2.28.10.tar.gz", hash = "sha256:97d8f40aa1ffe1e58c3726c77d63c182daea9a72d9f1fa2cafdea756b2a19f2c"},
+    {file = "types_requests-2.28.10-py3-none-any.whl", hash = "sha256:45b485725ed58752f2b23461252f1c1ad9205b884a1e35f786bb295525a3e16a"},
 ]
 types-six = [
     {file = "types-six-1.16.19.tar.gz", hash = "sha256:5bd851a00d761c5b5df78a379cb174a9aa63defc8d967600bbb37df607099ed2"},
@@ -3791,6 +3802,10 @@ types-six = [
 types-tabulate = [
     {file = "types-tabulate-0.8.11.tar.gz", hash = "sha256:17a5fa3b5ca453815778fc9865e8ecd0118b07b2b9faff3e2b06fe448174dd5e"},
     {file = "types_tabulate-0.8.11-py3-none-any.whl", hash = "sha256:af811268241e8fb87b63c052c87d1e329898a93191309d5d42111372232b2e0e"},
+]
+types-urllib3 = [
+    {file = "types-urllib3-1.26.24.tar.gz", hash = "sha256:a1b3aaea7dda3eb1b51699ee723aadd235488e4dc4648e030f09bc429ecff42f"},
+    {file = "types_urllib3-1.26.24-py3-none-any.whl", hash = "sha256:cf7918503d02d3576e503bbfb419b0e047c4617653bba09624756ab7175e15c9"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
