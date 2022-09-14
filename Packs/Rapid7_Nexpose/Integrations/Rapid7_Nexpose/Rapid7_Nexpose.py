@@ -1093,6 +1093,27 @@ def dq(obj, path):
     return None
 
 
+def enrich_asset_data(asset: dict) -> dict:
+    """
+    Enrich asset data with additional information.
+
+    Args:
+        asset (dict): A dictionary representing an asset as received from the API.
+
+    Returns:
+        dict: The enriched asset data.
+    """
+    last_scan = find_asset_last_change(asset)
+    asset["LastScanDate"] = last_scan["date"]
+    asset["LastScanId"] = last_scan["id"]
+    site = find_site_from_asset(asset["id"])
+
+    if site:
+        asset["Site"] = site["name"]
+
+    return asset
+
+
 def find_asset_last_change(asset_data: dict) -> dict:
     """
     Retrieve the last change (usually a scan) from an asset's history.
@@ -1878,11 +1899,7 @@ def get_assets_command(client: Client, page_size: Union[int, None] = None,
         return CommandResults(readable_output="No assets found")
 
     for asset in assets:
-        last_scan = find_asset_last_change(asset)
-        asset["LastScanDate"] = last_scan["date"]
-        asset["LastScanId"] = last_scan["id"]
-        site = find_site_from_asset(asset["id"])
-        asset["Site"] = site["name"] if site != "" else ""
+        enrich_asset_data(asset)
 
     headers = [
         "AssetId",
@@ -2446,10 +2463,10 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
         for hostname in hostnames:
             filters_data.append("host-name is " + hostname)  # TODO: Change to `in <list of comma separated hostnames>` instead if multiple filters?
 
-    found_assets = []
+    assets = []
 
     for filter_data in filters_data:
-        found_assets.extend(
+        assets.extend(
             client.search_assets(
                 filters=convert_asset_search_filters(filter_data),
                 match=match,
@@ -2460,15 +2477,11 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
             )
         )
 
-    if not found_assets:
+    if not assets:
         return CommandResults(readable_output="No assets were found")
 
-    for asset in found_assets:
-        last_scan = find_asset_last_change(asset)
-        asset["LastScanDate"] = last_scan["date"]
-        asset["LastScanId"] = last_scan["id"]
-        site = find_site_from_asset(asset["id"])
-        asset["Site"] = site["name"] if site != "" else ""
+    for asset in assets:
+        enrich_asset_data(asset)
 
     headers = [
         "AssetId",
@@ -2484,8 +2497,8 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
         "LastScanId"
     ]
 
-    outputs = replace_key_names(
-        data=found_assets,
+    replace_key_names(
+        data=assets,
         name_mapping={
             "id": "AssetId",
             "ip": "Address",
