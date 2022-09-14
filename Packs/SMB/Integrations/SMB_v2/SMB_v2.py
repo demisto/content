@@ -221,7 +221,6 @@ def main():
         elif demisto.command() == 'smb-directory-remove':
             return_results(smb_rmdir(client, demisto.args()))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
     finally:
         smbclient.reset_connection_cache()

@@ -1,0 +1,280 @@
+{
+    "items": [
+        {
+            "type": "bundle",
+            "id": "bundle--f76fdfc8-cc13-4fea-b0b6-604bb9f00336",
+            "objects": [
+                {
+                    "valid_from": "2021-01-01T00:00:00Z",
+                    "x_inthreat_sources_refs": [
+                        "identity--357447d7-9229-4ce1-b7fa-f1b83587048e"
+                    ],
+                    "spec_version": "2.1",
+                    "x_ic_is_in_flint": false,
+                    "lang": "en",
+                    "x_ic_impacted_locations": [
+                        "location--387542b5-5690-489f-8420-7f68b0b9b828",
+                        "location--c41ef74a-4292-47df-95f5-6f8ef7d2efb8",
+                        "location--1175a3bd-dd53-4a7e-9cdd-50743079025a",
+                        "location--9671f7eb-5b14-485e-befd-6fc3bdb38366",
+                        "location--e9be5f61-2d42-4eb6-a158-13b1547c0045",
+                        "location--b2f21856-d558-4904-bbe7-f832af1adc2a"
+                    ],
+                    "id": "indicator--a8239840-65ab-45d4-9309-0a6d1b93dbc1",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "modified": "2022-07-04T12:55:39.414499Z",
+                    "type": "indicator",
+                    "revoked": false,
+                    "created": "2022-07-04T11:17:09.211161Z",
+                    "x_ic_observable_types": [
+                        "filename"
+                    ],
+                    "pattern_type": "stix",
+                    "name": "sessionmanagermodule.dll",
+                    "pattern": "[filename:value = 'sessionmanagermodule.dll']",
+                    "indicator_types": [
+                        "malicious-activity"
+                    ],
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "x_ic_impacted_sectors": [
+                        "identity--333fecdb-e60d-46e4-9f21-5424dccef693",
+                        "identity--98bc4ec8-590f-49bf-b51e-b37228b6a4c0",
+                        "identity--86488fc3-2973-4e62-b230-f6441f7d39f0",
+                        "identity--39746349-9c5c-47bd-8f39-0aff658d8ee7",
+                        "identity--41070ab8-3181-4c01-9f75-c11df5fb1ca3",
+                        "identity--de6d2cda-d23b-47b5-a869-1065044aefe0",
+                        "identity--62b911a8-bcab-4f31-91f0-af9cdf9b6d20"
+                    ],
+                    "kill_chain_phases": [
+                        {
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain",
+                            "phase_name": "installation"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "execution"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "persistence"
+                        }
+                    ],
+                    "confidence": 100,
+                    "x_ic_deprecated": false,
+                    "valid_until": "2022-12-31T00:00:00Z"
+                },
+                {
+                    "x_inthreat_sources_refs": [
+                        "identity--117c9936-1101-485c-ad80-d5c868caee96"
+                    ],
+                    "spec_version": "2.1",
+                    "x_ic_is_in_flint": false,
+                    "lang": "en",
+                    "x_ic_impacted_locations": [
+                        "location--387542b5-5690-489f-8420-7f68b0b9b828",
+                        "location--c41ef74a-4292-47df-95f5-6f8ef7d2efb8",
+                        "location--1175a3bd-dd53-4a7e-9cdd-50743079025a",
+                        "location--9671f7eb-5b14-485e-befd-6fc3bdb38366",
+                        "location--e9be5f61-2d42-4eb6-a158-13b1547c0045",
+                        "location--b2f21856-d558-4904-bbe7-f832af1adc2a"
+                    ],
+                    "id": "malware--e774a0f1-7d2b-48b0-abdb-6e44474dbf9f",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "first_seen": "2021-03-01T00:00:00.000Z",
+                    "modified": "2022-07-04T12:55:39.414357Z",
+                    "type": "malware",
+                    "revoked": false,
+                    "created": "2022-07-04T09:33:01.085938Z",
+                    "aliases": [
+                        "SessionManager"
+                    ],
+                    "name": "SessionManager",
+                    "is_family": true,
+                    "external_references": [
+                        {
+                            "source_name": "securelist.com",
+                            "url": "https://securelist.com/the-sessionmanager-iis-backdoor/106868/"
+                        }
+                    ],
+                    "capabilities": [
+                        "communicates-with-c2",
+                        "infects-remote-machines",
+                        "compromises-data-integrity"
+                    ],
+                    "malware_types": [
+                        "backdoor"
+                    ],
+                    "implementation_languages": [
+                        "c++"
+                    ],
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "x_ic_impacted_sectors": [
+                        "identity--333fecdb-e60d-46e4-9f21-5424dccef693",
+                        "identity--98bc4ec8-590f-49bf-b51e-b37228b6a4c0",
+                        "identity--86488fc3-2973-4e62-b230-f6441f7d39f0",
+                        "identity--39746349-9c5c-47bd-8f39-0aff658d8ee7",
+                        "identity--41070ab8-3181-4c01-9f75-c11df5fb1ca3",
+                        "identity--de6d2cda-d23b-47b5-a869-1065044aefe0",
+                        "identity--62b911a8-bcab-4f31-91f0-af9cdf9b6d20"
+                    ],
+                    "kill_chain_phases": [
+                        {
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain",
+                            "phase_name": "exploitation"
+                        },
+                        {
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain",
+                            "phase_name": "installation"
+                        },
+                        {
+                            "kill_chain_name": "lockheed-martin-cyber-kill-chain",
+                            "phase_name": "command-and-control"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "execution"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "persistence"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "command-and-control"
+                        }
+                    ],
+                    "description": "Developed in C++, SessionManager is a malicious native-code IIS module whose aim is to be loaded by some IIS applications, to process legitimate HTTP requests that are continuously sent to the server.\n\nSuch malicious modules usually expect seemingly legitimate but specifically crafted HTTP requests from their operators, trigger actions based on the operators’ hidden instructions if any, then transparently pass the request to the server for it to be processed just like any other request.\n\nSessionManager offers the following capabilities that, when combined, make it a lightweight persistent initial access backdoor:\n\n* Reading, writing to and deleting arbitrary files on the compromised server.\n\n* Executing arbitrary binaries from the compromised server, also known as “remote command execution”.\n\n* Establishing connections to arbitrary network endpoints that can be reached by the compromised server, as well as reading and writing in such connections.",
+                    "confidence": 100,
+                    "x_ic_deprecated": false
+                },
+                {
+                    "stop_time": "2022-12-31T00:00:00Z",
+                    "x_inthreat_sources_refs": [
+                        "identity--357447d7-9229-4ce1-b7fa-f1b83587048e"
+                    ],
+                    "spec_version": "2.1",
+                    "x_ic_is_in_flint": false,
+                    "lang": "en",
+                    "x_ic_impacted_locations": [
+                        "location--387542b5-5690-489f-8420-7f68b0b9b828",
+                        "location--c41ef74a-4292-47df-95f5-6f8ef7d2efb8",
+                        "location--1175a3bd-dd53-4a7e-9cdd-50743079025a",
+                        "location--9671f7eb-5b14-485e-befd-6fc3bdb38366",
+                        "location--e9be5f61-2d42-4eb6-a158-13b1547c0045",
+                        "location--b2f21856-d558-4904-bbe7-f832af1adc2a"
+                    ],
+                    "id": "relationship--24279de8-cd84-4a60-9db2-c578a12b3813",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "modified": "2022-07-04T12:55:39.556844Z",
+                    "type": "relationship",
+                    "revoked": false,
+                    "created": "2022-07-04T11:17:17.62838Z",
+                    "relationship_type": "indicates",
+                    "target_ref": "malware--e774a0f1-7d2b-48b0-abdb-6e44474dbf9f",
+                    "source_ref": "indicator--a8239840-65ab-45d4-9309-0a6d1b93dbc1",
+                    "start_time": "2021-01-01T00:00:00Z",
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "x_ic_impacted_sectors": [
+                        "identity--333fecdb-e60d-46e4-9f21-5424dccef693",
+                        "identity--98bc4ec8-590f-49bf-b51e-b37228b6a4c0",
+                        "identity--86488fc3-2973-4e62-b230-f6441f7d39f0",
+                        "identity--39746349-9c5c-47bd-8f39-0aff658d8ee7",
+                        "identity--41070ab8-3181-4c01-9f75-c11df5fb1ca3",
+                        "identity--de6d2cda-d23b-47b5-a869-1065044aefe0",
+                        "identity--62b911a8-bcab-4f31-91f0-af9cdf9b6d20"
+                    ],
+                    "confidence": 100,
+                    "x_ic_deprecated": false
+                },
+                {
+                    "spec_version": "2.1",
+                    "x_ic_is_in_flint": false,
+                    "lang": "en",
+                    "x_ic_is_sector": false,
+                    "id": "identity--117c9936-1101-485c-ad80-d5c868caee96",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "modified": "2021-10-05T09:35:35.71996Z",
+                    "type": "identity",
+                    "revoked": false,
+                    "created": "2020-04-21T08:29:43.272093Z",
+                    "name": "securelist.com",
+                    "x_ic_is_source": true,
+                    "identity_class": "organization",
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "confidence": 90,
+                    "x_ic_deprecated": false
+                },
+                {
+                    "spec_version": "2.1",
+                    "x_ic_is_in_flint": true,
+                    "lang": "en",
+                    "x_ic_is_sector": false,
+                    "id": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "created_by_ref": "identity--357447d7-9229-4ce1-b7fa-f1b83587048e",
+                    "modified": "2019-09-30T07:54:40.149166Z",
+                    "type": "identity",
+                    "revoked": false,
+                    "created": "2008-01-01T00:00:00Z",
+                    "contact_information": "threatintel@sekoia.fr",
+                    "name": "SEKOIA",
+                    "x_ic_is_source": true,
+                    "sectors": [
+                        "technology"
+                    ],
+                    "external_references": [
+                        {
+                            "source_name": "SEKOIA website",
+                            "url": "https://www.sekoia.fr"
+                        }
+                    ],
+                    "identity_class": "organization",
+                    "object_marking_refs": [
+                        "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+                    ],
+                    "description": "SEKOIA is a French company which applies intelligence-driven cybersecurity",
+                    "confidence": 95,
+                    "x_ic_deprecated": false
+                },
+                {
+                    "definition_type": "tlp",
+                    "definition": {
+                        "tlp": "green"
+                    },
+                    "type": "marking-definition",
+                    "created": "2019-10-09T16:10:07.239899Z",
+                    "name": "TLP:GREEN",
+                    "spec_version": "2.1",
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "id": "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da",
+                    "x_ic_deprecated": false
+                },
+                {
+                    "definition_type": "tlp",
+                    "definition": {
+                        "tlp": "white"
+                    },
+                    "type": "marking-definition",
+                    "created": "2019-10-31T16:57:02.018068Z",
+                    "name": "TLP:WHITE",
+                    "spec_version": "2.1",
+                    "object_marking_refs": [
+                        "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+                    ],
+                    "id": "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
+                    "x_ic_deprecated": false
+                }
+            ]
+        }
+    ],
+    "has_more": false
+}

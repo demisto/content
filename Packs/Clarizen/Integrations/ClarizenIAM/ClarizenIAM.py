@@ -420,7 +420,6 @@ def main():
 
     except Exception as exc:
         # For any other integration command exception, return an error
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 

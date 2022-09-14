@@ -1,0 +1,21 @@
+commonfields:
+  id: CalderaPopulateEventLogs
+  version: -1
+name: CalderaPopulateEventLogs
+comment: Populates the Event Logs with Event Logs from the MITRE Caldera
+dependson:
+  must:
+  - '|||caldera-get-operation-event-logs'
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

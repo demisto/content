@@ -10,11 +10,10 @@ This playbook does not use any sub-playbooks.
 * Digital Shadows
 
 ### Scripts
+* Print
 * AddEvidence
 
 ### Commands
-* createNewIndicator
-* associateIndicatorsToIncident
 * ds-search
 
 ## Playbook Inputs
@@ -22,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_IP | An IP address to assess and enrich | IP.Address | Optional |
+| IoC_IP | A Digital Shadows ShadowSearch query containing IP addresses | IP.Address | Optional |
 
 ## Playbook Outputs
 ---

@@ -11,9 +11,24 @@ valid_ip_response = {
     "message": "Success",
 }
 
+valid_riot_ip_response = {
+    "ip": "1.1.1.1",
+    "noise": False,
+    "riot": True,
+    "classification": "benign",
+    "name": "CloudFlare",
+    "link": "https://viz.greynoise.io/ip/1.1.1.1",
+    "last_seen": "2021-05-10",
+    "message": "Success",
+}
+
 valid_ip_response_expected = copy.deepcopy(valid_ip_response)
 valid_ip_response_expected["address"] = valid_ip_response["ip"]
 del valid_ip_response_expected["ip"]
+
+valid_riot_ip_response_expected = copy.deepcopy(valid_riot_ip_response)
+valid_riot_ip_response_expected["address"] = valid_riot_ip_response["ip"]
+del valid_riot_ip_response_expected["ip"]
 
 # api_key, api_response, status_code, expected_output
 test_module_data = [
@@ -41,6 +56,13 @@ ip_reputation_command_data = [
         valid_ip_response,
         200,
         valid_ip_response_expected,
+    ),  # NOSONAR
+    (
+        {"ip": "1.1.1.1"},
+        "positive",
+        valid_riot_ip_response,
+        200,
+        valid_riot_ip_response_expected,
     ),  # NOSONAR
     (
         {"ip": "71.6.135.131"},

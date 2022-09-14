@@ -1,8 +1,7 @@
 id: Code42 File Search
 version: -1
 name: Code42 File Search
-description: This playbook searches for files via Code42 security events by either
-  MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
+description: This playbook searches for files via Code42 security events by either MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
 starttaskid: '0'
 tasks:
   '0':
@@ -372,7 +371,6 @@ outputs:
   description: SHA256 hash of file
 - contextPath: File.Hostname
   description: Hostname where file event was captured
-sourceplaybookid: Code42 File Search
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

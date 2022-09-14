@@ -169,9 +169,10 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
         if last_receipt_handles:
             demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
                           last_receipt_handles))
+            last_receipt_handles = set(last_receipt_handles)
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
-        receipt_handles = set()  # type: set
+        receipt_handles = []  # type: list
         incidents = []  # type: list
         while incidents_created < max_fetch:
             messages = client.receive_message(
@@ -191,7 +192,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
 
             # Creating incidents and avoiding creating incidents that were already created previously
             for message in messages["Messages"]:
-                receipt_handles.add(message['ReceiptHandle'])
+                receipt_handles.append(message['ReceiptHandle'])
                 if last_receipt_handles and message['ReceiptHandle'] in last_receipt_handles:
                     continue
                 incidents.append(parse_incident_from_finding(message, parse_body_as_json))

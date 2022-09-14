@@ -5,3 +5,6 @@ ignore=PA129
 
 [file:PopularNews_image.png]
 ignore=IM111
+
+[known_words]
+clickable

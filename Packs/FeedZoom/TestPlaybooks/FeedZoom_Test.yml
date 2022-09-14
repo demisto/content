@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1079752f-9aa1-41f4-871f-e1c94fd85a74
+    taskid: 514885f3-2038-41eb-8db7-b313ba378de6
     type: start
     task:
-      id: 1079752f-9aa1-41f4-871f-e1c94fd85a74
+      id: 514885f3-2038-41eb-8db7-b313ba378de6
       version: -1
       name: ""
       iscommand: false
@@ -31,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c93c9537-dc1b-413b-8533-9df32ac9d3cd
+    taskid: dda8411e-a5dd-4b04-8561-8d4ee11b18bf
     type: regular
     task:
-      id: c93c9537-dc1b-413b-8533-9df32ac9d3cd
+      id: dda8411e-a5dd-4b04-8561-8d4ee11b18bf
       version: -1
       name: DeleteContext
       description: Delete all context
@@ -55,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 200
+          "y": 195
         }
       }
     note: false
@@ -63,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9943aeaa-d1d3-4339-81c3-4ab7e2f62dfc
+    taskid: 952a1a58-8c52-40b6-8524-f8c383d04f5a
     type: regular
     task:
-      id: 9943aeaa-d1d3-4339-81c3-4ab7e2f62dfc
+      id: 952a1a58-8c52-40b6-8524-f8c383d04f5a
       version: -1
       name: zoom-get-indicators
       description: Get indicators from Zoom Feed
@@ -78,13 +82,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -92,12 +96,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 34a6e107-ce31-4596-8a84-22fd4a67e02b
+    taskid: d03c0bb8-4537-4c07-8be1-ba1cc3b239d1
     type: title
     task:
-      id: 34a6e107-ce31-4596-8a84-22fd4a67e02b
+      id: d03c0bb8-4537-4c07-8be1-ba1cc3b239d1
       version: -1
       name: Test Done
       type: title
@@ -109,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 600
+          "y": 720
         }
       }
     note: false
@@ -117,12 +123,55 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: be477cb0-23a8-4aef-8888-2f0cdde78385
+    type: playbook
+    task:
+      id: be477cb0-23a8-4aef-8888-2f0cdde78385
+      version: -1
+      name: Fetch Indicators Test
+      playbookName: Fetch Indicators Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      searchfield:
+        simple: firstSeen, value, score
+      sourcebrand:
+        simple: Zoom Feed
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 200,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50

@@ -148,7 +148,7 @@ def init_driver(offline_mode=False):
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
-        return_error(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+        raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
     return driver
@@ -519,8 +519,8 @@ def rasterize_email_command():
 
     w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
-    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "jpeg"}'  # type: ignore
-    with open('htmlBody.html', 'w') as f:
+    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
+    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 

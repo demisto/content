@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: 'Dragos Worldview'
+  id: Dragos Worldview
   version: -1
 configuration:
 - defaultvalue: https://portal.dragos.com
@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: "1"
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
@@ -52,15 +52,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: "50"
+- defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
 description: 'Custom integration designed to pull in reports from the Dragos Worldview
   API as incidents '
-display: 'Dragos Worldview'
-name: 'Dragos Worldview'
+display: Dragos Worldview
+name: Dragos Worldview
 script:
   commands:
   - arguments:
@@ -87,7 +87,7 @@ script:
       required: true
     description: Get the stix2 json bundle of indicators from a given report
     name: dragos-get-stix2
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isFetchSamples: true
   isfetch: true
   runonce: false
