@@ -1575,19 +1575,11 @@ def messages() -> Response:
     try:
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
-        # tenant_id = headers.get('X-Ms-Tenant-Id')
-        # if tenant_id and tenant_id == get_integration_context().get('tenant_id', ''):
-        #     demisto.debug("tenant id is registered in context")
-        # elif tenant_id != get_integration_context().get('tenant_id', ''):
-        #     demisto.debug('tenant id is not registered in context')
-        # else:
-        #     demisto.debug('no header for tenant')
-        demisto.debug(f"post request headers: {headers}")
+
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
             request_body: dict = request.json
-            demisto.debug(f"post request body: {request_body}")
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:
