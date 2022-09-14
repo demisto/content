@@ -1,6 +1,5 @@
 from CommonServerPython import *
 import json
-import io
 import demistomock as demisto
 
 """ API RAW RESULTS """
@@ -243,7 +242,7 @@ FILE_OUTPUTS = {
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -258,7 +257,7 @@ def test_login_failed(requests_mock, mocker):
     Then:
         - Ensure an indicative error is returned that authorization failed
     """
-    login_failed_html = """<!doctype html>
+    login_failed_html = b"""<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -272,7 +271,7 @@ def test_login_failed(requests_mock, mocker):
     <app-login></app-login>
 <script type="text/javascript" src="public/vendors_c29907a62751511cc002.js"></script><script type="text/javascript" src="public/login_62faa8ec0f21f2d2949f.js"></script></body>  # noqa: E501
 </html>
-""".encode('utf-8')
+"""
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'http://server',
         'credentials': {

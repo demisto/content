@@ -72,8 +72,12 @@ class Client:
                             headers=self._headers,
                             **requests_kwargs)
 
-        if res.status_code in self.error_codes:
-            raise DemistoException(self.error_codes[res.status_code], res=res)
+        if not res.ok:
+            status_code = res.status_code
+            if status_code in self.error_codes:
+                raise DemistoException(self.error_codes[res.status_code], res=res)
+            raise DemistoException(f'{status_code}: {res.text}')
+
         try:
             return res.json()
         except json.decoder.JSONDecodeError as e:

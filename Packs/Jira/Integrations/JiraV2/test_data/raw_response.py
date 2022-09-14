@@ -261,6 +261,58 @@ GET_ISSUE_RESPONSE = {
     }
 }
 
+GET_ISSUE_RESPONSE_WITH_LABELS = {
+    'expand': 'renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10022.requestTypePractice',
+    'id': '19141', 'key': 'VIK-238',
+    'fields': {
+        'statuscategorychangedate': '2021-04-04T12:25:48.335+0300',
+        'issuetype': {'id': '10001',
+                      'description': 'A task that needs to be done.',
+                      'name': 'Task', 'subtask': False, 'avatarId': 10318, 'hierarchyLevel': 0},
+        'timespent': None,
+        'project': {'id': '10005',
+                    'key': 'VIK', 'name': 'VikTest', 'projectTypeKey': 'software', 'simplified': False,
+                    'avatarUrls': {
+                        '48x48': ''}},
+        'issuerestriction': {'issuerestrictions': {}, 'shouldDisplay': False},
+        'watches': {'self': '',
+                    'watchCount': 1, 'isWatching': True},
+        'created': '2021-04-04T12:25:48.114+0300',
+        'customfield_10022': None,
+        'priority': {'self': '',
+                     'iconUrl': '',
+                     'name': 'Medium', 'id': '3'}, 'labels': ['test'],
+        'aggregatetimeoriginalestimate': None, 'timeestimate': None, 'versions': [],
+        'issuelinks': [],
+        'assignee': None, 'updated': '2021-04-04T12:49:43.546+0300',
+        'status': {'self': '',
+                   'description': '',
+                   'iconUrl': '',
+                   'name': 'To Do', 'id': '10000',
+                   'statusCategory': {
+                       'self': '',
+                       'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}},
+        'components': [], 'timeoriginalestimate': None,
+        'description': 'changeing again again\n\nagain gain',
+        'creator': {
+            'accountId': 'accountid',
+            'accountType': 'atlassian',
+            'active': True,
+            'avatarUrls': {
+                '16x16': '',
+                '24x24': '',
+                '32x32': '',
+                '48x48': ''
+            },
+            'displayName': 'jon doe',
+            'emailAddress': 'email',
+            'self': 'https://localhost/rest/api/2/user?accountId=id',
+            'timeZone': 'Asia'
+        }
+    }
+}
+
+
 FIELDS_RESPONSE = [
     {'id': 'customfield_10001', 'key': 'customfield_10001', 'name': 'Owner', 'untranslatedName': 'Owner',
      'custom': True, 'orderable': True, 'navigable': True, 'searchable': True,

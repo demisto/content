@@ -2,7 +2,7 @@
     "name": "XSOAR - Simple Dev to Prod",
     "description": "This pack simplifies exporting custom content items such as Playbooks, Automations, BYOI integrations, etc between your XSOAR Development and Production environments.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "beauchompers",
     "url": "",
     "email": "",

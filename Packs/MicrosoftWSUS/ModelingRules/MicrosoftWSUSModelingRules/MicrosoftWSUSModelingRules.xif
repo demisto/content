@@ -1,0 +1,17 @@
+[MODEL: dataset=msft_wsus_raw, model=Endpoint]
+alter columns = regextract(_raw_log ,"\s(\S+)")
+| alter time_zone = arrayindex(columns,1),
+    severity =  arrayindex(columns,2),
+    service_name =  arrayindex(split( arrayindex(columns,3),".") ,0),
+    event_category = arrayindex( regextract(_raw_log,"\s([a-zA-Z]+)\.[a-zA-Z]+"),0),
+    action = arrayindex( regextract(_raw_log,"\s[a-zA-Z]+\.([a-zA-Z]+)"),0),
+    event_time = arrayindex( regextract(_raw_log,"\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}"),0),
+    EventId = arrayindex( regextract(_raw_log,"\s*EventId\=\s*([^\,]+)\,"),0),
+    Message = arrayindex( regextract(_raw_log,"[a-zA-Z]+\.[a-zA-Z]+\s*(.*)"),0)
+| alter XDM.Endpoint.event_timestamp = parse_timestamp("%Y-%m-%d %H:%M:%E3S",event_time ),
+    XDM.Endpoint.threat.severity = severity,
+    XDM.Endpoint.original_event_id = EventId,
+    XDM.Endpoint.original_event_type = event_category,
+    XDM.Endpoint.reason = action,
+    XDM.Endpoint.Target.process.name = service_name,
+    XDM.Endpoint.original_event_description = Message;
