@@ -1,0 +1,9 @@
+[MODEL:model="Email", dataset="proofpointtesting_threat_response_raw"]
+alter XDM.Email.event_timestamp = created_at
+| alter XDM.Email.original_event_id = to_string(id)
+| alter XDM.Email.Client.user.username = users
+| alter severity = arrayindex( regextract(incident_field_values , "\"name\"\:\"Severity\",\"value\"\:\"([^\"]+)\"") ,0)
+| alter XDM.Email.threat.severity = severity
+| alter category = arrayindex( regextract(incident_field_values , "\"name\"\:\"Classification\",\"value\"\:\"([^\"]+)\"") ,0)
+| alter XDM.Email.threat.category = category
+| alter XDM.Email.original_event_description = to_string(events);
