@@ -212,7 +212,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
              int: dbot score
     """
 
-    block_type: str = BLOCK_TYPE_MAPPING[command]
+    block_type: str = BLOCK_TYPE_MAPPING.get(command)
     threshold_score = severity_score.get(threshold, -1)
     if threshold_score < 0 or threshold_score > 3:
         raise Exception(
