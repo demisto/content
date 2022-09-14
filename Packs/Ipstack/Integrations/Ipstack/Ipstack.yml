@@ -39,6 +39,7 @@ script:
       required: true
       default: true
       description: IP address to query.
+      isArray: true
     outputs:
     - contextPath: IP.Address
       description: IP address.
@@ -81,7 +82,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
 tests:
 - Ipstack_Test
 fromversion: 5.0.0
