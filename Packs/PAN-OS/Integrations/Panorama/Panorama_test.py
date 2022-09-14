@@ -3429,47 +3429,47 @@ def test_pan_os_get_merged_config(mocker):
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'name': 'address', 'element_to_change': 'fqdn', 'element_value': '1.1.1.1'
-                },
-                integration_panorama_params,
-                {
-                    'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']/address'
-                             '/entry[@name="address"]/fqdn',
-                    'element': '<fqdn>1.1.1.1</fqdn>', 'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'name': 'address', 'element_to_change': 'fqdn', 'element_value': '1.1.1.1'
+            },
+            integration_panorama_params,
+            {
+                'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']/address'
+                         '/entry[@name="address"]/fqdn',
+                'element': '<fqdn>1.1.1.1</fqdn>', 'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
 
-            ),
-            pytest.param(
-                {
-                    'name': 'address', 'element_to_change': 'ip_range', 'element_value': '1.1.1.1-1.1.1.8'
-                },
-                integration_panorama_params,
-                {
-                    'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']'
-                             '/address/entry[@name="address"]/ip-range',
-                    'element': '<ip-range>1.1.1.1-1.1.1.8</ip-range>',
-                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
+        ),
+        pytest.param(
+            {
+                'name': 'address', 'element_to_change': 'ip_range', 'element_value': '1.1.1.1-1.1.1.8'
+            },
+            integration_panorama_params,
+            {
+                'xpath': '/config/devices/entry/device-group/entry[@name=\'Lab-Devices\']'
+                         '/address/entry[@name="address"]/ip-range',
+                'element': '<ip-range>1.1.1.1-1.1.1.8</ip-range>',
+                'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
 
-            ),
-            pytest.param(
-                {
-                    'name': 'address', 'element_to_change': 'tag', 'element_value': 'tag1,tag2'
-                },
-                integration_firewall_params,
-                {
-                    'xpath': '/config/devices/entry/vsys/entry[@name=\'vsys1\']/address/entry[@name="address"]/tag',
-                    'element': '<tag><member>tag1</member><member>tag2</member></tag>',
-                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
+        ),
+        pytest.param(
+            {
+                'name': 'address', 'element_to_change': 'tag', 'element_value': 'tag1,tag2'
+            },
+            integration_firewall_params,
+            {
+                'xpath': '/config/devices/entry/vsys/entry[@name=\'vsys1\']/address/entry[@name="address"]/tag',
+                'element': '<tag><member>tag1</member><member>tag2</member></tag>',
+                'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
 
-            )
-        ]
-    )
+        )
+    ]
+)
 def test_pan_os_edit_address_group_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
@@ -3499,30 +3499,30 @@ def test_pan_os_edit_address_group_command_main_flow(mocker, args, params, expec
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'show_uncommitted': 'true'
-                },
-                integration_panorama_params,
-                {
-                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
-                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/application-group"
-                }
-            ),
-            pytest.param(
-                {
-                    'show_uncommitted': 'true'
-                },
-                integration_firewall_params,
-                {
-                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
-                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group"
-                }
-            )
-        ]
-    )
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'show_uncommitted': 'true'
+            },
+            integration_panorama_params,
+            {
+                'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/application-group"
+            }
+        ),
+        pytest.param(
+            {
+                'show_uncommitted': 'true'
+            },
+            integration_firewall_params,
+            {
+                'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group"
+            }
+        )
+    ]
+)
 def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
@@ -3550,39 +3550,39 @@ def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, 
 
     assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
         {'Applications': ['application-3'], 'Members': 1, 'Name': 'test'},
-        {'Applications': ['application-1', 'application-2'],'Members': 2,'Name': 'test-2'}
+        {'Applications': ['application-1', 'application-2'], 'Members': 2, 'Name': 'test-2'}
     ]
     assert mock_request.call_args.kwargs['params'] == expected_url_params
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'name': 'test', 'applications': 'application1,application2', 'device-group': 'test-device-group'
-                },
-                integration_panorama_params,
-                {
-                    'xpath': "/config/devices/entry/device-group/entry[@name='test-device-group']"
-                             "/application-group/entry[@name='test']",
-                    'element': '<members><member>application1</member><member>application2</member></members>',
-                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-            ),
-            pytest.param(
-                {
-                    'name': 'test', 'applications': 'application1,application2'
-                },
-                integration_firewall_params,
-                {
-                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
-                    'element': '<members><member>application1</member><member>application2</member></members>',
-                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-            )
-        ]
-    )
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'name': 'test', 'applications': 'application1,application2', 'device-group': 'test-device-group'
+            },
+            integration_panorama_params,
+            {
+                'xpath': "/config/devices/entry/device-group/entry[@name='test-device-group']"
+                         "/application-group/entry[@name='test']",
+                'element': '<members><member>application1</member><member>application2</member></members>',
+                'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        ),
+        pytest.param(
+            {
+                'name': 'test', 'applications': 'application1,application2'
+            },
+            integration_firewall_params,
+            {
+                'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
+                'element': '<members><member>application1</member><member>application2</member></members>',
+                'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        )
+    ]
+)
 def test_pan_os_create_application_group_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
@@ -3785,31 +3785,31 @@ class TestPanOSEditApplicationGroupCommand:
 
 
 @pytest.mark.parametrize(
-        'args, params, expected_url_params',
-        [
-            pytest.param(
-                {
-                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
-                },
-                integration_panorama_params,
-                {
-                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/"
-                             "application-group/entry[@name='test']",
-                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-            ),
-            pytest.param(
-                {
-                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
-                },
-                integration_firewall_params,
-                {
-                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
-                    'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-                }
-            )
-        ]
-    )
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'name': 'test', 'applications': 'application-2', 'action': 'remove'
+            },
+            integration_panorama_params,
+            {
+                'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/"
+                         "application-group/entry[@name='test']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        ),
+        pytest.param(
+            {
+                'name': 'test', 'applications': 'application-2', 'action': 'remove'
+            },
+            integration_firewall_params,
+            {
+                'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        )
+    ]
+)
 def test_pan_os_delete_application_group_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
