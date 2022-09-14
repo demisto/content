@@ -738,8 +738,8 @@ def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
 
     query_params = {}
 
-    if args.get('limit'):
-        query_params["limit"] = encode_string_results(args.get('limit'))
+    if limit := arg_to_number(args.get('limit', 200)):
+        query_params["limit"] = limit
 
     if args.get('offset'):
         query_params["offset"] = encode_string_results(args.get('offset'))
