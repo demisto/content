@@ -105,7 +105,7 @@ def test_trigger_generic_webhook(requests_mock, is_merged, expected):
             self.password = 'test_password'
             self.url = 'http://test.com'
 
-    post_mock = requests_mock.post('http://test.com', status_code=200)
+    post_mock = requests_mock.post('http://test.com', status_code=200, json=[{"id": "1"}])
     option_mock = OptionMock('pr_link_example', '1', 'dummy pr', PR_WITH_BOTH_BY_NEWLINE, is_merged)
     link_pr_to_jira_issue.trigger_generic_webhook(option_mock)
     res = post_mock.last_request.json()
