@@ -6,6 +6,7 @@
   ],
   "skipped_tests": {},
   "skipped_integrations": {},
+  "nightly_packs": [],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],
