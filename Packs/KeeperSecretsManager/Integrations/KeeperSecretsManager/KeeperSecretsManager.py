@@ -97,7 +97,7 @@ class Client:
         self.credentials = credentials
         self.verify_ssl_certs = False if insecure else True
         try:
-            config=InMemoryKeyValueStorage(credentials)
+            config = InMemoryKeyValueStorage(credentials)
         except Exception:
             demisto.debug("Failed to initialize KSM configuration. Invalid credentials.")
             raise ValueError("Failed to initialize KSM configuration. Invalid credentials.")
