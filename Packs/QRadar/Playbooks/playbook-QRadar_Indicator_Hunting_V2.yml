@@ -1065,7 +1065,7 @@ tasks:
     task:
       id: 76e0d469-ea05-41b0-8085-3c53285cf3d8
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on IP
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -1186,7 +1186,7 @@ tasks:
     task:
       id: 2559107a-16de-4241-878c-3bb53eea7067
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on Domain/URL
       description: 'This playbook runs a QRadar query and return its results to the context.'
       playbookName: QRadarFullSearch
       type: playbook
@@ -1546,7 +1546,7 @@ tasks:
     task:
       id: 08c2739c-01f4-49ac-8919-9842783a16ee
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on Domain/URL
       description: 'This playbook runs a QRadar query and return its results to the context.'
       playbookName: QRadarFullSearch
       type: playbook
@@ -1867,7 +1867,7 @@ tasks:
     task:
       id: c83d997e-9262-4a83-80ce-b8ccdf7e975f
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA256
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -1988,7 +1988,7 @@ tasks:
     task:
       id: 2bed77e0-5c1f-4763-81da-c2487aacb095
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA256
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -2094,7 +2094,7 @@ tasks:
     task:
       id: bbc25cfd-7fd4-4e21-8670-7a294bc47edb
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA1
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -2215,7 +2215,7 @@ tasks:
     task:
       id: a9354a3f-4f69-4368-82b0-c2635288f837
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on MD5
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -2336,7 +2336,7 @@ tasks:
     task:
       id: a2172120-e276-4839-8cf9-96f3aab74764
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on IP
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -2442,7 +2442,7 @@ tasks:
     task:
       id: 7a601ad8-bad0-470f-8254-7513c8acc417
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA1
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -2548,7 +2548,7 @@ tasks:
     task:
       id: 7d519845-0844-4d34-8733-72c17fe63d44
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on MD5
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
