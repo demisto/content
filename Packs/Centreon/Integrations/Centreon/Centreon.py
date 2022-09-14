@@ -19,7 +19,7 @@ DEFAULT_HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def httpRequest(method, urlSuffix, data, headers):
+def httpRequest(method, urlSuffix, data, headers):  # pragma: no cover
     data = {} if data is None else data
 
     url = BASE_URL + urlSuffix
@@ -40,7 +40,7 @@ def httpRequest(method, urlSuffix, data, headers):
         raise e
 
 
-def httpPost(urlSuffix, data=None, files=None):
+def httpPost(urlSuffix, data=None, files=None):  # pragma: no cover
     data = {} if data is None else data
     url = BASE_URL + urlSuffix
     LOG('running request with url=%s\tdata=%s\tfiles=%s' % (url, data, files))
@@ -101,9 +101,9 @@ def get_host_status_command():
         return "No Hosts found"
 
     # changing the keys from underscore notation to UpperCamelCase notation
-    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.iteritems()) for dic in response]
+    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.items()) for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.iteritems() if (v == 0 or v))
+    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.items() if (v == 0 or v))
                    for dic in camel_case_response]
 
     entry = {
@@ -138,9 +138,9 @@ def get_service_status_command():
         return "No Services found"
 
     # changing the keys from underscore notation to UpperCamelCase notation
-    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.iteritems()) for dic in response]
+    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.items()) for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.iteritems() if (v == 0 or v))
+    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.items() if (v == 0 or v))
                    for dic in camel_case_response]
 
     entry = {
@@ -173,6 +173,6 @@ try:
         demisto.results(get_service_status_command())
 
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise
