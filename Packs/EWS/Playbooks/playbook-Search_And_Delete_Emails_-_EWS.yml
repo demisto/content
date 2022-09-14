@@ -124,8 +124,6 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      SearchLastWeek:
-        simple: ${inputs.SearchLastWeek}
       SearchThisWeek:
         simple: ${inputs.SearchThisWeek}
       attachmentName:
