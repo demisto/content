@@ -428,7 +428,7 @@ test_upload_flow:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations
   script:
-    - if ! [[ git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/" ]] ; then                                                                            16:33:03
+    - if ! [[ $(git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/") ]] ; then                                                                            16:33:03
         echo "No upload related files were modified, skipping upload test."
         exit 0
       fi
