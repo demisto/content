@@ -1192,7 +1192,6 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
              'AccountId': demisto.get(value, 'user.account_id')
              }
         human_readable.append(d)
-    print(human_readable)
     headers = ['Name', 'AccountId']
     readable_output = tableToMarkdown(
         name='The list of all the workspace members',

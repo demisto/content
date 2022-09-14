@@ -2204,6 +2204,43 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+      outputs:
+        - contextPath: Bitbucket.WorkspaceMember.type
+          description: 'The action type.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.display_name
+          description: 'The display name of the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.links
+          description: 'Links with information about the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.type
+          description: 'The type of the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.uuid
+          description: 'The unique id of the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.account_id
+          description: 'The account id of the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.user.nickname
+          description: 'The nickname of the user.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.workspace.type
+          description: 'The type of the workspace.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.workspace.uuid
+          description: 'The unique id of the workspace.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.workspace.name
+          description: 'The name of the workspace.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.workspace.slug
+          description: 'The slug of the workspace.'
+          type: String
+        - contextPath: Bitbucket.WorkspaceMember.workspace.links
+          description: 'Links to information about the workspace.'
+          type: String
   isfetch: false
   runonce: false
   script: "-"
