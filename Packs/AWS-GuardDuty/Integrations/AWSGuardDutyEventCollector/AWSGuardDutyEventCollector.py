@@ -21,6 +21,9 @@ GD_SEVERITY_DICT = {
     'High': 7
 }
 
+PRODUCT = 'guardduty'
+VENDOR = 'aws'
+
 
 class DatetimeEncoder(json.JSONEncoder):
     """Json encoder class for encoding datetime objects. Use with json.dumps method."""
@@ -235,7 +238,7 @@ def main():  # pragma: no cover
                 })
 
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
-                send_events_to_xsiam(events, 'aws', 'guard_duty')
+                send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command != 'test-module':
             raise NotImplementedError(f"Command {command} is not implemented.")

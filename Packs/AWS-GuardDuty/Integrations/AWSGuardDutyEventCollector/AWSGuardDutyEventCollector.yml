@@ -4,22 +4,27 @@ commonfields:
   version: -1
 configuration:
 - display: AWS Default Region
+  additionalinfo: The AWS region for this instance of the integration. For example, us-west-2
   name: defaultRegion
   required: true
   type: 0
 - display: Role ARN
+  additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
   required: false
   type: 0
 - display: Role Session Name
+  additionalinfo: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
   name: roleSessionName
   required: false
   type: 0
 - display: Role Session Duration
+  additionalinfo: 'The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.'
   name: sessionDuration
   required: false
   type: 0
 - display: Access Key
+  additionalinfo: The access key ID and secret key used for authentication that was configured during IAM user configuration. If this is used, Role ARN is not required.
   name: credentials
   displaypassword: Secret Key
   required: false
@@ -49,7 +54,7 @@ configuration:
 - display: Guard Duty Severity level
   name: gd_severity
   required: true
-  additionalinfo: The minimum severity of the events to fetch (inclusive).
+  additionalinfo: 'The severity level or higher of findings to be fetched. Possible values: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched.'
   options:
     - 'Low'
     - 'Medium'
@@ -107,7 +112,7 @@ script:
     description: Manual command used to fetch events and display them.
     execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.33854
+  dockerimage: demisto/boto3py3:1.0.0.33999
   isfetchevents: true
   runonce: false
   subtype: python3
