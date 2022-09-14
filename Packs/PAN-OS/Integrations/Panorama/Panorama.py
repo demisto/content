@@ -1340,6 +1340,7 @@ def build_body_request_to_edit_pan_os_object(
     """
     This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
     the requested behavior and a full xpath to the object.
+
     Args:
         behavior (str): must be one of add/remove/replace.
         object_name (str): the name of the object that needs to be updated.
@@ -1350,6 +1351,7 @@ def build_body_request_to_edit_pan_os_object(
         is_entry (bool): whether the element should be of the following form:
             <entry name="{entry_name}"/>
         is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
+
     Returns:
         dict: a body request for the new object to update it.
     """
@@ -1362,13 +1364,15 @@ def build_body_request_to_edit_pan_os_object(
             object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
         )
     else:  # add or remove is only for listable objects.
-        current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
+        current_objects_items = panorama_get_current_element(
+            element_to_change=object_name, xpath=xpath, is_commit_required=False
+        )
         if behavior == 'add':
             updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
         else:  # remove
             updated_object_items = [item for item in current_objects_items if item not in element_value]
             if not updated_object_items and should_contain_entries:
-                raise DemistoException(f'The object: {object_name} must have at least one item.')
+                raise DemistoException(f'The object {xpath} must have at least one entry.')
 
         element = prepare_pan_os_objects_body_request(
             object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
@@ -3445,7 +3449,7 @@ def panorama_create_rule_command(args: dict):
 
 
 @logger
-def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
+def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_required: bool = True) -> list:
     """
     Get the current element value from
     """
@@ -3462,9 +3466,13 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     current_object = result.get(element_to_change, {})
-    if '@dirtyId' in result or '@dirtyId' in current_object:
-        LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+    if is_commit_required:
+        if '@dirtyId' in result or '@dirtyId' in current_object:
+            LOG(f'Found uncommitted item:\n{result}')
+            raise DemistoException('Please commit the instance prior to editing the Security rule.')
+    else:
+        # remove un-relevant committed data
+        parse_pan_os_un_committed_data(result, ['@admin', '@dirtyId', '@time'])
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
@@ -11381,13 +11389,58 @@ def pan_os_create_application_group(application_group_name, applications):
 
 def pan_os_create_application_group_command(args):
     application_group_name = args.get('name')
-    applications = args.get('applications')
+    applications = argToList(args.get('applications'))
 
     raw_response = pan_os_create_application_group(application_group_name, applications)
 
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'application-group {application_group_name} was created successfully.'
+        readable_output=f'application-group {application_group_name} was created successfully.',
+        outputs={'Name': application_group_name, 'Applications': applications, 'Members': len(applications)},
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
+    )
+
+
+def pan_os_edit_application_group(name, applications, action):
+    xpath = build_application_groups_xpath(name=name, element='members')
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(
+            build_body_request_to_edit_pan_os_object(
+                behavior=action, object_name='members', element_value=applications, is_listable=True, xpath=xpath
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = argToList(args.get('applications'))
+    action = args.get('action')
+
+    raw_response = pan_os_edit_application_group(name=application_group_name, applications=applications, action=action)
+
+    updated_applications = panorama_get_current_element(
+        element_to_change='members',
+        xpath=build_application_groups_xpath(application_group_name, 'members'),
+        is_commit_required=False
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was edited successfully.',
+        outputs={
+            'Name': application_group_name, 'Applications': updated_applications, 'Members': len(updated_applications)
+        },
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
     )
 
 
@@ -12048,6 +12101,8 @@ def main():
             return_results(pan_os_list_application_groups_command(args))
         elif command == 'pan-os-create-application-group':
             return_results(pan_os_create_application_group_command(args))
+        elif command == 'pan-os-edit-application-group':
+            return_results(pan_os_edit_application_group_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

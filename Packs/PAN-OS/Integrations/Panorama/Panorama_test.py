@@ -3558,18 +3558,18 @@ def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, 
 @pytest.mark.parametrize(
         'args, params, expected_url_params',
         [
-            # pytest.param(
-            #     {
-            #         'name': 'test', 'applications': 'application1,application2', 'device-group': 'test-device-group'
-            #     },
-            #     integration_panorama_params,
-            #     {
-            #         'xpath': "/config/devices/entry/device-group/entry[@name='test-device-group']"
-            #                  "/application-group/entry[@name='test']",
-            #         'element': '<members><member>application1</member><member>application2</member></members>',
-            #         'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
-            #     }
-            # ),
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application1,application2', 'device-group': 'test-device-group'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry/device-group/entry[@name='test-device-group']"
+                             "/application-group/entry[@name='test']",
+                    'element': '<members><member>application1</member><member>application2</member></members>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
             pytest.param(
                 {
                     'name': 'test', 'applications': 'application1,application2'
@@ -3583,7 +3583,7 @@ def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, 
             )
         ]
     )
-def test_pan_os_create_application_group_command_maiin_flow(mocker, args, params, expected_url_params):
+def test_pan_os_create_application_group_command_main_flow(mocker, args, params, expected_url_params):
     """
     Given:
      - Panorama instance configuration and arguments to create an application group.
@@ -3594,6 +3594,7 @@ def test_pan_os_create_application_group_command_maiin_flow(mocker, args, params
 
     Then:
      - make sure the xpath and the request is correct for both panorama/firewall.
+     - make sure the context is returned correctly.
     """
     from Panorama import main
 
@@ -3604,7 +3605,180 @@ def test_pan_os_create_application_group_command_maiin_flow(mocker, args, params
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'command', return_value='pan-os-create-application-group')
+    result = mocker.patch('demistomock.results')
 
     main()
-
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == {
+        'Name': 'test', 'Applications': ['application1', 'application2'], 'Members': 2
+    }
     assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSEditApplicationGroupCommand:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'add'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']"
+                             "/application-group/entry[@name='test']/members",
+                    'element': '<members><member>application-1</member><member>application-2</member></members>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'add'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/"
+                             "entry[@name='test']/members",
+                    'element': '<members><member>application-2</member><member>application-1</member></members>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_edit_application_group_main_flow_add_action(self, mocker, args, params, expected_url_params):
+        """
+        Tests cases where action == 'add'
+
+        Given:
+        - Panorama instance configuration and applications object of an application-group to add.
+        - Firewall instance configuration and applications object of an application-group to add.
+
+        When:
+        - running the pan-os-edit-application-group through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        responses = [
+            {
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'members': {'member': 'application-1'}
+                    }
+                }
+            },
+            {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}},
+            {
+                'response': {
+                    '@status': 'success', '@code': '19',
+                    'result': {
+                        '@total-count': '1', '@count': '1', 'members': {
+                            '@admin': 'admin', '@dirtyId': '809', '@time': '2022/09/14 04:12:11',
+                            'member': [
+                                {
+                                    '@admin': 'admin', '@dirtyId': '809',
+                                    '@time': '2022/09/14 04:12:11', '#text': 'application-1'
+                                },
+                                {
+                                    '@admin': 'admin', '@dirtyId': '809',
+                                    '@time': '2022/09/14 04:12:11', '#text': 'application-2'
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+
+        mock_request = mocker.patch("Panorama.http_request", side_effect=responses)
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-application-group')
+
+        main()
+        assert mock_request.mock_calls[1].kwargs['params']['xpath'] == expected_url_params['xpath']
+        assert 'application-1' in mock_request.mock_calls[1].kwargs['params']['element']
+        assert 'application-2' in mock_request.mock_calls[1].kwargs['params']['element']
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/application-group/"
+                             "entry[@name='test']/members",
+                    'element': '<members><member>application-1</member></members>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application-2', 'action': 'remove'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry"
+                             "[@name='test']/members",
+                    'element': '<members><member>application-1</member></members>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            )
+        ]
+    )
+    def test_pan_os_edit_application_group_main_flow_remove_action(self, mocker, args, params, expected_url_params):
+        """
+        Tests cases where action == 'remove'
+
+        Given:
+        - Panorama instance configuration and an application object of an application-group to remove.
+        - Firewall instance configuration and an application object of an application-group to remove.
+
+        When:
+        - running the pan-os-edit-application-group through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        responses = [
+            {
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'members': {'member': ['application-1', 'application-2']}
+                    }
+                }
+            },
+            {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}},
+            {
+                'response': {
+                    '@status': 'success', '@code': '19',
+                    'result': {
+                        '@total-count': '1', '@count': '1', 'members': {
+                            '@admin': 'admin', '@dirtyId': '809', '@time': '2022/09/14 04:12:11',
+                            'member': [
+                                {
+                                    '@admin': 'admin', '@dirtyId': '809',
+                                    '@time': '2022/09/14 04:12:11', '#text': 'application-1'
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+
+        mock_request = mocker.patch("Panorama.http_request", side_effect=responses)
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-application-group')
+
+        main()
+        assert mock_request.mock_calls[1].kwargs['params'] == expected_url_params

@@ -7490,6 +7490,7 @@ Returns a list of application-groups of either Panorama/firewall instance.
 | --- | --- | --- |
 | Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
 | Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
 
 #### Command example
 ```!pan-os-list-application-groups show_uncommitted=true```
@@ -7499,7 +7500,10 @@ Returns a list of application-groups of either Panorama/firewall instance.
     "Panorama": {
         "ApplicationGroup": [
             {
-                "Applications": "1c-enterprise",
+                "Applications": [
+                    "1c-enterprise"
+                ],
+                "Members": 1,
                 "Name": "test"
             },
             {
@@ -7507,7 +7511,16 @@ Returns a list of application-groups of either Panorama/firewall instance.
                     "2ch-base",
                     "4shared"
                 ],
+                "Members": 2,
                 "Name": "test-2"
+            },
+            {
+                "Applications": [
+                    "1c-enterprise",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-3"
             }
         ]
     }
@@ -7517,10 +7530,12 @@ Returns a list of application-groups of either Panorama/firewall instance.
 #### Human Readable Output
 
 >### Application groups:
->|Applications|Name|
->|---|---|
->| 1c-enterprise | test |
->| 2ch-base,<br/>4shared | test-2 |
+>|Applications|Members|Name|
+>|---|---|---|
+>| 1c-enterprise | 1 | test |
+>| 2ch-base,<br/>4shared | 2 | test-2 |
+>| 1c-enterprise,<br/>4shared | 2 | test-3 |
+
 
 ### pan-os-create-application-group
 ***
@@ -7541,9 +7556,76 @@ Creates a new application group rule in panorama/firewall instance. If trying to
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+
 #### Command example
 ```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise",
+                "4shared"
+            ],
+            "Members": 2,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >application-group test-3 was created successfully.
+### pan-os-edit-application-group
+***
+Edits an application-group
+
+
+#### Base Command
+
+`pan-os-edit-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+| action | The action to perform on the application-group. Possible values are: add, remove. Default is add. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group | 
+
+#### Command example
+```!pan-os-edit-application-group name=test-3 action=remove applications=4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise"
+            ],
+            "Members": 1,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was edited successfully.

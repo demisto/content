@@ -8167,6 +8167,9 @@ script:
     - contextPath: Panorama.ApplicationGroup.Applications
       description: The list of the applications that the application-group has.
       type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the application that are part of the application-group
+      type: Number
   - arguments:
     - description: The name for the application-group to be created with.
       isArray: false
@@ -8182,7 +8185,50 @@ script:
       required: false
     description: Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
     name: pan-os-create-application-group
-    outputs: []
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name for the application-group to be created with.
+      isArray: false
+      name: name
+      required: true
+    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      isArray: true
+      name: applications
+      required: true
+    - description: The device-group in which the application-group should be created. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - description: The action to perform on the application-group.
+      isArray: false
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      defaultValue: 'add'
+    description: Edits an application-group
+    name: pan-os-edit-application-group
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group
+      type: Number
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false
