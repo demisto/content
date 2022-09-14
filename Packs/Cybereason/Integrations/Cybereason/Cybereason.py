@@ -290,16 +290,16 @@ def query_processes_command(client: Client, args: dict):
         if not isinstance(item, dict):
             raise ValueError("Cybereason raw response is not valid, item in elements is not a dict")
 
-        simple_values = item.get('simpleValues', {})
-        element_values = item.get('elementValues', {})
+            simple_values = item.get('simpleValues', {})
+            element_values = item.get('elementValues', {})
 
-        output = {}
-        for info in PROCESS_INFO:
-            if info.get('type') == 'filterData':
-                output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+            output = {}
+            for info in PROCESS_INFO:
+                if info.get('type') == 'filterData':
+                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
 
-        output = update_output(output, simple_values, element_values, PROCESS_INFO)
-        outputs.append(output)
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
 
     context = []
     for output in outputs:
@@ -473,8 +473,9 @@ def query_malops_command(client: Client, args: dict):
                                                                  template_context, filters, guid_list=guid_list)
     outputs = []
 
+    data = {}
     for response in (malop_process_type, malop_loggon_session_type):
-        data = response.get('data', {})
+        data = response.get('data', {}) if response else {}
         malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         if not data or not malops_map:
             continue
@@ -667,13 +668,16 @@ def malop_processes_command(client: Client, args: dict):
             if not wanted_machine:
                 continue
 
-        output = {}
-        for info in PROCESS_INFO:
-            if info.get('type', '') == 'filterData':
-                output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+                if not wanted_machine:
+                    continue
 
-        output = update_output(output, simple_values, element_values, PROCESS_INFO)
-        outputs.append(output)
+            output = {}
+            for info in PROCESS_INFO:
+                if info.get('type', '') == 'filterData':
+                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
 
     context = []
     for output in outputs:
@@ -1566,7 +1570,7 @@ def logout(client: Client):
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 
 session = requests.session()
 

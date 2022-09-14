@@ -114,7 +114,7 @@ class CrowdStrikeClient(BaseClient):
         """
         now = datetime.now()
         ctx = get_integration_context()
-        if not ctx or force_gen_new_token:
+        if not ctx or not ctx.get('generation_time', force_gen_new_token):
             # new token is needed
             auth_token = self._generate_token()
         else:

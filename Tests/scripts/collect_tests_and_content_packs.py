@@ -1522,6 +1522,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
 
         logging.debug(f'Files string: {files_string}')
+        files_string = '\n'.join(filter(lambda line: 'scripts/collect_tests' not in line, files_string.split('\n')))
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              marketplace_version)
@@ -1530,12 +1531,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:
-        logging.info("Creating filter_file.txt")
-        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file.txt'), 'w') as filter_file:
+        logging.info("Creating filter_file_old.txt")
+        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file_old.txt'), 'w') as filter_file:
             filter_file.write(tests_string)
-        # content_packs_to_install.txt is not used in nightly build
-        logging.info("Creating content_packs_to_install.txt")
-        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install.txt'), 'w') as content_packs_to_install:
+        # content_packs_to_install_old.txt is not used in nightly build
+        logging.info("Creating content_packs_to_install_old.txt")
+        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install_old.txt'), 'w') as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:

@@ -3,9 +3,9 @@ commonfields:
   version: -1
 fromversion: 5.0.0
 name: Hybrid Analysis
-display: Hybrid Analysis
+display: Hybrid Analysis (Deprecated)
 category: Forensics & Malware Analysis
-description: Fully automated malware analysis with unique Hybrid Analysis.
+description: Deprecated. Use CrowdStrike Falcon Sandbox v2 instead.
 configuration:
 - display: Server URL (e.g. https://216.3.128.82)
   name: serverUrl
@@ -35,8 +35,7 @@ script:
       required: true
       description: The MD5, SHA1, or SHA256 hash of the file.
     - name: malicious_threat_levels
-      description: A CSV list of threat level values. Files that have a threat level
-        specified in the list will be considered malicious.
+      description: A CSV list of threat level values. Files that have a threat level specified in the list will be considered malicious.
       isArray: true
       defaultValue: "2"
     outputs:
@@ -103,8 +102,8 @@ script:
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: number
-    description: Returns summary information for a given MD5, SHA1 or SHA256 hash,
-      and all reports generated for any environment ID.
+    description: Returns summary information for a given MD5, SHA1 or SHA256 hash, and all reports generated for any environment ID.
+    deprecated: true
   - name: hybrid-analysis-submit-sample
     arguments:
     - name: entryId
@@ -113,8 +112,7 @@ script:
       description: TheWar-room entry ID of sample file
     - name: environmentID
       required: true
-      description: The environment ID to which to submit the file. Run the vx-get-environments
-        command to get all environment IDs.
+      description: The environment ID to which to submit the file. Run the vx-get-environments command to get all environment IDs.
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: JobID of the submission
@@ -125,14 +123,12 @@ script:
     - contextPath: HybridAnalysis.Submit.EnvironmentID
       description: 'The environment ID of the submission. '
       type: string
-    description: Submits a file from the investigation to the analysis server. The
-      minimum required authorization is "default".
+    description: Submits a file from the investigation to the analysis server. The minimum required authorization is "default".
+    deprecated: true
   - name: hybrid-analysis-search
     arguments:
     - name: query
-      description: 'The query to run, in the Hybrid Analysis query syntax. For more
-        information, see `<server url>/faq#advanced-search-options`. For example:
-        url:google, host:95.181.53.78.'
+      description: 'The query to run, in the Hybrid Analysis query syntax. For more information, see `<server url>/faq#advanced-search-options`. For example: url:google, host:95.181.53.78.'
     - name: filename
       description: The full file name, including the file extension.
     - name: filetype
@@ -142,17 +138,13 @@ script:
     - name: env_id
       description: The environment ID.
     - name: country
-      description: 'The ISO code of the country by which to filter results, for example:
-        swe'
+      description: 'The ISO code of the country by which to filter results, for example: swe'
     - name: verdict
-      description: 'The verdict by which to filter results. Can be "1- whitelisted",
-        "2- no verdict", "3- "no specific threat", "4- suspicious", or "5- malicious".'
+      description: 'The verdict by which to filter results. Can be "1- whitelisted", "2- no verdict", "3- "no specific threat", "4- suspicious", or "5- malicious".'
     - name: av_detect
-      description: 'The AV multi-scan range (0-100) by which to filter results, for
-        example: "50-70".'
+      description: 'The AV multi-scan range (0-100) by which to filter results, for example: "50-70".'
     - name: vx_family
-      description: 'The AV family substring by which to filter results, for example:
-        "nemucod".'
+      description: 'The AV family substring by which to filter results, for example: "nemucod".'
     - name: tag
       description: 'The hashtag by which to filter results, for example: "ransomware".'
     - name: port
@@ -174,8 +166,7 @@ script:
     - name: authentihash
       description: The authentication hash.
     - name: min_malicious_scanners
-      description: The number of scanners that report the file as malicious to determine
-        whether the file is malicious. Default is "2".
+      description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.Search.SHA256
@@ -231,8 +222,8 @@ script:
       description: The DBotScore vendor.
     - contextPath: DBotScore.Score
       description: The DBot score.
-    description: Performs a search on the database using the Hybrid Analysis search
-      syntax.
+    description: Performs a search on the database using the Hybrid Analysis search syntax.
+    deprecated: true
   - name: hybrid-analysis-detonate-file
     arguments:
     - name: entryId
@@ -240,19 +231,15 @@ script:
       description: The War Room entry ID of the sample file you want to detonate.
     - name: environmentID
       required: true
-      description: The environment ID to which to submit the file for detonation.
-        Run the vx-get-environments command to get all environment IDs. Default is
-        100, or other WINDOWS ID.
+      description: The environment ID to which to submit the file for detonation. Run the vx-get-environments command to get all environment IDs. Default is 100, or other WINDOWS ID.
     - name: delay
-      description: The amount of time (in seconds) to wait between calls. Default
-        is "3".
+      description: The amount of time (in seconds) to wait between calls. Default is "3".
       defaultValue: "3"
     - name: timeout
       description: The total wait time (in seconds) before timeout. Default is "60".
       defaultValue: "60"
     - name: malicious_threat_levels
-      description: A CSV list of threat level values. Files that have a threat level
-        specified in the list will be considered malicious.
+      description: A CSV list of threat level values. Files that have a threat level specified in the list will be considered malicious.
       isArray: true
       defaultValue: "2"
     outputs:
@@ -320,6 +307,7 @@ script:
       description: The DBot score.
       type: number
     description: Submits a file for detonation in Hybrid Analysis.
+    deprecated: true
   - name: hybrid-analysis-get-report-status
     arguments:
     - name: jobID
@@ -342,11 +330,11 @@ script:
       description: The environment ID of the submission.
       type: string
     description: Returns the state of the file submission.
+    deprecated: true
   - name: hybrid-analysis-quick-scan-url
     arguments:
     - name: scan_type
-      description: The type of scan. Run the hybrid-analysis-list-scanners command
-        to view available scanners.
+      description: The type of scan. Run the hybrid-analysis-list-scanners command to view available scanners.
       defaultValue: all
     - name: url
       required: true
@@ -373,8 +361,8 @@ script:
     - contextPath: HybridAnalysis.URL.SubmissionType
       description: The type of the submission. Can be "file" or "url".
       type: string
-    description: Submits the URL of a website, or the URL that contains the file,
-      for analysis.
+    description: Submits the URL of a website, or the URL that contains the file, for analysis.
+    deprecated: true
   - name: hybrid-analysis-submit-url
     arguments:
     - name: url
@@ -383,8 +371,7 @@ script:
       defaultValue: The URL of the website, or the URL that contains the file to submit.
     - name: environmentID
       required: true
-      description: The environment ID to which to submit the file. Run the vx-get-environments
-        command to get all environment IDs.
+      description: The environment ID to which to submit the file. Run the vx-get-environments command to get all environment IDs.
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: The job ID of the submission.
@@ -398,8 +385,8 @@ script:
     - contextPath: HybridAnalysis.Submit.SubmissionType
       description: The type of the submission. Can be "file" or "url".
       type: string
-    description: Submits The URL of a website or the URL that contains the file, for
-      analysis.
+    description: Submits The URL of a website or the URL that contains the file, for analysis.
+    deprecated: true
   - name: hybrid-analysis-list-scanners
     arguments: []
     outputs:
@@ -410,6 +397,7 @@ script:
     - contextPath: HybridAnalysis.Scanner.Description
       description: The scanner description.
     description: ' Returns a list of available scanners.'
+    deprecated: true
   - name: hybrid-analysis-quick-scan-url-results
     arguments:
     - name: scanID
@@ -417,8 +405,7 @@ script:
       description: The scan ID of the scanned URL.
     - name: min_malicious_scanners
       required: true
-      description: The number of scanners that report the file as malicious to determine
-        whether the file is malicious. Default is "2".
+      description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.URL.ScanID
@@ -443,7 +430,8 @@ script:
       description: The SHA256 hash of the file.
       type: string
     description: Returns the scan results of the given URL ID.
+    deprecated: true
   runonce: false
 tests:
-- Detonate File - HybridAnalysis - Test
-- HybridAnalysis-Test
+- No tests (deprecated)
+deprecated: true

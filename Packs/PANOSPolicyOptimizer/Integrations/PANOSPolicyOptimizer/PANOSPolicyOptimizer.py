@@ -63,6 +63,10 @@ class Client:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
+        # Fix to login validation from version 9
+        if int(demisto.params().get('version', 8)) > 8:
+            if 'window.Pan.staticMOTD' not in response.text:
+                match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         if not match:

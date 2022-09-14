@@ -176,6 +176,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      yes:
+      - '2'
       no:
       - '3'
     note: false

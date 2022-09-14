@@ -85,6 +85,7 @@ def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
             'vendorId': private_pack_metadata.get('vendorId', ""),
             'partnerId': private_pack_metadata.get('partnerId', ""),
             'partnerName': private_pack_metadata.get('partnerName', ""),
+            'disableMonthly': private_pack_metadata.get('disableMonthly', False),
             'contentCommitHash': private_pack_metadata.get('contentCommitHash', "")
         })
     return private_packs

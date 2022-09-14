@@ -36,20 +36,43 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: XMCyber continuously finds attack vectors to critical assets. This integration
-  fetches events (incidents) on changes in the overall risk score, risk to assets,
-  or impacting attack techniques. Additionally incidents are enriched with incoming
-  attack vectors to the incident's endpoints, and critical assets at risk form the
-  incident.
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
+description: XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
 display: XM Cyber
 name: XMCyber
 script:
   commands:
   - arguments:
     - default: false
-      description: The relevant period of time. The optiosn are timeAgo_days_7 (past
-        7 days) timeAgo_days_14 timeAgo_days_30 or monthly_YYYY_MM for a given year
-        and month
+      description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
       isArray: false
       name: timeId
       required: false
@@ -61,8 +84,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: List critical assets at risk from an entity and the complexity of
-      the attack
+    description: List critical assets at risk from an entity and the complexity of the attack
     execution: false
     name: xmcyber-affected-critical-assets-list
     outputs:
@@ -70,7 +92,7 @@ script:
       description: XMCyber Entity ID
       type: String
     - contextPath: XMCyber.Entity.criticalAssetsAtRiskList.name
-      description: Compromising Techinique Name
+      description: Compromising Technique Name
       type: String
     - contextPath: XMCyber.Entity.criticalAssetsAtRiskList.average
       description: Average attack complexity
@@ -80,9 +102,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The relevant period of time. The optiosn are timeAgo_days_7 (past
-        7 days) timeAgo_days_14 timeAgo_days_30 or monthly_YYYY_MM for a given year
-        and month
+      description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
       isArray: false
       name: timeId
       required: false
@@ -94,8 +114,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: List all entities at risk from an entity and the complexity of the
-      attack
+    description: List all entities at risk from an entity and the complexity of the attack
     execution: false
     name: xmcyber-affected-entities-list
     outputs:
@@ -134,7 +153,7 @@ script:
     deprecated: false
     description: Return data on Entity by IP from XM Cyber
     execution: false
-    name: ip
+    name: xmcyber-enrich-from-ip
     outputs:
     - contextPath: XMCyber.Entity.id
       description: XMCyber Entity ID
@@ -169,18 +188,6 @@ script:
     - contextPath: XMCyber.Entity.report
       description: Link to the Entity Report
       type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
     - contextPath: IP.Address
       description: IP address.
       type: String
@@ -195,15 +202,15 @@ script:
       type: String
   - arguments:
     - default: true
-      description: List of hostnames.
+      description: List of entityIds.
       isArray: true
-      name: hostname
+      name: entityId
       required: false
       secret: false
     deprecated: false
-    description: Return data on Entity by hostname from XM Cyber
+    description: Return data on Entity by entityId from XM Cyber
     execution: false
-    name: xmcyber-hostname
+    name: xmcyber-enrich-from-entityId
     outputs:
     - contextPath: XMCyber.Entity.id
       description: XMCyber Entity ID
@@ -247,7 +254,61 @@ script:
     - contextPath: Host.IP
       description: The IP address of the host.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  - arguments:
+    - default: true
+      description: List of entityIds.
+      isArray: true
+      name: entityId
+      required: false
+      secret: false
+    deprecated: false
+    description: Return data on Entity by hostname from XM Cyber
+    execution: false
+    name: xmcyber-enrich-from-hostname
+    outputs:
+    - contextPath: XMCyber.Entity.id
+      description: XMCyber Entity ID
+      type: String
+    - contextPath: XMCyber.Entity.name
+      description: Entity Name
+      type: String
+    - contextPath: XMCyber.Entity.isAsset
+      description: Is Entity a Critical Asset
+      type: Boolean
+    - contextPath: XMCyber.Entity.affectedEntities
+      description: Number of unique entities at risk from this entity
+      type: Number
+    - contextPath: XMCyber.Entity.averageComplexity
+      description: Average complexity to compromise this entity
+      type: Number
+    - contextPath: XMCyber.Entity.criticalAssetsAtRisk
+      description: Number of unique critical assets at risk from this entity
+      type: Number
+    - contextPath: XMCyber.Entity.averageComplexityLevel
+      description: Level of the average complexity to compromise this entity
+      type: String
+    - contextPath: XMCyber.Entity.compromisingTechniques.name
+      description: Technique compromising this entity
+      type: String
+    - contextPath: XMCyber.Entity.compromisingTechniques.count
+      description: Number of vectors with this technique compromising this entity
+      type: Number
+    - contextPath: XMCyber.Entity.type
+      description: Entity Type
+      type: String
+    - contextPath: XMCyber.Entity.report
+      description: Link to the Entity Report
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: Host.IP
+      description: The IP address of the host.
+      type: String
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

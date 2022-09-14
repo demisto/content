@@ -745,16 +745,17 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
+                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
-            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
+            closing_entry['Contents']['closeNotes'] = close_notes
+            incident_data['closeNotes'] = close_notes
 
     return closing_entry
 

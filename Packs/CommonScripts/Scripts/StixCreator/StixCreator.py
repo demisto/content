@@ -12,10 +12,10 @@ from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet
 from stix2 import Tool, CourseOfAction
 from typing import Any, Callable
 
-SCOs: dict[str, str] = {
-    "file md5": "file:hashes.md5",
-    "file sha1": "file:hashes.sha1",
-    "file sha256": "file:hashes.sha256",
+SCOs: dict[str, str] = {  # pragma: no cover
+    "md5": "file:hashes.md5",
+    "sha1": "file:hashes.sha1",
+    "sha256": "file:hashes.sha256",
     "ssdeep": "file:hashes.ssdeep",
     "ip": "ipv4-addr:value",
     "cidr": "ipv4-addr:value",
@@ -29,7 +29,7 @@ SCOs: dict[str, str] = {
     "registry key": "windows-registry-key:key"
 }
 
-SDOs: dict[str, Callable] = {
+SDOs: dict[str, Callable] = {  # pragma: no cover
     "malware": Malware,
     "attack pattern": AttackPattern,
     "campaign": Campaign,
@@ -41,6 +41,31 @@ SDOs: dict[str, Callable] = {
     "cve": Vulnerability,
     "course of action": CourseOfAction
 }
+
+
+def hash_type(value: str) -> str:  # pragma: no cover
+    length = len(value)
+    if length == 32:
+        return 'md5'
+    if length == 40:
+        return 'sha1'
+    if length == 64 and ":" in value:
+        return 'ssdeep'
+    elif length == 64:
+        return 'sha256'
+    if length == 128:
+        return 'sha512'
+    return ''
+
+
+def guess_indicator_type(type_: str, val: str) -> str:
+    # try to guess by key
+    for sco in SCOs:
+        if sco in type_:
+            return sco
+
+    # try to auto_detect by value
+    return (auto_detect_indicator_type(val) or type_).lower()
 
 
 def main():
@@ -94,6 +119,10 @@ def main():
 
         try:
             indicator_type = demisto_indicator_type.lower().replace("-", "")
+            if indicator_type == 'file':
+                indicator_type = hash_type(value)
+            if indicator_type not in SCOs and indicator_type not in SDOs:
+                indicator_type = guess_indicator_type(indicator_type, value)
             indicator = Indicator(pattern=f"[{SCOs[indicator_type]} = '{value}']",
                                   pattern_type='stix',
                                   **kwargs)
@@ -133,7 +162,7 @@ def main():
                 continue
 
     if len(indicators) > 1:
-        bundle = Bundle(indicators)
+        bundle = Bundle(indicators, allow_custom=True)
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
         }

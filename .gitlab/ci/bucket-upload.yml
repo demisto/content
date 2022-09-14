@@ -195,7 +195,7 @@ install-packs-in-xsiam-master:
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs

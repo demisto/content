@@ -86,6 +86,10 @@ CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
+DEMISTO_API_KEY: str
+DEMISTO_URL: str
+IGNORE_RETRIES: bool
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -828,6 +832,7 @@ def answer_question(text: str, question: dict, email: str = ''):
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
+    return incident_id
 
 
 def check_for_unanswered_questions():
@@ -840,24 +845,23 @@ def check_for_unanswered_questions():
     updated_questions = []
 
     for question in questions:
-        if question.get('last_poll_time'):
-            if question.get('expiry'):
-                # Check if the question expired - if it did, answer it with the default response
-                # and remove it
-                expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
-                if expiry < now:
-                    answer_question(question.get('default_response'), question, email='')
-                    updated_questions.append(question)
-                    continue
-            # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
-            # since the last polling time. if not, continue to the next question until it has.
-            last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
-            delta = now - last_poll_time
-            minutes = delta.total_seconds() / 60
-            sent = question.get('sent', None)
-            poll_time_minutes = get_poll_minutes(now, sent)
-            if minutes < poll_time_minutes:
+        if question.get('expiry'):
+            # Check if the question expired - if it did, answer it with the default response
+            # and remove it
+            expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
+            if expiry < now:
+                _ = answer_question(question.get('default_response'), question, email='')
+                updated_questions.append(question)
                 continue
+        # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+        # since the last polling time. if not, continue to the next question until it has.
+        last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
+        delta = now - last_poll_time
+        minutes = delta.total_seconds() / 60
+        sent = question.get('sent', None)
+        poll_time_minutes = get_poll_minutes(now, sent)
+        if minutes < poll_time_minutes:
+            continue
         entitlement = question.get('entitlement', '')
         demisto.info(f'Slack - polling for an answer for entitlement {entitlement}')
         question['last_poll_time'] = now_string
@@ -1417,9 +1421,12 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
     if req.retry_attempt:
-        if req.retry_attempt > 0:
+        if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
             return
+        else:
+            demisto.debug(f"Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
+                          f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
     data_type: str = req.type
     payload: dict = req.payload
     if data_type == 'error':
@@ -1442,6 +1449,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         action_text = ''
         message_ts = message.get('ts', '')
         actions = data.get('actions', [])
+        state = data.get('state', {})
 
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
@@ -1481,7 +1489,37 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_string = json.loads(entitlement_json)
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
-            answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            if state and DEMISTO_API_KEY:
+                string_safe_state = json.dumps(state)
+                body = {
+                    "data": "!Set",
+                    "args": {
+                        "value": {
+                            "simple": string_safe_state
+                        },
+                        "key": {
+                            "simple": "SlackBlockState"
+                        }
+                    },
+                    "investigationId": str(incident_id)
+                }
+                headers = {
+                    'Authorization': f'{DEMISTO_API_KEY}',
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                }
+
+                _body = json.dumps(body)
+                try:
+                    response = requests.request("POST", f"{DEMISTO_URL}/entry/execute/sync", headers=headers, data=_body,
+                                                verify=VERIFY_CERT)
+                    response.raise_for_status()
+                except requests.exceptions.ConnectionError as err:
+                    err_message = f'Error submitting context command to server. Check your API Key: {err}'
+                    demisto.updateModuleHealth(err_message)
+            if state and not DEMISTO_API_KEY:
+                demisto.debug("A state was found in the message, but no API key was configured.")
 
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
@@ -1772,6 +1810,7 @@ def slack_send():
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
                  or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
+        demisto.debug(f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
@@ -2512,7 +2551,8 @@ def init_globals(command_name: str = ''):
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
-    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
+    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
+    global IGNORE_RETRIES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2543,6 +2583,10 @@ def init_globals(command_name: str = ''):
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
+    DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
+    demisto_urls = demisto.demistoUrls()
+    DEMISTO_URL = demisto_urls.get('server')
+    IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     common_channels = demisto.params().get('common_channels', None)
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
