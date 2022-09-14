@@ -39,6 +39,12 @@
                 "Description": {
                     "simple": "summary.description"
                 },
+                "Destination IPs": {
+                    "simple": "summary.dst_ips"
+                },
+                "Dst Ports": {
+                    "simple": "summary.dst_ports"
+                },
                 "External Category Name": {
                     "simple": "category"
                 },

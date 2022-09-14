@@ -153,6 +153,8 @@ Returns a list of Detection objects. All search attributes will be cummulative u
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
+| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 
@@ -345,6 +347,8 @@ Returns a single detection details
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
+| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 

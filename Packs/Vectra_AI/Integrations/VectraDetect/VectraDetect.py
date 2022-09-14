@@ -737,9 +737,17 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
     source_host = detection.get('src_host')
     source_host_id = source_host.get('id') if source_host else None
 
+    summary = detection.get('summary')
+    if summary:
+        description = summary.get('description')
+        dst_ips = summary.get('dst_ips')
+        dst_ports = summary.get('dst_ports')
+
     return common_extract_data(detection) | {
         'Category'            : detection.get('category'),                                                # noqa: E203
-        'Description'         : detection.get('description'),                                             # noqa: E203
+        'Description'         : description,                                                              # noqa: E203
+        'DestinationIPs'      : dst_ips,                                                                  # noqa: E203
+        'DestinationPorts'    : dst_ports,                                                                # noqa: E203
         'FirstTimestamp'      : convert_date(detection.get('first_timestamp')),                           # noqa: E203
         'IsTargetingKeyAsset' : detection.get('is_targeting_key_asset'),                                  # noqa: E203
         'LastTimestamp'       : convert_date(detection.get('last_timestamp')),                            # noqa: E203

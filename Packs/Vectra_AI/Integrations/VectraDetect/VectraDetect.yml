@@ -338,6 +338,12 @@ script:
     - contextPath: Vectra.Detection.Description
       type: String
       description: Detection description
+    - contextPath: vectra.Detection.DestinationIPs
+      type: String
+      description: Detection destination IPs
+    - contextPath: vectra.Detection.DestinationPorts
+      type: String
+      description: Detection destination ports
     - contextPath: Vectra.Detection.FirstTimestamp
       type: String
       description: First time this detection has been seen
