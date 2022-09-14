@@ -278,7 +278,7 @@ class IncidentTypeAPI(EntityAPI):
         return verify_search_response_in_list(response, name)
 
 
-class ClassifierAPI(EntityAPI):  # TODO: check
+class ClassifierAPI(EntityAPI):  # works
     name = 'classifier'
 
     def search_specific_id(self, specific_id: str):
@@ -287,7 +287,7 @@ class ClassifierAPI(EntityAPI):  # TODO: check
                                fail_on_error=False)
 
     def search_all(self):
-        return execute_command('demisto-api-post',  # TODO: check.
+        return execute_command('demisto-api-post',
                                {'uri': '/classifier/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
