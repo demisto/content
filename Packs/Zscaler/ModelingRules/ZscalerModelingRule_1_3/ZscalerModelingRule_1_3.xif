@@ -1,5 +1,6 @@
 [MODEL: dataset=zscaler_nssweblog_raw]
-alter xdm.session_context_id = externalId,
+alter
+    xdm.session_context_id = externalId,
 	xdm.observer.action = act,
 	xdm.event.outcome = outcome,
 	xdm.event.outcome_reason = reason,

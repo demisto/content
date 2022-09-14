@@ -1,7 +1,8 @@
 fromversion: 6.8.0
+from_xdr_version: 3.4.0
 id: zscaler_internet_access_modeling_rule
 name: Zscaler Internet Access Modeling Rule
 rules: ''
 schema: ''
 tags: Zscaler Internet Access
-toversion: 6.9.9
+to_xdr_version: 3.4.9
