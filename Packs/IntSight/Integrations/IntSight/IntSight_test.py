@@ -1,5 +1,5 @@
+from unittest.mock import Mock, patch
 import pytest
-from mock import Mock, patch
 
 import demistomock as demisto
 
@@ -668,19 +668,6 @@ def test_assign_alert(mocker_results, mocker):
     ])
     IntSight.assign_alert()
     assert (assignee_id == mocker_results.call_args[0][0]['Contents']['Assignees.AssigneeID'])
-
-
-def test_unicode_to_str_recur(mocker):
-    mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
-    mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
-    mocker.patch.object(demisto, 'args', return_value={
-        'alert-id': '5e7b0b5620d02a00085ab21e',
-        'assignee-email': 'email@domain.com',
-        'is-mssp-optional': 'false'
-    })
-    from IntSight import unicode_to_str_recur
-    non_ascii_str = u'\u05d5\u05d5\u05d0\u05d5'
-    assert unicode_to_str_recur(non_ascii_str) == '\xd7\x95\xd7\x95\xd7\x90\xd7\x95'
 
 
 class MockResponse:
