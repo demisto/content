@@ -23,6 +23,7 @@ xdr_severity_to_demisto: dict[str, str] = {
     'SEV_020_LOW': 'low',
     'SEV_030_MEDIUM': 'medium',
     'SEV_040_HIGH': 'high',
+    'SEV_050_CRITICAL': 'critical',
     'SEV_090_UNKNOWN': 'unknown',
 }
 demisto_severity_to_xdr = {v: k for k, v in xdr_severity_to_demisto.items()}
