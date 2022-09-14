@@ -335,6 +335,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2594,6 +2595,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2640,6 +2642,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2686,6 +2689,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2732,6 +2736,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
