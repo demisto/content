@@ -3153,7 +3153,7 @@
         {
             "integrations": "CyCognito",
             "playbookID": "CyCognito-Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Google Chronicle Backstory",

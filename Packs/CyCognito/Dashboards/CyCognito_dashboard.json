@@ -882,7 +882,7 @@
             "reflectDimensions": true
         }
     ],
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.2.0",
     "description": "The dashboard consists of issues overview, prevalent issues, and issues distribution based on various factors (Example: Status, severity, etc) which are detected by the CyCognito platform.",
     "isPredefined": true
 }
