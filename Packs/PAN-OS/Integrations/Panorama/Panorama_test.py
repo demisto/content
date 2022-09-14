@@ -3549,8 +3549,8 @@ def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, 
     main()
 
     assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
-        {'Name': 'test', 'Applications': 'application-3'},
-        {'Name': 'test-2', 'Applications': ['application-1', 'application-2']}
+        {'Applications': ['application-3'], 'Members': 1, 'Name': 'test'},
+        {'Applications': ['application-1', 'application-2'],'Members': 2,'Name': 'test-2'}
     ]
     assert mock_request.call_args.kwargs['params'] == expected_url_params
 
