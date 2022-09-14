@@ -1,8 +1,8 @@
 [
   {
-    "severe_issues_count": 1,
-    "domain_names": [],
-    "from_rotating": "no",
+    "severe_issues": 1,
+    "domains": [],
+    "dynamically_resolved": "no",
     "tags": [],
     "id": "ip/127.0.0.1",
     "organizations": [
@@ -23,7 +23,7 @@
         "protocol": "tcp"
       }
     ],
-    "security_rating": "F",
+    "security_grade": "F",
     "investigation_status": "investigated",
     "locations": [
       "USA"
@@ -36,12 +36,13 @@
     "status": "normal",
     "alive": true,
     "comment": null,
-    "issues_count": 1
+    "issues_count": 1,
+    "discoverability": "Extreme"
   },
   {
-    "severe_issues_count": 1,
-    "domain_names": [],
-    "from_rotating": "no",
+    "severe_issues": 1,
+    "domains": [],
+    "dynamically_resolved": "no",
     "tags": [],
     "id": "ip/127.0.0.2",
     "organizations": [
@@ -49,7 +50,7 @@
     ],
     "first_seen": "2021-07-22T03:07:29.400Z",
     "open_ports": [],
-    "security_rating": "D",
+    "security_grade": "D",
     "investigation_status": "investigated",
     "locations": [
       "IND"
@@ -62,6 +63,7 @@
     "status": "normal",
     "alive": true,
     "comment": null,
-    "issues_count": 3
+    "issues_count": 3,
+    "discoverability": "High"
   }
 ]

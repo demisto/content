@@ -14,7 +14,7 @@ This integration was integrated and tested with CyCognito V1 API.
     | First Fetch Time | The date or relative timestamp from where to start fetching assets.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | False |
     | Max Fetch | The maximum number of assets to fetch every time. The maximum value is '1000'. | False |
     | Organizations | Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values. | False |
-    | Security Rating | Filters the assets according to security rating.<br/><br/>Supported values:<br/>A: Very strong,<br/>B: Strong,<br/>C: Less vulnerable,<br/>D: Vulnerable,<br/>F: Highly vulnerable | False |
+    | Security Grade | Filters the assets according to security grade.<br/><br/>Supported values:<br/>A: Very strong,<br/>B: Strong,<br/>C: Less vulnerable,<br/>D: Vulnerable,<br/>F: Highly vulnerable | False |
     | Hosting Type | Filters the assets based on their hosting type.<br/><br/>Supported values: 'owned', 'cloud', 'undetermined' | False |
     | Locations | Filters the assets based on the geographic locations to which they belong. Multiple selection is supported.<br/><br/>Locations are available only for IP, Domain, and Certificate asset types. | False |
     | Fetch indicators | Indicates whether to fetch indicators from the instance. | False |
@@ -55,7 +55,7 @@ Fetches a given limit of indicators from the CyCognito platform and displays the
 | last_seen | The date and time at which CyCognito most recently attributed the asset to the organization.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | Optional | 
 | organizations | Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values. | Optional | 
 | hosting_type | Filters the assets according to their hosting type. Supports comma-separated values.<br/><br/>Supported values: 'owned', 'cloud', 'undetermined' | Optional | 
-| security_rating | Filters the assets according to security rating. Supports comma-separated values.<br/><br/>Supported values: 'A', 'B', 'C', 'D', 'F'<br/><br/>Where:<br/>A = Very strong<br/>B = Strong<br/>C = Less vulnerable<br/>D = Vulnerable<br/>F = Highly vulnerable | Optional | 
+| security_grade | Filters the assets according to security rating. Supports comma-separated values.<br/><br/>Supported values: 'A', 'B', 'C', 'D', 'F'<br/><br/>Where:<br/>A = Very strong<br/>B = Strong<br/>C = Less vulnerable<br/>D = Vulnerable<br/>F = Highly vulnerable | Optional | 
 | status | Filters the assets according to their status. Supports comma-separated values.<br/><br/>Supported values: 'changed', 'new', 'normal' | Optional | 
 | locations | The geographical locations in which the asset is found. Supported values contain the three-letter ISO country code for the respective countries--e.g., IND, USA.<br/><br/>Locations are available only for IP, Domain, and Certificate asset types. | Optional | 
 | tags | A keyword or phrase that can be added to an asset or issue metadata. Supports comma-separated values. | Optional | 
@@ -70,7 +70,7 @@ There is no context output for this command.
 
 >### Indicator Detail:
 > #### Asset type: IP
->|Asset ID|Security Rating|Status|Organizations|First Seen|Last Seen|Locations|Hosting Type|
+>|Asset ID|Security Grade|Status|Organizations|First Seen|Last Seen|Locations|Hosting Type|
 >|---|---|---|---|---|---|---|---|
 >| 127.0.0.1 | F | normal | ACME Ticketing, ACME Cleantech Solutions, Acme Holdings | 30 Jun 2021, 12:32 PM | 24 Mar 2022, 04:26 AM | United States | cloud |
 >| 127.0.0.2 | D | normal | Acme Interior Design | 22 Jul 2021, 03:07 AM | 24 Mar 2022, 04:26 AM | India | owned |

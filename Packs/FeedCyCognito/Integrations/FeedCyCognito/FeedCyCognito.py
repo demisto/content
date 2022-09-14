@@ -19,7 +19,7 @@ HR_DATE_FORMAT = "%d %b %Y, %I:%M %p"
 BASE_URL = "https://api.platform.cycognito.com/v1"
 AVAILABLE_ASSET_TYPES = ["ip", "domain", "cert", "webapp", "iprange"]
 AVAILABLE_HOSTING_TYPES = ["cloud", "owned", "undetermined"]
-AVAILABLE_SECURITY_RATING = ["a", "b", "c", "d", "f"]
+AVAILABLE_SECURITY_GRADE = ["a", "b", "c", "d", "f"]
 AVAILABLE_STATUS_TYPES = ["new", "changed", "normal"]
 MAX_PAGE_SIZE = 1000
 DEFAULT_FIRST_FETCH = "2 weeks"
@@ -67,7 +67,7 @@ class CyCognitoFeedClient(BaseClient):
         demisto.info(f"[+] FeedCyCognito: Query parameters for get-indicators: {query_params}")
         demisto.info(f"[+] FeedCyCognito: Body filters for get-indicators: {filters}")
         return self._http_request(method='POST', url_suffix=f'assets/{asset_type}', params=query_params,
-                                  json_data=filters)  # type: ignore
+                                  json_data=filters)
 
 
 def trim_spaces_from_args(args):
@@ -130,14 +130,14 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
 
 def validate_get_indicators_arguments(asset_type: str = None, count: Optional[int] = None,
                                       sort_order: str = None, hosting_type: List[str] = None,
-                                      security_rating: List[str] = None, status: List[str] = None) -> None:
+                                      security_grade: List[str] = None, status: List[str] = None) -> None:
     """Validate parameters for get indicators command.
 
     :param asset_type: type of the asset
     :param count: number of the assets to fetch
     :param sort_order: the order in which to sort the result. possible values are asc and desc
     :param hosting_type: the list of hosting types
-    :param security_rating: the list of security ratings
+    :param security_grade: the list of security grades
     :param status: the list of status
 
     :raises ValueError: if the parameter is not in a format the command accepts
@@ -157,9 +157,9 @@ def validate_get_indicators_arguments(asset_type: str = None, count: Optional[in
     if not set(hosting_type).issubset(AVAILABLE_HOSTING_TYPES):  # type: ignore
         raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES))
 
-    if not set(security_rating).issubset(AVAILABLE_SECURITY_RATING):  # type: ignore
-        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_rating', list(
-            map(lambda x: x.upper(), AVAILABLE_SECURITY_RATING))))
+    if not set(security_grade).issubset(AVAILABLE_SECURITY_GRADE):  # type: ignore
+        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', list(
+            map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))))
 
     if not set(status).issubset(AVAILABLE_STATUS_TYPES):  # type: ignore
         raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES))
@@ -168,7 +168,7 @@ def validate_get_indicators_arguments(asset_type: str = None, count: Optional[in
 def prepare_body_filters_for_get_indicators(asset_type: str = None, organizations: List[str] = None,
                                             hosting_type: List[str] = None, locations: List[str] = None,
                                             tags: List[str] = None, first_seen: str = None,
-                                            last_seen: str = None, security_rating: List[str] = None,
+                                            last_seen: str = None, security_grade: List[str] = None,
                                             status: List[str] = None, only_alive: bool = False) -> List[Dict]:
     """Prepare body filters for get indicator command.
 
@@ -179,15 +179,15 @@ def prepare_body_filters_for_get_indicators(asset_type: str = None, organization
     :param tags: to retrieve the assets with specific tags
     :param first_seen: to retrieve the assets from a specific first seen time
     :param last_seen: to retrieve the assets from a specific last seen time
-    :param security_rating: to retrieve the assets with specific security ratings
+    :param security_grade: to retrieve the assets with specific security ratings
     :param status: to retrieve the assets with specific status
     :param only_alive: to fetch only live assets
     :return: returns a dictionary of query params and a list of body params
     """
     req_body = []
 
-    fields_with_in_operator = ['organizations', 'locations', 'security-rating', 'status', 'tags', 'hosting-type']
-    values_with_in_operator = [organizations, locations, security_rating, status, tags, hosting_type]
+    fields_with_in_operator = ['organizations', 'locations', 'security-grade', 'status', 'tags', 'hosting-type']
+    values_with_in_operator = [organizations, locations, security_grade, status, tags, hosting_type]
 
     for field, value in zip(fields_with_in_operator, values_with_in_operator):
         if value:
@@ -246,7 +246,7 @@ def prepare_hr_for_get_indicators(asset_type: str, response: Any) -> str:
 
         hr_outputs.append({
             'Asset ID': asset.get('id', '').split('/', 1)[-1],
-            'Security Rating': asset.get('security_rating'),
+            'Security Grade': asset.get('security_grade'),
             'Status': asset.get('status'),
             'Organizations': ", ".join(asset.get('organizations', [])),
             'First Seen': first_seen,
@@ -255,7 +255,7 @@ def prepare_hr_for_get_indicators(asset_type: str, response: Any) -> str:
             'Hosting Type': asset.get('hosting_type')
         })
 
-    headers = ["Asset ID", "Security Rating", "Status", "Organizations", "First Seen", "Last Seen",
+    headers = ["Asset ID", "Security Grade", "Status", "Organizations", "First Seen", "Last Seen",
                "Locations", "Hosting Type"]
     title = f"Indicator Detail:\n #### Asset type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}"
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
@@ -287,18 +287,21 @@ def build_iterators(response: List[Dict[str, Any]], feed_tags: List[str], tlp_co
                 'feedcycognitoassetid': asset.get('id'),
                 'feedcycognitoassettype': asset.get('type'),
                 'feedcycognitobusinessunits': asset.get('business_units'),
-                'feedcycognitocertificatesignature': asset.get('id').split('/')[1] if asset.get('id').startswith('cert/') else None,  # type: ignore # noqa
+                'feedcycognitocertificatesignature': asset.get('signature'),
                 'feedcycognitoclosedports': asset.get('closed_ports'),
-                'creationdate': asset.get('creation_time'),
+                'creationdate': asset.get('created'),
                 'domainname': asset.get('domain'),
                 'feedcycognitodomains': asset.get('domains'),
-                'feedcycognitodomainnames': asset.get('domain_names'),
-                'feedcycognitoexpirationtime': asset.get('expiration_time'),
+                'feedcycognitoassetdiscoverability': discoverability if (
+                    discoverability := asset.get('discoverability')) else "Unknown",
+                'feedcycognitoexpiration': asset.get('expiration'),
                 'firstseenbysource': asset.get('first_seen'),
-                'feedcycognitohostingtypes': asset.get('hosting_type'),
+                'feedcycognitodynamicallyresolved': dynamically_resolved if (
+                    dynamically_resolved := asset.get('dynamically_resolved')) else "",
+                'feedcycognitohostingtypes': hosting_types if (hosting_types := asset.get('hosting_type')) else "",
                 'feedcycognitoinvestigationstatus': asset.get('investigation_status'),
                 'ipaddress': asset.get('ip'),
-                'feedcycognitoipnames': asset.get('ip_names'),
+                'feedcycognitoipaddresses': asset.get('ip_addresses'),
                 'feedcycognitoissueralternativenames': asset.get('issuer_alt_names'),
                 'feedcycognitoissuercommonname': asset.get('issuer_common_name'),
                 'feedcycognitoissuercountry': asset.get('issuer_country'),
@@ -311,9 +314,9 @@ def build_iterators(response: List[Dict[str, Any]], feed_tags: List[str], tlp_co
                 'feedcycognitolocations': convert_alpha_3_codes_to_country_names(asset.get('locations', [])),
                 'feedcycognitoopenports': asset.get('open_ports'),
                 'feedcycognitoorganizations': asset.get('organizations'),
-                'feedcycognitostatus': asset.get('status'),
-                'feedcycognitosecurityrating': rating if (rating := asset.get('security_rating')) else "Unknown",
-                'feedcycognitosevereissuescount': asset.get('severe_issues_count'),
+                'feedcycognitostatus': status if (status := asset.get('status')) else "",
+                'feedcycognitosecuritygrade': grade if (grade := asset.get('security_grade')) else "Unknown",
+                'feedcycognitosevereissues': asset.get('severe_issues'),
                 'feedcycognitosignaturealgorithm': asset.get('signature_algorithm'),
                 'feedcycognitosubdomains': asset.get('sub_domains'),
                 'feedcycognitosubjectalternativenames': asset.get('subject_alt_names'),
@@ -347,7 +350,7 @@ def get_indicators_command(client: CyCognitoFeedClient, args: Dict[str, Any]) ->
     offset = max(arg_to_number(args.get('offset', 0), arg_name='offset'), 0)  # type: ignore
     sort_order = args.get('sort_order', '').lower()
     hosting_type = argToList(args.get('hosting_type', '').lower())
-    security_rating = argToList(args.get('security_rating', '').lower())
+    security_grade = argToList(args.get('security_grade', '').lower())
     status = argToList(args.get('status', '').lower())
     search = args.get('search', '')
     sort_by = args.get('sort_by', '').lower()
@@ -363,12 +366,13 @@ def get_indicators_command(client: CyCognitoFeedClient, args: Dict[str, Any]) ->
         last_seen = arg_to_datetime(last_seen, arg_name='last_seen').strftime(DATE_FORMAT)  # type: ignore
 
     validate_get_indicators_arguments(asset_type=asset_type, count=count, sort_order=sort_order,
-                                      hosting_type=hosting_type, security_rating=security_rating, status=status)
+                                      hosting_type=hosting_type, security_grade=security_grade, status=status)
 
     filters = prepare_body_filters_for_get_indicators(asset_type=asset_type, organizations=organizations,
                                                       hosting_type=hosting_type, locations=locations,
-                                                      tags=tags, first_seen=first_seen, last_seen=last_seen,
-                                                      security_rating=security_rating, status=status)
+                                                      tags=tags, first_seen=first_seen,
+                                                      last_seen=last_seen, security_grade=security_grade,
+                                                      status=status)
 
     response = client.get_indicators(asset_type=asset_type, count=count, offset=offset,
                                      sort_param=(sort_by, sort_order), search=search, filters=filters)
@@ -394,7 +398,8 @@ def fetch_indicators_command(client: CyCognitoFeedClient, params: Dict[str, Any]
                                             arg_name='First Fetch Time').strftime(DATE_FORMAT)  # type: ignore
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH), arg_name="Max Fetch")
     organizations = argToList(params.get('organizations'))
-    security_rating = list(map(lambda x: x.split(':')[0].lower(), params.get('security_rating', [])))
+    security_grade = list(map(lambda x: x.split(':')[0].lower(), params.get('security_grade', []))) if params.get(
+        'security_grade') else []
     hosting_type = params.get('hosting_type', [])
     locations = convert_countries_to_alpha_3_codes(argToList(params.get('locations')))
     default_mapping = params.get('default_mapping')
@@ -403,7 +408,7 @@ def fetch_indicators_command(client: CyCognitoFeedClient, params: Dict[str, Any]
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
 
-    validate_get_indicators_arguments(asset_type=asset_type, hosting_type=hosting_type, security_rating=security_rating,
+    validate_get_indicators_arguments(asset_type=asset_type, hosting_type=hosting_type, security_grade=security_grade,
                                       count=max_fetch, status=[])
 
     start_time = last_run.get('last_fetch', first_fetch_timestamp)
@@ -412,7 +417,7 @@ def fetch_indicators_command(client: CyCognitoFeedClient, params: Dict[str, Any]
     filters = prepare_body_filters_for_get_indicators(asset_type=asset_type, organizations=organizations,
                                                       hosting_type=hosting_type,
                                                       locations=locations, last_seen=start_time,
-                                                      security_rating=security_rating,
+                                                      security_grade=security_grade,
                                                       only_alive=only_alive)  # type: ignore
 
     response = client.get_indicators(asset_type=asset_type, count=max_fetch, offset=offset,  # type: ignore
@@ -497,9 +502,9 @@ def main():
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 
-    except Exception as e:
+    except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

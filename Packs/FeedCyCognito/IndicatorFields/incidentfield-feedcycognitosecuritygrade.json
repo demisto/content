@@ -1,26 +1,35 @@
 {
-    "id": "indicator_feedcycognitoipnames",
+    "id": "indicator_feedcycognitosecuritygrade",
     "version": -1,
-    "modified": "2022-05-28T16:50:11.486358868+05:30",
-    "name": "FeedCyCognito IP Names",
+    "modified": "2022-08-05T17:02:54.448337755+05:30",
+    "name": "FeedCyCognito Security Grade",
     "ownerOnly": false,
-    "cliName": "feedcycognitoipnames",
-    "type": "multiSelect",
+    "cliName": "feedcycognitosecuritygrade",
+    "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
+    "selectValues": [
+        "Unknown",
+        "A",
+        "B",
+        "C",
+        "D",
+        "F"
+    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,
     "content": true,
     "group": 2,
     "hidden": false,
-    "openEnded": true,
+    "openEnded": false,
     "associatedTypes": [
-        "Domain",
-        "CyCognito Asset"
+        "CyCognito Asset",
+        "IP",
+        "Domain"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -28,5 +37,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }

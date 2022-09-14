@@ -7,7 +7,7 @@ Generates a deep link to the CyCognito platform using the indicator context.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-indicator-section, field-change-triggered |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
 ---

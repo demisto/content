@@ -1,10 +1,10 @@
 {
-    "id": "indicator_feedcycognitosevereissuescount",
+    "id": "indicator_feedcycognitosevereissues",
     "version": -1,
     "modified": "2022-05-28T17:02:37.897977609+05:30",
-    "name": "FeedCyCognito Severe Issues Count",
+    "name": "FeedCyCognito Severe Issues",
     "ownerOnly": false,
-    "cliName": "feedcycognitosevereissuescount",
+    "cliName": "feedcycognitosevereissues",
     "type": "number",
     "closeForm": false,
     "editForm": true,
@@ -29,5 +29,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }

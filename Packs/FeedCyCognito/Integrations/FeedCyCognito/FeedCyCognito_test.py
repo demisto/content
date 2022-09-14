@@ -9,7 +9,7 @@ import pytest
 
 from FeedCyCognito import (AVAILABLE_ASSET_TYPES, AVAILABLE_HOSTING_TYPES,
                            AVAILABLE_STATUS_TYPES,
-                           AVAILABLE_SECURITY_RATING, BASE_URL, DATE_FORMAT,
+                           AVAILABLE_SECURITY_GRADE, BASE_URL, DATE_FORMAT,
                            ERRORS)
 from CommonServerPython import arg_to_datetime
 
@@ -61,10 +61,10 @@ def mocked_client():
         'values': ['cloud']
     }], {'asset_type': 'domain', 'hosting_type': ['cloud'], 'locations': ['IND']}),
     ([{
-        'field': 'security-rating',
+        'field': 'security-grade',
         'op': 'in',
         'values': ['a']
-    }], {'asset_type': 'iprange', 'security_rating': ['a']}),
+    }], {'asset_type': 'iprange', 'security_grade': ['a']}),
     ([{
         'field': 'first-seen',
         'op': 'between',
@@ -96,9 +96,9 @@ def test_prepare_filters_for_get_indicators(expected, args, mocker):
      {'sort_order': 'test', 'asset_type': 'ip'}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES),
      {'hosting_type': 'test', 'asset_type': 'ip'}),
-    (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_rating',
-                                                 list(map(lambda x: x.upper(), AVAILABLE_SECURITY_RATING))),
-     {'security_rating': 'a,e', 'asset_type': 'ip'}),
+    (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade',
+                                                 list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))),
+     {'security_grade': 'a,e', 'asset_type': 'ip'}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES),
      {'status': 'test', 'asset_type': 'ip'})
 ])
@@ -202,9 +202,9 @@ def test_test_module(requests_mock, mocked_client):
     ('Invalid date: "First Fetch Time"="abc"', {'first_fetch': 'abc', 'feed': False}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES),
      {'hosting_type': 'test', 'asset_type': 'ip', 'feed': False}),
-    (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_rating',
-     list(map(lambda x: x.upper(), AVAILABLE_SECURITY_RATING))),
-     {'security_rating': 'a,e', 'asset_type': 'ip', 'feed': False}),
+    (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade',
+     list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))),
+     {'security_grade': 'a,e', 'asset_type': 'ip', 'feed': False}),
     (ERRORS['INVALID_COUNTRY_ERROR'].format('invalid_country_name'),
      {'locations': ['invalid_country_name'], 'asset_type': 'ip', 'feed': False})
 ])
@@ -232,12 +232,12 @@ def test_fetch_indicators_command_when_valid_response_returned_with_updated_last
     requests_mock.post(BASE_URL + ASSET_IP_ENDPOINT, json=mock_response, status_code=200)
 
     args = {'asset_type': 'ip', 'max_fetch': 10, 'feed': True, 'first_fetch': '10 days',
-            'organizations': 'Acme Holding, Acme Interior', 'security_rating': ['A: Very Strong', 'B: Strong'],
+            'organizations': 'Acme Holding, Acme Interior', 'security_grade': ['A: Very Strong', 'B: Strong'],
             'hosting_type': ['owned'], 'locations': ["India", "United States"], 'default_mapping': False}
     last_run = {'last_fetch': DUMMY_TIME, 'offset': 2}
     next_run, actual_indicators = fetch_indicators_command(mocked_client, args, last_run)
 
-    assert next_run == {'last_fetch': "2022-03-29T09:44:22.144000Z", 'offset': 0}
+    assert next_run == {'last_fetch': "2022-03-31T03:39:22.569000Z", 'offset': 0}
     assert actual_indicators == indicators
 
 

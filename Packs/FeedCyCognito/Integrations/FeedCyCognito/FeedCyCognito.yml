@@ -3,89 +3,89 @@ commonfields:
   id: FeedCyCognito
   version: -1
 configuration:
-- additionalinfo: The API Key required to authenticate to the service.
-  display: API Key
-  name: api_key
-  required: true
-  type: 4
-- additionalinfo: The type of assets to be retrieved.
-  display: Asset Type
-  hidden: false
-  name: asset_type
-  options:
-  - ip
-  - domain
-  - cert
-  - webapp
-  - iprange
-  required: true
-  type: 15
-- additionalinfo: |-
-    The date or relative timestamp from where to start fetching assets.
+  - additionalinfo: The API Key required to authenticate to the service.
+    display: API Key
+    name: api_key
+    required: true
+    type: 4
+  - additionalinfo: The type of assets to be retrieved.
+    display: Asset Type
+    hidden: false
+    name: asset_type
+    options:
+      - ip
+      - domain
+      - cert
+      - webapp
+      - iprange
+    required: true
+    type: 15
+  - additionalinfo: |-
+      The date or relative timestamp from where to start fetching assets.
 
-    Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-    
-    For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
-  defaultvalue: 2 weeks
-  display: First Fetch Time
-  hidden: false
-  name: first_fetch
-  required: false
-  type: 0
-- additionalinfo: The maximum number of assets to fetch every time. The maximum value is '1000'.
-  defaultvalue: '50'
-  display: Max Fetch
-  hidden: false
-  name: max_fetch
-  required: false
-  type: 0
-- additionalinfo: Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values.
-  display: Organizations
-  hidden: false
-  name: organizations
-  required: false
-  type: 0
-- additionalinfo: |-
-    Filters the assets according to security rating.
+      Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-    Supported values:
-    A: Very strong,
-    B: Strong,
-    C: Less vulnerable,
-    D: Vulnerable,
-    F: Highly vulnerable
-  display: Security Rating
-  hidden: false
-  name: security_rating
-  options:
-  - 'A: Very strong'
-  - 'B: Strong'
-  - 'C: Less vulnerable'
-  - 'D: Vulnerable'
-  - 'F: Highly vulnerable'
-  required: false
-  type: 16
-- additionalinfo: |-
-    Filters the assets based on their hosting type.
+      For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+    defaultvalue: 2 weeks
+    display: First Fetch Time
+    hidden: false
+    name: first_fetch
+    required: false
+    type: 0
+  - additionalinfo: The maximum number of assets to fetch every time. The maximum value is '1000'.
+    defaultvalue: "50"
+    display: Max Fetch
+    hidden: false
+    name: max_fetch
+    required: false
+    type: 0
+  - additionalinfo: Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values.
+    display: Organizations
+    hidden: false
+    name: organizations
+    required: false
+    type: 0
+  - additionalinfo: |-
+      Filters the assets according to security grade.
 
-    Supported values: 'owned', 'cloud', 'undetermined'
-  display: Hosting Type
-  hidden: false
-  name: hosting_type
-  options:
-  - cloud
-  - owned
-  - undetermined
-  required: false
-  type: 16
-- additionalinfo: |-
-    Filters the assets based on the geographic locations to which they belong. Multiple selection is supported.
+      Supported values:
+      A: Very strong,
+      B: Strong,
+      C: Less vulnerable,
+      D: Vulnerable,
+      F: Highly vulnerable
+    display: Security Grade
+    hidden: false
+    name: security_grade
+    options:
+      - "A: Very strong"
+      - "B: Strong"
+      - "C: Less vulnerable"
+      - "D: Vulnerable"
+      - "F: Highly vulnerable"
+    required: false
+    type: 16
+  - additionalinfo: |-
+      Filters the assets based on their hosting type.
 
-    Locations are available only for IP, Domain, and Certificate asset types.
-  display: Locations
-  hidden: false
-  name: locations
-  options: ["Afghanistan","Aland Islands","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla",
+      Supported values: 'owned', 'cloud', 'undetermined'
+    display: Hosting Type
+    hidden: false
+    name: hosting_type
+    options:
+      - cloud
+      - owned
+      - undetermined
+    required: false
+    type: 16
+  - additionalinfo: |-
+      Filters the assets based on the geographic locations to which they belong. Multiple selection is supported.
+
+      Locations are available only for IP, Domain, and Certificate asset types.
+    display: Locations
+    hidden: false
+    name: locations
+    options: ["Afghanistan","Aland Islands","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla",
             "Antarctica","Antigua and Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan",
             "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan",
             "Bolivia, Plurinational State of","Bonaire, Sint Eustatius and Saba","Bosnia and Herzegovina","Botswana",
@@ -121,107 +121,108 @@ configuration:
             "United States of America","United States Minor Outlying Islands","Uruguay","Uzbekistan","Vanuatu",
             "Venezuela, Bolivarian Republic of","Vietnam","Virgin Islands, British","Virgin Islands, U.S.",
             "Wallis and Futuna","Western Sahara","Yemen","Zambia","Zimbabwe"]
-  required: false
-  type: 16
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: Good
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- defaultvalue: '1440'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- name: feedExpirationPolicy
-  display: ''
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- name: feedExpirationInterval
-  defaultvalue: '20160'
-  display: ''
-  required: false
-  type: 1
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  defaultvalue: 'false'
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-- additionalinfo: When selected, all the incoming indicators will map to a CyCognito Asset indicator type.
-  display: Default Indicator Mapping
-  hidden: false
-  name: default_mapping
-  required: false
-  type: 8
-- additionalinfo: |-
-    When selected, Fetches only live assets. 
+    required: false
+    type: 16
+  - defaultvalue: "true"
+    display: Fetch indicators
+    name: feed
+    required: false
+    type: 8
+  - additionalinfo: Indicators from this integration instance will be marked with this reputation.
+    defaultvalue: Good
+    display: Indicator Reputation
+    name: feedReputation
+    options:
+      - None
+      - Good
+      - Suspicious
+      - Bad
+    required: false
+    type: 18
+  - additionalinfo: Reliability of the source providing the intelligence data.
+    defaultvalue: B - Usually reliable
+    display: Source Reliability
+    name: feedReliability
+    options:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    required: true
+    type: 15
+  - defaultvalue: "1440"
+    display: Feed Fetch Interval
+    name: feedFetchInterval
+    required: false
+    type: 19
+  - name: feedExpirationPolicy
+    display: ""
+    options:
+      - never
+      - interval
+      - indicatorType
+      - suddenDeath
+    required: false
+    type: 17
+  - name: feedExpirationInterval
+    defaultvalue: "20160"
+    display: ""
+    required: false
+    type: 1
+  - additionalinfo:
+      When selected, the exclusion list is ignored for indicators from
+      this feed. This means that if an indicator from this feed is on the exclusion
+      list, the indicator might still be added to the system.
+    defaultvalue: "false"
+    display: Bypass exclusion list
+    name: feedBypassExclusionList
+    required: false
+    type: 8
+  - additionalinfo: Supports CSV values.
+    display: Tags
+    name: feedTags
+    required: false
+    type: 0
+  - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+    display: Traffic Light Protocol Color
+    name: tlp_color
+    options:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
+    required: false
+    type: 15
+  - additionalinfo: When selected, all the incoming indicators will map to a CyCognito Asset indicator type.
+    display: Default Indicator Mapping
+    hidden: false
+    name: default_mapping
+    required: false
+    type: 8
+  - additionalinfo: |-
+      When selected, Fetches only live assets. 
 
-    Note: This filter supports only IP and IP Range type of assets.
-  display: Fetch only Live Assets
-  hidden: false
-  name: only_alive
-  required: false
-  type: 8
-  defaultvalue: 'true'
-- additionalinfo: Indicates whether to allow connections without verifying the SSL certificate's validity.
-  defaultvalue: 'false'
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
-  defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+      Note: This filter supports only IP and IP Range type of assets.
+    display: Fetch only Live Assets
+    hidden: false
+    name: only_alive
+    required: false
+    type: 8
+    defaultvalue: "true"
+  - additionalinfo: Indicates whether to allow connections without verifying the SSL certificate's validity.
+    defaultvalue: "false"
+    display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+    defaultvalue: "false"
+    display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
 description: The CyCognito Feed integration retrieves the discovered assets from
   the CyCognito platform based on user-specified filters. A comprehensive dashboard and layout are also included.
 display: CyCognito Feed
@@ -249,7 +250,7 @@ script:
       defaultValue: '50'
       description: |-
         The number of results to retrieve.
-        
+
         Maximum value is '1000'
       isArray: false
       name: count
@@ -266,7 +267,7 @@ script:
     - default: false
       description: |-
         An Advanced Search parameter to query the response.
-        
+
         Note: Retrieves all the occurrences that are included in the string.
       isArray: false
       name: search
@@ -299,7 +300,7 @@ script:
         The date and time at which CyCognito first discovered and attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: first_seen
@@ -310,7 +311,7 @@ script:
         The date and time at which CyCognito most recently attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: last_seen
@@ -345,7 +346,7 @@ script:
         D = Vulnerable
         F = Highly vulnerable
       isArray: false
-      name: security_rating
+      name: security_grade
       required: false
       secret: false
     - default: false
@@ -360,7 +361,7 @@ script:
     - default: false
       description: |-
         The geographical locations in which the asset is found. Supported values contain the three-letter ISO country code for the respective countries--e.g., IND, USA.
-        
+
         Locations are available only for IP, Domain, and Certificate asset types.
       isArray: false
       name: locations
@@ -376,7 +377,7 @@ script:
     description: Fetches a given limit of indicators from the CyCognito platform and displays them in human-readable format in the war room.
     execution: false
     name: cycognito-get-indicators
-  dockerimage: demisto/pycountry:1.0.0.31623
+  dockerimage: demisto/pycountry:1.0.0.34082
   feed: true
   isfetch: false
   longRunning: false
@@ -390,4 +391,4 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
-fromversion: 6.0.0
+fromversion: 6.2.0

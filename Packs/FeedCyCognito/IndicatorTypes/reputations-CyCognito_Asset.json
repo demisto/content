@@ -14,5 +14,5 @@
     "mergeContext": false,
     "expiration": 0,
     "layout": "CyCognito Asset Information",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }

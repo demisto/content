@@ -111,7 +111,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "feedcycognitosecurityrating"
+                        "feedcycognitosecuritygrade"
                     ],
                     "valuesFormat": "abbreviated"
                 },
@@ -330,7 +330,7 @@
                 "params": {
                     "groupBy": [
                         "firstseenbysource(d)",
-                        "feedcycognitosecurityrating"
+                        "feedcycognitosecuritygrade"
                     ],
                     "timeFrame": "days",
                     "valuesFormat": "abbreviated"
@@ -386,7 +386,7 @@
                 "params": {
                     "groupBy": [
                         "feedcycognitolocations",
-                        "feedcycognitosecurityrating"
+                        "feedcycognitosecuritygrade"
                     ],
                     "valuesFormat": "abbreviated"
                 },
@@ -474,7 +474,7 @@
                 "prevName": "Total Assets at Risk",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "sourceBrands:FeedCyCognito and (feedcycognitosecurityrating:\"D\" or feedcycognitosecurityrating:\"F\")",
+                "query": "sourceBrands:FeedCyCognito and (feedcycognitosecuritygrade:\"D\" or feedcycognitosecuritygrade:\"F\")",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -558,7 +558,7 @@
                 "params": {
                     "groupBy": [
                         "feedcycognitotags",
-                        "feedcycognitosecurityrating"
+                        "feedcycognitosecuritygrade"
                     ],
                     "valuesFormat": "abbreviated"
                 },
@@ -613,7 +613,7 @@
                 "params": {
                     "groupBy": [
                         "feedcycognitoopenportprotocols",
-                        "feedcycognitosecurityrating"
+                        "feedcycognitosecuritygrade"
                     ],
                     "valuesFormat": "abbreviated"
                 },
@@ -622,7 +622,7 @@
             "reflectDimensions": true
         }
     ],
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.2.0",
     "description": "The dashboard consists of assets overview, distribution of assets on the basis of grades & status which are detected by the CyCognito platform.",
     "isPredefined": true
 }

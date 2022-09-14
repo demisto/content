@@ -392,7 +392,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "feedcycognitosecurityrating",
+                                "fieldId": "feedcycognitosecuritygrade",
                                 "height": 53,
                                 "id": "9acd3420-e0d8-11ec-85f0-1354bd87b429",
                                 "index": 2,
@@ -421,7 +421,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "feedcycognitosevereissuescount",
+                                "fieldId": "feedcycognitosevereissues",
                                 "height": 53,
                                 "id": "9ccd22d0-e0d8-11ec-85f0-1354bd87b429",
                                 "index": 4,
@@ -757,7 +757,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "feedcycognitoipnames",
+                                "fieldId": "feedcycognitoipaddresses",
                                 "height": 53,
                                 "id": "4b6ddfe0-e0e4-11ec-8ed8-7568cb70f2dc",
                                 "index": 1,
@@ -787,7 +787,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "feedcycognitoexpirationtime",
+                                "fieldId": "feedcycognitoexpiration",
                                 "height": 53,
                                 "id": "4e5b8fa0-e6e7-11ec-b4a2-ff1d371925ae",
                                 "index": 0,
@@ -798,7 +798,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "feedcycognitofromrotating",
+                                "fieldId": "feedcycognitodynamicallyresolved",
                                 "height": 53,
                                 "id": "8b29f1f0-e0e4-11ec-8ed8-7568cb70f2dc",
                                 "index": 1,
@@ -818,7 +818,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "feedcycognitodomainnames",
+                                "fieldId": "feedcycognitoassetdiscoverability",
                                 "height": 53,
                                 "id": "4274f810-e0e4-11ec-8ed8-7568cb70f2dc",
                                 "index": 3,
@@ -844,5 +844,5 @@
     "name": "CyCognito Asset Information",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }
