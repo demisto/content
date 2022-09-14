@@ -709,11 +709,12 @@ def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: st
     else:
         tsg_id = default_tsg_id
 
-    raw_response = []
+    raw_responses = []
 
     for job_id in job_ids:
 
-        raw_response.append(client.get_config_jobs_by_id(tsg_id, job_id)['data'][0])  # type: ignore
+        raw_response = client.get_config_jobs_by_id(tsg_id, job_id).get('data')[0]
+        raw_responses.append(raw_response) 
 
     outputs = raw_response
 
