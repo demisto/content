@@ -505,8 +505,8 @@ def main():  # pragma: no cover
         Client.query = query
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = xsoar_severity_field
-    if raw_tags := (params.get('feedTags') or params.get('tag')):
-        Client.tag = set(raw_tags.split(','))
+    if tag := (params.get('feedTags') or params.get('tag')):
+        Client.tag = tag
 
     client = Client(params)
     commands = {
