@@ -11300,11 +11300,11 @@ def extract_objects_info_by_key(_entry, _key):
 
 
 def build_application_groups_xpath(name: Optional[str], element: Optional[str] = None):
-    _xpath = f'{XPATH_OBJECTS}application-group'
+    _xpath = f"{XPATH_OBJECTS}application-group"
     if name:
-        _xpath = f'{_xpath}/entry[@name="{name}"'
+        _xpath = f"{_xpath}/entry[@name='{name}']"
     if element:
-        _xpath = f'{_xpath}/{element}'
+        _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
@@ -11341,12 +11341,18 @@ def pan_os_list_application_groups_command(args):
         for entry in entries:
             parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId'])
 
-    application_groups = [
-        {
-            'Name': extract_objects_info_by_key(entry, '@name'),
-            'Applications': extract_objects_info_by_key(entry, 'members')
-        } for entry in entries
-    ]
+    application_groups = []
+    for entry in entries:
+        applications = extract_objects_info_by_key(entry, 'members')
+        if not isinstance(applications, list):
+            applications = [applications]
+        application_groups.append(
+            {
+                'Name': extract_objects_info_by_key(entry, '@name'),
+                'Applications': applications,
+                'Members': len(applications)
+            }
+        )
 
     return CommandResults(
         raw_response=raw_response,
@@ -11361,16 +11367,28 @@ def pan_os_list_application_groups_command(args):
     )
 
 
-    print()
-    # table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
-    #
-    # return CommandResults(
-    #     raw_response=raw_response,
-    #     outputs=context,
-    #     readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
-    #     outputs_prefix='Panorama.VirtualRouter',
-    #     outputs_key_field='Name'
-    # )
+def pan_os_create_application_group(application_group_name, applications):
+    params = {
+        'xpath': build_application_groups_xpath(application_group_name),
+        'element': dict_to_xml(prepare_pan_os_objects_body_request('members', applications)),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = args.get('applications')
+
+    raw_response = pan_os_create_application_group(application_group_name, applications)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was created successfully.'
+    )
 
 
 def main():
@@ -12028,6 +12046,8 @@ def main():
             return_results(pan_os_get_running_config(args))
         elif command == 'pan-os-list-application-groups':
             return_results(pan_os_list_application_groups_command(args))
+        elif command == 'pan-os-create-application-group':
+            return_results(pan_os_create_application_group_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

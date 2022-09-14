@@ -7522,3 +7522,28 @@ Returns a list of application-groups of either Panorama/firewall instance.
 >| 1c-enterprise | test |
 >| 2ch-base,<br/>4shared | test-2 |
 
+### pan-os-create-application-group
+***
+Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+#### Human Readable Output
+
+>application-group test-3 was created successfully.

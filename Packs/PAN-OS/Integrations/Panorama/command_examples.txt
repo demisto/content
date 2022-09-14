@@ -122,3 +122,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-push-status job_id=31377
 !pan-os-edit-address name=test4 element_to_change=ip_range element_value="10.0.0.1-10.0.0.4"
 !pan-os-list-application-groups show_uncommitted=true
+!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared

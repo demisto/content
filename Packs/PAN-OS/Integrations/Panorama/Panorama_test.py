@@ -3553,3 +3553,58 @@ def test_pan_os_list_application_groups_command_main_flow(mocker, args, params, 
         {'Name': 'test-2', 'Applications': ['application-1', 'application-2']}
     ]
     assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            # pytest.param(
+            #     {
+            #         'name': 'test', 'applications': 'application1,application2', 'device-group': 'test-device-group'
+            #     },
+            #     integration_panorama_params,
+            #     {
+            #         'xpath': "/config/devices/entry/device-group/entry[@name='test-device-group']"
+            #                  "/application-group/entry[@name='test']",
+            #         'element': '<members><member>application1</member><member>application2</member></members>',
+            #         'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            #     }
+            # ),
+            pytest.param(
+                {
+                    'name': 'test', 'applications': 'application1,application2'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']",
+                    'element': '<members><member>application1</member><member>application2</member></members>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+def test_pan_os_create_application_group_command_maiin_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance configuration and arguments to create an application group.
+     - Firewall instance configuration and arguments to create an application group.
+
+    When:
+     - running the pan-os-create-application-group through the main flow.
+
+    Then:
+     - make sure the xpath and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-create-application-group')
+
+    main()
+
+    assert mock_request.call_args.kwargs['params'] == expected_url_params
