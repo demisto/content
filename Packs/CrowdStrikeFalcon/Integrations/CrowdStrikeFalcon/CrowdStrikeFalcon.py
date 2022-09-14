@@ -1,18 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 ''' IMPORTS '''
-import json
-import requests
 import base64
 import email
-from enum import Enum
 import hashlib
-from typing import List, Callable
-from dateutil.parser import parse
-from typing import Dict, Tuple, Any, Optional, Union
+import json
+from enum import Enum
 from threading import Timer
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+from dateutil.parser import parse
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1637,7 +1636,7 @@ def get_detections_by_behaviors(behaviors_id):
     try:
 
         body = {'ids': behaviors_id}
-        return http_request('POST', '/incidents/entities/behaviors/GET/v1', json=body)
+        return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
@@ -3748,7 +3747,7 @@ def rtr_polling_retrieve_file_command(args: dict):
         if args.get('SHA256'):
             # the status is ready, we can get the extracted files
             args.pop('SHA256')
-            return rtr_get_extracted_file(get_status_response, args.get('fileName'))  # type:ignore
+            return rtr_get_extracted_file(get_status_response, args.get('filename'))  # type:ignore
 
         else:
             # we should call the polling on status, cause the status is not ready
