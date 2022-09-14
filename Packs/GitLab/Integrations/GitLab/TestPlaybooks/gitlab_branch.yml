@@ -1,0 +1,334 @@
+id: d437f7f3-7b39-4c5d-814c-e95f5d3bd3be
+version: 14
+vcShouldKeepItemLegacyProdMachine: false
+name: gitlab branch
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e6c03797-ec27-4db1-8734-c5876cdd1222
+    type: start
+    task:
+      id: e6c03797-ec27-4db1-8734-c5876cdd1222
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9d9eec6b-32ab-4da4-8348-e14c4e36a283
+    type: regular
+    task:
+      id: 9d9eec6b-32ab-4da4-8348-e14c4e36a283
+      version: -1
+      name: gitlab-branch-create
+      description: Creates a new branch in the repository.
+      script: '|||gitlab-branch-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      branch:
+        simple: Try_
+      ref:
+        simple: main
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 01a287bb-52de-4179-8c32-0abf6de30471
+    type: condition
+    task:
+      id: 01a287bb-52de-4179-8c32-0abf6de30471
+      version: -1
+      name: VERIFY branch create
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6668d302-6836-4004-86fd-7d55c0a0d4c2
+    type: regular
+    task:
+      id: 6668d302-6836-4004-86fd-7d55c0a0d4c2
+      version: -1
+      name: Get Branch
+      description: Get a list of repository branches from a project, sorted by name
+        alphabetically.
+      script: '|||gitlab-branch-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      branch_name:
+        simple: ${GitLab.Branch.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3401da54-113a-496b-8c21-f3945ca0f1c7
+    type: condition
+    task:
+      id: 3401da54-113a-496b-8c21-f3945ca0f1c7
+      version: -1
+      name: 'VERIFY get branch '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: efebc234-e14d-44d5-8faa-02b47a668af7
+    type: regular
+    task:
+      id: efebc234-e14d-44d5-8faa-02b47a668af7
+      version: -1
+      name: delete branch
+      description: Deletes a branch from the repository.
+      script: '|||gitlab-branch-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      branch:
+        simple: ${GitLab.Branch.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fada91cb-bd8a-4f28-80b0-4867b0b758e4
+    type: regular
+    task:
+      id: fada91cb-bd8a-4f28-80b0-4867b0b758e4
+      version: -1
+      name: branch-get
+      description: Get a list of repository branches from a project, sorted by name
+        alphabetically.
+      script: '|||gitlab-branch-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 359173ea-a2a0-4e0d-86d2-c9d7932bb338
+    type: condition
+    task:
+      id: 359173ea-a2a0-4e0d-86d2-c9d7932bb338
+      version: -1
+      name: VERIFY list branch
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 140ec8cb-e086-451b-8137-526735e37e90
+    type: title
+    task:
+      id: 140ec8cb-e086-451b-8137-526735e37e90
+      version: -1
+      name: End Test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 400,
+        "x": 430,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
