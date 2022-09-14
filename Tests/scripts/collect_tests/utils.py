@@ -304,3 +304,10 @@ def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
     """
     return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
            {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)
+
+
+def hotfix_detect_old_script_yml(path: Path):
+    # a hotfix until SDK v1.7.5 is released
+    if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
+        return FileType.SCRIPT
+    return None
