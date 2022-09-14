@@ -25,6 +25,8 @@ xdr_severity_to_demisto: dict[str, str] = {
     'SEV_040_HIGH': 'high',
     'SEV_090_UNKNOWN': 'unknown',
 }
+demisto_severity_to_xdr = {v: k for k, v in xdr_severity_to_demisto.items()}
+
 xdr_reputation_to_demisto: Dict = {
     'GOOD': 1,
     'SUSPICIOUS': 2,
@@ -242,7 +244,8 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             xdr_ioc['status'] = 'DISABLED'
 
         if severity := custom_fields.get(Client.xsoar_severity_field):
-            xdr_ioc['severity'] = severity
+            demisto.debug(f'found severity level {severity} in field {Client.xsoar_severity_field}')
+            xdr_ioc['severity'] = demisto_severity_to_xdr[severity]
 
         return xdr_ioc
 
@@ -367,6 +370,10 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
+
+    raw_severity = ioc['RULE_SEVERITY']
+    demisto.debug(f'found severity {raw_severity}, its demisto equivalent is {xdr_severity_to_demisto[raw_severity]}')
+
     entry: Dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
@@ -375,7 +382,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.xsoar_severity_field: xdr_severity_to_demisto[ioc['RULE_SEVERITY']],
+            Client.xsoar_severity_field: xdr_severity_to_demisto[raw_severity],
         },
         "rawJSON": ioc
     }
