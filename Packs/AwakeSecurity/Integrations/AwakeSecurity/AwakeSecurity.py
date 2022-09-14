@@ -97,14 +97,24 @@ def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, generi
     if genericContext:
         entryContext.update(genericContext)
 
-    demisto.results({
-        "Type": entryTypes['note'],
-        "ContentsFormat": formats['json'],
-        "Contents": json.dumps(machineReadable),
-        "HumanReadable": humanReadable,
-        "ReadableContentsFormat": formats['markdown'],
-        "EntryContext": entryContext,
-    })
+    if innerKey in ('domain', 'email', 'ip'):
+        return {
+            "Type": entryTypes['note'],
+            "ContentsFormat": formats['json'],
+            "Contents": json.dumps(machineReadable),
+            "HumanReadable": humanReadable,
+            "ReadableContentsFormat": formats['markdown'],
+            "EntryContext": entryContext,
+        }
+    else:
+        demisto.results({
+            "Type": entryTypes['note'],
+            "ContentsFormat": formats['json'],
+            "Contents": json.dumps(machineReadable),
+            "HumanReadable": humanReadable,
+            "ReadableContentsFormat": formats['markdown'],
+            "EntryContext": entryContext,
+        })
 
 
 def toDBotScore(indicator_type, percentile, lookup_key):
@@ -181,34 +191,42 @@ def lookupDevice():
 
 
 def lookupDomain():
-    lookup_key = args["domain"]
-    contents = lookup("domain", lookup_key)
-    humanReadableFields = [
-        "notability",
-        "isAlexaTopOneMillion",
-        "isDGA",
-        "intelSources",
-        "numAssociatedDevices",
-        "numAssociatedActivities",
-        "approxBytesTransferred",
-        "protocols",
-        "firstSeen",
-        "lastSeen",
-    ]
-    if "notability" in contents:
-        dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
-    else:
-        dbotScore = {
-            "Vendor": "Awake Security",
-            "Type": 'domain',
-            "Indicator": lookup_key,
-            "Score": 0,
-            "Reliability": demisto.params().get('integrationReliability')
-        }
-    humanReadable = displayTable([contents], humanReadableFields)
-    contents["domain"] = lookup_key
-    genericContext = {"Domain": {"Name": lookup_key}}
-    returnResults(contents, "Domains", "domain", humanReadable, dbotScore, genericContext)
+    domains = args["domain"]
+    domains_list = argToList(domains)
+    domains_results = []
+
+    for lookup_key in domains_list:
+        contents = lookup("domain", lookup_key)
+        humanReadableFields = [
+            "notability",
+            "isAlexaTopOneMillion",
+            "isDGA",
+            "intelSources",
+            "numAssociatedDevices",
+            "numAssociatedActivities",
+            "approxBytesTransferred",
+            "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+        if "notability" in contents:
+            dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'domain',
+                "Indicator": lookup_key,
+                "Score": 0,
+                "Reliability": demisto.params().get('integrationReliability')
+            }
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["domain"] = lookup_key
+        genericContext = {"Domain": {"Name": lookup_key}}
+
+        domain_result = returnResults(contents, "Domains", "domain", humanReadable, dbotScore, genericContext)
+        domains_results.append(domain_result)
+
+    demisto.results(domains_results)
 
 
 def lookupEmail():
@@ -430,43 +448,50 @@ def fetchIncidents():
 
 
 ''' EXECUTION '''
-LOG('command is %s' % (command))
 
-try:
-    if command == "test-module":
-        # If we got this far we already successfully authenticated against the server
-        demisto.results('ok')
 
-    elif command == "fetch-incidents":
-        fetchIncidents()
+def main():
+    LOG('command is %s' % (command))
 
-    elif command == "awake-query-devices":
-        queryDevices()
+    try:
+        if command == "test-module":
+            # If we got this far we already successfully authenticated against the server
+            demisto.results('ok')
 
-    elif command == "awake-query-activities":
-        queryActivities()
+        elif command == "fetch-incidents":
+            fetchIncidents()
 
-    elif command == "awake-query-domains":
-        queryDomains()
+        elif command == "awake-query-devices":
+            queryDevices()
 
-    elif command == "awake-pcap-download":
-        pcapDownload()
+        elif command == "awake-query-activities":
+            queryActivities()
 
-    elif command == "domain":
-        lookupDomain()
+        elif command == "awake-query-domains":
+            queryDomains()
 
-    elif command == "email":
-        lookupEmail()
+        elif command == "awake-pcap-download":
+            pcapDownload()
 
-    elif command == "ip":
-        lookupIp()
+        elif command == "domain":
+            lookupDomain()
 
-    elif command == "device":
-        lookupDevice()
+        elif command == "email":
+            lookupEmail()
 
-except Exception as e:
-    if command == "fetch-incidents":
-        raise
-    LOG(e)
-    LOG.print_log()
-    return_error(e)
+        elif command == "ip":
+            lookupIp()
+
+        elif command == "device":
+            lookupDevice()
+
+    except Exception as e:
+        if command == "fetch-incidents":
+            raise
+        LOG(e)
+        LOG.print_log()
+        return_error(e)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
