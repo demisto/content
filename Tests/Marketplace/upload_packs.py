@@ -882,6 +882,7 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
+        # TODO: add for readme images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 

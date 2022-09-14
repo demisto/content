@@ -90,6 +90,7 @@ class Pack(object):
         self._create_date = None  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
+        self._reademe_image = False
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
@@ -3109,7 +3110,7 @@ class Pack(object):
             logging.info(f'Image sucessfully Downloaded: {image_name}')
             return True
         else:
-            logging.error(f'Image {image_name} Couldn\'t be retreived status code {r.status_code}')
+            logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
             return False
 
     def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
@@ -3540,6 +3541,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if images_data:
+        # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
         logging.debug(f"Images data {images_data}")
 
