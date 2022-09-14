@@ -261,7 +261,7 @@ tasks:
         complex:
           root: inputs.UserID
     separatecontext: true
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: |
