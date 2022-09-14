@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 blessings = "^1.7"
 coloredlogs = "^15.0.1"
 demisto_py = "^3.2.3"
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "a0eaf52f11ce5a6bd6c81b3c6c4595593f3a2d59"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "601654df817854bd3cab9e63f15ee0c3f0abce44"}
 freezegun = "^1.1.0"
 pandas = "^1.3.3"
 prettytable = "^3.2.0"
