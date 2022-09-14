@@ -1,19 +1,7 @@
 id: Port Scan - Generic
 version: -1
 name: Port Scan - Generic
-description: "Investigates a port scan incident. The incident may originate from outside\
-  \ or within the network. The playbook:\n- Enriches the hostname and IP address of\
-  \ the attacking endpoint\n- Escalates the incident in case a critical asset\
-  \ is involved\n- Hunts malware associated with the alerts across the organization\n\
-  - Blocks detected malware associated with the incident\n- Blocks IP addresses associated\
-  \ with the malware, if a malicious file was involved\n- Pivots from the attacking\
-  \ IP to detect and block malicious domains hosted on the IP (for external scan)\n\
-  - Isolates the attacking endpoint (for internal scan)\n- Allows manual blocking\
-  \ of ports through an email communication task\n\nIf you're using one or more of\
-  \ the following products, make sure to configure their corresponding playbook inputs,\
-  \ respectively:\nSplunk - \"Splunk Indicator Hunting\"\nQRadar - \"QRadar Indicator\
-  \ Hunting v2\"\nPalo Alto Networks Cortex Data Lake/Panorma/Autofocus/Analytics\
-  \ - \"PANW - Hunting and threat detection by indicator type V2\""
+description: "Investigates a port scan incident. The incident may originate from outside or within the network. The playbook:\n- Enriches the hostname and IP address of the attacking endpoint\n- Escalates the incident in case a critical asset is involved\n- Hunts malware associated with the alerts across the organization\n- Blocks detected malware associated with the incident\n- Blocks IP addresses associated with the malware, if a malicious file was involved\n- Pivots from the attacking IP to detect and block malicious domains hosted on the IP (for external scan)\n- Isolates the attacking endpoint (for internal scan)\n- Allows manual blocking of ports through an email communication task\n\nIf you're using one or more of the following products, make sure to configure their corresponding playbook inputs, respectively:\nSplunk - \"Splunk Indicator Hunting\"\nQRadar - \"QRadar Indicator Hunting v2\"\nPalo Alto Networks Cortex Data Lake/Panorma/Autofocus/Analytics - \"PANW - Hunting and threat detection by indicator type V2\""
 starttaskid: '0'
 tasks:
   '0':
@@ -37,6 +25,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '63':
     id: '63'
     taskid: f49ea1b5-839b-48a9-8524-91bfda10c15b
@@ -45,8 +37,7 @@ tasks:
       id: f49ea1b5-839b-48a9-8524-91bfda10c15b
       version: -1
       name: Escalate incident to higher tier
-      description: Assigns the incident to a random user who has the role configured
-        in the RoleForEscalation playbook input.
+      description: Assigns the incident to a random user who has the role configured in the RoleForEscalation playbook input.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -57,17 +48,19 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       roles:
         complex:
           root: inputs.RoleForEscalation
-      username: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 2875\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '64':
     id: '64'
     taskid: 6784b795-2168-4cdd-89f0-5312d6575165
@@ -76,8 +69,7 @@ tasks:
       id: 6784b795-2168-4cdd-89f0-5312d6575165
       version: -1
       name: Can the incident be auto-escalated to a higher tier?
-      description: Checks whether a role from which analysts can be assigned to the
-        incident was configured in the RoleForEscalation playbook input.
+      description: Checks whether a role from which analysts can be assigned to the incident was configured in the RoleForEscalation playbook input.
       type: condition
       iscommand: false
       brand: ''
@@ -100,6 +92,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '65':
     id: '65'
     taskid: 283724c2-2162-4869-84ee-29d53607376e
@@ -120,6 +116,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '86':
     id: '86'
     taskid: 547bb430-031e-4d73-8ec8-727ff9341387
@@ -155,6 +155,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '94':
     id: '94'
     taskid: e0ec2761-02d5-45c1-80d8-1dcd6431d33a
@@ -172,323 +176,8 @@ tasks:
       '#none#':
       - '109'
     scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      additionalcommunicatinghosts: {}
-      additionalcommunicatingips: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associateddomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
       niststage:
         simple: Recovery
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -496,6 +185,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '96':
     id: '96'
     taskid: b1c79092-88d5-4cf7-8e02-f05daf25e766
@@ -513,6 +206,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '97':
     id: '97'
     taskid: f954e63e-be10-4278-8813-a9cb69b075b4
@@ -533,18 +230,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '98':
     id: '98'
-    taskid: 61aebfe4-1307-439b-8f56-cd8befceefa3
+    taskid: 6d3fcb6f-5b8e-49bf-8ca5-4f504dbc0ced
     type: playbook
     task:
-      id: 61aebfe4-1307-439b-8f56-cd8befceefa3
+      id: 6d3fcb6f-5b8e-49bf-8ca5-4f504dbc0ced
       version: -1
       name: IP Enrichment - Generic v2
-      description: "Enrich IP addresses using one or more integrations.\n\n- Resolve\
-        \ IP addresses to hostnames (DNS)\n- Provide threat information\n- Separate\
-        \ internal and external IP addresses\n- For internal IP addresses, get host\
-        \ information"
+      description: "Enrich IP addresses using one or more integrations.\n\n- Resolve IP addresses to hostnames (DNS)\n- Provide threat information\n- Separate internal and external IP addresses\n- For internal IP addresses, get host information"
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -560,7 +258,7 @@ tasks:
           - operator: uniq
       InternalRange:
         complex:
-          root: inputs.InternalRange
+          root: inputs.InternalIPRanges
           transformers:
           - operator: uniq
       ResolveIP:
@@ -570,10 +268,15 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '99':
     id: '99'
     taskid: b051a552-d488-4492-81bf-b510a2ca72e3
@@ -659,12 +362,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '100':
     id: '100'
-    taskid: 6de91900-7ee9-487b-8806-b214ba5dbd03
+    taskid: ca208e03-4b64-4d08-8a04-5a67aca71033
     type: playbook
     task:
-      id: 6de91900-7ee9-487b-8806-b214ba5dbd03
+      id: ca208e03-4b64-4d08-8a04-5a67aca71033
       version: -1
       name: Port Scan - Internal Source
       description: Remediates port scans originating within the network.
@@ -677,9 +384,11 @@ tasks:
       - '110'
     scriptarguments:
       BlockAttackerIP:
-        simple: 'False'
+        complex:
+          root: inputs.BlockAttackerIP
       BlockMaliciousFiles:
-        simple: 'False'
+        complex:
+          root: inputs.BlockMaliciousFiles
       InternalSourceIPs:
         complex:
           root: IP
@@ -726,7 +435,8 @@ tasks:
           transformers:
           - operator: uniq
       IsolateEndpointIfCriticalIncident:
-        simple: 'False'
+        complex:
+          root: inputs.IsolateEndpointIfCriticalIncident
       RoleForEscalation:
         complex:
           root: inputs.RoleForEscalation
@@ -751,34 +461,43 @@ tasks:
           root: inputs.WhitelistedHostnames
           transformers:
           - operator: uniq
+      DBotScore:
+        complex:
+          root: DBotScore
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '101':
     id: '101'
-    taskid: abf22fdc-9a18-4e90-80de-687b6dffd22d
+    taskid: c5a45dea-5a09-41ff-82e4-8a846e9b89ea
     type: playbook
     task:
-      id: abf22fdc-9a18-4e90-80de-687b6dffd22d
+      id: c5a45dea-5a09-41ff-82e4-8a846e9b89ea
       version: -1
       name: Port Scan - External Source
       playbookName: Port Scan - External Source
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook remediates port scans originating outside of the organization''s network.'
     nexttasks:
       '#none#':
       - '110'
     scriptarguments:
       BlockAttackerIP:
-        simple: 'False'
+        complex:
+          root: inputs.BlockAttackerIP
       BlockMaliciousDomains:
         simple: 'False'
       SourceExternalIPs:
@@ -800,15 +519,23 @@ tasks:
                   simple: IP.Address
                 iscontext: true
           accessor: Address
+      DBotScore:
+        complex:
+          root: DBotScore
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 750\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '105':
     id: '105'
     taskid: 45115f54-2c88-4923-85a4-9b91d0ae6a5f
@@ -817,9 +544,7 @@ tasks:
       id: 45115f54-2c88-4923-85a4-9b91d0ae6a5f
       version: -1
       name: Ensure incident was remediated
-      description: Make sure that the incident was fully remediated. Take additional
-        steps as necessary to complete the investigation and containment, and then
-        proceed.
+      description: Make sure that the incident was fully remediated. Take additional steps as necessary to complete the investigation and containment, and then proceed.
       type: regular
       iscommand: false
       brand: ''
@@ -831,6 +556,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '106':
     id: '106'
     taskid: 4dc48d79-ffe0-433c-80da-e8c27c3798e8
@@ -847,20 +576,16 @@ tasks:
     nexttasks:
       '#none#':
       - '96'
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 3590\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '108':
     id: '108'
     taskid: 89a8a6f0-3ce3-40c9-8fdc-70e9be424956
@@ -878,331 +603,18 @@ tasks:
       '#none#':
       - '98'
     scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      additionalcommunicatinghosts: {}
-      additionalcommunicatingips: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associateddomains: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
       niststage:
         simple: Analysis
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 160\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '109':
     id: '109'
     taskid: d7f2f52c-4668-4868-89ed-e445821a994e
@@ -1211,8 +623,7 @@ tasks:
       id: d7f2f52c-4668-4868-89ed-e445821a994e
       version: -1
       name: Recover from the incident
-      description: "Take steps to recover from the incident:\n- Take hosts out of\
-        \ isolation\n- Unblock IPs\n- Unblock ports"
+      description: "Take steps to recover from the incident:\n- Take hosts out of isolation\n- Unblock IPs\n- Unblock ports"
       type: regular
       iscommand: false
       brand: ''
@@ -1224,6 +635,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '110':
     id: '110'
     taskid: 8448f01d-1d0e-494e-8169-ffb0dc81d85f
@@ -1244,6 +659,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '112':
     id: '112'
     taskid: b97cc715-2aa6-4023-85a3-a8433cdae7a2
@@ -1277,6 +696,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '113':
     id: '113'
     taskid: b7ef3d4e-e864-43dd-8bb3-4b4a8b3210a4
@@ -1285,9 +708,7 @@ tasks:
       id: b7ef3d4e-e864-43dd-8bb3-4b4a8b3210a4
       version: -1
       name: Ask the firewall approver to block connections using the unncessary open ports
-      description: Sends an email to the address configured in the FirewallApproverEmail
-        playbook input, asking them to confirm that they created a rule to block
-        the necessary ports in the firewall.
+      description: Sends an email to the address configured in the FirewallApproverEmail playbook input, asking them to confirm that they created a rule to block the necessary ports in the firewall.
       type: condition
       iscommand: false
       brand: ''
@@ -1308,11 +729,7 @@ tasks:
       subject:
         simple: Port Scan Incident - Action Needed
       body:
-        simple: 'Ports were scanned on the network, and some of them were not denied/dropped.
-          The IP that performed the scan was ${inputs.SourceIPs}, and it scanned ${inputs.DestinationIPs}
-          across the following unique ports: ${UniquePorts}. Please confirm that you
-          have created a firewall rule to block the necessary ports. If for any reason
-          you are not able to create such rules, click Reject.'
+        simple: 'Ports were scanned on the network, and some of them were not denied/dropped. The IP that performed the scan was ${inputs.SourceIPs}, and it scanned ${inputs.DestinationIPs} across the following unique ports: ${UniquePorts}. Please confirm that you have created a firewall rule to block the necessary ports. If for any reason you are not able to create such rules, click Reject.'
       methods:
       - email
       format: ''
@@ -1325,6 +742,10 @@ tasks:
       replyOptions:
       - Confirm
       - Reject
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '114':
     id: '114'
     taskid: 89bfc612-4497-4b70-8169-15fd85289e01
@@ -1342,328 +763,18 @@ tasks:
       '#none#':
       - '113'
     scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      sectorofaffectedparty: {}
       severity:
         simple: '3'
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 1620\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '115':
     id: '115'
     taskid: c78de867-49ed-445c-849e-99f5229bf3f8
@@ -1672,10 +783,7 @@ tasks:
       id: c78de867-49ed-445c-849e-99f5229bf3f8
       version: -1
       name: Is the necessary information for port blocking available?
-      description: Checks whether the base events composing the port scan alert are
-        available, whether the email of the person approving firewall port blocking
-        is available, and whether any of the scanned ports was not blocked by the
-        firewall.
+      description: Checks whether the base events composing the port scan alert are available, whether the email of the person approving firewall port blocking is available, and whether any of the scanned ports was not blocked by the firewall.
       type: condition
       iscommand: false
       brand: ''
@@ -1738,6 +846,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '116':
     id: '116'
     taskid: 160e8729-489c-4aa3-8406-b7ef2325588c
@@ -1755,10 +867,8 @@ tasks:
       '#none#':
       - '110'
     scriptarguments:
-      append: {}
       key:
         simple: Event
-      stringify: {}
       value:
         complex:
           root: inputs.Event
@@ -1768,6 +878,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '117':
     id: '117'
     taskid: b88900e9-f589-4f67-8958-6645b63908e5
@@ -1776,22 +890,7 @@ tasks:
       id: b88900e9-f589-4f67-8958-6645b63908e5
       version: -1
       name: Determine whether ports should be blocked - and block them
-      description: "Visit the logs or events related to the incident and determine\
-        \ whether the  malicious behavior was allowed or blocked,  and whether the\
-        \ ports scanned on the endpoint provided a positive reply to the scan.\nThe\
-        \ result of a scan on a port is usually generalized into one of three categories:\n\
-        Open or Accepted - the host sent a reply indicating that a service is listening\
-        \ on the port.\nClosed or Denied or Not Listening - the host sent a reply\
-        \ indicating that connections will be denied to the port.\nFiltered, Dropped\
-        \ or Blocked - There was no reply from the host.\n\nManually block the port/s\
-        \ on which the host is listening. Pay extra attention to vulnerable ports\
-        \ that may have been, or could be used in the future, for exploitation on the\
-        \ host. Also make sure the host does not accept connections on ports that\
-        \ it’s not supposed to. If such ports exist, you should create a rule in the\
-        \ firewall to block the relevant connections. When creating the rule, you must\
-        \ determine the scope in which the port will be blocked - is it a local issue\
-        \ with the specific endpoint that is listening on a port it shouldn’t, or\
-        \ should the port be blocked organization-wide?\n"
+      description: "Visit the logs or events related to the incident and determine whether the  malicious behavior was allowed or blocked,  and whether the ports scanned on the endpoint provided a positive reply to the scan.\nThe result of a scan on a port is usually generalized into one of three categories:\nOpen or Accepted - the host sent a reply indicating that a service is listening on the port.\nClosed or Denied or Not Listening - the host sent a reply indicating that connections will be denied to the port.\nFiltered, Dropped or Blocked - There was no reply from the host.\n\nManually block the port/s on which the host is listening. Pay extra attention to vulnerable ports that may have been, or could be used in the future, for exploitation on the host. Also make sure the host does not accept connections on ports that it’s not supposed to. If such ports exist, you should create a rule in the firewall to block the relevant connections. When creating the rule, you must determine the scope in which the port will be blocked - is it a local issue with the specific endpoint that is listening on a port it shouldn’t, or should the port be blocked organization-wide?\n"
       type: regular
       iscommand: false
       brand: ''
@@ -1803,6 +902,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '120':
     id: '120'
     taskid: 895f104e-6ec3-48bb-830d-9ecf0de8c346
@@ -1811,9 +914,7 @@ tasks:
       id: 895f104e-6ec3-48bb-830d-9ecf0de8c346
       version: -1
       name: Save incident information to incident fields.
-      description: Saves information about the source IP, destination IP, source username,
-        file hash, file name, amount of scanned ports, amount of scanned unique ports
-        and the port numbers in incident fields.
+      description: Saves information about the source IP, destination IP, source username, file hash, file name, amount of scanned ports, amount of scanned unique ports and the port numbers in incident fields.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1821,327 +922,6 @@ tasks:
     nexttasks:
       '#none#':
       - '110'
-    scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scannedports: {}
-      scansourcetype: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -2240,6 +1020,10 @@ tasks:
               separator:
                 value:
                   simple: ', '
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '121':
     id: '121'
     taskid: 11c7359a-276a-44cb-8c9f-8329dc617462
@@ -2256,326 +1040,6 @@ tasks:
     nexttasks:
       '#none#':
       - '97'
-    scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scannedports: {}
-      scansourcetype: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -2587,6 +1051,10 @@ tasks:
     - incidentfield: Ports Blocked
       output:
         simple: 'True'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '123':
     id: '123'
     taskid: 90924c7d-485b-427b-8ddb-0ab957272880
@@ -2595,8 +1063,7 @@ tasks:
       id: 90924c7d-485b-427b-8ddb-0ab957272880
       version: -1
       name: Save hostname to incident field
-      description: Saves the hostname that was resolved from the internal IP to an
-        incident field.
+      description: Saves the hostname that was resolved from the internal IP to an incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2604,327 +1071,6 @@ tasks:
     nexttasks:
       '#none#':
       - '100'
-    scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      sansstage: {}
-      scannedports: {}
-      scansourcetype: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -2938,105 +1084,103 @@ tasks:
         complex:
           root: Endpoint
           accessor: Hostname
-view: "{\n  \"linkLabelsPosition\": {\n    \"112_113_yes\": 0.36,\n    \"113_117_Reject\"\
-  : 0.41,\n    \"113_121_Confirm\": 0.58,\n    \"115_117_#default#\": 0.15,\n    \"\
-  64_63_yes\": 0.44,\n    \"86_64_yes\": 0.41,\n    \"86_94_#default#\": 0.8\n  },\n\
-  \  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3805,\n      \"width\"\
-  : 2580,\n      \"x\": -1040,\n      \"y\": 20\n    }\n  }\n}"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"112_113_yes\": 0.36,\n    \"113_117_Reject\": 0.41,\n    \"113_121_Confirm\": 0.58,\n    \"115_117_#default#\": 0.15,\n    \"64_63_yes\": 0.44,\n    \"86_64_yes\": 0.41,\n    \"86_94_#default#\": 0.8\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3805,\n      \"width\": 2580,\n      \"x\": -1040,\n      \"y\": 20\n    }\n  }\n}"
 inputs:
 - key: BlockAttackerIP
   value:
     simple: 'False'
   required: true
   description: Whether attacking IPs should be automatically blocked using firewalls.
+  playbookInputQuery:
 - key: WhitelistedHostnames
   value: {}
   required: false
-  description: A list of hostnames that should not be isolated even if used in an
-    attack.
+  description: A list of hostnames that should not be isolated even if used in an attack.
+  playbookInputQuery:
 - key: IsolateEndpointIfCriticalIncident
   value:
     simple: 'False'
   required: true
-  description: Whether to automatically isolate endpoints if the incident severity
-    is critical and the endpoint is not on the WhitelistedHostnames input, or opt
-    for manual user approval. True means isolation will be done automatically when the conditions are met.
+  description: Whether to automatically isolate endpoints if the incident severity is critical and the endpoint is not on the WhitelistedHostnames input, or opt for manual user approval. True means isolation will be done automatically when the conditions are met.
+  playbookInputQuery:
 - key: InternalIPRanges
   value: {}
   required: false
-  description: 'A list of IP ranges to check the IP against. The list should be provided
-    in CIDR notation, separated by commas. An example of a list of ranges would be:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
+  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Cortex XSOAR role of the users that the incident can be
-    escalated to in case the severity is determined to be critical.
+  description: The name of the Cortex XSOAR role of the users that the incident can be escalated to in case the severity is determined to be critical.
+  playbookInputQuery:
 - key: BlockMaliciousFiles
   value:
     simple: 'False'
   required: true
-  description: Whether to automatically block malicious files involved with the incident
-    across all endpoints in the organization.
+  description: Whether to automatically block malicious files involved with the incident across all endpoints in the organization.
+  playbookInputQuery:
 - key: SourceIPs
   value: {}
   required: false
-  description: The source IP address(es) that performed the port scan. If the source
-    is an external IP, this input is mandatory for a proper incident response. If
-    the source is an internal IP, then either this or the SourceHostnames input must
-    be filled. The value must be unique.
+  description: The source IP address(es) that performed the port scan. If the source is an external IP, this input is mandatory for a proper incident response. If the source is an internal IP, then either this or the SourceHostnames input must be filled. The value must be unique.
+  playbookInputQuery:
 - key: SourceHostnames
   value: {}
   required: false
-  description: The source hostname(s) that performed the port scan. If the source is
-    an external IP, this input can remain empty. If the source was internal, then
-    either this or the SourceIPs input must be filled. The value must be unique.
+  description: The source hostname(s) that performed the port scan. If the source is an external IP, this input can remain empty. If the source was internal, then either this or the SourceIPs input must be filled. The value must be unique.
+  playbookInputQuery:
 - key: SourceUsernames
   value: {}
   required: false
   description: The Active Directory username(s) that were used in the port scan attack.
+  playbookInputQuery:
 - key: InvolvedFileMD5
   value: {}
   required: false
   description: MD5 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
 - key: InvolvedFileSHA1
   value: {}
   required: false
   description: SHA1 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
 - key: InvolvedFileSHA256
   value: {}
   required: false
   description: SHA256 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
 - key: Event
   value: {}
   required: false
-  description: The base events that contain the actual data from the port scan requests.
-    The events should be a list of dictionaries that contain the action taken by the
-    firewall (Event.Action which could be Allowed for example), the source IP (Events.SourceIP),
-    destination IP (Event.DestinationIP) and destination port (Event.DestinationPort).
-    The events are necessary to be able to block the necessary ports.
+  description: The base events that contain the actual data from the port scan requests. The events should be a list of dictionaries that contain the action taken by the firewall (Event.Action which could be Allowed for example), the source IP (Events.SourceIP), destination IP (Event.DestinationIP) and destination port (Event.DestinationPort). The events are necessary to be able to block the necessary ports.
+  playbookInputQuery:
 - key: FirewallApproverEmail
   value: {}
   required: false
-  description: The email address of the person that will be contacted if blocking
-    certain ports is necessary. That person is expected to reply once they create
-    the necessary firewall rule/s.
+  description: The email address of the person that will be contacted if blocking certain ports is necessary. That person is expected to reply once they create the necessary firewall rule/s.
+  playbookInputQuery:
 - key: DestinationIPs
   value: {}
   required: false
   description: The destination IP addresses that were scanned. The value must be unique.
+  playbookInputQuery:
 - key: DestinationPorts
   value: {}
   required: false
   description: All the destination ports that were scanned (non-unique).
+  playbookInputQuery:
 - key: InvolvedFileName
   value: {}
   required: false
   description: Names of files that were involved in the port scan incident.
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Port Scan - Generic
 fromversion: 5.0.0
 tests:
-  - no test
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
