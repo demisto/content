@@ -20,7 +20,10 @@ def main():
                 Category=demisto.get(ent, 'Metadata.category'),
                 Created=demisto.get(ent, 'Metadata.created'),
                 Modified=demisto.get(ent, 'Metadata.modified')) for ent in ents]
-            return_results(CommandResults(outputs_prefix='Entry', outputs=outputs, readable_output='Done.', raw_response=ents))
+            return_results(CommandResults(outputs_prefix='Entry',
+                                          outputs=outputs,
+                                          readable_output=f'Found {len(ents)} entries.',
+                                          raw_response=ents))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetEntries.\nError:\n{type(e)}, {str(e)}')
