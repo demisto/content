@@ -305,7 +305,7 @@ class ClassifierAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in classifiers] if type(classifiers) is list else []
 
 
-class ReputationAPI(EntityAPI):
+class ReputationAPI(EntityAPI):  # works
     name = 'reputation'
 
     def search_specific_id(self, specific_id: str):
@@ -313,7 +313,7 @@ class ReputationAPI(EntityAPI):
                                {'uri': '/reputation/export'},
                                fail_on_error=False)
 
-    def search_all(self):  # TODO: check
+    def search_all(self):
         return execute_command('demisto-api-get',
                                {'uri': '/reputation/export'},
                                fail_on_error=False)
@@ -340,7 +340,7 @@ class LayoutAPI(EntityAPI):
                                {'uri': '/layouts'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: check
+    def delete_specific_id(self, specific_id: str):  # TODO: doesn't work
         return execute_command('demisto-api-post',
                                {'uri': f'/layout/{specific_id}/remove'},
                                fail_on_error=False)
