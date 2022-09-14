@@ -2732,9 +2732,12 @@ script:
       required: false
       type: String
       description: The search id to query the results.
-    - name: poll_for_all_events
+    - name: retry_if_not_all_fetched
       required: false
-      type: Boolean
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
       description: Whether to retry until all events are polled or stop when the first search is completed.
     deprecated: false
     description: Polling command to search for events of a specific offense.

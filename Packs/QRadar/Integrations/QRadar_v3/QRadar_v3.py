@@ -3524,13 +3524,16 @@ def qradar_search_retrieve_events_command(
     end_date: datetime | None = dateparser.parse(sm.get('end_date'))
     if not end_date or end_date.year == 1:
         end_date = None
+    # determine if this is the last run of the polling command
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
     events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
-    if is_last_run:
+    if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
-        if args.get('success'):
-            status = QueryStatus.SUCCESS.value
+        return CommandResults(
+            readable_output='Not all events were fetched. partial data is available.',
+        )
+
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
@@ -3538,7 +3541,7 @@ def qradar_search_retrieve_events_command(
         offense_id = args.get('offense_id', '')
         events_limit = int(args.get('events_limit', params.get('events_limit')))
         fetch_mode: FetchMode = args.get('fetch_mode', params.get('fetch_mode'))
-        if argToBoolean(args.get('retry_if_not_all_fetched')) and  \
+        if argToBoolean(args.get('retry_if_not_all_fetched', False)) and  \
             not is_last_run and not \
                 is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
             # return scheduled command result without search id to search again
