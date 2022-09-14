@@ -739,9 +739,9 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
 
     summary = detection.get('summary')
     if summary:
-        description = summary.get('description')
-        dst_ips = summary.get('dst_ips')
-        dst_ports = summary.get('dst_ports')
+        description = summary.get('description', "")
+        dst_ips = summary.get('dst_ips', "")
+        dst_ports = summary.get('dst_ports', "")
 
     return common_extract_data(detection) | {
         'Category'            : detection.get('category'),                                                # noqa: E203
