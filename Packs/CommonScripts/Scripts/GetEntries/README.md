@@ -15,7 +15,7 @@ Collect entries matching to the conditions in the war room
 | **Argument Name** | **Description** |
 | --- | --- |
 | tags | The list of tags |
-| categories | The list of categories |
+| categories | The list of categories. {commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments} |
 
 ## Outputs
 ---
