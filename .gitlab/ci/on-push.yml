@@ -426,7 +426,7 @@ test_upload_flow:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
-  needs: ["run-unittests-and-lint", "run-validations"]
+  needs: ["run-unittests-and-lint"]
   stage: test-upload-flow
   script:
     - if ! git diff origin/master upload_testing_flow --name-only | grep "Tests/\|Utils/"; then                                                                            16:33:03
