@@ -18,4 +18,4 @@ The integration includes commands to:
  - Get configuration jobs by ID
 
 
-The integration uses the Prisma SASE Multi-tenant API documented here: https://pan.dev
+The integration uses the Prisma SASE Multi-tenant API documented here: [Prisma API](https://pan.dev).
