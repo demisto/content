@@ -11,6 +11,7 @@ if [ "$#" -lt "1" ]; then
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
+  [-oa, --override-all]       If given, will override all packs during this upload flow.
   "
   exit 1
 fi
@@ -20,6 +21,7 @@ _bucket="marketplace-dist-dev"
 _bucket_v2="marketplace-v2-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
+_override_all_pack="false"
 
 # Parsing the user inputs.
 
@@ -54,6 +56,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -oa|--override-all) _override_all_pack="true"
+    shift;;
+
   *)    # unknown option.
     shift;;
   esac
@@ -81,6 +86,7 @@ curl -k -v --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
   --form "${_variables}" \
+  --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_pack}" \
   --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
   --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \

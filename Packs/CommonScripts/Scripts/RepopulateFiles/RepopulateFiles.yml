@@ -3,16 +3,71 @@ commonfields:
   version: -1
 name: RepopulateFiles
 script: ''
+type: python
 tags:
 - Utility
 comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
 enabled: true
+outputs:
+- contextPath: File.Name
+  description: Filename
+- contextPath: File.Type
+  description: File type
+- contextPath: File.Size
+  description: File size
+- contextPath: File.MD5
+  description: MD5 hash of the file
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+- contextPath: File.SHA512
+  description: SHA512 hash of the file
+- contextPath: File.EntryID
+  description: EntryID of the file
+- contextPath: File.Info
+  description: File information
+- contextPath: File.Extension
+  description: File extension
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file
+- contextPath: AttachmentFile.Name
+  description: Filename of incident attachments
+- contextPath: AttachmentFile.Type
+  description: File type of incident attachments
+- contextPath: AttachmentFile.Size
+  description: File size of incident attachments
+- contextPath: AttachmentFile.MD5
+  description: MD5 hash of the file of incident attachments
+- contextPath: AttachmentFile.SHA1
+  description: SHA1 hash of the file of incident attachments
+- contextPath: AttachmentFile.SHA256
+  description: SHA256 hash of the file of incident attachments
+- contextPath: AttachmentFile.SHA512
+  description: SHA512 hash of the file of incident attachments
+- contextPath: AttachmentFile.EntryID
+  description: EntryID of the file of incident attachments
+- contextPath: AttachmentFile.Info
+  description: File information of incident attachments
+- contextPath: AttachmentFile.Extension
+  description: File extension of incident attachments
+- contextPath: AttachmentFile.SSDeep
+  description: SSDeep hash of the file of incident attachments
+- contextPath: AttachmentFile.Attachment.description
+  description: File description
+- contextPath: AttachmentFile.Attachment.name
+  description: File name
+- contextPath: AttachmentFile.Attachment.path
+  description: File path
+- contextPath: AttachmentFile.Attachment.showMediaFile
+  description: showMediaFile
+- contextPath: AttachmentFile.Attachment.type
+  description: File content type
 scripttarget: 0
-type: python
 subtype: python3
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.5.31928
 tests:
 - No tests (auto formatted)

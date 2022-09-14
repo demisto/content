@@ -1,0 +1,3 @@
+gdetect-send entryID=1@042262f2-6a12-44da-8e11-74cf4bc67063
+gdetect-get-all uuid=23465d22-3464-39ce-b8b3-bc2ee7d6eecf
+gdetect-get-threats uuid=23465d22-3464-39ce-b8b3-bc2ee7d6eecf

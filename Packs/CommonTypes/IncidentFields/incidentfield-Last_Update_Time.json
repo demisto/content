@@ -12,7 +12,10 @@
         "CrowdStrike Falcon Incident",
         "Microsoft Defender For Endpoint",
         "OpsGenie Incident",
-        "OpsGenie Alert"
+        "OpsGenie Alert",
+        "Skyhigh Security Alert",
+        "Skyhigh Security Threat",
+        "ThreatConnect"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -25,7 +28,6 @@
     "editForm": true,
     "extractIndicatorTypesIDs": [],
     "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_lastupdatetime",

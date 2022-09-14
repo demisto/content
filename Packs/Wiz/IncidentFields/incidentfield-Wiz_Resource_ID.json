@@ -24,7 +24,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "description": "Unique (provider) cloud resource ID",
+    "description": "Unique Wiz resource ID",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"

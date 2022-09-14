@@ -1,0 +1,26 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myPack",
+        "marketplaces": [
+          "xsoar",
+          "marketplacev2"
+        ]
+      }
+    }
+  ],
+  "Packs": {
+    "myPack": {
+      "name": "myPack",
+      "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+      ]
+    }
+  }
+}

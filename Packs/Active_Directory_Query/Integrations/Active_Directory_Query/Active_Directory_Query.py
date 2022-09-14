@@ -25,7 +25,7 @@ conn: Optional[Connection] = None
 DEFAULT_OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Active Directory (Incoming)"
 
-COOMON_ACCOUNT_CONTROL_FLAGS = {
+COMMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
     514: "Disabled account",
     544: "Password Not Required",
@@ -252,7 +252,6 @@ def base_dn_verified(base_dn):
 
 
 def generate_unique_cn(default_base_dn, cn):
-
     changing_cn = cn
     i = 1
     while check_if_user_exists_by_attribute(default_base_dn, "cn", changing_cn):
@@ -402,19 +401,19 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
     return conn.entries
 
 
-def search_with_paging(search_filter, search_base, attributes=None, page_size=100, size_limit=0, time_limit=0):
+def search_with_paging(search_filter, search_base, attributes=None, page_size=100, size_limit=0,
+                       time_limit=0, page_cookie=None):
     """
     find entries in the DIT
 
     Args:
         search_base: the location in the DIT where the search will start
         search_filter: LDAP query string
-        attributes: the attributes to specify for each entrxy found in the DIT
-
+        attributes: the attributes to specify for each entry found in the DIT
     """
     assert conn is not None
     total_entries = 0
-    cookie = None
+    cookie = base64.b64decode(page_cookie) if page_cookie else None
     start = datetime.now()
 
     entries: List[Entry] = []
@@ -422,7 +421,6 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     while True:
         if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
-
         conn.search(
             search_base,
             search_filter,
@@ -431,7 +429,6 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
             paged_size=page_size,
             paged_cookie=cookie
         )
-
         entries_left_to_fetch -= len(conn.entries)
         total_entries += len(conn.entries)
         cookie = dict_safe_get(conn.result, ['controls', '1.2.840.113556.1.4.319', 'value', 'cookie'])
@@ -460,10 +457,11 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         raw.append(entry)
         flat.append(flat_entry)
-
+    encode_cookie = b64_encode(cookie) if cookie else None
     return {
         "raw": raw,
-        "flat": flat
+        "flat": flat,
+        "page_cookie": encode_cookie
     }
 
 
@@ -520,7 +518,6 @@ def convert_special_chars_to_unicode(search_filter):
 
 
 def free_search(default_base_dn, page_size):
-
     args = demisto.args()
 
     search_filter = args.get('filter')
@@ -536,16 +533,25 @@ def free_search(default_base_dn, page_size):
     if attributes:
         attributes = ALL_ATTRIBUTES if attributes == 'ALL' else attributes.split(',')
 
+    page_cookie = args.get('page-cookie')
+    if args.get('page-size'):
+        page_size = arg_to_number(args['page-size'])
+        size_limit = page_size
+
     entries = search_with_paging(
         search_filter,
         search_base,
         attributes=attributes,
         size_limit=size_limit,
         time_limit=time_limit,
-        page_size=page_size
+        page_size=page_size,
+        page_cookie=page_cookie
     )
 
-    ec = {} if context_output == 'no' else {'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat']}
+    ec = {} if context_output == 'no' else {'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat'],
+                                            'ActiveDirectory(obj.SearchPageCookie)': {
+                                                'SearchPageCookie': entries['page_cookie']}
+                                            }
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -571,9 +577,13 @@ def search_users(default_base_dn, page_size):
     if limit <= 0:
         limit = 20
 
+    page_cookie = args.get('page-cookie')
+    if args.get('page-size'):
+        page_size = arg_to_number(args['page-size'])
+        limit = page_size
+
     # default query - list all users
     query = "(&(objectClass=User)(objectCategory=person))"
-
     # query by user DN
     if args.get('dn'):
         dn = escape_filter_chars(args['dn'])
@@ -609,26 +619,28 @@ def search_users(default_base_dn, page_size):
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
 
-    attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES))
+    attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES)
+                      - set(argToList(args.get('attributes-to-exclude'))))
 
     entries = search_with_paging(
         query,
         default_base_dn,
+        page_cookie=page_cookie,
         attributes=attributes,
         size_limit=limit,
         page_size=page_size
     )
 
     accounts = [account_entry(entry, custom_attributes) for entry in entries['flat']]
+    if 'userAccountControl' in attributes:
+        for user in entries['flat']:
+            user_account_control = user.get('userAccountControl')[0]
+            user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
 
-    for user in entries['flat']:
-        user_account_control = user.get('userAccountControl')[0]
-        user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
-
-        # display a literal translation of the numeric account control flag
-        if args.get('user-account-control-out', '') == 'true':
-            user['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
-
+            # display a literal translation of the numeric account control flag
+            if args.get('user-account-control-out', '') == 'true':
+                user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
+                    user_account_control) or user_account_control
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -638,7 +650,8 @@ def search_users(default_base_dn, page_size):
         'EntryContext': {
             'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
             # 'backward compatability' with ADGetUser script
-            'Account(obj.ID == val.ID)': accounts
+            'Account(obj.ID == val.ID)': accounts,
+            'ActiveDirectory(obj.UsersPageCookie)': {'UsersPageCookie': entries['page_cookie']}
         }
     }
     demisto.results(demisto_entry)
@@ -734,6 +747,12 @@ def search_computers(default_base_dn, page_size):
         query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
             args['custom-field-type'], args['custom-field-data'])
 
+    size_limit = int(args.get('limit', '0'))
+    page_cookie = args.get('page-cookie')
+    if args.get('page-size'):
+        page_size = arg_to_number(args['page-size'])
+        size_limit = page_size
+
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
     attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
@@ -741,7 +760,9 @@ def search_computers(default_base_dn, page_size):
         query,
         default_base_dn,
         attributes=attributes,
-        page_size=page_size
+        page_size=page_size,
+        size_limit=size_limit,
+        page_cookie=page_cookie
     )
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries['flat']]
@@ -754,6 +775,7 @@ def search_computers(default_base_dn, page_size):
                 'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
                 # 'backward compatability' with ADGetComputer script
                 'Endpoint(obj.ID == val.ID)': endpoints,
+                'ActiveDirectory(obj.ComputersPageCookie)': {'ComputersPageCookie': entries['page_cookie']}
             },
             raw_response=entries['raw'],
         )
@@ -774,7 +796,6 @@ def search_group_members(default_base_dn, page_size):
     nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
     account_name = args.get('sAMAccountName')
-
     custom_attributes: List[str] = []
 
     default_attribute_mapping = {
@@ -796,16 +817,22 @@ def search_group_members(default_base_dn, page_size):
         query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
             .format(member_type, nested_search, group_dn, account_name)
 
+    size_limit = int(args.get('limit', '0'))
+    page_cookie = args.get('page-cookie')
+    if args.get('page-size'):
+        page_size = arg_to_number(args['page-size'])
+        size_limit = page_size
+
     entries = search_with_paging(
         query,
         default_base_dn,
         attributes=attributes,
         page_size=page_size,
-        time_limit=time_limit
+        time_limit=time_limit,
+        size_limit=size_limit,
+        page_cookie=page_cookie
     )
-
     members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
-
     demisto_entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -816,7 +843,8 @@ def search_group_members(default_base_dn, page_size):
             'ActiveDirectory.Groups(obj.dn ==' + group_dn + ')': {
                 'dn': group_dn,
                 'members': members
-            }
+            },
+            'ActiveDirectory(obj.GroupsPageCookie)': {'GroupsPageCookie': entries['page_cookie']}
         }
     }
 
@@ -932,7 +960,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
                                    "transformer script which determines the OU of the user "
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
-                                   "and schema type, under the \"ou\" field.")
+                                                          "and schema type, under the \"ou\" field.")
 
         user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
 
@@ -1014,7 +1042,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
                                    "transformer script which determines the OU of the user "
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
-                                   "and schema type, under the \"ou\" field.")
+                                                          "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
@@ -1455,7 +1483,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         except Exception as e:
             error_msg = 'Please validate your instance configuration and make sure all of the ' \
                         'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.\n' \
-                        'Error is: ' + str(e)
+                                                                                       'Error is: ' + str(e)
             raise DemistoException(error_msg)
 
         if disabled_users_group_cn:
@@ -1485,13 +1513,12 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
 
 def add_member_to_group(default_base_dn):
-
     args = demisto.args()
 
     search_base = args.get('base-dn') or default_base_dn
 
     # get the  dn of the member - either user or computer
-    args_err = "Pleade provide either username or computer-name"
+    args_err = "Please provide either username or computer-name"
     member_dn = ''
 
     if args.get('username') and args.get('computer-name'):
@@ -1523,7 +1550,6 @@ def add_member_to_group(default_base_dn):
 
 
 def remove_member_from_group(default_base_dn):
-
     args = demisto.args()
 
     search_base = args.get('base-dn') or default_base_dn
@@ -1637,6 +1663,57 @@ def get_mapping_fields_command(search_base):
 '''
 
 
+def set_password_not_expire(default_base_dn):
+    args = demisto.args()
+    sam_account_name = args.get('username')
+    pwd_n_exp = argToBoolean(args.get('value'))
+
+    if not sam_account_name:
+        raise Exception("Missing argument - You must specify a username (sAMAccountName).")
+
+    # Query by sAMAccountName
+    sam_account_name = escape_filter_chars(sam_account_name)
+    query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(sam_account_name)
+    entries = search_with_paging(query, default_base_dn, attributes='userAccountControl')
+
+    if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
+        return_error(f"sAMAccountName {sam_account_name} was not found.")
+
+    if user := entries.get('flat'):
+        user = user[0]
+        if user_account_control := user.get('userAccountControl'):
+            user_account_control = user_account_control[0]
+
+        # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
+        if pwd_n_exp:
+            # Sets the bit 16 to 1
+            user_account_control |= 1 << 16
+            content_output = (f"AD account {sam_account_name} has set \"password never expire\" attribute. "
+                              f"Value is set to True")
+        else:
+            # Clears the bit 16 to 0
+            user_account_control &= ~(1 << 16)
+            content_output = (f"AD account {sam_account_name} has cleared \"password never expire\" attribute. "
+                              f"Value is set to False")
+
+        attribute_name = 'userAccountControl'
+        attribute_value = user_account_control
+        dn = user_dn(sam_account_name, default_base_dn)
+        modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+
+        # Modify user
+        modify_object(dn, modification)
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': content_output
+        }
+        demisto.results(demisto_entry)
+
+    else:
+        raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
+
+
 def main():
     """ INSTANCE CONFIGURATION """
     params = demisto.params()
@@ -1697,7 +1774,7 @@ def main():
         except Exception as e:
             exc_msg = str(e)
             demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
-                         + "\nTrace:\n{}".format(traceback.format_exc())))
+                                                                + "\nTrace:\n{}".format(traceback.format_exc())))
             message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
             if 'ssl wrapping error' in exc_msg:
                 message = "Failed to access LDAP server. SSL error."
@@ -1710,8 +1787,8 @@ def main():
 
         if not base_dn_verified(DEFAULT_BASE_DN):
             message = "Failed to verify the base DN configured for the instance.\n" \
-                "Last connection result: {}\n" \
-                "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+                      "Last connection result: {}\n" \
+                      "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
             return_error(message)
             return
 
@@ -1729,6 +1806,9 @@ def main():
 
         if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+
+        if command == 'ad-modify-password-never-expire':
+            set_password_not_expire(DEFAULT_BASE_DN)
 
         if command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)

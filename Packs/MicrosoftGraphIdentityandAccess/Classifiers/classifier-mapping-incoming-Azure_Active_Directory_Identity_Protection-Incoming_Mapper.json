@@ -1,0 +1,73 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Graph Identity and Access Incoming Mapper",
+    "mapping": {
+        "Microsoft Graph Identity and Access": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Microsoft Graph Identity and Access Alert Type": {
+                    "complex": null,
+                    "simple": "riskEventType"
+                },
+                "Microsoft Graph Identity and Access Activity": {
+                    "complex": null,
+                    "simple": "activity"
+                },
+                "Microsoft Graph Identity and Access Detected Date Time": {
+                    "complex": null,
+                    "simple": "detectedDateTime"
+                },
+                "Microsoft Graph Identity and Access Detection Timing Type": {
+                    "complex": null,
+                    "simple": "detectionTimingType"
+                },
+                "Microsoft Graph Identity and Access Token Issuer Type": {
+                    "complex": null,
+                    "simple": "tokenIssuerType"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "lastUpdatedDateTime"
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "geoCoordinates",
+                        "filters": [],
+                        "root": "location",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Location Region": {
+                    "complex": null,
+                    "simple": "location.countryOrRegion"
+                },
+                "Risk Rating": {
+                    "complex": null,
+                    "simple": "riskLevel"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "ipAddress"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "riskState"
+                },
+                "Subtype": {
+                    "complex": null,
+                    "simple": "riskDetail"
+                },
+                "Username": {
+                    "complex": null,
+                    "simple": "userPrincipalName"
+                }
+            }
+        }
+    },
+    "name": "Microsoft Graph Identity and Access Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

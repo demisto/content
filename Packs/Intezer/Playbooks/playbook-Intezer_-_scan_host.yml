@@ -2,13 +2,7 @@ id: Intezer - scan host
 version: -1
 fromversion: 5.0.0
 name: Intezer - scan host
-description: |-
-  Uses Demisto D2 agent to scan a host using Intezer scanner.
-
-  Input:
-  * Hostname (default: ${Endpoint.Hostname})
-  * OS (default: windows)
-  * Credentials (default: Admin)
+description: "Deprecated. D2 agent is deprecated. No available replacement."
 starttaskid: "0"
 tasks:
   "0":
@@ -372,3 +366,4 @@ inputs:
 outputs: []
 tests:
 - No Tests
+deprecated: true

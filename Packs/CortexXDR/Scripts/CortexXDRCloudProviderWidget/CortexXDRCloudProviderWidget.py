@@ -1,7 +1,5 @@
 from CommonServerPython import *
 
-import traceback
-
 COLORS = {'AWS': 'ff0000',
           'GCP': '339966',
           'Azure': '0000ff'}
@@ -42,7 +40,6 @@ def main():
     try:
         return_results(get_cloudprovider_html_result())
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CloudProviderWidget. Error: {str(ex)}')
 
 

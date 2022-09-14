@@ -703,7 +703,7 @@ def update_matter_state_command():
                         result_of_update = 'Matter was successfully closed.'
                     except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
-                            demisto.log('{}'.format(ex))
+                            demisto.debug('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being closed.')
                         elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')
@@ -720,7 +720,7 @@ def update_matter_state_command():
                         result_of_update = 'Matter was {} and is now DELETED.'.format(current_state)
                     except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
-                            demisto.log('{}'.format(ex))
+                            demisto.debug('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being deleted.')
                         elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')
@@ -733,7 +733,7 @@ def update_matter_state_command():
                         result_of_update = 'Matter was {} and is not DELETED.'.format(current_state)
                     except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
-                            demisto.log('{}'.format(ex))
+                            demisto.debug('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being deleted.')
                         elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')

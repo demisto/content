@@ -695,7 +695,7 @@ def fetch_incidents():
         last_update_time = parse_date_range(FETCH_TIME, date_format=date_format)[0]
     incidents = []
     limit: int = int(demisto.params().get('fetch_limit', ''))
-    response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
+    response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'last_modified_min_date': last_update_time})
     alerts: List = response_content.get('alerts', [])
     if alerts:
         for alert in alerts:

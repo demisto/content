@@ -91,7 +91,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Use Unit42 ATOMs Feed instead.
-display: Unit42 Feed (Deprecated)
+display: Unit 42 Feed (Deprecated)
 name: Unit42 Feed
 script:
   commands:

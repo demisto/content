@@ -1,6 +1,7 @@
 import json
 import io
 from requests import Response
+import pytest
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
@@ -468,3 +469,65 @@ def test_parse_file_report_network():
     assert expected_outputs_ProcessList == outputs.get('ProcessList')
     assert expected_outputs_Summary == outputs.get('Summary')
     assert expected_outputs_elf == outputs.get('ELF')
+
+
+@pytest.mark.parametrize('response, expected_output', [
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', []),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', ['malware'])
+])
+def test_tags_file_report_response(mocker, response, expected_output):
+    """
+    Given:
+     - hash of a file with malware field which is set to no
+     - hash of a file with malware field which is set to yes
+
+    When:
+     - Running report command.
+
+    Then:
+    Added tag 'malware' only if the malware field in the file info is set to yes
+    - tags field is empty
+    - add 'malware' to tags field
+    """
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = response
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(demisto, "args",
+                        return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
+
+    assert command_results[0].indicator.tags == expected_output

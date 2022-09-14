@@ -1413,20 +1413,6 @@ script:
         - DESC
       required: false
       secret: false
-    - default: false
-      defaultValue: '50'
-      description: The number of results to retrieve in the response. Maximum allowed
-        size is 1000.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
-      name: next_page_token
-      required: false
-      secret: false
     deprecated: false
     description: Enumerates the available SLA Domains to apply to the on-demand snapshot
       as a retention policy.
@@ -1632,15 +1618,6 @@ script:
     - contextPath: RubrikPolaris.GPSSLADomain.objectTypes
       description: List of object types associated with this SLA Domain.
       type: Unknown
-    - contextPath: RubrikPolaris.PageToken.GPSSLADomain.next_page_token
-      description: Next page token.
-      type: String
-    - contextPath: RubrikPolaris.PageToken.GPSSLADomain.name
-      description: Name of the command.
-      type: String
-    - contextPath: RubrikPolaris.PageToken.GPSSLADomain.has_next_page
-      description: Whether the result has the next page or not.
-      type: Boolean
   - arguments:
     - default: false
       description: "The ID of the download, requested using \"rubrik-sonar-csv-download\" command.\n\nNote: Users can retrieve the list of downloads containing ID by executing the \"rubrik-user-downloads-list\" command."
@@ -2689,19 +2666,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 50
-      description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
-      name: next_page_token
-      required: false
-      secret: false
-    - default: false
       defaultValue: ClusterName
       description: "Specify the field to use for sorting the response.\n\nPossible values are: \"ClusterName\", \"ClusterType\", \"RegisteredAt\".\nAdditional values can be found in the documentation."
       isArray: false
@@ -2817,15 +2781,6 @@ script:
     - contextPath: RubrikPolaris.GPSCluster.lambdaFeatureHistory.wasSonarEverEnabled
       description: Whether Polaris Sonar was ever enabled on the cluster.
       type: Boolean
-    - contextPath: RubrikPolaris.PageToken.GPSCluster.has_next_page
-      description: Whether the result has the next page or not.
-      type: Boolean
-    - contextPath: RubrikPolaris.PageToken.GPSCluster.name
-      description: Name of the command.
-      type: String
-    - contextPath: RubrikPolaris.PageToken.GPSCluster.next_page_token
-      description: Next page token.
-      type: String
   - arguments:
     - default: false
       description: |-
@@ -2913,7 +2868,7 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.27986
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.31195
   feed: false
   isfetch: true
   longRunning: false

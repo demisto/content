@@ -16,7 +16,6 @@ from cryptography.x509 import (
     certificate_transparency
 )
 from typing import Dict, Union, Any, Optional, cast, List
-import traceback
 
 _INSTANCE_TO_TYPE = {
     general_name.OtherName: 'otherName',
@@ -473,7 +472,6 @@ def main():
     try:
         return_results(certificate_extract_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CertificateExtract. Error: {str(ex)}')
 
 

@@ -89,6 +89,75 @@ Following combinations are treated as constraints:
 
 
 
+
+
+
+### inventa-get-sources
+***
+Retrieves data sources' details containing info about data subject
+
+
+#### Base Command
+
+`inventa-get-sources`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasubject_id | ID of a datasubject within Inventa. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Inventa.Sources.sources.id | String | Id of a source containing info about data subject |
+| Inventa.Sources.sources.applianceName | String | Data sources conteining info related to a PII |
+| Inventa.Sources.sources.timestamp | String | Timestamp of a source containing info about data subject |
+| Inventa.Sources.sources.keyType | String | KeyType of a source containing info about data subject |
+| Inventa.Sources.sources.path | String | Path of a source containing info about data subject |
+| Inventa.Sources.sources.url | String | URL of a source containing info about data subject |
+| Inventa.Sources.sources.hostname | String | Hostname of a source containing info about data subject |
+| Inventa.Sources.sources.dbName | String | DB name of a source containing info about data subject |
+| Inventa.Sources.sources.vendor | String | Vendor of a source containing info about data subject |
+| Inventa.Sources.sources.type | String | Type of a source containing info about data subject |
+| Inventa.Sources.sources.context | String | Additional info on a source containing info about data subject |
+| Inventa.Sources.sources.entityTypes | String | Types of sensitive data stored in a source containing info about data subject |
+
+
+#### Command Example
+```!inventa-get-sources datasubject_id=123asd123```
+
+
+
+### inventa-get-sources-piis
+***
+Retrieves PII entities stored in data sources related to datasubject
+
+
+#### Base Command
+
+`inventa-get-sources-piis`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasubject_id | ID of a datasubject within Inventa. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Inventa.Sources.piis | String | PII entity types in sources |  
+
+
+#### Command Example
+```!inventa-get-sources-piis datasubject_id=123asd123```
+
+
+
+
 ### inventa-get-dsar-transactions
 ***
 Retrieves data transactions' details containing info about data subject
@@ -402,6 +471,34 @@ Creates Inventa ticket
 
 #### Command Example
 ```!inventa-create-ticket reason="test reason" datasubject_id=123asd456789```
+
+
+
+
+
+### inventa-validate-incident-inputs
+***
+Validates Incident inputs
+
+
+#### Base Command
+
+`inventa-validate-incident-inputs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Inventa.Incident.validated | Boolean | Whether inputs are valid | 
+
+
+#### Command Example
+```!inventa-validate-incident-inputs```
 
 
 

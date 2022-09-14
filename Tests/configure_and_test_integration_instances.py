@@ -32,6 +32,7 @@ from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -52,6 +53,10 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
+    'monitoring.pprof': 'true',
+    'enable.pprof.memory.dump': 'true',
+    'limit.memory.dump.size': '14000',
+    'memdump.debug.level': '1',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -308,6 +313,7 @@ class Build:
             installed_content_packs_successfully: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
+        logging.info(f"Packs ids to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
@@ -343,8 +349,7 @@ class Build:
                 if self.is_xsiam and not filtered_tests:
                     tests_for_iteration = []
                 else:
-                    tests_for_iteration = [test for test in tests
-                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -664,7 +669,7 @@ class XSOARBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
-        url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
+        url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
@@ -708,17 +713,19 @@ class XSIAMBuild(Build):
         super().__init__(options)
         self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
-        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
-
+            self.get_xsiam_configuration(options.xsiam_machine, options.xsiam_servers_path,
+                                         options.xsiam_servers_api_keys)
         self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.xsiam_machine)]
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+    def get_xsiam_configuration(xsiam_machine, xsiam_servers_path, xsiam_servers_api_keys_path):
+        xsiam_servers = get_json_file(xsiam_servers_path)
         conf = xsiam_servers.get(xsiam_machine)
-        return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+        xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
+        api_key = xsiam_servers_api_keys.get(xsiam_machine)
+        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -841,6 +848,7 @@ def options_handler(args=None):
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -1670,6 +1678,9 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     Returns:
         Tuple[List[str], List[str]]: The updated lists after filtering the turned non-hidden integrations.
     """
+    if not packs_not_to_install:
+        return new_integrations_names, modified_integrations_names
+
     hidden_integrations_names = packs_names_to_integrations_names(packs_not_to_install)
     # update the new integration and the modified integration with the non-hidden integrations.
     for hidden_integration_name in hidden_integrations_names:
@@ -1679,16 +1690,48 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     return list(set(new_integrations_names)), modified_integrations_names
 
 
-def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Set[str]:
+def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
     """
     Return a set of packs to install only in the post-update.
     Args:
         modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
-        (Set[str]): The set of the packs names that supposed to be not installed in the pre-update.
+        (Set[str]): The set of the pack names that should not be installed.
+        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
     """
-    return get_turned_non_hidden_packs(modified_packs_names, build)
+    non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
+                                                                      build.content_path, build.server_numeric_version)
+    build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
+    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
+
+
+def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+    """
+    Return a set of packs that have higher min version than the server version.
+
+    Args:
+        packs_names (Set[str]): A set of packs to install.
+        content_path (str): The content root path.
+        server_numeric_version (str): The server version.
+
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed because
+                    their min version is greater than the server version.
+    """
+    packs_with_higher_version = set()
+    for pack_name in packs_names:
+
+        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+                         f"higher than server version {server_numeric_version}")
+
+    return packs_with_higher_version
 
 
 def main():
@@ -1699,7 +1742,8 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Finds all the turned hidden -> non-hidden packs names.
+        4. Finds all the packs that should not be intalled, like turned hidden -> non-hidden packs names
+           or packs with higher min version than the server version.
         5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
            Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
            This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
@@ -1727,10 +1771,10 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install = get_packs_not_to_install(modified_packs_names, build)
+        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_not_to_install)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results

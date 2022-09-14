@@ -16,7 +16,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
@@ -67,7 +66,7 @@ def main():
         # TODO: replace the invoked command function with yours
         return_results(basescript_dummy_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
+
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
 
 
