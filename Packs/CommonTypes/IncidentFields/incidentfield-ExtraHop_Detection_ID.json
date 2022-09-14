@@ -24,7 +24,8 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "ExtraHop Detection"
+  "ExtraHop Detection",
+  "Vectra Detection"
  ],
  "systemAssociatedTypes": null,
  "associatedToAll": false,

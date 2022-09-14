@@ -45,6 +45,9 @@
                 "Dst Ports": {
                     "simple": "summary.dst_ports"
                 },
+                "Detection ID": {
+                    "simple": "id"
+                },
                 "External Category Name": {
                     "simple": "category"
                 },
