@@ -16,8 +16,8 @@ python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFCATS_FOLDER -s $GCS_M
 #Left TODO:
 #1. fix rule for job
 #3. check how to both print logs and return final result in create_test_branch - done
-#4. add image testing
+#4. add image testing - done
 #2. fix new pack not working - done
 #5. add all content items to new packs - done
 #6. add push to gitlab
-#7. add poilling on pipeline
+#7. add poilling on pipeline - done

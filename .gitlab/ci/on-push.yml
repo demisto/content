@@ -418,15 +418,21 @@ xsiam_server_master:
 test_upload_flow:
   tags:
     - gke
+  extends:
+    - .default-job-settings
   rules:
-    - # TODO: fix - checkg inside job, exit 0 if not this case
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
-    GCS_MARKET_KEY: "$GCS_MARKET_KEY"
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   needs: ["run-unittests-and-lint", "run-validations"]
   stage: test-upload-flow
   script:
+    - if ! git diff origin/master upload_testing_flow --name-only | grep "Tests/\|Utils/"; then                                                                            16:33:03
+        echo "No upload related files were modified, skipping upload test."
+        exit 0
+      fi
     - section_start "Create Testing Branch"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER | tee "$ARTIFACTS_FOLDER/create_test_branch.log"
     - section_end "Create Testing Branch"
@@ -436,14 +442,13 @@ test_upload_flow:
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1
     - pipeline_id=echo ./Utils/trigger_test_upload_flow.sh -ct $GITLAB_TOKEN -g | jq .id
-    - section_start "Wait For Upload To Finish"
-    -
-    - section_end "Wait For Upload To Finish"
     - section_end "Trigger Test Upload Flow On Testing Branch"
+    - section_start "Wait For Upload To Finish"
+    - python3 ./Utils/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - section_end "Wait For Upload To Finish"
     - section_start "Verify Created Testing Bucket"
     - test_upload_storage_base_path=upload-flow/builds
     - current_storage_base_path="$test_upload_storage_base_path/$branch/$pipeline_id/content/packs"
-    - #Sleep 1h 30m TODO: polling on specific pipeline like in private
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-dist-dev' -sb $current_storage_base_path
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-v2-dist-dev' -sb $current_storage_base_path
     - section_end "Verify Created Testing Bucket"

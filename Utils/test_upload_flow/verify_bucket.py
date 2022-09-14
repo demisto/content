@@ -83,6 +83,11 @@ class BucketVerifier:
         # verify the new dependency is in the metadata
         return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies').keys(), pack_id
 
+    @logger
+    def verify_new_image(self, pack_id, new_image_path):
+        image_in_bucket_path = gcp.download_image(pack_id)
+        return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read()
+
 
 class GCP:
     def __init__(self, service_account, storage_bucket_name, storage_base_path):
@@ -103,6 +108,16 @@ class GCP:
             return os.path.join(self.extracting_destination, pack_id)
         else:
             raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket')
+
+    def download_image(self, pack_id):
+        image_path = os.path.join(storage_base_path, pack_id, f"{pack_id}_image.png")
+        image = self.storage_bucket.blob(image_path)
+        if image.exists():
+            download_image_path = os.path.join(self.extracting_destination, f"{pack_id}_image.png")
+            image.download_to_filename(download_image_path)
+            return download_image_path
+        else:
+            raise FileNotFoundError(f'Image of pack {pack_id} was not found in the bucket')
 
     def is_in_index(self, pack_id):
         pack_path = os.path.join(self.index_path, pack_id)
@@ -164,11 +179,11 @@ def get_items_dict(pack_path, pack_id):
 
 def get_args():
     parser = argparse.ArgumentParser(description="Check if the created bucket is valid")
-    parser.add_argument('-s', '--service_account', help="Path to gcloud service account", required=False)
-    parser.add_argument('-sb', '--storage_base_path', help="Path to storage under the marketplace-dist-dev bucket",
+    parser.add_argument('-s', '--service-account', help="Path to gcloud service account", required=False)
+    parser.add_argument('-sb', '--storage-base_path', help="Path to storage under the marketplace-dist-dev bucket",
                         required=False)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", default='marketplace-dist-dev')
-    parser.add_argument('-a', '--artifacts_path', help="path to artifacts from the script creating the test branch, "
+    parser.add_argument('-b', '--bucket-name', help="Storage bucket name", default='marketplace-dist-dev')
+    parser.add_argument('-a', '--artifacts-path', help="path to artifacts from the script creating the test branch, "
                                                        "should contain json with dict of pack names and items to verify"
                                                        "and json with dict of pack names and versions to verify",
                         required=False)
@@ -232,5 +247,7 @@ if __name__ == "__main__":
     # verify modified pack
     bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 
+    # verify image
+    bv.verify_new_image('Armis', Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
     print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
