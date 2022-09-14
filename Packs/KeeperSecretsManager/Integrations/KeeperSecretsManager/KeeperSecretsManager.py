@@ -601,14 +601,14 @@ def test_module(client: Client) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
 
-    credentials = demisto.params()['credentials']
+    credentials = demisto.params().get('credentials')
     insecure = demisto.params().get('insecure', False)
     command = demisto.command()
 
