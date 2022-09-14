@@ -810,6 +810,8 @@ def expire_stored_ids(fetched_ids):
         The list of fetched ids.
 
     """
+    if len(fetched_ids) is 0:
+        return []
     cleaned_cache = []
 
     two_hours = timedelta(hours=2).total_seconds() * 1000
@@ -828,7 +830,7 @@ def fetch_incidents():
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    fetched_ids = demisto.getLastRun().get('fetched_ids')
+    fetched_ids = demisto.getLastRun().get('fetched_ids', [])
     time_range = {
         'type': 'relative',
         'value': {
