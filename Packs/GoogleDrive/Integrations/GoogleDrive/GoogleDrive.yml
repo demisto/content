@@ -1,6 +1,9 @@
 name: GoogleDrive
 category: IT Services
 display: Google Drive
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - name: user_service_account_json
   display: User's Service Account JSON

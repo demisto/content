@@ -2,6 +2,9 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
