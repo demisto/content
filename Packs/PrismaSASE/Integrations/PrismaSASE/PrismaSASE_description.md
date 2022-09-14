@@ -13,4 +13,4 @@ The TSG can be specified per command which allows a single service account to ac
 
 
 ## Prisma SASE API
-[https://pan.dev/sase](https://pan.dev/sase)
+[Prisma SASE API](https://pan.dev/sase).
