@@ -138,13 +138,17 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
+        demisto.debug(f'writing to {file_path=}')
         for ios in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+            demisto.debug(f'\t{ios=}')
             _file.write(ios + '\n')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
+        demisto.debug(f'writing to {file_path=}')
         for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
+            demisto.debug(f'\t{ioc=}')
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
 
@@ -243,12 +247,17 @@ def get_temp_file() -> str:
 def sync(client: Client):
     temp_file_path: str = get_temp_file()
     try:
+        demisto.debug('calling create_file_sync')
         create_file_sync(temp_file_path)
+        demisto.debug('calling get_requests_kwargs')
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        demisto.debug(f'{requests_kwargs=}')
         path: str = 'sync_tim_iocs'
+        demisto.debug('calling http_request')
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
+    demisto.debug('calling set_integration_context')
     set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
                              'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
                              'iocs_to_keep_time': create_iocs_to_keep_time()})
@@ -256,13 +265,15 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
-    if not datetime.utcnow().hour in range(1, 3):
-        raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     try:
+        demisto.debug('calling create_file_iocs_to_keep')
         create_file_iocs_to_keep(temp_file_path)
+        demisto.debug('calling get_requests_kwargs')
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        demisto.debug(f'{requests_kwargs=}')
         path = 'iocs_to_keep'
+        demisto.debug('calling http_request')
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -403,8 +414,10 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
+        demisto.debug('running sync')
         sync(client)
     else:
+        demisto.debug('running iocs_to_keep')
         iocs_to_keep(client)
 
 
@@ -488,6 +501,8 @@ def main():   # pragma: no cover
         'xdr-iocs-push': tim_insert_jsons,
     }
     command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+
     try:
         if command == 'fetch-indicators':
             fetch_indicators(client, params.get('autoSync', False))
