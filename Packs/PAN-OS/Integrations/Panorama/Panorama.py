@@ -11193,19 +11193,6 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
                     parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
-def extract_objects_info_by_key(_entry, _key):
-    key_info = _entry.get(_key)
-    if not key_info:  # api could not return the key
-        return None
-
-    if isinstance(key_info, dict) and (_member := key_info.get('member')):
-        return _member
-    elif isinstance(key_info, str):
-        return key_info
-
-    return None
-
-
 def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> List[Dict]:
 
     def parse_source_translation(_entry):
@@ -11270,15 +11257,6 @@ def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> 
     ]
 
 
-def do_pagination(entries, page: Optional[int], page_size: int = 50, limit: int = 50):
-    if page is not None:
-        if page <= 0:
-            raise DemistoException(f'page {page} must be a positive number')
-        return entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
-        return entries[:limit]
-
-
 def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
@@ -11319,10 +11297,6 @@ def pan_os_list_nat_rules_command(args):
     )
 
 
-def dict_to_xml(_dictionary):
-    return re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
-
-
 def create_nat_rule(args):
     def _set_up_body_request():
         def _set_up_destination_translation_body_request():
@@ -11354,7 +11328,7 @@ def create_nat_rule(args):
                     if source_translated_address:
                         return {
                             'source-translation': {
-                                source_translation_type: add_fields_as_json(
+                                source_translation_type: prepare_pan_os_objects_body_request(
                                     'translated-address',
                                     source_translated_address,
                                     is_list=False if source_translation_type == 'static-ip' else True
@@ -11374,7 +11348,7 @@ def create_nat_rule(args):
                             return {
                                 'source-translation': {
                                     'dynamic-ip-and-port': {
-                                        'interface-address': add_fields_as_json(
+                                        'interface-address': prepare_pan_os_objects_body_request(
                                             'interface', source_translated_interface, is_list=False
                                         )
                                     }
@@ -11408,7 +11382,7 @@ def create_nat_rule(args):
             for argument, (pan_os_object_path, is_listable_arg) in arguments_to_pan_os_paths.items():
                 if argument_value := args.get(argument):
                     _packets_objects_body_request.update(
-                        add_fields_as_json(pan_os_object_path, argument_value, is_list=is_listable_arg)
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable_arg)
                     )
 
             return _packets_objects_body_request
@@ -11498,7 +11472,7 @@ def build_body_request_to_edit_pan_os_object(
         raise ValueError(f'behavior argument must be one of replace/remove/add values')
 
     if behavior == 'replace':
-        element = add_fields_as_json(object_name, element_value, is_list=is_listable)
+        element = prepare_pan_os_objects_body_request(object_name, element_value, is_list=is_listable)
     else:  # add or remove is only for listable objects.
         current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
         if behavior == 'add':
@@ -11508,7 +11482,7 @@ def build_body_request_to_edit_pan_os_object(
             if not updated_object_items and should_contain_entries:
                 raise DemistoException(f'The object: {object_name} must have at least one item.')
 
-        element = add_fields_as_json(object_name, updated_object_items, is_list=True)
+        element = prepare_pan_os_objects_body_request(object_name, updated_object_items, is_list=True)
 
     return element
 
@@ -11536,10 +11510,6 @@ def pan_os_edit_nat_rule(
     }
 
     return http_request(URL, 'POST', params=params)
-
-
-def add_fields_as_json(key, value, is_list=True):
-    return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
 def pan_os_edit_nat_rule_command(args):
@@ -11644,37 +11614,6 @@ def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
     return http_request(URL, 'POST', params=params)
 
 
-def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
-    """
-    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
-    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
-    from the response recursively so the response would be just like an object that was already committed.
-    This must be done to keep the context aligned with both committed and un-committed objects.
-    Args:
-        dictionary (dict): The entry that the pan-os objects is in.
-        keys_to_remove (list): keys which should be removed from the pan-os api response
-    """
-
-    for key in keys_to_remove:
-        if key in dictionary:
-            del dictionary[key]
-
-    for key in dictionary:
-        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
-            dictionary[key] = dictionary[key]['#text']
-        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
-                and dictionary[key][0].get('#text'):
-            dictionary[key] = [text.get('#text') for text in dictionary[key]]
-
-    for value in dictionary.values():
-        if isinstance(value, dict):
-            parse_pan_os_un_committed_data(value, keys_to_remove)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    parse_pan_os_un_committed_data(item, keys_to_remove)
-
-
 def extract_objects_info_by_key(_entry, _key):
 
     if isinstance(_entry, dict):
@@ -11741,9 +11680,11 @@ def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limi
     if page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
-        return entries[(page - 1) * page_size:page_size * page]  # do pagination
+        entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
     else:
-        return entries[:limit]
+        entries = entries[:limit]
+
+    return entries
 
 
 def pan_os_list_virtual_routers_command(args):
@@ -11864,7 +11805,7 @@ def pan_os_list_redistribution_profile_command(args):
     )
 
 
-def add_fields_as_json(key, value, is_list=True):
+def prepare_pan_os_objects_body_request(key, value, is_list=True):
     return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
@@ -11890,21 +11831,21 @@ def pan_os_create_redistribution_profile(args):
         def _set_up_ospf_filter_body_request():
             _ospf_filter_body_request = {}
             if filter_ospf_path_type := args.get('filter_ospf_path_type'):
-                _ospf_filter_body_request.update(add_fields_as_json('path-type', filter_ospf_path_type))
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('path-type', filter_ospf_path_type))
             if filter_ospf_area := args.get('filter_ospf_area'):
-                _ospf_filter_body_request.update(add_fields_as_json('area', filter_ospf_area))
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('area', filter_ospf_area))
             if filter_ospf_tag := args.get('filter_ospf_tag'):
-                _ospf_filter_body_request.update(add_fields_as_json('tag', filter_ospf_tag))
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('tag', filter_ospf_tag))
 
             return {'ospf': _ospf_filter_body_request} if _ospf_filter_body_request else {}
 
         def _set_up_bgp_filter_body_request():
             _bgp_filter_body_request = {}
             if filter_bgp_community := args.get('filter_bgp_community'):
-                _bgp_filter_body_request.update(add_fields_as_json('community', filter_bgp_community))
+                _bgp_filter_body_request.update(prepare_pan_os_objects_body_request('community', filter_bgp_community))
             if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
                 _bgp_filter_body_request.update(
-                    add_fields_as_json('extended-community', filter_bgp_extended_community)
+                    prepare_pan_os_objects_body_request('extended-community', filter_bgp_extended_community)
                 )
             return {'bgp': _bgp_filter_body_request} if _bgp_filter_body_request else {}
 
@@ -11919,7 +11860,7 @@ def pan_os_create_redistribution_profile(args):
 
             for argument, pan_os_object_path in _arguments_to_pan_os_paths.items():
                 if argument_value := args.get(argument):
-                    _general_filters_body_request.update(add_fields_as_json(pan_os_object_path, argument_value))
+                    _general_filters_body_request.update(prepare_pan_os_objects_body_request(pan_os_object_path, argument_value))
 
             return _general_filters_body_request
 
@@ -12009,7 +11950,7 @@ def build_body_request_to_edit_pan_os_object(
         object_name (str): the name of the object that needs to be updated.
         element_value (str): the value of the new element.
         is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
-        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
+        xpath (str): the full xpath to the object that should be edited. not required if behavior == 'replace'
         should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
 
     Returns:
@@ -12020,7 +11961,7 @@ def build_body_request_to_edit_pan_os_object(
         raise ValueError(f'behavior argument must be one of replace/remove/add values')
 
     if behavior == 'replace':
-        element = add_fields_as_json(object_name, element_value, is_list=is_listable)
+        element = prepare_pan_os_objects_body_request(object_name, element_value, is_list=is_listable)
     else:  # add or remove is only for listable objects.
         current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
         if behavior == 'add':
@@ -12030,7 +11971,7 @@ def build_body_request_to_edit_pan_os_object(
             if not updated_object_items and should_contain_entries:
                 raise DemistoException(f'The object: {object_name} must have at least one item.')
 
-        element = add_fields_as_json(object_name, updated_object_items, is_list=True)
+        element = prepare_pan_os_objects_body_request(object_name, updated_object_items, is_list=True)
 
     return element
 
