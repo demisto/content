@@ -1154,27 +1154,18 @@ def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
             if entry:
                 matching_accounts_counter += 1
                 entries.append(entry)
-            if receive_only_accounts:
-                if accounts_counter % writing_to_logs == 0:
-                    demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
-                            int((float(accounts_counter) / len(all_acounts)) * 100),
-                            accounts_counter,
-                            len(all_acounts),
-                            matching_accounts_counter),
-                    )
-            else:
+            if accounts_counter % writing_to_logs == 0:
+                demisto.info(
+                    'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
+                        int((float(accounts_counter) / len(all_acounts)) * 100),
+                        accounts_counter,
+                        len(all_acounts),
+                        matching_accounts_counter),
+                )
+            if not receive_only_accounts:
                 msg_counter += num_of_messages
                 if msg_counter >= log_msg_target:
                     log_msg_target = msg_counter + max_results
-                    demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((float(accounts_counter) / len(all_acounts)) * 100),
-                            accounts_counter,
-                            len(all_acounts),
-                            msg_counter),
-                    )
-                elif accounts_counter % writing_to_logs == 0:
                     demisto.info(
                         'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
                             int((float(accounts_counter) / len(all_acounts)) * 100),
