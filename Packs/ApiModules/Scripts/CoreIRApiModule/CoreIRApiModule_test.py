@@ -369,7 +369,7 @@ def test_get_audit_agent_reports(requests_mock):
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
     assert outputs['CoreApiModule.AuditAgentReports'] == expected_outputs
-    assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
+    assert outputs['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
                                                                {'ID': '1111', 'Hostname': '1111.eu-central-1'},
                                                                {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
 
