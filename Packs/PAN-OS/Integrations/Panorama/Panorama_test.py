@@ -1415,7 +1415,6 @@ class MockedResponse:
 
 
 class TestPanoramaCommitCommand:
-
     COMMIT_POLLING_ARGS = {
         'device-group': 'some_device',
         'admin_name': 'some_admin_name',
@@ -1434,7 +1433,6 @@ class TestPanoramaCommitCommand:
 
     @staticmethod
     def create_mock_responses(job_commit_status_count):
-
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
                 text='<response status="success" code="19"><result><msg>''<line>Commit job '
@@ -1533,7 +1531,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-        self, mocker, args, expected_request_params, request_result, expected_demisto_result
+            self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
@@ -1594,7 +1592,7 @@ class TestPanoramaCommitCommand:
         ]
     )
     def test_panorama_commit_command_with_polling(
-        self, mocker, args, expected_commit_request_url_params, api_response_queue
+            self, mocker, args, expected_commit_request_url_params, api_response_queue
     ):
         """
         Given:
@@ -3272,7 +3270,7 @@ class TestObjectFunctions:
                                      'cmd': '<show><system><info/></system></show>',
                                      'key': 'fakeAPIKEY!',
                                  },
-                                 None,),
+                                 None, ),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -3426,3 +3424,552 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+class TestPanOSListNatRulesCommand:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                             "/device-group/entry[@name='Lab-Devices']/pre-rulebase/nat"
+                }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'false'},
+                integration_firewall_params,
+                {
+                    'action': 'show',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                             "/vsys/entry[@name='vsys1']/rulebase/nat"
+                }
+            ),
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'name': 'test'},
+                integration_panorama_params,
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {'show_uncommitted': 'true', 'name': 'test'},
+                integration_firewall_params,
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/nat/rules/entry[@name='test']"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_rules_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration.
+         - Firewall instance configuration.
+         - Panorama instance configuration to get a specific nat-rule.
+         - Firewall instance configuration to get a specific nat-rule.
+
+        When:
+         - running the pan-os-list-nat-rules through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        expected_context = [
+            {
+                'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
+                'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
+                'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
+                'DestinationTranslation': None
+            },
+            {
+                'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
+                'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
+                'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
+                'DestinationTranslation': None
+            }
+        ]
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json('test_data/list-nat-rules-response.json')
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-nat-rules')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == expected_context
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestCreatePanOSNatRuleCommand:
+    CREATE_NAT_RULE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'source_translation_type': 'static-ip',
+                    'source_translated_address': '1.1.1.1',
+                    'source_translated_address_type': 'translated-address',
+                    'destination_translation_type': 'none'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group"
+                             "/entry[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']",
+                    'element': '<source-translation><static-ip><translated-address>1.1.1.1<'
+                               '/translated-address></static-ip></source-translation><description>test</description>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'source_translation_type': 'static-ip',
+                    'source_translated_address': '1.1.1.1',
+                    'source_translated_address_type': 'translated-address',
+                    'destination_translation_type': 'none'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']",
+                    'element': '<source-translation><static-ip><translated-address>1.1.1.1<'
+                               '/translated-address></static-ip></source-translation><description>test</description>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'destination_zone': '1.1.1.1',
+                    'source_zone': '2.2.2.2',
+                    'pre_post': 'pre-rulebase',
+                    'source_address': '1.1.1.1,2.2.2.2',
+                    'source_translation_type': 'dynamic-ip',
+                    'source_translated_address_type': 'translated-address',
+                    'source_translated_address': '1.1.1.1,2.2.2.2',
+                    'destination_translation_type': 'none'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'set',
+                    'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
+                               '<member>2.2.2.2</member></translated-address></dynamic-ip></source-translation><to>'
+                               '<member>1.1.1.1</member></to><from><member>2.2.2.2</member></from><source><member>'
+                               '1.1.1.1</member><member>2.2.2.2</member></source><description>test</description>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'description': 'test',
+                    'destination_zone': '1.1.1.1',
+                    'source_zone': '2.2.2.2',
+                    'source_address': '1.1.1.1,2.2.2.2',
+                    'source_translation_type': 'dynamic-ip',
+                    'source_translated_address_type': 'translated-address',
+                    'source_translated_address': '1.1.1.1,2.2.2.2',
+                    'destination_translation_type': 'none'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'set',
+                    'element': '<source-translation><dynamic-ip><translated-address><member>1.1.1.1</member>'
+                               '<member>2.2.2.2</member></translated-address></dynamic-ip></source-translation><to>'
+                               '<member>1.1.1.1</member></to><from><member>2.2.2.2</member></from><source>'
+                               '<member>1.1.1.1</member><member>2.2.2.2</'
+                               'member></source><description>test</description>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+                }
+            ),
+        ]
+    )
+    def test_pan_os_create_nat_rule_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+         - Panorama instance configuration with source_translation_type, source_translated_address
+            and source_translated_address_type
+         - Firewall instance configuration with source_translation_type, source_translated_address
+            and source_translated_address_type
+         - Panorama instance configuration with basic parameter configurations along with dynamic-ip
+         - firewall instance configuration with basic parameter configurations along with dynamic-ip
+
+        When:
+         - running the pan-os-create-nat-rule through the main flow.
+
+        Then:
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-create-nat-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'rulename': 'test',
+                'pre_post': 'pre-rulebase'
+            },
+            integration_panorama_params,
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                         "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+            }
+        ),
+        pytest.param(
+            {
+                'rulename': 'test'
+            },
+            integration_firewall_params,
+            {
+                'action': 'delete',
+                'key': 'thisisabogusAPIKEY!',
+                'type': 'config',
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry"
+                         "[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+            }
+        )
+    ]
+)
+def test_pan_os_delete_nat_rule_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance configuration with a specific rulename.
+     - Firewall instance configuration with a specific rulename.
+
+    When:
+     - running the pan-os-delete-nat-rule through the main flow.
+
+    Then:
+     - make sure the xpath/element and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-nat-rule')
+
+    main()
+    assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSEditNatRule:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'element_to_change': 'source_translation_dynamic_ip',
+                    'behavior': 'replace',
+                    'element_value': '1.1.1.1,2.2.2.2'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<translated-address><member>1.1.1.1</member>'
+                               '<member>2.2.2.2</member></translated-address>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry["
+                             "@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']/source-translation"
+                             "/dynamic-ip/translated-address"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'element_to_change': 'source_zone',
+                    'behavior': 'replace',
+                    'element_value': '1.1.1.1'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<from><member>1.1.1.1</member></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/nat/rules/entry[@name='test']/from"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'element_to_change': 'destination_translation_dynamic_distribution_method',
+                    'behavior': 'replace',
+                    'element_value': 'Round Robin'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<distribution>Round Robin</distribution>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']/"
+                             "dynamic-destination-translation/distribution"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'element_to_change': 'source_translation_static_ip',
+                    'behavior': 'replace',
+                    'element_value': '1.1.1.1'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<translated-address>1.1.1.1</translated-address>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/rulebase/"
+                             "nat/rules/entry[@name='test']/source-translation/static-ip/translated-address"
+                }
+            ),
+        ]
+    )
+    def test_pan_os_nat_rule_replace_action_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given
+         - Panorama instance when replacing source_translation_dynamic_ip to a new value
+         - Firewall instance when replacing source_zone to a new value.
+         - Panorama instance when replacing destination_translation_dynamic_distribution_method to a new value.
+         - Firewall instance when replacing source_translation_static_ip to a new value.
+
+        When
+         - running the pan-os-edit-nat-rule through the main flow.
+
+        Then
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @pytest.mark.parametrize('nat_rule_object', ['destination_translation_ip', 'destination_interface', 'nat_type'])
+    def test_pan_os_add_or_remove_un_listable_objects(self, nat_rule_object):
+        """
+        Given
+         - un-listable nat-rules object.
+
+        When
+         - running the pan-os-edit-nat-rule command.
+
+        Then
+         - make sure an exception is raised.
+        """
+        from Panorama import pan_os_edit_nat_rule_command
+        with pytest.raises(ValueError):
+            pan_os_edit_nat_rule_command({'element_to_change': nat_rule_object, 'rulename': 'test', 'action': 'add'})
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'element_to_change': 'source_zone',
+                    'behavior': 'add',
+                    'element_value': '2.2.2.2,3.3.3.3'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<from><member>2.2.2.2</member><member>3.3.3.3</member><member>1.1.1.1</member></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']/from"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'element_to_change': 'source_zone',
+                    'behavior': 'add',
+                    'element_value': '2.2.2.2,3.3.3.3'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<from><member>2.2.2.2/member><member>1.1.1.1/member></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
+                             "/rulebase/nat/rules/entry[@name='test']/from"
+                }
+            )
+        ]
+    )
+    def test_pan_os_nat_rule_add_action_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given
+         - Panorama instance when adding a new value to source_zone.
+         - Firewall instance when adding a new value to source_zone.
+
+        When
+         - running the pan-os-edit-nat-rule through the main flow.
+
+        Then
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'from': {'member': '1.1.1.1'}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
+        assert '1.1.1.1' in mock_request.call_args.kwargs['params']['element']
+        assert '2.2.2.2' in mock_request.call_args.kwargs['params']['element']
+        assert '3.3.3.3' in mock_request.call_args.kwargs['params']['element']
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'pre_post': 'pre-rulebase',
+                    'element_to_change': 'source_zone',
+                    'behavior': 'remove',
+                    'element_value': '2.2.2.2,3.3.3.3'
+                },
+                integration_panorama_params,
+                {
+                    'action': 'edit',
+                    'element': '<from><member>1.1.1.1</member></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']/from"
+                }
+            ),
+            pytest.param(
+                {
+                    'rulename': 'test',
+                    'element_to_change': 'source_zone',
+                    'behavior': 'remove',
+                    'element_value': '2.2.2.2,3.3.3.3'
+                },
+                integration_firewall_params,
+                {
+                    'action': 'edit',
+                    'element': '<from><member>1.1.1.1</member></from>',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/"
+                             "rulebase/nat/rules/entry[@name='test']/from"
+                }
+            )
+        ]
+    )
+    def test_pan_os_nat_rule_remove_action_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given
+         - Panorama instance when removing a value from source_zone.
+         - Firewall instance when removing a value from source_zone.
+
+        When
+         - running the pan-os-edit-nat-rule through the main flow.
+
+        Then
+         - make sure the xpath/element and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'from': {'member': ['1.1.1.1', '2.2.2.2', '3.3.3.3']}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+
+        main()
+        assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
