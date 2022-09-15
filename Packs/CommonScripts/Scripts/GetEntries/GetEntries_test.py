@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import demistomock as demisto
 from GetEntries import main
 import json
@@ -35,7 +36,7 @@ class TestGetEntries:
             }]
         }
 
-        mocker.patch('GetEntries.execute_command', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
+        mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
         mocker.patch.object(demisto, 'results')
         main()
         assert demisto.results.call_count == 1
@@ -46,10 +47,23 @@ class TestGetEntries:
     def test_main_no_ents(self, mocker):
         original_ents = []
 
-        mocker.patch('GetEntries.execute_command', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
+        mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
         mocker.patch.object(demisto, 'results')
         main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
         if isinstance(results, dict):
             assert not results.get('EntryContext')
+
+    def test_main_error(self, mocker):
+        original_ents = [{
+            'Type': EntryType.ERROR
+        }]
+
+        mocker.patch.object(sys, 'exit')
+        mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
+        mocker.patch.object(demisto, 'results')
+        main()
+        assert demisto.results.call_count == 1
+        results = demisto.results.call_args[0][0]
+        assert demisto.results.get('Type') != EntryType.ERROR

@@ -5,11 +5,15 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        ents = execute_command('getEntries',
-                               assign_params(id=args.get('id'),
-                                             filter=assign_params(tags=argToList(args.get('tags')),
-                                                                  categories=argToList(args.get('categories')))),
-                               extract_contents=False)
+        ents = demisto.executeCommand('getEntries',
+                                      assign_params(id=args.get('id'),
+                                                    filter=assign_params(tags=argToList(args.get('tags')),
+                                                                         categories=argToList(args.get('categories')))))
+        if (isinstance(ents, dict) and ents.get('Type') == entryTypes['error']) or\
+           (isinstance(ents, list) and len(ents) > 0 and ents[0].get('Type') == entryTypes['error']):
+            error_message = get_error(ents)
+            raise DemistoException(f'Failed to execute getEntries. Error details:\n{error_message}')
+
         if not ents:
             return_results('No matching entries')
         else:
