@@ -11,7 +11,7 @@ CONF_PATH="./Tests/conf.json"
 echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
 source $BASH_ENV
 
-demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH --server-type "$SERVER_TYPE" --use-retries
+demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1" --xsiam-machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam-servers-path $XSIAM_SERVERS_PATH --server-type "$SERVER_TYPE" --use-retries --xsiam-servers-api-keys-path $XSIAM_API_KEYS
 
 RETVAL=$?
 

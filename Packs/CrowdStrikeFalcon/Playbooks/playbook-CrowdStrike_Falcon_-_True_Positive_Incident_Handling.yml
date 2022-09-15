@@ -91,7 +91,7 @@ tasks:
     conditions:
     - label: SNOW
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: inputs.TicketingSystemToUse
@@ -100,9 +100,18 @@ tasks:
             value:
               simple: SNOW
           ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
     - label: JIRA
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: inputs.TicketingSystemToUse

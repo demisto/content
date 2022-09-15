@@ -1,4 +1,5 @@
 ''' IMPORTS '''
+from typing import Literal
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -10,37 +11,31 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-URL = demisto.params()['url']
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
+URL = demisto.params().get('url', '')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {}  # type: Dict[str, str]
-IP_THRESHOLD = demisto.params().get('ip_threshold').lower()
-URL_THRESHOLD = demisto.params().get('url_threshold').lower()
-FILE_THRESHOLD = demisto.params().get('file_threshold').lower()
-EMAIL_THRESHOLD = demisto.params().get('email_threshold').lower()
-DOMAIN_THRESHOLD = demisto.params().get('domain_threshold').lower()
-
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-    PROXIES = {
-        'http': None,
-        'https': None
-    }  # type: Dict[str, Optional[str]]
-else:
-    PROXIES = {
-        'http': os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
-        'https': os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-    }
+IP_THRESHOLD = demisto.params().get('ip_threshold', '').lower()
+URL_THRESHOLD = demisto.params().get('url_threshold', '').lower()
+FILE_THRESHOLD = demisto.params().get('file_threshold', '').lower()
+EMAIL_THRESHOLD = demisto.params().get('email_threshold', '').lower()
+DOMAIN_THRESHOLD = demisto.params().get('domain_threshold', '').lower()
+MALICOUS_LVL = Literal['unknown', 'safe', 'low', 'medium', 'high']
+MALICIOUSNESS = {
+    'unknown': 0,
+    'safe': 1,
+    'low': 2,
+    'medium': 2,
+    'high': 3
+}
+PROXIES = handle_proxy()
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
+def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):  # pragma: no cover
 
     res = requests.request(
         method,
@@ -62,7 +57,7 @@ def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
             title = errors.get('title', '')
             detail = errors.get('detail', '')
             return_error(
-                'Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail)
+                f'Error in API call to EclecticIQ Integration: [{res.status_code}] - {title} - {detail}'
             )
         except Exception:  # In case error message is not in expected format
             return_error(res.content)
@@ -73,10 +68,8 @@ def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
         return_error(res)
 
 
-def maliciousness_to_dbotscore(maliciousness, threshold):
-
+def maliciousness_to_dbotscore(maliciousness: MALICOUS_LVL, threshold: MALICOUS_LVL) -> int:
     """
-
     Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
 
     Parameters
@@ -90,30 +83,21 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
     -------
     number
         Translated DBot Score
-
     """
-    maliciousness_list = ['unknown', 'safe', 'low', 'medium', 'high']
-
-    maliciousness_dictionary = {
-        'unknown': 0,
-        'safe': 1,
-        'low': 2,
-        'medium': 2,
-        'high': 3
-    }
-
-    for i in maliciousness_list[maliciousness_list.index(threshold):]:
-        maliciousness_dictionary[i] = 3
-
-    return maliciousness_dictionary[maliciousness]
+    if maliciousness not in MALICIOUSNESS:
+        raise ValueError(f'{maliciousness=} whereas acceptable values are only {MALICIOUSNESS.keys()}')
+    if threshold not in MALICIOUSNESS:
+        raise ValueError(f'{threshold=} whereas acceptable values are only {MALICIOUSNESS.keys()}')
+    if MALICIOUSNESS.get(maliciousness) >= MALICIOUSNESS.get(threshold):  # type: ignore
+        return MALICIOUSNESS.get('high')  # type: ignore
+    return MALICIOUSNESS.get(maliciousness)  # type: ignore
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module():  # pragma: no cover
     """
-
     The function which runs when clicking on Test in integration settings
 
 
@@ -121,21 +105,15 @@ def test_module():
     -------
     str
         ok if getting observable successfully
-
     """
-
     get_observable('8.8.8.8')
     demisto.results('ok')
 
 
-def login():
-
+def login():  # pragma: no cover
     """
-
     Logins to EclecticIQ API with given credentials and sets the returned token in the headers
-
     """
-
     cmd_url = '/api/auth'
     cmd_json = {
         'password': PASSWORD,
@@ -146,13 +124,11 @@ def login():
         token = response['token']
     else:
         return_error('Failed to retrieve token')
-    HEADERS['Authorization'] = 'Bearer {}'.format(token)
+    HEADERS['Authorization'] = f'Bearer {token}'
 
 
-def ip_command():
-
+def ip_command():  # pragma: no cover
     """
-
     Gets reputation of an EclecticIQ IPv4 observable
 
     Parameters
@@ -164,9 +140,7 @@ def ip_command():
     -------
     entry
         Reputation of given IPv4
-
     """
-
     ip = demisto.args()['ip']
 
     response = get_observable(ip)
@@ -217,7 +191,7 @@ def ip_command():
     }  # type: dict
 
     if observables:
-        human_readable_title = 'EclecticIQ IP reputation - {}'.format(ip)
+        human_readable_title = f'EclecticIQ IP reputation - {ip}'
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
         context['EclecticIQ.IP'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['ip']] = standard_ip_outputs
@@ -232,10 +206,8 @@ def ip_command():
     })
 
 
-def url_command():
-
+def url_command():  # pragma: no cover
     """
-
     Gets reputation of an EclecticIQ URI observable
 
     Parameters
@@ -247,9 +219,7 @@ def url_command():
     -------
     entry
         Reputation of given URL
-
     """
-
     url = demisto.args()['url']
 
     response = get_observable(url)
@@ -292,7 +262,8 @@ def url_command():
         'Type': 'url',
         'Indicator': url,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -300,7 +271,7 @@ def url_command():
     }  # type: dict
 
     if observables:
-        human_readable_title = 'EclecticIQ URL reputation - {}'.format(url)
+        human_readable_title = f'EclecticIQ URL reputation - {url}'
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
         context['EclecticIQ.URL'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['url']] = standard_url_outputs
@@ -315,10 +286,8 @@ def url_command():
     })
 
 
-def file_command():
-
+def file_command():  # pragma: no cover
     """
-
     Gets reputation of an EclecticIQ hash observable
 
     Parameters
@@ -330,9 +299,7 @@ def file_command():
     -------
     entry
         Reputation of given file hash
-
     """
-
     file = demisto.args()['file']
 
     hash_type = get_hash_type(file).upper()
@@ -377,7 +344,8 @@ def file_command():
         'Type': 'file',
         'Indicator': file,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -385,7 +353,7 @@ def file_command():
     }  # type: dict
 
     if observables:
-        human_readable_title = 'EclecticIQ File reputation - {}'.format(file)
+        human_readable_title = f'EclecticIQ File reputation - {file}'
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
         context['EclecticIQ.File'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['file']] = standard_file_outputs
@@ -400,10 +368,8 @@ def file_command():
     })
 
 
-def email_command():
-
+def email_command():  # pragma: no cover
     """
-
     Gets reputation of an EclecticIQ email address observable
 
     Parameters
@@ -415,9 +381,7 @@ def email_command():
     -------
     entry
         Reputation of given email address
-
     """
-
     email = demisto.args()['email']
 
     response = get_observable(email)
@@ -460,7 +424,8 @@ def email_command():
         'Type': 'email',
         'Indicator': email,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -468,7 +433,7 @@ def email_command():
     }  # type: dict
 
     if observables:
-        human_readable_title = 'EclecticIQ Email reputation - {}'.format(email)
+        human_readable_title = f'EclecticIQ Email reputation - {email}'
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
         context['EclecticIQ.Email'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['email']] = standard_email_outputs
@@ -483,10 +448,8 @@ def email_command():
     })
 
 
-def domain_command():
-
+def domain_command():  # pragma: no cover
     """
-
     Gets reputation of an EclecticIQ domain observable
 
     Parameters
@@ -498,9 +461,7 @@ def domain_command():
     -------
     entry
         Reputation of given domain address
-
     """
-
     domain = demisto.args()['domain']
 
     response = get_observable(domain)
@@ -543,7 +504,8 @@ def domain_command():
         'Type': 'domain',
         'Indicator': domain,
         'Vendor': 'EclecticIQ',
-        'Score': score
+        'Score': score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     context = {
@@ -551,7 +513,7 @@ def domain_command():
     }  # type: dict
 
     if observables:
-        human_readable_title = 'EclecticIQ Domain reputation - {}'.format(domain)
+        human_readable_title = f'EclecticIQ Domain reputation - {domain}'
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
         context['EclecticIQ.Domain'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['domain']] = standard_domain_outputs
@@ -566,10 +528,8 @@ def domain_command():
     })
 
 
-def get_observable(ioc):
-
+def get_observable(ioc):  # pragma: no cover
     """
-
     Send API query to EclecticIQ to get reputation of an observable
 
     Parameters
@@ -581,18 +541,14 @@ def get_observable(ioc):
     -------
     response
         Python requests response object
-
     """
-
-    cmd_url = '/api/observables?filter[value]={}'.format(ioc)
+    cmd_url = f'/api/observables?filter[value]={ioc}'
     response = http_request('GET', cmd_url)
     return response
 
 
-def get_observable_related_entity_command():
-
+def get_observable_related_entity_command():  # pragma: no cover
     """
-
     Get EclecticIQ related entities to an observable
 
     Parameters
@@ -604,9 +560,7 @@ def get_observable_related_entity_command():
     -------
     entry
         Observable related entities data
-
     """
-
     observable_id = demisto.args()['observable_id']
 
     processed_extract_response = processed_extract(observable_id)
@@ -649,7 +603,7 @@ def get_observable_related_entity_command():
             # API returns a number, we add the time format to it
             context_output['HalfLife'] = str(context_output['HalfLife']) + ' Days'
 
-        human_readable += tableToMarkdown('Observable ID {} related entities'.format(observable_id), context_output)
+        human_readable += tableToMarkdown(f'Observable ID {observable_id} related entities', context_output)
 
         test_mechanisms_output = []
 
@@ -721,10 +675,8 @@ def get_observable_related_entity_command():
     })
 
 
-def processed_extract(observable_id):
-
+def processed_extract(observable_id):  # pragma: no cover
     """
-
     Send API query to EclecticIQ to get extracted processed data of an observable
 
     Parameters
@@ -736,18 +688,14 @@ def processed_extract(observable_id):
     -------
     response
         Python requests response object
-
     """
-
-    cmd_url = '/private/entities/processed-extract/{}'.format(observable_id)
+    cmd_url = f'/private/entities/processed-extract/{observable_id}'
     response = http_request('GET', cmd_url)
     return response
 
 
-def original_extract(observable_id):
-
+def original_extract(observable_id):  # pragma: no cover
     """
-
     Send API query to EclecticIQ to get extracted orginial data of an observable
 
     Parameters
@@ -759,17 +707,13 @@ def original_extract(observable_id):
     -------
     response
         Python requests response object
-
     """
-
-    cmd_url = '/private/entities/original-extract/{}'.format(observable_id)
+    cmd_url = f'/private/entities/original-extract/{observable_id}'
     response = http_request('GET', cmd_url)
     return response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-login()
 
 COMMANDS = {
     'test-module': test_module,
@@ -781,10 +725,17 @@ COMMANDS = {
     'eclecticiq-get-observable-related-entity': get_observable_related_entity_command
 }
 
-try:
-    LOG('Command being called is {}'.format(demisto.command()))
-    command_func = COMMANDS.get(demisto.command())
-    if command_func is not None:
-        command_func()
-except Exception as e:
-    return_error('Error has occurred in EclecticIQ integration: {}\n {}'.format(type(e), e.message))
+
+def main():  # pragma: no cover
+    try:
+        LOG(f'Command being called is {demisto.command()}')
+        login()
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
+    except Exception as e:
+        return_error(f'Error has occurred in EclecticIQ integration: {type(e)}\n {e}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    main()

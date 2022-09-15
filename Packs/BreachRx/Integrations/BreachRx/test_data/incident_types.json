@@ -1,0 +1,57 @@
+{
+  "data": {
+    "types": [
+      {
+        "name": "Attempted Access"
+      },
+      {
+        "name": "Denial of Service"
+      },
+      {
+        "name": "Improper Disclosure"
+      },
+      {
+        "name": "Improper Usage"
+      },
+      {
+        "name": "Loss or Theft"
+      },
+      {
+        "name": "Malicious Code"
+      },
+      {
+        "name": "Other"
+      },
+      {
+        "name": "Ransomware"
+      },
+      {
+        "name": "Third-party"
+      },
+      {
+        "name": "Unauthorized Access"
+      },
+      {
+        "name": "Unconfirmed Incident"
+      },
+      {
+        "name": "Exercise"
+      },
+      {
+        "name": "Readiness"
+      },
+      {
+        "name": "Readiness"
+      },
+      {
+        "name": "DSAR"
+      },
+      {
+        "name": "Migration Test"
+      },
+      {
+        "name": "Phishing"
+      }
+    ]
+  }
+}
