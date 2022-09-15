@@ -48,6 +48,7 @@ class BucketUploadFlow(object):
     AGGREGATED = "aggregated"
     IMAGES = 'images'
     AUTHOR = 'author'
+    README_IMAGES = 'readme_images'
     INTEGRATIONS = 'integrations'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"

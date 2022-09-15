@@ -359,6 +359,13 @@ class Pack(object):
         return self._uploaded_integration_images
 
     @property
+    def uploaded_readme_iamges(self):
+        """
+        @ TODO: decide on a design
+        """
+        return self._reademe_image
+
+    @property
     def is_missing_dependencies(self):
         return self._is_missing_dependencies
 
@@ -2978,8 +2985,59 @@ class Pack(object):
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
+    def copy_readme_images(self, production_bucket, build_bucket, images_data, storage_base_path,
+                           build_bucket_base_path):
+        """ Copies pack's readme_images from the build bucket to the production bucket
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            images_data (dict): The images data structure from Prepare Content step
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
+        Returns:
+            bool: Whether the operation succeeded.
+        """
+        task_status = True
+        err_msg = f"Failed copying {self._pack_name} pack integrations images."
+        pc_uploaded_readme_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.README_IMAGES, False)
+
+        if not pc_uploaded_readme_images:
+            logging.info(f"No added/modified readme images were detected in {self._pack_name} pack.")
+            return task_status
+
+        # take the folder of all the readme images.
+        build_bucket_readme_images_dir_path = os.path.join(build_bucket_base_path, self._pack_name, BucketUploadFlow.README_IMAGES)
+        build_bucket_image_blob = build_bucket.blob(build_bucket_readme_images_dir_path)
+
+        if not build_bucket_image_blob.exists():
+            logging.error(f"Found changed/added readme image in pack {self._pack_name} in content repo but "
+                          f"{build_bucket_readme_images_dir_path} does not exist in build bucket")
+            task_status = False
+        else:
+            logging.info(f"Copying {self._pack_name} pack readme images folder")
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(storage_base_path, self._pack_name, BucketUploadFlow.README_IMAGES)
+                )
+                if not copied_blob.exists():
+                    logging.error(f"Copy {self._pack_name} integration readme images folder: {build_bucket_image_blob.name} "
+                                  f"blob to {copied_blob.name} blob failed.")
+                    task_status = False
+
+            except Exception as e:
+                logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                return False
+
+        if not task_status:
+            logging.error(err_msg)
+        else:
+            logging.success(f"Copied readme images folder for {self._pack_name} pack.")
+
+        return task_status
+
     def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
-        # TODO: check about the copy operation
         """ Downloads pack readme links to images, and upload them to gcs.
 
             Searches for image links in pack readme.
@@ -3015,9 +3073,11 @@ class Pack(object):
                     logging.info(f'no image links were found in {self._pack_name} readme file')
                     return task_status
 
+                self._reademe_image = True
+
                 for image_info in readme_images_storage_paths:
-                    readme_original_url = image_info.get('original_read_me_url'),
-                    gcs_storage_path = str(image_info.get('image_gcp_path')),
+                    readme_original_url = image_info.get('original_read_me_url')
+                    gcs_storage_path = str(image_info.get('image_gcp_path'))
                     image_name = str(image_info.get('image_name'))
 
                     task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url, gcs_storage_path,
