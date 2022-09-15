@@ -4675,7 +4675,7 @@
             "integrations": [
                 "SplunkPy"
             ],
-            "instance_names": "use_default_handler"
+            "instance_names": "use_python_requests_handler"
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
