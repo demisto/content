@@ -2651,7 +2651,7 @@ tasks:
               simple: Manual
     - label: "No"
       condition:
-      - - operator: isNotEqualNumber
+      - - operator: isNotEqualString
           left:
             value:
               simple: incident.sourceBrand
