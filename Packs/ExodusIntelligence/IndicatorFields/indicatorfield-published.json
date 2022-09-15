@@ -1,14 +1,11 @@
 {
-    "id": "indicator_xicpes",
+    "id": "indicator_xipublishdate",
     "version": -1,
-    "modified": "2022-04-29T11:08:49.074455322-04:00",
-    "propagationLabels": [
-        "all"
-    ],
-    "name": "XI CPES",
+    "modified": "2022-08-19T13:55:39.781709688Z",
+    "name": "XI Publish Date",
     "ownerOnly": false,
-    "cliName": "xicpes",
-    "type": "longText",
+    "cliName": "xipublishdate",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -30,5 +27,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.5.0"
 }
