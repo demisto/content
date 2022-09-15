@@ -65,6 +65,10 @@ def trigger_generic_webhook(options):
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
+    if not issues_in_pr:
+        print("No linked issues were found in PR. Make sure you correctly linked issues.")
+        return
+
     print(f"found issues in PR: {issues_in_pr}")
 
     body = {
@@ -86,6 +90,13 @@ def trigger_generic_webhook(options):
             f"Trigger playbook for Linking GitHub PR to Jira Issue failed. Post request to Content"
             f" Gold has status code of {res.status_code}")
         sys.exit(1)
+
+    res_json = res.json()
+    if res_json and isinstance(res_json, list):
+        res_json_response_data = res.json()[0]
+        if res_json_response_data:
+            investigation_id = res_json_response_data.get("id")
+            print(f'{investigation_id=}')
 
 
 def main():
