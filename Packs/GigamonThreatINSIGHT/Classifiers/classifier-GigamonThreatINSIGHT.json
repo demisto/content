@@ -5,7 +5,7 @@
     "description": "Classifies Gigamon ThreatINSIGHT detections.",
     "fromVersion": "6.5.0",
     "keyTypeMap": {
-        "Hello World Alert": "Gigamon ThreatINSIGHT Detection"
+        "Gigamon ThreatINSIGHT Detection": "Gigamon ThreatINSIGHT Detection"
     },
     "transformer": {
         "complex": {
