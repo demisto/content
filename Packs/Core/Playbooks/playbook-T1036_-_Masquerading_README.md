@@ -22,7 +22,7 @@ The playbook's first response action is a containment plan which is based on the
 * Auto file quarantine
 * Manual endpoint isolation
 
-When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
 
 This phase will execute the following containment actions:
 
@@ -94,12 +94,12 @@ In this playbook the remediation plan happens in two different phases:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Endpoint Investigation Plan
+* Eradication Plan
+* Containment Plan
+* Recovery Plan
 * Enrichment for Verdict
 * Handle False Positive Alerts
-* Eradication Plan
-* Endpoint Investigation Plan
-* Recovery Plan
-* Containment Plan
 
 ### Integrations
 This playbook does not use any integrations.

@@ -1192,12 +1192,6 @@ inputs:
   required: false
   description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
   playbookInputQuery:
-- key: PreHostContainment
-  value:
-    simple: "True"
-  required: false
-  description: Isolate the host after the Analysis phase (command-line analysis)
-  playbookInputQuery:
 - key: FileRemediation
   value: {}
   required: false

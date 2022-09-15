@@ -38,12 +38,12 @@ It then continues with the following eradication actions:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Command-Line Analysis
-* Eradication Plan
 * Endpoint Investigation Plan
 * Containment Plan
 * Recovery Plan
+* Command-Line Analysis
 * Handle False Positive Alerts
+* Eradication Plan
 
 ### Integrations
 * CortexCoreIR
@@ -63,7 +63,6 @@ This playbook does not use any scripts.
 | ShouldCloseAutomatically | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | AutoRestoreEndpoint | Whether to execute the Recovery playbook. | False | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user  |  | Optional |
-| PreHostContainment | Isolate the host after the Analysis phase \(command-line analysis\) | True | Optional |
 | FileRemediation | Can be 'Quarantine' or 'Delete'. |  | Optional |
 
 ## Playbook Outputs
