@@ -1072,6 +1072,83 @@ def convert_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
+def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
+                  report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
+                  download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
+    """
+    Create a report and optionally download it.
+
+    Args:
+        client (Client): Client to use for API requests.
+        scope (dict[str, Any]): Scope of the report, see Nexpose's documentation for more details.
+        template_id (str | None, optional): ID of report template to use.
+            Defaults to None (will result in using the first available template)
+        report_name (str, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        report_format (ReportFileFormat, optional): Format of the report that will be generated. Defaults to PDF.
+        download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
+            Defaults to True.
+    """
+    if not template_id:
+        templates = client.get_report_templates()
+
+        if not templates.get("resources"):
+            return CommandResults(readable_output="Error: No available templates were found.")
+
+        template_id = templates["resources"][0]["id"]
+
+    if not report_name:
+        report_name = "report " + str(datetime.now())
+
+    if not report_format:
+        report_format = ReportFileFormat.PDF
+
+    if download_immediately is None:
+        download_immediately = True
+
+    report_id = client.create_report_config(
+        scope=scope,
+        template_id=template_id,
+        report_name=report_name,
+        report_format=report_format.name.lower(),
+    )
+
+    instance_id = client.create_report(report_id)
+
+    context = {
+        "Name": report_name,
+        "ID": report_id,
+        "InstanceID": instance_id,
+        "Format": report_format.name.lower(),
+    }
+    hr = tableToMarkdown("Report Information", context)
+
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+
+            return download_report_command(
+                client=client,
+                report_id=report_id,
+                instance_id=instance_id,
+                report_name=report_name,
+                report_format=report_format,
+            )
+
+        except Exception as e:
+            # A 404 response could mean that the report generation process has not finished yet.
+            # In that case report's information will be returned to the user for them to download it manually.
+            if "404" not in str(e):
+                raise
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="Nexpose.Report",
+        outputs=context,
+        outputs_key_field=["ID", "InstanceID"],
+    )
+
+
 def dq(obj, path):
     """
     return a value in an object path. in case of multiple objects in path, searches them all.
@@ -1375,65 +1452,17 @@ def create_assets_report_command(client: Client, asset_ids: list[str], template_
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    if not template_id:
-        templates = client.get_report_templates()
+    scope = {"assets": [int(asset_id) for asset_id in asset_ids]}
 
-        if not templates.get("resources"):
-            raise ValueError("No available templates were found.")
-
-        template_id = templates["resources"][0]["id"]
-
-    if not report_name:
-        report_name = "report " + str(datetime.now())
-
-    if not report_format:
-        report_format = ReportFileFormat.PDF
-
-    if download_immediately is None:
-        download_immediately = True
-
-    report_id = client.create_report_config(
-        scope={"assets": [int(asset_id) for asset_id in asset_ids]}, # TODO: Check if conversion to int is actually needed
+    return create_report(
+        client=client,
+        scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format.name.lower(),
+        report_format=report_format,
+        download_immediately=download_immediately,
     )
 
-    instance_id = client.create_report(report_id)
-
-    context = {
-        "Name": report_name,
-        "ID": report_id,
-        "InstanceID": instance_id,
-        "Format": report_format.name.lower(),
-    }
-    hr = tableToMarkdown("Report Information", context)
-
-    if download_immediately:
-        try:
-            # Wait for the report to be completed
-            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
-
-            return download_report_command(
-                client=client,
-                report_id=report_id,
-                instance_id=instance_id,
-                report_name=report_name,
-                report_format=report_format,
-            )
-
-        except Exception as e:
-            # If we received 404 it could mean that the report generation process has not finished yet. in that case
-            # we'll return the report's info to enable users to query for the report's status and download it.
-            if "404" not in str(e):
-                raise
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="Nexpose.Report",
-        outputs=context,
-        outputs_key_field=["ID", "InstanceID"],
-    )
 
 def create_scan_report_command(client: Client, scan_id: str, template_id: Optional[str] = None,
                                report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
@@ -1451,57 +1480,15 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
         """
-    if not template_id:
-        templates = client.get_report_templates()
+    scope = {"scan": scan_id}
 
-        if not templates.get("resources"):
-            raise ValueError("No available templates were found.")
-
-        template_id = templates["resources"][0]["id"]
-
-    report_id = client.create_report_config(
-        scope={"scan": scan_id},
+    return create_report(
+        client=client,
+        scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format.name.lower(),
-    )
-
-    instance_id = client.create_report(report_id)
-
-    context = {
-        "Name": report_name,
-        "ID": report_id,
-        "InstanceID": instance_id,
-        "Format": report_format.name.lower(),
-    }
-
-    hr = tableToMarkdown("Report Information", context)
-
-    if download_immediately:
-        # Wait for the report to be completed
-        time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
-
-        try:
-            return download_report_command(
-                client=client,
-                report_id=report_id,
-                instance_id=instance_id,
-                report_name=report_name,
-                report_format=report_format,
-            )
-
-        # If a 404 response was received, it could mean that the report generation process has not finished yet.
-        # In that case, report's info will still be returned to enable users
-        # to query for the report's status and download it.
-        except DemistoException as e:
-            if "404" not in str(e):
-                raise
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="Nexpose.Report",
-        outputs=context,
-        outputs_key_field=["ID", "InstanceID"],
+        report_format=report_format,
+        download_immediately=download_immediately,
     )
 
 
@@ -1553,65 +1540,15 @@ def create_sites_report_command(client: Client, sites: list[Site],
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    if not template_id:
-        templates = client.get_report_templates()
+    scope = {"sites": sites}
 
-        if not templates.get("resources"):
-            raise ValueError("No available templates were found.")
-
-        template_id = templates["resources"][0]["id"]
-
-    if not report_name:
-        report_name = "report " + str(datetime.now())
-
-    if not report_format:
-        report_format = ReportFileFormat.PDF
-
-    if download_immediately is None:
-        download_immediately = True
-
-    report_id = client.create_report_config(
-        scope={"sites": sites},
+    return create_report(
+        client=client,
+        scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format.name.lower(),
-    )
-
-    instance_id = client.create_report(report_id)
-
-    context = {
-        "Name": report_name,
-        "ID": report_id,
-        "InstanceID": instance_id,
-        "Format": report_format.name.lower(),
-    }
-
-    hr = tableToMarkdown("Report Information", context)
-
-    if download_immediately:
-        try:
-            # Wait for the report to be completed
-            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
-
-            return download_report_command(
-                client=client,
-                report_id=report_id,
-                instance_id=instance_id,
-                report_name=report_name,
-                report_format=report_format,
-            )
-
-        except Exception as e:
-            # If we received 404 it could mean that the report generation process has not finished yet. in that case
-            # we'll return the report's info to enable users to query for the report's status and download it.
-            if "404" not in str(e):
-                raise
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="Nexpose.Report",
-        outputs=context,
-        outputs_key_field=["ID", "InstanceID"],
+        report_format=report_format,
+        download_immediately=download_immediately,
     )
 
 
