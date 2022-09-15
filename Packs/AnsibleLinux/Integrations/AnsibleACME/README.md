@@ -548,3 +548,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Caaidentities
 >        * 0: letsencrypt.org
 
+
+### Troubleshooting
+The Ansible-Runner container is not suitable for running as a non-root user.
+Thus the Ansible integrations will fail if the XSOAR Docker Hardening guide is applied. https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/docker/docker-hardening-guide.
+The `docker.run.internal.asuser` server configuration causes the software that is run inside of the docker containers utilised by XSOAR to run as a non-root user account inside the container.
+The ansible-runner software is required to run as root as it applies it's own isolation via bwrap to the ansible execution environment. 
+This is a limitation of the Ansible-Runner software itself https://github.com/ansible/ansible-runner/issues/611
+A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure XSOAR to ignore the ansible container image by setting the value of `demisto/ansible-runner` and afterwards run /reset_containers to reload any containers that might be running to ensure they receive the config.
+See step 2 of this guide for complete instructions: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.
