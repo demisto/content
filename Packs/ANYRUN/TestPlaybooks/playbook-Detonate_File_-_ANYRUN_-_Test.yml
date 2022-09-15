@@ -140,8 +140,8 @@ tasks:
     task:
       id: 5c4b490f-ed22-4af0-8713-fd33d85c7016
       version: -1
-      name: Detonate File - ANYRUN V2
-      playbookName: Detonate File - ANYRUN V2
+      name: Detonate File - ANYRUN
+      playbookName: Detonate File - ANYRUN
       type: playbook
       iscommand: false
       brand: ""

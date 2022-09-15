@@ -136,8 +136,8 @@ tasks:
     task:
       id: 3a519d65-66d9-4655-8380-8bcd3502a449
       version: -1
-      name: Detonate File From URL - ANYRUN V2
-      playbookName: Detonate File From URL - ANYRUN V2
+      name: Detonate File From URL - ANYRUN
+      playbookName: Detonate File From URL - ANYRUN
       type: playbook
       iscommand: false
       brand: ''

@@ -136,8 +136,8 @@ tasks:
     task:
       id: 48858c51-9f89-4c74-8cad-98e80189c46b
       version: -1
-      name: Detonate URL - ANYRUN V2
-      playbookName: Detonate URL - ANYRUN V2
+      name: Detonate URL - ANYRUN
+      playbookName: Detonate URL - ANYRUN
       type: playbook
       iscommand: false
       brand: ''
