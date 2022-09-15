@@ -5176,13 +5176,13 @@
             "fromversion": "6.2.0"
         },
         {
-            "playbookID": "Detonate File - ANYRUN V2 - Test"
+            "playbookID": "Detonate File - ANYRUN - Test"
         },
         {
-            "playbookID": "Detonate URL - ANYRUN V2 - Test"
+            "playbookID": "Detonate URL - ANYRUN - Test"
         },
         {
-            "playbookID": "Detonate File From URL - ANYRUN V2 - Test"
+            "playbookID": "Detonate File From URL - ANYRUN - Test"
         }
     ],
     "skipped_tests": {
