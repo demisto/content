@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *
 
 
 class Client(BaseClient):
     """
     Client class to interact with the service API.
     """
+
     def __init__(self, base_url, verify, proxy, headers, auth):
         """
         Class initialization.
@@ -361,6 +361,7 @@ def main() -> None:
     """
     main function
     """
+    params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
     command = demisto.command()
@@ -368,14 +369,16 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()
+        api = params['api_key']
+        auth_id = params['x-xdr-auth-id']
         headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json"
+            'Authorization': f'{api}',
+            'x-xdr-auth-id': f'{auth_id}',
+            'Content-Type': 'application/json'
         }
         url_suffix = "/public_api/v1"
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        url = params['url']
+        add_sensitive_log_strs(api)
         base_url = urljoin(url, url_suffix)
         client = Client(
             base_url=base_url,
