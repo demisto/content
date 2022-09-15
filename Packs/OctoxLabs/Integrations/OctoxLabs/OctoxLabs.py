@@ -1,17 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -35,12 +21,12 @@ def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
 def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]) -> CommandResults:
     commands: Dict[str, Callable] = {
         "test-module": test_module,
-        "get-adapters": get_adapters,
-        "get-connections": get_connections,
-        "get-discoveries": get_discoveries,
-        "get-last-discovery": get_last_discovery,
-        "search-devices": search_devices,
-        "get-device": get_device,
+        "octoxlabs-get-adapters": get_adapters,
+        "octoxlabs-get-connections": get_connections,
+        "octoxlabs-get-discoveries": get_discoveries,
+        "octoxlabs-get-last-discovery": get_last_discovery,
+        "octoxlabs-search-devices": search_devices,
+        "octoxlabs-get-device": get_device,
     }
     command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:

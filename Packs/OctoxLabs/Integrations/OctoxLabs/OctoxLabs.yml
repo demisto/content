@@ -4,7 +4,8 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: 127.0.0.1
-  display: Your Octox Labs Platform IP
+  display: IP
+  additionalinfo: Your Octox Labs Platform IP
   name: octox_ip
   required: true
   type: 0
@@ -19,7 +20,7 @@ display: 'OctoxLabs'
 name: OctoxLabs
 script:
   commands:
-    - name: get-adapters
+    - name: octoxlabs-get-adapters
       deprecated: false
       description: 'Fetch octoxlabs all adapters'
       execution: false
@@ -51,7 +52,7 @@ script:
       - contextPath: OctoxLabs.Adapters.results.hr_status
         description: 'Adapter human readable status'
         type: String
-    - name: get-connections
+    - name: octoxlabs-get-connections
       deprecated: false
       description: 'Fetch octoxlabs connections'
       execution: false
@@ -87,7 +88,7 @@ script:
         - contextPath: OctoxLabs.Connections.results.enabled
           description: 'Connection is enabled?'
           type: Boolean
-    - name: get-discoveries
+    - name: octoxlabs-get-discoveries
       deprecated: false
       description: 'Fetch octoxlabs discoveries'
       execution: false
@@ -120,7 +121,7 @@ script:
         - contextPath: OctoxLabs.Discoveries.results.progress
           description: 'Discovery progress'
           type: Number
-    - name: get-last-discovery
+    - name: octoxlabs-get-last-discovery
       deprecated: false
       description: 'Get last success discovery'
       execution: false
@@ -143,7 +144,7 @@ script:
         - contextPath: OctoxLabs.Discovery.progress
           description: 'Last discovery progress'
           type: Number
-    - name: search-devices
+    - name: octoxlabs-search-devices
       deprecated: false
       description: 'Search in your devices'
       execution: false
@@ -185,7 +186,7 @@ script:
         - contextPath: OctoxLabs.Devices.results
           description: 'List<Dict> Device information'
           type: Unknown
-    - name: get-device
+    - name: octoxlabs-get-device
       deprecated: false
       description: 'Fetch your device'
       execution: false
@@ -212,6 +213,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/octoxlabs:1.0.0.33874
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

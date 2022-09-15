@@ -76,7 +76,7 @@ def test_get_adapters(requests_mock, octox_client):
     adapter_data = util_load_json(path="test_data/get_adapters.json")
     requests_mock.get("/adapters/adapters", json=adapter_data)
 
-    result = run_command(octox=octox_client, command_name="get-adapters", args={})
+    result = run_command(octox=octox_client, command_name="octoxlabs-get-adapters", args={})
     data = result.outputs
 
     assert data["count"] == 2
@@ -87,7 +87,7 @@ def test_get_connections(requests_mock, octox_client):
     connections_data = util_load_json(path="test_data/get_connections.json")
     requests_mock.get("/adapters/connections", json=connections_data)
 
-    result = run_command(octox=octox_client, command_name="get-connections", args={})
+    result = run_command(octox=octox_client, command_name="octoxlabs-get-connections", args={})
     data = result.outputs
 
     assert data["count"] == 2
@@ -98,8 +98,8 @@ def test_get_connections(requests_mock, octox_client):
 def test_search_devices_parameters(octox_client):
     with rm.mock() as m:
         m.post("/assets/assets", json={"count": 0, "results": []})
-        run_command(octox=octox_client, command_name="search-devices", args={"fields": "Adapters, Hostname"})
-        run_command(octox=octox_client, command_name="search-devices", args={})
+        run_command(octox=octox_client, command_name="octoxlabs-search-devices", args={"fields": "Adapters, Hostname"})
+        run_command(octox=octox_client, command_name="octoxlabs-search-devices", args={})
 
     first_request = m.request_history[0]
     first_data = first_request.json()
