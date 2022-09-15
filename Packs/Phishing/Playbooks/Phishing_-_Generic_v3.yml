@@ -1870,8 +1870,6 @@ tasks:
     scriptarguments:
       AutomaticallyLinkIncidents:
         simple: "True"
-      fieldsToDisplay:
-        simple: id,name,similarity,reportedemailfrom,recipients,severity,status,occurred
     separatecontext: true
     continueonerrortype: ""
     loop:
