@@ -26,7 +26,6 @@ xdr_severity_to_demisto: dict[str, str] = {
     'SEV_050_CRITICAL': 'CRITICAL',
     'SEV_090_UNKNOWN': 'UNKNOWN',
 }
-demisto_severity_to_xdr = {v: k for k, v in xdr_severity_to_demisto.items()}
 
 xdr_reputation_to_demisto: Dict = {
     'GOOD': 1,
@@ -215,6 +214,7 @@ def demisto_types_to_xdr(_type: str) -> str:
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
+        demisto.debug(f'Raw outgoing IOC: {ioc}')
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # may be overwritten with the value from the severity_field
@@ -245,14 +245,9 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             xdr_ioc['status'] = 'DISABLED'
 
         if severity := custom_fields.get(Client.xsoar_severity_field):
-            demisto.debug(f'found severity level {severity} in field {Client.xsoar_severity_field}')
-            if severity not in demisto_severity_to_xdr:
-                value = ioc['value']
-                raise DemistoException(f'indicator {value} has severity {severity}, '
-                                       f'which cannot be mapped to a valid XDR severity. '
-                                       f'Please see the XDR-IOC integration documentation for more details.')
-            xdr_ioc['severity'] = demisto_severity_to_xdr[severity]
+            xdr_ioc['severity'] = severity  # NOTE: these do NOT need translation to the XDR, 0x0_xxxx_xxxx format
 
+        demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
 
     except KeyError as error:
@@ -377,9 +372,6 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
 
-    raw_severity = ioc['RULE_SEVERITY']
-    demisto.debug(f'found severity {raw_severity}, its demisto equivalent is {xdr_severity_to_demisto[raw_severity]}')
-
     entry: Dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
@@ -388,14 +380,14 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.xsoar_severity_field: xdr_severity_to_demisto[raw_severity],
+            Client.xsoar_severity_field: xdr_severity_to_demisto[ioc['RULE_SEVERITY']],
         },
         "rawJSON": ioc
     }
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
 
-    demisto.debug(f'demisto entry: {entry}')
+    demisto.debug(f'Processed incoming entry: {entry}')
     return entry
 
 
