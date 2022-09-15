@@ -5,12 +5,6 @@
     ],
     "created": "2022-06-27T10:00:00Z",
     "currentVersion": "1.1.0",
-    "dependencies": {
-        "CommonTypes": {
-            "display_name": "Common Types",
-            "mandatory": true
-        }
-    },
     "description": "This content pack allows to create incidents based on Vectra Accounts/Hosts/Detections objects.",
     "devEmail": [
         "tme@vectra.ai"
