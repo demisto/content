@@ -641,7 +641,7 @@ class TestCommands:
         mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
         mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
         set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 seccedded.')
+        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
         call_args = mocker_set_context.call_args[0][0]
         assert call_args['ts'] == 1637798400000
         assert call_args['time'] == '2021-11-25T00:00:00Z'
