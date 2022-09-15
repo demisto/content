@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -734,11 +736,36 @@ def get_mapping_fields_command():
     """
     indexes = FETCH_INDEX.split(',')
     elastic_mapping = {}
+    demisto.debug(f'{indexes=}')
     for index in indexes:
+        demisto.debug(f'{index=}')
         res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
-        my_map = res.json()[index]['mappings']['properties']
-        elastic_mapping[index] = {"_id": "doc_id", "_index": index}
-        elastic_mapping[index]["_source"] = parse_subtree(my_map)
+        res_json = res.json()
+        demisto.debug(f'{res=}')
+        demisto.debug(f'{res_json=}')
+        # To get mappings for all data streams and indices in a cluster,
+        # use _all or * for <target> or omit the <target> parameter - from Elastic API
+        if index in ['*', '_all', '']:
+            for key in res_json.keys():
+                if 'mappings' in res_json[key] and 'properties' in res_json[key]['mappings']:
+                    my_map = res_json[key]['mappings']['properties']
+                    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
+                    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+
+        elif index.endwith('*') or index.endwith('_all'):
+            prefix_index = re.compile(index.rstrip('_all').rstrip('*'))
+            for key in res_json.keys():
+                demisto.debug(f'{prefix_index=} and {key=}')
+                if prefix_index.match(key):
+                    my_map = res_json[key]['mappings']['properties']
+                    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
+                    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+
+        else:
+            my_map = res_json[index]['mappings']['properties']
+            elastic_mapping[index] = {"_id": "doc_id", "_index": index}
+            elastic_mapping[index]["_source"] = parse_subtree(my_map)
+
     demisto.results(elastic_mapping)
 
 
