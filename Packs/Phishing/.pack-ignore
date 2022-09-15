@@ -141,6 +141,7 @@ ignore=IF116
 
 [file:Process_Email_-_Generic_v2_README.md]
 ignore=RM106
+ignore=PB118
 
 [known_words]
 CheckEmailAuthenticity
