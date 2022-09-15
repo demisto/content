@@ -2,7 +2,9 @@ id: Detonate File - ANYRUN
 version: -1
 name: Detonate File - ANYRUN
 description: |-
-  Deprecated. Use Detonate File - ANYRUN V2 instead..
+  Detonates one or more files using the ANYRUN sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
 deprecated: false
 fromversion: 5.0.0
 toversion: 6.1.9
