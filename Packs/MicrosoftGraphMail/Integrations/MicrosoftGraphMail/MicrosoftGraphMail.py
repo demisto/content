@@ -712,9 +712,9 @@ class MsGraphClient:
         emails_as_html_and_text = []
 
         for email_as_html in emails_as_html:
-            body_as_text = text_emails_ids.get(email_as_html.get('id')).get('uniqueBody')
-            if body_as_html := email_as_html.get('uniqueBody'):
-                email_as_html['uniqueBody'] = [body_as_html, body_as_text]
+            body_as_text = text_emails_ids.get(email_as_html.get('id')).get('body')
+            if body_as_html := email_as_html.get('body'):
+                email_as_html['body'] = [body_as_html, body_as_text]
             emails_as_html_and_text.append(email_as_html)
 
         return emails_as_html_and_text
@@ -759,15 +759,15 @@ class MsGraphClient:
         return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
-    def get_mail_unique_body(_unique_body, content_type):
+    def get_email_body_content(_email_body, content_type):
 
         if content_type not in {'text', 'html'}:
             raise ValueError(f'content-type must be text or html')
 
-        for _email_body_data in _unique_body:
+        for _email_body_data in _email_body:
             if _email_body_data.get('contentType') == content_type:
-                return _email_body_data
-        return {}
+                return _email_body_data.get('content') or ''
+        return ''
 
     def _parse_item_as_dict(self, email):
         """
@@ -784,13 +784,23 @@ class MsGraphClient:
         parsed_email = {EMAIL_DATA_MAPPING[k]: v for (k, v) in email.items() if k in EMAIL_DATA_MAPPING}
         parsed_email['Headers'] = email.get('internetMessageHeaders', [])
 
-        email_unique_body = email.get('uniqueBody', [])
+        email_unique_body = email.get('uniqueBody') or []
+        email_body = email.get('body') or []
 
-        email_body = email.get('body', {}) or self.get_mail_unique_body(email_unique_body, content_type='html')
-        email_content_as_html = email_body.get('content', '')
+        email_content_as_html = self.get_email_body_content(
+            email_body, content_type='html'
+        ) or self.get_email_body_content(
+            email_unique_body, content_type='html'
+        )
+        email_content_as_text = self.get_email_body_content(
+            email_body, content_type='text'
+        ) or self.get_email_body_content(
+            email_unique_body, content_type='text'
+        )
+
         parsed_email['Body'] = email_content_as_html
-        parsed_email['Text'] = self.get_mail_unique_body(email_unique_body, content_type='text').get('content', '')
-        parsed_email['BodyType'] = email_body.get('contentType', '')
+        parsed_email['Text'] = email_content_as_text
+        parsed_email['BodyType'] = 'html'
 
         parsed_email['Sender'] = MsGraphClient._get_recipient_address(email.get('sender', {}))
         parsed_email['From'] = MsGraphClient._get_recipient_address(email.get('from', {}))
@@ -899,8 +909,7 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.display_full_email_body:
-            # parse HTML into plain-text
-            body = self.get_mail_unique_body(email.get('uniqueBody', []), content_type='text').get('content', '')
+            body = self.get_email_body_content(email.get('body', []), content_type='text')
 
         incident = {
             'name': parsed_email.get('Subject'),
