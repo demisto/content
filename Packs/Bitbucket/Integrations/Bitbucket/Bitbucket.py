@@ -303,19 +303,6 @@ class Client(BaseClient):
         url_suffix = f'/workspaces/{self.workspace}/members'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def code_search_request(self, params: Dict, search_query: str) -> Dict:
-        """ Makes a GET request /workspaces/{workspace}/search/code/{search_query} endpoint
-            to return a list of the matching code peaces in the workspace.
-            :param params: Dict - The pagination params if needed
-            :param search_query: str - The search query
-
-            Creates the url and makes the api call
-            :return JSON response from /workspaces/{workspace}/search/code/{search_query} endpoint
-            :rtype Dict[str, Any]
-        """
-        url_suffix = f'/workspaces/{self.workspace}/search/code?search_query={search_query}'
-        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -1222,50 +1209,6 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-# def code_search_command(client: Client, args: Dict) -> CommandResults:
-#     """ Returns a list of all the code peaces that matches the search query in the argument.
-#         Args:
-#             client: A Bitbucket client.
-#             args: Demisto args.
-#         Returns:
-#             A CommandResult object with the requested list.
-#     """
-#     search_query = args.get('search_query')
-#     limit = arg_to_number(args.get('limit', 50))
-#     page: int = arg_to_number(args.get('page', 1))
-#     check_args(limit, page)
-#     page_size = min(100, limit)
-#     params = {
-#         'page': page,
-#         'pagelen': page_size
-#     }
-#     response = client.code_search_request(params, search_query)
-#     results = check_pagination(client, response, limit)
-#     human_readable = []
-#     for value in results:
-#         link = demisto.get(value, 'file.links.self.href')
-#         splitted_link = link.split('/')
-#         repository = splitted_link[5]
-#         d = {'Path': demisto.get(value, 'file.path'),
-#              'Repository': repository,
-#              'Link': f'https://bitbucket.org/{client.workspace}/{repository}/src'
-#              }
-#         human_readable.append(d)
-#     headers = ['Name', 'AccountId']
-#     readable_output = tableToMarkdown(
-#         name='The list of all the workspace members',
-#         t=human_readable,
-#         removeNull=True,
-#         headers=headers
-#     )
-#     return CommandResults(
-#         readable_output=readable_output,
-#         outputs_prefix='Bitbucket.Code',
-#         outputs=results,
-#         raw_response=results
-#     )
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -1372,9 +1315,6 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'bitbucket-workspace-member-list':
             result = workspace_member_list_command(client, demisto.args())
             return_results(result)
-        # elif demisto.command() == 'bitbucket-code-search':
-        #     result = code_search_command(client, demisto.args())
-        #     return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
 

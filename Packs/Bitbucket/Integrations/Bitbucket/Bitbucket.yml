@@ -2241,42 +2241,6 @@ script:
         - contextPath: Bitbucket.WorkspaceMember.workspace.links
           description: 'Links to information about the workspace.'
           type: String
-#    - name: bitbucket-code-search
-#      description: returns a list of all the code peaces that matches the query in the workspace. in order to use this command please enable the search code option in the account, with the link in the integration help.
-#      arguments:
-#        - name: limit
-#          required: false
-#          isArray: false
-#          description: The maximum number of items in the list.
-#        - name: page
-#          required: false
-#          isArray: false
-#          description: The specific result page to display.
-#      outputs:
-#        - contextPath: Bitbucket.Code.type
-#          description: 'The action type.'
-#          type: String
-#        - contextPath: Bitbucket.Code.content_match_count
-#          description: 'How match code peaces match the search query.'
-#          type: Number
-#        - contextPath: Bitbucket.Code.content_matches.lines.line
-#          description: 'The line number in the file'
-#          type: Number
-#        - contextPath: Bitbucket.Code.content_matches.lines.segments.text
-#          description: 'The text in the line'
-#          type: String
-#        - contextPath: Bitbucket.Code.content_matches.lines.segments.match
-#          description: 'Is the text matching to the search query.'
-#          type: Boolean
-#        - contextPath: Bitbucket.Code.file.path
-#          description: 'The name of the file.'
-#          type: String
-#        - contextPath: Bitbucket.Code.file.type
-#          description: 'The type of the file.'
-#          type: String
-#        - contextPath: Bitbucket.Code.file.links.self.href
-#          description: 'Link of an api call with information about the file.'
-#          type: String
   isfetch: false
   runonce: false
   script: "-"
