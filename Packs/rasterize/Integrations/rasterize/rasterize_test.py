@@ -10,6 +10,8 @@ import http.server
 import time
 import threading
 import pytest
+from selenium import webdriver
+from pyvirtualdisplay import Display
 from unittest.mock import mock_open
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
@@ -286,10 +288,6 @@ class TestRasterizeIncludeUrl:
             Then:
                 - Verify that it runs as expected.
         """
-
-        from selenium import webdriver
-        from pyvirtualdisplay import Display
-
         mocker.patch.object(Display, 'start', retuen_value=None)
         mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
         mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
@@ -308,14 +306,12 @@ class TestRasterizeIncludeUrl:
             Then:
                 - Verify that it runs as expected.
         """
-
-        from selenium import webdriver
-        from pyvirtualdisplay import Display
-
         mocker.patch.object(Display, 'start', retuen_value=None)
         mocker.patch.object(Display, 'stop', retuen_value=None)
         mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
         mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+
+        mocker.patch('subprocess.run')
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 

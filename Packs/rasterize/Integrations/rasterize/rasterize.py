@@ -148,7 +148,6 @@ def init_display(width: int, height: int):
     """
     try:
         demisto.debug(f"Starting display with width: {width}, and height: {height}.")
-        os.environ['DISPLAY'] = ':0'
         display = Display(visible=0, size=(width, height), backend='xvnc')
         display.start()
 
@@ -459,13 +458,12 @@ def get_image_screenshot(driver, include_url):
 
     if include_url:
         try:
-            process = subprocess.Popen('import -window root screenshot.png'.split(' '), stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE, universal_newlines=True)
-            stdout, _ = process.communicate()
-            demisto.debug(f"Finished taking the screenshot. Stdout: {stdout}")
+            res = subprocess.run('import -window root screenshot.png'.split(' '), text=True, capture_output=True, check=True,
+                                 env={'DISPLAY': ':0'})
+            demisto.debug(f"Finished taking the screenshot. Stdout: [{res.stdout}] stderr: [{res.stderr}]")
 
-        except subprocess.SubprocessError as se:
-            demisto.error(f'Subprocess exception: {se}. Stderr: {process.stderr}')
+        except subprocess.CalledProcessError as se:
+            demisto.error(f'Subprocess exception: {se}. Stderr: [{se.stderr}] stdout: [{se.stdout}]')
             raise
 
         try:
