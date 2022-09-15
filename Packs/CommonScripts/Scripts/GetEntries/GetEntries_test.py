@@ -67,6 +67,7 @@ class TestGetEntries:
 
         mocker.patch('GetEntries.return_error', side_effect=__return_error)
         mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
+        mocker.patch.object(demisto, 'error')
         mocker.patch.object(demisto, 'results')
         main()
         assert demisto.results.call_count == 1
