@@ -4652,7 +4652,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "SplunkPy"
-            ]
+            ],
+            "instance_names": "use_default_handler"
         },
         {
             "playbookID": "SplunkPySearch_Test",
@@ -4673,7 +4674,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "SplunkPy"
-            ]
+            ],
+            "instance_names": "use_default_handler"
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
