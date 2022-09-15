@@ -1,8 +1,16 @@
-## BaseIntegration Help
+## OctoxLabs Integration Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+OctoxLabs is a device, user, vulnerability and application management platform.
+OctoxLabs integration enabled now in Cortex XSoar. You can search your devices with historical discoveries and create integrations.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+You must create an API Key on OctoxLabs platform for use Cortex XSoar.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Generate API Key
+1. Go to settings
+2. Click "Add User" button
+3. Type Username and choose User Type as "API User"
+4. Click "Create" button
+5. Click your user's Edit button
+6. Copy API Token
+
+Or also see for details: [https://github.com/octoxlabs/py-octoxlabs#getting-started](https://github.com/octoxlabs/py-octoxlabs#getting-started)
