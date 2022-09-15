@@ -310,7 +310,8 @@ class Client(BaseClient):
 def check_pagination(client: Client, response: Dict, limit: int) -> List:
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
-    if is_next and limit > int(arg_to_number(response.get('pagelen'))):
+    pagelen = response.get('pagelen', None)
+    if is_next and pagelen and limit > int(pagelen):
         return get_paged_results(client, response, limit)
     else:
         return arr
@@ -336,7 +337,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     return results
 
 
-def check_args(limit: int, page: int):
+def check_args(limit: int = None, page: int = None):
     if limit is not None and limit < 1:
         raise Exception('The limit value must be equal to 1 or bigger.')
     if page is not None and page < 1:
@@ -345,7 +346,7 @@ def check_args(limit: int, page: int):
 
 def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
                              description: str, close_source_branch: str) -> Dict:
-    body = {}
+    body: Dict = {}
     if title:
         body["title"] = title
     if source_branch:
@@ -388,7 +389,7 @@ def test_module(client: Client) -> str:
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 def project_list_command(client: Client, args: Dict) -> CommandResults:
-    limit = arg_to_number(args.get('limit', 50))
+    limit = int(args.get('limit', 50))
     project_key = args.get('project_key')
     page = arg_to_number(args.get('page', 1))
     check_args(limit, page)
@@ -432,9 +433,9 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
-    limit = int(arg_to_number(args.get('limit', 50)))
+    limit = int(args.get('limit', 50))
     repo = args.get('repo', None)
-    page = int(arg_to_number(args.get('page', 1)))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {'page': page,
@@ -559,8 +560,8 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     file_path = args.get('file_path', None)
     excluded_branches = args.get('excluded_branches', None)
     included_branches = args.get('included_branches', None)
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -702,8 +703,8 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         """
     repo = args.get('repo', None)
     issue_id = args.get('issue_id', None)
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -858,8 +859,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     pull_request_id = args.get('pull_request_id', None)
     state = args.get('state', None)
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -992,8 +993,8 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     issue_id = args.get('issue_id', None)  # TODO make sure that it is ok to make it a required field
     comment_id = args.get('comment_id', None)
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -1072,8 +1073,8 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
     repo = args.get('repo', None)
     pr_id = arg_to_number(args.get('pull_request_id'))
     comment_id = args.get('comment_id', None)
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -1178,8 +1179,8 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with the requested list.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    page: int = arg_to_number(args.get('page', 1))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
