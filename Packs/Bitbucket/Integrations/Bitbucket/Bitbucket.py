@@ -1,8 +1,10 @@
+import demisto_client.demisto_api
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Any, Tuple
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -301,14 +303,27 @@ class Client(BaseClient):
         url_suffix = f'/workspaces/{self.workspace}/members'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
+    def code_search_request(self, params: Dict, search_query: str) -> Dict:
+        """ Makes a GET request /workspaces/{workspace}/search/code/{search_query} endpoint
+            to return a list of the matching code peaces in the workspace.
+            :param params: Dict - The pagination params if needed
+            :param search_query: str - The search query
+
+            Creates the url and makes the api call
+            :return JSON response from /workspaces/{workspace}/search/code/{search_query} endpoint
+            :rtype Dict[str, Any]
+        """
+        url_suffix = f'/workspaces/{self.workspace}/search/code?search_query={search_query}'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
 
 def check_pagination(client: Client, response: Dict, limit: int) -> List:
     arr: List[Dict] = response.get('values', [])
-    isNext = response.get('next', None)
-    if isNext and limit > response.get('pagelen'):
+    is_next = response.get('next', None)
+    if is_next and limit > int(arg_to_number(response.get('pagelen'))):
         return get_paged_results(client, response, limit)
     else:
         return arr
@@ -379,16 +394,16 @@ def test_module(client: Client) -> str:
     try:
         client.get_project_list_request(params=params)
         return "ok"
-    except Exception as e:
+    except Exception:
         raise Exception('There was a problem in the authentication process.')
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 def project_list_command(client: Client, args: Dict) -> CommandResults:
-    limit: int = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', 50))
     project_key = args.get('project_key')
-    page: int = arg_to_number(args.get('page', 1))
+    page = arg_to_number(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -430,9 +445,9 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
-    limit = arg_to_number(args.get('limit', 50))
+    limit = int(arg_to_number(args.get('limit', 50)))
     repo = args.get('repo', None)
-    page: int = arg_to_number(args.get('page', 1))
+    page = int(arg_to_number(args.get('page', 1)))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {'page': page,
@@ -547,7 +562,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
         repo = client.repository
     response = client.commit_create_request(body, repo)
     if response.status_code == 201:
-        return CommandResults(readable_output=f'The commit was created successfully.')
+        return CommandResults(readable_output='The commit was created successfully.')
     else:
         return CommandResults(readable_output=response)
 
@@ -617,9 +632,9 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
         repo = client.repository
     response = client.file_delete_request(body, repo)
     if response.status_code == 201:
-        return CommandResults(readable_output=f'The file was deleted successfully.')
+        return CommandResults(readable_output='The file was deleted successfully.')
     else:
-        return CommandResults(readable_output=response)
+        return CommandResults(outputs=response)
 
 
 def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -716,7 +731,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         hr_title = f'The information about issue "{issue_id}"'
     else:
         results = check_pagination(client, response, limit)
-        hr_title = f'List of the issues'
+        hr_title = 'List of the issues'
     human_readable = []
     for value in results:
         d = {'Id': value.get('id'),
@@ -810,7 +825,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     if not repo:
         repo = client.repository
     response = client.pull_request_create_request(repo, body)
-    return CommandResults(readable_output=f'The pull request was created successfully',
+    return CommandResults(readable_output='The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
                           outputs=response,
                           raw_response=response)
@@ -874,7 +889,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         hr_title = f'The information about pull request "{pull_request_id}"'
     else:
         results = check_pagination(client, response, limit)
-        hr_title = f'List of the pull requests'
+        hr_title = 'List of the pull requests'
     human_readable = []
     for value in results:
         d = {'Id': value.get('id'),
@@ -1201,10 +1216,54 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Bitbucket.IssueComment',
+        outputs_prefix='Bitbucket.WorkspaceMember',
         outputs=results,
         raw_response=results
     )
+
+
+# def code_search_command(client: Client, args: Dict) -> CommandResults:
+#     """ Returns a list of all the code peaces that matches the search query in the argument.
+#         Args:
+#             client: A Bitbucket client.
+#             args: Demisto args.
+#         Returns:
+#             A CommandResult object with the requested list.
+#     """
+#     search_query = args.get('search_query')
+#     limit = arg_to_number(args.get('limit', 50))
+#     page: int = arg_to_number(args.get('page', 1))
+#     check_args(limit, page)
+#     page_size = min(100, limit)
+#     params = {
+#         'page': page,
+#         'pagelen': page_size
+#     }
+#     response = client.code_search_request(params, search_query)
+#     results = check_pagination(client, response, limit)
+#     human_readable = []
+#     for value in results:
+#         link = demisto.get(value, 'file.links.self.href')
+#         splitted_link = link.split('/')
+#         repository = splitted_link[5]
+#         d = {'Path': demisto.get(value, 'file.path'),
+#              'Repository': repository,
+#              'Link': f'https://bitbucket.org/{client.workspace}/{repository}/src'
+#              }
+#         human_readable.append(d)
+#     headers = ['Name', 'AccountId']
+#     readable_output = tableToMarkdown(
+#         name='The list of all the workspace members',
+#         t=human_readable,
+#         removeNull=True,
+#         headers=headers
+#     )
+#     return CommandResults(
+#         readable_output=readable_output,
+#         outputs_prefix='Bitbucket.Code',
+#         outputs=results,
+#         raw_response=results
+#     )
 
 
 ''' MAIN FUNCTION '''
@@ -1313,9 +1372,11 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'bitbucket-workspace-member-list':
             result = workspace_member_list_command(client, demisto.args())
             return_results(result)
+        # elif demisto.command() == 'bitbucket-code-search':
+        #     result = code_search_command(client, demisto.args())
+        #     return_results(result)
         else:
             raise NotImplementedError('This command is not implemented yet.')
-        # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:

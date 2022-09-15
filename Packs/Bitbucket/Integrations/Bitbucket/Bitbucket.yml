@@ -60,12 +60,12 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
-      output:
+      outputs:
         - contextPath: Bitbucket.Project.type
-          description: 'Client value type.'
+          description: 'The type of the action.'
           type: String
         - contextPath: Bitbucket.Project.owner.display_name
-          description: 'Client Project owner name.'
+          description: 'The project owner name.'
           type: String
         - contextPath: Bitbucket.Project.owner.links.self.href
           description: 'The link to a json with the information about the owner of the project.'
@@ -159,7 +159,7 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
-      output:
+      outputs:
         - contextPath: Bitbucket.Branch.name
           description: 'The branch name.'
           type: String
@@ -522,7 +522,7 @@ script:
           description: 'The type of the author.'
           type: String
         - contextPath: Bitbucket.Commit.author.raw
-          description: 'The raw information about the author.'
+          description: 'The raw information about the author, including the display name and user email.'
           type: String
         - contextPath: Bitbucket.Commit.author.user.display_name
           description: 'The display name of the author.'
@@ -936,7 +936,7 @@ script:
           description: The repository name or slug.
           isArray: false
         - name: title
-          required: false
+          required: true
           description: The title of the new issue.
           isArray: false
         - name: issue_id
@@ -1144,7 +1144,7 @@ script:
           description: 'The type of the request.'
           type: String
         - contextPath: Bitbucket.PullRequest.id
-          description: 'The id of the action.'
+          description: 'The pull request id.'
           type: Number
         - contextPath: Bitbucket.PullRequest.title
           description: 'The title of the pull request.'
@@ -1329,7 +1329,7 @@ script:
           description: 'The type of the request.'
           type: String
         - contextPath: Bitbucket.PullRequest.id
-          description: 'The id of the action.'
+          description: 'The pull request id.'
           type: Number
         - contextPath: Bitbucket.PullRequest.title
           description: 'The title of the pull request.'
@@ -1510,7 +1510,7 @@ script:
           description: 'The type of the request.'
           type: String
         - contextPath: Bitbucket.PullRequest.id
-          description: 'The id of the action.'
+          description: 'The pull request id.'
           type: Number
         - contextPath: Bitbucket.PullRequest.title
           description: 'The title of the pull request.'
@@ -1667,7 +1667,7 @@ script:
           description: 'The action type.'
           type: String
         - contextPath: Bitbucket.IssueComment.id
-          description: 'The id of the action'
+          description: 'The id of the comment on the issue.'
           type: Number
         - contextPath: Bitbucket.IssueComment.created_on
           description: 'The creation date of the comment.'
@@ -1778,7 +1778,7 @@ script:
           description: 'The action type.'
           type: String
         - contextPath: Bitbucket.IssueComment.id
-          description: 'The id of the action'
+          description: 'The id of comment on the issue.'
           type: Number
         - contextPath: Bitbucket.IssueComment.created_on
           description: 'The creation date of the comment.'
@@ -1870,7 +1870,7 @@ script:
           description: 'The action type.'
           type: String
         - contextPath: Bitbucket.IssueComment.id
-          description: 'The id of the action'
+          description: 'The id of the comment on the issue.'
           type: Number
         - contextPath: Bitbucket.IssueComment.created_on
           description: 'The creation date of the comment.'
@@ -1955,7 +1955,7 @@ script:
           isArray: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
-          description: 'The action id.'
+          description: 'The id of the comment in the pull request.'
           type: Number
         - contextPath: Bitbucket.PullRequestComment.created_on
           description: 'The creation date of the pull request comment.'
@@ -2039,7 +2039,7 @@ script:
           description: The specific result page to display.
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
-          description: 'The action id.'
+          description: 'The id of the comment in the pull request.'
           type: Number
         - contextPath: Bitbucket.PullRequestComment.created_on
           description: 'The creation date of the pull request comment.'
@@ -2119,7 +2119,7 @@ script:
           isArray: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
-          description: 'The action id.'
+          description: 'The id of the comment in the pull request.'
           type: Number
         - contextPath: Bitbucket.PullRequestComment.created_on
           description: 'The creation date of the pull request comment.'
@@ -2241,6 +2241,42 @@ script:
         - contextPath: Bitbucket.WorkspaceMember.workspace.links
           description: 'Links to information about the workspace.'
           type: String
+#    - name: bitbucket-code-search
+#      description: returns a list of all the code peaces that matches the query in the workspace. in order to use this command please enable the search code option in the account, with the link in the integration help.
+#      arguments:
+#        - name: limit
+#          required: false
+#          isArray: false
+#          description: The maximum number of items in the list.
+#        - name: page
+#          required: false
+#          isArray: false
+#          description: The specific result page to display.
+#      outputs:
+#        - contextPath: Bitbucket.Code.type
+#          description: 'The action type.'
+#          type: String
+#        - contextPath: Bitbucket.Code.content_match_count
+#          description: 'How match code peaces match the search query.'
+#          type: Number
+#        - contextPath: Bitbucket.Code.content_matches.lines.line
+#          description: 'The line number in the file'
+#          type: Number
+#        - contextPath: Bitbucket.Code.content_matches.lines.segments.text
+#          description: 'The text in the line'
+#          type: String
+#        - contextPath: Bitbucket.Code.content_matches.lines.segments.match
+#          description: 'Is the text matching to the search query.'
+#          type: Boolean
+#        - contextPath: Bitbucket.Code.file.path
+#          description: 'The name of the file.'
+#          type: String
+#        - contextPath: Bitbucket.Code.file.type
+#          description: 'The type of the file.'
+#          type: String
+#        - contextPath: Bitbucket.Code.file.links.self.href
+#          description: 'Link of an api call with information about the file.'
+#          type: String
   isfetch: false
   runonce: false
   script: "-"
