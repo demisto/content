@@ -6,3 +6,4 @@ rules: ''
 schema: ''
 tags: Zscaler Internet Access
 to_xdr_version: 3.4.9
+toversion: 6.9.9
