@@ -559,10 +559,16 @@ def change_nic_state(si, args):  # pragma: no cover
 
 def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(vsphere_client, args)
+    # Added this condition to avoid 'vsphere_client.tagging.TagAssociation.list_attached_objects' errors
+    if not relevant_tag:
+        raise Exception("The given tag does not exist - so relevant tag is None - tag id didn't found")
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
-    vms_details = vsphere_client.vcenter.VM.list(
-        vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+    vms_details = []
+    # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
+    if vms:
+        vms_details = vsphere_client.vcenter.VM.list(
+            vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
     data = []
     for vm in vms_details:
         data.append({
