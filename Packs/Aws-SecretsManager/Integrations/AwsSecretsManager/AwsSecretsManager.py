@@ -234,11 +234,21 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cov
 
     credentials = []
     for cred_key in creds_dict.keys():
-        credentials.append({
-            "user": creds_dict[cred_key].get("Name"),
-            "password": creds_dict[cred_key].get("SecretString"),
-            "name": f'{cred_key}/{creds_dict[cred_key].get("Name")}',
-        })
+        try:
+            secret_as_dict = json.loads(creds_dict[cred_key].get("SecretString"))
+
+            if not any(key in ["user", "password", "workgroup", "certificate"] for key in secret_as_dict.keys()):
+                credentials.append({
+                    "user": secret_as_dict.get("username", ""),
+                    "password": secret_as_dict.get("password", ""),
+                    "workgroup": secret_as_dict.get("workgroup", ""),
+                    "certificate": secret_as_dict.get("certificate", ""),
+                    "name": f'{creds_dict[cred_key].get("Name")}',
+                })
+            else:
+                LOG(f'({creds_dict[cred_key]}) has no keys supporting the format')
+        except Exception as e:
+            return_error(f'theres is a problem parsing ({creds_dict[cred_key]}) secret value')
     demisto.credentials(credentials)
 
 def main(): # pragma: no cover:
@@ -249,7 +259,7 @@ def main(): # pragma: no cover:
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('access_key')
+        aws_access_key_id = params.get('credentials').get('identifier')
         aws_secret_access_key = params.get('credentials').get('password')
         verify_certificate = not argToBoolean(params.get('insecure'))
         timeout = params.get('timeout')
