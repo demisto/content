@@ -745,7 +745,7 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
     else:
         description = dst_ips = dst_ports = None
 
-    return common_extract_data(detection) | {
+    return common_extract_data(detection) | remove_empty_elements({
         'Category'            : detection.get('category'),                                                # noqa: E203
         'Description'         : description,                                                              # noqa: E203
         'DestinationIPs'      : dst_ips,                                                                  # noqa: E203
@@ -760,10 +760,10 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
         'SourceAccountID'     : source_account_id,                                                        # noqa: E203
         'SourceHostID'        : source_host_id,                                                           # noqa: E203
         'SourceIP'            : detection.get('src_ip'),                                                  # noqa: E203
-        'TriageRuleID'        : detection.get('triage_rule_id'),                                          # noqa: E203
+        'TriageRuleID'        : detection.get('triage_rule_id'),                               # noqa: E203
         'Type'                : detection.get('detection'),                                               # noqa: E203
         'URL'                 : forge_entity_url('detection', detection.get('id')),                       # noqa: E203
-    }
+    })
 
 
 def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
