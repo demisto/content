@@ -3356,7 +3356,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     current_object = result.get(element_to_change, {})
     if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+        raise DemistoException('Please commit the instance prior to editing the rule.')
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
