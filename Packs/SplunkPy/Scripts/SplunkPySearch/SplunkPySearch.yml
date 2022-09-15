@@ -1,0 +1,29 @@
+commonfields:
+  id: SplunkPySearch
+  version: -1
+name: SplunkPySearch
+deprecated: true
+script: ''
+type: python
+subtype: python2
+tags:
+- enhancement
+- splunk
+comment: Deprecated. No available replacement. Run a query through Splunk and format the results as a table.
+enabled: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Splunk query to execute
+- name: rows
+  description: Return up to X first rows. If omitted, defaults to 10.
+  defaultValue: "10"
+scripttarget: 0
+dependson:
+  must:
+  - splunk-search
+fromversion: 6.5.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)
