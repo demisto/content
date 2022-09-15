@@ -13,9 +13,13 @@ configuration:
   name: credentials
   type: 9
   required: true
+- display: Authentication Endpoint
+  name: auth_endpoint
+  required: false
+  type: 0
 - display: API Endpoint
   name: api_endpoint
-  required: false
+  required: true
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
 - defaultvalue: 7 days
@@ -211,7 +215,7 @@ script:
     - name: vm_id
       description: vm cloud provider id
       required: true
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: true
   longRunning: false

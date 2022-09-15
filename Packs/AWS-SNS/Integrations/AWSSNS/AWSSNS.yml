@@ -225,10 +225,10 @@ script:
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
       description: The Subscription Arn
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3py3:1.0.0.33827
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 fromversion: 6.5.0
 tests:

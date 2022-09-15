@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.73"
+version = "1.24.70"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.73,<1.28.0"
+botocore = ">=1.27.70,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.73"
+version = "1.27.70"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -229,7 +229,7 @@ python-versions = "~=3.7"
 
 [[package]]
 name = "certifi"
-version = "2022.9.14"
+version = "2022.6.15.1"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -451,7 +451,6 @@ klara = "^0.6.3"
 MarkupSafe = "^2.1.1"
 mergedeep = "^1.3.4"
 mypy = "^0.942"
-neo4j = "^4.4.5"
 networkx = "^2.7.1"
 nltk = "^3.7"
 ordered-set = "^4.1.0"
@@ -459,7 +458,6 @@ paramiko = "^2.11.0"
 Pebble = "^4.6.3"
 pipenv = "^2022.3.28"
 prettytable = "^3.2.0"
-pydantic = "^1.9.2"
 pykwalify = "^1.8.0"
 pylint = "2.12.2"
 PyPDF2 = "^1.26.0"
@@ -483,10 +481,10 @@ types-paramiko = "^2.8.17"
 types-protobuf = "^3.19.15"
 types-PyMySQL = "^1.0.15"
 types-python-dateutil = "^2.8.10"
-types-pytz = ">=2021.3.6,<2023.0.0"
+types-pytz = "^2021.3.6"
 types-pyvmomi = "^7.0.6"
 types-PyYAML = "^6.0.5"
-types-requests = "2.28.10"
+types-requests = "2.26.3"
 types-six = "^1.16.12"
 types-tabulate = "^0.8.6"
 typing-extensions = "^4.1.1"
@@ -502,8 +500,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ce46d3e0ddb176e8ebf7330e72613d417f228384"
-resolved_reference = "ce46d3e0ddb176e8ebf7330e72613d417f228384"
+reference = "4f06d439255fc18583c19aa89a8d9ed45a9bcce2"
+resolved_reference = "4f06d439255fc18583c19aa89a8d9ed45a9bcce2"
 
 [[package]]
 name = "Deprecated"
@@ -669,7 +667,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "google-api-core"
-version = "2.10.1"
+version = "2.10.0"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -1998,7 +1996,7 @@ types-cryptography = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.20.3"
+version = "3.20.2"
 description = "Typing stubs for protobuf"
 category = "main"
 optional = false
@@ -2258,7 +2256,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b9b73b01361f54ee5c199c3f0c84ae11f13a45df861828eb119693451a4fd0b7"
+content-hash = "a95cf494f966a26deb148cad1e9911b2028549ca918959fb9d6d778c7b7d5db8"
 
 [metadata.files]
 aiohttp = [
@@ -2409,12 +2407,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.73-py3-none-any.whl", hash = "sha256:f7ca88a76c8e31c19fef3bad2dee3c2ee0e77a0bced151fa3922cf021d55755e"},
-    {file = "boto3-1.24.73.tar.gz", hash = "sha256:a8911d55f1497dc55d69d2029c3a5120887af4846ef6b9fe3ef0c777dc1b394e"},
+    {file = "boto3-1.24.70-py3-none-any.whl", hash = "sha256:bb69ebe7c484305568b1aaed664db3d09716dc93235e41f23538f99ea4f3addc"},
+    {file = "boto3-1.24.70.tar.gz", hash = "sha256:abac9c7e54212ee68c2a311812a498ece2c43f98d1302f099128a9fe45cf37c5"},
 ]
 botocore = [
-    {file = "botocore-1.27.73-py3-none-any.whl", hash = "sha256:0b94d1e7b1435f8ff108c74a09fe03ec88aadbfafe97e940ea415dc86ba305a3"},
-    {file = "botocore-1.27.73.tar.gz", hash = "sha256:e281e45e84d2728207d63499a37cea1dc1dde6093167ab238370ece67f6e7316"},
+    {file = "botocore-1.27.70-py3-none-any.whl", hash = "sha256:c0a014b4dfd7ffe739393034aa6e70e73f3a1b22c7667a59858259b341bf5082"},
+    {file = "botocore-1.27.70.tar.gz", hash = "sha256:2ad5be6ca322a549f858d245237358ed300f7347096caacbb29c013e10663d34"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -2428,8 +2426,8 @@ cachetools = [
     {file = "cachetools-5.2.0.tar.gz", hash = "sha256:6a94c6402995a99c3970cc7e4884bb60b4a8639938157eeed436098bf9831757"},
 ]
 certifi = [
-    {file = "certifi-2022.9.14-py3-none-any.whl", hash = "sha256:e232343de1ab72c2aa521b625c80f699e356830fd0e2c620b465b304b17b0516"},
-    {file = "certifi-2022.9.14.tar.gz", hash = "sha256:36973885b9542e6bd01dea287b2b4b3b21236307c56324fcc3f1160f2d655ed5"},
+    {file = "certifi-2022.6.15.1-py3-none-any.whl", hash = "sha256:43dadad18a7f168740e66944e4fa82c6611848ff9056ad910f8f7a3e46ab89e0"},
+    {file = "certifi-2022.6.15.1.tar.gz", hash = "sha256:cffdcd380919da6137f76633531a5817e3a9f268575c128249fb637e4f9e73fb"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
@@ -2723,8 +2721,8 @@ giturlparse = [
     {file = "giturlparse-0.10.0.tar.gz", hash = "sha256:2595ab291d30717cda8474b874c9fd509f1b9802ad7f6968c36a45e4b13eb337"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.10.1.tar.gz", hash = "sha256:e16c15a11789bc5a3457afb2818a3540a03f341e6e710d7f9bbf6cde2ef4a7c8"},
-    {file = "google_api_core-2.10.1-py3-none-any.whl", hash = "sha256:92d17123cfe399b5ef7e026c63babf978d8475e1ac877919eb7933e25dea2273"},
+    {file = "google-api-core-2.10.0.tar.gz", hash = "sha256:1d053734f14591939e7764e99c31253fed46bf2578da0dcd82821f17a6dd991c"},
+    {file = "google_api_core-2.10.0-py3-none-any.whl", hash = "sha256:325529859836a479244b0882c1a77320fd35cb108df2ec1232e3e908ea56eda4"},
 ]
 google-auth = [
     {file = "google-auth-2.11.0.tar.gz", hash = "sha256:ed65ecf9f681832298e29328e1ef0a3676e3732b2e56f41532d45f70a22de0fb"},
@@ -2883,6 +2881,10 @@ humanfriendly = [
 idna = [
     {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
     {file = "idna-3.4.tar.gz", hash = "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4"},
+]
+imagesize = [
+    {file = "imagesize-1.4.1-py2.py3-none-any.whl", hash = "sha256:0d8d18d08f840c19d0ee7ca1fd82490fdc3729b7ac93f49870406ddde8ef8d8b"},
+    {file = "imagesize-1.4.1.tar.gz", hash = "sha256:69150444affb9cb0d5cc5a92b3676f0b2fb7cd9ae39e947a5e11a36b4497cd4a"},
 ]
 imagesize = [
     {file = "imagesize-1.4.1-py2.py3-none-any.whl", hash = "sha256:0d8d18d08f840c19d0ee7ca1fd82490fdc3729b7ac93f49870406ddde8ef8d8b"},
@@ -3761,8 +3763,8 @@ types-paramiko = [
     {file = "types_paramiko-2.11.6-py3-none-any.whl", hash = "sha256:9d6adb74a645c28e01e8539b218e8b8a4bab0b73925c60aca35993cc87f7d5a0"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.20.3.tar.gz", hash = "sha256:aae6404a9c902970da33977d1bc44cebae4957a5ceeced650b9afafb36051bb2"},
-    {file = "types_protobuf-3.20.3-py3-none-any.whl", hash = "sha256:7344c65ff8ff915e5e997e0ac16b1c0ad6ee7fca11df5a64f550aedb264fdb23"},
+    {file = "types-protobuf-3.20.2.tar.gz", hash = "sha256:cfb76b5eba514807796603006134ccc361432dd061a8ccb8db2cf9108a454369"},
+    {file = "types_protobuf-3.20.2-py3-none-any.whl", hash = "sha256:e5aa38c2ea7a765f5d572a961e92b150c2eb8504b56a525eaae745a41b4d8fdc"},
 ]
 types-PyMySQL = [
     {file = "types-PyMySQL-1.0.19.tar.gz", hash = "sha256:f79a1f4d9df4a65db999537f9a47de419be162dfeab3b2c91bcba8bb1a362a65"},
@@ -3795,10 +3797,6 @@ types-six = [
 types-tabulate = [
     {file = "types-tabulate-0.8.11.tar.gz", hash = "sha256:17a5fa3b5ca453815778fc9865e8ecd0118b07b2b9faff3e2b06fe448174dd5e"},
     {file = "types_tabulate-0.8.11-py3-none-any.whl", hash = "sha256:af811268241e8fb87b63c052c87d1e329898a93191309d5d42111372232b2e0e"},
-]
-types-urllib3 = [
-    {file = "types-urllib3-1.26.24.tar.gz", hash = "sha256:a1b3aaea7dda3eb1b51699ee723aadd235488e4dc4648e030f09bc429ecff42f"},
-    {file = "types_urllib3-1.26.24-py3-none-any.whl", hash = "sha256:cf7918503d02d3576e503bbfb419b0e047c4617653bba09624756ab7175e15c9"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
