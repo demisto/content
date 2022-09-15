@@ -1,5 +1,9 @@
 This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
-Note: Final remediation tasks are always decided by a human analyst. 
+
+Note: 
+- Final remediation tasks are always decided by a human analyst.
+- Please do not rerun this playbook inside a phishing incident since it can produce
+  an unexpected result. Create a new incident instead if needed.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
