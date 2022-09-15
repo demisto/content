@@ -7436,6 +7436,205 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-nat-rules
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-nat-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
+| device-group | The device-group in which the nat-rules are part of. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Nat.Name | String | The name of the rule. | 
+| Panorama.Nat.Location | String | The device group that the rule is part of. | 
+| Panorama.Nat.Tags | String | The tags in which the rule is part of. | 
+| Panorama.Nat.SourceZone | String | The source zone of the rule. | 
+| Panorama.Nat.DestinationZone | String | The destination zone of the rule. | 
+| Panorama.Nat.SourceAddress | String | The source address of the rule. | 
+| Panorama.Nat.DestinationAddress | String | The destination address of the rule. | 
+| Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
+| Panorama.Nat.Service | String | The service in which the rule has. | 
+| Panorama.Nat.Description | String | The description of the rule. | 
+| Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
+| Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
+| Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+
+#### Command example
+```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Nat": [
+            {
+                "Description": "a test rule",
+                "DestinationAddress": "test123",
+                "DestinationInterface": "any",
+                "DestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": null,
+                "Name": "test-2",
+                "Service": "any",
+                "SourceAddress": "5.5.5.5",
+                "SourceTranslation": {
+                    "DynamicIpAndPort": {
+                        "InterfaceAddress": "a2"
+                    }
+                },
+                "SourceZone": [
+                    "2.2.2.2",
+                    "3.3.3.3"
+                ],
+                "Tags": "test tag"
+            },
+            {
+                "Description": "blabla",
+                "DestinationAddress": "1.1.1.1",
+                "DestinationInterface": "a2",
+                "DestinationTranslation": null,
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "Name": "test-1",
+                "Service": "any",
+                "SourceAddress": "3.3.3.3",
+                "SourceTranslation": {
+                    "StaticIP": {
+                        "TranslatedAddress": "3.3.3.3"
+                    }
+                },
+                "SourceZone": "3.3.3.3",
+                "Tags": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nat Policy Rules:
+>| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
+--------|---|---|---|---|---|---|---|---|---|
+>| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
+>| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+
+
+### pan-os-create-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the nat-rule to create. | Required | 
+| description | The description that the new nat-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| nat_type | The nat-type in which the rule will be created with. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| destination_zone | A comma-separated list of destination zones. | Optional | 
+| destination_interface | The page at which to start listing nat-rules, must be a positive number. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| source_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| destination_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| source_translation_type | The source translation type in which the rule will be created with. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
+| source_translated_address_type | The source translation address type in which the rule will be created with. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
+| source_translated_address | A comma-separated list of source translation addresses, only if source_translation_type == static_ip, must be a single value. | Optional | 
+| source_translated_interface | The source translation interface. | Optional | 
+| destination_translation_type | The destination translation type. Possible values are: static_ip, dynamic_ip, none. Default is none. | Optional | 
+| destination_translated_address | A comma-separated list of destination translated addresses. | Optional | 
+| destination_translated_port | the destination translated port. | Optional | 
+| destination_translation_distribution_method | the destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
+| negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
+| destination_dns_rewrite_direction | the type in which the dns rewrite direction should be. Possible values are: forward, reverse. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1```
+#### Human Readable Output
+
+>Nat rule test was created successfully.
+### pan-os-delete-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-delete-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the nat-rule to delete. | Optional | 
+| device-group | The device-group in which the nat-rule should be deleted from. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>Nat rule test was deleted successfully.
+### pan-os-edit-nat-rule
+***
+Returns a list of nat-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-edit-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| rulename | The name of the nat-rule to edit. | Required     | 
+| device-group | The device-group in which the nat-rule is part of. Only for Panorama instance. | Optional     | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
+| behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
+| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
+| element_value | The value of the element to change. Can be a list for certain elements. | Required     | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3```
+#### Human Readable Output
+
+>Nat rule test was edited successfully.
 ### pan-os-list-virtual-routers
 ***
 Returns a list of virtual routers of either Panorama/firewall instance.
