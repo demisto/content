@@ -19,12 +19,12 @@ xdr_types_to_demisto: Dict = {
     "IP": 'IP'
 }
 xdr_severity_to_demisto: dict[str, str] = {
-    'SEV_010_INFO': 'info',
-    'SEV_020_LOW': 'low',
-    'SEV_030_MEDIUM': 'medium',
-    'SEV_040_HIGH': 'high',
-    'SEV_050_CRITICAL': 'critical',
-    'SEV_090_UNKNOWN': 'unknown',
+    'SEV_010_INFO': 'INFO',
+    'SEV_020_LOW': 'LOW',
+    'SEV_030_MEDIUM': 'MEDIUM',
+    'SEV_040_HIGH': 'HIGH',
+    'SEV_050_CRITICAL': 'CRITICAL',
+    'SEV_090_UNKNOWN': 'UNKNOWN',
 }
 demisto_severity_to_xdr = {v: k for k, v in xdr_severity_to_demisto.items()}
 
@@ -246,6 +246,11 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
 
         if severity := custom_fields.get(Client.xsoar_severity_field):
             demisto.debug(f'found severity level {severity} in field {Client.xsoar_severity_field}')
+            if severity not in demisto_severity_to_xdr:
+                value = ioc['value']
+                raise DemistoException(f'indicator {value} has severity {severity}, '
+                                       f'which cannot be mapped to a valid XDR severity. '
+                                       f'Please see the XDR-IOC integration documentation for more details.')
             xdr_ioc['severity'] = demisto_severity_to_xdr[severity]
 
         return xdr_ioc
@@ -390,6 +395,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
 
+    demisto.debug(f'demisto entry: {entry}')
     return entry
 
 
@@ -399,10 +405,15 @@ def get_changes(client: Client):
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
     requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    demisto.debug(f'creating http request to {path} with {str(requests_kwargs)}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
+        demisto.debug(f'setting integration context with {from_time=}')
         set_integration_context(from_time)
-        demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
+        demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
+        for indicator in demisto_indicators:
+            demisto.debug(f'indicator: {indicator}')
+        demisto.createIndicators(demisto_indicators)
 
 
 def module_test(client: Client):
@@ -493,6 +504,10 @@ def get_sync_file():
             return_results(fileResult('xdr-sync-file', _tmpfile.read()))
     finally:
         os.remove(temp_file_path)
+
+
+def to_cli_name(field_name: str):
+    return field_name.lower().replace(' ', '')
 
 
 def main():  # pragma: no cover
