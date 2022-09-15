@@ -7,7 +7,7 @@ from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxltieclient import TieClient
 from typing import NamedTuple
-from dxltieclient.constants import FileReputationProp, FileGtiAttrib, FileEnterpriseAttrib, AtdAttrib, EpochMixin, TrustLevel,\
+from dxltieclient.constants import FileReputationProp, FileGtiAttrib, FileEnterpriseAttrib, AtdAttrib, TrustLevel,\
     HashType, EnterpriseAttrib, FileProvider, FirstRefProp
 
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
@@ -97,7 +97,7 @@ class GeneralFileReputationParser(abc.ABC):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: get_provider_name(provider_id=val)}
 
         elif(reputation_key == FileReputationProp.CREATE_DATE):
-            return {self.GENERAL_REPUTATION_KEYS[reputation_key]: EpochMixin.to_localtime_string(val)}
+            return {self.GENERAL_REPUTATION_KEYS[reputation_key]: epoch_to_localtime(int(val))}
 
         elif(reputation_key in self.GENERAL_REPUTATION_KEYS):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: val}
@@ -128,7 +128,7 @@ class GtiFileReputationParser(GeneralFileReputationParser):
         parsed_res: Dict[str, Any] = {}
         for key, val in attributes.items():
             if(key == FileGtiAttrib.FIRST_CONTACT):
-                parsed_res[self.ATTRIBUTES_KEYS[key]] = EpochMixin.to_localtime_string(val)
+                parsed_res[self.ATTRIBUTES_KEYS[key]] = epoch_to_localtime(int(val))
 
             elif(key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
@@ -165,7 +165,7 @@ class EnterpriseFileReputationParser(GeneralFileReputationParser):
         parsed_res: Dict[str, Any] = {}
         for key, val in attributes.items():
             if(key == FileEnterpriseAttrib.FIRST_CONTACT or key == FileEnterpriseAttrib.LAST_DETECTION_TIME):
-                parsed_res[self.ATTRIBUTES_KEYS[key]] = EpochMixin.to_localtime_string(val)
+                parsed_res[self.ATTRIBUTES_KEYS[key]] = epoch_to_localtime(int(val))
 
             elif(key == FileEnterpriseAttrib.SERVER_VERSION):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = EnterpriseAttrib.to_version_string(val)
@@ -272,7 +272,7 @@ def parse_reputation_human_readable(reputation):
 
     # get date
     create_date = reputation.get(FileReputationProp.CREATE_DATE)
-    create_date_str = EpochMixin.to_localtime_string(create_date)
+    create_date_str = epoch_to_localtime(int(create_date))
     # TODO Ask TPM about create date
     res = {
         'Trust level': trust_level,
@@ -288,7 +288,7 @@ def parse_reputation_human_readable(reputation):
 def parse_reference_human_readable(reference):
     agent_guid = reference.get(FirstRefProp.SYSTEM_GUID)
     date = reference.get(FirstRefProp.DATE)
-    
+
     return {
         'Date': epoch_to_localtime(date),
         'AgentGuid': agent_guid.replace('{', '').replace('}', '')  # remove brackets if exist
