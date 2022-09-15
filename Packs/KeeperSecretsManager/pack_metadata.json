@@ -1,0 +1,39 @@
+{
+    "name": "Keeper Secrets Manager",
+    "description": "Use Secrets Manager to manage secrets and protect sensitive data through Keeper Vault.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Keeper Security",
+    "url": "https://www.keepersecurity.com/",
+    "email": "sm@keepersecurity.com",
+    "created": "2022-08-15T15:04:05Z",
+    "categories": [
+        "Authentication",
+        "IT Services",
+        "Utilities"
+    ],
+    "tags": [
+        "IAM",
+        "Compliance",
+        "Security"
+    ],
+    "useCases": [
+        "Access",
+        "Identity and Access Management",
+        "IT Services"
+    ],
+    "keywords": [
+        "credential",
+        "Keeper",
+        "KeeperSecretsManager",
+        "KSM",
+        "password",
+        "secret",
+        "SSH key"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
