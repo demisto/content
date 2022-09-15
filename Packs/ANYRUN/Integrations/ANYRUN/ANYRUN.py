@@ -656,7 +656,7 @@ def extract_indicators(response: Dict) -> List[CommandResults]:
                     indicator=attack_indicator
                 )
                 attack_relationship = EntityRelationship(
-                    name=EntityRelationship.Relationships.HAS,
+                    name=EntityRelationship.Relationships.RELATED_TO,
                     entity_a=main_entity,
                     entity_a_type=main_entity_type,
                     entity_b=item.get('name'),
