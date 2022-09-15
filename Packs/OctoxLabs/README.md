@@ -1,5 +1,3 @@
-This integration was integrated and tested with version 3.0.1 of OctoxLabs
-
 ## Configure OctoxLabs on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
