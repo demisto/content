@@ -59,7 +59,6 @@ class TestGetEntries:
         def __return_error(message, error='', outputs=None):
             demisto.results({'Type': EntryType.ERROR, 'ContentsFormat': EntryFormat.TEXT, 'Contents': message})
 
-
         original_ents = [{
             'Type': EntryType.ERROR,
             'Contents': 'error'
