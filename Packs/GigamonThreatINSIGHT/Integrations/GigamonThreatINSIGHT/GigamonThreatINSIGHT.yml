@@ -14,7 +14,7 @@ configuration:
   name: first_fetch
   defaultvalue: 7 days
   type: 0
-  required: false
+  required: true
 - display: Fetch incidents
   name: isFetch
   type: 8
