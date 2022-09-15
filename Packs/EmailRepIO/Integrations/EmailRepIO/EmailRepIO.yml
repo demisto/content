@@ -49,9 +49,7 @@ script:
       description: Whether the email address should be treated as suspicious or risky.
     - contextPath: EmailRepIO.Email.references
       type: Number
-      description: The total number of positive and negative sources of the reputation. Note
-        that these may not all be direct references to the email address, but can
-        include reputation sources for the domain or other related information.
+      description: The total number of positive and negative sources of the reputation. Note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information.
     - contextPath: EmailRepIO.Email.details.blacklisted
       type: Boolean
       description: Whether the email is believed to be malicious or spam.
@@ -60,12 +58,10 @@ script:
       description: Whether the email exhibited malicious behavior (e.g., phishing or fraud).
     - contextPath: EmailRepIO.Email.details.malicious_activity_recent
       type: Boolean
-      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal
-        account takeovers).
+      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal account takeovers).
     - contextPath: EmailRepIO.Email.details.credentials_leaked
       type: Boolean
-      description: Whether the email credentials were ever leaked (e.g., a data breach,
-        pastebin, dark web, etc.).
+      description: Whether the email credentials were ever leaked (e.g., a data breach, pastebin, dark web, etc.).
     - contextPath: EmailRepIO.Email.details.credentials_leaked_recent
       type: Boolean
       description: Whether the email credentials were leaked in the last 90 days.
@@ -74,20 +70,16 @@ script:
       description: Whether the email was ever in a data breach.
     - contextPath: EmailRepIO.Email.details.first_seen
       type: Date
-      description: The first date the email was observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
+      description: The first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.last_seen
       type: Date
-      description: The last date the email was observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior.
+      description: The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.domain_exists
       type: Boolean
       description: Whether the domain is a valid domain.
     - contextPath: EmailRepIO.Email.details.domain_reputation
       type: String
-      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable,
-        or doesn’t exist.'
+      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist.'
     - contextPath: EmailRepIO.Email.details.new_domain
       type: Boolean
       description: Whether the domain was created within the last year.
@@ -130,7 +122,7 @@ script:
   - arguments:
     - default: true
       description: The email address to get the reputation for.
-      isArray: false
+      isArray: true
       name: email
       required: true
       secret: false
@@ -162,9 +154,7 @@ script:
       description: Whether the email address should be treated as suspicious or risky.
     - contextPath: EmailRepIO.Email.references
       type: Number
-      description: The total number of positive and negative sources of the reputation. Note
-        that these may not all be direct references to the email address, but can
-        include reputation sources for the domain or other related information.
+      description: The total number of positive and negative sources of the reputation. Note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information.
     - contextPath: EmailRepIO.Email.details.blacklisted
       type: Boolean
       description: Whether the email is believed to be malicious or spam.
@@ -173,12 +163,10 @@ script:
       description: Whether the email exhibited malicious behavior (e.g., phishing or fraud).
     - contextPath: EmailRepIO.Email.details.malicious_activity_recent
       type: Boolean
-      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal
-        account takeovers).
+      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal account takeovers).
     - contextPath: EmailRepIO.Email.details.credentials_leaked
       type: Boolean
-      description: Whether the email credentials were ever leaked (e.g., a data breach,
-        pastebin, dark web, etc.).
+      description: Whether the email credentials were ever leaked (e.g., a data breach, pastebin, dark web, etc.).
     - contextPath: EmailRepIO.Email.details.credentials_leaked_recent
       type: Boolean
       description: Whether the email credentials were leaked in the last 90 days.
@@ -187,20 +175,16 @@ script:
       description: Whether the email was ever in a data breach.
     - contextPath: EmailRepIO.Email.details.first_seen
       type: Date
-      description: The first date the email was observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
+      description: The first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.last_seen
       type: Date
-      description: The last date the email was observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak,
-        or exhibiting malicious or spammy behavior.
+      description: The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.domain_exists
       type: Boolean
       description: Whether the domain is a valid domain.
     - contextPath: EmailRepIO.Email.details.domain_reputation
       type: String
-      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable,
-        or doesn’t exist.'
+      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist.'
     - contextPath: EmailRepIO.Email.details.new_domain
       type: Boolean
       description: Whether the domain was created within the last year.
@@ -212,8 +196,7 @@ script:
       description: Whether the email has a suspicious top level domain (tld).
     - contextPath: EmailRepIO.Email.details.spam
       type: Boolean
-      description: Whether the email exhibited spammy behavior (e.g., spam traps, login
-        form abuse).
+      description: Whether the email exhibited spammy behavior (e.g., spam traps, login form abuse).
     - contextPath: EmailRepIO.Email.details.free_provider
       type: Boolean
       description: Whether the email uses a free email provider.
@@ -290,7 +273,7 @@ script:
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
     execution: false
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: false
   longRunning: false
@@ -300,3 +283,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
