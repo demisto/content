@@ -485,7 +485,7 @@ def set_sync_time(time: str):
     set_integration_context({'ts': int(date_time_obj.timestamp() * 1000),
                              'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
                              'iocs_to_keep_time': create_iocs_to_keep_time()})
-    return_results(f'set sync time to {time} seccedded.')
+    return_results(f'set sync time to {time} succeeded.')
 
 
 def get_sync_file():
