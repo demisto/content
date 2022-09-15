@@ -7,17 +7,15 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import (TESTS_AND_DOC_DIRECTORIES,
-                                                   FileType,
-                                                   MarketplaceVersions)
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
-    DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, ONLY_INSTALL_PACK_FILE_TYPES,
-    SANITY_TEST_TO_PACK, SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK,
-    XSOAR_SANITY_TEST_NAMES)
+    DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
+    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -31,7 +29,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple)
+                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -274,7 +272,7 @@ class TestCollector(ABC):
                 logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
                 return None
 
-        self.__validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
         result += self._always_installed_packs  # type:ignore[operator]
         result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
         result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
@@ -438,8 +436,8 @@ class TestCollector(ABC):
         if path in PATHS.files_to_ignore:
             raise NothingToCollectException(path, 'not under a pack (ignored, not triggering sanity tests)')
 
-        if set(PACK_MANAGER.relative_to_packs(path).parts).intersection(TESTS_AND_DOC_DIRECTORIES):
-            raise NothingToCollectException(path, 'file under test_data or documentation folder,'
+        if set(PACK_MANAGER.relative_to_packs(path).parts).intersection(NON_CONTENT_FOLDERS):
+            raise NothingToCollectException(path, 'file under test_data, samples or documentation folder,'
                                                   ' (not triggering sanity tests)')
 
     @staticmethod
@@ -470,7 +468,7 @@ class TestCollector(ABC):
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
-    def __validate_tests_in_id_set(self, tests: Iterable[str]):
+    def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
@@ -540,7 +538,7 @@ class BranchTestCollector(TestCollector):
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
 
-        actual_content_type = find_yml_content_type(yml_path)
+        actual_content_type = find_yml_content_type(yml_path) or hotfix_detect_old_script_yml(yml_path)
         self._validate_content_item_compatibility(yml, is_integration=actual_content_type == FileType.INTEGRATION)
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
@@ -911,7 +909,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220831')
+    logger.info('TestCollector v20220913')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
