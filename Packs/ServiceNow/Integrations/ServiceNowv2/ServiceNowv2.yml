@@ -135,12 +135,24 @@ configuration:
   name: close_incident
   required: false
   type: 8
+- additionalinfo: Define how to close the mirrored tickets,
+    choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: None
+  display: Mirrored ServiceNow Ticket closure method
+  name: close_ticket_multiple_options
+  options:
+  - None
+  - closed
+  - resolved
+  required: false
+  type: 15
 - additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -732,7 +744,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed"'
       isArray: false
       name: state
       required: false
@@ -1303,7 +1315,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed", or "Resolved" or "6" or "6 - Resolved".'
       isArray: false
       name: state
       required: false
@@ -2191,7 +2203,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   isfetch: true
   ismappable: true
   isremotesyncin: true

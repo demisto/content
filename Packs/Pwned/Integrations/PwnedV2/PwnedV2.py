@@ -146,7 +146,8 @@ def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
         'Indicator': indicator_value,
         'Type': indicator_type,
         'Vendor': VENDOR,
-        'Score': dbot_score
+        'Score': dbot_score,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
 
