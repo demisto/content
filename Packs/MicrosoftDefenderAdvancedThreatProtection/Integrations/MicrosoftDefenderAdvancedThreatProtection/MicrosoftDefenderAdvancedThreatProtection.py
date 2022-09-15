@@ -1322,7 +1322,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> Dict[str, Any]:
         """Retrieves results according to query.
 
         Args:
@@ -2551,14 +2551,14 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     query_batch = args.get('query_batch', '')
     if query and query_batch:
         raise DemistoException('Both query and query_batch were given, please provide just one')
-    if  not query and not query_batch:
+    if not query and not query_batch:
         raise DemistoException('Both query and query_batch were not given, please provide one')
 
-    queries: List[Dict[str, Any]] = []
+    queries: List[Dict[str, str]] = []
     if query:
-        queries.append({'timeout': int(args.get('timeout', 10)),
-                        'time_range': args.get('time_range',''),
-                        'name': args.get('name',''),
+        queries.append({'timeout': args.get('timeout', '10'),
+                        'time_range': args.get('time_range', ''),
+                        'name': args.get('name', ''),
                         'query': query
                         })
     else:
@@ -2566,24 +2566,21 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
             query = json.loads(query_batch).get('queries')
             queries.extend(query)
         except Exception as e:
-            print(str(e))
-            raise DemistoException('Please provide a valid JSON query_batch')
+            raise DemistoException(f'Please provide a valid JSON query_batch', e)
 
     if len(queries) > 10:
         raise DemistoException('Please provide only up to 10 queries')
 
-    print(queries)
     human_readable = ''
-    outputs: List[Dict[Any, Optional[Any]]] = []
+    outputs = []
     for query_details in queries:
         query = query_details.get('query')
-        name = query_details.get('name') # type: ignore
-        timeout = query_details.get('timeout') or int(args.get('timeout', 10))
-        time_range = query_details.get('time_range') or args.get('time_range')
+        name = query_details.get('name')
+        timeout = int(query_details.get('timeout', '') or args.get('timeout', 10))
+        time_range = query_details.get('time_range') or args.get('time_range', '')
 
-        print(type(timeout))
-        print(query)
-        response = client.get_advanced_hunting(query, timeout, time_range) # type: ignore
+        response = client.get_advanced_hunting(query, timeout, time_range)
+        print(response)
         results = response.get('Results')
         if isinstance(results, list) and len(results) == 1:
             report_id = results[0].get('ReportId')
@@ -2592,8 +2589,7 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         if name:
             outputs.append({name: results})
         else:
-            outputs = results # type: ignore
-        print(outputs)
+            outputs = results  # type: ignore
         human_readable += tableToMarkdown(f'Hunt results for {name} query:', results, removeNull=True)
 
         entry_context = {
