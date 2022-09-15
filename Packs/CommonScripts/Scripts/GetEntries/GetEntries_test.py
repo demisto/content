@@ -56,12 +56,16 @@ class TestGetEntries:
             assert not results.get('EntryContext')
 
     def test_main_error(self, mocker):
+        def __return_error(message, error='', outputs=None):
+            demisto.results({'Type': EntryType.ERROR, 'ContentsFormat': EntryFormat.TEXT, 'Contents': message})
+
+
         original_ents = [{
             'Type': EntryType.ERROR,
             'Contents': 'error'
         }]
 
-        mocker.patch.object(sys, 'exit')
+        mocker.patch('GetEntries.return_error', side_effect=__return_error)
         mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
         mocker.patch.object(demisto, 'results')
         main()
