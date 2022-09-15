@@ -403,6 +403,9 @@ def formatEvents(r_json):
 
 def getFirstFetch(firstFetch) -> dict[str, Any]:
 
+    if not firstFetch or not firstFetch.strip():
+        return {'days': 7, 'hours': 0}
+
     pieces = firstFetch.strip().split()
     unit = pieces[len(pieces) - 1]
 
