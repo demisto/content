@@ -2455,19 +2455,26 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
     endpoints = [{"IP": asset["Address"], "HostName": asset["Name"], "OS": asset["OperatingSystem"]}
                  for asset in outputs]
 
-    # TODO: Convert to CommandResults
-    return {
-        "Type": entryTypes["note"],
-        "Contents": found_assets,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": tableToMarkdown("Nexpose assets", outputs, headers, removeNull=True),
-        "EntryContext": {
-            "Nexpose.Asset(val.AssetId==obj.AssetId)": outputs,
-            "Endpoint(val.IP==obj.IP)": endpoints
-        }
-    }
+    result = []
 
+    for asset in assets:
+        result.append(
+            CommandResults(
+                outputs_prefix="Nexpose.Asset",
+                outputs_key_field="Id",
+                outputs=asset,
+                readable_output=tableToMarkdown("Nexpose Asset", asset, headers, removeNull=True),
+                raw_response=asset,
+                indicator=Common.Endpoint(
+                    id=asset["AssetId"],
+                    hostname=asset.get("Name"),
+                    ip_address=asset.get("Address"),
+                    os=asset.get("OperatingSystem"),
+                    vendor=VENDOR_NAME
+                )
+            ))
+
+    return result
 
 
 def start_assets_scan_command(client: Client, ips: Optional[str, list] = None,
