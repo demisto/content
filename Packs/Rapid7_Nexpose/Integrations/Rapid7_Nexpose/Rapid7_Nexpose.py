@@ -1874,25 +1874,24 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
         recursive=True,
     )
 
-    result = [CommandResults(
-        outputs_prefix="Nexpose.Asset",
-        outputs_key_field="Id",
-        outputs=assets,
-        raw_response=assets,
-        readable_output=tableToMarkdown("Nexpose assets", assets, headers, removeNull=True),
-        )]
+    result = []
 
-    result.extend(
-        [CommandResults(
-            readable_output=" ",
-            indicator=Common.Endpoint(
-                hostname=asset.get("Name"),
-                ip_address=asset.get("Address"),
-                domain=None,
-                mac_address=None,
-                os=asset.get("OperatingSystem"),
-            )
-        ) for asset in assets])
+    for asset in assets:
+        result.append(
+            CommandResults(
+                outputs_prefix="Nexpose.Asset",
+                outputs_key_field="Id",
+                outputs=asset,
+                readable_output=tableToMarkdown("Nexpose Asset", asset, headers, removeNull=True),
+                raw_response=asset,
+                indicator=Common.Endpoint(
+                    id=asset["AssetId"],
+                    hostname=asset.get("Name"),
+                    ip_address=asset.get("Address"),
+                    os=asset.get("OperatingSystem"),
+                    vendor=VENDOR_NAME
+                )
+            ))
 
     return result
 
