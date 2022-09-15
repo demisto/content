@@ -16,6 +16,7 @@ API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for 
 DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+VENDOR_NAME = "Rapid7 Nexpose"  # TODO: Check if correct
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -52,7 +53,7 @@ class InvalidSiteNameException(DemistoException):
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
-    def __init__(self, url: str, username: str, password: str, token: Union[str, None] = None, verify: bool = True):
+    def __init__(self, url: str, username: str, password: str, token: Optional[str] = None, verify: bool = True):
         """
         Initialize the client.
 
@@ -81,8 +82,8 @@ class Client(BaseClient):
             verify=verify,
         )
 
-    def _paged_http_request(self, page_size: Union[int, None], page: Union[int, None] = None,
-                            sort: Union[str, None] = None, limit: Union[int, None] = None, **kwargs) -> list:
+    def _paged_http_request(self, page_size: Optional[int], page: Optional[int] = None,
+                            sort: Optional[str] = None, limit: Optional[int] = None, **kwargs) -> list:
         """
         Run _http_request with pagination handling.
 
@@ -189,8 +190,8 @@ class Client(BaseClient):
             resp_type="json",
         ).get("id"))
 
-    def create_site(self, name: str, description: Union[str, None] = None, assets: Union[list[str], None] = None,
-                    site_importance: Union[str, None] = None, template_id: Union[str, None] = None) -> dict:
+    def create_site(self, name: str, description: Optional[str] = None, assets: Optional[list[str]] = None,
+                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> dict:
         """
         | Create a new site.
         |
@@ -307,9 +308,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_asset_vulnerabilities(self, asset_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                                  page: Union[int, None] = None, sort: Union[str, None] = None,
-                                  limit: Union[int, None] = None) -> list[dict]:
+    def get_asset_vulnerabilities(self, asset_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
+                                  page: Optional[int] = None, sort: Optional[str] = None,
+                                  limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieves a list of all vulnerability findings on an asset.
         |
@@ -357,8 +358,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_assets(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
-                   sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+    def get_assets(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                   sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of all assets.
         |
@@ -457,9 +458,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_scans(self, active: Union[bool, None] = False,
-                  page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
-                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+    def get_scans(self, active: Optional[bool] = False,
+                  page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                  sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of all scans.
         |
@@ -563,9 +564,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_site_assets(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                        page: Union[int, None] = None, sort: Union[str, None] = None,
-                        limit: Union[int, None] = None) -> list[dict]:
+    def get_site_assets(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
+                        page: Optional[int] = None, sort: Optional[str] = None,
+                        limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of all assets that are linked with a specific site.
         |
@@ -594,9 +595,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_site_scans(self, site_id: str, page_size: Union[int, None] = DEFAULT_PAGE_SIZE,
-                       page: Union[int, None] = None, sort: Union[str, None] = None,
-                       limit: Union[int, None] = None) -> list[dict]:
+    def get_site_scans(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
+                       page: Optional[int] = None, sort: Optional[str] = None,
+                       limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of scans from a specific site.
         |
@@ -644,9 +645,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_site_scan_schedules(self, site_id: str, page_size: Union[int, None] = None,
-                                page: Union[int, None] = None, sort: Union[str, None] = None,
-                                limit: Union[int, None] = None) -> list[dict]:
+    def get_site_scan_schedules(self, site_id: str, page_size: Optional[int] = None,
+                                page: Optional[int] = None, sort: Optional[str] = None,
+                                limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve information about scan schedules for a specific site.
         |
@@ -673,8 +674,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_sites(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
-                  sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+    def get_sites(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                  sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of sites.
         |
@@ -702,8 +703,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_vulnerabilities(self, page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
-                            sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+    def get_vulnerabilities(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                            sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve information about all existing vulnerabilities.
         |
@@ -789,9 +790,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def search_assets(self, filters: Union[list[dict], None], match: str,
-                      page_size: Union[int, None] = DEFAULT_PAGE_SIZE, page: Union[int, None] = None,
-                      sort: Union[str, None] = None, limit: Union[int, None] = None) -> list[dict]:
+    def search_assets(self, filters: Optional[list[dict]], match: str,
+                      page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                      sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve a list of all assets with access permissions that match the provided search filters.
         |
@@ -870,7 +871,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def find_site_id(self, name: str) -> Union[str, None]:
+    def find_site_id(self, name: str) -> Optional[str]:
         """
         Find a site ID by its name.
 
@@ -887,8 +888,8 @@ class Client(BaseClient):
 class Site:
     """A class representing a site, which can be identified by ID or name."""
 
-    def __init__(self, site_id: Union[str, None] = None,
-                 site_name: Union[str, None] = None, client: Union[Client, None] = None) -> None:
+    def __init__(self, site_id: Optional[str] = None,
+                 site_name: Optional[str] = None, client: Optional[Client] = None) -> None:
         """
         Create a new Site object.
         Required parameters are either `site_id`, or both `site_name` and `client`.
@@ -1242,8 +1243,8 @@ def get_session():
 
 
 def find_site_from_asset(asset_id: str):
-    # TODO: Remove demisto.params() and improve code
-    # TODO: Check why this function uses a non-API endpoint, and adjust this function accordingly.
+    # TODO: Remove demisto.params() and improve code,
+    #       Check why this function uses a non-API endpoint, and adjust this function accordingly.
     url = demisto.params()["server"].rstrip("/") + "/data/assets/" + str(asset_id) + "/scans"
     username = demisto.params()["credentials"]["identifier"]
     password = demisto.params()["credentials"]["password"]
@@ -1322,7 +1323,6 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
         Union[dict, list, tuple]: The same data-structure with key names of dicts replaced according to mapping.
     """
     # TODO: Fix issue when nested key is inside a list
-    data_before = data.copy()
     if isinstance(data, Union[list, tuple]):
         return [replace_key_names(
             data=data[i],
@@ -1358,10 +1358,10 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
 
 
 # --- Command Functions --- #
-def create_assets_report_command(client: Client, asset_ids: list[str], template_id: Union[str, None] = None,
-                                 report_name: Union[str, None] = None,
-                                 report_format: Union[ReportFileFormat, None] = None,
-                                 download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+def create_assets_report_command(client: Client, asset_ids: list[str], template_id: Optional[str] = None,
+                                 report_name: Optional[str] = None,
+                                 report_format: Optional[ReportFileFormat] = None,
+                                 download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
     """
     Create a report about specific assets.
 
@@ -1370,9 +1370,10 @@ def create_assets_report_command(client: Client, asset_ids: list[str], template_
         asset_ids (list[str]): List of assets to include in the report.
         template_id (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
-        report_name (str): Name for the report that will be generated.
-        report_format (ReportFileFormat): Format of the report that will be generated.
-        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+        report_name (str, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        report_format (ReportFileFormat, optional): Format of the report that will be generated. Defaults to PDF.
+        download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
+            Defaults to True.
     """
     if not template_id:
         templates = client.get_report_templates()
@@ -1434,20 +1435,21 @@ def create_assets_report_command(client: Client, asset_ids: list[str], template_
         outputs_key_field=["ID", "InstanceID"],
     )
 
-
-def create_scan_report_command(client: Client, scan_id: str, template_id: Union[str, None] = None,
-                               report_name: Union[str, None] = None, report_format: Union[ReportFileFormat, None] = None,
-                               download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+def create_scan_report_command(client: Client, scan_id: str, template_id: Optional[str] = None,
+                               report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
+                               download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
     """
     Create a report about specific sites.
 
     Args:
         client (Client): Client to use for API requests.
         scan_id (scan): ID of the scan to create a report on.
-        template_id (str | None, optional): ID of report template to use. Defaults to None.
-        report_name (str): Name for the report that will be generated.
-        report_format (ReportFileFormat): Format of the report that will be generated.
-        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+        template_id (str | None, optional): ID of report template to use.
+            Defaults to None (will result in using the first available template)
+        report_name (str, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        report_format (ReportFileFormat, optional): Format of the report that will be generated. Defaults to PDF.
+        download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
+            Defaults to True.
         """
     if not template_id:
         templates = client.get_report_templates()
@@ -1503,9 +1505,9 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Union[
     )
 
 
-def create_site_command(client: Client, name: str, description: Union[str, None] = None,
-                        assets: Union[list[str], None] = None, site_importance: Union[SiteImportance, None] = None,
-                        template_id: Union[str, None] = None) -> CommandResults:
+def create_site_command(client: Client, name: str, description: Optional[str] = None,
+                        assets: Optional[list[str]] = None, site_importance: Optional[SiteImportance] = None,
+                        template_id: Optional[str] = None) -> CommandResults:
     """
     Create a new site.
 
@@ -1534,9 +1536,10 @@ def create_site_command(client: Client, name: str, description: Union[str, None]
     )
 
 
-def create_sites_report_command(client: Client, sites: list[Site], template_id: Union[str, None] = None,
-                                report_name: Union[str, None] = None, report_format: Union[ReportFileFormat, None] = None,
-                                download_immediately: Union[bool, None] = None) -> Union[dict, CommandResults]:
+def create_sites_report_command(client: Client, sites: list[Site],
+                                template_id: Optional[str] = None, report_name: Optional[str] = None,
+                                report_format: Optional[ReportFileFormat] = None,
+                                download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
     """
     Create a report about specific sites.
 
@@ -1544,10 +1547,11 @@ def create_sites_report_command(client: Client, sites: list[Site], template_id: 
         client (Client): Client to use for API requests.
         sites (list[Site]): List of sites to create the report about.
         template_id (str | None, optional): ID of report template to use.
-                Defaults to None (will result in using the first available template)
-        report_name (str): Name for the report that will be generated.
-        report_format (ReportFileFormat): Format of the report that will be generated.
-        download_immediately: Union[bool, None] = Whether to download the report automatically after creation.
+            Defaults to None (will result in using the first available template)
+        report_name (str, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        report_format (ReportFileFormat, optional): Format of the report that will be generated. Defaults to PDF.
+        download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
+            Defaults to True.
     """
     if not template_id:
         templates = client.get_report_templates()
@@ -1733,7 +1737,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     # Set all vars to None
     software_headers = software_output = service_headers = services_output = users_headers = users_output = None
 
-    if "software" in asset and len(asset["software"]) > 0:  # TODO: Replace with: if len(asset.get("software", [])) > 0
+    if "software" in asset and len(asset["software"]) > 0:
         software_headers = [
             "Software",
             "Version",
@@ -1872,9 +1876,9 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     }
 
 
-def get_assets_command(client: Client, page_size: Union[int, None] = None,
-                       page: Union[int, None] = None, sort: Union[str, None] = None,
-                       limit: Union[int, None] = None) -> Union[CommandResults, list[CommandResults]]:
+def get_assets_command(client: Client, page_size: Optional[int] = None,
+                       page: Optional[int] = None, sort: Optional[str] = None,
+                       limit: Optional[int] = None) -> Union[CommandResults, list[CommandResults]]:
     """
     Retrieve a list of all assets.
 
@@ -1970,7 +1974,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         vulnerability_id=vulnerability_id,
     )
 
-    # TODO: If 404 is received, check that asset_id and vulnerability_id are valid.
+    # TODO: If 404 is received, check that asset_id and vulnerability_id are valid and return error message accordingly.
     # If they are, print a message saying that the asset is not vulnerable.
     # Otherwise print an error saying which parameter is invalid.
 
@@ -2208,9 +2212,9 @@ def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[C
     return scans
 
 
-def get_scans_command(client: Client, active: Union[bool, None] = None, page_size: Union[int, None] = None,
-                      page: Union[int, None] = None, sort: Union[str, None] = None,
-                      limit: Union[int, None] = None) -> CommandResults:
+def get_scans_command(client: Client, active: Optional[bool] = None, page_size: Optional[int] = None,
+                      page: Optional[int] = None, sort: Optional[str] = None,
+                      limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve a list of all scans.
 
@@ -2236,7 +2240,7 @@ def get_scans_command(client: Client, active: Union[bool, None] = None, page_siz
     if not scans:
         return CommandResults(readable_output="No scans found")
 
-    normalized_scans = [normalize_scan_data(scan) for scan in scans]
+    normalized_scans = [normalize_scan_data(scan) for scan in scans]  # TODO: Use get_scan_entry function and modify it to make vulnerability optional
 
     scan_hr = tableToMarkdown(
         name="Nexpose scans",
@@ -2263,8 +2267,8 @@ def get_scans_command(client: Client, active: Union[bool, None] = None, page_siz
     )
 
 
-def get_sites_command(client: Client, page_size: Union[int, None] = None, page: Union[int, None] = None,
-                      sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
+def get_sites_command(client: Client, page_size: Optional[int] = None, page: Optional[int] = None,
+                      sort: Optional[str] = None, limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve a list of sites.
 
@@ -2321,9 +2325,9 @@ def get_sites_command(client: Client, page_size: Union[int, None] = None, page: 
     )
 
 
-def list_scan_schedule_command(client: Client, site: Site, schedule_id: Union[str, None] = None,
-                               page_size: Union[int, None] = None, page: Union[int, None] = None,
-                               limit: Union[int, None] = None) -> CommandResults:
+def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional[str] = None,
+                               page_size: Optional[int] = None, page: Optional[int] = None,
+                               limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
@@ -2396,12 +2400,12 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Union[st
     )
 
 
-def search_assets_command(client: Client, filter_query: Union[str, None] = None,
-                          ip_addresses: Union[str, None] = None, hostnames: Union[str, None] = None,
-                          risk_score: Union[str, None] = None, vulnerability_title: Union[str, None] = None,
-                          sites: Union[Site, list[Site], None] = None, match: Union[str, None] = None,
-                          page_size: Union[int, None] = None, page: Union[int, None] = None,
-                          sort: Union[str, None] = None, limit: Union[int, None] = None) -> CommandResults:
+def search_assets_command(client: Client, filter_query: Optional[str] = None, ip_addresses: Optional[str] = None,
+                          hostnames: Optional[str] = None, risk_score: Optional[str] = None,
+                          vulnerability_title: Optional[str] = None, sites: Optional[Site, list[Site]] = None,
+                          match: Optional[str] = None, page_size: Optional[int] = None,
+                          page: Optional[int] = None, sort: Optional[str] = None,
+                          limit: Optional[int] = None) -> Union[CommandResults, list[CommandResults]]:
     """
     Retrieve a list of all assets with access permissions that match the provided search filters.
 
@@ -2529,9 +2533,10 @@ def search_assets_command(client: Client, filter_query: Union[str, None] = None,
     }
 
 
-def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
-                              hostnames: Union[str, list, None] = None,
-                              scan_name: Union[str, None] = None) -> CommandResults:
+
+def start_assets_scan_command(client: Client, ips: Optional[str, list] = None,
+                              hostnames: Optional[str, list] = None,
+                              scan_name: Optional[str] = None) -> CommandResults:  # TODO: Add pagination args?
     """
     | Start a scan on the provided assets.
     |
@@ -2593,7 +2598,7 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
 
 
 def start_site_scan_command(client: Client, site: Site,
-                            scan_name: Union[str, None], hosts: Union[list[str], None]) -> CommandResults:
+                            scan_name: Optional[str], hosts: Optional[list[str]]) -> CommandResults:  # TODO: Add pagination args?
     """
     Start a scan for a specific site.
 
