@@ -3,17 +3,47 @@ commonfields:
   id: Tenable.io Event Collector
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
+- displaypassword: Access Key
+  additionalinfo: Tenable API access key.
+  name: access_key
   required: true
   hiddenusername: true
   type: 9
+- displaypassword: Secret Key
+  additionalinfo: Tenable API secret key.
+  name: secret_key
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Vulnerabilities Fetch Interval
+  additionalinfo: Fetch interval in minutes.
+  name: vuln_fetch_interval
+  required: true
+  type: 0
+- display: Severity
+  additionalinfo: The severity of the vulnerabilities to include in the export.
+  name: severity
+  options:
+  - info
+  - low
+  - medium
+  - high
+  - critical
+  required: false
+  type: 16
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The maximum amount of audit logs to retrieve for each event type. For more information about event types see the help section.
+  defaultvalue: '1000'
+  display: Max Fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -22,32 +52,67 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'Tenable.io Event Collector'
+description: Tenable.io Event Collector integration.
+display: Tenable.io Event Collector
 name: Tenable.io Event Collector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - arguments:
+        - auto: PREDEFINED
+          defaultValue: 'false'
+          description: Set this argument to True in order to create events, otherwise the command will only display the events.
+          isArray: false
+          name: should_push_events
+          predefined:
+            - 'true'
+            - 'false'
+          required: true
+        - default: false
+          description: The maximum number of alerts to return (maximum value - 10000).
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - default: false
+          description: Date to return events that occurred after.
+          isArray: false
+          name: from_date
+          required: false
+          secret: false
+        - default: false
+          description: Date to return events that occurred before.
+          isArray: false
+          name: to_date
+          required: false
+          secret: false
+        - default: false
+          description: Return events contains given actor UUID.
+          isArray: false
+          name: actor_id
+          required: false
+          secret: false
+        - default: false
+          description: Return events matching given target UUID.
+          isArray: false
+          name: target_id
+          required: false
+          secret: false
+        deprecated: false
+        description: Returns events extracted from SaaS traffic and or logs.
+        execution: false
+        name: tenable-get-events
   isfetch: false
   runonce: false
   script: '-'
+  isfetchevents: true
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.5.31797
-fromversion: 6.5.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- marketplacev2
+
+
+
