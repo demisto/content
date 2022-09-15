@@ -9,14 +9,14 @@ def main():
                                       assign_params(id=args.get('id'),
                                                     filter=assign_params(tags=argToList(args.get('tags')),
                                                                          categories=argToList(args.get('categories')))))
-        if (isinstance(ents, dict) and ents.get('Type') == entryTypes['error']) or\
-           (isinstance(ents, list) and len(ents) > 0 and ents[0].get('Type') == entryTypes['error']):
-            error_message = get_error(ents)
-            raise DemistoException(f'Failed to execute getEntries. Error details:\n{error_message}')
-
         if not ents:
             return_results('No matching entries')
         else:
+            ents = ents if isinstance(ents, list) else [ents]
+            if is_error(ents) and not demisto.get(ents[0], 'ID'):
+                error_message = get_error(ents)
+                raise DemistoException(f'Failed to execute getEntries. Error details:\n{error_message}')
+
             outputs = [assign_params(
                 ID=demisto.get(ent, 'ID'),
                 Type=demisto.get(ent, 'Type'),

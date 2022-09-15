@@ -57,7 +57,8 @@ class TestGetEntries:
 
     def test_main_error(self, mocker):
         original_ents = [{
-            'Type': EntryType.ERROR
+            'Type': EntryType.ERROR,
+            'Contents': 'error'
         }]
 
         mocker.patch.object(sys, 'exit')
