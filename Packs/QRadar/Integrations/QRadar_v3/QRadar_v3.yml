@@ -2735,10 +2735,19 @@ script:
     - name: retry_if_not_all_fetched
       required: false
       auto: PREDEFINED
+      description: Whether to retry until all events are polled or stop when the first search is completed.
+
       predefined:
       - 'true'
       - 'false'
-      description: Whether to retry until all events are polled or stop when the first search is completed.
+    - name: polling
+      required: false
+      auto: PREDEFINED
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+
     deprecated: false
     description: Polling command to search for events of a specific offense.
     name: qradar-search-retrieve-events

@@ -3515,6 +3515,7 @@ def qradar_search_retrieve_events_command(
     """
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
+    is_polling = argToBoolean(args.get('polling', False))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -3556,18 +3557,18 @@ def qradar_search_retrieve_events_command(
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
             )
-            return CommandResults(scheduled_command=scheduled_command,
+            return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                                   readable_output='Not all events were fetched. Searching again.',
                                   outputs_prefix='QRadar.SearchEvents',
                                   outputs_key_field='ID',
-                                  outputs={'Events': events, 'ID': search_id},
+                                  outputs={'Events': events, 'ID': search_id, 'Status': 'Partial'},
                                   )
 
         else:
             return CommandResults(
                 outputs_prefix='QRadar.SearchEvents',
                 outputs_key_field='ID',
-                outputs={'Events': events, 'ID': search_id},
+                outputs={'Events': events, 'ID': search_id, 'Status': 'Success'},
                 readable_output=tableToMarkdown(f'{get_num_events(events)} Events returned from search_id {search_id}',
                                                 events,
                                                 ),
@@ -3584,7 +3585,7 @@ def qradar_search_retrieve_events_command(
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
-    return CommandResults(scheduled_command=scheduled_command,
+    return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                           readable_output=f'Search ID: {search_id}',
                           outputs_prefix='QRadar.SearchEvents',
                           outputs_key_field='ID',
