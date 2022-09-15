@@ -8,7 +8,7 @@
         "byTo": "",
         "byFrom": "days",
         "toValue": null,
-        "fromValue": 30,
+        "fromValue": 7,
         "field": "",
         "by": ""
     },
@@ -70,59 +70,6 @@
 			"reflectDimensions": false
 		},
 		{
-			"id": "3747f820-fd4e-11e8-a656-2b6c8cbabaee",
-			"forceRange": false,
-			"x": 0,
-			"y": 0,
-			"i": "3747f820-fd4e-11e8-a656-2b6c8cbabaee",
-			"w": 6,
-			"h": 2,
-			"widget": {
-				"id": "1e54092d-1ed0-47a6-862d-893adc05e612",
-				"version": 1,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "SLA wittin",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "pie",
-				"query": "-category:job and (detectionsla.slaStatus:within or containmentsla.slaStatus:within or triagesla.slaStatus:within or remediationsla.slaStatus:within)",
-				"isPredefined": false,
-				"description": "The detection SLA status of all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default, and inherits new time range when the dashboard time changes.",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 7,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"type"
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
 			"id": "a48c1670-fdf1-11e8-a2fa-df5e7de7d45d",
 			"forceRange": false,
 			"x": 6,
@@ -169,114 +116,6 @@
 					"keys": [
 						"avg|openDuration",
 						"count|1"
-					],
-					"valuesFormat": "hours"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "b9afd880-2c6d-11ed-8337-eb4dfc48df38",
-			"forceRange": false,
-			"x": 0,
-			"y": 4,
-			"i": "b9afd880-2c6d-11ed-8337-eb4dfc48df38",
-			"w": 2,
-			"h": 2,
-			"widget": {
-				"id": "fddd62ff-a411-4e6a-8213-e0277a9b95b5",
-				"version": 1,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Mean Time to Triage",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "duration",
-				"query": "-category:job and triagesla.runStatus:ended",
-				"isPredefined": false,
-				"description": "The mean time (average time) to detection across all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default.",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 30,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"keys": [
-						"avg|triagesla.totalDuration"
-					],
-					"valuesFormat": "hours"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "ce80fa50-2c6d-11ed-8337-eb4dfc48df38",
-			"forceRange": false,
-			"x": 6,
-			"y": 2,
-			"i": "ce80fa50-2c6d-11ed-8337-eb4dfc48df38",
-			"w": 2,
-			"h": 2,
-			"widget": {
-				"id": "fddd62ff-a411-4e6a-8213-e0277a9b95b5",
-				"version": 1,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Mean Time to Containment",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "duration",
-				"query": "-category:job and containmentsla.runStatus:ended",
-				"isPredefined": false,
-				"description": "The mean time (average time) to detection across all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default.",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 30,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"keys": [
-						"avg|containmentsla.totalDuration"
 					],
 					"valuesFormat": "hours"
 				},
@@ -343,23 +182,138 @@
 			"reflectDimensions": false
 		},
 		{
-			"id": "dd8b0160-2c6f-11ed-8337-eb4dfc48df38",
+			"id": "c7f1ad10-3500-11ed-9493-318012f39d0b",
 			"forceRange": false,
-			"x": 2,
-			"y": 2,
-			"i": "dd8b0160-2c6f-11ed-8337-eb4dfc48df38",
-			"w": 4,
+			"x": 0,
+			"y": 0,
+			"i": "c7f1ad10-3500-11ed-9493-318012f39d0b",
+			"w": 6,
 			"h": 2,
 			"widget": {
-				"id": "mttd-by-type",
-				"version": 1,
+				"id": "574f6536-d268-4c06-89c0-e81c7c7239cd",
+				"version": 4,
 				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
+				"modified": "2022-09-15T14:14:49.186820805Z",
 				"packID": "",
 				"packName": "",
 				"itemVersion": "",
 				"fromServerVersion": "",
 				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "Within SLA by Type",
+				"prevName": "Within SLA by Type",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and (detectionsla.slaStatus:within or containmentsla.slaStatus:within or triagesla.slaStatus:within or remediationsla.slaStatus:within)",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"type"
+					],
+					"valuesFormat": "abbreviated"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "e02bc370-3500-11ed-9493-318012f39d0b",
+			"forceRange": false,
+			"x": 6,
+			"y": 0,
+			"i": "e02bc370-3500-11ed-9493-318012f39d0b",
+			"w": 6,
+			"h": 2,
+			"widget": {
+				"id": "d4d8dfa1-c34f-4f96-8af7-b929c0720be8",
+				"version": 1,
+				"cacheVersn": 0,
+				"modified": "2022-09-15T14:15:27.075801598Z",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "Late SLA by Type",
+				"prevName": "Late SLA by Type",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and ( detectionsla.slaStatus:late or triagesla.slaStatus:late or containmentsla.slaStatus:late or remediationsla.slaStatus:late )",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"type"
+					],
+					"valuesFormat": "abbreviated"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "c1176a10-3501-11ed-9493-318012f39d0b",
+			"forceRange": false,
+			"x": 2,
+			"y": 2,
+			"i": "c1176a10-3501-11ed-9493-318012f39d0b",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "e24f1c02-b742-431c-8cf6-119394bb89a6",
+				"version": 4,
+				"cacheVersn": 0,
+				"modified": "2022-09-15T14:21:51.357177349Z",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
 				"definitionId": "",
 				"vcShouldIgnore": false,
 				"vcShouldKeepItemLegacyProdMachine": false,
@@ -367,7 +321,7 @@
 				"shouldCommit": false,
 				"Cache": null,
 				"name": "MTTD by Severity",
-				"prevName": "",
+				"prevName": "MTTD by Severity",
 				"dataType": "incidents",
 				"widgetType": "line",
 				"query": "-category:job and detectionsla.runStatus:ended",
@@ -390,7 +344,6 @@
 						"occurred(d)",
 						"severity"
 					],
-					"hideLegend": false,
 					"keys": [
 						"avg|detectionsla.totalDuration / 60"
 					],
@@ -399,26 +352,85 @@
 				},
 				"category": ""
 			},
-			"reflectDimensions": false
+			"reflectDimensions": true
 		},
 		{
-			"id": "12639400-2dc0-11ed-895c-e9cdc185db1c",
+			"id": "f8400ce0-3501-11ed-9493-318012f39d0b",
 			"forceRange": false,
-			"x": 8,
+			"x": 6,
 			"y": 2,
-			"i": "12639400-2dc0-11ed-895c-e9cdc185db1c",
-			"w": 4,
+			"i": "f8400ce0-3501-11ed-9493-318012f39d0b",
+			"w": 2,
 			"h": 2,
 			"widget": {
-				"id": "",
-				"version": 0,
+				"id": "13674026-3ba0-464c-89a0-46d0de27e201",
+				"version": 4,
 				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
+				"modified": "2022-09-15T14:23:24.726652471Z",
 				"packID": "",
 				"packName": "",
 				"itemVersion": "",
 				"fromServerVersion": "",
 				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "Mean Time to Containment",
+				"prevName": "Mean Time to Containment",
+				"dataType": "incidents",
+				"widgetType": "duration",
+				"query": "-category:job and containmentsla.runStatus:ended",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|containmentsla.totalDuration"
+					],
+					"valuesFormat": "hours"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "838f3280-3502-11ed-9493-318012f39d0b",
+			"forceRange": false,
+			"x": 8,
+			"y": 2,
+			"i": "838f3280-3502-11ed-9493-318012f39d0b",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "92d112e0-cfb8-4efc-8bc4-9cce6e34f2d1",
+				"version": 2,
+				"cacheVersn": 0,
+				"modified": "2022-09-15T14:26:39.834493673Z",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
 				"definitionId": "",
 				"vcShouldIgnore": false,
 				"vcShouldKeepItemLegacyProdMachine": false,
@@ -426,7 +438,7 @@
 				"shouldCommit": false,
 				"Cache": null,
 				"name": "MTTC by Severity",
-				"prevName": "",
+				"prevName": "MTTC by Severity",
 				"dataType": "incidents",
 				"widgetType": "line",
 				"query": "-category:job and containmentsla.runStatus:ended",
@@ -450,33 +462,97 @@
 						"severity"
 					],
 					"keys": [
-						"avg|containmentsla.totalDuration / 60 "
+						"avg|containmentsla.totalDuration / 60"
 					],
 					"timeFrame": "days",
 					"valuesFormat": "abbreviated"
 				},
 				"category": ""
 			},
-			"reflectDimensions": false
+			"reflectDimensions": true
 		},
 		{
-			"id": "63bbdba0-2dc0-11ed-895c-e9cdc185db1c",
+			"id": "2fd8ebc0-3504-11ed-865f-7bd669e53419",
 			"forceRange": false,
-			"x": 8,
+			"x": 0,
 			"y": 4,
-			"i": "63bbdba0-2dc0-11ed-895c-e9cdc185db1c",
-			"w": 4,
+			"i": "2fd8ebc0-3504-11ed-865f-7bd669e53419",
+			"w": 2,
 			"h": 2,
 			"widget": {
-				"id": "",
-				"version": 0,
+				"id": "81b585f2-c439-42de-8ad6-6a2877808f09",
+				"version": 3,
 				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
+				"modified": "2022-09-15T14:39:18.696172536Z",
 				"packID": "",
 				"packName": "",
 				"itemVersion": "",
 				"fromServerVersion": "",
 				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "Mean Time to Triage",
+				"prevName": "Mean Time to Triage",
+				"dataType": "incidents",
+				"widgetType": "duration",
+				"query": "-category:job and triagesla.runStatus:ended",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {},
+						"type": "above"
+					},
+					"keys": [
+						"avg|triagesla.totalDuration"
+					],
+					"valuesFormat": "hours"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "b841e160-3504-11ed-865f-7bd669e53419",
+			"forceRange": false,
+			"x": 8,
+			"y": 4,
+			"i": "b841e160-3504-11ed-865f-7bd669e53419",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "e086debd-715c-4f4f-8c3a-a584b12e1252",
+				"version": 3,
+				"cacheVersn": 0,
+				"modified": "2022-09-15T14:43:02.966652016Z",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
 				"definitionId": "",
 				"vcShouldIgnore": false,
 				"vcShouldKeepItemLegacyProdMachine": false,
@@ -484,7 +560,7 @@
 				"shouldCommit": false,
 				"Cache": null,
 				"name": "MTTR by Severity",
-				"prevName": "",
+				"prevName": "MTTR by Severity",
 				"dataType": "incidents",
 				"widgetType": "line",
 				"query": "-category:job and status:Closed",
@@ -515,60 +591,7 @@
 				},
 				"category": ""
 			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "40c34460-2ddb-11ed-895c-e9cdc185db1c",
-			"forceRange": false,
-			"x": 6,
-			"y": 0,
-			"i": "40c34460-2ddb-11ed-895c-e9cdc185db1c",
-			"w": 6,
-			"h": 2,
-			"widget": {
-				"id": "1e54092d-1ed0-47a6-862d-893adc05e612",
-				"version": 1,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "SLA late",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "pie",
-				"query": "-category:job and ( detectionsla.slaStatus:late or triagesla.slaStatus:late or containmentsla.slaStatus:late remediationsla.slaStatus:late )",
-				"isPredefined": false,
-				"description": "The detection SLA status of all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default, and inherits new time range when the dashboard time changes.",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 30,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"type"
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
+			"reflectDimensions": true
 		}
 	],
     "description": "",
