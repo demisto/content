@@ -502,7 +502,7 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "99c595ef5b0a4c83163da59f9a44c3123267d47a"
+reference = "agent_config"
 resolved_reference = "99c595ef5b0a4c83163da59f9a44c3123267d47a"
 
 [[package]]
@@ -2258,7 +2258,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "e50ae240928453ef49102776ae5141450096fd40156967aa18110e52345b7fc9"
+content-hash = "7cc905fd36ab1177f4f3b1d33922499c486f2089b7b644e5e58236044287cbb2"
 
 [metadata.files]
 aiohttp = [
