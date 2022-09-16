@@ -90,7 +90,7 @@ class Pack(object):
         self._create_date = None  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
-        self._reademe_image = False
+        self._reademe_image = []
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
@@ -3073,8 +3073,6 @@ class Pack(object):
                     logging.info(f'no image links were found in {self._pack_name} readme file')
                     return task_status
 
-                self._reademe_image = True
-
                 for image_info in readme_images_storage_paths:
                     readme_original_url = image_info.get('original_read_me_url')
                     gcs_storage_path = str(image_info.get('image_gcp_path'))
@@ -3082,6 +3080,8 @@ class Pack(object):
 
                     task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url, gcs_storage_path,
                                                                           image_name, storage_bucket)
+                    self._reademe_image.append(image_name)
+
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack readme image.")
             task_status = False
@@ -3158,11 +3158,13 @@ class Pack(object):
                 shutil.copyfileobj(r.raw, f)
 
             # init the blob with the correct path to save the image on gcs
+            logging.info(f'Omer: {gcs_storage_path=}')
             readme_image = storage_bucket.blob(gcs_storage_path)
 
             # load the file from local memo to the gcs
             with open(image_name, "rb") as image_file:
                 readme_image.upload_from_file(image_file)
+                logging.info('Uploaded the image to gcs')
 
             # remove local saved image
             os.remove(image_name)
