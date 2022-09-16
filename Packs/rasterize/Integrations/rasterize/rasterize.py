@@ -148,6 +148,7 @@ def init_display(width: int, height: int):
     """
     try:
         demisto.debug(f"Starting display with width: {width}, and height: {height}.")
+        os.environ['DISPLAY'] = ':0'
         display = Display(visible=0, size=(width, height), backend='xvnc')
         display.start()
 

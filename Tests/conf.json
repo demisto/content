@@ -2781,7 +2781,8 @@
                 "Image OCR"
             ],
             "playbookID": "Rasterize Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Rasterize",
