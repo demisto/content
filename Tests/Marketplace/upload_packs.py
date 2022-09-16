@@ -883,7 +883,7 @@ def get_images_data(packs_list: list):
         if pack.uploaded_integration_images:
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_readme_iamges:
-            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = True
+            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = pack.uploaded_readme_iamges
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
