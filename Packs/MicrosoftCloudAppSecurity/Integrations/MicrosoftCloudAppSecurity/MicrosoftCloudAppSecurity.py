@@ -134,7 +134,8 @@ class Client:
 
                 # used for device code flow
                 resource='https://api.security.microsoft.com' if auth_mode == 'device code flow' else None,
-                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if auth_mode == 'device code flow' else None,
+                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token'
+                if auth_mode == 'device code flow' else None,
                 # used for client credentials flow
                 tenant_id=tenant_id,
                 enc_key=enc_key
@@ -225,7 +226,7 @@ class Client:
 
 @logger
 def start_auth(client: Client) -> CommandResults:
-    result = client.ms_client.start_auth('!microsoft-cas-auth-complete')
+    result = client.ms_client.start_auth('!microsoft-cas-auth-complete')  # type: ignore[attr-defined]
     return CommandResults(readable_output=result)
 
 
@@ -377,7 +378,7 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def test_module(client: Client, auth_mode: str, is_fetch: bool, custom_filter: Optional[str]):
+def test_module(client: Client, auth_mode: str, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
         if auth_mode == "device code flow":
             raise DemistoException(
@@ -747,7 +748,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     return last_run, incidents
 
 
-def params_to_filter(severity: List[str], resolution_status: str):
+def params_to_filter(severity: List[Any], resolution_status: str):
     filters: Dict[str, Any] = {}
     if len(severity) == 1:
         filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
@@ -928,7 +929,7 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             if params.get('custom_filter'):
-                filters = json.loads(params.get('custom_filter'))
+                filters = json.loads(str(params.get('custom_filter')))
             else:
                 filters = params_to_filter(severity, resolution_status)
             next_run, incidents = fetch_incidents(
