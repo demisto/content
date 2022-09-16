@@ -1,6 +1,6 @@
 import pytest
 
-from DelineaSS import Client, \
+from Delinea import Client, \
     secret_password_get_command, secret_username_get_command, \
     secret_get_command, secret_password_update_command, \
     secret_checkout_command, secret_checkin_command, \
