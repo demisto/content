@@ -421,11 +421,10 @@ script:
     description: Returns the results page for the specified UUID.
     name: urlscan-get-result-page
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   dockerimage: demisto/python3:3.10.7.33922
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
-defaultEnabled: false

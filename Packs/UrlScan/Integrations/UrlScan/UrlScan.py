@@ -5,10 +5,10 @@ from CommonServerPython import *  # noqa: F401
 import collections
 import json as JSON
 import time
+from urllib.parse import urlparse
 
 import requests
 from requests.utils import quote  # type: ignore
-from urllib.parse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -20,7 +20,8 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, we will not scan it.'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
+                                'For your own safety we did not perform this scan...'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -487,7 +488,8 @@ def format_results(client, uuid):
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
         response_img = requests.request("GET", screen_path, verify=client.use_ssl)
-        stored_img = fileResult('screenshot.png', response_img.content)
+        screenshot_name = cont['EffectiveURL'].replace('http://', '').replace('https://', '').replace('/', '_')
+        stored_img = fileResult('{}.png'.format(screenshot_name), response_img.content)
 
     dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
                                   integration_name=BRAND, score=dbot_score.get('Score'),
