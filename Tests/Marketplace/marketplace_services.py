@@ -359,7 +359,7 @@ class Pack(object):
         return self._uploaded_integration_images
 
     @property
-    def uploaded_readme_iamges(self):
+    def uploaded_readme_images(self):
         """
         @ TODO: decide on a design
         """
@@ -3075,11 +3075,12 @@ class Pack(object):
 
                 for image_info in readme_images_storage_paths:
                     readme_original_url = image_info.get('original_read_me_url')
-                    gcs_storage_path = str(image_info.get('image_gcp_path'))
+                    gcs_storage_path = str(image_info.get('new_gcs_image_path'))
                     image_name = str(image_info.get('image_name'))
 
-                    task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url, gcs_storage_path,
-                                                                          image_name, storage_bucket)
+                    task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                                                        gcs_storage_path,
+                                                                                        image_name, storage_bucket)
                     self._reademe_image.append(image_name)
 
         except Exception:
