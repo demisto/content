@@ -369,7 +369,6 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()
-        #validate params
         if isinstance(params, dict):
             creds = params.get('credentials')
             if isinstance(creds, dict):
