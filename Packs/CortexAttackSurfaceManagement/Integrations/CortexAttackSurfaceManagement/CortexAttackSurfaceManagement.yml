@@ -9,15 +9,11 @@ configuration:
   required: true
   type: 0
 - additionalinfo: reference https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis
-  display: API Key
-  name: api_key
-  required: false
-  type: 4
-- additionalinfo: reference https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis
   display: API Key ID
-  name: x-xdr-auth-id
-  required: false
-  type: 0
+  displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
 description: Integration to pull asset and other ASM related information
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management
