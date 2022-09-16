@@ -3116,7 +3116,7 @@ class Pack(object):
                 url_path = Path(path)
                 image_name = url_path.name
 
-                image_gcp_path = Path(gcs_pack_path, image_name)
+                image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
 
                 line = line.replace(url, str(image_gcp_path))
 
@@ -3159,7 +3159,7 @@ class Pack(object):
                 shutil.copyfileobj(r.raw, f)
 
             # init the blob with the correct path to save the image on gcs
-            logging.info(f'Omer: {gcs_storage_path=}')
+            logging.info(f'{gcs_storage_path=}')
             readme_image = storage_bucket.blob(gcs_storage_path)
 
             # load the file from local memo to the gcs
