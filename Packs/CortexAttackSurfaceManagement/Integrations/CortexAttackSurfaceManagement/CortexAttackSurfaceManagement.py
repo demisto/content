@@ -369,8 +369,11 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()
-        api = params.get('credentials').get('password')
-        auth_id = params.get('credentials').get('identifier')
+        if isinstance(params, dict):
+            creds = params.get('credentials')
+            if isinstance(creds, dict):
+                api = creds.get('password')
+                auth_id = creds.get('identifier')
         headers = {
             'Authorization': f'{api}',
             'x-xdr-auth-id': f'{auth_id}',
