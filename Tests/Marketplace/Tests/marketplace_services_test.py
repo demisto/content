@@ -1635,7 +1635,7 @@ class TestImagesUpload:
             'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
                                     '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
                                     'Retrieve_Asset_Details_-_Lansweeper.png',
-            'new_gcs_image_path': Path('gcs_test_path/Retrieve_Asset_Details_-_Lansweeper.png'),
+            'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
             'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
         }
         ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url, 'gcs_test_path')
