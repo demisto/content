@@ -19,10 +19,10 @@ script:
   - arguments:
     - default: true
       description: An IPv4 address to query, e.g., 1.1.1.1.
-      isArray: false
       name: ip
       required: true
       secret: false
+      isArray: false
     deprecated: false
     description: Checks the reputation of an IP address.
     execution: false
@@ -142,6 +142,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/cymruwhois:1.0.0.34082
-fromversion: 6.5.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

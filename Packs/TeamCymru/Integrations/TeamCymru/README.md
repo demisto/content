@@ -1,5 +1,5 @@
 Team Cymru provided various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
-This integration was integrated and tested with version xx of TeamCymru
+This integration was integrated and tested with version 1.0 of TeamCymru.
 
 ## Configure Team Cymru on Cortex XSOAR
 
