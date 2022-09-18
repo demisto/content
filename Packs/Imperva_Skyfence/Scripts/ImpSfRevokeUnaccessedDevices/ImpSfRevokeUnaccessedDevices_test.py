@@ -14,8 +14,11 @@ def test_revoke_empty(mocker):
 
 def test_revoke_3_months(mocker):
     old_user = [{
-        'Type': 1, 
-        'Contents': [{'last_updated': '1627765200000', 'accounts': '[{"account_id": "dummy"}]', 'endpoint_status': 'managed', 'endpoint_id': 'dummy'}],
+        'Type': 1,
+        'Contents': [{
+            'last_updated': '1627765200000', 'accounts': '[{"account_id": "dummy"}]', 'endpoint_status': 'managed',
+            'endpoint_id': 'dummy'
+        }],
         'ContentsFormat': 'json'
     }]
     mocker.patch.object(demisto, 'executeCommand', return_value=old_user)
