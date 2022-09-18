@@ -29,7 +29,7 @@ def main():
                                           readable_output=f'Found {len(ents)} entries.',
                                           raw_response=ents))
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute GetEntries.\nError:\n{type(e)}, {str(e)}')
 
 

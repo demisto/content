@@ -15,6 +15,16 @@ class SideEffectExecuteCommand:
 
 class TestGetEntries:
     def test_main(self, mocker):
+        """
+
+         Given:
+             - A entry returns from getEntries.
+         When:
+             - No argument parameters are provided.
+         Then:
+             - The fields are being parsed properly in to context.
+
+        """
         original_ents = [{
             'ID': 'test-ID',
             'Type': 'test-Type',
@@ -45,6 +55,16 @@ class TestGetEntries:
         assert json.dumps(entry_context) == json.dumps(output_ents)
 
     def test_main_no_ents(self, mocker):
+        """
+
+         Given:
+             - No entries returns from getEntries.
+         When:
+             - No argument parameters are provided.
+         Then:
+             - No entries parameters are given to context.
+
+        """
         original_ents = []
 
         mocker.patch.object(demisto, 'executeCommand', side_effect=SideEffectExecuteCommand(original_ents).execute_command)
@@ -56,6 +76,16 @@ class TestGetEntries:
             assert not results.get('EntryContext')
 
     def test_main_error(self, mocker):
+        """
+
+         Given:
+             - An error returns from getEntries.
+         When:
+             - No argument parameters are provided.
+         Then:
+             - An error entry returns to the results.
+
+        """
         def __return_error(message, error='', outputs=None):
             demisto.results({'Type': EntryType.ERROR, 'ContentsFormat': EntryFormat.TEXT, 'Contents': message})
 
