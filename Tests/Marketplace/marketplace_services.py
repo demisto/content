@@ -3104,6 +3104,7 @@ class Pack(object):
             A list of dicts of all the image urls found in the README.md file with all related data
             (original_url, new_gcs_path, image_name)
         """
+        logging.info(f'{marketplace=}')
         if marketplace == 'xsoar':
             marketplace = 'marketplace-dist'
         else:
