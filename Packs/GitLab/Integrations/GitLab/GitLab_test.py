@@ -243,7 +243,6 @@ def test_get_project_list_command(request_mock):
     pass   # need to complete
 
 
-
 '''
  response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
     res = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')

@@ -137,7 +137,6 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
         params = {'ref': ref}
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
-
         return response
 
     def file_create_request(self, file_path: str | None, branch: str | None, commit_msg: str,
@@ -674,8 +673,9 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
         (CommandResults).
     """
     issue_iid = args.get('issue_iid')
-    params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked', 'due_date', 'epic_id', 'epic_iid',
-                       'issue_type', 'milestone_id', 'remove_labels', 'state_event', 'title']
+    params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked',
+                       'due_date', 'epic_id', 'epic_iid', 'issue_type', 'milestone_id', 'remove_labels',
+                       'state_event', 'title']
     headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', 'Assignee']
     params = check_args_for_update(args, params_optional)
     response = client.issue_update_request(issue_iid, params)
@@ -804,7 +804,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR required arguments:
-            - 'file_path': Url parameter- URL-encoded full path to new file. 
+            - 'file_path': Url parameter- URL-encoded full path to new file.
             - 'branch': Retrieve file from the given branch.
             - 'commit_message': message regarding the update.
             - 'entry_id' OR 'file_content' for the update.
