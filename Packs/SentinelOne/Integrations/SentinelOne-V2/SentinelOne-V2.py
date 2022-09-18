@@ -20,7 +20,8 @@ requests.packages.urllib3.disable_warnings()
 IS_VERSION_2_1: bool
 GLOBAL_BLOCK: bool
 BLOCK_SITEIDS: str
-OS_COUNT: int
+OS_COUNT = 4
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -2903,7 +2904,6 @@ def main():
     proxy = params.get('proxy', False)
     BLOCK_SITEIDS = params.get('block_site_ids', 'None')
     GLOBAL_BLOCK = BLOCK_SITEIDS == 'None'
-    OS_COUNT = 4
 
     IS_VERSION_2_1 = api_version == '2.1'
 
