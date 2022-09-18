@@ -4,6 +4,8 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import json
+from datetime import datetime, date
+
 
 import requests
 from typing import Dict, Any
@@ -37,7 +39,7 @@ class DatetimeEncoder(json.JSONEncoder):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: AWSClient) -> str:
+def test_module(client: AWSClient):
     aws_client = client.aws_session(
         service=SERVICE
     )
@@ -48,7 +50,7 @@ def test_module(client: AWSClient) -> str:
         demisto.results('ok')
 
 
-def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, Any]):
     aws_client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -102,7 +104,7 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     ))
 
 
-def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -146,7 +148,7 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
         readable_output=human_readable
     ))
 
-def aws_secrets_manager_secret_delete_command(client: AWSClient, args: Dict[str, Any]):
+def aws_secrets_manager_secret_delete_command(client: AWSClient, args):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -186,7 +188,7 @@ def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("the secret was restored successfully")
 
-def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
