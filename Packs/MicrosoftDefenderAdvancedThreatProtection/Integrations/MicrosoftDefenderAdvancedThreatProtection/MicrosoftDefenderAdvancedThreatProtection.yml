@@ -895,8 +895,8 @@ script:
       required: false
       secret: false
       deprecated: false
-    - default: true
-      description: If stated along with query, then the response should be saved in context under the name.Result, and added to the HR of the results.
+    - default: false
+      description: If stated along with query, then the response should be saved in context under the Result.name path.
       isArray: false
       name: name
       required: false
@@ -5848,7 +5848,7 @@ script:
     - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
       description: Troubleshooting information.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.34100
   feed: false
   isfetch: true
   longRunning: false

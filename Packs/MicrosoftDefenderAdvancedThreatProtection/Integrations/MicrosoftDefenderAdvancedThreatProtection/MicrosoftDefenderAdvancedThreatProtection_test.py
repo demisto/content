@@ -2416,11 +2416,9 @@ def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exce
             'name': 'name',
             'query': query,
             'query_batch': query_batch}
-    mocker.patch.object(client_mocker, 'get_advanced_hunting',
-                              return_value=return_value)
+    mocker.patch.object(client_mocker, 'get_advanced_hunting', return_value=return_value)
 
     with pytest.raises(Exception) as e:
         get_advanced_hunting_command(client_mocker, args)
-
 
     assert str(e.value) == exception
