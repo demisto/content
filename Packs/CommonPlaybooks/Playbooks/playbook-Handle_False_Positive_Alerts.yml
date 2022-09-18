@@ -783,8 +783,8 @@ tasks:
     task:
       id: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
       version: -1
-      name: Should disable indicator IOC rule automatically?
-      description: "A condition to check if should disable IOC automatically in Cortex Server"
+      name: Whether to disable indicator IOC rule automatically?
+      description: "A condition to check whether to disable IOC automatically in Cortex Server."
       type: condition
       iscommand: false
       brand: ""
@@ -871,7 +871,7 @@ inputs:
 - key: ShouldCloseAutomatically
   value: {}
   required: false
-  description: Should we automatically close false positive alerts? Specify true/false.
+  description: Whether to automatically close false positive alerts? Specify true/false.
   playbookInputQuery:
 - key: sourceIP
   value:
@@ -879,7 +879,7 @@ inputs:
       root: alert
       accessor: hostip
   required: false
-  description: The host IP from the alert.
+  description: The host IP address from the alert.
   playbookInputQuery:
 - key: username
   value:
@@ -913,7 +913,7 @@ inputs:
 - key: ShouldHandleFPautomatically
   value: {}
   required: false
-  description: Should we automatically handle false positive alerts? Specify true/false.
+  description: Whether to automatically handle false positive alerts? Specify true/false.
   playbookInputQuery:
 outputs: []
 tests:
