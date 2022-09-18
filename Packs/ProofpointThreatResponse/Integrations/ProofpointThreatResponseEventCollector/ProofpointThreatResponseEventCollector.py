@@ -1,3 +1,5 @@
+import copy
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -84,9 +86,10 @@ def list_incidents_command(client, args):
     raw_response = client.get_incidents_request(args)
 
     incidents_list = raw_response[:limit]
-    human_readable = create_incidents_human_readable('List Incidents Results:', incidents_list)
+    events = get_events_from_incidents(incidents_list)
+    human_readable = create_incidents_human_readable('List Incidents Results:', events)
 
-    return incidents_list, human_readable, raw_response
+    return events, human_readable, raw_response
 
 
 def pass_sources_list_filter(incident, sources_list):
@@ -307,7 +310,24 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
 
     demisto.debug(f'Fetched {len(incidents)} events')
 
-    return incidents, last_run
+    events = get_events_from_incidents(incidents)
+    return events, last_run
+
+
+def get_events_from_incidents(incidents):
+    fetched_events = []
+    for incident in incidents:
+        if events := incident.get('events'):
+            for event in events:
+                new_incident = copy.deepcopy(incident)
+                del new_incident['events']
+                new_incident['event'] = event
+                fetched_events.append(new_incident)
+        else:
+            del incident['events']
+            incident['event'] = {}
+            fetched_events.append(incident)
+    return fetched_events
 
 
 def main():  # pragma: no cover

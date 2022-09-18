@@ -3,6 +3,13 @@ from CommonServerPython import *
 from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command
 
 
+def create_json_output_file(result, file_name):
+    json_object = json.dumps(result, indent=4)
+    # Writing to sample.json
+    with open(f'test_data/expected_result.json', "w") as outfile:
+        outfile.write(json_object)
+
+
 def test_fetch_events_command(requests_mock):
     """
     Given:
@@ -17,17 +24,19 @@ def test_fetch_events_command(requests_mock):
     base_url = 'https://server_url/'
     with open('./test_data/raw_response.json', 'r') as f:
         incidents = json.loads(f.read())
+    with open('./test_data/expected_result.json', 'r') as f:
+        expected_result = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents', json=incidents)
     client = Client(base_url=base_url,
                     verify=True,
                     headers={},
                     proxy=False)
-    first_fetch, _ = parse_date_range('6 hours', date_format=TIME_FORMAT)
+    first_fetch, _ = parse_date_range('2 hours', date_format=TIME_FORMAT)
     events, last_fetch = fetch_events_command(client=client, first_fetch=first_fetch, last_run={},
                                               fetch_limit='100',
                                               fetch_delta='6 hours',
                                               incidents_states=['open'])
-    assert last_fetch.get('last_fetched_incident_id', {}).get('open') == 2
+    assert events == expected_result
 
 
 def test_list_incidents_command(requests_mock):
