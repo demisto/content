@@ -28,6 +28,7 @@ integration_panorama_params = {
     'device_group': 'Lab-Devices',
     'server': 'https://1.1.1.1',
     'key': 'thisisabogusAPIKEY!',
+    'template': 'test'
 }
 
 
@@ -1415,6 +1416,7 @@ class MockedResponse:
 
 
 class TestPanoramaCommitCommand:
+
     COMMIT_POLLING_ARGS = {
         'device-group': 'some_device',
         'admin_name': 'some_admin_name',
@@ -3973,3 +3975,565 @@ class TestPanOSEditNatRule:
         main()
         assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSListVirtualRouters:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params, mocked_response_path',
+        [
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'false', 'virtual_router': 'test'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/"
+                             "config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='test']"
+                },
+                'test_data/list-virtual-routers-response.json'
+            ),
+            pytest.param(
+                {'show_uncommitted': 'false', 'virtual_router': 'test'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'show', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response.json'
+            ),
+            pytest.param(
+                {'pre_post': 'pre-rulebase', 'show_uncommitted': 'true', 'virtual_router': 'test'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response-un-commited-router.json'
+            ),
+            pytest.param(
+                {'show_uncommitted': 'true', 'virtual_router': 'test'},
+                integration_firewall_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='test']"
+                },
+                'test_data/list-virtual-routers-response-un-commited-router.json'
+            )
+        ]
+    )
+    def test_pan_os_list_virtual_routers_command_main_flow(
+            self, mocker, args, params, expected_url_params, mocked_response_path
+    ):
+        """
+        Given:
+         - Panorama instance configuration and name to retrieve a specific virtual router that was committed.
+         - Firewall instance configuration and name to retrieve a specific virtual router that was committed.
+         - Panorama instance configuration and name to retrieve a specific virtual router that was not committed.
+         - Firewall instance configuration and name to retrieve a specific virtual router that was not committed.
+
+        When:
+         - running the pan-os-list-virtual-routers through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly for both un-committed and committed cases.
+         - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json(mocked_response_path)
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-virtual-routers')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+            {
+                'BGP': {'enable': 'no',
+                        'routing-options': {'graceful-restart': {'enable': 'yes'}}},
+                'ECMP': {'algorithm': {'ip-modulo': 'None'}},
+                'Interface': None,
+                'Multicast': {},
+                'Name': 'test',
+                'OSPF': {'enable': 'no'},
+                'OSPFv3': {'enable': 'no'},
+                'RIP': {'enable': 'no'},
+                'RedistributionProfile': None,
+                'StaticRoute': None
+            }
+        ]
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSListRedistributionProfiles:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {'virtual_router': 'virtual-router-1', 'template': 'test-override'},
+                integration_panorama_params,
+                {
+                    'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry["
+                             "@name='test-override']/config/devices/entry[@name='localhost.localdomain']/network"
+                             "/virtual-router/entry[@name='virtual-router-1']/protocol/redist-profile"
+                }
+            ),
+            pytest.param(
+                {'virtual_router': 'virtual-router-1'},
+                integration_firewall_params,
+                {
+                    'action': 'get',
+                    'key': 'thisisabogusAPIKEY!',
+                    'type': 'config',
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/"
+                             "entry[@name='virtual-router-1']/protocol/redist-profile"
+                }
+            )
+        ]
+    )
+    def test_pan_os_list_redistribution_profiles_main_flow(
+            self, mocker, args, params, expected_url_params
+    ):
+        """
+        Given:
+         - Panorama instance configuration and name to retrieve redistribution profiles that were not committed.
+         - Firewall instance configuration and name to retrieve redistribution profiles that were not committed.
+
+        When:
+         - running the pan-os-list-redistribution-profiles through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct for both panorama/firewall and that template gets overriden
+             when using panorama instance.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json(
+                'test_data/list-redistribution-profiles-un-committed-response.json'
+            )
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-redistribution-profiles')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+            {
+                'Name': 'test1', 'Priority': '1', 'Action': 'redist', 'FilterInterface': 'loopback',
+                'FilterType': ['bgp', 'connect', 'ospf', 'rip', 'static'], 'FilterDestination': '1.1.1.1',
+                'FilterNextHop': '2.2.2.2',
+                'BGP': {'Community': ['local-as', 'no-export'], 'ExtendedCommunity': '0x4164ACFCE33404EA'},
+                'OSPF': {
+                    'PathType': ['ext-1', 'ext-2', 'inter-area', 'intra-area'],
+                    'Area': ['1.1.1.1', '2.2.2.2'], 'Tag': '1'}
+            },
+            {
+                'Name': 'test-2', 'Priority': '123', 'Action': 'no-redist', 'FilterInterface': None,
+                'FilterType': None, 'FilterDestination': None, 'FilterNextHop': None, 'BGP': None, 'OSPF': None
+            }
+        ]
+
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSCreateRedistributionProfile:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile', 'priority': '12',
+                    'action': 'redist', 'filter_bgp_extended_community': '0x4164ACFCE33404EA',
+                    'filter_source_type': 'bgp,ospf', 'filter_ospf_area': '1.1.1.1,2.2.2.2'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/"
+                             "config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry["
+                             "@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'element': '<priority>12</priority><action><redist/></action><filter><ospf><area><member>1.1.1.1<'
+                               '/member><member>2.2.2.2</member></area></ospf><bgp><extended-community>'
+                               '<member>0x4164ACFCE33404EA</member></extended-community></bgp><type><member>bgp'
+                               '</member><member>ospf</member></type></filter>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile', 'interface': 'loopback',
+                    'filter_ospf_tag': '1.1.1.1,2.2.2.2', 'filter_source_type': 'ospf,bgp',
+                    'filter_ospf_path_type': 'ext-1,ext-2'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                    'element': '<filter><ospf><path-type><member>ext-1</member><member>ext-2</member></path-type><tag>'
+                               '<member>1.1.1.1</member><member>2.2.2.2</member></tag></ospf><type><member>'
+                               'ospf</member><member>bgp</member></type><interface><member>loopback</member>'
+                               '</interface></filter>',
+                    'action': 'set', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_create_redistribution_profile_command_main_flow(self, mocker, args, params, expected_url_params):
+        """
+        Given:
+        - Panorama instance configuration and arguments to create a redistribution-profile.
+        - Firewall instance configuration and arguments to create a redistribution-profile.
+
+        When:
+        - running the pan-os-create-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-create-redistribution-profile')
+
+        main()
+
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+class TestPanOSEditRedistributionProfile:
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'priority', 'element_value': '50', 'behavior': 'replace'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/"
+                             "config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/priority",
+                    'element': '<priority>50</priority>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_type', 'element_value': 'bgp,ospf', 'behavior': 'replace'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/config"
+                             "/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/type", 'element': '<type><member>bgp</member><member>ospf</member></type>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1,2.2.2.2,3.3.3.3',
+                    'behavior': 'replace'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/config"
+                             "/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/ospf/area",
+                    'element': '<area><member>1.1.1.1</member><member>2.2.2.2</member><member>3.3.3.3</member></area>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_bgp_extended_community', 'element_value': '0x4164ACFCE33404EA',
+                    'behavior': 'replace'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/bgp/community",
+                    'element': '<extended-community><member>0x4164ACFCE33404EA</member></extended-community>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_destination', 'element_value': '1.1.1.1,2.2.2.2',
+                    'behavior': 'replace'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/destination",
+                    'element': '<destination><member>1.1.1.1</member><member>2.2.2.2</member></destination>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_replace_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Tests several cases where behavior == 'replace'
+
+        Given:
+        - Panorama instance configuration and priority object of a redistribution-profile to edit.
+        - Panorama instance configuration and filter_type object of a redistribution-profile to edit.
+        - Panorama instance configuration and filter_ospf_area object of a redistribution-profile to edit.
+        - Firewall instance configuration and filter_bgp_extended_community object of a redistribution-profile to edit.
+        - Firewall instance configuration and filter_destination object of a redistribution-profile to edit.
+
+        When:
+        - running the pan-os-edit-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-redistribution-profile')
+
+        main()
+
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_nexthop', 'element_value': '2.2.2.2,3.3.3.3', 'behavior': 'add'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
+                             "/entry[@name='virtual-router']/protocol/redist-profile/entry"
+                             "[@name='redistribution-profile']/filter/nexthop",
+                    'element': '<nexthop><member>1.1.1.1</member><member>3.3.3.3</member'
+                               '><member>2.2.2.2</member></nexthop>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_nexthop', 'element_value': '2.2.2.2,3.3.3.3', 'behavior': 'add'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/nexthop",
+                    'element': '<nexthop><member>1.1.1.1</member><member>2.2.2.2</'
+                               'member><member>3.3.3.3</member></nexthop>',
+                    'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+                }
+
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_add_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Tests cases where behavior == 'add'
+
+        Given:
+        - Panorama instance configuration and nexthop object of a redistribution-profile to add.
+        - Firewall instance configuration and nexthop object of a redistribution-profile to add.
+
+        When:
+        - running the pan-os-edit-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'nexthop': {'member': '1.1.1.1'}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-redistribution-profile')
+
+        main()
+        assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
+        assert '1.1.1.1' in mock_request.call_args.kwargs['params']['element']
+        assert '2.2.2.2' in mock_request.call_args.kwargs['params']['element']
+        assert '3.3.3.3' in mock_request.call_args.kwargs['params']['element']
+
+    @pytest.mark.parametrize(
+        'args, params, expected_url_params',
+        [
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1', 'behavior': 'remove'
+                },
+                integration_panorama_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']"
+                             "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry"
+                             "[@name='redistribution-profile']/filter/ospf/area",
+                    'element': '<area />',
+                    'action': 'edit',
+                    'type': 'config',
+                    'key': 'thisisabogusAPIKEY!'
+                }
+            ),
+            pytest.param(
+                {
+                    'virtual_router': 'virtual-router', 'name': 'redistribution-profile',
+                    'element_to_change': 'filter_ospf_area', 'element_value': '1.1.1.1', 'behavior': 'remove'
+                },
+                integration_firewall_params,
+                {
+                    'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                             "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
+                             "/filter/ospf/area",
+                    'element': '<area />',
+                    'action': 'edit',
+                    'type': 'config',
+                    'key': 'thisisabogusAPIKEY!'
+                }
+            )
+        ]
+    )
+    def test_pan_os_edit_redistribution_profile_command_remove_action_main_flow(
+        self, mocker, args, params, expected_url_params
+    ):
+        """
+        Tests cases where behavior == 'remove'
+
+        Given:
+        - Panorama instance configuration and area object of a redistribution-profile to remove.
+        - Firewall instance configuration and area object of a redistribution-profile to remove.
+
+        When:
+        - running the pan-os-edit-redistribution-profile through the main flow.
+
+        Then:
+        - make sure the xpath and the request is correct for both panorama/firewall.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request",
+            return_value={
+                'response': {
+                    '@status': 'success', '@code': '19', 'result': {
+                        '@total-count': '1', '@count': '1', 'area': {'member': ['1.1.1.1']}
+                    }
+                }
+            }
+        )
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-redistribution-profile')
+
+        main()
+        assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+            },
+            integration_panorama_params,
+            {
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='test']/c"
+                         "onfig/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                         "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        ),
+        pytest.param(
+            {
+                'virtual_router': 'virtual-router', 'name': 'redistribution-profile'
+            },
+            integration_firewall_params,
+            {
+                'xpath': "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
+                         "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']",
+                'action': 'delete', 'type': 'config', 'key': 'thisisabogusAPIKEY!'
+            }
+        )
+    ]
+)
+def test_pan_os_delete_redistribution_profile_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+    - Panorama instance configuration and arguments to delete a redistribution-profile.
+    - Firewall instance configuration and arguments to delete a redistribution-profile.
+
+    When:
+    - running the pan-os-delete-redistribution-profile through the main flow.
+
+    Then:
+    - make sure the xpath and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-delete-redistribution-profile')
+
+    main()
+
+    assert mock_request.call_args.kwargs['params'] == expected_url_params

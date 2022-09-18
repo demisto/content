@@ -7635,3 +7635,407 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Nat rule test was edited successfully.
+### pan-os-list-virtual-routers
+***
+Returns a list of virtual routers of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-virtual-routers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| virtual_router | The name of the virtual router to retrieve, if not mentioned will bring all the virtual routers. | Optional | 
+| template | The template in which the virtual router are part of. Use only for panorama instances. | Optional | 
+| show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of virtual routers to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing virtual-routers, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.VirtualRouter.Name | String | The name of the virtual Router | 
+| Panorama.VirtualRouter.Interface | Unknown | The interface\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.RIP | Unknown | Information about the RIP of the virtual router. | 
+| Panorama.VirtualRouter.OSPF | Unknown | Information about the OSPF of the virtual router. | 
+| Panorama.VirtualRouter.OSPFv3 | Unknown | Information about the OSPFv3 of the virtual router. | 
+| Panorama.VirtualRouter.BGP | Unknown | Information about the BGP of the virtual router. | 
+| Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.Multicast | Unknown | Information about the Multicast of the virtual router. | 
+| Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
+
+#### Command example
+```!pan-os-list-virtual-routers show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "VirtualRouter": [
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": null,
+                "Multicast": {},
+                "Name": "virtual-router-1",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "enable": "no"
+                },
+                "RedistributionProfile": {},
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": [
+                                {
+                                    "@name": "static_route_ip",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "14",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip2",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "188",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip3",
+                                    "destination": "1.1.1.1/32",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": "loopback",
+                "Multicast": {
+                    "enable": "no",
+                    "rp": {
+                        "local-rp": {
+                            "candidate-rp": {
+                                "interface": "loopback"
+                            }
+                        }
+                    }
+                },
+                "Name": "virtual-router-2",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "auth-profile": {
+                        "entry": {
+                            "@name": "213"
+                        }
+                    },
+                    "enable": "no",
+                    "export-rules": {
+                        "entry": {
+                            "@name": "test1"
+                        }
+                    },
+                    "interface": {
+                        "entry": {
+                            "@name": "loopback",
+                            "bfd": {
+                                "profile": "Inherit-vr-global-setting"
+                            },
+                            "default-route": {
+                                "disable": {}
+                            },
+                            "enable": "yes",
+                            "mode": "normal"
+                        }
+                    }
+                },
+                "RedistributionProfile": {
+                    "entry": [
+                        {
+                            "@name": "test1",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "1"
+                        },
+                        {
+                            "@name": "test-2",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "123"
+                        }
+                    ]
+                },
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": {
+                                "@name": "test",
+                                "bfd": {
+                                    "profile": "None"
+                                },
+                                "destination": "1.1.1.1",
+                                "metric": "10",
+                                "nexthop": {
+                                    "ip-address": "2.2.2.2"
+                                },
+                                "path-monitor": {
+                                    "enable": "no",
+                                    "failure-condition": "any",
+                                    "hold-time": "2"
+                                },
+                                "route-table": {
+                                    "unicast": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Routers:
+>|BGP|Interface|Multicast| Name             |OSPF|OSPFv3|RIP|RedistributionProfile|StaticRoute|
+>|---|---|------------------|---|---|---|---|---|---|
+>| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
+>| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
+
+### pan-os-list-redistribution-profiles
+***
+Returns a list of redistribution-profiles of a specific virtual-router of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-redistribution-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Redistribution profile name. | Optional | 
+| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. can be retrieved from pan-os-list-virtual-routers. | Required | 
+| template | The template in which the redistribution profiles are part of. Use only for panorama instances. | Optional | 
+| limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-list-redistribution-profiles virtual_router=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RedistributionProfile": [
+            {
+                "Action": "redist",
+                "BGP": {
+                    "Community": [
+                        "local-as",
+                        "no-export"
+                    ],
+                    "ExtendedCommunity": "0x4164ACFCE33404EA"
+                },
+                "FilterDestination": "1.1.1.1",
+                "FilterInterface": "loopback",
+                "FilterNextHop": "2.2.2.2",
+                "FilterType": [
+                    "bgp",
+                    "connect",
+                    "ospf",
+                    "rip",
+                    "static"
+                ],
+                "Name": "test1",
+                "OSPF": {
+                    "Area": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                    ],
+                    "PathType": [
+                        "ext-1",
+                        "ext-2",
+                        "inter-area",
+                        "intra-area"
+                    ],
+                    "Tag": "1"
+                },
+                "Priority": "1"
+            },
+            {
+                "Action": "no-redist",
+                "BGP": null,
+                "FilterDestination": null,
+                "FilterInterface": null,
+                "FilterNextHop": null,
+                "FilterType": null,
+                "Name": "test-2",
+                "OSPF": null,
+                "Priority": "123"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Redistribution profiles for virtual router test-guy
+>|Name|Priority|Action|Filter Type|Filter Destination|Filter Next Hop|BGP|OSPF|
+>|---|---|---|---|---|---|---|---|
+>| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
+>| test-2 | 123 | no-redist |  |  |  |  |  |
+
+### pan-os-create-redistribution-profile
+***
+Creates a new redistribution-profile in panorama/firewall instance. If trying to create an existing profile, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the of the redistribution profile to create. | Required | 
+| virtual_router | The virtual router that the redistribution profile will be created on. | Required | 
+| template | The template in which the virtual-router is in. Use only for panorama instances. | Optional | 
+| filter_source_type | Comma separated list of The filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
+| destination | A comma-separated list of destination to filter by. | Optional | 
+| nexthop | A comma-separated list of next-hops to filter by. | Optional | 
+| interface | A comma-separated list of interfaces to filter by. | Optional | 
+| priority | The priority of the profile. (1-255). | Required | 
+| action | The action of the profile. Possible values are: redist, no-redist. | Optional | 
+| filter_ospf_area | A comma-separated list of areas for the OSPF. | Optional | 
+| filter_ospf_tag | A comma-separated list of tags for the OSPF. | Optional | 
+| filter_ospf_path_type | A comma-separated list of path types for the OSPF. Possible values are: ext-1, ext-2, inter-area, intra-area. | Optional | 
+| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format - where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
+| filter_bgp_extended_community | A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1```
+#### Human Readable Output
+
+>Redistribution profile test was created successfully.
+### pan-os-edit-redistribution-profile
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to edit. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
+| element_to_change | The element to change. Possible values are: filter_type, filter_destination, filter_nexthop, filter_interface, priority, action, filter_ospf_area, filter_ospf_tag, filter_ospf_path_type, filter_bgp_community, filter_bgp_extended_community. | Required | 
+| element_value | The value of the element to change. Can be a list for all the elements except priority and action. | Required | 
+| behavior | The operation to perform on the profile. Possible values are: replace, add, remove. Default is replace. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf```
+#### Human Readable Output
+
+>Redistribution profile test was edited successfully.
+
+### pan-os-delete-redistribution-profile
+***
+Deletes a redistribution-profile from a virtual-router.
+
+
+#### Base Command
+
+`pan-os-delete-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to delete. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-redistribution-profile virtual_router=test1 name=test```
+#### Human Readable Output
+
+>Redistribution profile test was deleted successfully.

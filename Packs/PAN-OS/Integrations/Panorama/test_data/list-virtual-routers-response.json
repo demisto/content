@@ -1,0 +1,37 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "entry":{
+            "@name":"test",
+            "ecmp":{
+               "algorithm":{
+                  "ip-modulo":"None"
+               }
+            },
+            "protocol":{
+               "bgp":{
+                  "routing-options":{
+                     "graceful-restart":{
+                        "enable":"yes"
+                     }
+                  },
+                  "enable":"no"
+               },
+               "rip":{
+                  "enable":"no"
+               },
+               "ospf":{
+                  "enable":"no"
+               },
+               "ospfv3":{
+                  "enable":"no"
+               }
+            }
+         }
+      }
+   }
+}
