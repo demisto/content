@@ -15,6 +15,16 @@ commonfields:
   version: -1
 enabled: true
 name: StixParserV2
+outputs:
+- contextPath: STIXParser.value
+  description: ...
+  type: String
+- contextPath: STIXParser.type
+  description: ...
+  type: string
+- contextPath: STIXParser.rawJSON
+  description: ...
+  type: string
 script: '-'
 system: true
 tags:
