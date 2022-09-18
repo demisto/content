@@ -1,0 +1,303 @@
+{
+  "templates_data": [
+    {
+      "report_name": "export1",
+      "report_description": "2 x custom widgets, default config",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "export1",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "9994801706708",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "description": "2 x custom widgets, default config",
+                "customerName": "41st Parameter"
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-293",
+          "data": [
+            {
+              "key": "xql_1650873228590",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "dataset = xdr_data ",
+                "entityType": "xql-widget-table-f47e9565-67f9-4ff7-8ac0-f63e5736102b",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3024",
+          "data": [
+            {
+              "key": "xql_1650873339410",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "dataset = endpoints | filter (endpoint_status in (ENUM.CONNECTED , ENUM.DISCONNECTED, ENUM.CONNECTION_LOST, ENUM.FORENSICS_OFFLINE, ENUM.UNINSTALLED, ENUM.DELETED))",
+                "entityType": "xql-widget-table-31e56f30-e0d7-4367-8923-d2bad1abd618",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 86400000
+      },
+      "global_id": "39bebb6440ee4dde843565b54672eb68",
+      "time_offset": 0
+    },
+    {
+      "report_name": "exportTemplate-custom1",
+      "report_description": "custom widgets, non-default settings",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "exportTemplate-custom1",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "9994801706708",
+                "description": "custom widgets, non-default settings",
+                "customerName": "41st Parameter"
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3054",
+          "data": [
+            {
+              "key": "xql_1636028800491",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "dataset = xdr_data ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3096",
+          "data": [
+            {
+              "key": "xql_1649659377880",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "dataset = endpoints | view graph type = pie xaxis = endpoint_name yaxis = content_rollout_delay_days_ ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "endpoint_name"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "content_rollout_delay_days_"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 2592000000
+      },
+      "global_id": "8bfd4345abe54f4ba7e22f0551640ea2",
+      "time_offset": 0
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1636028800491",
+      "title": "xdrrrrr",
+      "creation_time": 1636028800491,
+      "description": null,
+      "data": {
+        "phrase": "dataset = xdr_data ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "zshindelman@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1649659377880",
+      "title": "Test",
+      "creation_time": 1649659377880,
+      "description": null,
+      "data": {
+        "phrase": "dataset = endpoints | view graph type = pie xaxis = endpoint_name yaxis = content_rollout_delay_days_ ",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "endpoint_name"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "content_rollout_delay_days_"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "afaitelson@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1650873228590",
+      "title": "Dataset= all xdr_data 1M",
+      "creation_time": 1650873228590,
+      "description": null,
+      "data": {
+        "phrase": "dataset = xdr_data ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "abahat@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1650873339410",
+      "title": "Endpoint Status - Last month",
+      "creation_time": 1650873339410,
+      "description": null,
+      "data": {
+        "phrase": "dataset = endpoints | filter (endpoint_status in (ENUM.CONNECTED , ENUM.DISCONNECTED, ENUM.CONNECTION_LOST, ENUM.FORENSICS_OFFLINE, ENUM.UNINSTALLED, ENUM.DELETED))",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "endpoints"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "abahat@paloaltonetworks.com"
+    }
+  ]
+}

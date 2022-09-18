@@ -24,6 +24,9 @@
             "display_name": "Common Playbooks"
         }
     },
+    "videos": [
+        "https://www.youtube.com/watch?v=Wk1g43cgo98"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

@@ -1,0 +1,777 @@
+{
+  "dashboards_data": [
+    {
+      "name": "Okta SSO Dashboard",
+      "description": null,
+      "status": "ENABLED",
+      "sharing": "PUBLIC",
+      "layout": [
+        {
+          "id": "row-6967",
+          "data": [
+            {
+              "key": "xql_1623836588988",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 269,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_identity \r\n| sort desc counter\r\n| limit 10\n| view graph type = pie xaxis = auth_identity yaxis = counter font = \"Arial\" legendfontsize = 12 calloutfontsize = 12 ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "auth_identity"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legendfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "calloutfontsize",
+                        "value": "12"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "key": "xql_1623836675003",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 269,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_target  \r\n| sort desc counter\r\n| limit 10\n| view graph type = pie xaxis = auth_target yaxis = counter font = \"Arial\" legendfontsize = 12 calloutfontsize = 12 ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "auth_target"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legendfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "calloutfontsize",
+                        "value": "12"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "key": "xql_1623837173399",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 269,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_client_type     \r\n| sort desc counter\n| view graph type = pie subtype = semi_donut xaxis = auth_client_type yaxis = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 calloutfontsize = 12 ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "semi_donut"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "auth_client_type"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "headerfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legendfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "calloutfontsize",
+                        "value": "12"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1230",
+          "data": [
+            {
+              "key": "xql_1623836886793",
+              "data": {
+                "type": "Custom XQL",
+                "width": 66.8233713902,
+                "height": 395,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by action_user_agent \r\n| sort desc counter\r\n| limit 10",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": [
+                    
+                  ]
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {
+                    "action_user_agent": "{\"pinned\":null,\"width\":null,\"hide\":false}"
+                  },
+                  "rowHeight": "{\"rowHeight\":40,\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": "\"stretch\""
+                }
+              }
+            },
+            {
+              "key": "xql_1623837518274",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.1766286098,
+                "height": 395,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_outcome      \r\n| sort desc counter\n| view graph type = bubble subtype = packed show_callouts = true show_callouts_names = true xaxis = auth_outcome yaxis = counter bubblerad = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 calloutfontsize = 12 legend = false ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "bubble",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "packed"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "show_callouts",
+                        "value": "true"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "show_callouts_names",
+                        "value": "true"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "auth_outcome"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "bubblerad",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "headerfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legendfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "calloutfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legend",
+                        "value": "false"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-7315",
+          "data": [
+            {
+              "key": "xql_1623837159287",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| iploc auth_client \r\n| comp count(event_id ) as counter by loc_country    \r\n| sort desc counter\n| view graph type = map xaxis = loc_country yaxis = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 legend = false ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "map",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "loc_country"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "counter"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "font",
+                        "value": "\"Arial\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "headerfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legendfontsize",
+                        "value": "12"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "legend",
+                        "value": "false"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "ce27311ce69c41b1b4a84c7888b34854"
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1623836588988",
+      "title": "Okta Identities",
+      "creation_time": 1618303947369,
+      "description": "",
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_identity \r\n| sort desc counter\r\n| limit 10\n| view graph type = pie xaxis = auth_identity yaxis = counter font = \"Arial\" legendfontsize = 12 calloutfontsize = 12 ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "auth_identity"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legendfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "calloutfontsize",
+                "value": "12"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1623836675003",
+      "title": "Okta Targets",
+      "creation_time": 1624365753840,
+      "description": null,
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_target  \r\n| sort desc counter\r\n| limit 10\n| view graph type = pie xaxis = auth_target yaxis = counter font = \"Arial\" legendfontsize = 12 calloutfontsize = 12 ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "auth_target"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legendfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "calloutfontsize",
+                "value": "12"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1623836886793",
+      "title": "Okta User-Agents",
+      "creation_time": 1625391762082,
+      "description": null,
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by action_user_agent \r\n| sort desc counter\r\n| limit 10",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": [
+            
+          ]
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+            "action_user_agent": "{\"pinned\":null,\"width\":null,\"hide\":false}"
+          },
+          "rowHeight": "{\"rowHeight\":40,\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": "\"stretch\""
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1623837159287",
+      "title": "Okta Locations",
+      "creation_time": 1646052781404,
+      "description": null,
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| iploc auth_client \r\n| comp count(event_id ) as counter by loc_country    \r\n| sort desc counter\n| view graph type = map xaxis = loc_country yaxis = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 legend = false ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "map",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "loc_country"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "headerfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legendfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legend",
+                "value": "false"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1623837173399",
+      "title": "Okta Client Types",
+      "creation_time": 1646052781404,
+      "description": null,
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_client_type     \r\n| sort desc counter\n| view graph type = pie subtype = semi_donut xaxis = auth_client_type yaxis = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 calloutfontsize = 12 ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "semi_donut"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "auth_client_type"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "headerfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legendfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "calloutfontsize",
+                "value": "12"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    },
+    {
+      "widget_key": "xql_1623837518274",
+      "title": "Okta Auth Outcome",
+      "creation_time": 1646052781404,
+      "description": null,
+      "data": {
+        "phrase": "preset = authentication_story \r\n| filter associated_vendors = \"Okta\"\r\n| comp count(event_id ) as counter by auth_outcome      \r\n| sort desc counter\n| view graph type = bubble subtype = packed show_callouts = true show_callouts_names = true xaxis = auth_outcome yaxis = counter bubblerad = counter font = \"Arial\" headerfontsize = 12 legendfontsize = 12 calloutfontsize = 12 legend = false ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "bubble",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "packed"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "show_callouts",
+                "value": "true"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "show_callouts_names",
+                "value": "true"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "auth_outcome"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "bubblerad",
+                "value": "counter"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "font",
+                "value": "\"Arial\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "headerfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legendfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "calloutfontsize",
+                "value": "12"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "legend",
+                "value": "false"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "xdr_data"
+        ],
+        "query_uses_library": false
+      },
+      "creator_mail": "vfintushal@paloaltonetworks.com"
+    }
+  ]
+}
