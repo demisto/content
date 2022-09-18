@@ -501,8 +501,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "bf221628a4f0d626e0d34294155bd4a44f37fbcb"
-resolved_reference = "bf221628a4f0d626e0d34294155bd4a44f37fbcb"
+reference = "7cdde2e511b2819c3938aa5b03ea0ff809b971a2"
+resolved_reference = "7cdde2e511b2819c3938aa5b03ea0ff809b971a2"
 
 [[package]]
 name = "Deprecated"
@@ -1978,7 +1978,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-Markdown"
-version = "3.4.1"
+version = "3.4.2"
 description = "Typing stubs for Markdown"
 category = "main"
 optional = false
@@ -2257,7 +2257,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "2bf6972d42374012eb41ecb1e579d4abd0a0f7a69fece30e9231675d69ce76ed"
+content-hash = "402202eee35cc29f4504a3a9f444d02262153b46b0b885121b51c6b50bc135f5"
 
 [metadata.files]
 aiohttp = [
@@ -3751,8 +3751,8 @@ types-ipaddress = [
     {file = "types_ipaddress-1.0.8-py3-none-any.whl", hash = "sha256:4933b74da157ba877b1a705d64f6fa7742745e9ffd65e51011f370c11ebedb55"},
 ]
 types-Markdown = [
-    {file = "types-Markdown-3.4.1.tar.gz", hash = "sha256:cda9bfd1fcb11e8133a037f8a184e3059ae7389a5f5cc0b53117bf2902aca10d"},
-    {file = "types_Markdown-3.4.1-py3-none-any.whl", hash = "sha256:2d1e5bfff192c78d6644bc3820fea9c7c7cb42dc87558020728ec5b728448ce2"},
+    {file = "types-Markdown-3.4.2.tar.gz", hash = "sha256:7c5b2346873ae12d548de684a25920009f2446f0ea42ce8c5559eb9a3ac10072"},
+    {file = "types_Markdown-3.4.2-py3-none-any.whl", hash = "sha256:7dd9fe8bd2645ec984f438b255f42b795507b5cd2a998cc1970ec13f443dc832"},
 ]
 types-paramiko = [
     {file = "types-paramiko-2.11.6.tar.gz", hash = "sha256:cfc9f12047bcf5cfaa6b7a5ad9d777d41ff4fe04ca2bb9bcf55c88dff02037e5"},
