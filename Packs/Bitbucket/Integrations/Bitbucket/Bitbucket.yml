@@ -62,7 +62,7 @@ script:
           description: The specific result page to display.
       outputs:
         - contextPath: Bitbucket.Project.type
-          description: 'The type of the action.'
+          description: 'The type of the object.'
           type: String
         - contextPath: Bitbucket.Project.owner.display_name
           description: 'The project owner name.'
@@ -1748,7 +1748,7 @@ script:
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment to delete.
+          description: The id of the comment to delete. In order to get the comment id, use the command "bitbucket-issue-comment-list"
           isArray: false
     - name: bitbucket-issue-comment-list
       description: Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
@@ -2187,11 +2187,11 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request.
+          description: The id of the pull request. In order to get the pull request id use the command "!bitbucket-pull-request-list"
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment.
+          description: The id of the comment. In order to get the comment id use the command "bitbucket-pull-request-comment-list".
           isArray: false
     - name: bitbucket-workspace-member-list
       description: returns a list of all the members in the workspace.

@@ -1,4 +1,4 @@
-import demisto_client.demisto_api
+from requests import Response
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -56,11 +56,11 @@ class Client(BaseClient):
         }
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def branch_delete_request(self, branch_name: str, repo: str = None) -> str:
+    def branch_delete_request(self, branch_name: str, repo: str = None) -> Response:
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
-    def commit_create_request(self, body: Dict, repo: str = None):
+    def commit_create_request(self, body: Dict, repo: str = None) -> Response:
         url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
@@ -83,14 +83,14 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   params=params)
 
-    def file_delete_request(self, body: Dict, repo: str = None) -> Dict:
+    def file_delete_request(self, body: Dict, repo: str = None) -> Response:
         url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
                                   data=body,
                                   resp_type='response')
 
-    def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Dict:
+    def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Response:
         url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
@@ -183,7 +183,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def issue_comment_delete_request(self, repo: str, issue_id: str, comment_id: str) -> Dict:
+    def issue_comment_delete_request(self, repo: str, issue_id: str, comment_id: str) -> Response:
         """ Makes a DELETE request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to delete
             a comment in an issue.
             :param repo: str - The repository the user entered, if he did.
@@ -277,7 +277,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def pull_request_comment_delete_request(self, repo: str, pr_id: int, comment_id: str) -> Dict:
+    def pull_request_comment_delete_request(self, repo: str, pr_id: int, comment_id: str) -> Response:
         """ Makes a DELETE request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
             to delete a specific comment in a pull request.
             :param repo: str - The repository the user entered, if he did.
@@ -496,7 +496,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
 def branch_create_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     name = args.get('name', None)
-    target_branch = args.get('target_branch')
+    target_branch = args.get('target_branch', None)
     if not repo:
         repo = client.repository
     response = client.branch_create_request(name, target_branch, repo)
@@ -639,11 +639,11 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
     else:
         including_list = None
     commit_list = client.commit_list_request(repo=repo, params=params, included_list=including_list)
-
-    if len(commit_list.get('values')) == 0:
+    values: List = commit_list.get('values', [])
+    if len(values) == 0:
         return [CommandResults(readable_output=f'The file {file_path} does not exist')]
 
-    commit_hash = commit_list.get('values')[0].get('hash')
+    commit_hash = values[0].get('hash')
     response = client.raw_file_get_request(repo, file_path, commit_hash)
     output = {
         'file_path': file_path,
@@ -758,7 +758,7 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with a dictionary contains the updated issue.
     """
     repo = args.get('repo', None)
-    issue_id = arg_to_number(args.get('issue_id', None))
+    issue_id = int(args.get('issue_id', None))
     title = args.get('title', None)
     state = args.get('state')
     issue_type = args.get('type')
@@ -803,7 +803,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', None)
     title = args.get('title', None)
-    source_branch = args.get('source_branch')
+    source_branch = args.get('source_branch', None)
     destination_branch = args.get('destination_branch', None)
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
@@ -830,7 +830,7 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', None)
     pull_request_id = args.get('pull_request_id', None)
     title = args.get('title', None)
-    source_branch = args.get('source_branch')
+    source_branch = args.get('source_branch', None)
     destination_branch = args.get('destination_branch', None)
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
@@ -948,7 +948,7 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
     comment_id = args.get('comment_id', None)
     if not repo:
         repo = client.repository
-    response = client.issue_comment_delete_request(repo, issue_id, comment_id)
+    client.issue_comment_delete_request(repo, issue_id, comment_id)
     return CommandResults(
         readable_output=f'The comment on issue number {issue_id} was deleted successfully',
         outputs_prefix='Bitbucket.IssueComment',
@@ -1046,7 +1046,7 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
         A CommandResult object with a success message, in case of a successful creation of a comment.
     """
     repo = args.get('repo', None)
-    pr_id = arg_to_number(args.get('pull_request_id', None))
+    pr_id = int(args.get('pull_request_id', None))
     content = args.get('content', None)
     body = {
         'content': {
@@ -1071,7 +1071,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         A CommandResult object with a list of the comments or a single comment on a specific issue.
     """
     repo = args.get('repo', None)
-    pr_id = arg_to_number(args.get('pull_request_id'))
+    pr_id = int(args.get('pull_request_id', None))
     comment_id = args.get('comment_id', None)
     limit = int(args.get('limit', 50))
     page = int(args.get('page', 1))
@@ -1133,7 +1133,7 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
             A CommandResult object with a success message.
     """
     repo = args.get('repo', None)
-    pr_id = arg_to_number(args.get('pull_request_id'))
+    pr_id = int(args.get('pull_request_id', None))
     comment_id = args.get('comment_id', None)
     content = args.get('content')
     if not repo:
@@ -1160,7 +1160,7 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
             A CommandResult object with a success message.
     """
     repo = args.get('repo', None)
-    pr_id = arg_to_number(args.get('pull_request_id'))
+    pr_id = int(args.get('pull_request_id', None))
     comment_id = args.get('comment_id', None)
     if not repo:
         repo = client.repository
@@ -1242,10 +1242,10 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            str_result: str = test_module(client)
+            return_results(str_result)
         elif demisto.command() == 'bitbucket-project-list':
-            result = project_list_command(client, demisto.args())
+            result: CommandResults = project_list_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'bitbucket-open-branch-list':
             result = open_branch_list_command(client, demisto.args())
@@ -1269,8 +1269,8 @@ def main() -> None:  # pragma: no cover
             result = file_delete_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'bitbucket-raw-file-get':
-            result = raw_file_get_command(client, demisto.args())
-            return_results(result)
+            result_list = raw_file_get_command(client, demisto.args())
+            return_results(result_list)
         elif demisto.command() == 'bitbucket-issue-create':
             result = issue_create_command(client, demisto.args())
             return_results(result)
