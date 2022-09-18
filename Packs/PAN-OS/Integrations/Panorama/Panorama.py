@@ -3356,7 +3356,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     current_object = result.get(element_to_change, {})
     if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+        raise DemistoException('Please commit the instance prior to editing the rule.')
 
     current_objects_items = []
 
@@ -11142,6 +11142,872 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None):
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
+    if name:
+        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
+    return _xpath
+
+
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None):
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommited else 'show',
+        'key': API_KEY,
+        # rulebase is for firewall instance.
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
+
+    for key in keys_to_remove:
+        if key in dictionary:
+            del dictionary[key]
+
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            parse_pan_os_un_committed_data(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
+
+
+def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> List[Dict]:
+
+    def parse_source_translation(_entry):
+
+        source_translation_object = _entry.get('source-translation', {})
+
+        for _source_translation_type in ('dynamic-ip', 'dynamic-ip-and-port', 'static-ip'):
+            if _source_translation := source_translation_object.get(_source_translation_type):
+                pretty_context = camelize_string(src_str=_source_translation_type, delim='-')
+                if _source_translation_type == 'dynamic-ip-and-port':
+                    if interface := _source_translation.get('interface-address'):
+                        return {pretty_context: {
+                            'InterfaceAddress': extract_objects_info_by_key(interface, 'interface')}
+                        }
+
+                return {pretty_context: {
+                    'TranslatedAddress': extract_objects_info_by_key(_source_translation, 'translated-address')}
+                }
+        return None
+
+    def parse_destination_translation(_entry):
+        destination_translation_object = {}
+        if destination_translation := _entry.get('destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                destination_translation_object['TranslatedAddress'] = translated_address
+            if dns_rewrite := destination_translation.get('dns-rewrite'):
+                destination_translation_object['DNSRewrite'] = dns_rewrite.get('direction')
+        return destination_translation_object if destination_translation_object else None
+
+    def parse_dynamic_destination_translation(_entry):
+        dynamic_destination_translation_object = {}
+        if destination_translation := _entry.get('dynamic-destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                dynamic_destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                dynamic_destination_translation_object['TranslatedAddress'] = translated_address
+            if distribution := destination_translation.get('distribution'):
+                dynamic_destination_translation_object['DistributionMethod'] = distribution
+        return dynamic_destination_translation_object if dynamic_destination_translation_object else None
+
+    if show_uncommited:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Tags': extract_objects_info_by_key(entry, 'tag'),
+            'SourceZone': extract_objects_info_by_key(entry, 'from'),
+            'DestinationZone': extract_objects_info_by_key(entry, 'to'),
+            'SourceAddress': extract_objects_info_by_key(entry, 'source'),
+            'DestinationAddress': extract_objects_info_by_key(entry, 'destination'),
+            'DestinationInterface': extract_objects_info_by_key(entry, 'to-interface'),
+            'Service': extract_objects_info_by_key(entry, 'service'),
+            'Description': extract_objects_info_by_key(entry, 'description'),
+            'SourceTranslation': parse_source_translation(entry),
+            'DestinationTranslation': parse_destination_translation(entry),
+            'DynamicDestinationTranslation': parse_dynamic_destination_translation(entry)
+        } for entry in entries
+    ]
+
+
+def pan_os_list_nat_rules_command(args):
+    name = args.get('name')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = dict_safe_get(result, ['nat', 'rules', 'entry'], default_return_value=[]) or result.get('entry')
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
+
+    if not name:
+        # filter the nat-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=nat_rules,
+        readable_output=tableToMarkdown(
+            'Nat Policy Rules:',
+            nat_rules,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=[
+                'Name', 'Tags', 'SourceZone', 'DestinationZone', 'SourceAddress',
+                'DestinationAddress', 'DestinationInterface', 'Service', 'Description'
+            ]
+        ),
+        outputs_prefix='Panorama.Nat',
+        outputs_key_field='Name'
+    )
+
+
+def create_nat_rule(args):
+    def _set_up_body_request():
+        def _set_up_destination_translation_body_request():
+            destination_translation_type = args.get('destination_translation_type')
+            if destination_translation_type != 'none':
+                destination_translation_body_request = {}
+                if destination_translated_port := args.get('destination_translated_port'):
+                    destination_translation_body_request['translated-port'] = destination_translated_port
+                if destination_translated_address := args.get('destination_translated_address'):
+                    destination_translation_body_request['translated-address'] = destination_translated_address
+                if destination_translation_type == 'static_ip':
+                    if destination_dns_rewrite_direction := args.get('destination_dns_rewrite_direction'):
+                        destination_translation_body_request['dns-rewrite'] = {
+                            'direction': destination_dns_rewrite_direction
+                        }
+                    return {'destination-translation': destination_translation_body_request}
+                else:  # destination_translation_type == dynamic-ip
+                    if method := args.get('destination_translation_distribution_method'):
+                        destination_translation_body_request['distribution'] = method
+                    return {'dynamic-destination-translation': destination_translation_body_request}
+            return {}
+
+        def _set_up_source_translation_body_request():
+            source_translation_type = args.get('source_translation_type')
+            if source_translation_type != 'none':
+                source_translated_address_type = args.get('source_translated_address_type')
+                if source_translated_address_type == 'translated-address':
+                    source_translated_address = args.get('source_translated_address')
+                    if source_translated_address:
+                        return {
+                            'source-translation': {
+                                source_translation_type: prepare_pan_os_objects_body_request(
+                                    'translated-address',
+                                    source_translated_address,
+                                    is_list=False if source_translation_type == 'static-ip' else True
+                                    # dynamic-ip and dynamic-ip-and-port can be a list of IPs
+                                )
+                            }
+                        }
+                    else:
+                        raise DemistoException(
+                            'source_translated_address must be provided '
+                            'if source_translated_address_type == translated-address'
+                        )
+                else:  # interface-address
+                    source_translated_interface = args.get('source_translated_interface')
+                    if source_translated_interface:
+                        if source_translation_type == 'dynamic-ip-and-port':
+                            return {
+                                'source-translation': {
+                                    'dynamic-ip-and-port': {
+                                        'interface-address': prepare_pan_os_objects_body_request(
+                                            'interface', source_translated_interface, is_list=False
+                                        )
+                                    }
+                                }
+                            }
+                        else:
+                            raise DemistoException(
+                                'interface-address can only be set when source_translation_type == dynamic-ip-and-port'
+                            )
+                    else:
+                        raise DemistoException(
+                            'source_translated_interface must be '
+                            'provided if source_translation_type == interface-address'
+                        )
+            return {}
+
+        def _set_up_original_packet_objects_body_request():
+            _packets_objects_body_request = {}
+            arguments_to_pan_os_paths = {
+                'destination_zone': ('to', True),
+                'source_zone': ('from', True),
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'tags': ('tag', True),
+                'service': ('service', False),
+                'description': ('description', False),
+                'nat_type': ('nat-type', False),
+                'destination_interface': ('to-interface', False)
+            }
+
+            for argument, (pan_os_object_path, is_listable_arg) in arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _packets_objects_body_request.update(
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable_arg)
+                    )
+
+            return _packets_objects_body_request
+
+        _body_request = {}
+
+        if negate_destination := args.get('negate_destination'):
+            _body_request['target'] = {
+                'negate': negate_destination
+            }
+
+        _body_request.update(_set_up_source_translation_body_request())
+        _body_request.update(_set_up_destination_translation_body_request())
+        _body_request.update(_set_up_original_packet_objects_body_request())
+
+        return _body_request
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_nat_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': dict_to_xml(_set_up_body_request()),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = create_nat_rule(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was created successfully.'
+    )
+
+
+def pan_os_delete_nat_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    raw_response = pan_os_delete_nat_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was deleted successfully.'
+    )
+
+
+def pan_os_edit_nat_rule(
+    rule_name, pre_post, behavior, element_to_change, element_value, object_name, is_listable=True
+):
+
+    xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_nat_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    un_listable_objects = {
+        'nat_type',
+        'destination_interface',
+        'destination_translation_dynamic_port',
+        'destination_translation_dynamic_ip',
+        'destination_translation_dynamic_distribution_method',
+        'destination_translation_port',
+        'destination_translation_ip',
+        'source_translation_interface',
+        'source_translation_static_ip',
+        'negate_destination',
+        'disabled',
+        'description',
+        'service'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'source_zone': ('from', 'from', True),
+        'destination_zone': ('to', 'to', True),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination', True),
+        'nat_type': ('nat-type', 'nat-type', False),
+        'destination_interface': ('to-interface', 'to-interface', False),
+        'negate_destination': ('target/negate', 'negate', False),
+        'tags': ('tag', 'tag', True),
+        'disabled': ('disabled', 'disabled', False),
+        'service': ('service', 'service', False),
+        'description': ('description', 'description', False),
+        'source_translation_dynamic_ip': (
+            'source-translation/dynamic-ip/translated-address', 'translated-address', True
+        ),
+        'source_translation_static_ip': (
+            'source-translation/static-ip/translated-address', 'translated-address', False
+        ),
+        'source_translation_dynamic_ip_and_port': (
+            'source-translation/dynamic-ip-and-port/translated-address', 'translated-address', True
+        ),
+        'source_translation_interface': (
+            'source-translation/dynamic-ip-and-port/interface-address/interface', 'interface', False
+        ),
+        'destination_translation_dynamic_port': (
+            'dynamic-destination-translation/translated-port', 'translated-port', False
+        ),
+        'destination_translation_dynamic_ip': (
+            'dynamic-destination-translation/translated-address', 'translated-address', False
+        ),
+        'destination_translation_dynamic_distribution_method': (
+            'dynamic-destination-translation/distribution', 'distribution', False
+        ),
+        'destination_translation_port': ('destination-translation/translated-port', 'translated-port', False),
+        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
+    }
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_nat_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        behavior=behavior,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was edited successfully.'
+    )
+
+
+def build_virtual_routers_xpath(name: Optional[str] = None):
+    network_xpath, _ = set_xpath_network()
+    _xpath = f'{network_xpath}/virtual-router'
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_virtual_routers_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def extract_objects_info_by_key(_entry, _key):
+
+    if isinstance(_entry, dict):
+        key_info = _entry.get(_key)
+        if not key_info:  # api could not return the key
+            return None
+
+        if isinstance(key_info, dict) and (_member := key_info.get('member')):
+            return _member
+        elif isinstance(key_info, str):
+            return key_info
+    elif isinstance(_entry, list):
+        return [item.get(_key) for item in _entry]
+    return None
+
+
+def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
+
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        human_readable.append(
+            {
+                'Name': entry.get('@name'),
+                'Interface': extract_objects_info_by_key(entry, 'interface'),
+                'RIP': extract_objects_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
+                'OSPF': extract_objects_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
+                'OSPFv3': extract_objects_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
+                'BGP': extract_objects_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
+                'Multicast': extract_objects_info_by_key(entry.get('multicast', {}), 'enable'),
+                'Static Route': extract_objects_info_by_key(
+                    entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
+                        'entry', {}),
+                    '@name'
+                ),
+                'Redistribution Profile': extract_objects_info_by_key(
+                    entry.get('protocol', {}).get('redist-profile', {}).get('entry', {}), '@name'
+                )
+            }
+        )
+        context.append(
+            {
+                'Name': entry.get('@name'),
+                'Interface': extract_objects_info_by_key(entry, 'interface'),
+                'RIP': entry.get('protocol', {}).get('rip'),
+                'OSPF': entry.get('protocol', {}).get('ospf'),
+                'OSPFv3': entry.get('protocol', {}).get('ospfv3'),
+                'BGP': entry.get('protocol', {}).get('bgp'),
+                'Multicast': entry.get('multicast', {}),
+                'StaticRoute': entry.get('routing-table'),
+                'RedistributionProfile': entry.get('protocol', {}).get('redist-profile'),
+                'ECMP': entry.get('ecmp')
+            }
+        )
+
+    return human_readable, context
+
+
+def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
+    if page is not None:
+        if page <= 0:
+            raise DemistoException(f'page {page} must be a positive number')
+        entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
+    else:
+        entries = entries[:limit]
+
+    return entries
+
+
+def pan_os_list_virtual_routers_command(args):
+    name = args.get('virtual_router')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = result.get('virtual-router', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=context,
+        readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
+        outputs_prefix='Panorama.VirtualRouter',
+        outputs_key_field='Name'
+    )
+
+
+def build_redistribution_profile_xpath(
+    virtual_router_name: Optional[str], redistribution_profile_name: Optional[str], element: Optional[str] = None
+):
+    _xpath = f"{build_virtual_routers_xpath(virtual_router_name)}/protocol/redist-profile"
+    if redistribution_profile_name:
+        _xpath = f"{_xpath}/entry[@name='{redistribution_profile_name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
+    return _xpath
+
+
+def pan_os_list_redistribution_profile(virtual_router_name: Optional[str], redistribution_profile_name: Optional[str]):
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_redistribution_profile_xpath(virtual_router_name, redistribution_profile_name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_redistribution_profiles(entries):
+
+    def extract_bgp_and_ospf_filters(_entry, _filters_types):
+        if not _entry:
+            return None
+
+        filters_by_types = {
+            camelize_string(src_str=filter_type, delim='-'): extract_objects_info_by_key(_entry, filter_type)
+            for filter_type in _filters_types if _entry.get(filter_type)
+        }
+
+        return filters_by_types if filters_by_types else None
+
+    for entry in entries:  # by default we can get also un-committed redistribution rules objects.
+        parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Priority': extract_objects_info_by_key(entry, 'priority'),
+            'Action': list(entry.get('action', {}).keys())[0] if entry.get('action') else None,
+            'FilterInterface': extract_objects_info_by_key(entry.get('filter', {}), 'interface'),
+            'FilterType': extract_objects_info_by_key(entry.get('filter', {}), 'type'),
+            'FilterDestination': extract_objects_info_by_key(entry.get('filter', {}), 'destination'),
+            'FilterNextHop': extract_objects_info_by_key(entry.get('filter', {}), 'nexthop'),
+            'BGP': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('bgp'), _filters_types=['community', 'extended-community']
+            ),
+            'OSPF': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('ospf'), _filters_types=['path-type', 'area', 'tag']
+            )
+        } for entry in entries
+    ]
+
+
+def pan_os_list_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    virtual_router_name = args.get('virtual_router')
+
+    raw_response = pan_os_list_redistribution_profile(virtual_router_name, redistribution_profile_name)
+
+    result = raw_response.get('response', {}).get('result', {})
+    entries = result.get('redist-profile', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not redistribution_profile_name:
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, limit=limit)
+
+    redistribution_profiles = parse_pan_os_list_redistribution_profiles(entries)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=redistribution_profiles,
+        readable_output=tableToMarkdown(
+            f'Redistribution profiles of virtual router {virtual_router_name}:',
+            redistribution_profiles,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=['Name', 'Priority', 'Action', 'FilterType', 'FilterDestination', 'FilterNextHop', 'BGP', 'OSPF']
+        ),
+        outputs_prefix='Panorama.RedistributionProfile',
+        outputs_key_field='Name'
+    )
+
+
+def prepare_pan_os_objects_body_request(key, value, is_list=True):
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def dict_to_xml(_dictionary, contains_xml_chars=False):
+    """
+    Transforms a dict object to an XML string.
+
+    Args:
+        _dictionary (dict): the dict to parse into XML
+        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
+
+    Returns:
+        str: the dict representation in XML.
+    """
+    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    if contains_xml_chars:
+        return xml.replace('&gt;', '>').replace('&lt;', '<')
+    return xml
+
+
+def pan_os_create_redistribution_profile(args):
+    def _set_up_body_request():
+        def _set_up_ospf_filter_body_request():
+            _ospf_filter_body_request = {}
+            if filter_ospf_path_type := args.get('filter_ospf_path_type'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('path-type', filter_ospf_path_type))
+            if filter_ospf_area := args.get('filter_ospf_area'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('area', filter_ospf_area))
+            if filter_ospf_tag := args.get('filter_ospf_tag'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('tag', filter_ospf_tag))
+
+            return {'ospf': _ospf_filter_body_request} if _ospf_filter_body_request else {}
+
+        def _set_up_bgp_filter_body_request():
+            _bgp_filter_body_request = {}
+            if filter_bgp_community := args.get('filter_bgp_community'):
+                _bgp_filter_body_request.update(prepare_pan_os_objects_body_request('community', filter_bgp_community))
+            if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
+                _bgp_filter_body_request.update(
+                    prepare_pan_os_objects_body_request('extended-community', filter_bgp_extended_community)
+                )
+            return {'bgp': _bgp_filter_body_request} if _bgp_filter_body_request else {}
+
+        def _set_up_general_filter_body_request():
+            _general_filters_body_request = {}
+            _arguments_to_pan_os_paths = {
+                'filter_source_type': 'type',
+                'interface': 'interface',
+                'destination': 'destination',
+                'nexthop': 'nexthop'
+            }
+
+            for argument, pan_os_object_path in _arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _general_filters_body_request.update(prepare_pan_os_objects_body_request(pan_os_object_path, argument_value))
+
+            return _general_filters_body_request
+
+        _body_request = {}
+
+        if priority := args.get('priority'):
+            _body_request['priority'] = priority
+        if action := args.get('action'):
+            _body_request['action'] = f'<{action}/>'
+
+        if {
+            'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
+            'filter_ospf_path_type', 'filter_bgp_community', 'filter_bgp_extended_community'
+        }.intersection(set(args.keys())):
+            _body_request['filter'] = {}
+            _body_request['filter'].update(_set_up_ospf_filter_body_request())
+            _body_request['filter'].update(_set_up_bgp_filter_body_request())
+            _body_request['filter'].update(_set_up_general_filter_body_request())
+
+        return _body_request
+
+    params = {
+        'xpath': build_redistribution_profile_xpath(
+            virtual_router_name=args.get('virtual_router'), redistribution_profile_name=args.get('name')
+        ),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    raw_response = pan_os_create_redistribution_profile(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was created successfully.'
+    )
+
+
+def pan_os_edit_redistribution_profile(
+    virtual_router_name,
+    redistribution_profile_name,
+    element_to_change,
+    element_value,
+    object_name,
+    is_listable,
+    behavior
+):
+
+    xpath = build_redistribution_profile_xpath(
+            virtual_router_name, redistribution_profile_name, element=element_to_change
+        )
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=False
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def build_body_request_to_edit_pan_os_object(
+    behavior, object_name, element_value, is_listable, xpath='', should_contain_entries=True
+):
+    """
+    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
+    the requested behavior and a full xpath to the object.
+
+    Args:
+        behavior (str): must be one of add/remove/replace.
+        object_name (str): the name of the object that needs to be updated.
+        element_value (str): the value of the new element.
+        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
+        xpath (str): the full xpath to the object that should be edited. not required if behavior == 'replace'
+        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+
+    Returns:
+        dict: a body request for the new object to update it.
+    """
+
+    if behavior not in {'replace', 'remove', 'add'}:
+        raise ValueError(f'behavior argument must be one of replace/remove/add values')
+
+    if behavior == 'replace':
+        element = prepare_pan_os_objects_body_request(object_name, element_value, is_list=is_listable)
+    else:  # add or remove is only for listable objects.
+        current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
+        if behavior == 'add':
+            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
+        else:  # remove
+            updated_object_items = [item for item in current_objects_items if item not in argToList(element_value)]
+            if not updated_object_items and should_contain_entries:
+                raise DemistoException(f'The object: {object_name} must have at least one item.')
+
+        element = prepare_pan_os_objects_body_request(object_name, updated_object_items, is_list=True)
+
+    return element
+
+
+def pan_os_edit_redistribution_profile_command(args):
+    virtual_router_name, redistribution_profile_name = args.get('virtual_router'), args.get('name')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {'priority', 'action'}
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'filter_type': ('filter/type', 'type', True),
+        'filter_destination': ('filter/destination', 'destination', True),
+        'filter_nexthop': ('filter/nexthop', 'nexthop', True),
+        'filter_interface': ('filter/interface', 'interface', True),
+        'priority': ('priority', 'priority', False),
+        'action': ('action', 'action', False),
+        'filter_ospf_area': ('filter/ospf/area', 'area', True),
+        'filter_ospf_tag': ('filter/ospf/tag', 'tag', True),
+        'filter_ospf_path_type': ('filter/ospf/path-type', 'path-type', True),
+        'filter_bgp_community': ('filter/bgp/community', 'community', True),
+        'filter_bgp_extended_community': ('filter/bgp/community', 'extended-community', True)
+    }
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_redistribution_profile(
+        virtual_router_name=virtual_router_name,
+        redistribution_profile_name=redistribution_profile_name,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable,
+        behavior=behavior
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was edited successfully.'
+    )
+
+
+def pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile):
+    params = {
+        'xpath': build_redistribution_profile_xpath(virtual_router, redistribution_profile),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_redistribution_profile_command(args):
+    redistribution_profile, virtual_router = args.get('name'), args.get('virtual_router')
+    raw_response = pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile} was deleted successfully.'
+    )
+
+
 def build_pbf_xpath(name, pre_post, element_to_change=None):
     _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
     if name:
@@ -12221,6 +13087,24 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-nat-rules':
+            return_results(pan_os_list_nat_rules_command(args))
+        elif command == 'pan-os-create-nat-rule':
+            return_results(pan_os_create_nat_rule_command(args))
+        elif command == 'pan-os-delete-nat-rule':
+            return_results(pan_os_delete_nat_rule_command(args))
+        elif command == 'pan-os-edit-nat-rule':
+            return_results(pan_os_edit_nat_rule_command(args))
+        elif command == 'pan-os-list-virtual-routers':
+            return_results(pan_os_list_virtual_routers_command(args))
+        elif command == 'pan-os-list-redistribution-profiles':
+            return_results(pan_os_list_redistribution_profile_command(args))
+        elif command == 'pan-os-create-redistribution-profile':
+            return_results(pan_os_create_redistribution_profile_command(args))
+        elif command == 'pan-os-edit-redistribution-profile':
+            return_results(pan_os_edit_redistribution_profile_command(args))
+        elif command == 'pan-os-delete-redistribution-profile':
+            return_results(pan_os_delete_redistribution_profile_command(args))
         elif command == 'pan-os-list-pbf-rules':
             return_results(pan_os_list_pbf_rules_command(args))
         elif command == 'pan-os-create-pbf-rule':
