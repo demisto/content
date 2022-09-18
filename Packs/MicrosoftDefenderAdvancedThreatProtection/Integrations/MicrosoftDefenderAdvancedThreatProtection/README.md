@@ -1088,43 +1088,66 @@ AdvancedQuery.Read.All
 ##### Base Command
 
 `microsoft-atp-advanced-hunting`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to run. | Required | 
-| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. | Optional | 
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
+| query | The query to run. Must be passed if query_batch argument is empty. | Optional | 
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array. Default is 10. | Optional | 
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, will be applied to all queries in the array. Possible values are: . | Optional | 
+| query_batch | A JSON array of queries, limited to 10 queries. Must be passed if query argument is empty. Example for input:<br/>{ "queries": [<br/>    {<br/>    "query": "query #1",	// Mandatory<br/>    "name": "name #1",	// Mandatory<br/>    "timeout": "timeout #1"	// Non-mandatory, will override the {timeout} argument<br/>    "time_range": "2 days ago"	// Non-mandatory, will override the {time_range} argument<br/>    },<br/>    {<br/>    "query": "query #2",	// Mandatory<br/>    "name": "name #2",	// Mandatory<br/>    "timeout": "timeout #2" // Non-mandatory, will override the {timeout} argument<br/>    "time_range": "6 days ago"	// Non-mandatory, will override the {time_range} argument<br/>    }<br/>  ]<br/>}. | Optional | 
+| name | If stated along with query, then the response should be saved in context under the name.Result, and added to the HR of the results. | Optional | 
 
-##### Context Output
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Hunt.Result | String | The query results. | 
 
-
-##### Command Example
-```!microsoft-atp-advanced-hunting query="DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)"```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-advanced-hunting query_batch=`{"queries": [{"query": "DeviceInfo | where OnboardingStatus == 'Onboarded' | limit 10 | distinct DeviceName", "name": "name", "timeout": "20"}]}````
+#### Context Example
+```json
 {
-    "MicrosoftATP.Hunt.Result": [
-        {
-            "DeviceId": "4899036531e374137f63289c3267bad772c13fef", 
-            "Timestamp": "2020-02-23T07:14:42.1599815Z", 
-            "ReportId": "35275"
+    "MicrosoftATP": {
+        "Hunt": {
+            "Result": [
+                {
+                    "name": [
+                        {
+                            "DeviceName": "msde-agent-host-centos7.c.dmst-integrations.internal"
+                        },
+                        {
+                            "DeviceName": "desktop-s2455r8"
+                        },
+                        {
+                            "DeviceName": "msde-agent-host-win2016-dc.msde.lab.demisto"
+                        },
+                        {
+                            "DeviceName": "win2016-msde-agent.msde.lab.demisto"
+                        },
+                        {
+                            "DeviceName": "ec2amaz-ua9hieu"
+                        }
+                    ]
+                }
+            ]
         }
-    ]
+    }
 }
 ```
 
-##### Human Readable Output
-##### Hunt results
-|Timestamp|DeviceId|ReportId|
-|---|---|---|
-| 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
+#### Human Readable Output
 
+>### Hunt results for name query:
+>|DeviceName|
+>|---|
+>| msde-agent-host-centos7.c.dmst-integrations.internal |
+>| desktop-s2455r8 |
+>| msde-agent-host-win2016-dc.msde.lab.demisto |
+>| win2016-msde-agent.msde.lab.demisto |
+>| ec2amaz-ua9hieu |
 
 ### 10. microsoft-atp-create-alert
 ---

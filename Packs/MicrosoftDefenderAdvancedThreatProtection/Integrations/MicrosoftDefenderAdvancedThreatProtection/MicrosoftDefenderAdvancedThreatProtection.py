@@ -2566,10 +2566,10 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
             query = json.loads(query_batch).get('queries')
             queries.extend(query)
         except Exception as e:
-            raise DemistoException(f'Please provide a valid JSON query_batch', e)
+            raise DemistoException(f'Please provide a valid JSON query_batch.', e)
 
     if len(queries) > 10:
-        raise DemistoException('Please provide only up to 10 queries')
+        raise DemistoException('Please provide only up to 10 queries.')
 
     human_readable = ''
     outputs = []
@@ -2580,7 +2580,6 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         time_range = query_details.get('time_range') or args.get('time_range', '')
 
         response = client.get_advanced_hunting(query, timeout, time_range)
-        print(response)
         results = response.get('Results')
         if isinstance(results, list) and len(results) == 1:
             report_id = results[0].get('ReportId')
@@ -2592,9 +2591,9 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
             outputs = results  # type: ignore
         human_readable += tableToMarkdown(f'Hunt results for {name} query:', results, removeNull=True)
 
-        entry_context = {
+    entry_context = {
             'MicrosoftATP.Hunt.Result': outputs
-        }
+    }
     return human_readable, entry_context, response
 
 

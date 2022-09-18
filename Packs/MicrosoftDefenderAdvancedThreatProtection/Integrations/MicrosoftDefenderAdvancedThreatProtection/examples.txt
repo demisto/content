@@ -7,6 +7,7 @@ microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f0
 microsoft-atp-list-alerts severity=Low
 microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress
 microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"
+microsoft-atp-advanced-hunting query_batch=`{"queries": [{"query": "DeviceInfo | where OnboardingStatus == 'Onboarded' | limit 10 | distinct DeviceName", "name": "name1", "timeout": "20"}]}`
 microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z
 machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"
 microsoft-atp-get-alert-related-user id=da637175364995825348_1865170845
