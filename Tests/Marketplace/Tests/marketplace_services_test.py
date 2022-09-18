@@ -6,6 +6,7 @@ import json
 import os
 import random
 import glob
+import requests
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
@@ -89,6 +90,30 @@ class GitMock:
                 return '(#33)'
             case _:
                 return 'no number'
+
+
+# def mocked_requests_get(*args, **kwargs):
+#
+#     class Raw:
+#         def __init__(self, raw):
+#             self.raw = raw
+#             self.decode_content = False
+#
+#     class MockResponse:
+#         def __init__(self, status_code, raw, decode_content):
+#             self.status_code = status_code
+#             self.raw = Raw(raw)
+#
+#         def raw(self):
+#             return self.raw
+#
+#     if args[0] == 'https://testurl.com':
+#         with open('test_data/readme_images_test_data/Retrieve_Asset_Details_-_Lansweeper.png', 'rb') as f:
+#             data = f.read()
+#         return MockResponse(200, data, False)
+
+def shutilcopyobj_mock(raw, f):
+    f.write(raw)
 
 
 class TestMetadataParsing:
@@ -1673,6 +1698,15 @@ class TestImagesUpload:
     def test_is_file_readme(self, dummy_pack, path, expected_res):
         assert expected_res == dummy_pack.is_raedme_file(path)
 
+    # def test_download_readme_image_from_url_and_upload_to_gcs(self, mocker, dummy_pack):
+    #     mock_readme_url = 'https://testurl.com'
+    #     gcs_storage_path = 'storage_path'
+    #     image_name = 'fake_image'
+    #     storage_bucket = mocker.MagicMock()
+    #     mocker.patch('requests.get', side_effect=mocked_requests_get)
+    #     mocker.patch('shutil.copyfileobj', side_effect=shutilcopyobj_mock)
+    #     dummy_pack.download_readme_image_from_url_and_upload_to_gcs(mock_readme_url, gcs_storage_path, image_name,
+    #                                                                 storage_bucket)
     # def test_the_upload_flow(self, mocker, dummy_pack):
     #     mocker.patch("Tests.Marketplace.marketplace_services.logging")
     #     dummy_storage_bucket = mocker.MagicMock()

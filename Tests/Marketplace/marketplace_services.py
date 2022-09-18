@@ -3160,7 +3160,6 @@ class Pack(object):
              storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
 
         """
-        logging.info(f'{readme_original_url=}')
         # Open the url image, set stream to True, this will return the stream content.
         readme_original_url = urllib.parse.urlparse(readme_original_url)
         r = requests.get(readme_original_url.geturl(), stream=True, verify=False)
@@ -3174,7 +3173,6 @@ class Pack(object):
                 shutil.copyfileobj(r.raw, f)
 
             # init the blob with the correct path to save the image on gcs
-            logging.info(f'{gcs_storage_path=}')
             readme_image = storage_bucket.blob(gcs_storage_path)
 
             # load the file from local memo to the gcs
