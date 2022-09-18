@@ -3039,7 +3039,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
+    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False, marketplace=''):
         """ Downloads pack readme links to images, and upload them to gcs.
 
             Searches for image links in pack readme.
@@ -3050,7 +3050,7 @@ class Pack(object):
                 storage_base_path (str): the path under the bucket to upload to.
                 diff_files_list (list): The list of all modified/added files found in the diff
                 detect_changes (bool): Whether to detect changes or upload the author image in any case.
-
+                marketplace (str): The marketplace the pack is linked to.
             Returns:
                 bool: whether the operation succeeded.
         """
@@ -3068,7 +3068,7 @@ class Pack(object):
                 # detect added/modified integration readme files
                 logging.info(f'found a pack: {self._pack_name} with changes in README')
                 readme_images_storage_paths = self.collect_images_from_readme_and_replace_with_storage_path(
-                    pack_readme_path, storage_pack_path)
+                    pack_readme_path, storage_pack_path, marketplace)
 
                 # no external image urls were found in the readme file
                 if not readme_images_storage_paths:
@@ -3091,19 +3091,25 @@ class Pack(object):
         finally:
             return task_status
 
-    @staticmethod
-    def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path):
+    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace):
         """
         Replaces inplace all images links in the pack README.md with their new gcs location
 
         Args:
             pack_readme_path (str): A path to the pack README file.
             gcs_pack_path (str): A path to the pack in gcs
+            marketplace (str): The marketplace this pack is going to be uploaded to.
 
         Returns:
             A list of dicts of all the image urls found in the README.md file with all related data
             (original_url, new_gcs_path, image_name)
         """
+        if marketplace == 'xsoar':
+            marketplace = 'marketplace-dist'
+        else:
+            marketplace = 'marketplace-v2-dist'
+
+        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace}/content/packs/{self.name}'
         url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
         urls_list = []
 
@@ -3119,8 +3125,9 @@ class Pack(object):
                 image_name = url_path.name
 
                 image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
+                url_to_replace_linking_to_dist = os.path.join(google_api_readme_images_url, BucketUploadFlow.README_IMAGES, image_name)
 
-                line = line.replace(url, str(image_gcp_path))
+                line = line.replace(url, str(url_to_replace_linking_to_dist))
 
                 urls_list.append({
                     'original_read_me_url': url,
@@ -3178,7 +3185,8 @@ class Pack(object):
             logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
             return False
 
-    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
+    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs,
+                      marketplace=''):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
@@ -3216,7 +3224,7 @@ class Pack(object):
             self.cleanup()
             return False
 
-        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes, marketplace)
         if not task_status:
             self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()

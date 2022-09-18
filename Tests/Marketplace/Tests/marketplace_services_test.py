@@ -1638,7 +1638,7 @@ class TestImagesUpload:
             'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
             'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
         }
-        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url, 'gcs_test_path')
+        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url, 'gcs_test_path', 'marketplacev2')
         assert ret == [expected_urls_ret]
 
         with open(path_readme_to_replace_url) as replaced_readme:
