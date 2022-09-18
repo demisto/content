@@ -1,13 +1,12 @@
-import datetime
 import re
-
 import urllib3
 
 import demistomock as demisto
 
+from datetime import datetime
 from enum import Enum
 from time import strptime, struct_time
-
+from typing import Optional, Union
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -108,15 +107,14 @@ class Client(BaseClient):
         if page:
             kwargs["params"]["page"] = str(page)
 
-        # If sort is not None, split it into a list
-        if sort:
-            sort = sort.split(sep=";")
-
         kwargs["params"].update(find_valid_params(
             page_size=page_size,
-            sort=sort,
             limit=limit,
         ))
+
+        # If sort is not None, split it into a list and add to kwargs
+        if sort:
+            kwargs["params"]["sort"] = sort.split(sep=";")
 
         response: dict = self._http_request(**kwargs)
         result = response.get("resources", [])
@@ -125,9 +123,6 @@ class Client(BaseClient):
             return []
 
         if not page:
-            # If page_size is not set, the size that will be used is API's default.
-            _page_size = page_size if page_size else API_DEFAULT_PAGE_SIZE
-
             total_pages = response["page"].get("totalPages", 1)
             page_count = 1
 
@@ -135,7 +130,7 @@ class Client(BaseClient):
                 page_count += 1
                 kwargs["params"]["page"] = str(page_count)
                 response = self._http_request(**kwargs)
-                result.extend(response.get("resources"))
+                result.extend(response["resources"])
 
         if limit and limit < len(result):
             return result[:limit]
@@ -174,7 +169,7 @@ class Client(BaseClient):
             report_format (str): Format of the report that will be generated.
 
         Returns:
-            str: ID of the created report configuration.
+            str: ID of the newly created report configuration.
         """
         post_data = {
             "scope": scope,
@@ -184,7 +179,7 @@ class Client(BaseClient):
         }
 
         return str(self._http_request(
-            url_suffix=f"/reports",
+            url_suffix="/reports",
             method="POST",
             json_data=post_data,
             resp_type="json",
@@ -226,7 +221,7 @@ class Client(BaseClient):
                     }}}
 
         return self._http_request(
-            url_suffix=f"/sites",
+            url_suffix="/sites",
             method="POST",
             json_data=post_data,
             resp_type="json",
@@ -559,7 +554,7 @@ class Client(BaseClient):
             dict: API response with all shared credentials and their information.
         """
         return self._http_request(
-            url_suffix=f"/shared_credentials",
+            url_suffix="/shared_credentials",
             method="GET",
             resp_type="json",
         )
@@ -905,17 +900,25 @@ class Site:
             or `site_name` was provided without a `site_id`, and `client` was not provided.
             InvalidSiteNameException: If no ID was provided and a site with a matching name could not be found.
         """
+        self.id: str
+        self.name: Optional[str] = None
+
         if site_id:
             self.id = site_id
 
         elif site_name:
-            if not client:
+            self.name = site_name
+
+            if client:
+                id = client.find_site_id(site_name)
+
+                if not id:
+                    raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
+
+                self.id = id
+
+            else:
                 raise ValueError("Can't fetch site ID as no Client was provided.")
-
-            self.id = client.find_site_id(site_name)
-
-            if not self.id:
-                raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
 
         else:
             raise ValueError("Either a site ID or a site name must be passed.")
@@ -954,8 +957,6 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
         # Convert numbers to floats if values are numbers
         # TODO: Check if float conversion has any meaning, remove if not
         for i, value in enumerate(values):
-            current_value = None
-
             try:
                 values[i] = float(value)
 
@@ -1508,7 +1509,14 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
         template_id (str | None, optional): The identifier of a scan template.
             Defaults to None (results in using default scan template).
     """
-    response = client.create_site(name, description, assets, site_importance.name.lower(), template_id)
+    site_importance_str = site_importance.name.lower() if site_importance else None
+
+    response = client.create_site(
+        name=name,
+        description=description,
+        assets=assets,
+        site_importance=site_importance_str,
+        template_id=template_id)
 
     output = {
         "Id": response["id"]
@@ -1997,9 +2005,9 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     solutions = client.get_asset_vulnerability_solution(asset_id, vulnerability_id)
     vulnerability_data["solutions"] = solutions
 
-    if solutions:
+    if solutions and solutions.get("resources"):
         solutions_output = replace_key_names(
-            data=solutions.get("resources"),
+            data=solutions["resources"],
             name_mapping={
                 "type": "Type",
                 "summary.text": "Summary",
@@ -2338,7 +2346,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
 
 def search_assets_command(client: Client, filter_query: Optional[str] = None, ip_addresses: Optional[str] = None,
                           hostnames: Optional[str] = None, risk_score: Optional[str] = None,
-                          vulnerability_title: Optional[str] = None, sites: Optional[Site, list[Site]] = None,
+                          vulnerability_title: Optional[str] = None, sites: Union[Site, list[Site], None] = None,
                           match: Optional[str] = None, page_size: Optional[int] = None,
                           page: Optional[int] = None, sort: Optional[str] = None,
                           limit: Optional[int] = None) -> Union[CommandResults, list[CommandResults]]:
@@ -2477,8 +2485,8 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
     return result
 
 
-def start_assets_scan_command(client: Client, ips: Optional[str, list] = None,
-                              hostnames: Optional[str, list] = None,
+def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
+                              hostnames: Union[str, list, None] = None,
                               scan_name: Optional[str] = None) -> CommandResults:  # TODO: Add pagination args?
     """
     | Start a scan on the provided assets.
@@ -2597,7 +2605,7 @@ def main():
         handle_proxy()
 
         client = Client(
-            url=params.get("server"),
+            url=params["server"],
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
             token=params.get("token"),
@@ -2608,30 +2616,45 @@ def main():
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "nexpose-create-assets-report":
+            report_format = args.get("format")
+
+            if args.get("format"):
+                report_format = ReportFileFormat(args["format"].upper())
+
             results = create_assets_report_command(
                 client=client,
                 asset_ids=argToList(args.get("assets")),
                 template_id=args.get("template"),
                 report_name=args.get("name"),
-                report_format=ReportFileFormat(args.get("format").upper()),
+                report_format=report_format,
                 download_immediately=argToBoolean(args.get("download_immediately"))
             )
         elif command == "nexpose-create-scan-report":
+            report_format = None
+
+            if args.get("format"):
+                report_format = ReportFileFormat(args["format"].upper())
+
             results = create_scan_report_command(
                 client=client,
-                scan_id=args.get("scans"),
+                scan_id=args["scans"],
                 template_id=args.get("template"),
                 report_name=args.get("name"),
-                report_format=ReportFileFormat(args.get("format").upper()),
+                report_format=report_format,
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-create-site":
+            site_importance = None
+
+            if args.get("importance"):
+                site_importance = SiteImportance(args["importance"].upper())
+
             results = create_site_command(
                 client=client,
-                name=args.get("name"),
+                name=args["name"],
                 description=args.get("description"),
                 assets=argToList(args.get("assets")),
-                site_importance=SiteImportance(args.get("importance").upper()),
+                site_importance=site_importance,
                 template_id=args.get("scanTemplateId"),
             )
         elif command == "nexpose-create-sites-report":
@@ -2640,12 +2663,17 @@ def main():
                 [Site(site_name=site_name, client=client) for site_name in argToList(args.get("site_names"))]
             )
 
+            report_format = None
+
+            if args.get("format"):
+                report_format = ReportFileFormat(args["format"].upper())
+
             results = create_sites_report_command(
                 client=client,
                 sites=sites_list,
                 template_id=args.get("template"),
                 report_name=args.get("name"),
-                report_format=ReportFileFormat(args.get("format").upper()),
+                report_format=report_format,
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-delete-scan-schedule":
@@ -2656,7 +2684,7 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
-                scheduled_scan_id=args.get("schedule_id"),
+                scheduled_scan_id=args["schedule_id"],
             )
         elif command == "nexpose-delete-site":
             results = delete_site_command(
@@ -2670,21 +2698,21 @@ def main():
         elif command == "nexpose-download-report":
             results = download_report_command(
                 client=client,
-                report_id=args.get("report_id"),
-                instance_id=args.get("instance_id"),
+                report_id=args["report_id"],
+                instance_id=args["instance_id"],
                 report_name=args.get("name"),
                 report_format=ReportFileFormat(args.get("format", "pdf").upper()),
             )
         elif command == "nexpose-get-asset":
             results = get_asset_command(
                 client=client,
-                asset_id=args.get("id")
+                asset_id=args["id"]
             )
         elif command == "nexpose-get-asset-vulnerability":
             results = get_asset_vulnerability_command(
                 client=client,
-                asset_id=args.get("id"),
-                vulnerability_id=args.get("vulnerabilityId"),
+                asset_id=args["id"],
+                vulnerability_id=args["vulnerabilityId"],
             )
         elif command == "nexpose-get-assets":
             results = get_assets_command(
@@ -2701,8 +2729,8 @@ def main():
         elif command == "nexpose-get-report-status":
             results = get_generated_report_status_command(
                 client=client,
-                report_id=args.get("report_id"),
-                instance_id=args.get("instance_id")
+                report_id=args["report_id"],
+                instance_id=args["instance_id"]
             )
         elif command == "nexpose-get-scan":
             results = get_scan_command(
@@ -2742,13 +2770,13 @@ def main():
         elif command == "nexpose-pause-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args.get("id"),
+                scan_id=args["id"],
                 scan_status=ScanStatus.PAUSE,
             )
         elif command == "nexpose-resume-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args.get("id"),
+                scan_id=args["id"],
                 scan_status=ScanStatus.RESUME,
             )
         elif command == "nexpose-search-assets":
@@ -2795,7 +2823,7 @@ def main():
         elif command == "nexpose-stop-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args.get("id"),
+                scan_id=args["id"],
                 scan_status=ScanStatus.STOP,
             )
         else:
