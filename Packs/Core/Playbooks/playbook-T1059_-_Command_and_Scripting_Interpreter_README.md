@@ -62,7 +62,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | ShouldCloseAutomatically | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | AutoRestoreEndpoint | Whether to execute the Recovery playbook. | False | Optional |
-| AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user  |  | Optional |
+| AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user.  |  | Optional |
 | FileRemediation | Can be 'Quarantine' or 'Delete'. |  | Optional |
 
 ## Playbook Outputs
