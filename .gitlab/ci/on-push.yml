@@ -138,7 +138,7 @@ create-instances-with-graph:
     - section_end "Calculate Packs Dependencies"
     
     # this replaces @dorschw collect tests
-    - cat "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+    - echo "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
 
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
