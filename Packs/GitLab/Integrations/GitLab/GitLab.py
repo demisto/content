@@ -1,11 +1,8 @@
-from base64 import encode
-from email import header
-from xmlrpc.client import Boolean, boolean
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict, Any, Tuple
-import requests
+from typing import Dict, Any
+
 
 '''--------------------- CONSTANTS------------------- '''
 
@@ -17,7 +14,7 @@ DEFAULT_RESULTS_PER_PAGE = 50
 DEFAULT_LIMIT = 50
 DEFAULT_PAGE_START = 1
 PAGE_INVALID_ARGS_FOR_UPDATE_FUNC = 'At least one of arguments is required for the' \
-                                    ' request to be successful\n' 
+                                    ' request to be successful\n'
 
 '''--------------------- CLIENT CLASS --------------------'''
 
@@ -26,7 +23,7 @@ class Client(BaseClient):
     def __init__(self, project_id, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.project_id = project_id
-    
+
     def get_projects_request(self, repository_storage, last_activity_before, min_access_level, simple, sort,
                              membership, search_namespaces, archived, search, id_before, last_activity_after, starred,
                              id_after, owned, order_by, statistics, visibility, with_custom_attributes,
@@ -99,12 +96,12 @@ class Client(BaseClient):
     def get_project_list_request(self, args: dict, per_page: int, page: int):
         headers = self._headers
         suffix = '/projects'
-        params = assign_params( membership=args.get('membership'), order_by=args.get('order_by'),
+        params = assign_params(membership=args.get('membership'), order_by=args.get('order_by'),
                                owned=args.get('owned'), search=args.get('search'), sort=args.get('sort'),
                                visibility=args.get('visibility'), with_issues_enabled=args.get('with_issues_enabled'),
                                with_merge_requests_enabled=args.get('with_merge_requests_enabled'),
                                per_page=per_page, page=page)
-                               
+
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
         return response
 
@@ -140,7 +137,7 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
         params = {'ref': ref}
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
-        
+
         return response
 
     def file_create_request(self, file_path: str | None, branch: str | None, commit_msg: str,
@@ -148,9 +145,9 @@ class Client(BaseClient):
                             content: str | None, execute_filemode: str | None):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params = assign_params( author_email=author_email, author_name=author_name, execute_filemode=execute_filemode)
+        params = assign_params(author_email=author_email, author_name=author_name, execute_filemode=execute_filemode)
         body = assign_params(branch=branch, commit_message=commit_msg, content=content)
-        response = self._http_request('POST', suffix, headers=headers,data=body, params=params, ok_codes=OK_CODES_POST)
+        response = self._http_request('POST', suffix, headers=headers, data=body, params=params, ok_codes=OK_CODES_POST)
         return response
 
     def commit_single_request(self, commit_id):
@@ -169,7 +166,7 @@ class Client(BaseClient):
                   'per_page': per_page, 'page': page}
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
         return response
-    
+
     def branch_single_request(self, branch_name):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/commits/{branch_name}'
@@ -199,23 +196,23 @@ class Client(BaseClient):
         return response
 
     def file_update_request(self, file_path: str, branch: str | None, start_branch: str | None, encoding: str | None,
-                            author_email: str | None,author_name: str | None, commit_message: str | None,
+                            author_email: str | None, author_name: str | None, commit_message: str | None,
                             last_commit_id: str | None, execute_filemode: str | None, content: str | None,):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params= assign_params(start_branch=start_branch,encoding= encoding,
-                              author_email=author_email, author_name=author_name,
-                              last_commit_id=last_commit_id, execute_filemode=execute_filemode)
-        body=assign_params(branch=branch, commit_message=commit_message,content=content)
-        response = self._http_request('PUT', suffix, headers=headers,data=body, params=params, ok_codes=OK_CODES_GET_PUT)
+        params = assign_params(start_branch=start_branch, encoding=encoding,
+                               author_email=author_email, author_name=author_name,
+                               last_commit_id=last_commit_id, execute_filemode=execute_filemode)
+        body = assign_params(branch=branch, commit_message=commit_message, content=content)
+        response = self._http_request('PUT', suffix, headers=headers, data=body, params=params, ok_codes=OK_CODES_GET_PUT)
         return response
 
     def file_delete_request(self, file_path: str, branch: str, commit_message: str):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params = assign_params(branch= branch, commit_message=commit_message)
-        response = self._http_request('DELETE', suffix, headers=headers, params=params, ok_codes=OK_CODES_DELETE, 
-                                        resp_type='text')
+        params = assign_params(branch=branch, commit_message=commit_message)
+        response = self._http_request('DELETE', suffix, headers=headers, params=params, ok_codes=OK_CODES_DELETE,
+                                      resp_type='text')
 
         return response
 
@@ -255,7 +252,7 @@ class Client(BaseClient):
                                created_after=args.get('created_after'), created_before=args.get('created_before)'),
                                updated_after=args.get('updated_after'), updated_before=args.get('updated_before)'),
                                scope=args.get('scope'), author_id=args.get('author_id'),
-                               author_username=args.get('author_username'),assignee_i=args.get('assignee_id'),
+                               author_username=args.get('author_username'), assignee_i=args.get('assignee_id'),
                                reviewer_id=args.get('reviewer_id'), reviewer_username=args.get('reviewer_username'),
                                source_branch=args.get('source_branch'), target_branch=args.get('target_branch'),
                                search=args.get('search'), per_page=per_page, page=page)
@@ -316,7 +313,7 @@ class Client(BaseClient):
         response = self._http_request('POST', suffix, headers=headers, json_data=data, ok_codes=OK_CODES_POST)
         return response
 
-    def merge_request_note_update_request(self, merge_request_iid: str | Any, note_id: str | Any,body: str | Any):
+    def merge_request_note_update_request(self, merge_request_iid: str | Any, note_id: str | Any, body: str | Any):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes/{note_id}'
         data = assign_params(body=body)
@@ -343,6 +340,7 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
         return response
 
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -351,7 +349,7 @@ def get_branch_details(branch: dict) -> dict:
     This function return branch details according to the human_readable desgin.
     input: a dict of project as return after a request
     output: Dict with the feilds: Title ,CommitShortId ,CommitTitle ,CreatedAt ,IsMerge, IsProtected
-    '''  
+    '''
     branch_after_edit = {'Title': branch.get('name'),
                          'IsMerge': branch.get('merged'),
                          'IsProtected': branch.get('protected')}
@@ -431,7 +429,8 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    client.file_create_request('/Users/mmorag/dev/demisto/content/Packs/GitLab/Integrations/GitLab/example.jason', 'main', 'commit_msg')
+    client.file_create_request(
+        '/Users/mmorag/dev/demisto/content/Packs/GitLab/Integrations/GitLab/example.jason', 'main', 'commit_msg')
 #    client.issue_update_request('issue_id' == '114454293', {'title': 'main_tryy'})
     return 'ok'
 
@@ -511,7 +510,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                          'CreatedAt': issue.get('created_at'),
                          'UpdateAt': issue.get('update_at'),
                          'State': issue.get('state'),
-                         'CreatedBy': issue.get('author',{}).get('created_by')
+                         'CreatedBy': issue.get('author', {}).get('created_by')
                          }
         if issue.get('assignee'):
             issue_details['Assignee'] = issue.get('assignee').get('name')
@@ -677,7 +676,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
         (CommandResults).
     """
     issue_iid = args.get('issue_iid')
-    params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked', 'due_date', 'epic_id', 'epic_iid', 
+    params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked', 'due_date', 'epic_id', 'epic_iid',
                        'issue_type', 'milestone_id', 'remove_labels', 'state_event', 'title']
     headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', 'Assignee']
     params = check_args_for_update(args, params_optional)
@@ -688,7 +687,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
                            'UpdatedAt': response.get('updated_at', ''),
                            'State': response.get('state', ''),
                            'Assignee': response.get('assignee', ''),
-                           'CreatedBy':response.get('author',{}).get('name', '') }
+                           'CreatedBy': response.get('author', {}).get('name', '')}
     if response.get('author'):
         human_readable_dict['CreatedBy'] = response.get('author').get('name', '')
     if response.get('milestone'):
@@ -780,7 +779,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_id = args.get('entry_id', '')
     author_email = args.get('author_email', '')
     author_name = args.get('author_name', '')
-    file_content= args.get('file_content', '')
+    file_content = args.get('file_content', '')
     execute_filemode = args.get('execute_filemode', '')
     if not entry_id and not file_content:
         raise DemistoException('You must specify either the "file_content" or the "entry_id" of the file.')
@@ -835,8 +834,8 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     else:
         file_content = bytes(file_content, encoding='utf8')
     response = client.file_update_request(file_path, branch, start_branch, encoding, author_email, author_name, commit_message,
-                                          last_commit_id, execute_filemode,file_content)
-  
+                                          last_commit_id, execute_filemode, file_content)
+
     human_readable_str = 'File updated successfully'
     return CommandResults(
         outputs_prefix='GitLab.File',
@@ -859,7 +858,7 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     branch = args.get('branch', '')
     file_path = args.get('file_path', '')
-    commit_message=args.get('commit_message','')
+    commit_message = args.get('commit_message', '')
     response = client.file_delete_request(file_path, branch, commit_message)
     human_readable_string = 'File deleted successfully'
     command_results = CommandResults(
@@ -891,7 +890,7 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                'Message': response.get('message', ''),
                                'ShortId': response.get('short_id', ''),
                                'Author': response.get('author_name', ''),
-                               'CreatedAt': response.get('committed_date', '')})   
+                               'CreatedAt': response.get('committed_date', '')})
     else:
         response_title = 'List Commits'
         response = response_according_pagination(client.commit_list_request, args)
@@ -1105,7 +1104,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
             merge_request_edit['CreatedBy'] = merge_request['author'].get('name', '')
         if merge_request.get('merge_user'):
             merge_request_edit['MergeBy'] = merge_request['merge_user'].get('username', '')
-        
+
         response_to_hr.append(merge_request_edit)
     human_readable = tableToMarkdown('List Merge requests', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1280,7 +1279,7 @@ def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> C
 def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response_to_hr = []
     headers = ['Id', 'Name', 'UserName', 'MembershipState', 'ExpiresAt']
-    group_id = args.get('group_id') 
+    group_id = args.get('group_id')
     response = client.group_member_list_request(group_id)
     for group_member in response:
         group_member_edit = {'Id': group_member.get('id', ''),
