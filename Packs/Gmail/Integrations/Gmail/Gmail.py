@@ -1120,7 +1120,8 @@ def support_multithreading_py2():
 
 
 def get_all_mailboxes():
-    all_acounts = []
+    all_accounts = []
+    number_of_accounts = 0
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
     while True:
@@ -1130,61 +1131,60 @@ def get_all_mailboxes():
             'pageToken': users_next_page_token
         }
         result = service.users().list(**command_args).execute()
-        all_acounts.extend(result['users'])
+        number_of_accounts += len(result['users'])
+        all_accounts.append(result['users'])
         users_next_page_token = result.get('nextPageToken')
         if users_next_page_token is None:
-            return all_acounts
+            return all_accounts, number_of_accounts
 
 
 def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs):
-    all_acounts = get_all_mailboxes()
-    demisto.debug('Starts searching in {} accounts'.format(len(all_acounts)))
+    all_accounts, number_of_accounts = get_all_mailboxes()
+    demisto.debug('Starts searching in {} accounts'.format(number_of_accounts))
     accounts_counter, matching_accounts_counter, msg_counter = 0, 0, 0
     log_msg_target = max_results
     support_multithreading_py2()
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        entries = []
-        for user in all_acounts:
-            futures.append(executor.submit(search_command, mailbox=user['primaryEmail'],
-                                           receive_only_accounts=receive_only_accounts))
-        for future in concurrent.futures.as_completed(futures):
-            accounts_counter += 1
-            entry, num_of_messages = future.result()
-            if entry:
-                matching_accounts_counter += 1
-                entries.append(entry)
-            if accounts_counter % writing_to_logs == 0:
-                demisto.info(
-                    'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
-                        int((float(accounts_counter) / len(all_acounts)) * 100),
-                        accounts_counter,
-                        len(all_acounts),
-                        matching_accounts_counter),
-                )
-            if not receive_only_accounts:
-                msg_counter += num_of_messages
-                if msg_counter >= log_msg_target:
-                    log_msg_target = msg_counter + max_results
-                    demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((float(accounts_counter) / len(all_acounts)) * 100),
-                            accounts_counter,
-                            len(all_acounts),
-                            msg_counter),
-                    )
+    for accounts in all_accounts:
 
-            # return midway results
-            if accounts_counter % 100 == 0:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            entries = []
+            for user in accounts:
+                futures.append(executor.submit(search_command, mailbox=user['primaryEmail'],
+                                               receive_only_accounts=receive_only_accounts))
+            for future in concurrent.futures.as_completed(futures):
+                accounts_counter += 1
+                entry, num_of_messages = future.result()
+                if entry:
+                    matching_accounts_counter += 1
+                    entries.append(entry)
+                if accounts_counter % writing_to_logs == 0:
+                    demisto.info(
+                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} matching accounts so far'.format(
+                            int((float(accounts_counter) / number_of_accounts) * 100),
+                            accounts_counter,
+                            number_of_accounts,
+                            matching_accounts_counter),
+                    )
+                if not receive_only_accounts:
+                    msg_counter += num_of_messages
+                    if (accounts_counter % writing_to_logs == 0) and msg_counter >= log_msg_target:
+                        log_msg_target = msg_counter + max_results
+                        demisto.info(
+                            'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
+                                int((float(accounts_counter) / number_of_accounts) * 100),
+                                accounts_counter,
+                                number_of_accounts,
+                                msg_counter),
+                        )
+
+            if entries:
                 if receive_only_accounts:
                     entries = [mailboxes_to_entry(entries)]
                 demisto.results(entries)
                 entries = []
-        # if these are the final result push - return them
-        if receive_only_accounts and entries:
-            entries = [mailboxes_to_entry(entries)]
-        entries.append("Search completed")
-        return entries
+
+    return 'Search completed'
 
 
 def search_command(mailbox=None, receive_only_accounts=False):
