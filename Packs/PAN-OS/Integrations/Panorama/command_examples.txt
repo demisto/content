@@ -118,3 +118,5 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-apply-dns-signature-policy action=allow anti_spyware_profile_name=Test_antiSpyWare dns_signature_source=Test_EDL packet_capture="single-packet"
 !pan-os xpath=“/config/devices/entry[@name=‘localhost.localdomain’]/template/entry[@name=‘test’]/config/devices/entry[@name=‘localhost.localdomain’]/network/profiles/zone-protection-profile/entry[@name=‘test’]/scan-white-list/entry[@name=‘bla’]/ipv4" type=config action=edit element=“<ipv4>1.1.1.1</ipv4>”
 !pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60
+!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60
+!pan-os-push-status job_id=31377

@@ -1196,6 +1196,8 @@ def parse_incident_from_item(item, is_fetch):
         # handle item id
         if item.message_id:
             labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+            # fetch history
+            incident['dbotMirrorId'] = str(item.message_id)
 
         if item.item_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})

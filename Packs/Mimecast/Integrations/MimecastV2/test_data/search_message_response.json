@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "trackedEmails": [
+                {
+                    "info": "Indexed and archived",
+                    "id": "1234",
+                    "status": "archived",
+                    "fromEnv": {
+                        "emailAddress": "test@gmail.com"
+                    },
+                    "fromHdr": {
+                        "displayableName": "test@gmail.com",
+                        "emailAddress": "test@gmail.com"
+                    },
+                    "to": [
+                        {
+                            "displayableName": "",
+                            "emailAddress": "test@gmail.com"
+                        }
+                    ],
+                    "received": "2022-07-18T13:25:00+0000",
+                    "subject": "Stock Sales",
+                    "senderIP": "1.2.3.4",
+                    "attachments": false,
+                    "route": "inbound",
+                    "sent": "2022-07-18T13:25:00+0000",
+                    "spamScore": 2,
+                    "detectionLevel": "relaxed"
+                }
+            ]
+        }
+    ],
+    "fail": []
+}

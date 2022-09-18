@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 409,
+        "message": "generic::already_exists: list with name demo_list14_created_from_api already exists",
+        "status": "ALREADY_EXISTS"
+    }
+}
