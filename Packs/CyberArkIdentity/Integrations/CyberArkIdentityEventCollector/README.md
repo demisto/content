@@ -13,8 +13,6 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
     | App ID | The application ID to fetch the logs from.                                | True |
     | User name | The SIEM user name (for example `admin@example.com`).                  | True |
     | Password | The SIEM password.                                                      | True |
-    | Product name | The name of the product to name the dataset after.                  | False |
-    | Vendor name | The name of the vendor to name the dataset after.                    | False |
     | First fetch time  | The period to retrieve events for. <br/>format: &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months. <br/>Default is 3 days. | True |
     | Maximum number of events per fetch | The number of items to retrieve per request from CyberArk's API. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |

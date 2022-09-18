@@ -1,0 +1,6 @@
+{
+  "GoogleChronicleBackstory.DeleteRule(val.ruleId == obj.ruleId)": {
+    "ruleId": "test_rule_id",
+    "actionStatus": "SUCCESS"
+  }
+}

@@ -1,0 +1,141 @@
+{
+    "description": "Maps incoming Vectra Detect incidents fields.",
+    "feed": false,
+    "fromVersion": "6.5.0",
+    "id": "Vectra Detect - Incoming Mapper",
+    "name": "Vectra Detect - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "mapping": {
+        "Vectra Account": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Vectra Certainty Score": {
+                    "simple": "certainty"
+                },
+                "External Severity": {
+                    "simple": "severity"
+                },
+                "Is Active": {
+                    "simple": "state"
+                },
+                "Vectra Threat Score": {
+                    "simple": "threat"
+                }
+            }
+        },
+        "Vectra Detection": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Source Hostname": {
+                    "simple": "src_host.name"
+                },
+                "Source IP": {
+                    "simple": "src_host.ip"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "Threat Name": {
+                    "simple": "detection_type"
+                },
+                "occurred": {
+                    "simple": "last_timestamp"
+                }
+            }
+        },
+        "Vectra Host": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Vectra Certainty Score": {
+                    "simple": "certainty"
+                },
+                "Device Id": {
+                    "simple": "id"
+                },
+                "Device Local IP": {
+                    "simple": "ip"
+                },
+                "Device Name": {
+                    "simple": "name"
+                },
+                "External Severity": {
+                    "simple": "severity"
+                },
+                "External System ID": {
+                    "simple": "host_luid"
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "host_artifact_set.type"
+                                        }
+                                    },
+                                    "operator": "isNotEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "mac"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "host_artifact_set",
+                        "transformers": []
+                    }
+                },
+                "Is Active": {
+                    "simple": "state"
+                },
+                "Vectra Threat Score": {
+                    "simple": "threat"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Description": {
+                    "simple": "summary.description"
+                },
+                "Detection URL": {
+                    "simple": "_vectra_specific.UI_URL"
+                },
+                "External Category Name": {
+                    "simple": "detection_category"
+                },
+                "External End Time": {
+                    "simple": "last_timestamp"
+                },
+                "External Start Time": {
+                    "simple": "first_timestamp"
+                },
+                "External Sub Category Name": {
+                    "simple": "detection_type"
+                },
+                "Incident Link": {
+                    "simple": "_vectra_specific.UI_URL"
+                },
+                "Source IP": {
+                    "simple": "src_ip"
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    }
+}

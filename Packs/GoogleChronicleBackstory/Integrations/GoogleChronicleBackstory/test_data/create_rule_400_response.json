@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 400,
+        "message": "generic::invalid_argument: compiling rule: parsing: error with token: \"events\"\nexpected meta\nline: 2 \ncolumn: 9-15 ",
+        "status": "INVALID_ARGUMENT"
+    }
+}

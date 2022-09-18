@@ -313,3 +313,35 @@ def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     domain = "test.plus"
     response = get_whois_raw(domain=domain, server=server)
     assert response == [mock_response]
+
+
+def test_get_raw_response_with_non_recursive_data_query(mocker):
+    """
+    Given:
+        - A domain to query, non-recursive data query and a mock response which simulates a
+          Whois server response that includes a name of a refer server.
+    When:
+        - running the Whois.get_whois_raw(domain, server) function
+
+    Then:
+        - Verify that the final response of the get_whois_raw() includes only the response of the first server which was
+          queried, without the response of the refer server.
+    """
+    import socket
+    from Whois import get_whois_raw
+
+    def connect_mocker(curr_server):
+        """
+        This function is a mocker for the function socket.connect()
+        """
+        return None
+
+    mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
+    mock_response2 = "Domain Name: test_refer_server\n"
+
+    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
+    mocker.patch('Whois.whois_request_get_response', side_effect=[mock_response1, mock_response2])
+
+    domain = "test.plus"
+    response = get_whois_raw(domain=domain, is_recursive=False)
+    assert response == [mock_response1]

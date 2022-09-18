@@ -66,11 +66,19 @@ script:
   - name: taegis-fetch-alerts
     arguments:
     - name: ids
-      required: true
       description: A list of alert IDs to return
       isArray: true
+    - name: cql_query
+      description: The Taegis CQL query to for searching Alerts
+    - name: limit
+      default: true
+      description: Number of results to return per page
+      defaultValue: "10"
+    - name: offset
+      description: The results to start with
+      defaultValue: "0"
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.Alerts
       description: List of Taegis alerts
     description: List Taegis alerts by ID
   - name: taegis-fetch-investigation
@@ -87,7 +95,7 @@ script:
       description: A list of statuses to use when searching for investigations
       isArray: true
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.Investigations
       description: Dictionary of the located Taegis investigation
     description: Fetch all investigations or a specific investigation
   - name: taegis-create-investigation
@@ -108,7 +116,7 @@ script:
       description: The priority of the investigation (1-5)
       defaultValue: "2"
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.Investigation
       description: The investigation ID that was created
     description: Create an Investigation within Taegis
   - name: taegis-update-investigation
@@ -136,7 +144,7 @@ script:
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation
     description: Update an existing investigation
   - name: taegis-fetch-investigation-alerts
@@ -151,7 +159,7 @@ script:
       description: Number of alerts per investigation query
       defaultValue: "10"
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.InvestigationAlerts
       description: List of alerts related to a Taegis investigation
     description: Fetch Alert IDs related to a specific investigation
   - name: taegis-execute-playbook
@@ -162,7 +170,7 @@ script:
     - name: inputs
       description: JSON Object of optional playbook inputs
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.Execution
       description: The playbook execution ID
       type: string
     description: Executes a Taegis playbook instance
@@ -173,10 +181,10 @@ script:
       required: true
       description: Playbook execution ID
     outputs:
-    - contextPath: TaegisXDR.Result
+    - contextPath: TaegisXDR.PlaybookExecution
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   subtype: python3
   isfetch: true

@@ -1,0 +1,263 @@
+id: Mimecast - Block Sender Domain
+version: -1
+name: Mimecast - Block Sender Domain
+description: A playbook to block sender domain name using Mimecast integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6020a1a1-57ef-48ab-8fd4-e5f71711e7f6
+    type: start
+    task:
+      id: 6020a1a1-57ef-48ab-8fd4-e5f71711e7f6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 67619d62-7fef-40ad-8d55-f796c38ec187
+    type: condition
+    task:
+      id: 67619d62-7fef-40ad-8d55-f796c38ec187
+      version: -1
+      name: Mimecast integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: MimecastV2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9f335425-1a61-4e1a-8588-4c82cb8846f2
+    type: regular
+    task:
+      id: 9f335425-1a61-4e1a-8588-4c82cb8846f2
+      version: -1
+      name: Get block group id
+      description: Returns the list of groups according to the specified query.
+      script: '|||mimecast-find-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query_source:
+        complex:
+          root: inputs.QuerySource
+      query_string:
+        complex:
+          root: inputs.BlockGroup
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3482ee8f-4495-49cb-8707-45b2071aca3b
+    type: title
+    task:
+      id: 3482ee8f-4495-49cb-8707-45b2071aca3b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d2f135a2-08fd-4e23-80c7-00ebdc91b494
+    type: regular
+    task:
+      id: d2f135a2-08fd-4e23-80c7-00ebdc91b494
+      version: -1
+      name: Add senders to the block group
+      description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+      script: '|||mimecast-add-group-member'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain_address:
+        complex:
+          root: inputs.SenderDomain
+      group_id:
+        complex:
+          root: Mimecast.Group
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 329c4961-d586-4d16-8987-5ea376b3919b
+    type: condition
+    task:
+      id: 329c4961-d586-4d16-8987-5ea376b3919b
+      version: -1
+      name: All mandatory inputs provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SenderDomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.BlockGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.QuerySource
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: BlockGroup
+  value: {}
+  required: true
+  description: The sender domain block group.
+  playbookInputQuery:
+- key: SenderDomain
+  value: {}
+  required: true
+  description: The sender domain to block.
+  playbookInputQuery:
+- key: QuerySource
+  value: {}
+  required: true
+  description: The query source, please use "cloud" or "ldap" for this input.
+  playbookInputQuery:
+outputs: []
+quiet: false
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
