@@ -469,11 +469,16 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
-    def get_exclusions_request(self, item_ids=None, os_types=None, exclusion_type: str = None, limit: int = 10, value_contains: str = None):
+    def get_exclusions_request(self, item_ids=None,
+                               os_types=None,
+                               exclusion_type: str = None,
+                               limit: int = 10,
+                               value_contains: Optional[str] = None):
         """
-        includeChildren and includeParents are set as True in the params for the API request to return all items in the exclusion list. 
+        When includeChildren and includeParents are set to True in API request-
+        it will return all items in the exclusion list.
         If left blank they default to false and the API call will return a subset of the exclusion list.
-        """      
+        """
         endpoint_url = 'exclusions'
 
         params = {
@@ -2044,11 +2049,12 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> List[Optional[str]]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
-    Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked. 
-    Currently there are only three platforms it is acceptable for a hash to be blocked 3 times but if more results are returned an error will be thrown. 
+    Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked.
+    Currently there are only three platforms it is acceptable for a hash to be blocked 3 times.
+    If more results are returned, an error will be thrown.
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
-    item_ids = []
+    item_ids: list = []
     limit = OS_COUNT + 1
     white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item)
     demisto.debug(f'white_list: {white_list}')
@@ -2679,12 +2685,12 @@ def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, 
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
-    if get_global == True:
+    if get_global:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
 
-        ret = []
+        ret: list = []
 
         # Validation check first
         if len(block_list) > 3:
