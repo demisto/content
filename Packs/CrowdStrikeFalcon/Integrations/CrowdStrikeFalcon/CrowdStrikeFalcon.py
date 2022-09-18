@@ -3578,9 +3578,9 @@ def parse_rtr_command_response(response, host_ids, process_id=None) -> list:
 
 def match_remove_command_for_os(operating_system, file_path):
     if operating_system == 'Windows':
-        return f'rm {file_path} --force'
+        return f"rm '{file_path}' --force"
     elif operating_system == 'Linux' or operating_system == 'Mac':
-        return f'rm {file_path} -r -d'
+        return f"rm '{file_path}' -r -d"
     else:
         return ""
 
