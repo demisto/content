@@ -1,8 +1,6 @@
 {
 	"name": "XSOAR Content",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "content",
-	"workspaceFolder": "/workspaces/content",
+	"image": "mcr.microsoft.com/devcontainers/python:3",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
 		"terminal.integrated.profiles.linux": {
@@ -51,6 +49,7 @@
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
+		"PATH": "${containerEnv:PATH}:/home/vscode/.local/bin",
 		"PYTHONPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"MYPYPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
@@ -60,9 +59,25 @@
 		"DEMISTO_API_KEY": "${localEnv:DEMISTO_API_KEY}"
 	},
 	"features": {
-		"docker-in-docker": "latest",
-		"git": "os-provided",
-		"github-cli": "latest"
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "os-provided"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/common-utils:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "latest"
+		}
 	},
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
+	"overrideFeatureInstallOrder": [
+		"ghcr.io/devcontainers/features/common-utils:1"
+	],
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc && pipx install demisto-sdk --force && curl -sSL https://install.python-poetry.org | python3 - && NO_HOOKS=1 .hooks/bootstrap",
+	"postCreateCommand": "git config --global --add safe.directory /workspaces/content && git config codespaces-theme.hide-status 1"
 }
