@@ -93,7 +93,7 @@ script:
       description: The file path.
       required: false
       isArray: false
-    - name: content
+    - name: file_content
       description: The file's content.
       required: false
       isArray: false
@@ -164,7 +164,7 @@ script:
       isArray: false
     - name: entry_id
       description: The ID or URL-encoded path of the project owned by the authenticated user
-      required: true
+      required: false
       isArray: false
     - name: file_content
       description: The file content.
@@ -185,10 +185,10 @@ script:
       type: Boolean
     outputs:
     - type: String
-      contextPath: GitLab.EditExistingFileInBranch.file_path
+      contextPath: GitLab.File.file_path
       description: The file path.
     - type: String
-      contextPath: GitLab.EditExistingFileInBranch.branch
+      contextPath: GitLab.File.branch
       description: The name of the branch.
   - name: gitlab-file-delete
     description: Editing existing file in repository.
@@ -202,7 +202,11 @@ script:
       description: Name of the new branch to delete.
       required: true
       isArray: false
-    outputs: []
+    - name: commit_message
+      description: The commit message. 
+      required: true
+      isArray: false
+    outputs: 
   - name: gitlab-issue-list
     description: Get a list of a project's issues.
     arguments:
@@ -354,7 +358,7 @@ script:
       contextPath: GitLab.Issue.assignee.name
       description: The name of the assignee.
   - name: gitlab-issue-update
-    description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
+    description: Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
     arguments:
     - name: issue_iid
       description: The internal ID of a project's issue
@@ -1933,9 +1937,6 @@ script:
       required: true
       isArray: false
     outputs:
-    - type: String
-      contextPath: GitLab.CreateCommit.message
-      description: ''
   - name: gitlab-issue-create
     description: Create an issue.
     arguments:
@@ -2495,322 +2496,322 @@ script:
       secret: false
     outputs:
     - type: Number
-      contextPath: GitLab.GetGroupProject.id
+      contextPath: GitLab.GroupProject.id
       description: The project's ID.
     - type: String
-      contextPath: GitLab.GetGroupProject.description
+      contextPath: GitLab.GroupProject.description
       description: The project's description.
     - type: String
-      contextPath: GitLab.GetGroupProject.name
+      contextPath: GitLab.GroupProject.name
       description: The project's name.
     - type: String
-      contextPath: GitLab.GetGroupProject.name_with_namespace
+      contextPath: GitLab.GroupProject.name_with_namespace
       description: The project's name with namespace.
     - type: String
-      contextPath: GitLab.GetGroupProject.path
+      contextPath: GitLab.GroupProject.path
       description: The file's path.
     - type: String
-      contextPath: GitLab.GetGroupProject.path_with_namespace
+      contextPath: GitLab.GroupProject.path_with_namespace
       description: The project's path with namespace.
     - type: Date
-      contextPath: GitLab.GetGroupProject.created_at
+      contextPath: GitLab.GroupProject.created_at
       description: The project date of creation.
     - type: String
-      contextPath: GitLab.GetGroupProject.default_branch
+      contextPath: GitLab.GroupProject.default_branch
       description: The project default branch.
     - type: String
-      contextPath: GitLab.GetGroupProject.ssh_url_to_repo
+      contextPath: GitLab.GroupProject.ssh_url_to_repo
       description: Group project ssh url to repository.
     - type: String
-      contextPath: GitLab.GetGroupProject.http_url_to_repo
+      contextPath: GitLab.GroupProject.http_url_to_repo
       description: Group project http url to repository.
     - type: String
-      contextPath: GitLab.GetGroupProject.web_url
+      contextPath: GitLab.GroupProject.web_url
       description: Group project web url.
     - type: String
-      contextPath: GitLab.GetGroupProject.readme_url
+      contextPath: GitLab.GroupProject.readme_url
       description: Group project readme url.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.avatar_url
+      contextPath: GitLab.GroupProject.avatar_url
       description: Group project avatar url.
     - type: Number
-      contextPath: GitLab.GetGroupProject.forks_count
+      contextPath: GitLab.GroupProject.forks_count
       description: Group project web url forks count.
     - type: Number
-      contextPath: GitLab.GetGroupProject.star_count
+      contextPath: GitLab.GroupProject.star_count
       description: Group project web url star count.
     - type: Date
-      contextPath: GitLab.GetGroupProject.last_activity_at
+      contextPath: GitLab.GroupProject.last_activity_at
       description: The project date of last date of activity.
     - type: Number
-      contextPath: GitLab.GetGroupProject.namespace.id
+      contextPath: GitLab.GroupProject.namespace.id
       description: The namespace id.
     - type: String
-      contextPath: GitLab.GetGroupProject.namespace.name
+      contextPath: GitLab.GroupProject.namespace.name
       description: The namespace name.
     - type: String
-      contextPath: GitLab.GetGroupProject.namespace.path
+      contextPath: GitLab.GroupProject.namespace.path
       description: The namespace path.
     - type: String
-      contextPath: GitLab.GetGroupProject.namespace.kind
+      contextPath: GitLab.GroupProject.namespace.kind
       description: The namespace kind.
     - type: String
-      contextPath: GitLab.GetGroupProject.namespace.full_path
+      contextPath: GitLab.GroupProject.namespace.full_path
       description: The full path of the namespace.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.namespace.parent_id
+      contextPath: GitLab.GroupProject.namespace.parent_id
       description: The parent id.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.namespace.avatar_url
+      contextPath: GitLab.GroupProject.namespace.avatar_url
       description: The avatar url.
     - type: String
-      contextPath: GitLab.GetGroupProject.namespace.web_url
+      contextPath: GitLab.GroupProject.namespace.web_url
       description: The name web url.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_registry_image_prefix
+      contextPath: GitLab.GroupProject.container_registry_image_prefix
       description: The container registry image prefix.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.self
+      contextPath: GitLab.GroupProject._links.self
       description: The group projects' links.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.issues
+      contextPath: GitLab.GroupProject._links.issues
       description: The group projects' issues.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.merge_requests
+      contextPath: GitLab.GroupProject._links.merge_requests
       description: The group projects' merge requests.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.repo_branches
+      contextPath: GitLab.GroupProject._links.repo_branches
       description: The group projects' repository branches.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.labels
+      contextPath: GitLab.GroupProject._links.labels
       description: The group projects' links labels.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.events
+      contextPath: GitLab.GroupProject._links.events
       description: The group projects' links events.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.members
+      contextPath: GitLab.GroupProject._links.members
       description: The group projects' links members.
     - type: String
-      contextPath: GitLab.GetGroupProject._links.cluster_agents
+      contextPath: GitLab.GroupProject._links.cluster_agents
       description: The group projects' links cluster agents.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.packages_enabled
+      contextPath: GitLab.GroupProject.packages_enabled
       description: If the group projects' packages are enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.empty_repo
+      contextPath: GitLab.GroupProject.empty_repo
       description: The group projects' empty repository.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.archived
+      contextPath: GitLab.GroupProject.archived
       description: The group projects is archived.
     - type: String
-      contextPath: GitLab.GetGroupProject.visibility
+      contextPath: GitLab.GroupProject.visibility
       description: The group projects' visibility.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.resolve_outdated_diff_discussions
+      contextPath: GitLab.GroupProject.resolve_outdated_diff_discussions
       description: The group projects's resolved outdated different discussions.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.cadence
+      contextPath: GitLab.GroupProject.container_expiration_policy.cadence
       description: The group projects' container expiration policy cadence.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.enabled
+      contextPath: GitLab.GroupProject.container_expiration_policy.enabled
       description: If the group projects' container expiration policy enabled.
     - type: Number
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.keep_n
+      contextPath: GitLab.GroupProject.container_expiration_policy.keep_n
       description: If to keep the group project expiration policy.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.older_than
+      contextPath: GitLab.GroupProject.container_expiration_policy.older_than
       description: If the group project expiration policy is older than X.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.name_regex
+      contextPath: GitLab.GroupProject.container_expiration_policy.name_regex
       description: What is the group project expiration policy regex name.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.name_regex_keep
+      contextPath: GitLab.GroupProject.container_expiration_policy.name_regex_keep
       description: If to keep the group project expiration policy regex name.
     - type: Date
-      contextPath: GitLab.GetGroupProject.container_expiration_policy.next_run_at
+      contextPath: GitLab.GroupProject.container_expiration_policy.next_run_at
       description: The group project expiration policy next run at.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.issues_enabled
+      contextPath: GitLab.GroupProject.issues_enabled
       description: if to enabled issues.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.merge_requests_enabled
+      contextPath: GitLab.GroupProject.merge_requests_enabled
       description: If to enable merge requests.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.wiki_enabled
+      contextPath: GitLab.GroupProject.wiki_enabled
       description: If wiki is enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.jobs_enabled
+      contextPath: GitLab.GroupProject.jobs_enabled
       description: If jobs are enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.snippets_enabled
+      contextPath: GitLab.GroupProject.snippets_enabled
       description: If snippets are enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.container_registry_enabled
+      contextPath: GitLab.GroupProject.container_registry_enabled
       description: If the container registry is enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.service_desk_enabled
+      contextPath: GitLab.GroupProject.service_desk_enabled
       description: If service desk is enabled.
     - type: String
-      contextPath: GitLab.GetGroupProject.service_desk_address
+      contextPath: GitLab.GroupProject.service_desk_address
       description: The group project service desk address.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.can_create_merge_request_in
+      contextPath: GitLab.GroupProject.can_create_merge_request_in
       description: If the group project can create merge request in.
     - type: String
-      contextPath: GitLab.GetGroupProject.issues_access_level
+      contextPath: GitLab.GroupProject.issues_access_level
       description: The group project issues access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.repository_access_level
+      contextPath: GitLab.GroupProject.repository_access_level
       description: The group project repository access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.merge_requests_access_level
+      contextPath: GitLab.GroupProject.merge_requests_access_level
       description: The group project merge requests access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.forking_access_level
+      contextPath: GitLab.GroupProject.forking_access_level
       description: The group project forking access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.wiki_access_level
+      contextPath: GitLab.GroupProject.wiki_access_level
       description: The group project wiki access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.builds_access_level
+      contextPath: GitLab.GroupProject.builds_access_level
       description: The group project builds access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.snippets_access_level
+      contextPath: GitLab.GroupProject.snippets_access_level
       description: The group project snippets access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.pages_access_level
+      contextPath: GitLab.GroupProject.pages_access_level
       description: The group project pages access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.operations_access_level
+      contextPath: GitLab.GroupProject.operations_access_level
       description: The group project operations access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.analytics_access_level
+      contextPath: GitLab.GroupProject.analytics_access_level
       description: The group project analytics access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.container_registry_access_level
+      contextPath: GitLab.GroupProject.container_registry_access_level
       description: The group project container registry access level.
     - type: String
-      contextPath: GitLab.GetGroupProject.security_and_compliance_access_level
+      contextPath: GitLab.GroupProject.security_and_compliance_access_level
       description: The group project security and compliance access level.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.emails_disabled
+      contextPath: GitLab.GroupProject.emails_disabled
       description: If group project emails are disabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.shared_runners_enabled
+      contextPath: GitLab.GroupProject.shared_runners_enabled
       description: If group project shared runners are enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.lfs_enabled
+      contextPath: GitLab.GroupProject.lfs_enabled
       description: If group project lfs are enabled.
     - type: Number
-      contextPath: GitLab.GetGroupProject.creator_id
+      contextPath: GitLab.GroupProject.creator_id
       description: The group project creator id.
     - type: string
-      contextPath: GitLab.GetGroupProject.import_url
+      contextPath: GitLab.GroupProject.import_url
       description: The group project import url.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.import_type
+      contextPath: GitLab.GroupProject.import_type
       description: The group project import type.
     - type: String
-      contextPath: GitLab.GetGroupProject.import_status
+      contextPath: GitLab.GroupProject.import_status
       description: The group project import status.
     - type: Number
-      contextPath: GitLab.GetGroupProject.open_issues_count
+      contextPath: GitLab.GroupProject.open_issues_count
       description: The group project issues count.
     - type: Number
-      contextPath: GitLab.GetGroupProject.ci_default_git_depth
+      contextPath: GitLab.GroupProject.ci_default_git_depth
       description: The group project default fit depth.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.ci_forward_deployment_enabled
+      contextPath: GitLab.GroupProject.ci_forward_deployment_enabled
       description: If the ci forward deployment are  enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.ci_job_token_scope_enabled
+      contextPath: GitLab.GroupProject.ci_job_token_scope_enabled
       description: If the group project ci job token scope is enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.ci_separated_caches
+      contextPath: GitLab.GroupProject.ci_separated_caches
       description: The group project ci separated caches.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.ci_opt_in_jwt
+      contextPath: GitLab.GroupProject.ci_opt_in_jwt
       description: The group project ci opt in jwt value.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.ci_allow_fork_pipelines_to_run_in_parent_project
+      contextPath: GitLab.GroupProject.ci_allow_fork_pipelines_to_run_in_parent_project
       description: If group project ci allows fork pipelines to run in parent project.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.public_jobs
+      contextPath: GitLab.GroupProject.public_jobs
       description: The group project import public jobs.
     - type: Number
-      contextPath: GitLab.GetGroupProject.build_timeout
+      contextPath: GitLab.GroupProject.build_timeout
       description: The group project build timeout.
     - type: String
-      contextPath: GitLab.GetGroupProject.auto_cancel_pending_pipelines
+      contextPath: GitLab.GroupProject.auto_cancel_pending_pipelines
       description: The group project auto cancel pending pipelines.
     - type: String
-      contextPath: GitLab.GetGroupProject.ci_config_path
+      contextPath: GitLab.GroupProject.ci_config_path
       description: The group project ci config path.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.only_allow_merge_if_pipeline_succeeds
+      contextPath: GitLab.GroupProject.only_allow_merge_if_pipeline_succeeds
       description: If to only allow merge if pipeline succeeds.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.allow_merge_on_skipped_pipeline
+      contextPath: GitLab.GroupProject.allow_merge_on_skipped_pipeline
       description: If to only allow merge on skipped pipeline.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.restrict_user_defined_variables
+      contextPath: GitLab.GroupProject.restrict_user_defined_variables
       description: The group project restrict user defined variables.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.request_access_enabled
+      contextPath: GitLab.GroupProject.request_access_enabled
       description: If the request access enabled.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.only_allow_merge_if_all_discussions_are_resolved
+      contextPath: GitLab.GroupProject.only_allow_merge_if_all_discussions_are_resolved
       description: If to only allow merge if all discussions are resolved.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.remove_source_branch_after_merge
+      contextPath: GitLab.GroupProject.remove_source_branch_after_merge
       description: If to remove source branch after merge.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.printing_merge_request_link_enabled
+      contextPath: GitLab.GroupProject.printing_merge_request_link_enabled
       description: If printing merge request link is enabled.
     - type: String
-      contextPath: GitLab.GetGroupProject.merge_method
+      contextPath: GitLab.GroupProject.merge_method
       description: what is the merge method.
     - type: String
-      contextPath: GitLab.GetGroupProject.squash_option
+      contextPath: GitLab.GroupProject.squash_option
       description: What the squash option.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.enforce_auth_checks_on_uploads
+      contextPath: GitLab.GroupProject.enforce_auth_checks_on_uploads
       description: If to enforce auth checks on uploads.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.suggestion_commit_message
+      contextPath: GitLab.GroupProject.suggestion_commit_message
       description: The suggestion commit message.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.merge_commit_template
+      contextPath: GitLab.GroupProject.merge_commit_template
       description: The merge commit template.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.squash_commit_template
+      contextPath: GitLab.GroupProject.squash_commit_template
       description: The squash commit template.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.auto_devops_enabled
+      contextPath: GitLab.GroupProject.auto_devops_enabled
       description: The auto devops deploy strategy.
     - type: String
-      contextPath: GitLab.GetGroupProject.auto_devops_deploy_strategy
+      contextPath: GitLab.GroupProject.auto_devops_deploy_strategy
       description: The auto devops deploy strategy
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.autoclose_referenced_issues
+      contextPath: GitLab.GroupProject.autoclose_referenced_issues
       description: The autoclose referenced issues.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.keep_latest_artifact
+      contextPath: GitLab.GroupProject.keep_latest_artifact
       description: If keeping the lastest artifact is enabled.
     - type: Unknown
-      contextPath: GitLab.GetGroupProject.runner_token_expiration_interval
+      contextPath: GitLab.GroupProject.runner_token_expiration_interval
       description: What is runner token expiration interval.
     - type: String
-      contextPath: GitLab.GetGroupProject.external_authorization_classification_label
+      contextPath: GitLab.GroupProject.external_authorization_classification_label
       description: What is the external authorization classification label.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.requirements_enabled
+      contextPath: GitLab.GroupProject.requirements_enabled
       description: If the requirements are enabled.
     - type: String
-      contextPath: GitLab.GetGroupProject.requirements_access_level
+      contextPath: GitLab.GroupProject.requirements_access_level
       description: The requirements access level.
     - type: Boolean
-      contextPath: GitLab.GetGroupProject.security_and_compliance_enabled
+      contextPath: GitLab.GroupProject.security_and_compliance_enabled
       description: If the security and compliance is enabled.
   - name: gitlab-raw-file-get
     description: Get raw file.

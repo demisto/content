@@ -45,31 +45,6 @@ class Client(BaseClient):
         return response
 
 # client functions
-    def projects_get_access_requests_request(self, id_):
-        headers = self._headers
-        response = self._http_request('GET', f'/projects/{id_}/access_requests', headers=headers)
-        return response
-
-    def projects_request_access_request(self, id_):
-        headers = self._headers
-        response = self._http_request('POST', f'/projects/{id_}/access_requests', headers=headers)
-        return response
-
-    def projects_approve_access_request(self, id_, user_id, access_level):
-        params = assign_params(access_level=access_level)
-        headers = self._headers
-        response = self._http_request('PUT', f'/projects/{id_}/access_requests/{user_id}/approve', params=params,
-                                      headers=headers)
-        return response
-
-    def projects_deny_access_request(self, id_, user_id):
-        headers = self._headers
-        self._http_request('DELETE', f'/projects/{id_}/access_requests/{user_id}', headers=headers, resp_type='text')
-        response = {
-            'id': user_id,
-            'state': 'denied'
-        }
-        return response
 
     def group_projects_list_request(self, args: dict, per_page: int, page: int):
         headers = self._headers
@@ -173,9 +148,9 @@ class Client(BaseClient):
                             content: str | None, execute_filemode: str | None):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params = assign_params(branch=branch, commit_message=commit_msg, author_email=author_email,
-                               author_name=author_name, content=content, execute_filemode=execute_filemode)
-        response = self._http_request('POST', suffix, headers=headers, params=params, ok_codes=OK_CODES_POST)
+        params = assign_params( author_email=author_email, author_name=author_name, execute_filemode=execute_filemode)
+        body = assign_params(branch=branch, commit_message=commit_msg, content=content)
+        response = self._http_request('POST', suffix, headers=headers,data=body, params=params, ok_codes=OK_CODES_POST)
         return response
 
     def commit_single_request(self, commit_id):
@@ -225,20 +200,22 @@ class Client(BaseClient):
 
     def file_update_request(self, file_path: str, branch: str | None, start_branch: str | None, encoding: str | None,
                             author_email: str | None,author_name: str | None, commit_message: str | None,
-                            last_commit_id: str | None, execute_filemode: str | None):
+                            last_commit_id: str | None, execute_filemode: str | None, content: str | None,):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params= assign_params(branch=branch, start_branch=start_branch,encoding= encoding,
-                              author_email=author_email, author_name=author_name, commit_message=commit_message,
+        params= assign_params(start_branch=start_branch,encoding= encoding,
+                              author_email=author_email, author_name=author_name,
                               last_commit_id=last_commit_id, execute_filemode=execute_filemode)
-        response = self._http_request('PUT', suffix, headers=headers, params=params, ok_codes=OK_CODES_GET_PUT)
+        body=assign_params(branch=branch, commit_message=commit_message,content=content)
+        response = self._http_request('PUT', suffix, headers=headers,data=body, params=params, ok_codes=OK_CODES_GET_PUT)
         return response
 
-    def file_delete_request(self, file_path: str, branch: str):
+    def file_delete_request(self, file_path: str, branch: str, commit_message: str):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/files/{file_path}'
-        params = assign_params(branch= branch)
-        response = self._http_request('DELETE', suffix, headers=headers, params=params, ok_codes=OK_CODES_DELETE)
+        params = assign_params(branch= branch, commit_message=commit_message)
+        response = self._http_request('DELETE', suffix, headers=headers, params=params, ok_codes=OK_CODES_DELETE, 
+                                        resp_type='text')
 
         return response
 
@@ -481,7 +458,7 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
                                'Path': project.get('path')})
     human_readable = tableToMarkdown('List Group Projects', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
-        outputs_prefix='GitLab.Project',
+        outputs_prefix='GitLab.GroupProject',
         outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
@@ -533,19 +510,18 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                          'Title': issue.get('title'),
                          'CreatedAt': issue.get('created_at'),
                          'UpdateAt': issue.get('update_at'),
-                         'State': issue.get('state')
+                         'State': issue.get('state'),
+                         'CreatedBy': issue.get('author',{}).get('created_by')
                          }
         if issue.get('assignee'):
             issue_details['Assignee'] = issue.get('assignee').get('name')
         if issue.get('milestone'):
             issue_details['Milestone'] = issue.get('milestone').get('title')
-        if issue.get('author'):
-            issue_details['CreatedBy'] = issue.get('author').get('created_by'),
         response_to_hr.append(issue_details)
     human_readable = tableToMarkdown('List Issues', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
-        outputs_key_field=['id'],
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -573,12 +549,12 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     human_readable_dict = {
         'Iid': response.get('iid'),
         'Title': response.get('title'),
-        'CreatedAt': response.get('created_at', ''),
-        'CreatedBy': response.get('autor.name', ''),
-        'UpdatedAt': response.get('updated_at', ''),
-        'Milstone': response.get('milestone.title', ''),
-        'State': response.get('state', ''),
-        'Assignee': response.get('assignee.name', '')
+        'CreatedAt': response.get('created_at', ' '),
+        'CreatedBy': response.get('autor.name', ' '),
+        'UpdatedAt': response.get('updated_at', ' '),
+        'Milstone': response.get('milestone.title', ' '),
+        'State': response.get('state', ' '),
+        'Assignee': response.get('assignee.name', ' ')
     }
     human_readable = tableToMarkdown('Create Issue', human_readable_dict, headers=headers, removeNull=True)
     return CommandResults(
@@ -711,7 +687,8 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
                            'CreatedAt': response.get('created_at', ''),
                            'UpdatedAt': response.get('updated_at', ''),
                            'State': response.get('state', ''),
-                           'Assignee': response.get('assignee', '')}
+                           'Assignee': response.get('assignee', ''),
+                           'CreatedBy':response.get('author',{}).get('name', '') }
     if response.get('author'):
         human_readable_dict['CreatedBy'] = response.get('author').get('name', '')
     if response.get('milestone'):
@@ -792,7 +769,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
             - 'file_path' (Required): The file path.
-            - 'ref': The branch to retrieve the file from, default is main
+            - 'branch': The branch to retrieve the file from, default is main
     Returns:
         (CommandResults).
     """
@@ -803,10 +780,10 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_id = args.get('entry_id', '')
     author_email = args.get('author_email', '')
     author_name = args.get('author_name', '')
-    file_content = args.get('content', '')
+    file_content= args.get('file_content', '')
     execute_filemode = args.get('execute_filemode', '')
     if not entry_id and not file_content:
-        raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
+        raise DemistoException('You must specify either the "file_content" or the "entry_id" of the file.')
     elif entry_id:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
@@ -858,7 +835,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     else:
         file_content = bytes(file_content, encoding='utf8')
     response = client.file_update_request(file_path, branch, start_branch, encoding, author_email, author_name, commit_message,
-                                          last_commit_id, execute_filemode)
+                                          last_commit_id, execute_filemode,file_content)
   
     human_readable_str = 'File updated successfully'
     return CommandResults(
@@ -870,13 +847,24 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    branch = str(args.get('branch', ''))
-    response = client.branch_delete_request(branch)
+    """
+    Deletes a file from branch.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+        - branch: the name of the branch.
+        - file_path: the file path.
+    Returns:
+        (CommandResults).
+    """
+    branch = args.get('branch', '')
+    file_path = args.get('file_path', '')
+    commit_message=args.get('commit_message','')
+    response = client.file_delete_request(file_path, branch, commit_message)
     human_readable_string = 'File deleted successfully'
     command_results = CommandResults(
-        outputs_prefix='GitLab.Branch',
+        outputs_prefix='GitLab.File',
         readable_output=human_readable_string,
-        outputs_key_field='',
         outputs=response,
         raw_response=response
     )
@@ -1392,6 +1380,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 
-# python2 uses __builtin__ python3 uses builtins
 if __name__ in ("builtins", "__builtin__", "__main__"):
     main()
