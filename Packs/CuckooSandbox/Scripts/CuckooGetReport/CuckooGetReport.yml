@@ -1,0 +1,26 @@
+commonfields:
+  id: CuckooGetReport
+  version: -1
+name: CuckooGetReport
+script: ''
+type: python
+subtype: python3
+tags:
+- cuckoo
+comment: Deprecated. Use the 'cuckoo-get-task-report' command instead.
+deprecated: true
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: ID of the task in Cuckoo.
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-get-task-report
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

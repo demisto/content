@@ -44,6 +44,7 @@ MESSAGE_TYPES: dict = {
 }
 
 if '@' in BOT_ID:
+    demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
 
@@ -1574,6 +1575,7 @@ def messages() -> Response:
     try:
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
+
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
