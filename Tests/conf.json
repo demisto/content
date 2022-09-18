@@ -5114,7 +5114,8 @@
             "integrations": [
                 "Whois",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 120
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
