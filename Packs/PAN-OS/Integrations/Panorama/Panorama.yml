@@ -8128,7 +8128,7 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
-    - description: The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules.
+    - description: The name of the application-group to retrieve, if not mentioned will bring all the application-groups.
       isArray: false
       name: name
       required: false
