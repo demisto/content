@@ -13,7 +13,7 @@
             "indicator_types": [
                 "malicious-activity"
             ],
-            "pattern": "[url:value = 'http://x4z9arb.cn/4712/']",
+            "pattern": "[url:value = 'http://example.com/4712/']",
             "pattern_type": "stix",
             "valid_from": "2014-06-29T13:49:37.079Z"
         },

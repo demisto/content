@@ -15,7 +15,6 @@ def create_json_output_file(result, file_name):
     ('ip-stix-ioc.xml', 'ip-stix-ioc-results.json'),
     ('url-stix-ioc.xml', 'url-stix-ioc-results.json'),
     ('collection_example.xml', 'indicators_example.json'),
-    ('stix2.json', 'stix2_results.json'),
     ('STIX_Domain_Watchlist.xml', 'STIX_Domain_Watchlist_result.json'),
     ('STIX_FileHash_Watchlist.xml', 'STIX_FileHash_Watchlist_result.json'),
     ('STIX_IP_Watchlist.xml', 'STIX_IP_Watchlist_result.json'),
@@ -58,10 +57,10 @@ def test_parse_stix2(indicators_file, expected_result):
         - A collection of indicators in STIX2 format.
 
     When:
-        - fetch_indicators_command is running.
+        - Parsing stix2 indicators.
 
     Then:
-        - Validate the indicator extract as expected.
+        - Validate the indicators extract as expected.
     """
     from StixParserV2 import STIX2Parser
 

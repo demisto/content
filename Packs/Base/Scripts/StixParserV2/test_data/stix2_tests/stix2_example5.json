@@ -13,7 +13,7 @@
             "sectors": [
                 "technology"
             ],
-            "contact_information": "hank@pymtech.com"
+            "contact_information": "user@example.com"
         },
         {
             "type": "identity",
@@ -26,7 +26,7 @@
             "sectors": [
                 "technology"
             ],
-            "contact_information": "norman@oscorp.com"
+            "contact_information": "user@example.com"
         },
         {
             "type": "malware",

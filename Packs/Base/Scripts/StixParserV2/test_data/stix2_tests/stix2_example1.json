@@ -59,7 +59,7 @@
             "external_references": [
                 {
                     "source_name": "capec",
-                    "url": "https://capec.mitre.org/data/definitions/148.html",
+                    "url": "http://example.com/data/definitions/148.html",
                     "external_id": "CAPEC-148"
                 }
             ]
@@ -74,7 +74,7 @@
             "external_references": [
                 {
                     "source_name": "capec",
-                    "url": "https://capec.mitre.org/data/definitions/488.html",
+                    "url": "http://example.com/data/definitions/488.html",
                     "external_id": "CAPEC-488"
                 }
             ]

@@ -1,6 +1,6 @@
 [
     {
-        "value": "http://x4z9arb.cn/4712/",
+        "value": "http://example.com/4712/",
         "type": "URL",
         "rawJSON": {
             "type": "URL",
@@ -13,10 +13,10 @@
             "indicator_types": [
                 "malicious-activity"
             ],
-            "pattern": "[url:value = 'http://x4z9arb.cn/4712/']",
+            "pattern": "[url:value = 'http://example.com/4712/']",
             "pattern_type": "stix",
             "valid_from": "2014-06-29T13:49:37.079Z",
-            "value": "http://x4z9arb.cn/4712/"
+            "value": "http://example.com/4712/"
         },
         "fields": {
             "description": "This organized threat actor group operates to create profit from all types of crime.",
