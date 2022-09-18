@@ -149,8 +149,8 @@ Editing existing file in repository.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitLab.EditExistingFileInBranch.file_path | String | The file path. | 
-| GitLab.EditExistingFileInBranch.branch | String | The name of the branch. | 
+| GitLab.File.file_path | String | The file path. | 
+| GitLab.File.branch | String | The name of the branch. | 
 
 ### gitlab-file-delete
 ***
@@ -1107,9 +1107,6 @@ Deletes an existing note of a merge request.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GitLab.CreateCommit.message | String |  | 
 
 ### gitlab-issue-create
 ***
@@ -1419,112 +1416,112 @@ Get the list of projects of a given group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitLab.GetGroupProject.id | Number | The project's ID. | 
-| GitLab.GetGroupProject.description | String | The project's description. | 
-| GitLab.GetGroupProject.name | String | The project's name. | 
-| GitLab.GetGroupProject.name_with_namespace | String | The project's name with namespace. | 
-| GitLab.GetGroupProject.path | String | The file's path. | 
-| GitLab.GetGroupProject.path_with_namespace | String | The project's path with namespace. | 
-| GitLab.GetGroupProject.created_at | Date | The project date of creation. | 
-| GitLab.GetGroupProject.default_branch | String | The project default branch. | 
-| GitLab.GetGroupProject.ssh_url_to_repo | String | Group project ssh url to repository. | 
-| GitLab.GetGroupProject.http_url_to_repo | String | Group project http url to repository. | 
-| GitLab.GetGroupProject.web_url | String | Group project web url. | 
-| GitLab.GetGroupProject.readme_url | String | Group project readme url. | 
-| GitLab.GetGroupProject.avatar_url | Unknown | Group project avatar url. | 
-| GitLab.GetGroupProject.forks_count | Number | Group project web url forks count. | 
-| GitLab.GetGroupProject.star_count | Number | Group project web url star count. | 
-| GitLab.GetGroupProject.last_activity_at | Date | The project date of last date of activity. | 
-| GitLab.GetGroupProject.namespace.id | Number | The namespace id. | 
-| GitLab.GetGroupProject.namespace.name | String | The namespace name. | 
-| GitLab.GetGroupProject.namespace.path | String | The namespace path. | 
-| GitLab.GetGroupProject.namespace.kind | String | The namespace kind. | 
-| GitLab.GetGroupProject.namespace.full_path | String | The full path of the namespace. | 
-| GitLab.GetGroupProject.namespace.parent_id | Unknown | The parent id. | 
-| GitLab.GetGroupProject.namespace.avatar_url | Unknown | The avatar url. | 
-| GitLab.GetGroupProject.namespace.web_url | String | The name web url. | 
-| GitLab.GetGroupProject.container_registry_image_prefix | String | The container registry image prefix. | 
-| GitLab.GetGroupProject._links.self | String | The group projects' links. | 
-| GitLab.GetGroupProject._links.issues | String | The group projects' issues. | 
-| GitLab.GetGroupProject._links.merge_requests | String | The group projects' merge requests. | 
-| GitLab.GetGroupProject._links.repo_branches | String | The group projects' repository branches. | 
-| GitLab.GetGroupProject._links.labels | String | The group projects' links labels. | 
-| GitLab.GetGroupProject._links.events | String | The group projects' links events. | 
-| GitLab.GetGroupProject._links.members | String | The group projects' links members. | 
-| GitLab.GetGroupProject._links.cluster_agents | String | The group projects' links cluster agents. | 
-| GitLab.GetGroupProject.packages_enabled | Boolean | If the group projects' packages are enabled. | 
-| GitLab.GetGroupProject.empty_repo | Boolean | The group projects' empty repository. | 
-| GitLab.GetGroupProject.archived | Boolean | The group projects is archived. | 
-| GitLab.GetGroupProject.visibility | String | The group projects' visibility. | 
-| GitLab.GetGroupProject.resolve_outdated_diff_discussions | Boolean | The group projects's resolved outdated different discussions. | 
-| GitLab.GetGroupProject.container_expiration_policy.cadence | String | The group projects' container expiration policy cadence. | 
-| GitLab.GetGroupProject.container_expiration_policy.enabled | Boolean | If the group projects' container expiration policy enabled. | 
-| GitLab.GetGroupProject.container_expiration_policy.keep_n | Number | If to keep the group project expiration policy. | 
-| GitLab.GetGroupProject.container_expiration_policy.older_than | String | If the group project expiration policy is older than X. | 
-| GitLab.GetGroupProject.container_expiration_policy.name_regex | String | What is the group project expiration policy regex name. | 
-| GitLab.GetGroupProject.container_expiration_policy.name_regex_keep | String | If to keep the group project expiration policy regex name. | 
-| GitLab.GetGroupProject.container_expiration_policy.next_run_at | Date | The group project expiration policy next run at. | 
-| GitLab.GetGroupProject.issues_enabled | Boolean | if to enabled issues. | 
-| GitLab.GetGroupProject.merge_requests_enabled | Boolean | If to enable merge requests. | 
-| GitLab.GetGroupProject.wiki_enabled | Boolean | If wiki is enabled. | 
-| GitLab.GetGroupProject.jobs_enabled | Boolean | If jobs are enabled. | 
-| GitLab.GetGroupProject.snippets_enabled | Boolean | If snippets are enabled. | 
-| GitLab.GetGroupProject.container_registry_enabled | Boolean | If the container registry is enabled. | 
-| GitLab.GetGroupProject.service_desk_enabled | Boolean | If service desk is enabled. | 
-| GitLab.GetGroupProject.service_desk_address | String | The group project service desk address. | 
-| GitLab.GetGroupProject.can_create_merge_request_in | Boolean | If the group project can create merge request in. | 
-| GitLab.GetGroupProject.issues_access_level | String | The group project issues access level. | 
-| GitLab.GetGroupProject.repository_access_level | String | The group project repository access level. | 
-| GitLab.GetGroupProject.merge_requests_access_level | String | The group project merge requests access level. | 
-| GitLab.GetGroupProject.forking_access_level | String | The group project forking access level. | 
-| GitLab.GetGroupProject.wiki_access_level | String | The group project wiki access level. | 
-| GitLab.GetGroupProject.builds_access_level | String | The group project builds access level. | 
-| GitLab.GetGroupProject.snippets_access_level | String | The group project snippets access level. | 
-| GitLab.GetGroupProject.pages_access_level | String | The group project pages access level. | 
-| GitLab.GetGroupProject.operations_access_level | String | The group project operations access level. | 
-| GitLab.GetGroupProject.analytics_access_level | String | The group project analytics access level. | 
-| GitLab.GetGroupProject.container_registry_access_level | String | The group project container registry access level. | 
-| GitLab.GetGroupProject.security_and_compliance_access_level | String | The group project security and compliance access level. | 
-| GitLab.GetGroupProject.emails_disabled | Unknown | If group project emails are disabled. | 
-| GitLab.GetGroupProject.shared_runners_enabled | Boolean | If group project shared runners are enabled. | 
-| GitLab.GetGroupProject.lfs_enabled | Boolean | If group project lfs are enabled. | 
-| GitLab.GetGroupProject.creator_id | Number | The group project creator id. | 
-| GitLab.GetGroupProject.import_url | string | The group project import url. | 
-| GitLab.GetGroupProject.import_type | Unknown | The group project import type. | 
-| GitLab.GetGroupProject.import_status | String | The group project import status. | 
-| GitLab.GetGroupProject.open_issues_count | Number | The group project issues count. | 
-| GitLab.GetGroupProject.ci_default_git_depth | Number | The group project default fit depth. | 
-| GitLab.GetGroupProject.ci_forward_deployment_enabled | Boolean | If the ci forward deployment are  enabled. | 
-| GitLab.GetGroupProject.ci_job_token_scope_enabled | Boolean | If the group project ci job token scope is enabled. | 
-| GitLab.GetGroupProject.ci_separated_caches | Boolean | The group project ci separated caches. | 
-| GitLab.GetGroupProject.ci_opt_in_jwt | Boolean | The group project ci opt in jwt value. | 
-| GitLab.GetGroupProject.ci_allow_fork_pipelines_to_run_in_parent_project | Boolean | If group project ci allows fork pipelines to run in parent project. | 
-| GitLab.GetGroupProject.public_jobs | Boolean | The group project import public jobs. | 
-| GitLab.GetGroupProject.build_timeout | Number | The group project build timeout. | 
-| GitLab.GetGroupProject.auto_cancel_pending_pipelines | String | The group project auto cancel pending pipelines. | 
-| GitLab.GetGroupProject.ci_config_path | String | The group project ci config path. | 
-| GitLab.GetGroupProject.only_allow_merge_if_pipeline_succeeds | Boolean | If to only allow merge if pipeline succeeds. | 
-| GitLab.GetGroupProject.allow_merge_on_skipped_pipeline | Boolean | If to only allow merge on skipped pipeline. | 
-| GitLab.GetGroupProject.restrict_user_defined_variables | Boolean | The group project restrict user defined variables. | 
-| GitLab.GetGroupProject.request_access_enabled | Boolean | If the request access enabled. | 
-| GitLab.GetGroupProject.only_allow_merge_if_all_discussions_are_resolved | Boolean | If to only allow merge if all discussions are resolved. | 
-| GitLab.GetGroupProject.remove_source_branch_after_merge | Boolean | If to remove source branch after merge. | 
-| GitLab.GetGroupProject.printing_merge_request_link_enabled | Boolean | If printing merge request link is enabled. | 
-| GitLab.GetGroupProject.merge_method | String | what is the merge method. | 
-| GitLab.GetGroupProject.squash_option | String | What the squash option. | 
-| GitLab.GetGroupProject.enforce_auth_checks_on_uploads | Boolean | If to enforce auth checks on uploads. | 
-| GitLab.GetGroupProject.suggestion_commit_message | Unknown | The suggestion commit message. | 
-| GitLab.GetGroupProject.merge_commit_template | Unknown | The merge commit template. | 
-| GitLab.GetGroupProject.squash_commit_template | Unknown | The squash commit template. | 
-| GitLab.GetGroupProject.auto_devops_enabled | Boolean | The auto devops deploy strategy. | 
-| GitLab.GetGroupProject.auto_devops_deploy_strategy | String | The auto devops deploy strategy | 
-| GitLab.GetGroupProject.autoclose_referenced_issues | Boolean | The autoclose referenced issues. | 
-| GitLab.GetGroupProject.keep_latest_artifact | Boolean | If keeping the lastest artifact is enabled. | 
-| GitLab.GetGroupProject.runner_token_expiration_interval | Unknown | What is runner token expiration interval. | 
-| GitLab.GetGroupProject.external_authorization_classification_label | String | What is the external authorization classification label. | 
-| GitLab.GetGroupProject.requirements_enabled | Boolean | If the requirements are enabled. | 
-| GitLab.GetGroupProject.requirements_access_level | String | The requirements access level. | 
-| GitLab.GetGroupProject.security_and_compliance_enabled | Boolean | If the security and compliance is enabled. | 
+| GitLab.GroupProject.id | Number | The project's ID. | 
+| GitLab.GroupProject.description | String | The project's description. | 
+| GitLab.GroupProject.name | String | The project's name. | 
+| GitLab.GroupProject.name_with_namespace | String | The project's name with namespace. | 
+| GitLab.GroupProject.path | String | The file's path. | 
+| GitLab.GroupProject.path_with_namespace | String | The project's path with namespace. | 
+| GitLab.GroupProject.created_at | Date | The project date of creation. | 
+| GitLab.GroupProject.default_branch | String | The project default branch. | 
+| GitLab.GroupProject.ssh_url_to_repo | String | Group project ssh url to repository. | 
+| GitLab.GroupProject.http_url_to_repo | String | Group project http url to repository. | 
+| GitLab.GroupProject.web_url | String | Group project web url. | 
+| GitLab.GroupProject.readme_url | String | Group project readme url. | 
+| GitLab.GroupProject.avatar_url | Unknown | Group project avatar url. | 
+| GitLab.GroupProject.forks_count | Number | Group project web url forks count. | 
+| GitLab.GroupProject.star_count | Number | Group project web url star count. | 
+| GitLab.GroupProject.last_activity_at | Date | The project date of last date of activity. | 
+| GitLab.GroupProject.namespace.id | Number | The namespace id. | 
+| GitLab.GroupProject.namespace.name | String | The namespace name. | 
+| GitLab.GroupProject.namespace.path | String | The namespace path. | 
+| GitLab.GroupProject.namespace.kind | String | The namespace kind. | 
+| GitLab.GroupProject.namespace.full_path | String | The full path of the namespace. | 
+| GitLab.GroupProject.namespace.parent_id | Unknown | The parent id. | 
+| GitLab.GroupProject.namespace.avatar_url | Unknown | The avatar url. | 
+| GitLab.GroupProject.namespace.web_url | String | The name web url. | 
+| GitLab.GroupProject.container_registry_image_prefix | String | The container registry image prefix. | 
+| GitLab.GroupProject._links.self | String | The group projects' links. | 
+| GitLab.GroupProject._links.issues | String | The group projects' issues. | 
+| GitLab.GroupProject._links.merge_requests | String | The group projects' merge requests. | 
+| GitLab.GroupProject._links.repo_branches | String | The group projects' repository branches. | 
+| GitLab.GroupProject._links.labels | String | The group projects' links labels. | 
+| GitLab.GroupProject._links.events | String | The group projects' links events. | 
+| GitLab.GroupProject._links.members | String | The group projects' links members. | 
+| GitLab.GroupProject._links.cluster_agents | String | The group projects' links cluster agents. | 
+| GitLab.GroupProject.packages_enabled | Boolean | If the group projects' packages are enabled. | 
+| GitLab.GroupProject.empty_repo | Boolean | The group projects' empty repository. | 
+| GitLab.GroupProject.archived | Boolean | The group projects is archived. | 
+| GitLab.GroupProject.visibility | String | The group projects' visibility. | 
+| GitLab.GroupProject.resolve_outdated_diff_discussions | Boolean | The group projects's resolved outdated different discussions. | 
+| GitLab.GroupProject.container_expiration_policy.cadence | String | The group projects' container expiration policy cadence. | 
+| GitLab.GroupProject.container_expiration_policy.enabled | Boolean | If the group projects' container expiration policy enabled. | 
+| GitLab.GroupProject.container_expiration_policy.keep_n | Number | If to keep the group project expiration policy. | 
+| GitLab.GroupProject.container_expiration_policy.older_than | String | If the group project expiration policy is older than X. | 
+| GitLab.GroupProject.container_expiration_policy.name_regex | String | What is the group project expiration policy regex name. | 
+| GitLab.GroupProject.container_expiration_policy.name_regex_keep | String | If to keep the group project expiration policy regex name. | 
+| GitLab.GroupProject.container_expiration_policy.next_run_at | Date | The group project expiration policy next run at. | 
+| GitLab.GroupProject.issues_enabled | Boolean | if to enabled issues. | 
+| GitLab.GroupProject.merge_requests_enabled | Boolean | If to enable merge requests. | 
+| GitLab.GroupProject.wiki_enabled | Boolean | If wiki is enabled. | 
+| GitLab.GroupProject.jobs_enabled | Boolean | If jobs are enabled. | 
+| GitLab.GroupProject.snippets_enabled | Boolean | If snippets are enabled. | 
+| GitLab.GroupProject.container_registry_enabled | Boolean | If the container registry is enabled. | 
+| GitLab.GroupProject.service_desk_enabled | Boolean | If service desk is enabled. | 
+| GitLab.GroupProject.service_desk_address | String | The group project service desk address. | 
+| GitLab.GroupProject.can_create_merge_request_in | Boolean | If the group project can create merge request in. | 
+| GitLab.GroupProject.issues_access_level | String | The group project issues access level. | 
+| GitLab.GroupProject.repository_access_level | String | The group project repository access level. | 
+| GitLab.GroupProject.merge_requests_access_level | String | The group project merge requests access level. | 
+| GitLab.GroupProject.forking_access_level | String | The group project forking access level. | 
+| GitLab.GroupProject.wiki_access_level | String | The group project wiki access level. | 
+| GitLab.GroupProject.builds_access_level | String | The group project builds access level. | 
+| GitLab.GroupProject.snippets_access_level | String | The group project snippets access level. | 
+| GitLab.GroupProject.pages_access_level | String | The group project pages access level. | 
+| GitLab.GroupProject.operations_access_level | String | The group project operations access level. | 
+| GitLab.GroupProject.analytics_access_level | String | The group project analytics access level. | 
+| GitLab.GroupProject.container_registry_access_level | String | The group project container registry access level. | 
+| GitLab.GroupProject.security_and_compliance_access_level | String | The group project security and compliance access level. | 
+| GitLab.GroupProject.emails_disabled | Unknown | If group project emails are disabled. | 
+| GitLab.GroupProject.shared_runners_enabled | Boolean | If group project shared runners are enabled. | 
+| GitLab.GroupProject.lfs_enabled | Boolean | If group project lfs are enabled. | 
+| GitLab.GroupProject.creator_id | Number | The group project creator id. | 
+| GitLab.GroupProject.import_url | string | The group project import url. | 
+| GitLab.GroupProject.import_type | Unknown | The group project import type. | 
+| GitLab.GroupProject.import_status | String | The group project import status. | 
+| GitLab.GroupProject.open_issues_count | Number | The group project issues count. | 
+| GitLab.GroupProject.ci_default_git_depth | Number | The group project default fit depth. | 
+| GitLab.GroupProject.ci_forward_deployment_enabled | Boolean | If the ci forward deployment are  enabled. | 
+| GitLab.GroupProject.ci_job_token_scope_enabled | Boolean | If the group project ci job token scope is enabled. | 
+| GitLab.GroupProject.ci_separated_caches | Boolean | The group project ci separated caches. | 
+| GitLab.GroupProject.ci_opt_in_jwt | Boolean | The group project ci opt in jwt value. | 
+| GitLab.GroupProject.ci_allow_fork_pipelines_to_run_in_parent_project | Boolean | If group project ci allows fork pipelines to run in parent project. | 
+| GitLab.GroupProject.public_jobs | Boolean | The group project import public jobs. | 
+| GitLab.GroupProject.build_timeout | Number | The group project build timeout. | 
+| GitLab.GroupProject.auto_cancel_pending_pipelines | String | The group project auto cancel pending pipelines. | 
+| GitLab.GroupProject.ci_config_path | String | The group project ci config path. | 
+| GitLab.GroupProject.only_allow_merge_if_pipeline_succeeds | Boolean | If to only allow merge if pipeline succeeds. | 
+| GitLab.GroupProject.allow_merge_on_skipped_pipeline | Boolean | If to only allow merge on skipped pipeline. | 
+| GitLab.GroupProject.restrict_user_defined_variables | Boolean | The group project restrict user defined variables. | 
+| GitLab.GroupProject.request_access_enabled | Boolean | If the request access enabled. | 
+| GitLab.GroupProject.only_allow_merge_if_all_discussions_are_resolved | Boolean | If to only allow merge if all discussions are resolved. | 
+| GitLab.GroupProject.remove_source_branch_after_merge | Boolean | If to remove source branch after merge. | 
+| GitLab.GroupProject.printing_merge_request_link_enabled | Boolean | If printing merge request link is enabled. | 
+| GitLab.GroupProject.merge_method | String | what is the merge method. | 
+| GitLab.GroupProject.squash_option | String | What the squash option. | 
+| GitLab.GroupProject.enforce_auth_checks_on_uploads | Boolean | If to enforce auth checks on uploads. | 
+| GitLab.GroupProject.suggestion_commit_message | Unknown | The suggestion commit message. | 
+| GitLab.GroupProject.merge_commit_template | Unknown | The merge commit template. | 
+| GitLab.GroupProject.squash_commit_template | Unknown | The squash commit template. | 
+| GitLab.GroupProject.auto_devops_enabled | Boolean | The auto devops deploy strategy. | 
+| GitLab.GroupProject.auto_devops_deploy_strategy | String | The auto devops deploy strategy | 
+| GitLab.GroupProject.autoclose_referenced_issues | Boolean | The autoclose referenced issues. | 
+| GitLab.GroupProject.keep_latest_artifact | Boolean | If keeping the lastest artifact is enabled. | 
+| GitLab.GroupProject.runner_token_expiration_interval | Unknown | What is runner token expiration interval. | 
+| GitLab.GroupProject.external_authorization_classification_label | String | What is the external authorization classification label. | 
+| GitLab.GroupProject.requirements_enabled | Boolean | If the requirements are enabled. | 
+| GitLab.GroupProject.requirements_access_level | String | The requirements access level. | 
+| GitLab.GroupProject.security_and_compliance_enabled | Boolean | If the security and compliance is enabled. | 
 
 ### gitlab-raw-file-get
 ***
