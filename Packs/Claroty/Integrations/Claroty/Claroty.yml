@@ -311,6 +311,12 @@ script:
       - Critical
       required: false
       secret: false
+    - default: false
+      description: Returns only unresloved alerts.
+      isArray: false
+      name: exclude_resolved_alerts
+      required: false
+      secret: false
     deprecated: false
     description: Gets alerts from CTD.
     execution: false

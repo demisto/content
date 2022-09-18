@@ -327,7 +327,7 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     if alert_severity:
         Filter("severity", get_severity_filter(alert_severity), "gte")
 
-    if bool(demisto.params().get("exclude_resolved_alerts", False)):
+    if strtobool(args.get("exclude_resolved_alerts", "False")):
         filters = _add_exclude_resolved_alerts_filters(filters)
 
     site_id = demisto.params().get("site_id", None)
