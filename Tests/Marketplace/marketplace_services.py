@@ -3009,10 +3009,16 @@ class Pack(object):
             logging.info(f"No added/modified readme images were detected in {self._pack_name} pack.")
             return task_status
 
+        logging.info(f'{pc_uploaded_readme_images}')
+        logging.info(f'{self._reademe_images=}')
+
         for readme_image_name in self._reademe_images:
+            logging.info(f'copying image {readme_image_name}')
             build_bucket_readme_image_path = os.path.join(build_bucket_base_path, self._pack_name,
                                                           BucketUploadFlow.README_IMAGES, readme_image_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_readme_image_path)
+
+            logging.info(f'{build_bucket_readme_image_path=}')
 
             if not build_bucket_image_blob.exists():
                 logging.error(f"Found changed/added readme image in pack {self._pack_name} in content repo but "
@@ -3025,6 +3031,7 @@ class Pack(object):
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
                         new_name=os.path.join(storage_base_path, self._pack_name, BucketUploadFlow.README_IMAGES)
                     )
+                    logging.info('trying to copy')
                     if not copied_blob.exists():
                         logging.error(
                             f"Copy {self._pack_name} integration readme image: {build_bucket_image_blob.name} "
