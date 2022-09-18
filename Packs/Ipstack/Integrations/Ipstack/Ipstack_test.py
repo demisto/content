@@ -23,7 +23,7 @@ def test_right_location_format(mocker, requests_mock):
         and contain DBotScore calculations.
     """
     mocker.patch.object(demisto, 'params', return_value={'proxy': 'proxy',
-                                                         'apikey': 'apikey',
+                                                         'apikey': {'password': 'apikey'},
                                                          'integrationReliability': 'C - Fairly reliable'})
     mocker.patch.object(demisto, 'args', return_value={'ip': '1.2.3.4'})
     mocker.patch.object(demisto, 'results')
@@ -47,7 +47,7 @@ def test_test_module(mocker, requests_mock):
       - No errors occurred
     """
     mocker.patch.object(demisto, 'params', return_value={'proxy': 'proxy',
-                                                         'apikey': 'apikey',
+                                                         'apikey': {'password': 'apikey'},
                                                          'integrationReliability': 'C - Fairly reliable'})
     results_mock = mocker.patch.object(demisto, 'results')
     requests_mock.get(

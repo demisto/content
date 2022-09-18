@@ -6,11 +6,12 @@ display: ipstack
 category: Data Enrichment & Threat Intelligence
 description: "One of the leading IP to geolocation \nAPIs and global IP database services."
 configuration:
-- display: API Key
+- display: ""
+  displaypassword: API Key
   name: apikey
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
+  hiddenusername: true
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -39,6 +40,7 @@ script:
       required: true
       default: true
       description: IP address to query.
+      isArray: true
     outputs:
     - contextPath: IP.Address
       description: IP address.
@@ -81,7 +83,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
 tests:
 - Ipstack_Test
 fromversion: 5.0.0
