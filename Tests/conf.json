@@ -2241,9 +2241,6 @@
             "timeout": 2400
         },
         {
-            "playbookID": "STIXParserTest"
-        },
-        {
             "playbookID": "VerifyJSON - Test",
             "fromversion": "5.5.0"
         },

@@ -5,7 +5,7 @@ args:
   name: iocXml
   required: true
   secret: false
-comment: Parse Stix files to Demisto indicators
+comment: Deprecated. Use STIXParserV2 instead.
 commonfields:
   id: StixParser
   version: -1
@@ -21,6 +21,7 @@ type: python
 subtype: python2
 dockerimage: demisto/stix:1.0.0.23135
 tests:
-- STIXParserTest
+- No tests (deprecated)
 dependson: {}
 fromversion: 5.0.0
+deprecated: true
