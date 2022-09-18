@@ -136,6 +136,7 @@ class CollectionResult:
             conf: Optional[TestConf],
             id_set: Optional[IdSet],
             is_sanity: bool,
+            is_nightly: bool,
     ):
         """
         Validates the arguments of the constructor.
