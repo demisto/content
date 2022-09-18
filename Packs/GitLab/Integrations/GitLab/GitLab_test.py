@@ -13,8 +13,6 @@ import io
 import json
 import requests
 import pytest
-from typing import Dict, Callable, Union, List, Any
-from CommonServerPython import CommandResults
 from GitLab import Client
 '''
 group_project_list_command
