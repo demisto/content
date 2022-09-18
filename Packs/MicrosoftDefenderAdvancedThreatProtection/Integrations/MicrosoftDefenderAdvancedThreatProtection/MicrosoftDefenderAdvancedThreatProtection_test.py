@@ -2368,8 +2368,8 @@ def test_get_machines(mocker, page_num, page_size, res):
 
 
 @pytest.mark.parametrize('query, query_batch, hr_name, timeout',
-                         [('', '{"queries": [{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10' \
-                            ' | distinct DeviceName", "name": "name1", "timeout": "20"}]}', "name1", 20),
+                         [('', '{"queries": [{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
+                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]}', "name1", 20),
                           ('DeviceInfo | where OnboardingStatus == Onboarded | limit 10 | distinct DeviceName', '', "name", 10)])
 def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeout):
     """
@@ -2398,29 +2398,29 @@ def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeo
 @pytest.mark.parametrize('query, query_batch, exception, return_value',
                          [('', '', 'Both query and query_batch were not given, please provide one',
                            {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]}),
-                          ('query', 'query_batch', 'Both query and query_batch were given, please provide just one', 
+                          ('query', 'query_batch', 'Both query and query_batch were given, please provide just one',
                           {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]})])
 def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exception, return_value):
     """
     Given:
-        - query, query_batch, human readable name and a timeout
+        - query, query_batch
 
     When:
-        - Running the get_advanced_hunting_command command
+        - Running the get_advanced_hunting_command command expecting an exception
 
     Then:
-        - verify the expected results
+        - verify the expected exception has the correct value
     """
     args = {'timeout': '10',
             'time_range': '1 day',
             'name': 'name',
             'query': query,
             'query_batch': query_batch}
-    req = mocker.patch.object(client_mocker, 'get_advanced_hunting',
+    mocker.patch.object(client_mocker, 'get_advanced_hunting',
                               return_value=return_value)
-    # Execute
+
     with pytest.raises(Exception) as e:
         get_advanced_hunting_command(client_mocker, args)
 
-    # Assert
+
     assert str(e.value) == exception
