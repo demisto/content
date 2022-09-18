@@ -1177,7 +1177,7 @@ def main():
                 continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
-
+        shutil.copyfile(pack.path, Path(packs_artifacts_path).parent / f'uploaded_packs-{build_number}' / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
                                                                 override_all_packs or pack.is_modified,
                                                                 storage_base_path)

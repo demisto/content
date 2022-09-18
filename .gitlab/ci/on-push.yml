@@ -141,7 +141,7 @@ create-instances-with-graph:
     - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH" "xsoar" "graph"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
@@ -212,7 +212,7 @@ create-instances:
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH" "xsoar"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
@@ -348,7 +348,7 @@ prepare-testing-bucket-mpv2-with-graph:
     - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2" "graph"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Upload Artifacts to GCP" --collapsed
