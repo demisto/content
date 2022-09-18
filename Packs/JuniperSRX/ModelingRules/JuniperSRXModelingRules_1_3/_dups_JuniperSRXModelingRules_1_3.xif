@@ -1,0 +1,13 @@
+
+0_JuniperSRXModelingRules
+	xdm.event.operation_sub_type (2)
+1_JuniperSRXModelingRules
+	xdm.source.ipv4 (2)
+1_JuniperSRXModelingRules
+	xdm.target.ipv4 (2)
+1_JuniperSRXModelingRules
+	xdm.target.port (2)
+1_JuniperSRXModelingRules
+	xdm.target.interface (2)
+1_JuniperSRXModelingRules
+	xdm.network.rule (2)

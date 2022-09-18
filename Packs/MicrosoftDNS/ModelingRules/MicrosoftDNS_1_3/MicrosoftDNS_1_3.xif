@@ -1,0 +1,44 @@
+[MODEL: dataset="msft_dns_raw "]
+alter hostname = replace(json_extract(_raw_log,"$.host.name"),"\"",""),
+    opcode = replace(json_extract(_raw_log,"$.opcode"),"\"",""),
+    protocol = replace(json_extract(_raw_log,"$.protocol"),"\"",""),
+    remoteIP = replace(json_extract(_raw_log,"$.RemoteIP"),"\"",""),
+    questiontype = replace(json_extract(_raw_log,"$.questiontype"),"\"",""),
+    queryType = replace(json_extract(_raw_log,"$.QueryType"),"\"",""),
+    time = replace(json_extract(_raw_log,"$.time"),"\"",""),
+    date = replace(json_extract(_raw_log,"$.date"),"\"",""),
+    direction = replace(json_extract(_raw_log,"$.SendReceiveIndicator"),"\"",""),
+    qflags = replace(json_extract(_raw_log,"$.qflags"),"\"",""),
+    fullQuery = replace(json_extract(_raw_log,"$.questionnamenondetailed"),"\"",""),
+    product = replace(json_extract(_raw_log,"$.fields.product"),"\"",""),
+    vendor = replace(json_extract(_raw_log,"$.fields.vendor"),"\"",""),
+    message = replace(json_extract(_raw_log,"$.Message"),"\"","")
+| alter remoteipv6 = if(remoteIP contains ":",remoteIP,null)
+| alter remoteipv4 = if(remoteIP not contains ":",remoteIP,null)
+| alter answeripv4 = arrayindex(regextract(message, "DATA\s*(\d+\.\d+\.\d+\.\d+)"),0)
+| alter answeripv6 = arrayindex(regextract(message, "DATA\s*([a-zA-Z0-9]*\:[a-zA-Z0-9]*\:[a-zA-Z0-9]*\:[a-zA-Z0-9]*\:[a-zA-Z0-9]*\:[a-zA-Z0-9]*)"),0)
+//coverting a query with (randomNumber) to a query with "."
+| alter query1 = replex(fullQuery,"^\(\d+\)","")
+| alter query2 = replex(query1,"\(\d+\)$","")
+| alter query = replex(query2,"\(\d+\)",".")
+| alter timestamp = parse_timestamp("%m/%d/%Y %I:%M:%S %p", format_string("%s %s", date, time))
+| alter flag_1 = to_number(arrayindex(regextract(qflags, "^(\d+)"),0))
+// create field to flag 2
+| alter flag_2 = arrayindex(regextract(qflags, "^\d+\s(.*)\s[A-Z]+"),0)
+| alter flags_2_list = split(flag_2," ")
+// create field to flag 3
+| alter responseCode = arrayindex(regextract(qflags, "([A-Za-z]+)$"),0)
+| alter xdm.network.dns.opcode = opcode,
+    xdm.network.dns.dns_question.type = questiontype,
+    xdm.source.host.hostname = hostname,
+    xdm.network.ip_protocol = protocol,
+    xdm.target.ipv4 = remoteipv4,
+    xdm.target.ipv6 = remoteipv6,
+    xdm.network.dns.dns_question.class = queryType,
+    _time = timestamp,
+    xdm.network.dns.is_response = if(direction="Rcv",1,0),
+    xdm.network.dns.dns_question.name = query,
+    xdm.network.dns.response_code = responseCode,
+    xdm.observer.product = product,
+    xdm.observer.vendor = vendor,
+    xdm.network.dns.dns_resource_record.value = if(answeripv4=null,answeripv6,answeripv4);

@@ -1,0 +1,9 @@
+
+1_NetskopeEventCollector
+	xdm.alert.severity (2)
+1_NetskopeEventCollector
+	xdm.source.user.username (2)
+1_NetskopeEventCollector
+	xdm.event.description (2)
+1_NetskopeEventCollector
+	xdm.event.type (2)

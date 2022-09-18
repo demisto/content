@@ -1,0 +1,23 @@
+[MODEL: dataset=duo_duo_raw]
+filter eventtype = "authentication"
+| alter xdm.source.host.hostname = json_extract_scalar(access_device, "$.hostname"),
+    xdm.source.host.ipv4_addresses = arraycreate(json_extract_scalar(access_device, "$.ip")),
+    xdm.source.location.city = json_extract_scalar(access_device, "$.location.city"),
+    xdm.source.location.country = json_extract_scalar(access_device, "$.location.country"),
+    xdm.intermediate.host.os_family = json_extract_scalar(access_device, "$.os"),
+    xdm.intermediate.host.os = json_extract_scalar(access_device, "$.os_version"),
+    xdm.event.type = eventtype,
+    xdm.auth.auth_method = factor,
+    _time = to_timestamp(to_integer(timestamp), "SECONDS");
+
+filter eventtype = "administrator"
+| alter xdm.event.operation = action,
+    xdm.event.description = description,
+    xdm.target.resource.name = object,
+    _time = to_timestamp(to_integer(timestamp), "SECONDS"),
+    xdm.source.user.username = username,
+    xdm.source.user.user_type = context,
+    xdm.target.user.identifier = phone,
+    xdm.event.type = type,
+    xdm.target.user.username = json_extract_scalar(description, "$.hostname"),
+    xdm.target.resource.type = json_extract_scalar(description, "$.factor");

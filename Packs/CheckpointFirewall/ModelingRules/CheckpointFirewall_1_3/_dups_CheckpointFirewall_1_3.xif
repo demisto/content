@@ -1,0 +1,35 @@
+
+1_CheckpointFirewall
+	xdm.event.id (2)
+1_CheckpointFirewall
+	xdm.event.type (2)
+1_CheckpointFirewall
+	xdm.network.ip_protocol (2)
+1_CheckpointFirewall
+	xdm.network.rule (2)
+1_CheckpointFirewall
+	xdm.alert.severity (2)
+1_CheckpointFirewall
+	xdm.observer.vendor (2)
+1_CheckpointFirewall
+	xdm.observer.product (2)
+1_CheckpointFirewall
+	xdm.observer.action (2)
+1_CheckpointFirewall
+	xdm.source.host.hostname (2)
+1_CheckpointFirewall
+	xdm.source.user.username (2)
+1_CheckpointFirewall
+	xdm.source.ipv4 (2)
+1_CheckpointFirewall
+	xdm.source.ipv6 (2)
+1_CheckpointFirewall
+	xdm.target.user.username (2)
+1_CheckpointFirewall
+	xdm.target.ipv4 (2)
+1_CheckpointFirewall
+	xdm.target.ipv6 (2)
+1_CheckpointFirewall
+	xdm.target.port (2)
+3_CheckpointFirewall
+	xdm.observer.vendor (2)

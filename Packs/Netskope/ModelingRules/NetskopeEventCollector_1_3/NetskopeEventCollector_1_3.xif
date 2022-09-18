@@ -1,0 +1,61 @@
+//[MODEL: dataset=netskope_netskope_raw]
+//alter xdm.event.type = action,
+//    xdm.target.host.os_family = device,
+//    xdm.target.host.hostname = coalesce(dsthost, hostname),
+//    xdm.target.ipv4 = dstip,
+//    xdm.target.port = dstport,
+//    xdm.network.ip_protocol = ip_protocol,
+//    xdm.source.host.os = os,
+//    xdm.network.protocol_layers = arraycreate(protocol),
+//    xdm.event.duration = session_duration,
+//    xdm.source.ipv4 = srcip,
+//    xdm.source.port = srcport,
+//    _time = to_timestamp(to_integer(timestamp), "SECONDS"),
+//    xdm.source.sent_packets = total_packets,
+//    xdm.target.user.username = user,
+//    xdm.target.user.identifier = userkey,
+//    xdm.network.http.user_agent = useragent;
+//
+//[MODEL: dataset=netskope_netskope_raw]
+//alter xdm.alert.severity = severity_level,
+//    _time = to_timestamp(to_integer(timestamp), "SECONDS"),
+//    xdm.source.user.username = user,
+//    xdm.event.description = audit_log_event,
+//    xdm.event.type = type
+//| filter activity not in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
+//| alter xdm.event.type = activity,
+//    xdm.event.outcome_reason = alert,
+//    xdm.alert.original_alert_id = to_string(incident_id),
+//    xdm.source.location.country = src_country,
+//    xdm.source.location.city = src_location,
+//    xdm.source.location.region = src_region,
+//    xdm.source.ipv4 = coalesce(srcip, userip),
+//    _time = to_timestamp(to_integer(timestamp), "SECONDS"),
+//    xdm.source.user.username = user,
+//    xdm.alert.severity = severity,
+//    xdm.event.description = if(json_extract_scalar(supporting_data, "$.data_type") = "reason", json_extract_scalar(supporting_data, "$.data_values[0]"), ""),
+//    xdm.source.location.latitude = concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
+//    xdm.source.user_agent = useragent;
+//
+//[MODEL: dataset=netskope_netskope_raw]
+//filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
+//| alter xdm.auth.auth_method = access_method,
+//    xdm.event.type = activity,
+//    xdm.target.application.name = coalesce(app, managed_app),
+//    xdm.source.host.hostname = device,
+//    xdm.source.location.country = dst_country,
+//    xdm.source.location.region = dst_region,
+//    xdm.source.location.latitude = concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
+//    xdm.source.process.executable.file_type = file_type,
+//    xdm.intermediate.host.hostname = hostname,
+//    xdm.source.process.executable.md5 = md5,
+//    xdm.source.host.os = os,
+//    _time = to_timestamp(to_integer(timestamp), "SECONDS"),
+//    xdm.target.url = url,
+//    xdm.target.user.username = user,
+//    xdm.source.host.ipv4_addresses = arraycreate(userip),
+//    xdm.event.outcome_reason = action,
+//    xdm.alert.severity = severity,
+//    xdm.source.process.executable.sha256 = coalesce(_sha256, sha256),
+//    xdm.auth.kerberos_tgt.padata_type = data_type,
+//    xdm.source.user_agent = useragent;

@@ -1,0 +1,7 @@
+from_xdr_version: 3.5.0
+fromversion: 6.10.0
+id: alibaba_modeling_rule
+name: Alibaba Modeling Rule
+rules: ''
+schema: ''
+tags: alibaba

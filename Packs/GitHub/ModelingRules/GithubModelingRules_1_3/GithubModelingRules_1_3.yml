@@ -1,0 +1,7 @@
+from_xdr_version: 3.5.0
+fromversion: 6.10.0
+id: github_modeling_rule
+name: Github Modeling Rule
+rules: ''
+schema: ''
+tags: github
