@@ -3,51 +3,91 @@ commonfields:
   id: AHA
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'AHA'
-name: AHA
+  - name: url
+    display: Your server URL
+    required: true
+    defaultvalue: https://example.com/
+    type: 0
+    additionalinfo: null
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: api_key
+    display: Api Key
+    required: true
+    defaultvalue: null
+    type: 0
+    additionalinfo: "API Key to access service REST API "
+description: Aha!
+display: AHA
+name: Aha!
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - name: get_all_features
+      description: will get all features from service
+      deprecated: false
+      arguments: []
+      outputs: []
+    - name: get_feature
+      description: returns a specific feature
+      deprecated: false
+      arguments:
+        - name: featureName
+          description: name of the feature to return
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: fieldsList
+          description: list of fields to be returned in response body
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+      outputs: []
+    - name: edit_feature
+      description: change value of a field in feature
+      deprecated: false
+      arguments:
+        - name: featureName
+          description: name of the feature to edit
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: body
+          description: "fields to change as "
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - "{"
+            - '    "feature": {    '
+            - '        "workflow_status": {'
+            - '            "name" : "Closed"'
+            - "        }"
+            - "    }"
+            - "}"
+      outputs: []
   isfetch: false
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.5.31797
+  feed: false
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)

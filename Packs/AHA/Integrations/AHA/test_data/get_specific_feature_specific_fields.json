@@ -1,0 +1,18 @@
+{
+    "feature": {
+        "id": "7142047393121670680",
+        "name": "Push based weather alerts",
+        "created_by_user": {
+            "id": "7142047370286614216",
+            "name": "Danny Fried",
+            "email": "dfried@paloaltonetworks.com"
+        },
+        "workflow_status": {
+            "id": "7142047373292237665",
+            "name": "Closed",
+            "position": 6,
+            "complete": true,
+            "color": "#689f3b"
+        }
+    }
+}

@@ -1,16 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from AHA import Client, get_all_features
+from AHA import Client, get_all_features, get_feature
+import pytest
 import io
 
-# TODO create mock tests should be statless 
-# 
 
-apikey = ""
+apikey = demisto.params().get('api_key')
 headers = {
     'Authorization': f"Bearer {apikey}",
 }
-base_url = "https://paloalto-networks.aha.io/api/v1/"
 BASE_URL = "https://paloalto-networks.aha.io/api/v1/"
 
 
@@ -33,43 +31,67 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-#TODO change name 
-# TODO this is an example of how to work with mock 
-def test_check_the_status_of_an_action_requested_on_a_case_command(mocker):
+# TODO change name
+# TODO this is an example of how to work with mock
+def test_getFeatures(mocker):
     """
         When:
-            - Checking status of an action request on a case
-        Then
-            - Assert the context data is as expected.
-            - Assert output prefix data is as expected
+            - Requesting all features
+        Then:
+            - Asserts get all features
     """
-    client = mock_client(mocker, util_load_json('test_data/get_features.json'))
-    results = get_all_features(client, "2022-01-01")
-    assert len(results.outputs) > 0
+    client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
+    results = get_all_features(client=client, fromDate="2022-01-01")
+    assert len(results.outputs) == 30
 
 
-def test_getFeatures():
-    client = Client(headers=headers, base_url=base_url, proxy=False, verify=False)
-    result = client.list_features()
-    assert len(result['features']) > 0
-    result
+def test_getFeaturesFromDate(mocker):
+    """
+        When:
+            - Requesting all features with created date of the future
+        Then:
+            - Return en empty list
+    """
+    client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
+    results = get_all_features(client=client, fromDate="3000-01-01")
+    assert len(results.outputs) == 0
 
 
-def test_getFeaturesFromDate():
-    client = Client(headers=headers, base_url=base_url, proxy=False, verify=False)
-    result = client.list_features("2023-09-12")
-    assert len(result['features']) == 0
+def test_getSpecificFeature(mocker):
+    """
+        When:
+            - Requesting a specific feature
+        Then:
+            - Return the requested feature
+    """
+    client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
+    result = get_feature(client=client, featureName="DEMO-10")
+    assert result.outputs['reference_num'] == "DEMO-10"
 
 
-def test_getSpecificFeature():
-    client = Client(headers=headers, base_url=base_url, proxy=False, verify=False)
-    result = client.get_feature("DEMO-10")
-    assert result['feature']['reference_num'] == "DEMO-10"
+def test_getSpecificFeatureWithSpecificFields(mocker):
+    """
+        When:
+            - Requesting a specific feature with specific fields
+        Then:
+            - Return the requested feature with the specified fields
+    """
+    client = mock_client(mocker, util_load_json('test_data/get_specific_feature_specific_fields.json'))
+    result = get_feature(client=client, featureName="DEMO-10", fieldsList=["workflow_status", "name"])
+    if "reference_num" in result.outputs:
+        pytest.fail("There should NOT be a reference_num field in output.")
+    assert result.outputs['name'] == "Push based weather alerts"
 
 
-def test_updateFeatureField():
-    client = Client(headers=headers, base_url=base_url, proxy=False, verify=False)
+def test_updateFeatureField(mocker):
+    """
+        When:
+            - Requesting to update a field in a feautre.
+        Then:
+            - Return the feature with field updated.
+    """
+    client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
     fields = {"score": 29, "workflow_status": {"name": "Closed"}}
-    result = client.update_feature(featureName="DEMO-36", fields=fields)
-    assert result['feature']['reference_num'] == "DEMO-36"
+    result = client.update_feature(featureName="DEMO-10", fields=fields)
+    assert result['feature']['reference_num'] == "DEMO-10"
     assert result['feature']['workflow_status']['name'] == "Closed"

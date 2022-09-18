@@ -1,10 +1,11 @@
 # import demistomock as demisto
 from dataclasses import dataclass
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+# from CommonServerUserPython import *  # noqa
 
-import requests
-from typing import Dict, Any
+import requests 
+from typing import Dict
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -13,6 +14,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+URL_SUFFIX = '/products/DEMO/features/'
 
 ''' CLIENT CLASS '''
 
@@ -32,16 +34,22 @@ class Client(BaseClient):
                                       resp_type='json')
         return response
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def get_feature(self, featureName: str, fieldsList) -> Dict:
+        """
+        Retrieves a specific feature from AHA
+        Args:
+        featureName: str
+        """
+        headers = self._headers
+        url_suffix = f"{URL_SUFFIX}{featureName}"
+        if fieldsList:
+            fields = ",".join(fieldsList)
+            url_suffix = f"{url_suffix}?fields={fields}"
+        response = self._http_request(method='GET', url_suffix=url_suffix, headers=headers,
+                                      resp_type='json')
+        return response
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def update_feature(self, featureName: str, fields: Dict) -> Dict:
         """
         Updates fields in a feature from AHA
         Args:
@@ -54,8 +62,7 @@ class Client(BaseClient):
         response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{featureName}", headers=headers,
                                       resp_type='json', data=payload)
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -66,76 +73,11 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-def get_all_features(client: Client, fromDate: str) -> CommandResults:
-    message: str = ''
-    try:
-        result = client.list_features(fromDate=fromDate)
-        if result:
-            message = result['features']
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
-        outputs=message,
-        raw_response=message
-    )
-    return command_results
-
+    """Tests API connectivity and authentication'"""
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-def get_all_features(client: Client, fromDate: str) -> CommandResults:
-    message: str = ''
-    try:
-        result = client.list_features(fromDate=fromDate)
-        if result:
-            message = result['features']
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
-        outputs=message,
-        raw_response=message
-    )
-    return command_results
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-def get_feature(client: Client, featureName: str) -> str:
-    message: str = ''
-    try:
-        result = client.get_feature(featureName=featureName)
+        result = client.list_features()
         if result:
             message = 'ok'
     except DemistoException as e:
@@ -144,6 +86,46 @@ def get_feature(client: Client, featureName: str) -> str:
         else:
             raise e
     return message
+
+
+def get_all_features(client: Client, fromDate: str) -> CommandResults:
+    message: str = ''
+    try:
+        result = client.list_features(fromDate=fromDate)
+        if result:
+            message = result['features']
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    command_results = CommandResults(
+        outputs_prefix='AHA.ActionStatus',
+        outputs_key_field='',
+        outputs=message,
+        raw_response=message
+    )
+    return command_results
+
+
+def get_feature(client: Client, featureName: str, fieldsList=None) -> CommandResults:
+    message: str = ''
+    try:
+        result = client.get_feature(featureName=featureName, fieldsList=fieldsList)
+        if result:
+            message = result['feature']
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    command_results = CommandResults(
+        outputs_prefix='AHA.ActionStatus',
+        outputs_key_field='',
+        outputs=message,
+        raw_response=message
+    )
+    return command_results
 
 
 def edit_feature(client: Client, featureName: str, data: str) -> str:
@@ -174,6 +156,7 @@ def delete_feature(client: Client) -> str:
             raise e
     return message
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -185,15 +168,15 @@ def main() -> None:
     """
 
     # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(demisto.params()['url'], '/api/v1')    
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    # verify_certificate = not demisto.params().get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
