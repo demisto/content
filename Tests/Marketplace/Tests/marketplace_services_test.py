@@ -1630,7 +1630,6 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
         images_data = {"TestPack": {BucketUploadFlow.README_IMAGES: [os.path.basename(blob_name)]}}
-        dummy_pack.uploaded_readme_images = [os.path.basename(blob_name)]
         task_status = dummy_pack.copy_readme_images(dummy_prod_bucket, dummy_build_bucket, images_data,
                                                     GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status

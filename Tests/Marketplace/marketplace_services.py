@@ -3012,7 +3012,7 @@ class Pack(object):
         logging.info(f'{pc_uploaded_readme_images}')
         logging.info(f'{self._reademe_images=}')
 
-        for readme_image_name in self._reademe_images:
+        for readme_image_name in pc_uploaded_readme_images:
             logging.info(f'copying image {readme_image_name}')
             build_bucket_readme_image_path = os.path.join(build_bucket_base_path, self._pack_name,
                                                           BucketUploadFlow.README_IMAGES, readme_image_name)
