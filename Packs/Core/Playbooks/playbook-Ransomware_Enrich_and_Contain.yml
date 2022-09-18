@@ -1145,7 +1145,7 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    Whether to detonate the ransomware file in sandbox, set to True to enable file detonation and False to disable it.
+    Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.
     By default is set to True
   playbookInputQuery:
 outputs: []
