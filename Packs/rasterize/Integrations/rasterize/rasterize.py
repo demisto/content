@@ -470,8 +470,8 @@ def get_image_screenshot(driver, include_url):
         try:
             with open('screenshot.png', 'rb') as f:
                 image = f.read()
-        except Exception:
-            demisto.error('Failed to read the screenshot.png image.')
+        except Exception as e:
+            demisto.error(f'Failed to read the screenshot.png image. Exception: {e}')
             raise
         finally:
             os.remove('screenshot.png')
