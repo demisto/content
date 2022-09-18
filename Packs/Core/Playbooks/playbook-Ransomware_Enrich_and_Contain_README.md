@@ -3,7 +3,7 @@ The playbook executes the following:
 
 1. Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
 
-2. Retrieves the WildFire sandbox report and extract the indicators within it.
+2. Retrieves the WildFire sandbox report and extracts the indicators within it.
 
    The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
 
