@@ -1,7 +1,6 @@
-id: d84642ca-065b-4bd5-86ca-dbdf63746d48
-version: 193
-vcShouldKeepItemLegacyProdMachine: false
-name: 'gitlab '
+id: 'gitlab'
+version: -1
+name: 'gitlab'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "50"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -53,7 +52,6 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,8 +74,7 @@ tasks:
       id: 41c80db5-ec4f-40c3-85ce-74f1c5e4ef83
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark
-        an issue as closed. The id can be taken from gitlab-issue-list.
+      description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
       script: '|||gitlab-issue-update'
       type: regular
       iscommand: true
@@ -95,7 +92,6 @@ tasks:
       title:
         simple: whatnu
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -133,7 +129,6 @@ tasks:
             value:
               simple: GitLab.Issue.iid
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -171,7 +166,6 @@ tasks:
             value:
               simple: GitLab.Issue.labels
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -197,8 +191,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -235,7 +229,6 @@ tasks:
       issue_iid:
         simple: ${GitLab.Issue.iid}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -273,7 +266,6 @@ tasks:
             value:
               simple: GitLab.IssueNote.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -311,7 +303,6 @@ tasks:
             value:
               simple: GitLab.Issue.updated_at
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -348,7 +339,6 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -386,7 +376,6 @@ tasks:
             value:
               simple: GitLab.IssueNote.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -409,8 +398,7 @@ tasks:
       id: 45f73ad4-b890-4cf3-866d-bb7c08164aa1
       version: -1
       name: Get Version
-      description: Retrieve version information for this GitLab instance. Responds
-        200 OK for authenticated users.
+      description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
       script: '|||gitlab-version-get'
       type: regular
       iscommand: true
@@ -419,7 +407,6 @@ tasks:
       '#none#':
       - "19"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -462,7 +449,6 @@ tasks:
             value:
               simple: GitLab.Version.revision
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -497,7 +483,6 @@ tasks:
       limit:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -535,7 +520,6 @@ tasks:
             value:
               simple: GitLab.Commit.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -570,7 +554,6 @@ tasks:
       commit_id:
         simple: c156b66b
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -608,7 +591,6 @@ tasks:
             value:
               simple: GitLab.Commit.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -645,7 +627,6 @@ tasks:
       note_id:
         simple: ${GitLab.IssueNote.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -682,7 +663,6 @@ tasks:
       ref:
         simple: main
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -705,8 +685,7 @@ tasks:
       id: 057ef3b0-7c59-4cae-8171-dbf563d09ced
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, sorted by name
-        alphabetically.
+      description: Get a list of repository branches from a project, sorted by name alphabetically.
       script: '|||gitlab-branch-list'
       type: regular
       iscommand: true
@@ -718,7 +697,6 @@ tasks:
       branch_name:
         simple: ${GitLab.Branch.name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -756,7 +734,6 @@ tasks:
             value:
               simple: GitLab.Branch.name
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -794,7 +771,6 @@ tasks:
             value:
               simple: GitLab.Branch.name
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -829,7 +805,6 @@ tasks:
       branch:
         simple: ${GitLab.Branch.name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -870,7 +845,6 @@ tasks:
       title:
         simple: playbook
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -908,7 +882,6 @@ tasks:
             value:
               simple: GitLab.MergeRequest.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -931,8 +904,7 @@ tasks:
       id: 63bf3709-b8e1-46de-8520-3054124c0233
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch,
-        title, or even close the MR.
+      description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
       script: '|||gitlab-merge-request-update'
       type: regular
       iscommand: true
@@ -952,7 +924,6 @@ tasks:
       title:
         simple: title update
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -997,7 +968,6 @@ tasks:
             value:
               simple: GitLab.MergeRequest.description
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1034,7 +1004,6 @@ tasks:
       title:
         simple: I'm a issue
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1072,7 +1041,6 @@ tasks:
             value:
               simple: GitLab.Issue.iid
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1095,9 +1063,7 @@ tasks:
       id: f57b1553-9c20-4332-8821-5b479c455dc9
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed
-        without authentication, only public groups are returned. By default, this
-        request returns 20 results at a time because the API results are paginated
+      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
       script: '|||gitlab-group-list'
       type: regular
       iscommand: true
@@ -1109,7 +1075,6 @@ tasks:
       limit:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1147,7 +1112,6 @@ tasks:
             value:
               simple: GitLab.Group.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1170,8 +1134,7 @@ tasks:
       id: 413c7616-0080-47c2-845f-3d3fc362d377
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated
-        user.
+      description: Gets a list of group or project members viewable by the authenticated user.
       script: '|||gitlab-group-member-list'
       type: regular
       iscommand: true
@@ -1183,7 +1146,6 @@ tasks:
       group_id:
         simple: "55694272"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1221,7 +1183,6 @@ tasks:
             value:
               simple: GitLab.Group.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1244,9 +1205,7 @@ tasks:
       id: 9c443796-1f92-42d2-82a1-6c44d95a8718
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated
-        user. When accessed without authentication, only public projects with simple
-        fields are returned.
+      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
       script: '|||gitlab-project-list'
       type: regular
       iscommand: true
@@ -1258,7 +1217,6 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1296,7 +1254,6 @@ tasks:
             value:
               simple: GitLab.Project.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1333,7 +1290,6 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1376,7 +1332,6 @@ tasks:
       Uppercase:
         simple: "False"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1414,7 +1369,6 @@ tasks:
             value:
               simple: GitLab.GroupProject.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1437,8 +1391,7 @@ tasks:
       id: b6db4ef6-1d43-4126-8fc7-9c92c0fd26ad
       version: -1
       name: File get
-      description: Allows to receive information about file in repository like name,
-        size, content.
+      description: Allows to receive information about file in repository like name, size, content.
       script: '|||gitlab-file-get'
       type: regular
       iscommand: true
@@ -1452,7 +1405,6 @@ tasks:
       ref:
         simple: main
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1489,7 +1441,6 @@ tasks:
       ref:
         simple: main
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1529,7 +1480,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1566,7 +1516,6 @@ tasks:
       merge_request_iid:
         simple: ${GitLab.MergeRequest.iid}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1604,7 +1553,6 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1643,7 +1591,6 @@ tasks:
       note_id:
         simple: "1103379746"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1680,7 +1627,6 @@ tasks:
       note_id:
         simple: ${GitLab.MergeRequestNote.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1717,7 +1663,6 @@ tasks:
       merge_request_iid:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1755,7 +1700,6 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1798,7 +1742,6 @@ tasks:
       file_path:
         simple: testByPlaybookGitlab
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1836,7 +1779,6 @@ tasks:
             value:
               simple: GitLab.File.file_path
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1874,7 +1816,6 @@ tasks:
             value:
               simple: GitLab.File.file_path
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1897,8 +1838,7 @@ tasks:
       id: caa351f8-3f62-48b2-88b6-f8232a85bc5e
       version: -1
       name: file-create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       script: '|||gitlab-file-create'
       type: regular
       iscommand: true
@@ -1918,7 +1858,6 @@ tasks:
       file_path:
         simple: testByPlaybookGitlab
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1941,8 +1880,7 @@ tasks:
       id: 98ce0881-571d-4c2e-8c7f-58d825bce077
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -1965,7 +1903,6 @@ tasks:
             value:
               simple: GitLab.File.branch
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2004,7 +1941,6 @@ tasks:
       file_path:
         simple: testByPlaybookGitlab
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2042,7 +1978,6 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2073,3 +2008,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: ''

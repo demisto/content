@@ -429,9 +429,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    client.file_create_request(
-        '/Users/mmorag/dev/demisto/content/Packs/GitLab/Integrations/GitLab/example.jason', 'main', 'commit_msg')
-#    client.issue_update_request('issue_id' == '114454293', {'title': 'main_tryy'})
+    client.version_get_request()
     return 'ok'
 
 

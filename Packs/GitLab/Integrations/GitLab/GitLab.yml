@@ -83,7 +83,7 @@ script:
       description: If the file is excute in filemode (Bool)
       type: Boolean
   - name: gitlab-file-create
-    description: This allows you to create a single file. File path or entry_id must be specified. 
+    description: This allows you to create a single file. File path or entry_id must be specified.
     arguments:
     - name: entry_id
       description: Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument.
@@ -203,10 +203,10 @@ script:
       required: true
       isArray: false
     - name: commit_message
-      description: The commit message. 
+      description: The commit message.
       required: true
       isArray: false
-    outputs: 
+    outputs: []
   - name: gitlab-issue-list
     description: Get a list of a project's issues.
     arguments:
@@ -1936,7 +1936,7 @@ script:
       description: The ID of a note
       required: true
       isArray: false
-    outputs:
+    outputs: []
   - name: gitlab-issue-create
     description: Create an issue.
     arguments:
@@ -2823,7 +2823,7 @@ script:
     - description: The branch to retrieve the file from, default is master
       isArray: false
       name: ref
-      required: false 
+      required: false
     outputs:
     - contextPath: GitLab.File.ref
       description: The branch the file's content was taken from.
