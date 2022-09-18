@@ -208,3 +208,4 @@ def test_url_command(mocker, client):
     assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
     assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
     assert command_res.indicator.url == excepted.get('URL').get('Data')
+

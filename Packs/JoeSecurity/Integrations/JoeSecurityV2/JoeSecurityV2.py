@@ -1,11 +1,8 @@
 from typing import Generator, Tuple
-
 import jbxapi
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
@@ -137,6 +134,33 @@ def build_quota_hr(res: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
     return hr, headers
 
 
+def build_submission_hr(res: Dict[str, Any], analyses: List[Dict[str, Any]]) -> Tuple[Dict[str, Any], List[str]]:
+    """
+            Helper function that supports the building of the human-readable output for submission command.
+
+         Args:
+            res: Dict(str, any): Submission result returned by the API.
+            analyses: List(Dict(str, any)): List of analysis result returned by the API.
+         Returns:
+             result: Tuple(Dict(str,Any), List(str)): The submission human-readable entry.
+    """
+    headers = ['Submission Id', 'Sample Name', 'Time', 'Status', 'Web Id', 'Encrypted', 'Analysis Id', 'Classification',
+               'Threat Name', 'Score', 'Detection']
+    hr = {'Submission Id': res.get('submission_id'), 'Sample Name': res.get('name'), 'Time': res.get('time'),
+          'Status': res.get('status'), 'Web Id': analyses[0].get('webid'), 'Encrypted': analyses[0].get('encrypted'),
+          'Analysis Id': analyses[0].get('analysisid'), 'Classification': analyses[0].get('classification'),
+          'Threat Name': analyses[0].get('threatname'), 'Score': analyses[0].get('score'),
+          'Detection': analyses[0].get('detection')}
+    if res.get('analyses', [{}])[0].get('sha256'):
+        headers.extend(['SHA256', 'MD5', 'SHA1', 'File Name'])
+        hr.update({'SHA256': analyses[0].get('sha256'), 'MD5': analyses[0].get('md5'), 'SHA1': analyses[0].get('sha1'),
+                   'File Name': analyses[0].get('filename')})
+    else:
+        headers.append('URL')
+        hr.update({'URL': res.get('url')})
+    return hr, headers
+
+
 def build_reputation_hr(analysis: Dict[str, Any], command: str) -> Dict[str, Any]:
     """
           Helper function that supports the building of the human-readable output.
@@ -177,7 +201,8 @@ def build_relationships(threat_name: str, entity: str, entity_type: str) -> Enti
                               reverse_name=EntityRelationship.Relationships.INDICATED_BY)
 
 
-def build_indicator_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]]) -> Tuple[
+    CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the Indicator object.
 
@@ -189,11 +214,12 @@ def build_indicator_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Co
              result: Tuple(Common.Indicator, Optional(EntityRelationship)) The indicator class.
     """
     if analysis.get('sha256'):
-        return build_file_object(client, analysis)
-    return build_url_object(client, analysis)
+        return build_file_object(client, analysis, analyses)
+    return build_url_object(client, analysis, analyses)
 
 
-def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]]) -> Tuple[
+    CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the File object.
 
@@ -212,9 +238,10 @@ def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Command
     threat_name = analysis.get('threatname', '')
     relationships = []
     headers = ['File Name', 'Sha1', 'Sha256', 'Md5']
-
     hr = {'File Name': file_name, 'Sha1': sha1, 'Sha256': sha256, 'Md5': md5}
-    score, description = indicator_calculate_score(analysis.get('detection', ''))
+    score, description = max(
+        [indicator_calculate_score(entry.get('detection')) for entry in analyses if entry.get('sha256') == sha256],
+        key=lambda tup: tup[1])  # Find the max dbot score between all the analysis results.
     dbot_score = Common.DBotScore(indicator=file_name, integration_name='JoeSecurityV2',
                                   indicator_type=DBotScoreType.FILE,
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -227,7 +254,8 @@ def build_file_object(client: Client, analysis: Dict[str, Any]) -> Tuple[Command
                           readable_output=tableToMarkdown('File Result:', hr, headers)), relationships
 
 
-def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]]) -> Tuple[
+    CommandResults, List[EntityRelationship]]:
     """
          Helper function that creates the URL object.
 
@@ -242,7 +270,9 @@ def build_url_object(client: Client, analysis: Dict[str, Any]) -> Tuple[CommandR
     threat_name = analysis.get('threatname', '')
     relationships = []
 
-    score, description = indicator_calculate_score(analysis.get('detection', ''))
+    score, description = max(
+        [indicator_calculate_score(entry.get('detection')) for entry in analyses if entry.get('filename') == url],
+        key=lambda tup: tup[1])  # Find the max dbot score between all the analysis results.
     dbot_score = Common.DBotScore(indicator=url, integration_name='JoeSecurityV2', indicator_type=DBotScoreType.URL,
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
                                       client.reliability), score=score, malicious_description=description)
@@ -333,7 +363,8 @@ def build_search_command_result(analyses: List[Dict[str, Any]]) -> CommandResult
                           outputs_prefix='Joe.Analysis', outputs_key_field='Id')
 
 
-def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]) -> List[CommandResults]:
+def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]], full_display: bool) -> List[
+    CommandResults]:
     """
          Helper function that parses the analysis result object.
 
@@ -350,16 +381,16 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
     relationships = []
     for analysis in analyses:
         hr_analysis_ls.append(build_analysis_hr(analysis))
-        command_res, relationship = build_indicator_object(client, analysis)
-        command_res_ls.append(command_res)
-        if relationship:
-            relationships.append(relationship)
+        if full_display:
+            command_res, relationship = build_indicator_object(client, analysis, analyses)
+            command_res_ls.append(command_res)
+            if relationship:
+                relationships.append(relationship)
     command_res_ls.append(CommandResults(outputs=analyses,
                                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls,
                                                                          hr_headers), outputs_prefix='Joe.Analysis',
                                          relationships=relationships))
     return command_res_ls
-
 
 
 def build_reputiation_command_result(client: Client, analyses: List[Dict[str, Any]]) -> List[CommandResults]:
@@ -381,28 +412,156 @@ def build_reputiation_command_result(client: Client, analyses: List[Dict[str, An
     return command_res_ls
 
 
-def filter_result(analyses: List[Dict[str, Any]], filter_by: str) -> List[Dict[str, Any]]:
+def build_submission_command_result(client: Client, res: Dict[str, Any], args: Dict[str, Any], download_report: bool) -> \
+        List[CommandResults]:
     """
-         Helper function that filters the duplication from the analyses.
+        Helper function that parses the submission result object.
 
          Args:
-            analyses: (List[Dict[str, Any]): The files from Joe Security.
-            filter_by: (str): The unique field from the analysis data, filename for urls and sha256 for files.
+            client (Client): The client class.
+            res: (Dict(str, any)): The submission result returned by the API.
+            args: (Dict(str, any)): The submission arguments.
+            download_report: (bool): Indicates either to download the report.
          Returns:
-             result: (List[Dict[str, Any]]): The filtered analyses.
+            result: (CommandResults): The parsed CommandResults object.
+    """
+    command_results = []
+    relationships = []
+    report_type = args.get('report_type')
+    full_display = argToBoolean(args.get('full_display', True))
+    analyses = res.get('analyses', [])
+    hr, headers = build_submission_hr(res, res.get('analyses', []))
+    if full_display:
+        for analysis in analyses:
+            command_res, relationship = build_indicator_object(client, analysis, analyses)
+            web_id = analysis.get('webid')
+            if download_report:
+                report = download_report_command(client, {'type': report_type, 'webid': web_id})
+                command_results.append(report)
+            if relationship:
+                relationships.append(relationship)
+            command_results.append(command_res)
+    command_results.append(
+        CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
+                       readable_output=tableToMarkdown('Submission Results:', hr, headers=headers),
+                       relationships=relationships))
+    return command_results
+
+
+def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+         Helper function that builds the submission parameters.
+
+         Args:
+            args: (Dict[str, Any]): The command arguments.
+         Returns:
+             result: (Dict[str, Any]): The submission parameters.
      """
-    files = []
-    existing_files = []
-    analyses.reverse()  # In case of duplication, take the must updated run. (The last one)
-    for analysis in analyses:
-        # In the case of url command (filter by filename), ignore files if they were queried (free query can retrieve also url).
-        if filter_by == 'filename' and analysis.get('sha256'):
-            continue
-        unique_field = analysis.get(filter_by)
-        if unique_field and unique_field not in existing_files:
-            existing_files.append(unique_field)
-            files.append(analysis)
-    return files
+    params = {'comments': args.get('comment', None), 'systems': argToList(args.get('systems')),
+              'tags': argToList(args.get('tags')), 'internet-access': argToBoolean(args.get('internet_access', True)),
+              'archive-no-unpack': argToBoolean(args.get('archive_no_unpack', False)),
+              'ssl-inspection': argToBoolean(args.get('ssl_inspection', False)),
+              'localized-internet-country': args.get('localized_internet_country'),
+              'internet-simulation': argToBoolean(args.get('internet_simulation', False)),
+              'hybrid-code-analysis': argToBoolean(args.get('hybrid_code_analysis', True)),
+              'hybrid-decompilation': argToBoolean(args.get('hybrid_decompilation', False)),
+              'vba-instrumentation': argToBoolean(args.get('vba_instrumentation', True)),
+              'js-instrumentation': argToBoolean(args.get('js_instrumentation', True)),
+              'java-jar-tracing': argToBoolean(args.get('java_jar_tracing', True)),
+              'dotnet-tracing': argToBoolean(args.get('dotnet_tracing', True)),
+              'amsi-unpacking': argToBoolean(args.get('amsi_unpacking', True)),
+              'fast-mode': argToBoolean(args.get('fast_mode', False)),
+              'secondary-results': argToBoolean(args.get('secondary_results', False)),
+              'report-cache': argToBoolean(args.get('report_cache', False)),
+              'command-line-argument': args.get('command_line_argument'),
+              'live-interaction': argToBoolean(args.get('live_interaction', False)),
+              'document-password': args.get('document_password'), 'archive-password': args.get('archive_password'),
+              'start-as-normal-user': argToBoolean(args.get('start_as_normal_user', False)),
+              'language-and-locale': args.get('language_and_locale'),
+              'delete-after-days': arg_to_number(args.get('delete_after_days', 30)),
+              'encrypt-with-password': args.get('encrypt_with_password'),
+              'export-to-jbxview': argToBoolean(args.get('export_to_jbxview', False)),
+              'email-notification': argToBoolean(args.get('email_notification', False))}
+
+    return params
+
+
+def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], file: str) -> PollResult:
+    """
+        Helper function that submits a file to Joe Sandbox.
+
+         Args:
+            client (Client): The client class.
+            args: (Dict[str, Any]): The command arguments.
+            params: (Dict[str, Any]): The submission parameters.
+            file: (str): The file to submit.
+
+         Returns:
+             result: (PollResult): The parsed PollResult object.
+     """
+    file_path = demisto.getFilePath(file)
+    with open(file_path['path'], 'rb') as f:
+        res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
+        partial_res = CommandResults(
+            readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
+        return PollResult(
+            response=CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id'),
+            args_for_next_run={'submission_id': res.get('submission_id'), **args}, continue_to_poll=True,
+            partial_result=partial_res)
+
+
+def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], url: str) -> PollResult:
+    """
+        Helper function that submits a URL to Joe Sandbox.
+
+         Args:
+            client (Client): The client class.
+            args: (Dict[str, Any]): The command arguments.
+            params: (Dict[str, Any]): The submission parameters.
+            url: (str): The URL to submit.
+
+         Returns:
+             result: (PollResult): The parsed PollResult object.
+     """
+    res = client.submit_url(url=url, params=params)
+    partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
+    return PollResult(
+        response=CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id'),
+        args_for_next_run={'submission_id': res.get('submission_id'), **args}, continue_to_poll=True,
+        partial_result=partial_res)
+
+
+@polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 1200)), interval=10,
+                  requires_polling_arg=False)
+def polling_submission_command(args: Dict[str, Any], client: Client, params: Dict[str, Any]) -> PollResult:
+    """
+         Helper function that polls the analysis result.
+
+         Args:
+            args: (Dict[str, Any]): The command arguments.
+            client (Client): The client class.
+            params: (Dict[str, Any]): The submission parameters.
+         Returns:
+             result: (Dict[str, Any]): The analysis result.
+     """
+    if submission_id := args.get('submission_id'):
+        res = client.submission_info(submission_id=submission_id)
+        status = res.get('status')
+        if status == 'finished':
+            command_results = build_submission_command_result(client, res, args, True)
+            return PollResult(command_results)
+        return PollResult(
+            response=CommandResults(outputs=res,  # this is what the response will be in case job has finished
+                                    outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
+                                    readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...'),
+            continue_to_poll=status != 'finished', args_for_next_run=args)
+    else:
+        if file := args.get('entry_id'):
+            return file_submission(client, args, params, file)
+        elif url := args.get('url'):
+            return url_submission(client, args, params, url)
+        else:
+            raise DemistoException('No file or URL was provided.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -457,7 +616,7 @@ def list_analysis_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
     filtered_pages = paginate(args, client.analysis_list_paged())
     analysis_result_ls = client.analysis_info_list(web_ids=[entry.get('webid') for entry in filtered_pages])
-    return build_analysis_command_result(client, analysis_result_ls)
+    return build_analysis_command_result(client, analysis_result_ls, argToBoolean(args.get('full_display')))
 
 
 def download_report_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -475,7 +634,6 @@ def download_report_command(client: Client, args: Dict[str, Any]) -> Dict[str, A
     report_type = args.get('type')
 
     result = client.analysis_download(webid=web_id, type=report_type)[1]
-
     return fileResult(f'{web_id}_report.{report_type}', result, EntryType.ENTRY_INFO_FILE)
 
 
@@ -496,7 +654,7 @@ def download_sample_command(client: Client, args: Dict[str, Any]) -> Dict[str, A
     return fileResult(f'{web_id}.dontrun', result)
 
 
-def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
     """
         Search through all analyses.
 
@@ -510,7 +668,7 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
     result = client.analysis_search(query=query)
     if result:
-        return build_search_command_result(result)
+        return build_analysis_command_result(client, result, argToBoolean(args.get('full_display', False)))
     return CommandResults(readable_output='No Results were found.')
 
 
@@ -532,7 +690,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         response = client.analysis_search(query=file)
         analyses.extend(response)
 
-    return build_reputiation_command_result(client, filter_result(analyses, filter_by='sha256'))
+    return build_reputiation_command_result(client, analyses)
 
 
 def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -552,7 +710,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for url in urls:
         response = client.analysis_search(query=url)
         analyses.extend(response)
-    return build_reputiation_command_result(client, filter_result(analyses, filter_by='filename'))
+    return build_reputiation_command_result(client, analyses)
 
 
 def list_lia_countries_command(client: Client) -> CommandResults:
@@ -611,6 +769,57 @@ def get_account_quota_command(client: Client) -> CommandResults:
     return CommandResults(readable_output='No Results were found.')
 
 
+def submission_info_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+        Retrieve information about a submission.
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    submission_ids = argToList(args.get('submission_ids'))
+    command_results = []
+    for submission_id in submission_ids:
+        res = client.submission_info(submission_id=submission_id)
+        if res:
+            command_results.extend(build_submission_command_result(client, res, args, False))
+        else:
+            command_results.append(
+                CommandResults(readable_output=f'No Results were found for submission {submission_id}.'))
+    return command_results
+
+
+def submission_sample_command(client: Client, args: Dict[str, Any]) -> PollResult:
+    """
+        Upload a sample to Joe server.
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    params = build_submission_params(args)
+    return polling_submission_command(args, client, params)
+
+
+def submission_url_command(client: Client, args: Dict[str, Any]) -> PollResult:
+    """
+        Upload a URL to Joe server.
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: (CommandResults) The CommandResults object.
+    """
+    params = build_submission_params(args)
+    params.update({'url-reputation': argToBoolean(args.get('url_reputation', False))})
+    return polling_submission_command(args, client, params)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -656,8 +865,12 @@ def main() -> None:  # pragma: no cover
             return_results(lis_lang_locales_command(client))
         elif command == 'joe-get-account-quota':
             return_results(get_account_quota_command(client))
-
-
+        elif command == 'joe-submission-info':
+            return_results(submission_info_command(client, args))
+        elif command == 'joe-submission-sample':
+            return_results(submission_sample_command(client, args))
+        elif command == 'joe-submission-url':
+            return_results(submission_url_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
