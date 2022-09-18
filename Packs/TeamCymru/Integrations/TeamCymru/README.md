@@ -1,5 +1,5 @@
-Team Cymru provided various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
-This integration was integrated and tested with version xx of TeamCymru
+Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
+This integration was integrated and tested with version 1.0 of TeamCymru
 
 ## Configure Team Cymru on Cortex XSOAR
 
@@ -51,9 +51,58 @@ Checks the reputation of an IP address.
 | TeamCymru.IP.Geo.Country | String | The IP country. | 
 | TeamCymru.IP.Registrar.Abuse.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
 
+#### Command example
+```!ip ip=1.1.1.1```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "1.1.1.1",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "TeamCymru"
+    },
+    "IP": {
+        "ASN": "13335",
+        "ASOwner": "CLOUDFLARENET, US",
+        "Address": "1.1.1.1",
+        "Geo": {
+            "Country": "AU"
+        },
+        "Registrar": {
+            "Abuse": {
+                "Network": "1.1.1.0/24"
+            }
+        }
+    },
+    "TeamCymru": {
+        "IP": {
+            "ASN": "13335",
+            "ASOwner": "CLOUDFLARENET, US",
+            "Address": "1.1.1.1",
+            "Geo": {
+                "Country": "AU"
+            },
+            "Registrar": {
+                "Network": "1.1.1.0/24"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Team Cymru results for 1.1.1.1
+>|IP|ASN|Organization|Country|Range|
+>|---|---|---|---|---|
+>| 1.1.1.1 | 13335 | CLOUDFLARENET, US | AU | 1.1.1.0/24 |
+
+
 ### cymru-bulk-whois
 ***
-Look up many ip addresses. Insert CSV file or list of IPv4 addresses. Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
+Checks the reputation of IPv4 addresses within a file. Insert CSV file. 
+Note: Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
 
 
 #### Base Command
@@ -63,8 +112,8 @@ Look up many ip addresses. Insert CSV file or list of IPv4 addresses. Queries ex
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bulk-list | List of IPv4 addresses to query. | Optional | 
-| bulk-file | The CSV file's War Room entry ID. If a bulk-list is supplied, do not use this argument. | Optional | 
+| entry_id | The file's War Room entry ID. | Required | 
+| delimiter | Delimiter by which the content of the file is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
 
 
 #### Context Output
@@ -88,86 +137,4 @@ Look up many ip addresses. Insert CSV file or list of IPv4 addresses. Queries ex
 | TeamCymru.IP.Registrar.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
 
 #### Command example
-```!cymru-bulk-whois bulk-list="1.1.1.1, 8.8.8.8"```
-#### Context Example
-```json
-{
-    "DBotScore": [
-        {
-            "Indicator": "8.8.8.8",
-            "Score": 0,
-            "Type": "ip",
-            "Vendor": "TeamCymru"
-        },
-        {
-            "Indicator": "1.1.1.1",
-            "Score": 0,
-            "Type": "ip",
-            "Vendor": "TeamCymru"
-        }
-    ],
-    "IP": [
-        {
-            "ASN": "15169",
-            "ASOwner": "GOOGLE, US",
-            "Address": "8.8.8.8",
-            "Geo": {
-                "Country": "US"
-            },
-            "Registrar": {
-                "Abuse": {
-                    "Network": "8.8.8.0/24"
-                }
-            }
-        },
-        {
-            "ASN": "13335",
-            "ASOwner": "CLOUDFLARENET, US",
-            "Address": "1.1.1.1",
-            "Geo": {
-                "Country": "AU"
-            },
-            "Registrar": {
-                "Abuse": {
-                    "Network": "1.1.1.0/24"
-                }
-            }
-        }
-    ],
-    "TeamCymru": {
-        "IP": [
-            {
-                "ASN": "15169",
-                "ASOwner": "GOOGLE, US",
-                "Address": "8.8.8.8",
-                "Geo": {
-                    "Country": "US"
-                },
-                "Registrar": {
-                    "Network": "8.8.8.0/24"
-                }
-            },
-            {
-                "ASN": "13335",
-                "ASOwner": "CLOUDFLARENET, US",
-                "Address": "1.1.1.1",
-                "Geo": {
-                    "Country": "AU"
-                },
-                "Registrar": {
-                    "Network": "1.1.1.0/24"
-                }
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Team Cymru results:
->|IP|ASN|Organization|Country|Range|
->|---|---|---|---|---|
->| 8.8.8.8 | 15169 | GOOGLE, US | US | 8.8.8.0/24 |
->| 1.1.1.1 | 13335 | CLOUDFLARENET, US | AU | 1.1.1.0/24 |
-
+```!cymru-bulk-whois entry_id=${File.EntryID}```

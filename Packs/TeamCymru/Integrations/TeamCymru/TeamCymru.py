@@ -45,11 +45,6 @@ def team_cymru_bulk_whois(client: Client, bulk: List[str]) -> Optional[Dict[str,
     :rtype: Dict[str, Dict[str, str]]
     """
 
-    # raw_result = dict()
-    # for subset_of_ips in split_list_into_chunks(bulk, 10000):  # TODO only do 10,000 ips at a time
-    #     print(subset_of_ips[0])
-    #     raw_result.update(client.lookupmany_dict(subset_of_ips))
-    # return raw_result
     raw_result = client.lookupmany_dict(bulk)
     return {k: vars(raw_result[k]) for k in raw_result} if raw_result else None
 
@@ -59,9 +54,9 @@ def team_cymru_bulk_whois(client: Client, bulk: List[str]) -> Optional[Dict[str,
 
 def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
     """
-    Arrange the ip's result from the API to the context format
+    Arranges the IP's result from the API to the context format.
     :param ip: ip address
-    :param ip_data: the ip given data (as returned from the api call)
+    :param ip_data: the ip given data (as returned from the API call)
     :return: commandResult of the given IP
     """
     asn = demisto.get(ip_data, 'asn')
@@ -99,7 +94,7 @@ def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
 
 def validate_ip_addresses(ips_list: list[str]):
     """
-    Given list of IP addresses, returns the invalid and valid ips.
+    Given a list of IP addresses, returns the invalid and valid ips.
     :param ips_list: list of ip addresses
     :return: invalid_ip_addresses, valid_ip_addresses
     """
@@ -115,31 +110,41 @@ def validate_ip_addresses(ips_list: list[str]):
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def parse_file(get_file_path_res: dict[str, str]):
+def parse_file(get_file_path_res: dict[str, str], delimiter=","):
     """
     Parses the given file line by line to list.
+    :param delimiter: delimiter by which the content of the list is seperated.
     :param get_file_path_res: Object contains file ID, path and name
     :return: bulk list of the elements in the file
     """
     bulk_list = []
     with open(get_file_path_res['path']) as file:
-        reader = csv.reader(file, delimiter=',', skipinitialspace=True)
+        reader = csv.reader(file, delimiter=delimiter, skipinitialspace=True)
         for row in reader:
             for col in row:
                 bulk_list += col.split()
     return bulk_list
 
 
-# def split_list_into_chunks(l, sublist_size):
-#     """
-#     returns successive sublist_size'd chunks from l
-#     :param l: list to divide into chunks
-#     :param sublist_size: the size of the chunks to divide the list into
-#     :return: a generator that when called, gives back lists of
-#                  size sublist_size
-#     """
-#     n = max(1, sublist_size)
-#     return (l[i:i + n] for i in range(0, len(l), n))
+def parse_ips_list(client: Client, ips_list):
+    """
+    Creates a commandResults array based on a list of IP addresses,
+    this by calling the relevant functions.
+    :param client: client to use
+    :param ips_list: list of IP addresses
+    :return: CommandResults object
+    """
+    command_results: List[CommandResults] = []
+    invalid_ips, valid_ips = validate_ip_addresses(ips_list)
+    if invalid_ips:
+        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
+                       exit=len(invalid_ips) == len(ips_list))
+
+    results = team_cymru_bulk_whois(client, valid_ips)
+    if results:
+        for ip, ip_data in results.items():
+            command_results.append(parse_ip_result(ip, ip_data))
+    return command_results
 
 
 ''' COMMAND FUNCTIONS '''
@@ -167,14 +172,14 @@ def test_module(client: Client) -> str:
         if result and result.get('owner') == 'GOOGLE, US':
             message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns the results of 'ip' command
     :type client: ``Client``
@@ -185,17 +190,20 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults object containing the results of the lookup action as returned from the API
     and its readable output.
     """
-    ip = args.get('ip')
+    command_results: List[CommandResults] = []
+    ip = argToList(args.get('ip'))
     if not ip:
         raise ValueError('IP not specified')
-    if not is_ip_valid(ip):
-        raise ValueError(f"The given IP address: {ip} is not valid")
+    if len(ip) > 1:
+        return parse_ips_list(client, ip)
+    if len(ip) == 1 and not is_ip_valid(ip[0]):
+        raise ValueError(f"The given IP address: {ip[0]} is not valid")
 
     # Call the Client function and get the raw response
-    result = team_cymru_ip(client, ip)
-    if not result:
-        return CommandResults()
-    return parse_ip_result(ip, result)
+    result = team_cymru_ip(client, ip[0])
+    if result:
+        command_results.append(parse_ip_result(ip[0], result))
+    return command_results
 
 
 def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -205,37 +213,21 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> List[Comma
     :param Client: client to use
 
     :type args: ``Dict[str, Any]``
-    :param args: All command arguments - either 'bulk-list' or 'bulk-file'
+    :param args: All command arguments - 'entry_id', 'delimiter'
     :return: CommandResults object containing the results of the lookup action as returned from the API
     and its readable output.
     """
-    command_results: List[CommandResults] = []
 
-    if args.get('bulk-list'):
-        if args.get('bulk-file'):
-            raise ValueError('Both bulk-list and bulk-file were inserted - please insert only one.')
-        bulk_list = argToList(args.get('bulk-list'))
-    elif args.get('bulk-file'):
-        demisto.debug('getting the path of the file from its bulk-file')
-        get_file_path_res = demisto.getFilePath(args.get('bulk-file'))
+    if args.get('entry_id'):
+        demisto.debug('getting the path of the file from its entry_id')
+        get_file_path_res = demisto.getFilePath(args.get('entry_id'))
         if not get_file_path_res:
-            raise ValueError('No file was found for given bulk-file')
-        bulk_list = parse_file(get_file_path_res)
+            raise ValueError('No file was found for given entry_id')
+        ips_list = parse_file(get_file_path_res, args.get('delimiter', ','))
     else:
-        raise ValueError('No bulk-list or bulk-file specified.')
+        raise ValueError('No entry_id specified.')
 
-    invalid_ips, valid_ips = validate_ip_addresses(bulk_list)
-    if invalid_ips:
-        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
-                       exit=len(invalid_ips) == len(bulk_list))
-
-    results = team_cymru_bulk_whois(client, valid_ips)
-    if not results:
-        return command_results
-    for ip, ip_data in results.items():
-        command_results.append(parse_ip_result(ip, ip_data))
-
-    return command_results
+    return parse_ips_list(client, ips_list)
 
 
 ''' MAIN FUNCTION '''

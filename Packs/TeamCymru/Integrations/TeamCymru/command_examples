@@ -1,2 +1,2 @@
-!ip ip=8.8.8.8
-!cymru-bulk-whois bulk-list="1.1.1.1, 8.8.8.8"
+!ip ip=1.1.1.1 using=TeamCymru_instance
+!cymru-bulk-whois entry_id=${File.EntryID} using=TeamCymru_instance

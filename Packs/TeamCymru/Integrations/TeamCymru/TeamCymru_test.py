@@ -72,7 +72,7 @@ def test_cymru_bulk_whois_command_with_list(mocker):
         - Verify the result is as expected and returns the expected warning
     """
     from TeamCymru import cymru_bulk_whois_command
-    mock_arg = {"bulk-list": MOCK_BULK_LIST}
+    mock_arg = {"list": MOCK_BULK_LIST}
     test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
     return_value = test_data.get('cymru_bulk_whois_command_response')
     mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
@@ -100,7 +100,7 @@ def test_cymru_bulk_whois_command_with_file(mocker):
         - Verify the result is as expected
     """
     from TeamCymru import cymru_bulk_whois_command
-    mock_arg = {"bulk-file": MOCK_ENTRY_ID}
+    mock_arg = {"entry_id": MOCK_ENTRY_ID}
     test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
     return_value = test_data.get('cymru_bulk_whois_command_response')
     mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
@@ -123,10 +123,10 @@ def test_cymru_bulk_whois_command_with_file(mocker):
 
 
 @pytest.mark.parametrize('args, expected_error',
-                         [({'bulk-list': '1.1.1.1', 'bulk-file': MOCK_ENTRY_ID},
-                           'Both bulk-list and bulk-file were inserted - please insert only one.'),
-                          ({'bulk-file': MOCK_ENTRY_ID}, 'No file was found for given bulk-file'),
-                          ({}, 'No bulk-list or bulk-file specified.')])
+                         [({'list': '1.1.1.1', 'entry_id': MOCK_ENTRY_ID},
+                           'Both list and entry_id were inserted - please insert only one.'),
+                          ({'entry_id': MOCK_ENTRY_ID}, 'No file was found for given entry_id'),
+                          ({}, 'No list or entry_id specified.')])
 def test_cymru_bulk_whois_invalid_bulk(args, expected_error, mocker):
     """
     Given:
@@ -217,7 +217,7 @@ def test_empty_command_result(mocker):
     assert not result.readable_output
     assert result
     mocker.patch("TeamCymru.team_cymru_bulk_whois", return_value=None)
-    result = cymru_bulk_whois_command(client, {'bulk-list': '1.1.1.1'})
+    result = cymru_bulk_whois_command(client, {'list': '1.1.1.1'})
     assert not result
 
 

@@ -1,6 +1,5 @@
 id: TeamCymruTest
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: TeamCymruTest
 starttaskid: "0"
 tasks:
@@ -215,9 +214,6 @@ tasks:
       id: ccc2239e-3fa1-4567-8f16-24e1f2c33566
       version: -1
       name: 'cymru-bulk-whois '
-      description: Look up many ip addresses. Insert CSV file or list of IPv4 addresses.
-        Queries exceeding 10,000 IPs may return in more than a minute given a moderately
-        sized Internet link.
       script: TeamCymru|||cymru-bulk-whois
       type: regular
       iscommand: true
@@ -302,3 +298,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: ''
