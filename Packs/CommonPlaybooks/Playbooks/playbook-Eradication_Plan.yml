@@ -1077,7 +1077,7 @@ tasks:
       id: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
