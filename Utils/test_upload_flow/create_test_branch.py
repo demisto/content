@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
         p = subprocess.Popen(['git', 'remote', 'add', 'origin', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git'])
         repo.git.commit(m="Added Test file", no_verify=True)
-        repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+        #repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
         print(e)

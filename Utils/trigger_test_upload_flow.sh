@@ -114,62 +114,34 @@ if [ -n "$_storage_base_path" ] && [[ "$_storage_base_path" != upload-flow* ]]; 
   exit 1
 fi
 
-if [ -n "$_gitlab" ]; then
 
-  _variables="variables[BUCKET_UPLOAD]=true"
-  if [ -n "$_force" ]; then
-    _variables="variables[FORCE_BUCKET_UPLOAD]=true"
-  fi
 
-  if [ -z "$_override_all_packs" ]; then
-    _override_all_packs=false
-  else
-    _override_all_packs=true
-  fi
-  if [ -z "$_create_dependencies_zip" ]; then
-    _create_dependencies_zip=false
-  fi
-
-  source Utils/gitlab_triggers/trigger_build_url.sh
-
-  curl --request POST \
-    --form token="${_ci_token}" \
-    --form ref="${_branch}" \
-    --form "${_variables}" \
-    --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
-    --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
-    --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
-    --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
-    --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
-    --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
-    --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
-    --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
-    "$BUILD_TRIGGER_URL"
-
-else
-
-  trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
-
-  post_data=$(cat <<-EOF
-  {
-    "branch": "${_branch}",
-    "parameters": {
-      "gcs_market_bucket": "${_bucket}",
-      "bucket_upload": "${_bucket_upload}",
-      "force_pack_upload": "${_force}",
-      "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}",
-      "storage_base_path": "${_storage_base_path}"
-    }
-  }
-  EOF
-  )
-
-  curl \
-  --header "Accept: application/json" \
-  --header "Content-Type: application/json" \
-  -k \
-  --data "${post_data}" \
-  --request POST ${trigger_build_url} \
-  --user "$_ci_token:"
+_variables="variables[BUCKET_UPLOAD]=true"
+if [ -n "$_force" ]; then
+  _variables="variables[FORCE_BUCKET_UPLOAD]=true"
 fi
+
+if [ -z "$_override_all_packs" ]; then
+  _override_all_packs=false
+else
+  _override_all_packs=true
+fi
+if [ -z "$_create_dependencies_zip" ]; then
+  _create_dependencies_zip=false
+fi
+
+source Utils/gitlab_triggers/trigger_build_url.sh
+
+curl --request POST \
+  --form token="${_ci_token}" \
+  --form ref="${_branch}" \
+  --form "${_variables}" \
+  --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
+  --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
+  --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
+  --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
+  --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
+  --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+  --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
+  --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
+  "$BUILD_TRIGGER_URL"
