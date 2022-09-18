@@ -1,0 +1,18 @@
+[
+    {
+        "value": "http://demisto.com/4712",
+        "type": "URL",
+        "title": null,
+        "description": null,
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
+        "rawJSON": {
+            "indicator": "http://demisto.com/4712",
+            "type": "URL",
+            "indicator_ref": "example:Observable-ee59c28e-d922-480e-9b7b-a79502696505",
+            "value": "http://demisto.com/4712"
+        }
+    }
+]

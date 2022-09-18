@@ -1,0 +1,112 @@
+{
+    "id": "bundle--5330e3e3-8f58-4d21-9f4b-793a054c0d33",
+    "objects": [
+        {
+            "created": "2016-05-07T11:22:30.000Z",
+            "id": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+            "infrastructure_types": [
+                "command-and-control"
+            ],
+            "labels": [
+                "command-and-control"
+            ],
+            "modified": "2016-05-07T11:22:30.000Z",
+            "name": "Poison Ivy C2",
+            "type": "infrastructure",
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-05-09T08:17:27.000Z",
+            "id": "relationship--7aebe2f0-28d6-48a2-9c3e-b0aaa60266ed",
+            "modified": "2016-05-09T08:17:27.000Z",
+            "relationship_type": "controls",
+            "source_ref": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+            "target_ref": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
+            "type": "relationship",
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-05-08T14:31:09.000Z",
+            "id": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
+            "is_family": true,
+            "labels": [
+                "rat"
+            ],
+            "modified": "2016-05-08T14:31:09.000Z",
+            "name": "Poison Ivy",
+	    "malware_types":[
+		    "remote-access-trojan"
+	    ],
+            "type": "malware",
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-05-09T08:17:27.000Z",
+            "id": "relationship--7aebe2f0-28d6-48a2-9c3e-b0aaa60266ef",
+            "modified": "2016-05-09T08:17:27.000Z",
+            "relationship_type": "consists-of",
+            "source_ref": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+            "target_ref": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956",
+            "type": "relationship",
+	    "spec_version": "2.1"
+        },
+        {
+            "id": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956",
+            "type": "ipv4-addr",
+            "value": "198.51.100.3"
+        },
+        {
+            "created": "2016-11-22T09:22:30.000Z",
+            "id": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
+            "infrastructure_types": [
+                "hosting-target-lists"
+            ],
+            "labels": [
+                "target-list-hosting"
+            ],
+            "modified": "2016-11-22T09:22:30.000Z",
+            "name": "Example target-list-hosting",
+            "type": "infrastructure",
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-11-23T08:17:27.000Z",
+            "id": "relationship--37ac0c8d-f86d-4e56-aee9-914343959a4c",
+            "modified": "2016-11-23T08:17:27.000Z",
+            "relationship_type": "uses",
+            "source_ref": "malware--3a41e552-999b-4ad3-bedc-332b6d9ff80c",
+            "target_ref": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
+            "type": "relationship",
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-11-12T14:31:09.000Z",
+            "id": "malware--3a41e552-999b-4ad3-bedc-332b6d9ff80c",
+            "is_family": true,
+            "modified": "2016-11-12T14:31:09.000Z",
+            "name": "IMDDOS",
+            "type": "malware",
+	    "malware_types":[
+		    "bot"
+	    ],
+
+	    "spec_version": "2.1"
+        },
+        {
+            "created": "2016-11-23T10:42:39.000Z",
+            "id": "relationship--81f12913-1372-4c96-85ec-E9034ac98aba",
+            "modified": "2016-11-23T10:42:39.000Z",
+            "relationship_type": "consists-of",
+            "source_ref": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
+            "target_ref": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b",
+            "type": "relationship",
+	    "spec_version": "2.1"
+        },
+        {
+            "id": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b",
+            "type": "domain-name",
+            "value": "example.com"
+        }
+    ],
+    "type": "bundle"
+}

@@ -1,0 +1,51 @@
+{
+    "type": "bundle",
+    "id": "bundle--56be2a3b-1534-4bef-8fe9-602926274089",
+    "objects": [
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d81f86b9-975b-4c0b-875e-810c5ad45a4f",
+            "created": "2014-06-29T13:49:37.079Z",
+            "modified": "2014-06-29T13:49:37.079Z",
+            "name": "Malicious site hosting downloader",
+            "description": "This organized threat actor group operates to create profit from all types of crime.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = 'http://x4z9arb.cn/4712/']",
+            "pattern_type": "stix",
+            "valid_from": "2014-06-29T13:49:37.079Z"
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--162d917e-766f-4611-b5d6-652791454fca",
+            "created": "2014-06-30T09:15:17.182Z",
+            "modified": "2014-06-30T09:15:17.182Z",
+            "name": "x4z9arb backdoor",
+            "description": "This malware attempts to download remote files after establishing a foothold as a backdoor.",
+            "malware_types": [
+                "backdoor",
+                "remote-access-trojan"
+            ],
+            "is_family": false,
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "mandiant-attack-lifecycle-model",
+                    "phase_name": "establish-foothold"
+                }
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--864af2ea-46f9-4d23-b3a2-1c2adf81c265",
+            "created": "2020-02-29T18:03:58.029Z",
+            "modified": "2020-02-29T18:03:58.029Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--d81f86b9-975b-4c0b-875e-810c5ad45a4f",
+            "target_ref": "malware--162d917e-766f-4611-b5d6-652791454fca"
+        }
+    ]
+}

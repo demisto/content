@@ -1,0 +1,18 @@
+[
+    {
+        "value": "http://example.com/foo/malicious1.html##comma##http://example.com/foo/malicious2.html##comma##http://example.com/foo/malicious3.html",
+        "type": "URL",
+        "title": null,
+        "description": null,
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
+        "rawJSON": {
+            "indicator": "http://example.com/foo/malicious1.html##comma##http://example.com/foo/malicious2.html##comma##http://example.com/foo/malicious3.html",
+            "type": "URL",
+            "indicator_ref": "example:Observable-Pattern-cc5c00ce-98a6-4cbe-8474-59eaecdb018f",
+            "value": "http://example.com/foo/malicious1.html##comma##http://example.com/foo/malicious2.html##comma##http://example.com/foo/malicious3.html"
+        }
+    }
+]

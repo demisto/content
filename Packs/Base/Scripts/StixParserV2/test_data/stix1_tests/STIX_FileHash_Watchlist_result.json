@@ -1,0 +1,19 @@
+[
+    {
+        "value": "01234567890abcdef01234567890abcdef##comma##abcdef1234567890abcdef1234567890##comma##00112233445566778899aabbccddeeff",
+        "type": "File",
+        "title": null,
+        "description": null,
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
+        "rawJSON": {
+            "indicator": "01234567890abcdef01234567890abcdef##comma##abcdef1234567890abcdef1234567890##comma##00112233445566778899aabbccddeeff",
+            "htype": "md5",
+            "type": "File",
+            "indicator_ref": "example:Observable-c9ca84dc-4542-4292-af54-3c5c914ccbbc",
+            "value": "01234567890abcdef01234567890abcdef##comma##abcdef1234567890abcdef1234567890##comma##00112233445566778899aabbccddeeff"
+        }
+    }
+]
