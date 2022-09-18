@@ -179,6 +179,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-cb", "--content-branch", nargs="?",
                         help="The content branch name, if empty will run on current branch.")
     parser.add_argument("-a", "--artifacts_path", help="Path to store the script's output", default=".")
+    parser.add_argument("-g", "--gitlab-mirror-token", help="Gitlab mirror token for pushing commits "
+                                                            "directly to gitlab repo")
     return parser.parse_args()
 
 
@@ -222,7 +224,7 @@ if __name__ == "__main__":
             repo.git.add(f"{p}/*")
 
         repo.git.commit(m="Added Test file", no_verify=True)
-        repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+        repo.git.push('--set-upstream', f'GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
         print(e)
