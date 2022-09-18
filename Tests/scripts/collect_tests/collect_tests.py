@@ -492,7 +492,7 @@ class TestCollector(ABC):
         )
 
     def _collect_pack_for_modeling_rule(self, pack_id: str, reason_description: str, changed_file_path: Path,
-                      content_item_range: Optional[VersionRange] = None) -> CollectionResult:
+                      content_item_range: Optional[VersionRange] = None, is_nightly: bool = False) -> CollectionResult:
         """Create a CollectionResult for a pack because of a modeling rule
 
         Marks the pack being collected and the modeling rule that needs to be tested
@@ -502,11 +502,12 @@ class TestCollector(ABC):
             reason_description (str): the reason the pack is being collected
             changed_file_path (Path): the path to the file that was modified
             content_item_range (Optional[VersionRange], optional): version range. Defaults to None.
+            is_nightly (Optional[bool]): whether this is a nightly flow. Defaults to False.
 
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
-        pack = PACK_MANAGER[pack_id]
+        pack = PACK_MANAGER.get_pack_metadata(pack_id)
 
         version_range = content_item_range \
             if pack.version_range.is_default \
@@ -523,9 +524,17 @@ class TestCollector(ABC):
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         mr_to_test = relative_path_of_mr.parent
-        result = self._collect_pack(pack_id, reason, reason_description, version_range)
-        result.mrs_to_test = {mr_to_test}
-        return result
+        return CollectionResult(
+            test=None,
+            mr_to_test=mr_to_test,
+            pack=pack_id,
+            reason=reason,
+            version_range=version_range,
+            reason_description=reason_description,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_nightly=is_nightly
+        )
 
     def __validate_skipped_integration(self, id_: str, path: Path):
         if id_ in self.conf.skipped_integrations:
@@ -787,8 +796,8 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-            self._validate_xsiam_compatibility(content_item)
-        except NonXSIAMContentException as e:
+            self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
+        except IncompatibleMarketplaceException as e:
             if file_type not in MODELING_RULE_COMPONENT_FILES:
                 raise
         except NonDictException:
@@ -998,7 +1007,6 @@ class NightlyTestCollector(TestCollector, ABC):
             try:
                 result.append(self._collect_pack(
                     pack_id=pack_metadata.pack_id,
-                    mr_to_test=None,
                     reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
