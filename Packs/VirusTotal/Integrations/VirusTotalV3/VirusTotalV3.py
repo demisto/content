@@ -835,14 +835,20 @@ class ScoreCalculator:
             raw_response: The response from the API
 
         Returns:
-            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
-            Common.DBotScore.GOOD
+            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS,
+            Common.DBotScore.GOOD or Common.DBotScore.NONE
         """
         self.logs.append(f'Analysing file hash {given_hash}. ')
         data = raw_response.get('data', {})
         attributes = data.get('attributes', {})
         analysis_results = attributes.get('last_analysis_results', {})
         analysis_stats = attributes.get('last_analysis_stats', {})
+
+        if raw_response.get('error', {}).get('code') == 'NotFoundError':
+            self.logs.append(
+                f'Hash: "{given_hash}" was not found in VirusTotal'
+            )
+            return Common.DBotScore.NONE
 
         # Trusted vendors
         if self.is_preferred_vendors_pass_malicious(analysis_results):
@@ -1318,6 +1324,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         geo_country=attributes.get('country'),
         detection_engines=detection_engines,
         positive_engines=positive_engines,
+        as_owner=attributes.get('as_owner'),
         relationships=relationships_list,
         dbot_score=Common.DBotScore(
             ip,
@@ -1342,7 +1349,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
                 'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_engines}/{detection_engines}'
             },
-            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives'],
+            headers=['id', 'network', 'country', 'as_owner', 'last_modified', 'reputation', 'positives'],
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,

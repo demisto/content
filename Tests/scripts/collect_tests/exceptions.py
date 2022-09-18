@@ -1,6 +1,10 @@
 from pathlib import Path
 from typing import Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
+
+from Tests.scripts.collect_tests.version_range import VersionRange
+
 
 class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
@@ -21,8 +25,10 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'pack support level is not XSOAR')
+    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
+        self.support_level = support_level
+        self.content_version_range = content_version_range
+        super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 
 class DeprecatedPackException(UnsupportedPackException):
@@ -33,6 +39,15 @@ class DeprecatedPackException(UnsupportedPackException):
 class SkippedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is skipped')
+
+
+class NonNightlyPackInNightlyBuildException(Exception):
+    def __init__(self, pack_name: str):
+        self.message = f'Skipping tests for pack {pack_name}: ' \
+                       f'This is a nightly build, and the pack is not in the list of nightly packs'
+
+    def __str__(self):
+        return self.message
 
 
 class NonDictException(Exception):
@@ -72,6 +87,11 @@ class NothingToCollectException(Exception):
 
     def __str__(self):
         return self.message
+
+
+class IncompatibleMarketplaceException(NothingToCollectException):
+    def __init__(self, content_path: Path, expected_marketplace: MarketplaceVersions):
+        super().__init__(content_path, f'is not compatible with {expected_marketplace=}')
 
 
 class InvalidTestException(Exception):
