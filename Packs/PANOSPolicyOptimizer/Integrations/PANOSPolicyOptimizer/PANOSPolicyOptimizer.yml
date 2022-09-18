@@ -19,6 +19,10 @@ configuration:
   name: device_group
   required: false
   type: 0
+- defaultvalue: 8
+  display: PAN-OS Version
+  name: version
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -165,7 +169,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.5.33323
   feed: false
   isfetch: false
   longRunning: false
