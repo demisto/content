@@ -434,7 +434,7 @@ test_upload_flow:
   script:
     - |
       if !$(git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/") ; then                                                                            16:33:03
-        echo "No upload related files were modified, skipping upload test."
+        echo "No upload related files were modified, skipping upload test"
         exit 0
       fi
     - section_start "Create Testing Branch"
