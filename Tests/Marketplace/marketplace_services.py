@@ -360,10 +360,13 @@ class Pack(object):
 
     @property
     def uploaded_readme_images(self):
-        """
-        @ TODO: decide on a design
-        """
         return self._reademe_images
+
+    @uploaded_readme_images.setter
+    def uploaded_readme_images(self, uploaded_readme_images):
+        """ bool: whether the pack author image was uploaded or not.
+        """
+        self._reademe_images = uploaded_readme_images
 
     @property
     def is_missing_dependencies(self):

@@ -1615,6 +1615,26 @@ class TestImagesUpload:
                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
+    def test_copy_readme_images(self, mocker, dummy_pack):
+        """
+           Given:
+               - Readme Image.
+           When:
+               - Performing copy and upload of all the pack's Readme images.
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/packs/TestPack/readme_images/test_image.png"
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        images_data = {"TestPack": {BucketUploadFlow.README_IMAGES: [os.path.basename(blob_name)]}}
+        dummy_pack.uploaded_readme_images = [os.path.basename(blob_name)]
+        task_status = dummy_pack.copy_readme_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+        assert task_status
+
     def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
         """
            Given:
