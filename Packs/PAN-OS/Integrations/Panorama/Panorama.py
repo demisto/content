@@ -11929,7 +11929,7 @@ def build_body_request_to_edit_pan_os_object(
         if behavior == 'add':
             updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
         else:  # remove
-            updated_object_items = [item for item in current_objects_items if item not in element_value]
+            updated_object_items = [item for item in current_objects_items if item not in argToList(element_value)]
             if not updated_object_items and should_contain_entries:
                 raise DemistoException(f'The object: {object_name} must have at least one item.')
 
