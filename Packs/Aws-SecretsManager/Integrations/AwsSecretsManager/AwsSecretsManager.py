@@ -9,8 +9,6 @@ from datetime import datetime, date
 
 import requests
 from typing import Dict, Any
-import botocore.exceptions
-
 
 from AWSApiModule import *  # noqa: E402
 
@@ -25,7 +23,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' HELPER FUNCTIONS '''
-
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
@@ -35,6 +32,7 @@ class DatetimeEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -92,7 +90,8 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     readable_output = [{'Name': secret.get('Name', ''),
                         'ARN': secret.get('ARN', ''),
                         'Description': secret.get('Description', ''),
-                        'LastAccessedDate': secret.get('LastChangedDate', '')} for secret in response['SecretList'][offset:end]]
+                        'LastAccessedDate': secret.get('LastChangedDate', '')}
+                       for secret in response['SecretList'][offset:end]]
 
     human_readable = tableToMarkdown('AWS Secrets List', readable_output)
 
@@ -148,6 +147,7 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
         readable_output=human_readable
     ))
 
+
 def aws_secrets_manager_secret_delete_command(client: AWSClient, args):
     client = client.aws_session(
         service=SERVICE,
@@ -188,6 +188,7 @@ def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("the secret was restored successfully")
 
+
 def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
@@ -215,6 +216,7 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
         outputs_key_field='Name',
         readable_output=human_readable
     ))
+
 
 def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cover
     client = client.aws_session(
@@ -250,8 +252,9 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cov
             else:
                 LOG(f'({creds_dict[cred_key]}) has no keys supporting the format')
         except Exception as e:
-            return_error(f'theres is a problem parsing ({creds_dict[cred_key]}) secret value')
+            return_error(f'theres is a problem parsing ({creds_dict[cred_key]}) secret value, {e}')
     demisto.credentials(credentials)
+
 
 def main(): # pragma: no cover:
     try:
@@ -293,6 +296,7 @@ def main(): # pragma: no cover:
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
