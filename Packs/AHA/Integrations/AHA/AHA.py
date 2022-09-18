@@ -1,9 +1,8 @@
 # import demistomock as demisto
-from dataclasses import dataclass
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 # from CommonServerUserPython import *  # noqa
 
-import requests 
+import requests
 from typing import Dict
 
 
@@ -24,7 +23,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self._headers = headers
 
-    def list_features(self, fromDate="2020-01-01") -> Dict:
+    def list_features(self, fromDate: str = "2020-01-01") -> Dict:
         """
         Retrieves a list of features from AHA
         Args:
@@ -34,7 +33,7 @@ class Client(BaseClient):
                                       resp_type='json')
         return response
 
-    def get_feature(self, featureName: str, fieldsList) -> Dict:
+    def get_feature(self, featureName: str, fieldsList: Optional[List]) -> Dict:
         """
         Retrieves a specific feature from AHA
         Args:
@@ -108,7 +107,7 @@ def get_all_features(client: Client, fromDate: str) -> CommandResults:
     return command_results
 
 
-def get_feature(client: Client, featureName: str, fieldsList=None) -> CommandResults:
+def get_feature(client: Client, featureName: str, fieldsList: Optional[List] = None) -> CommandResults:
     message: str = ''
     try:
         result = client.get_feature(featureName=featureName, fieldsList=fieldsList)
@@ -128,33 +127,24 @@ def get_feature(client: Client, featureName: str, fieldsList=None) -> CommandRes
     return command_results
 
 
-def edit_feature(client: Client, featureName: str, data: str) -> str:
+def edit_feature(client: Client, featureName: str, fields: Dict) -> CommandResults:
     message: str = ''
     try:
-        result = client.update_feature()
+        result = client.update_feature(featureName=featureName, fields=fields)
         if result:
-            message = 'ok'
+            message = result['feature']
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    return message
-
-
-# TODO implement
-def delete_feature(client: Client) -> str:
-    message: str = ''
-    try:
-        result = client.list_features()
-        if result:
-            message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    command_results = CommandResults(
+        outputs_prefix='AHA.ActionStatus',
+        outputs_key_field='',
+        outputs=message,
+        raw_response=message
+    )
+    return command_results
 
 
 ''' MAIN FUNCTION '''
@@ -167,11 +157,10 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    api_key = demisto.params().get('credentials', {}).get('password')
+    api_key = demisto.params().get('api_key')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')    
+    base_url = urljoin(demisto.params()['url'], '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -182,9 +171,6 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
     verify = not demisto.params().get('insecure', False)
-    fromDate = demisto.params().get('fromDate', '2020-01-01')
-    featureName = demisto.params().get('featureName', '')
-    data = demisto.params().get()('fields', '')
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
@@ -198,23 +184,28 @@ def main() -> None:
             base_url=base_url,
             proxy=proxy,
             verify=verify)
+        command = demisto.command()
+        args = demisto.args()
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == 'get-all-features':
-            result = get_all_features(client, fromDate=fromDate)
-            return_results(result)
-        elif demisto.command() == 'get-feature':
-            result = get_feature(client, featureName=featureName)
-            return_results(result)
-        elif demisto.command() == 'edit-feature':
-            result = edit_feature(client, featureName=featureName, data=data)
-            return_results(result)
-        elif demisto.command() == 'delete-feature':
-            result = delete_feature(client)
-            return_results(result)
+        elif command == 'get-all-features':
+            fromDate = args['fromDate', '2020-01-01']
+            commandResult = get_all_features(client, fromDate=fromDate)
+            return_results(commandResult)
+        elif command == 'get-feature':
+            featureName = args['featureName', '']
+            commandResult = get_feature(client, featureName=featureName)
+            return_results(commandResult)
+        elif command == 'edit-feature':
+            featureName = args['featureName', '']
+            fields = args['fields', {}]
+            commandResult = edit_feature(client, featureName=featureName, fields=fields)
+            return_results(commandResult)
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:

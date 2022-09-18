@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: AHA
+  id: Aha
   version: -1
 configuration:
   - name: url
@@ -29,65 +29,31 @@ configuration:
     additionalinfo: "API Key to access service REST API "
 description: Aha!
 display: AHA
-name: Aha!
+name: Aha
 script:
   commands:
-    - name: get_all_features
+    - name: get-all-features
       description: will get all features from service
       deprecated: false
       arguments: []
       outputs: []
-    - name: get_feature
+    - name: get-feature
       description: returns a specific feature
       deprecated: false
-      arguments:
-        - name: featureName
-          description: name of the feature to return
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: fieldsList
-          description: list of fields to be returned in response body
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
+      arguments: []
       outputs: []
-    - name: edit_feature
+    - name: edit-feature
       description: change value of a field in feature
       deprecated: false
-      arguments:
-        - name: featureName
-          description: name of the feature to edit
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: body
-          description: "fields to change as "
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - "{"
-            - '    "feature": {    '
-            - '        "workflow_status": {'
-            - '            "name" : "Closed"'
-            - "        }"
-            - "    }"
-            - "}"
+      arguments: []
       outputs: []
   isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
   - No tests (auto formatted)

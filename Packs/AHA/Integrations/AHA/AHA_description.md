@@ -1,8 +1,11 @@
-## BaseIntegration Help
-
-Markdown file for integration configuration  help snippet. In this file add:
-
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+ To access the Aha! service, you need to provide 
+ email address and API key as parameters for the
+ integration.
+ 
+ To generate your personal api_key, visit:
+ https://secure.aha.io/settings/api_keys
+ 
+ The integration supports the following workflows:
+ - Aha! Get features (since date)
+ - Aha! Get feature (all fields / specific fields)
+ - Aha! Update feature
