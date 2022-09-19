@@ -7,34 +7,7 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "CiscoSMA Attachments": {
-                    "complex": {
-                        "filters": [],
-                        "root": "attributes",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "from": {
-                                        "value": {
-                                            "simple": "\"attachments\""
-                                        }
-                                    },
-                                    "to": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "substring"
-                            }
-                        ]
-                    }
-                },
-                "CiscoSMA Attriutes": {
-                    "complex": {
-                        "filters": [],
-                        "root": "attributes",
-                        "transformers": []
-                    }
+                    "simple": "attachments"
                 },
                 "CiscoSMA Email From": {
                     "simple": "fromAddress"
@@ -49,27 +22,7 @@
                     "simple": "toAddress"
                 },
                 "CiscoSMA Envelope Recipient": {
-                    "complex": {
-                        "filters": [],
-                        "root": "attributes",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "from": {
-                                        "value": {
-                                            "simple": "\"envelopeRecipient\""
-                                        }
-                                    },
-                                    "to": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "substring"
-                            }
-                        ]
-                    }
+                    "simple": "envelopeRecipient"
                 },
                 "CiscoSMA Message Body": {
                     "simple": "messageBody"
@@ -78,55 +31,7 @@
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
-            "internalMapping": {
-                "CiscoSMA Attriutes": {
-                    "complex": {
-                        "accessor": "attributes}",
-                        "filters": [],
-                        "root": "${incident.labels",
-                        "transformers": []
-                    }
-                },
-                "CiscoSMA Email From": {
-                    "simple": "attributes.fromAddress.[0]"
-                },
-                "CiscoSMA Email Message ID": {
-                    "simple": "mid"
-                },
-                "CiscoSMA Email Size": {
-                    "simple": "attributes.size"
-                },
-                "CiscoSMA Email Subject": {
-                    "simple": "attributes.subject"
-                },
-                "CiscoSMA Email To": {
-                    "simple": "attributes.toAddress.[0]"
-                },
-                "CiscoSMA Envelope Recipient": {
-                    "complex": {
-                        "accessor": "attributes}",
-                        "filters": [],
-                        "root": "${incident.labels",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "from": {
-                                        "value": {
-                                            "simple": "\"envelopeRecipient\""
-                                        }
-                                    },
-                                    "to": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "substring"
-                            }
-                        ]
-                    }
-                }
-            }
+            "internalMapping": {}
         }
     },
     "name": "CiscoSMA-incoming-mapper",
