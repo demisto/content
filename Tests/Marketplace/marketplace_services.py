@@ -2208,11 +2208,16 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name)
+                        dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
-                        })
+
+                        }
+                        if preview:
+                            dashboard.update({"preview": preview})
+                        folder_collected_items.append(dashboard)
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
                         folder_collected_items.append({
@@ -3012,6 +3017,12 @@ class Pack(object):
             self.cleanup()
             return False
 
+        # task_status = self.upload_preview_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        # if not task_status:
+        #     self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+        #     self.cleanup()
+        #     return False
+
         return True
 
     def cleanup(self):
@@ -3288,6 +3299,21 @@ class Pack(object):
             versions_dict[rn_version] = pr_numbers
 
         return versions_dict
+
+    def get_preview_image_gcp_path(self, pack_file_name: str) -> Optional[str]:
+        # TODO check names with . maybe should change the split
+        name_without_extension = pack_file_name.split('.')[0]
+        preview_image_name = name_without_extension + '_image.png'
+        try:
+            preview_image_path = os.path.join(self._pack_path,
+                                             PackFolders.XSIAM_DASHBOARDS, preview_image_name)  # disable-secrets-detection
+
+            if os.path.exists(preview_image_path):
+                return urllib.parse.quote(
+                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, PackFolders.XSIAM_DASHBOARDS, preview_image_name))
+            return None
+        except Exception:
+            logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
 
 
 # HELPER FUNCTIONS

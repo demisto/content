@@ -66,6 +66,7 @@ class GCPConfig(object):
     CONTENT_PACKS_PATH = "content/packs"
     PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
+    PREVIEW_IMAGES_BASE_PATH = "content/previews"
     BUILD_PATH_PREFIX = "content/builds"
     BUILD_BASE_PATH = ""
     PRIVATE_BASE_PATH = "content/packs"
@@ -297,6 +298,7 @@ class PackStatus(enum.Enum):
     FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
+    FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
