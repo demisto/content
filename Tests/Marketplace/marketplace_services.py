@@ -3111,7 +3111,7 @@ class Pack(object):
         """
         logging.info(f'{marketplace=}')
         if marketplace == 'xsoar':
-            marketplace = 'marketplace-dist'
+            marketplace = 'marketplace-dist-dev'
         else:
             marketplace = 'marketplace-v2-dist'
 
