@@ -154,7 +154,11 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
 
 
 def stringify(value: Any) -> str:
-    return '' if value is None else str(value)
+    if value is None or\
+       (isinstance(value, dict) and (not value)) or\
+       (isinstance(value, list) and (not value)):
+        return ''
+    return str(value)
 
 
 def main():

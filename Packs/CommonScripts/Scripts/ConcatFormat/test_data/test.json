@@ -68,6 +68,40 @@
     "results": "yyyxxx0"
   },
   {
+    "comments": "value and prefix has a string value, suffix is empty dict",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": {},
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
+    "comments": "value and prefix has a string value, suffix is empty array",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": [],
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
     "comments": "value and suffix has a string value, prefix is null",
     "args": {
       "value": "xxx",
@@ -100,6 +134,40 @@
       "keep_symbol_to_null": false
     },
     "results": "0xxxzzz"
+  },
+  {
+    "comments": "value and suffix has a string value, prefix is empty dict",
+    "args": {
+      "value": "xxx",
+      "prefix": {},
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
+  },
+  {
+    "comments": "value and suffix has a string value, prefix is empty array",
+    "args": {
+      "value": "xxx",
+      "prefix": [],
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
   },
   {
     "comments": "value is integer 123, prefix and suffix are null",
