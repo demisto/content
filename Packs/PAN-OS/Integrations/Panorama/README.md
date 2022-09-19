@@ -668,14 +668,15 @@ Creates an address object.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | New address name. | Required | 
-| description | New address description. | Optional | 
-| fqdn | FQDN of the new address. | Optional | 
-| ip_netmask | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
-| ip_range | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | The tag for the new address. | Optional | 
+|-------------------| --- | --- |
+| name              | New address name. | Required | 
+| description       | New address description. | Optional | 
+| fqdn              | FQDN of the new address. | Optional | 
+| ip_netmask        | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
+| ip_range          | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
+| ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
+| device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
+| tag               | The tag for the new address. | Optional | 
 
 
 #### Context Output
