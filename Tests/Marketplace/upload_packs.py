@@ -24,7 +24,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
     SKIPPED_STATUS_CODES
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
-
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
@@ -1030,12 +1030,16 @@ def main():
     try:
         id_set = open_id_set_file(option.id_set_path)
     except Exception as e:
-        
+        with Neo4jContentGraphInterface() as graph:
+            if not graph.is_graph_alive():
+                raise e
+
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
+    build_number += '_id_set' if not id_set else '_graph'
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
