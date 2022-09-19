@@ -567,7 +567,7 @@ def get_project_id(project_key='', project_name=''):
 
     # Jira used to respond with a dictionary with the 'projects' key until version 9.0.0
     if isinstance(result, dict):
-        for project in result.get('projects'):
+        for project in result.get('projects', []):
             if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
                 return project.get('id')
 

@@ -1251,7 +1251,7 @@ def test_get_project_id(mocker):
     Then
         - Ensure only the new api endpoint is being used.
     """
-    from JiraV2 import get_project_id, jira_req
+    from JiraV2 import get_project_id
 
     def mock_res(method, endpoint, resp_type):
         if endpoint == 'rest/api/latest/issue/createmeta':
