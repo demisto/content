@@ -157,7 +157,6 @@ def stringify(value: Any) -> str:
     return '' if value is None else str(value)
 
 
-
 def main():
     args = demisto.args()
     try:
