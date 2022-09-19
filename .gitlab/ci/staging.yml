@@ -1,0 +1,142 @@
+create-instances-with-graph:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
+  cache:
+    policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    KUBERNETES_CPU_REQUEST: 1000m
+
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    # - !reference [.create-id-set-xsoar]
+    - !reference [.create-release-notes-and-common-docs]
+    - section_start "Create content graph"
+    - neo4j-admin --version
+    - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
+
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+    # - echo $successful_feature_branch_build
+    # - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+    # - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
+    # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    # - section_end "Create Content Artifacts and Update Conf"
+
+    # - section_start "Collect Tests and Content Packs"
+    # - |
+    #   if [ -n "${INSTANCE_TESTS}" ]; then
+    #     echo "Skipping - not running in INSTANCE_TESTS build"
+    #   else
+    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #     python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+    #   fi
+    # - section_end "Collect Tests and Content Packs"
+
+    # - section_start "Collect Tests V2"
+    # - |
+    #   if [ -n "${INSTANCE_TESTS}" ]; then
+    #     echo "Skipping - not running in INSTANCE_TESTS build"
+    #   else
+    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #     python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+    #   fi
+    # - section_end "Collect Tests V2"
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+    
+    # this replaces @dorschw collect tests
+    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Create Instances"
+    - |
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - section_end "Create Instances"
+
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+
+
+prepare-testing-bucket-mpv2-with-graph:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+  cache:
+    policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    KUBERNETES_CPU_REQUEST: 1000m
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    # - !reference [.create-id-set-mp-v2]
+    - !reference [.create-release-notes-and-common-docs]
+
+    - section_start "Create content graph"
+    - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
+
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+
+    # - section_start "Create Content Artifacts and Update Conf" --collapsed
+    # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    # - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
+    # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
+
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+
+    # - section_start "Replace Cortex XSOAR" --collapsed
+    # - pushd "$ARTIFACTS_FOLDER"
+    # - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+    # - pushd content_packs; zip -r ../content_packs.zip *; popd
+    # - pushd all_content; zip -r ../all_content.zip *; popd
+    # - pushd content_new; zip -r ../content_new.zip *; popd
+    # - pushd content_test; zip -r ../content_test.zip *; popd
+    # - rm -rf content_packs all_content content_new content_test
+    # - popd
+    # - section_end "Replace Cortex XSOAR"
+
+    # - section_start "Collect Tests and Content Packs"
+    # - |
+    #   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #   python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+    # - section_end "Collect Tests and Content Packs"
+
+    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+    - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
