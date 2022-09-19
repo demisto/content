@@ -442,10 +442,11 @@ test_upload_flow:
     - section_end "Create Testing Branch"
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1
-    - pipeline_id=echo ./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g | jq .id
+    - pipeline_id=./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g | jq .id
+    - echo "Triggered a test upload with pipeline id" $pipeline_id
     - section_end "Trigger Test Upload Flow On Testing Branch"
     - section_start "Wait For Upload To Finish"
-    - python3 ./Utils/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
     - section_end "Wait For Upload To Finish"
     - section_start "Verify Created Testing Bucket"
     - test_upload_storage_base_path=upload-flow/builds
