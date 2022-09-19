@@ -3305,12 +3305,12 @@ class Pack(object):
         name_without_extension = pack_file_name.split('.')[0]
         preview_image_name = name_without_extension + '_image.png'
         try:
-            preview_image_path = os.path.join(self._pack_path,
-                                             PackFolders.XSIAM_DASHBOARDS, preview_image_name)  # disable-secrets-detection
-
+            preview_image_path = os.path.join(self._pack_path,PackFolders.XSIAM_DASHBOARDS.value, preview_image_name)  # disable-secrets-detection
+            logging.info(f"yuval {preview_image_path}")
             if os.path.exists(preview_image_path):
+                logging.info(f"yuval {preview_image_path} file exists")
                 return urllib.parse.quote(
-                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, PackFolders.XSIAM_DASHBOARDS, preview_image_name))
+                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, PackFolders.XSIAM_DASHBOARDS.value, preview_image_name))
             return None
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
