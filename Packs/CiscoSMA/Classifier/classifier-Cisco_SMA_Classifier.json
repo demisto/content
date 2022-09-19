@@ -1,0 +1,36 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "2497153f-cef3-48e6-875a-bbb473458d8e",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"CiscoSMA": "Cisco SMA Spam Quarantine"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "CiscoSMA",
+	"nameRaw": "CiscoSMA",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "integration"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
