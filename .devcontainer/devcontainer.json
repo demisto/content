@@ -89,5 +89,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && touch .env && echo 'PYTHONPATH=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/* | xargs):$PYTHONPATH' >> .env && echo 'export MYPYPATH=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/* | xargs):$MYPYPATH' >> .env && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
 }
