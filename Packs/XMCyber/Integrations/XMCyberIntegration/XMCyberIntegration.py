@@ -16,7 +16,7 @@ DEBUG_MODE = False
 
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
-MIN_MINOR_VERSION = 38
+MIN_MINOR_VERSION = 43
 FULL_INCIDENTS_SECONDS = 60 if DEBUG_MODE else 86400
 ONE_WEEK_IN_SECONDS = 1 if DEBUG_MODE else 604800
 
@@ -879,9 +879,9 @@ def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults
         s_version = system_version.split(".")
         major = int(s_version[0])
         minor = int(s_version[1])
-        if major < 1 or (major == 1 and minor < 43):
+        if major < 1 or (major == MIN_MAJOR_VERSION and minor < MIN_MINOR_VERSION):
             raise Exception(
-                f"Instance version not compatible. {system_version} (found) < 1.43 (required)."
+                f"Instance version not compatible. {system_version} (found) < {MIN_MAJOR_VERSION}.{MIN_MINOR_VERSION} (required)."
             )
 
     except DemistoException as e:

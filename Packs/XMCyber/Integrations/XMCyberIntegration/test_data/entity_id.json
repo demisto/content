@@ -24,6 +24,7 @@
             "totalVectors": 80,
             "agentId": "3110337924893579985",
             "name": "CorporateDC",
+            "projectId": "focused-module-278310",
             "productType": "DomainController",
             "os": {
                 "type": "Windows",
