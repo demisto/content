@@ -22,9 +22,9 @@ def mock_gen():
 
 
 PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, [i for i in range(0, 50)]),
-    ({}, [i for i in range(0, 50)]), ({'page': '1', 'page_size': '1'}, [0]),
-    ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]), ({'page': '11', 'page_size': '10'}, []),
-    ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])]
+                      ({}, [i for i in range(0, 50)]), ({'page': '1', 'page_size': '1'}, [0]),
+                      ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]), ({'page': '11', 'page_size': '10'}, []),
+                      ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_SUCCESS)
@@ -45,7 +45,7 @@ def test_paginate_success(args, excepted):
 
 
 PAGINATION_FAILURE = [({'limit': '-1'}, ValueError), ({'page': '1'}, DemistoException),
-    ({'page_size': '1'}, DemistoException), ({'page': '-1', 'page_size': '1'}, ValueError), ]
+                      ({'page_size': '1'}, DemistoException), ({'page': '-1', 'page_size': '1'}, ValueError), ]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_FAILURE)
@@ -208,4 +208,3 @@ def test_url_command(mocker, client):
     assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
     assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
     assert command_res.indicator.url == excepted.get('URL').get('Data')
-
