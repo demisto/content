@@ -1,0 +1,72 @@
+{
+  "events": [
+    {
+      "id": "b85e1bc7b7e64df0a308d96f203ca97d",
+      "action": "user.create",
+      "crud": "c",
+      "actor": {
+        "id": "0e9dd207-1e83-46de-8d7d-d8963e6b5bae",
+        "name": "webrouter.20200130@tenable.admin"
+      },
+      "target": {
+        "id": "142f7818-d956-449d-b575-3599763698a6",
+        "name": "tmalache@paloaltonetworks.com",
+        "type": "User"
+      },
+      "description": "None",
+      "is_anonymous": "True",
+      "is_failure": "False",
+      "fields": [
+        {
+          "key": "X-Access-Type",
+          "value": "apikey"
+        },
+        {
+          "key": "X-Forwarded-For",
+          "value": "54.196.217.80"
+        },
+        {
+          "key": "X-Request-Uuid",
+          "value": "00b19fa42ac57196338c:108979354:00b06ecba54822cfbca2:00d066644b2aa9f1b362708917e16ebbcaba:4d2dac38af870c2ee2f2"
+        }
+      ],
+      "received": "2022-05-18T16:33:02Z"
+    },
+    {
+      "id": "cfb8a0db6668421a958e6f36c8b4535e",
+      "action": "user.authenticate.password",
+      "crud": "u",
+      "actor": {
+        "id": "142f7818-d956-449d-b575-3599763698a6",
+        "name": "tmalache@paloaltonetworks.com"
+      },
+      "target": {
+        "id": "142f7818-d956-449d-b575-3599763698a6",
+        "name": "tmalache@paloaltonetworks.com",
+        "type": "User"
+      },
+      "description": "None",
+      "is_anonymous": "None",
+      "is_failure": "True",
+      "fields": [
+        {
+          "key": "X-Forwarded-For",
+          "value": "34.100.71.242, 34.100.71.242"
+        },
+        {
+          "key": "message",
+          "value": "Invalid credentials."
+        },
+        {
+          "key": "X-Request-Uuid",
+          "value": "815f207da87c7b8af8d5f03a00a33226:00d0e6985c0d3703451068dcf7f342f72042:3395561eb4c9e48edaeb:017ae1edac58de9f54dc"
+        }
+      ],
+      "received": "2022-05-18T18:34:44Z"
+    }
+  ],
+  "pagination": {
+    "total": 1658,
+    "limit": 2
+  }
+}

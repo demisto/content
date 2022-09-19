@@ -49,7 +49,7 @@ class Client(BaseClient):
         """
 
         Args:
-            limit:
+            limit: limit number of audit logs to get.
             from_date: date to fetch audit logs from.
             to_date: date which until to fetch audit logs.
             actor_id: fetch audit logs with matching actor id.
@@ -69,10 +69,22 @@ class Client(BaseClient):
             query = self.add_query(query, f'f=target_id.match:{target_id}')
         if limit:
             query = self.add_query(query, f'limit={limit}')
+        else:
+            query = self.add_query(query, f'limit=5000')
         res = super()._http_request(method='GET', url_suffix=f'/audit-log/v1/events{query}', headers=self._headers)
         return res.get('events', [])
 
-    def get_export_uuid(self, num_assets: int, last_found: int, severity: List[str]):
+    def get_export_uuid(self, num_assets: int, last_found: float, severity: List[str]):
+        """
+
+        Args:
+            num_assets: number of assets used to chunk the vulnerabilities.
+            last_found: vulnerabilities that were last found between the specified date (in Unix time) and now.
+            severity: severity of the vulnerabilities to include in the export.
+
+        Returns: The UUID of the vulnerabilities export job.
+
+        """
         payload = {
             "filters":
                 {
@@ -85,6 +97,14 @@ class Client(BaseClient):
         return res.get('export_uuid', '')
 
     def get_export_status(self, export_uuid: str):
+        """
+
+        Args:
+            export_uuid: The UUID of the vulnerabilities export job.
+
+        Returns: The status of the job, and number of chunks available if succeeded.
+
+        """
         res = super()._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
                                     headers=self._headers)
         status = res.get('status')
@@ -92,6 +112,15 @@ class Client(BaseClient):
         return status, chunks_available
 
     def download_vulnerabilities_chunk(self, export_uuid: str, chunk_id: int):
+        """
+
+        Args:
+            export_uuid: The UUID of the vulnerabilities export job.
+            chunk_id: The ID of the chunk you want to export.
+
+        Returns: Chunk of vulnerabilities from API.
+
+        """
         return super()._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                      headers=self._headers)
 
@@ -99,19 +128,20 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_audit_logs_command(client: Client, from_date: Optional[str], to_date: Optional[str], actor_id: Optional[str],
-                           target_id: Optional[str], limit: Optional[int] = None) -> List[Any] | Any:  # pragma: no cover
+def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_date: Optional[str] = None,
+                           actor_id: Optional[str] = None, target_id: Optional[str] = None,
+                           limit: Optional[int] = None):
     """
 
     Args:
-        client:
-        from_date:
-        to_date:
-        actor_id:
-        target_id:
-        limit:
+        client: Client class object.
+        from_date: date to fetch audit logs from.
+        to_date: date which until to fetch audit logs.
+        actor_id: fetch audit logs with matching actor id.
+        target_id:fetch audit logs with matching target id.
+        limit: limit number of audit logs to get.
 
-    Returns:
+    Returns: CommandResults of audit logs from API.
 
     """
     audit_logs = client.get_audit_logs_request(from_date=from_date,
@@ -132,27 +162,28 @@ def get_audit_logs_command(client: Client, from_date: Optional[str], to_date: Op
     return results, audit_logs
 
 
-def fetch_audit_logs_command(client: Client, first_fetch: str, last_run: dict, limit: int = 1000) -> Tuple[list, dict]:
+def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_run: dict, limit: int = 1000):
     """
-
+    Fetches vulnerabilities if job has succeeded, and audit logs.
     Args:
-        client:
-        first_fetch:
-        last_run:
-        limit:
+        client: Client class object.
+        first_fetch: time to first fetch from.
+        last_run: last run object.
+        limit: number of audit logs to max fetch.
 
-    Returns:
+    Returns: vulnerabilities, audit logs and updated last run object
 
     """
 
     last_fetch = last_run.get('next_fetch')
     last_id_fetched = last_run.get('last_id')
     vulnerabilities = []
+    new_last_run = {}
     index = 0
     if not last_fetch and first_fetch:
         start_date = first_fetch.strftime(DATE_FORMAT)
     else:
-        start_date = last_fetch.strftime(DATE_FORMAT)
+        start_date = last_fetch  # type: ignore
 
     audit_logs: List[Dict] = []
     audit_logs_from_api = client.get_audit_logs_request(from_date=start_date)
@@ -162,32 +193,49 @@ def fetch_audit_logs_command(client: Client, first_fetch: str, last_run: dict, l
             if log.get('id') == last_id_fetched:
                 break
             index += 1
-
-    last_log_to_fetch = min(len(audit_logs_from_api), limit)
-    audit_logs.extend(audit_logs_from_api[index:last_log_to_fetch])
+    demisto.info(f'{len(audit_logs_from_api)}')
+    audit_logs_from_api_len = len(audit_logs_from_api)
+    last_log_to_fetch = min(audit_logs_from_api_len, limit)
+    demisto.info(f'{index=}, {last_log_to_fetch=}')
+    if index < audit_logs_from_api_len and last_log_to_fetch <= audit_logs_from_api_len:
+        demisto.info('here again')
+        audit_logs.extend(audit_logs_from_api[index:last_log_to_fetch])
 
     # trying to fetch vulnerabilities
     integration_context = get_integration_context()
     export_uuid = integration_context.get('export_uuid')
+    demisto.info("checking export uuid")
     if export_uuid:
+        demisto.info(f'{export_uuid=}')
         vulnerabilities, finished_fetching = try_get_chunks(client=client, export_uuid=export_uuid)
         # set params for next run
         if finished_fetching:
             set_integration_context({'export_uuid': None})
-            next_run = time.mktime(datetime.now(tz=timezone.utc).timetuple())
-            new_last_run = {'next_fetch_vunl': next_run}
+            next_run_vuln = time.mktime(datetime.now(tz=timezone.utc).timetuple())
+            new_last_run = {'next_fetch_vunl': next_run_vuln}
 
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    new_last_run.update({'last_id': audit_logs[-1].get('id'),
-                         'next_fetch': next_run})
+    next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    new_last_run.update({'last_id': audit_logs[-1].get('id') if audit_logs else last_id_fetched,
+                         'next_fetch': next_run})  # type : ignore
 
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {new_last_run=}.')
+    demisto.info(f'{len(vulnerabilities)=}, {len(audit_logs)=}')
     return vulnerabilities, audit_logs, new_last_run
 
 
 def try_get_chunks(client: Client, export_uuid: str):
+    """
+    If job has succeeded (status FINISHED) get all information from all chunks available.
+    Args:
+        client: Client class object.
+        export_uuid: The UUID of the vulnerabilities export job.
+
+    Returns: All information from all chunks available.
+
+    """
     vulnerabilities = []
     status, chunks_available = client.get_export_status(export_uuid=export_uuid)
+    demisto.info(f'{status=}, {chunks_available=}')
     if status == 'FINISHED':
         for chunk_id in chunks_available:
             vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
@@ -197,37 +245,47 @@ def try_get_chunks(client: Client, export_uuid: str):
     return vulnerabilities, True
 
 
-def fetch_vulnerabilities_command(client: Client, first_fetch: datetime, last_run: dict, severity: List[str]):
+def generate_export_uuid(client: Client, first_fetch: Optional[datetime], last_run: dict, severity: List[str]):
     """
-    
+    Generate a job export uuid in order to fetch vulnerabilities.
+
     Args:
-        client: 
-        first_fetch: 
-        last_run: 
-        num_assets: 
-
-    Returns:
+        client: Client class object.
+        first_fetch: time to first fetch from.
+        last_run: last run object.
+        severity: severity of the vulnerabilities to include in the export.
 
     """
-    demisto.debug("Getting export uuid for report.")
+    demisto.info("Getting export uuid for report.")
     last_fetch = last_run.get('next_fetch_vunl')
-    last_found = time.mktime(first_fetch.timetuple()) if not last_fetch and first_fetch else last_fetch
-
-    export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found, severity=severity)
+    last_found = time.mktime(first_fetch.timetuple()) if not last_fetch and first_fetch else last_fetch  # type : ignore
+    demisto.info(f'{last_found=}')
+    export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found, severity=severity)  # type : ignore
     set_integration_context({'export_uuid': export_uuid})
 
 
 def run_vulnerabilities_fetch(last_run: dict, first_fetch: datetime, vuln_fetch_interval: int):
+    """
+
+    Args:
+        last_run: last run object.
+        first_fetch: time to first fetch from.
+        vuln_fetch_interval: vulnerabilities fetch interval.
+
+    Returns: True if fetch vulnerabilities can be run.
+
+    """
+    integration_context = get_integration_context()
     if not last_run.get('next_fetch_vunl'):
         time_to_check = time.mktime(first_fetch.timetuple())
     else:
-        time_to_check = last_run.get('next_fetch_vunl')
-    if time.time() - time_to_check > vuln_fetch_interval:
+        time_to_check = last_run.get('next_fetch_vunl')  # type: ignore
+    if time.time() - time_to_check > vuln_fetch_interval and not integration_context.get('export_uuid'):
         return True
     return False
 
 
-def test_module(client: Client, first_fetch=None) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -244,6 +302,7 @@ def test_module(client: Client, first_fetch=None) -> str:
     client.get_audit_logs_request(limit=10)
     return 'ok'
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -256,7 +315,7 @@ def main() -> None:  # pragma: no cover
 
     access_key = params.get('access_key', {}).get('password')
     secret_key = params.get('secret_key', {}).get('password')
-    vuln_fetch_interval = arg_to_number(params.get('vuln_fetch_interval')) * 60
+    vuln_fetch_interval = arg_to_number(params.get('vuln_fetch_interval', 240)) * 60  # type: ignore
     severity = argToList(params.get('severity'))
 
     verify_certificate = not params.get('insecure', False)
@@ -276,26 +335,26 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            return_results(test_module(client, max_fetch, first_fetch))
+            return_results(test_module(client))
 
-        elif command in ('tenable-get-events', 'fetch-events'):
+        elif command in ('tenable-get-audit-logs', 'fetch-events'):
 
-            if command == 'tenable-get-events':
+            if command == 'tenable-get-audit-logs':
                 results, events = get_audit_logs_command(client,
                                                          from_date=args.get('from_date'),
                                                          to_date=args.get('to_date'),
                                                          actor_id=args.get('actor_id'),
                                                          target_id=args.get('target_id'),
-                                                         limit=args.get('target_id'))
+                                                         limit=args.get('limit'))
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
                 if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
                                              vuln_fetch_interval=vuln_fetch_interval):
-                    fetch_vulnerabilities_command(client, first_fetch, last_run, severity)
+                    generate_export_uuid(client, first_fetch, last_run, severity)
 
-                vulnerabilities, events, last_run = fetch_audit_logs_command(client, first_fetch, last_run, max_fetch)
+                vulnerabilities, events, last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
                 demisto.setLastRun(last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):

@@ -57,50 +57,50 @@ display: Tenable.io Event Collector
 name: Tenable.io Event Collector
 script:
   commands:
-    - arguments:
-        - auto: PREDEFINED
-          defaultValue: 'false'
-          description: Set this argument to True in order to create events, otherwise the command will only display the events.
-          isArray: false
-          name: should_push_events
-          predefined:
-            - 'true'
-            - 'false'
-          required: true
-        - default: false
-          description: The maximum number of alerts to return (maximum value - 10000).
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          description: Date to return events that occurred after.
-          isArray: false
-          name: from_date
-          required: false
-          secret: false
-        - default: false
-          description: Date to return events that occurred before.
-          isArray: false
-          name: to_date
-          required: false
-          secret: false
-        - default: false
-          description: Return events contains given actor UUID.
-          isArray: false
-          name: actor_id
-          required: false
-          secret: false
-        - default: false
-          description: Return events matching given target UUID.
-          isArray: false
-          name: target_id
-          required: false
-          secret: false
-        deprecated: false
-        description: Returns events extracted from SaaS traffic and or logs.
-        execution: false
-        name: tenable-get-events
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: The maximum number of alerts to return (maximum value - 5000).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Date to return events that occurred after.
+      isArray: false
+      name: from_date
+      required: false
+      secret: false
+    - default: false
+      description: Date to return events that occurred before.
+      isArray: false
+      name: to_date
+      required: false
+      secret: false
+    - default: false
+      description: Return events contains given actor UUID.
+      isArray: false
+      name: actor_id
+      required: false
+      secret: false
+    - default: false
+      description: Return events matching given target UUID.
+      isArray: false
+      name: target_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns events extracted from SaaS traffic and or logs.
+    execution: false
+    name: tenable-get-audit-logs
   isfetch: false
   runonce: false
   script: '-'

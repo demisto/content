@@ -1,0 +1,32 @@
+[MODEL: model=Endpoint, dataset=tenable_io_raw]
+filter severity_id in (0, 1, 2, 3, 4)
+| alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
+        XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
+        XDM.Endpoint.Target.host.device_id=replace(json_extract(asset,"$.uuid"),"\"",""),
+        XDM.Endpoint.Target.host.os=replace(arrayindex(json_extract_array(asset,"$.operating_system"),0),"\"",""),
+        XDM.Endpoint.threat.description=replace(json_extract(plugin,"$.description"),"\"",""),
+        XDM.Endpoint.threat.name=replace(json_extract(plugin,"$.name"),"\"",""),
+        XDM.Endpoint.threat.severity=severity,
+        XDM.Endpoint.outcome=output,
+        XDM.Endpoint.Actor.host.fqdn=replace(json_extract(asset,"$.fqdn"),"\"",""),
+        XDM.Endpoint.threat.category=replace(json_extract(plugin,"$.family"),"\"",""),
+        XDM.Endpoint.threat.original_threat_id=json_extract_scalar(plugin,"$.id"),
+        XDM.Endpoint.observation_timestamp=indexed;
+
+[MODEL: dataset=tenable_io_raw, model=Audit]
+filter severity_id not in (0, 1, 2, 3, 4)
+| alter XDM.Audit.TriggeredBy.identity.uuid=json_extract_scalar(actor, "$.id"),
+      XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(actor, "$.name"),
+      XDM.Audit.original_event_description=description,
+      XDM.Audit.audited_resource.id=json_extract_scalar("target", "$.id"),
+      XDM.Audit.audited_resource.name=json_extract_scalar("target", "$.name"),
+      XDM.Audit.audited_resource.type=json_extract_scalar("target", "$.type"),
+      XDM.Audit.event_timestamp=received,
+      XDM.Audit.original_event_id=id,
+      XDM.Audit.operation=action,
+      XDM.Audit.TriggeredBy.ipv4=arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Forwarded-For",json_extract_scalar("@element", "$.value"), "")),
+      XDM.Audit.TriggeredBy.agent.identifier=arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Request-Uuid",json_extract_scalar("@element", "$.value"), "")),
+      XDM.Audit.outcome=arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "message",json_extract_scalar("@element", "$.value"), "")),
+      XDM.Audit.TriggeredBy.identity.type=arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "serviceName",json_extract_scalar("@element", "$.value"), "")),
+      XDM.Audit.session_context_id=arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Session-Uuid",json_extract_scalar("@element", "$.value"), ""));
+
