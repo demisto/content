@@ -3997,13 +3997,6 @@
             ]
         },
         {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "fromversion": "6.1.0",
-            "integrations": [
-                "Panorama"
-            ]
-        },
-        {
             "playbookID": "GoogleCloudSCC-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5368,6 +5361,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
