@@ -14,6 +14,17 @@ import json
 import io
 
 import pytest
+from Bitbucket import Client
+
+
+@pytest.fixture
+def bitbucket_client():
+    return Client(workspace='workspace',
+                  server_url='server_url',
+                  auth=(),
+                  proxy=False,
+                  verify=False,
+                  repository='repository')
 
 
 def util_load_json(path):
@@ -32,13 +43,10 @@ def test_check_args(limit, page, expected_results):
     """
         Given:
             - A command's arguments
-
         When:
             - running commands that has pagination
-
         Then:
             - checking that if the parameters < 1 , exception is thrown
-
         """
     from Bitbucket import check_args
 
@@ -47,35 +55,26 @@ def test_check_args(limit, page, expected_results):
     assert e.value.args[0] == expected_results
 
 
-def test_get_paged_results(mocker):
+def test_get_paged_results(mocker, bitbucket_client):
     """
         Given:
             - A http response and a limit to the list
-
         When:
             - running a command with pagination needed
-
         Then:
             - return a list with all the results after pagination
-
         """
-    from Bitbucket import get_paged_results, Client
-    client = Client(workspace='workspace',
-                    server_url='server_url',
-                    auth=(),
-                    proxy=False,
-                    verify=False,
-                    repository='repository')
+    from Bitbucket import get_paged_results
     response1 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response1')
     response2 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response2')
     res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
-    mocker.patch.object(Client, 'get_full_url', return_value=response2)
-    results = get_paged_results(client, response1, 10)
+    mocker.patch.object(bitbucket_client, 'get_full_url', return_value=response2)
+    results = get_paged_results(bitbucket_client, response1, 10)
     assert len(results) == 2
     assert results == res
 
 
-def test_check_pagination():
+def test_check_pagination(bitbucket_client):
     """
         Given:
             - A http response and a limit to the list
@@ -86,20 +85,14 @@ def test_check_pagination():
         Then:
             - return a list with all the results after pagination
     """
-    from Bitbucket import check_pagination, Client
-    client = Client(workspace='workspace',
-                    server_url='server_url',
-                    auth=(),
-                    proxy=False,
-                    verify=False,
-                    repository='repository')
+    from Bitbucket import check_pagination
     response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
     res = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')
     response_2 = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('res_2')
     result_2 = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result_2')
-    results10 = check_pagination(client, response, 10)
-    results1 = check_pagination(client, response, 1)
-    results_2 = check_pagination(client, response_2, 1)
+    results10 = check_pagination(bitbucket_client, response, 10)
+    results1 = check_pagination(bitbucket_client, response, 1)
+    results_2 = check_pagination(bitbucket_client, response_2, 1)
     assert results10 == res
     assert results1 == res
     assert results_2 == result_2
@@ -129,11 +122,12 @@ def test_create_pull_request_body(title, source_branch, destination_branch, revi
             - check that the function returns the correct body according to the parameters that it gets
     """
     from Bitbucket import create_pull_request_body
-    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
+    body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
+                                    close_source_branch)
     assert body == expected_body
 
 
-def test_project_list_command(mocker):
+def test_project_list_command(mocker, bitbucket_client):
     """
     Given:
         - All relevant arguments for the command
@@ -142,22 +136,155 @@ def test_project_list_command(mocker):
         - bitcucket-project-list command is executed
 
     Then:
-        - The http request is called with the right arguments.
+        - The http request is called with the right arguments, and returns the right command result.
     """
-    from Bitbucket import project_list_command, Client
-    client = Client(workspace='workspace',
-                    server_url='server_url',
-                    auth=(),
-                    proxy=False,
-                    verify=False,
-                    repository='repository')
+    from Bitbucket import project_list_command
     args = {'limit': '10'}
-    response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')
-    mocker.patch.object(client, 'get_project_list_request', return_value=response)
-    result = project_list_command(client, args)
+    response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('res_2')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result_2')
+    mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
+    result = project_list_command(bitbucket_client, args)
     expected_readable_output = '### List of the projects in workspace\n|Key|Name|Description|IsPrivate|\n' \
-                               '|---|---|---|---|\n| T1 | Test1 | description | true |\n'
+                               '|---|---|---|---|\n| T1 | Test1 | description | true |\n| T2 | Test1 | description | true |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
     assert result.raw_response == expected_result
+
+
+def test_project_list_command_with_project_key(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+
+    When:
+        - bitcucket-project-list command is executed
+
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import project_list_command
+    args = {'limit': '10', 'project_key': 'T1'}
+    response = util_load_json('test_data/commands_test_data.json').get(
+        'test_project_list_command_with_project_key').get('response')
+    mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
+    result = project_list_command(bitbucket_client, args)
+    expected_readable_output = '### The information about project T1\n|Key|Name|Description|IsPrivate|\n' \
+                               '|---|---|---|---|\n| T1 | Test1 | description | true |\n'
+    readable_output = result.readable_output
+    assert readable_output == expected_readable_output
+    assert result.raw_response == [response]
+
+
+def test_open_branch_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-open-branch-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import open_branch_list_command
+    response = util_load_json('test_data/commands_test_data.json').get('test_open_branch_list_command')
+    mocker.patch.object(bitbucket_client, 'get_open_branch_list_request', return_value=response)
+    expected_result = response.get('values')
+    expected_human_readable = '### The list of open branches\n' \
+                              '|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|\n' \
+                              '|---|---|---|---|\n' \
+                              '| branch | Some User | 2022-09-08T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n' \
+                              '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
+    result = open_branch_list_command(bitbucket_client, {})
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == expected_result
+
+
+def test_branch_get_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-branch-get command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import branch_get_command
+    args = {'branch_name': 'master'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_branch_get_command')
+    mocker.patch.object(bitbucket_client, 'get_branch_request', return_value=response)
+    expected_human_readable = '### Information about the branch: master\n' \
+                              '|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|\n' \
+                              '|---|---|---|---|\n' \
+                              '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
+    result = branch_get_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+
+
+def test_branch_create_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-branch-create command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import branch_create_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {'name': 'test', 'target_branch': 'master'}
+    expected_body = {
+        'target': {
+            'hash': 'master'
+        },
+        'name': 'test'
+    }
+    branch_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/refs/branches',
+                                    json_data=expected_body)
+
+
+def test_branch_delete_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-branch-delete command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import branch_delete_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {'branch_name': 'test'}
+    branch_delete_command(bitbucket_client, args)
+    http_request.assert_called_with(method='DELETE',
+                                    url_suffix='/repositories/workspace/repository/refs/branches/test',
+                                    resp_type='response')
+
+
+def test_commit_create_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-commit-create command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import commit_create_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'message': 'message',
+        'branch': 'branch',
+        'file_name': 'hello.txt',
+        'file_content': 'Hello world!'
+    }
+    expected_body = {
+        "message": 'message',
+        "branch": 'branch',
+        'hello.txt': 'Hello world!'
+    }
+    commit_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/src',
+                                    data=expected_body,
+                                    resp_type='response')

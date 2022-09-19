@@ -478,7 +478,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
                       'LastCommitCreatedAt': demisto.get(response, 'target.date')}
     headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
     readable_output = tableToMarkdown(
-        name=f'Information about the branch {branch_name}',
+        name=f'Information about the branch: {branch_name}',
         t=human_readable,
         removeNull=True,
         headers=headers
@@ -515,7 +515,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     if response.status_code == 204:
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
     else:
-        return CommandResults(readable_output=response)
+        return CommandResults(readable_output=f'There was a problem in deleting branch "{branch_name}".')
 
 
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
