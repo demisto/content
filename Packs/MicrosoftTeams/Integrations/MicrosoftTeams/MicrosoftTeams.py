@@ -712,7 +712,7 @@ def get_team_aad_id(team_name: str) -> str:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
     url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=displayName eq '{team_name}' " \
-    "and resourceProvisioningOptions/Any(x:x eq 'Team')"
+               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
