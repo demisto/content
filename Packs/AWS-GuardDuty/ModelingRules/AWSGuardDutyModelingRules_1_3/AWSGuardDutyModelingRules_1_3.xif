@@ -1,0 +1,14 @@
+[MODEL: dataset="aws_guardduty_raw"]
+alter
+    _time = UpdatedAt,
+    xdm.event.type = json_extract_scalar(Resource, "$.ResourceType"),
+    xdm.event.operation_sub_type = Type,
+    xdm.event.description = Description,
+    xdm.event.outcome_reason = Title,
+    xdm.alert.severity = to_string(Severity),
+    xdm.target.host.hostname = json_extract_scalar(Resource, "$.EksClusterDetails.Name"),
+    xdm.source.user.username = json_extract_scalar(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),
+    xdm.source.user.user_type = json_extract_scalar(Resource, "$.AccessKeyDetails.UserType"),
+    xdm.source.user.employee_id = json_extract_scalar(Resource, "$.AccessKeyDetails.PrincipalId"),
+    xdm.target.process.name = json_extract_scalar(Service, "$.ServiceName"),
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(json_extract_scalar(Service, "$.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4"), ""));
