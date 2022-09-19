@@ -1289,7 +1289,11 @@ def panorama_create_address_command(args: dict):
     ip_range = args.get('ip_range')
     ip_wildcard = args.get('ip_wildcard')
 
-    if not ((fqdn is not None) ^ (ip_netmask is not None) ^ (ip_range is not None) ^ (ip_wildcard is not None)):
+    # make sure only one of fqdn/ip_netmask/ip_range/ip_wildcard was provided.
+
+    if sum(
+        map(bool, [(fqdn is not None), (ip_netmask is not None), (ip_range is not None), (ip_wildcard is not None)])
+    ) != 1:
         raise DemistoException(
             f'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
         )

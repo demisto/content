@@ -5539,3 +5539,31 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
 
     main()
     assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+    'args', [
+        {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
+        {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'name': 'test'},
+        {'ip_netmask': '1', 'ip_range': '2', 'name': 'test'},
+        {'ip_netmask': '1', 'fqdn': '3', 'name': 'test'},
+        {'ip_range': '2', 'fqdn': '3', 'name': 'test'},
+        {'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
+    ]
+)
+def test_pan_os_create_address_main_flow_error(args):
+    """
+    Given:
+     - more than one ip_netmask/ip_range/fqdn/ip_wildcard as command arguments
+
+    When:
+     - running the panorama_create_address_command function
+
+    Then:
+     - make sure an exception is raised saying only one of ip_netmask/ip_range/fqdn/ip_wildcard can
+        be the command input.
+    """
+    from Panorama import panorama_create_address_command
+
+    with pytest.raises(DemistoException):
+        panorama_create_address_command(args)
