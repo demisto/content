@@ -6,15 +6,26 @@ PRODUCT = 'Email Protection'
 
 
 class Client(BaseClient):
-    def get_threats(self, params):
+    def list_threats(self, params):
         return self._http_request('GET', params=params, url_suffix='threats')
 
-    def get_threat(self, threat):
-        return self._http_request('GET', url_suffix=f'threats/{threat}')
+    def get_threat(self, threat_id):
+        return self._http_request('GET', url_suffix=f'threats/{threat_id}')
 
 
-def get_threats(client: Client, after):
-    before = get_timestamp_format('now')
+def get_events(client: Client, after: str):
+    """Retrieves messages by time range & ordered by datetime
+
+    Args:
+      client (Client): Abnormal Security client.
+      after (str): the start datetime to search messages
+
+    Returns:
+      list:  messages ordered by datetime.
+      str: the last run to be set for the next run.
+
+    """
+    before = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")
     threats_ids = get_list_threats(client, after, before)
     messages = []
     if threats_ids:
@@ -25,10 +36,22 @@ def get_threats(client: Client, after):
     return [], before
 
 
-def get_messages_by_datetime(client: Client, threat_id, after, before):
+def get_messages_by_datetime(client: Client, threat_id: str, after: str, before: str):
+    """get messages from a threat and return only the messages that are in the time range
+
+    Args:
+      client (Client): Abnormal Security client.
+      threat_id (str): the threat to get messages.
+      after (str): the datetime to search messages after that.
+      before (str): the datetime to search messages before that.
+
+    Returns:
+      list:  messages filtered by the time range.
+    """
     messages = []
     res = client.get_threat(threat_id)
     for message in res.get('messages'):
+        # messages are ordered from newest to oldest
         received_time = message.get('receivedTime')
         if before >= received_time >= after:
             messages.append(message)
@@ -37,24 +60,23 @@ def get_messages_by_datetime(client: Client, threat_id, after, before):
     return messages
 
 
-def get_timestamp_format(value):
-    timestamp: Optional[datetime]
-    if isinstance(value, int):
-        value = str(value)
-    if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
-    if timestamp is None:
-        raise TypeError(f'after is not a valid time {value}')
-    return timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+def get_list_threats(client: Client, after: str, before: str):
+    """get list of all threats ids in the time range
 
+    Args:
+      client (Client): Abnormal Security client.
+      after (str): the datetime to search threats after that.
+      before (str): the datetime to search threats before that.
 
-def get_list_threats(client, after, before):
+    Returns:
+      list:  list of threats ids.
+    """
     threats = []
     is_next_page = True
     page_number = 1
     while is_next_page:
         params = assign_params(pageSize=1000, filter=f'receivedTime gte {after} lte {before}', pageNumber=page_number)
-        res = client.get_threats(params)
+        res = client.list_threats(params)
         threats += res.get('threats')
         if res.get('nextPageNumber'):
             page_number = res.get('nextPageNumber')
@@ -65,25 +87,29 @@ def get_list_threats(client, after, before):
 
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    token = demisto_params['token']['password']
-    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
-    verify = demisto_params['verify']
-    proxy = demisto_params['proxy']
-    after = get_timestamp_format(demisto_params.get('after'))
+    params = demisto.params()
+
+    token = params['token']['password']
+    verify = params['verify']
+    proxy = params['proxy']
+    after = arg_to_datetime(arg=params.get('after'), arg_name='after', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")
     client = Client(base_url='https://api.abnormalplatform.com/v1',
                     verify=verify,
                     proxy=proxy,
                     headers={"Authorization": f"Bearer {token}"})
 
+    last_run = demisto.getLastRun().get('last_run')
+    if last_run:
+        after = last_run
+
     command = demisto.command()
     try:
-        threats, last_run = get_threats(client, after)
+        threats, last_run = get_events(client, after)
         if command == 'test-module':
             return_results('ok')
 
         elif command == 'fetch-events':
-            demisto.setLastRun({'after': last_run})
+            demisto.setLastRun({'last_run': last_run})
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
 
         elif command == 'AbnormalSecurityEventCollector-get-events':
@@ -92,7 +118,7 @@ def main():
                 raw_response=threats,
             )
             return_results(command_results)
-            if should_push_events:
+            if argToBoolean(demisto.args().get('should_push_events', False)):
                 send_events_to_xsiam(threats, VENDOR, PRODUCT)
 
     except Exception as e:

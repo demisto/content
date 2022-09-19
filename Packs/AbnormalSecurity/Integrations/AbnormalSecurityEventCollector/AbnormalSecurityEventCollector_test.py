@@ -1,9 +1,10 @@
 import pytest
 import demistomock as demisto
 import io
-from AbnormalSecurityEventCollector import get_threats
+from AbnormalSecurityEventCollector import get_events
 from CommonServerPython import *
 from Packs.AbnormalSecurity.Integrations.AbnormalSecurityEventCollector.AbnormalSecurityEventCollector import Client
+from freezegun import freeze_time
 
 
 class MockResponse:
@@ -19,7 +20,7 @@ def util_load_json(path):
 
 
 class Client(BaseClient):
-    def get_threats(self, params):
+    def list_threats(self, params):
         return util_load_json('test_data/test_get_list_threats.json')
 
     def get_threat(self, threat):
@@ -30,16 +31,17 @@ class Client(BaseClient):
 """
 
 
-def test_get_a_list_of_threats_command():
+@freeze_time("2022-09-14")
+def test_get_events():
     """
         When:
-            - Retrieving list of cases identified
+            - running the get_events function
         Then
-            - Assert the context data is as expected.
-            - Assert output prefix data is as expected
+            - Assert the returned messages contains only messages in the specific time range (.
+            - Assert the returned messages are ordered by datetime.
     """
     client = Client(base_url="url")
-    messages, last_run = get_threats(client, '2022-04-02T18:44:38Z')
+    messages, last_run = get_events(client, after='2022-05-02T18:44:38Z')
 
     assert messages == [{'abxMessageId': 3,
                          'receivedTime': '2022-06-01T18:44:38Z',
