@@ -110,7 +110,7 @@ def validate_ip_addresses(ips_list: list[str]):
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def parse_file(get_file_path_res: dict[str, str], delimiter=","):
+def parse_file(get_file_path_res: dict[str, str], delimiter: str = ",") -> List[str]:
     """
     Parses the given file line by line to list.
     :param delimiter: delimiter by which the content of the list is seperated.
@@ -126,7 +126,7 @@ def parse_file(get_file_path_res: dict[str, str], delimiter=","):
     return bulk_list
 
 
-def parse_ips_list(client: Client, ips_list):
+def parse_ips_list(client: Client, ips_list: list[str]) -> List[CommandResults]:
     """
     Creates a commandResults array based on a list of IP addresses,
     this by calling the relevant functions.
