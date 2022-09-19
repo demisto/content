@@ -490,7 +490,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -669,7 +669,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -906,7 +906,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:

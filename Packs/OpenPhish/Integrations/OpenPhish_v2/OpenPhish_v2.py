@@ -142,7 +142,11 @@ def url_command(client: Client, **kwargs) -> List[CommandResults]:
             desc = ""
             markdown = f"#### No matches for URL {url}\n"
 
-        dbot = Common.DBotScore(url, DBotScoreType.URL, 'OpenPhish', dbotscore, desc)
+        dbot = Common.DBotScore(
+            url, DBotScoreType.URL,
+            'OpenPhish', dbotscore, desc,
+            reliability=demisto.params().get('integrationReliability')
+        )
         url_object = Common.URL(url, dbot)
         command_results.append(CommandResults(
             indicator=url_object,

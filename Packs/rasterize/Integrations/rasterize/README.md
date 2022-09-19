@@ -58,7 +58,14 @@ Converts the contents of a URL to an image file or a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 #### Command Example
 ```!rasterize url=http://google.com```
@@ -105,7 +112,14 @@ Converts the body of an email to an image file or a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 #### Command Example
 ```!rasterize-email htmlBody="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"></head><body><br>---------- TEST FILE ----------<br></body></html>"```
@@ -151,7 +165,14 @@ Converts an image file to a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
 
 #### Command Example
 ```!rasterize-image EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
@@ -195,7 +216,14 @@ Converts a PDF file to an image file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
 
 #### Command Example
 ```!rasterize-pdf EntryID=897@6e069bc4-2a1e-43ea-8ed3-ea558e377751```
@@ -217,3 +245,52 @@ There is no context output for this command.
 #### Human Readable Output
 
 
+
+### rasterize-html
+***
+Converts an html file to a PDF or PNG file.
+
+
+#### Base Command
+
+`rasterize-html`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| EntryID | The entry ID of the html file. | Required | 
+| width | The html file width, for example, 600px. Specify with or without the px suffix. | Optional | 
+| height | The html file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
+| file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
+| type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. |
+
+#### Command Example
+```!rasterize-html EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e4586751```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "930@6e069bc4-2a1e-43ea-8ed3-ea558e458651",
+        "Extension": "png",
+        "Info": "application/png",
+        "Name": "image.png",
+        "Size": 21856,
+        "Type": "png document, version 1.4"
+    }
+}
+```
+
+#### Human Readable Output

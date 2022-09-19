@@ -50,6 +50,8 @@ run-validations:
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
+  tags:
+    - gke
   stage: unittests-and-validations
   needs: []
   extends:
@@ -106,7 +108,7 @@ create-instances:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Collect Tests and Content Packs"
+    - section_start "Collect Tests and Content Packs (old)" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
@@ -114,8 +116,18 @@ create-instances:
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
       fi
-    - section_end "Collect Tests and Content Packs"
+    - section_end "Collect Tests and Content Packs (old)"
 
+    - section_start "Collect Tests V2"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+      fi
+    - section_end "Collect Tests V2"
+    
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
@@ -133,6 +145,7 @@ create-instances:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 prepare-testing-bucket-mpv2:
   tags:
@@ -179,8 +192,14 @@ prepare-testing-bucket-mpv2:
     - section_start "Collect Tests and Content Packs"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
+    
+    - section_start "Collect Tests V2"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+    - section_end "Collect Tests V2"
 
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
@@ -189,6 +208,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 .test_content_on_xsoar_server_instances_base:
   tags:
@@ -203,6 +223,7 @@ prepare-testing-bucket-mpv2:
   needs: ["create-instances"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -246,15 +267,6 @@ prepare-testing-bucket-mpv2:
     - exit $EXIT_CODE
 
 
-xsoar_server_6_2:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.2"
-
-
 xsoar_server_6_5:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
@@ -272,6 +284,13 @@ xsoar_server_6_6:
   variables:
     INSTANCE_ROLE: "Server 6.6"
 
+xsoar_server_6_8:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.8"
 
 xsoar_server_master:
   extends:
@@ -327,6 +346,7 @@ slack-notify-nightly-build:
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 

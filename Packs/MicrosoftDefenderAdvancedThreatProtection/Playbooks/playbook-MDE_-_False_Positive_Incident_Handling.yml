@@ -1,8 +1,8 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: 'This playbook handles closing false positive incidents for Microsoft Defender for Endpoint. '
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles closing false positive incidents for Microsoft Defender for Endpoint.
 id: MDE - False Positive Incident Handling
 inputs:
 - description: 'Duplicate Cortex XSOAR investigation IDs to close. '
@@ -93,6 +93,7 @@ tasks:
           "y": -220
         }
       }
+    continueonerrortype: ""
   '1':
     id: '1'
     ignoreworker: false
@@ -133,6 +134,7 @@ tasks:
           "y": 1170
         }
       }
+    continueonerrortype: ""
   '2':
     id: '2'
     ignoreworker: false
@@ -184,6 +186,7 @@ tasks:
           "y": 1350
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -211,6 +214,7 @@ tasks:
           "y": 1665
         }
       }
+    continueonerrortype: ""
   '4':
     id: '4'
     ignoreworker: false
@@ -241,6 +245,7 @@ tasks:
           "y": 70
         }
       }
+    continueonerrortype: ""
   '5':
     id: '5'
     ignoreworker: false
@@ -291,6 +296,7 @@ tasks:
           "y": 380
         }
       }
+    continueonerrortype: ""
   '7':
     id: '7'
     ignoreworker: false
@@ -336,6 +342,7 @@ tasks:
           "y": 1515
         }
       }
+    continueonerrortype: ""
   '8':
     id: '8'
     ignoreworker: false
@@ -366,6 +373,7 @@ tasks:
           "y": 725
         }
       }
+    continueonerrortype: ""
   '9':
     id: '9'
     ignoreworker: false
@@ -396,6 +404,7 @@ tasks:
           "y": 70
         }
       }
+    continueonerrortype: ""
   '12':
     id: '12'
     ignoreworker: false
@@ -425,9 +434,9 @@ tasks:
       id: 691dd509-b56a-4056-8207-96f6f3f57c18
       iscommand: false
       name: Microsoft Defender For Endpoint - Unisolate Endpoint
-      playbookId: Microsoft Defender For Endpoint - Unisolate Endpoint
       type: playbook
       version: -1
+      playbookName: Microsoft Defender For Endpoint - Unisolate Endpoint
     taskid: 691dd509-b56a-4056-8207-96f6f3f57c18
     timertriggers: []
     type: playbook
@@ -438,6 +447,7 @@ tasks:
           "y": 550
         }
       }
+    continueonerrortype: ""
   '14':
     form:
       description: ''
@@ -458,6 +468,22 @@ tasks:
         required: false
         tooltip: ''
         type: multiSelect
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Generate alerts on this indicator?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "False"
+        - simple: "True"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
       sender: ''
       title: Indicators to Allow
       totalanswers: 0
@@ -489,12 +515,12 @@ tasks:
     task:
       brand: ''
       description: Choose the marked IOC to be added to the approve list.
-      id: c2afa666-c2e5-496f-8588-312b3639a81f
+      id: 859cd652-2d86-42ec-8f21-2eb6085c064b
       iscommand: false
       name: Choose the marked IOC to be added to approve list
       type: collection
       version: -1
-    taskid: c2afa666-c2e5-496f-8588-312b3639a81f
+    taskid: 859cd652-2d86-42ec-8f21-2eb6085c064b
     timertriggers: []
     type: collection
     view: |-
@@ -504,6 +530,7 @@ tasks:
           "y": 200
         }
       }
+    continueonerrortype: ""
   '15':
     id: '15'
     ignoreworker: false
@@ -516,7 +543,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       indicatorsValues:
-        simple: ${Indicators to block.Questions.0}
+        simple: ${Indicators to Allow.Answers.0}
       tags:
         simple: ${inputs.AllowTag}
     separatecontext: false
@@ -540,6 +567,7 @@ tasks:
           "y": 550
         }
       }
+    continueonerrortype: ""
   '16':
     id: '16'
     ignoreworker: false
@@ -570,6 +598,7 @@ tasks:
           "y": 725
         }
       }
+    continueonerrortype: ""
   '18':
     conditions:
     - condition:
@@ -614,6 +643,7 @@ tasks:
           "y": 200
         }
       }
+    continueonerrortype: ""
   '51':
     id: '51'
     ignoreworker: false
@@ -645,6 +675,7 @@ tasks:
           "y": -90
         }
       }
+    continueonerrortype: ""
   '53':
     id: '53'
     ignoreworker: false
@@ -675,6 +706,7 @@ tasks:
           "y": 870
         }
       }
+    continueonerrortype: ""
   '60':
     conditions:
     - condition:
@@ -726,6 +758,7 @@ tasks:
           "y": 1000
         }
       }
+    continueonerrortype: ""
   '67':
     id: '67'
     ignoreworker: false
@@ -749,6 +782,8 @@ tasks:
         simple: ${Indicators to Allow.Answers.0}
       severity:
         simple: Informational
+      generate_alert:
+        simple: ${Indicators to Allow.Answers.1}
     separatecontext: false
     skipunavailable: false
     task:
@@ -770,6 +805,7 @@ tasks:
           "y": 550
         }
       }
+    continueonerrortype: ""
   '68':
     conditions:
     - condition:
@@ -813,6 +849,7 @@ tasks:
           "y": 370
         }
       }
+    continueonerrortype: ""
 version: -1
 view: |-
   {
@@ -827,5 +864,6 @@ view: |-
     }
   }
 tests:
-  - No tests
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender - ATP - Indicators SC Test
 fromversion: 6.5.0

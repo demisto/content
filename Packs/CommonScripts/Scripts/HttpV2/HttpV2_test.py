@@ -1,6 +1,7 @@
 import json
 import io
 import pytest
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -48,3 +49,30 @@ def test_create_headers(headers, request_content_type_header, response_content_t
 
     output = create_headers(headers, request_content_type_header, response_content_type_header)
     assert output == expected_headers
+
+
+@pytest.mark.parametrize('headers, expected_headers', [
+    ('"key": "value"', {"key": "value"}),
+    ('{"key": "value"}', {"key": "value"}),
+    ('"key": "value", "key1": "value1"', {"key": "value", "key1": "value1"}),
+    ('{"key": "value", "key1": "value1"}', {"key": "value", "key1": "value1"}),
+])
+def test_parse_headers(headers, expected_headers):
+    from HttpV2 import parse_headers
+
+    output = parse_headers(headers)
+    assert output == expected_headers
+
+
+@pytest.mark.parametrize('headers', [
+    'key: "value"',
+    '"key": "value"}',
+    '"key": "value", "key1": value1"',
+    '{"key": "value", "key1": "value1"',
+    '"key": "value", "key1": "value1"}',
+])
+def test_parse_wrong_headers(headers):
+    from HttpV2 import parse_headers
+
+    with pytest.raises(DemistoException, match="Make sure the headers are in one of the allowed formats."):
+        parse_headers(headers)

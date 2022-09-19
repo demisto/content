@@ -1,0 +1,35 @@
+commonfields:
+  id: PWObservationPcapDownload
+  version: -1
+name: PWObservationPcapDownload
+script: ''
+type: python
+subtype: python2
+tags:
+- protectwise
+comment: Deprecated. No available replacement.
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: The observation ID (or a comma-separated list of IDs)
+- name: sensorId
+  required: true
+  description: the sensor id (or a comma-separated list of IDs)
+- name: filename
+  description: Optionally provide a filename for the download
+- name: burstsize
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 1 second.
+- name: waitms
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 1 second.
+scripttarget: 0
+dependson:
+  must:
+  - ProtectWise|||protectwise-observation-pcap-download
+timeout: 3.6µs
+tests:
+- Protectwise-Test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+deprecated: true

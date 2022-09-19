@@ -1399,6 +1399,7 @@ def test_fetch_all_incidents(requests_mock):
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=500',
                       json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11/labels', json=[{'name': 'test'}])
 
     alerts_states_to_retrieve = 'unresolved'
     last_run = {}
@@ -1408,6 +1409,7 @@ def test_fetch_all_incidents(requests_mock):
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
+        '',
         last_run,
         fetch_time,
         max_fetch
@@ -1442,6 +1444,7 @@ def test_fetch_new_incidents(requests_mock):
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=500',
                       json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11/labels', json=[{'name': 'test'}])
 
     alerts_states_to_retrieve = 'unresolved'
     last_run = {'time': '2021-09-26T14:02:59.000000Z', 'id': '2'}
@@ -1451,6 +1454,7 @@ def test_fetch_new_incidents(requests_mock):
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
+        '',
         last_run,
         fetch_time,
         max_fetch

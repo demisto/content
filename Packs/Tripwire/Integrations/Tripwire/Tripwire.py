@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import traceback
 from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
@@ -507,7 +506,6 @@ def main() -> None:
         else:
             raise NotImplementedError(f'{command} is not an existing Tripwire command')
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

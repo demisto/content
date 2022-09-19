@@ -39,6 +39,11 @@ gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_
 echo "Finished copying private bucket successfully."
 
 
+echo "Copying index.zip at: gs://marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
+gsutil -m cp "gs://marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip"
+echo "Finished copying private index.zip successfully."
+
+
 PUBLIC_BUILD_BUCKET_PATH="content/builds/$GIT_BRANCH/$GITHUB_RUN_NUMBER"
 PUBLIC_TARGET_PATH="$PUBLIC_BUILD_BUCKET_PATH/content/packs"
 BUCKET_FULL_TARGET_PATH="$GCS_TESTING_BUCKET/$PUBLIC_BUILD_BUCKET_PATH"
@@ -62,6 +67,7 @@ else
     python3 ./Tests/private_build/upload_packs_private.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $NEW_PACK_NAME -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false -nek $PACK_ENCRYPTION_KEY_NEW -bn $GIT_BRANCH -ek $PACK_ENCRYPTION_KEY -inf $IS_INFRA_BUILD -o
     NEW_EXTRACT_FOLDER_FOR_INDEX=$(mktemp -d)
     NEW_EXTRACT_FOLDER_FOR_ARTIFACTS=$(mktemp -d)
+    echo "\nbetween the two scripts\n"
     python3 ./Tests/Marketplace/prepare_public_index_for_private_testing.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -n $GITHUB_RUN_NUMBER -e $NEW_EXTRACT_FOLDER_FOR_INDEX -sb $PUBLIC_TARGET_PATH -s $KF -p $NEW_PACK_NAME -a $PACK_ARTIFACTS -ea $NEW_EXTRACT_FOLDER_FOR_ARTIFACTS -di private/dummy_index
     echo "Finished updating content packs successfully."
   fi

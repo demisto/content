@@ -1,0 +1,32 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "TOPdesk Outgoing Mapper",
+    "mapping": {
+        "TOPdesk Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "impact": {
+                    "complex": null,
+                    "simple": "topdeskimpact"
+                },
+                "priority": {
+                    "complex": null,
+                    "simple": "topdeskpriority"
+                },
+                "processingStatus": {
+                    "complex": null,
+                    "simple": "topdeskprocessingstatus"
+                },
+                "urgency": {
+                    "complex": null,
+                    "simple": "topdeskurgency"
+                }
+            }
+        }
+    },
+    "name": "TOPdesk Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

@@ -45,6 +45,10 @@ class Client(BaseClient):
 
         user_id = self.id if self.id else user_name.split('@')[0]
         is_active = True
+        try:
+            self.test(demisto.params())
+        except Exception as exc:
+            raise DemistoException(f'Something went Wrong! Please check the credentials. {exc}')
 
         return IAMUserAppData(user_id, user_name, is_active, {})
 
@@ -265,7 +269,6 @@ def main():
 
     except Exception as exc:
         # For any other integration command exception, return an error
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 

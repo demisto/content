@@ -1821,8 +1821,7 @@ script:
     - defaultValue: Reboot initiated by Ansible
       description: Message to display to users before reboot.
       name: msg
-    - defaultValue: '[''/sbin'', ''/usr/sbin'', ''/usr/local/sbin'']'
-      description: 'Paths to search on the remote machine for the `shutdown` command.
+    - description: 'Paths to search on the remote machine for the `shutdown` command.
         `Only` these paths will be searched for the `shutdown` command. `PATH` is
         ignored in the remote node when searching for the `shutdown` command.'
       isArray: true
@@ -5759,7 +5758,6 @@ script:
         is only supported with state: `install`/`present`'
       name: allow_unauthenticated
     - auto: PREDEFINED
-      defaultValue: 'no'
       description: 'If yes or safe, performs an aptitude safe-upgrade. If full, performs
         an aptitude full-upgrade. If dist, performs an apt-get dist-upgrade. Note:
         This does not upgrade a specific package, use state=latest for that. Note:
