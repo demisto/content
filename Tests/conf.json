@@ -3996,13 +3996,6 @@
             ]
         },
         {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "fromversion": "6.1.0",
-            "integrations": [
-                "Panorama"
-            ]
-        },
-        {
             "playbookID": "GoogleCloudSCC-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5345,7 +5338,6 @@
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
         "test_AssignToNextShiftOOO": "Issue 44198",
         "EWS_O365_send_mail_test": "Issue 44200",
-        "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "Fetch Indicators Test": "Issue 45490",
@@ -5367,6 +5359,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials"
     },
     "skipped_integrations": {
+        "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",

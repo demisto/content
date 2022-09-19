@@ -225,6 +225,8 @@ script:
       description: The display name of the participants.
       type: String
   dockerimage: demisto/teams:1.0.0.32769
+  feed: false
+  isfetch: false
   longRunning: true
   longRunningPort: true
   runonce: false
