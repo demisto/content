@@ -1,5 +1,4 @@
 # type: ignore
-from ast import arguments
 from typing import Callable, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -1671,7 +1670,7 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     end_date = format_reporting_datetime(args["end_date"])
     device_type = "esa"
     device_name = args.get("device_name")
-    device_group_name = args.get("device_group_name") if device_name == None else None
+    device_group_name = args.get("device_group_name") if device_name is None else None
     order_by = args.get("order_by")
     order_dir = args.get("order_dir")
     top = args.get("top")
