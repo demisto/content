@@ -1,4 +1,4 @@
-create-instances-with-graph:
+graph-create-instances:
   tags:
     - gke
   extends:
@@ -76,7 +76,7 @@ create-instances-with-graph:
     - section_end "Upload Artifacts to GCP"
 
 
-prepare-testing-bucket-mpv2-with-graph:
+graph-prepare-testing-bucket-mpv2:
   tags:
     - gke
   extends:
@@ -142,3 +142,15 @@ prepare-testing-bucket-mpv2-with-graph:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+
+
+compare_zips:
+  needs: ["prepare-testing-bucket-mpv2", "graph-prepare-testing-bucket-mpv2", "create-instances", "graph-create-instances"]
+  stage: stage-compare
+  extends:
+    - .default-job-settings
+  allow_failure: true
+  script:
+    - echo "compare between graph and id_set"
+
+
