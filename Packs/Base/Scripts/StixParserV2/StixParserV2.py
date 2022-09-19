@@ -1157,18 +1157,21 @@ class DomainNameObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
+        domains = []
         dtype = props.get('type', 'FQDN')
         if dtype != 'FQDN':
             return []
 
-        domain = props.find('Value')
-        if domain is None:
-            return []
+        if domain_value := props.find('Value'):
+            debug = domain_value.string
+            domain_list = debug.split('##comma##')
+            for domain in domain_list:
+                domains.append({
+                    'indicator': domain,
+                    'type': 'Domain'
+                })
 
-        return [{
-            'indicator': domain.string.encode('ascii', 'replace').decode(),
-            'type': 'Domain'
-        }]
+        return domains
 
 
 class FileObject(object):
