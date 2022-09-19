@@ -651,6 +651,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.MARKETPLACES: self.user_metadata.get(Metadata.MARKETPLACES, ''),
             Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
