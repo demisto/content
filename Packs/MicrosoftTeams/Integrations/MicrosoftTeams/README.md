@@ -1,5 +1,5 @@
 Send messages and notifications to your team members.
-This integration was integrated and tested with version xx of Microsoft Teams
+This integration was integrated and tested with version 1.0 of Microsoft Teams
 
 ## Configure Microsoft Teams on Cortex XSOAR
 
