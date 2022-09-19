@@ -7,7 +7,7 @@ import time
 import requests
 
 GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
-TIMEOUT = 60 * 60 * 2
+TIMEOUT = 60 * 60 * 4
 
 
 def get_pipeline_info(pipeline_id, token):
