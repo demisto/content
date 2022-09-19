@@ -1799,5 +1799,3 @@ def main():
 
 if __name__ == 'builtins':
     main()
-
-register_module_line('Microsoft Teams', 'end', __line__())
