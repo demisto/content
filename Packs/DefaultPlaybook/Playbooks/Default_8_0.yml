@@ -328,4 +328,4 @@ inputs:
 outputs: []
 tests:
   - Default - Test
-fromversion: 6.8.0
+fromversion: 8.0.0

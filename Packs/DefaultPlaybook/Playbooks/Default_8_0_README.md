@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Default](../doc_files/Default.png)
+![Default](../doc_files/Default_8_0.png)
