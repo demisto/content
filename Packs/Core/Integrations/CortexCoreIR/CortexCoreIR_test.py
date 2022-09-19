@@ -50,7 +50,7 @@ class TestPrevalenceCommands:
         res = handle_prevalence_command(mock_client, 'core-get-domain-analytics-prevalence',
                                         {'domain': 'some_name'})
         assert res.outputs[0].get('value') is True
-        assert res.outputs[0].get('args', {}).get('domain_name') == 'some_name'
+        assert res.outputs[0].get('domain_name') == 'some_name'
 
     def test_get_ip_analytics(self, mocker):
         """
@@ -68,7 +68,7 @@ class TestPrevalenceCommands:
         res = handle_prevalence_command(mock_client, 'core-get-IP-analytics-prevalence',
                                         {'ip': 'some ip'})
         assert res.outputs[0].get('value') is True
-        assert res.outputs[0].get('args', {}).get('ip_address') == 'some_ip'
+        assert res.outputs[0].get('ip_address') == 'some_ip'
 
     def test_get_registry_analytics(self, mocker):
         """
@@ -86,4 +86,4 @@ class TestPrevalenceCommands:
         res = handle_prevalence_command(mock_client, 'core-get-registry-analytics-prevalence',
                                         {'key_name': 'some key', 'value_name': 'some value'})
         assert res.outputs[0].get('value') is True
-        assert res.outputs[0].get('args', {}).get('key_name') == 'some key'
+        assert res.outputs[0].get('key_name') == 'some key'
