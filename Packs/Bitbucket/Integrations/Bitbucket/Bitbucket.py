@@ -329,7 +329,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
             else:
                 break
         if limit > 0 and is_next:
-            response = client.get_full_url(full_url=is_next)  # TODO update
+            response = client.get_full_url(full_url=is_next)
             is_next = response.get('next', None)
             arr = response.get('values', [])
         else:
@@ -346,7 +346,7 @@ def check_args(limit: int = None, page: int = None):
 
 def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
                              description: str, close_source_branch: str) -> Dict:
-    body: Dict = {}
+    body: Dict = {}  # TODO support a list of reviewers
     if title:
         body["title"] = title
     if source_branch:
@@ -385,8 +385,6 @@ def test_module(client: Client) -> str:
     except Exception:
         raise Exception('There was a problem in the authentication process.')
 
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 def project_list_command(client: Client, args: Dict) -> CommandResults:
     limit = int(args.get('limit', 50))
