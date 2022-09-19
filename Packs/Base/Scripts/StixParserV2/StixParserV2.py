@@ -1484,7 +1484,7 @@ def build_observables(file_name):
                 content = etree.tostring(c, encoding='unicode')
                 timestamp, observable, indicator, ttp = StixDecode.decode(content)
                 if observable:
-                    observables.append(observable[0])
+                    observables.extend(observable)
                 if indicator:
                     indicators.update(indicator)
                 if ttp:

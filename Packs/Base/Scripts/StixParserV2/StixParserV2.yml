@@ -17,13 +17,13 @@ enabled: true
 name: StixParserV2
 outputs:
 - contextPath: STIXParser.value
-  description: ...
+  description: Indicator value.
   type: String
 - contextPath: STIXParser.type
-  description: ...
+  description: Indicator type.
   type: string
 - contextPath: STIXParser.rawJSON
-  description: ...
+  description: Indicator rawJSON.
   type: string
 script: '-'
 system: true
