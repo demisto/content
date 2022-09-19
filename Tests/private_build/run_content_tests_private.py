@@ -267,7 +267,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     filtered_tests = extract_filtered_tests()
     if not filtered_tests:
-        logging.info('no teste where collected to execute.')
+        logging.info('no tests were collected to execute.')
         return
 
     if not tests or len(tests) == 0:
