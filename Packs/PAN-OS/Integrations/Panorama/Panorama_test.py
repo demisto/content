@@ -1284,6 +1284,7 @@ def test_panorama_list_edls_command_main_flow(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
     mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-list-edls')
     request_mock = mocker.patch(
         'Panorama.http_request',
         return_value=load_json('test_data/list-edls-including-un-committed-edl.json')
@@ -1298,7 +1299,16 @@ def test_panorama_list_edls_command_main_flow(mocker):
         'key': 'thisisabogusAPIKEY!'
     }
 
-    # assert list(result.call_args.args[0]['EntryContext'].values())[0] == []
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+        {
+            'Name': 'test-1', 'Type': 'domain', 'URL': 'http://test.com',
+            'Recurring': 'hourly', 'DeviceGroup': 'Lab-Devices'
+        },
+        {
+            'Name': 'test-2', 'Type': 'ip', 'URL': 'http://test1.com',
+            'Recurring': 'five-minute', 'DeviceGroup': 'Lab-Devices'
+        }
+    ]
 
 
 def test_panorama_edit_edl_command_main_flow(mocker):
