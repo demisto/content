@@ -225,6 +225,7 @@ Admin user.
 | sort_order | The sorting order of the alerts - descending or ascending | Optional | 
 | alert_limit | The maximum number of alerts to query. | Optional | 
 | minimal_severity | Set minimal severity to query by. | Optional | 
+| exclude_resolved_alerts | Returns only unresloved alerts. | Optional |
 
 
 ##### Context Output
