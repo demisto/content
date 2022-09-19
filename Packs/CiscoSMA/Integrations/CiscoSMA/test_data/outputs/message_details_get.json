@@ -19,7 +19,7 @@
         ],
         "sendingHostSummary": {
           "reverseDnsHostname": "test.test.net (verified)",
-          "ipAddress": "33.33.33.33",
+          "ipAddress": "1.1.1.1",
           "sbrsScore": "3.5"
         },
         "ampTgCategories": [
@@ -41,12 +41,12 @@
         "summary": [
           {
             "timestamp": "07 Sep 2022 09:08:03 (GMT)",
-            "description": "Incoming connection (ICID 13646) has sender_group: ACCEPTLIST, sender_ip: 33.33.33.33 and sbrs: 3.5",
+            "description": "Incoming connection (ICID 13646) has sender_group: ACCEPTLIST, sender_ip: 1.1.1.1 and sbrs: 3.5",
             "lastEvent": false
           },
           {
             "timestamp": "07 Sep 2022 09:08:03 (GMT)",
-            "description": "Protocol SMTP interface Data 1  (IP 194.1.1.1) on incoming connection (ICID 13646) from sender IP 33.33.33.33 Reverse DNS  test.test.net verified yes.",
+            "description": "Protocol SMTP interface Data 1  (IP 1.1.1.1) on incoming connection (ICID 13646) from sender IP 1.1.1.1 Reverse DNS  test.test.net verified yes.",
             "lastEvent": false
           },
           {

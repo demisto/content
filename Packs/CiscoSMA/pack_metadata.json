@@ -1,5 +1,5 @@
 {
-    "name": "Cisco SMA",
+    "name": "CiscoSMA",
     "description": "The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).",
     "support": "xsoar",
     "currentVersion": "1.0.1",

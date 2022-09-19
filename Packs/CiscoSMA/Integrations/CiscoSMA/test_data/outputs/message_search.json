@@ -51,7 +51,7 @@
           "recipient": [
             "test@test.com"
           ],
-          "sender": "testtest@amazonses.com",
+          "sender": "test@test.com",
           "serialNumber": "TESTSERIALNUMBER",
           "allIcid": [
             10767
@@ -106,7 +106,7 @@
           "recipient": [
             "test@test.com"
           ],
-          "sender": "testtest@amazonses.com",
+          "sender": "test@test.com",
           "serialNumber": "TESTSERIALNUMBER",
           "allIcid": [
             16516
@@ -161,7 +161,7 @@
           "recipient": [
             "test@test.com"
           ],
-          "sender": "testtest@amazonses.com",
+          "sender": "test@test.com",
           "serialNumber": "TESTSERIALNUMBER",
           "allIcid": [
             10053
@@ -216,7 +216,7 @@
           "recipient": [
             "test@test.com"
           ],
-          "sender": "testtest@amazonses.com",
+          "sender": "test@test.com",
           "serialNumber": "TESTSERIALNUMBER",
           "allIcid": [
             15331

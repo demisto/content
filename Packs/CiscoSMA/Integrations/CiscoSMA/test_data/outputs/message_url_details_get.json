@@ -9,7 +9,7 @@
       "urlDetails": [
         {
           "timestamp": "24 Aug 2022 10:05:56 (GMT)",
-          "description": "Message 21 URL: http://test:8080/ , URL reputation: -6.8, Condition: URL Reputation Rule."
+          "description": "Message 21 URL: http://test.com/ , URL reputation: -6.8, Condition: URL Reputation Rule."
         },
         {
           "timestamp": "24 Aug 2022 10:05:56 (GMT)",
@@ -17,10 +17,10 @@
         },
         {
           "timestamp": "24 Aug 2022 10:05:56 (GMT)",
-          "description": "Message 21 URL: http://test:8080 , URL reputation: -6.8, Condition: URL Reputation Rule."
+          "description": "Message 21 URL: http://test.com , URL reputation: -6.8, Condition: URL Reputation Rule."
         }
       ],
-      "hostName": "esa1.test.eu.iphmx.com (194.165.192.36)",
+      "hostName": "esa1.test.eu.iphmx.com (1.1.1.1)",
       "direction": "incoming",
       "messageStatus": "Quarantined by Content Filters",
       "senderGroup": "ACCEPTLIST",

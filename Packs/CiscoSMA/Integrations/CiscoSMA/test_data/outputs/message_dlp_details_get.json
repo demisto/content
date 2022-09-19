@@ -7,8 +7,8 @@
       "showDLPDetails": true,
       "direction": "outgoing",
       "smtpAuthId": "",
-      "sender": "test@test1.com",
-      "midHeader": "<test@test.PROD.OUTLOOK.COM>",
+      "sender": "test@test.com",
+      "midHeader": "<test@test.com>",
       "timestamp": "28 Aug 2022 06:56:26 (GMT)",
       "hostName": "esa2.test.eu.iphmx.com (1.1.1.1)",
       "mid": [
@@ -64,7 +64,7 @@
       "recipient": [
         "test@test.com"
       ],
-      "headerFrom": "test@test1.com",
+      "headerFrom": "test@test.com",
       "subject": "Fw: Re: "
     }
   }

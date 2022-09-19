@@ -256,7 +256,7 @@ def test_spam_quarantine_message_delete_command(
                 "page_size": "1",
             },
             1,
-            "test123@test123.com",
+            "test@test.com",
         ),
     ],
 )
