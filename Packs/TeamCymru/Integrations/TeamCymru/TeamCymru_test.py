@@ -6,6 +6,9 @@ import pytest
 from unittest.mock import MagicMock
 import TeamCymru
 
+
+'''GLOBALS'''
+
 client = MagicMock()
 MOCK_ENTRY_ID = '@123'
 MOCK_BULK_LIST = "1.1.1.1, b, 2.2.2, n, 3.3.3.3,2001:0db8:85a3:0000:0000:8a2e:0370:7334,a,\"8.8.8.8\"," \
@@ -15,6 +18,11 @@ MOCK_IPS_LIST = ['1.1.1.1', 'b', '2.2.2', 'n',
                  '1.1.2.2', '6', '6.6.6.6', '1.1.2.2']
 MOCK_INVALID_IPS = ['b', '2.2.2', 'n', '2001:0db8:85a3:0000:0000:8a2e:0370:7334', 'a', '6']
 MOCK_VALID_IPS = ['1.1.1.1', '3.3.3.3', '8.8.8.8', '4.4.4.4', '1.1.2.2', '6.6.6.6', '1.1.2.2']
+MOCK_FILE_RES = {
+    'id': 'test_id',
+    'path': 'test_data/test_ips_file.csv',
+    'name': 'test_ips_file.csv',
+}
 
 
 def load_test_data(json_path):
@@ -56,9 +64,9 @@ def test_ip_command(mocker):
     response = ip_command(client, mock_arg)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_outputs == response.outputs
-    assert mock_readable_outputs == response.readable_output
-    assert response.indicator
+    assert mock_outputs == response[0].outputs
+    assert mock_readable_outputs == response[0].readable_output
+    assert response[0].indicator
 
 
 def test_cymru_bulk_whois_command_with_list(mocker):
@@ -66,13 +74,13 @@ def test_cymru_bulk_whois_command_with_list(mocker):
     Given:
         - List of IP addresses
     When:
-        - Running the cymru_bulk_whois command
+        - Running the IP command
     Then:
         - Verify support list of IPs
         - Verify the result is as expected and returns the expected warning
     """
-    from TeamCymru import cymru_bulk_whois_command
-    mock_arg = {"list": MOCK_BULK_LIST}
+    from TeamCymru import ip_command
+    mock_arg = {"ip": MOCK_BULK_LIST}
     test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
     return_value = test_data.get('cymru_bulk_whois_command_response')
     mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
@@ -80,7 +88,7 @@ def test_cymru_bulk_whois_command_with_list(mocker):
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
 
-    response = cymru_bulk_whois_command(client, mock_arg)
+    response = ip_command(client, mock_arg)
     assert warning.call_args[0][0] == test_data.get("warning_message")
     assert warning.call_args[1] == {'exit': False}
     for i, res in enumerate(response):
@@ -105,12 +113,7 @@ def test_cymru_bulk_whois_command_with_file(mocker):
     return_value = test_data.get('cymru_bulk_whois_command_response')
     mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
 
-    mock_file = {
-        'id': 'test_id',
-        'path': 'test_data/test_ips_file.csv',
-        'name': 'test_ips_file.csv',
-    }
-    mocker.patch.object(demisto, 'getFilePath', return_value=mock_file)
+    mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_RES)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
 
@@ -123,10 +126,8 @@ def test_cymru_bulk_whois_command_with_file(mocker):
 
 
 @pytest.mark.parametrize('args, expected_error',
-                         [({'list': '1.1.1.1', 'entry_id': MOCK_ENTRY_ID},
-                           'Both list and entry_id were inserted - please insert only one.'),
-                          ({'entry_id': MOCK_ENTRY_ID}, 'No file was found for given entry_id'),
-                          ({}, 'No list or entry_id specified.')])
+                         [({'entry_id': MOCK_ENTRY_ID}, 'No file was found for given entry_id'),
+                          ({}, 'No entry_id specified.')])
 def test_cymru_bulk_whois_invalid_bulk(args, expected_error, mocker):
     """
     Given:
@@ -213,11 +214,10 @@ def test_empty_command_result(mocker):
     from TeamCymru import ip_command, cymru_bulk_whois_command
     mocker.patch("TeamCymru.team_cymru_ip", return_value=None)
     result = ip_command(client, {'ip': '1.1.1.1'})
-    assert not result.outputs
-    assert not result.readable_output
-    assert result
+    assert not result
     mocker.patch("TeamCymru.team_cymru_bulk_whois", return_value=None)
-    result = cymru_bulk_whois_command(client, {'list': '1.1.1.1'})
+    mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_RES)
+    result = cymru_bulk_whois_command(client, {'entry_id': MOCK_ENTRY_ID})
     assert not result
 
 
