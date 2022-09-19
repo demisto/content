@@ -4,7 +4,7 @@ commonfields:
 name: Abnormal Security Event Collector
 display: Abnormal Security Event Collector
 category: Analytics & SIEM
-description:
+description: Abnormal Security Event Collector integration for XSIAM.
 configuration:
 - display: ""
   displaypassword: Token
@@ -30,7 +30,7 @@ script:
   type: python
   commands:
   - description: Manual command to fetch events.
-    name: AbnormalSecurityEventCollector-get-events
+    name: abnormal-security-event-collector-get-events
     arguments:
       - auto: PREDEFINED
         defaultValue: 'False'

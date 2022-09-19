@@ -1,8 +1,8 @@
 from CommonServerPython import *
 import demistomock as demisto
 
-VENDOR = 'Abnormal Security'
-PRODUCT = 'Email Protection'
+VENDOR = 'Abnormal-Security'
+PRODUCT = 'Email-Protection'
 
 
 class Client(BaseClient):
@@ -112,7 +112,7 @@ def main():
             demisto.setLastRun({'last_run': last_run})
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
 
-        elif command == 'AbnormalSecurityEventCollector-get-events':
+        elif command == 'abnormal-security-event-collector-get-events':
             command_results = CommandResults(
                 readable_output=tableToMarkdown(f'{VENDOR} - {PRODUCT} events', threats),
                 raw_response=threats,
