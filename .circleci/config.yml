@@ -338,7 +338,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      # - *restore_cache
+      - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
