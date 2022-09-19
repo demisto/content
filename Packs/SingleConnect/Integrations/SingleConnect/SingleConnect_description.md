@@ -1,3 +1,5 @@
 ## About Single Connect
 
-Single Connect Dynamic Password Controller enables enterprises to remove these static passwords stored in applications and keep them in DPC,in a secure password vault. Single Connect provides a token-based authentication for the 3rd party applications while accessing password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
+Single Connect Dynamic Password Controller enables enterprises to remove static passwords stored in applications and keep passwords in a secure password vault.
+
+Single Connect provides token-based authentication for 3rd party applications when accessing password vault. This process verifies the application's identity and gives secure access to the password associated with that identity.

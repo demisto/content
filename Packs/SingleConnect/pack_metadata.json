@@ -1,6 +1,6 @@
 {
     "name": "SingleConnect",
-    "description": "Single Connect is an SAPM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Single Connect provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.",
+    "description": "Single Connect enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. It secures access to passwords through token-based authentication",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "",
