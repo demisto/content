@@ -223,7 +223,7 @@ if __name__ == "__main__":
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
-        p = subprocess.Popen(['git', 'remote', 'add', 'origin', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git'])
+        p = subprocess.Popen(['git', 'remote', 'add', 'origin', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git'])  # disable-secrets-detection
         repo.git.commit(m="Added Test file", no_verify=True)
         #repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
