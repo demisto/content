@@ -21,13 +21,13 @@ configuration:
 - name: max_fetch
   display: Maximum incidents per fetch
   required: false
-  defaultValue: 50
+  defaultvalue: 50
   type: 0
   additionalinfo: Default is 50. Maximum is 100.
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   required: false
-  defaultValue: 7 days
+  defaultvalue: 7 days
   type: 0
   additionalinfo: |-
     Timestamp in ISO format or <number> <time unit>,
@@ -75,19 +75,19 @@ configuration:
   additionalinfo: Filter value to fetch by message field.
 - name: proxy
   display: Use system proxy settings
-  defaultValue: 'false'
+  defaultvalue: 'false'
   type: 8
   required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  defaultValue: 'false'
+  defaultvalue: 'false'
   type: 8
   required: false
-- display: Incident type
+- display: Alert type
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
+- display: Fetch alerts
   name: isFetch
   required: false
   type: 8

@@ -5203,6 +5203,11 @@
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "CiscoSMA",
+            "playbookID": "CiscoSMA",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
