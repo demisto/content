@@ -7164,6 +7164,9 @@ class ExecutionMetrics(object):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
 
+    def get_metric_list(self):
+        return self._metrics
+
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
             if len(self._metrics) == 0:
