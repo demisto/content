@@ -27,6 +27,8 @@ RUN VERSION="latest" bash install-powershell.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN curl -sSL https://install.python-poetry.org | python3 - \
+    && python -m pip install --user pipx \
+    && python -m pipx ensurepath \
     && git config --global http.sslCAInfo /usr/local/share/ca-certificates/certs.crt \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc \
