@@ -59,7 +59,7 @@
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
-		"PATH": "${containerEnv:PATH}:/home/vscode/.local/bin",
+		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"MYPYPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
