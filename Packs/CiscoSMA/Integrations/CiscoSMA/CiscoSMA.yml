@@ -83,11 +83,11 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-- display: Alert type
+- display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Fetch alerts
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -1108,3 +1108,5 @@ script:
       contextPath: CiscoSMA.Report.resultSet
       description: Report results summary.
 fromversion: "6.2.0"
+tests:
+- No tests (auto formatted)
