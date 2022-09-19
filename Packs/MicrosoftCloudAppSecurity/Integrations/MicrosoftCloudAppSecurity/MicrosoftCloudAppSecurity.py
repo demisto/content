@@ -232,7 +232,7 @@ def start_auth(client: Client) -> CommandResults:
 
 @logger
 def complete_auth(client: Client) -> CommandResults:
-    client.ms_client.get_access_token()
+    client.ms_client.get_access_token()  # type: ignore[attr-defined]
     return CommandResults(readable_output='✅ Authorization completed successfully.')
 
 
@@ -245,7 +245,8 @@ def reset_auth() -> CommandResults:
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    client.ms_client.get_access_token()  # type: ignore[attr-defined]
+    # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
@@ -748,7 +749,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     return last_run, incidents
 
 
-def params_to_filter(severity: List[Any], resolution_status: str):
+def params_to_filter(severity: Optional[Any], resolution_status: str):
     filters: Dict[str, Any] = {}
     if len(severity) == 1:
         filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
@@ -890,7 +891,7 @@ def main():  # pragma: no cover
     app_id = params.get('app_id')
     tenant_id = params.get('tenant_id')
     auth_mode = params.get('auth_mode', 'legacy')
-    enc_key = (params.get('credentials') or {}).get('password')
+    enc_key = params.get('client_id', {}).get('password')
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -900,7 +901,7 @@ def main():  # pragma: no cover
     first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
     severity = params.get('severity')
-    resolution_status = params.get('resolution_status')
+    resolution_status = str(params.get('resolution_status'))
     look_back = arg_to_number(params.get('look_back')) or 0
 
     command = demisto.command()
