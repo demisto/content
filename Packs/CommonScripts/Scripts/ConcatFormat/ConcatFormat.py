@@ -153,10 +153,15 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
         return None
 
 
+def stringify(value: Any) -> str:
+    return '' if value is None else str(value)
+
+
+
 def main():
     args = demisto.args()
     try:
-        value = args['value']
+        value = args.get('value')
         prefix = args.get('prefix')
         suffix = args.get('suffix')
         variable_markers = argToList(args.get('variable_markers') or '${,}')
@@ -181,15 +186,13 @@ def main():
             variable_markers[1],
             argToBoolean(args.get('keep_symbol_to_null') or False))
 
-        if prefix is not None and prefix != '':
-            prefix = formatter.build(str(prefix), extract_dt, dx)
-            prefix = '' if prefix is None else str(prefix)
-            value = prefix + str(value)
+        prefix = stringify(prefix)
+        if prefix:
+            value = stringify(formatter.build(prefix, extract_dt, dx)) + stringify(value)
 
-        if suffix is not None and suffix != '':
-            suffix = formatter.build(str(suffix), extract_dt, dx)
-            suffix = '' if suffix is None else str(suffix)
-            value = str(value) + suffix
+        suffix = stringify(suffix)
+        if suffix:
+            value = stringify(value) + stringify(formatter.build(suffix, extract_dt, dx))
 
     except Exception as err:
         # Don't return an error by return_error() as this is transformer.
@@ -200,4 +203,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-

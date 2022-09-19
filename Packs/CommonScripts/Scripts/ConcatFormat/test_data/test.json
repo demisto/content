@@ -1,5 +1,22 @@
 [
   {
+    "comments": "value is null, prefix and suffix have string values",
+    "args": {
+      "value": null,
+      "prefix": "yyy",
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyzzz"
+  },
+  {
     "comments": "value, prefix and suffix have string values",
     "args": {
       "value": "xxx",

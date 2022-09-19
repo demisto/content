@@ -12,7 +12,6 @@ comment: Returns a string concatenated with given prefix & suffix which supports
 enabled: true
 args:
 - name: value
-  required: true
   description: 'The text to be concatenated with prefix & suffix '
 - name: prefix
   description: A prefix to concat to the start of the argument
