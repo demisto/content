@@ -5222,6 +5222,7 @@
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
+        "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
