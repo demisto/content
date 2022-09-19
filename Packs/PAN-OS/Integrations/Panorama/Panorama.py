@@ -55,6 +55,7 @@ XPATH_RULEBASE = ''
 
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
+DEFAULT_LIMIT_PAGE_SIZE = 50
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -3358,10 +3359,17 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         LOG(f'Found uncommitted item:\n{result}')
         raise DemistoException('Please commit the instance prior to editing the rule.')
 
+    current_objects_items = []
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
         current_objects_items = argToList(current_object.get('member'))
+    elif 'entry' in current_object:
+        entries = current_object['entry']
+        if not isinstance(entries, list):
+            entries = [entries]
+        current_objects_items = [entry.get('@name') for entry in entries]
 
     return current_objects_items
 
@@ -11273,8 +11281,8 @@ def pan_os_list_nat_rules_command(args):
     if not name:
         # filter the nat-rules by limit - name means we get only a single entry anyway.
         page = arg_to_number(args.get('page'))
-        page_size = arg_to_number(args.get('page_size')) or 50
-        limit = arg_to_number(args.get('limit')) or 50
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
@@ -11601,15 +11609,23 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
     human_readable, context = [], []
 
     for entry in entries:
+        name = entry.get('@name')
+        interface = extract_objects_info_by_key(entry, 'interface')
+        rip = entry.get('protocol', {}).get('rip')
+        ospf = entry.get('protocol', {}).get('ospf')
+        ospf_v3 = entry.get('protocol', {}).get('ospfv3')
+        bgp = entry.get('protocol', {}).get('bgp')
+        multicast = entry.get('multicast')
+
         human_readable.append(
             {
-                'Name': entry.get('@name'),
-                'Interface': extract_objects_info_by_key(entry, 'interface'),
-                'RIP': extract_objects_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
-                'OSPF': extract_objects_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
-                'OSPFv3': extract_objects_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
-                'BGP': extract_objects_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
-                'Multicast': extract_objects_info_by_key(entry.get('multicast', {}), 'enable'),
+                'Name': name,
+                'Interface': interface,
+                'RIP': extract_objects_info_by_key(rip or {}, 'enable'),
+                'OSPF': extract_objects_info_by_key(ospf or {}, 'enable'),
+                'OSPFv3': extract_objects_info_by_key(ospf_v3 or {}, 'enable'),
+                'BGP': extract_objects_info_by_key(bgp or {}, 'enable'),
+                'Multicast': extract_objects_info_by_key(multicast or {}, 'enable'),
                 'Static Route': extract_objects_info_by_key(
                     entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
                         'entry', {}),
@@ -11622,13 +11638,13 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
         )
         context.append(
             {
-                'Name': entry.get('@name'),
-                'Interface': extract_objects_info_by_key(entry, 'interface'),
-                'RIP': entry.get('protocol', {}).get('rip'),
-                'OSPF': entry.get('protocol', {}).get('ospf'),
-                'OSPFv3': entry.get('protocol', {}).get('ospfv3'),
-                'BGP': entry.get('protocol', {}).get('bgp'),
-                'Multicast': entry.get('multicast', {}),
+                'Name': name,
+                'Interface': interface,
+                'RIP': rip,
+                'OSPF': ospf,
+                'OSPFv3': ospf_v3,
+                'BGP': bgp,
+                'Multicast': multicast,
                 'StaticRoute': entry.get('routing-table'),
                 'RedistributionProfile': entry.get('protocol', {}).get('redist-profile'),
                 'ECMP': entry.get('ecmp')
@@ -11638,7 +11654,12 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
     return human_readable, context
 
 
-def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
+def do_pagination(
+    entries,
+    page: Optional[int] = None,
+    page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
+    limit: int = DEFAULT_LIMIT_PAGE_SIZE
+):
     if page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
@@ -11656,15 +11677,15 @@ def pan_os_list_virtual_routers_command(args):
     raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
     result = raw_response.get('response', {}).get('result', {})
 
-    entries = result.get('virtual-router', {}).get('entry') or [result.get('entry')]
+    entries = dict_safe_get(result, ['virtual-router', 'entry'], default_return_value=result.get('entry'))
     if not isinstance(entries, list):
         entries = [entries]
 
     if not name:
         # if name was provided, api returns one entry so no need to do limit/pagination
         page = arg_to_number(args.get('page'))
-        page_size = arg_to_number(args.get('page_size')) or 50
-        limit = arg_to_number(args.get('limit')) or 50
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
@@ -11767,7 +11788,11 @@ def pan_os_list_redistribution_profile_command(args):
     )
 
 
-def prepare_pan_os_objects_body_request(key, value, is_list=True):
+def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
+    if is_entry:
+        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
+    if is_empty_tag:
+        return {key: f'<{value}/>'}
     return {key: {'member': argToList(value)}} if is_list else {key: value}
 
 
@@ -11901,7 +11926,14 @@ def pan_os_edit_redistribution_profile(
 
 
 def build_body_request_to_edit_pan_os_object(
-    behavior, object_name, element_value, is_listable, xpath='', should_contain_entries=True
+    behavior,
+    object_name,
+    element_value,
+    is_listable,
+    xpath='',
+    should_contain_entries=True,
+    is_entry=False,
+    is_empty_tag=False
 ):
     """
     This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
@@ -11912,8 +11944,11 @@ def build_body_request_to_edit_pan_os_object(
         object_name (str): the name of the object that needs to be updated.
         element_value (str): the value of the new element.
         is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
-        xpath (str): the full xpath to the object that should be edited. not required if behavior == 'replace'
+        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
         should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+        is_entry (bool): whether the element should be of the following form:
+            <entry name="{entry_name}"/>
+        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
 
     Returns:
         dict: a body request for the new object to update it.
@@ -11923,7 +11958,9 @@ def build_body_request_to_edit_pan_os_object(
         raise ValueError(f'behavior argument must be one of replace/remove/add values')
 
     if behavior == 'replace':
-        element = prepare_pan_os_objects_body_request(object_name, element_value, is_list=is_listable)
+        element = prepare_pan_os_objects_body_request(
+            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
     else:  # add or remove is only for listable objects.
         current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
         if behavior == 'add':
@@ -11933,7 +11970,9 @@ def build_body_request_to_edit_pan_os_object(
             if not updated_object_items and should_contain_entries:
                 raise DemistoException(f'The object: {object_name} must have at least one item.')
 
-        element = prepare_pan_os_objects_body_request(object_name, updated_object_items, is_list=True)
+        element = prepare_pan_os_objects_body_request(
+            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
 
     return element
 
@@ -11998,6 +12037,317 @@ def pan_os_delete_redistribution_profile_command(args):
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Redistribution profile {redistribution_profile} was deleted successfully.'
+    )
+
+
+def build_pbf_xpath(name, pre_post, element_to_change=None):
+    _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
+    if name:
+        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+    if element_to_change:
+        _xpath = f'{_xpath}/{element_to_change}'
+    return _xpath
+
+
+def pan_os_list_pbf_rules(name, pre_post, show_uncommitted):
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        # rulebase is for firewall instance.
+        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        name = extract_objects_info_by_key(entry, '@name')
+        description = extract_objects_info_by_key(entry, 'description')
+        tags = extract_objects_info_by_key(entry, 'tag')
+        source_zone = extract_objects_info_by_key(entry.get('from', {}), 'zone')
+        source_interface = extract_objects_info_by_key(entry.get('from', {}), 'interface')
+        source_address = extract_objects_info_by_key(entry, 'source')
+        source_user = extract_objects_info_by_key(entry, 'source-user')
+        destination_address = extract_objects_info_by_key(entry, 'destination')
+
+        human_readable.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'Source Zone': source_zone,
+                'Source Interface': source_interface,
+                'Source Address': source_address,
+                'Source User': source_user,
+                'Destination Address': destination_address,
+                'Action': list(entry['action'].keys())[0] if entry.get('action') else None
+            }
+        )
+
+        context.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'SourceZone': source_zone,
+                'SourceInterface': source_interface,
+                'SourceAddress': source_address,
+                'SourceUser': source_user,
+                'DestinationAddress': destination_address,
+                'Action': entry.get('action'),
+                'EnforceSymmetricReturn': entry.get('enforce-symmetric-return'),
+                'Target': entry.get('target'),
+                'Application': extract_objects_info_by_key(entry, 'application'),
+                'Service': extract_objects_info_by_key(entry, 'service')
+            }
+        )
+
+    return human_readable, context
+
+
+def pan_os_list_pbf_rules_command(args):
+    name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = dict_safe_get(result, ['pbf', 'rules', 'entry'], default_return_value=result.get('entry'))
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
+
+    if not name:
+        # filter the pbf-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=pbf_rules,
+        readable_output=tableToMarkdown('Policy Based Forwarding Rules:', table, removeNull=True),
+        outputs_prefix='Panorama.PBF',
+        outputs_key_field='Name'
+    )
+
+
+def pan_os_create_pbf_rule(args):
+    def _set_up_body_request():
+        def _set_up_action_body_request():
+            _action_body_request = {}  # type: ignore[var-annotated]
+            if action := args.get('action'):
+                if action == 'forward':
+                    _action_body_request['action'] = {'forward': {}}
+                    nexthop = args.get('nexthop')
+                    if nexthop != 'none':
+                        nexthop_value = args.get('nexthop_value')
+                        if not nexthop_value:
+                            raise DemistoException('nexthop_value argument must be set when nexthop is not none')
+                        _action_body_request['action']['forward']['nexthop'] = {nexthop: nexthop_value}
+                    if egress_interface := args.get('egress_interface'):
+                        _action_body_request['action']['forward']['egress-interface'] = egress_interface
+                    else:
+                        raise DemistoException(f'egress_interface argument must be set when action == forward')
+                else:
+                    _action_body_request.update(
+                        prepare_pan_os_objects_body_request('action', action, is_empty_tag=True)
+                    )
+            return _action_body_request
+
+        def _set_up_enforce_symmetric_return_body_request():
+            _enforce_symmetric_return_body_request = {}
+            # enforce_symmetric_return = 'yes' or 'no' always
+            enforce_symmetric_return = args.get('enforce_symmetric_return')
+            _enforce_symmetric_return_body_request['enforce-symmetric-return'] = {'enabled': enforce_symmetric_return}
+
+            if enforce_symmetric_return == 'yes' and (nexthop_address_list := args.get('nexthop_address_list')):
+                _enforce_symmetric_return_body_request['enforce-symmetric-return'].update(
+                    prepare_pan_os_objects_body_request('nexthop-address-list', nexthop_address_list, is_entry=True)
+                )
+            return _enforce_symmetric_return_body_request
+
+        def _setup_general_rule_body_request():
+            _general_rule_body_request = {}
+            objects_mapping_pan_os = {
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'source_user': ('source-user', True),
+                'application': ('application', True),
+                'service': ('service', True),
+                'description': ('description', False),
+                'negate_source': ('negate-source', False),
+                'negate_destination': ('negate-destination', False)
+            }
+
+            for argument, (pan_os_object_path, is_listable) in objects_mapping_pan_os.items():
+                if argument_value := args.get(argument):
+                    _general_rule_body_request.update(
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable)
+                    )
+            return _general_rule_body_request
+
+        _body_request = {}
+        _body_request.update(_set_up_action_body_request())
+        _body_request.update(_set_up_enforce_symmetric_return_body_request())
+        _body_request.update(_setup_general_rule_body_request())
+
+        if source_zone := args.get('source_zone'):
+            _body_request['from'] = prepare_pan_os_objects_body_request('zone', source_zone)
+
+        return _body_request
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_pbf_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = pan_os_create_pbf_rule(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was created successfully.'
+    )
+
+
+def pan_os_edit_pbf_rule(
+    rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
+):
+    xpath = build_pbf_xpath(
+            name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
+        )
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
+            contains_xml_chars=True
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_pbf_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {
+        'action_forward_no_pbf', 'action_forward_discard', 'description', 'negate_source', 'negate_destination',
+        'enforce_symmetric_return', 'action_forward_egress_interface', 'action_forward_nexthop_fqdn',
+        'action_forward_nexthop_ip', 'action_forward_no_pbf', 'action_forward_discard'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'action_forward_discard': ('action', 'action', False),
+        'action_forward_no_pbf': ('action', 'action', False),
+        'action_forward_nexthop_ip': ('action/forward/nexthop/ip-address', 'ip-address', False),
+        'action_forward_nexthop_fqdn': ('action/forward/nexthop/fqdn', 'fqdn', False),
+        'action_forward_egress_interface': ('action/forward/egress-interface', 'egress-interface', False),
+        'source_zone': ('from/zone', 'zone', True),
+        'enforce_symmetric_return': ('enforce-symmetric-return/enabled', 'enabled', False),
+        'nexthop_address_list': ('enforce-symmetric-return/nexthop-address-list', 'nexthop-address-list', False),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination_address', True),
+        'source_user': ('source-user', 'source-user', True),
+        'application': ('application', 'application', True),
+        'service': ('service', 'service', True),
+        'description': ('description', 'description', False),
+        'negate_source': ('negate-source', 'negate-source', False),
+        'negate_destination': ('negate-destination', 'negate-destination', False)
+    }
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    if element_to_change == 'action_forward_no_pbf':
+        element_value = 'no-pbf'
+
+    if element_to_change == 'action_forward_discard':
+        element_value = 'discard'
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_pbf_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable,
+        behavior=behavior
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF {rule_name} was edited successfully.'
+    )
+
+
+def pan_os_delete_pbf_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_pbf_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+
+    raw_response = pan_os_delete_pbf_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was deleted successfully.'
     )
 
 
@@ -12669,6 +13019,14 @@ def main():
             return_results(pan_os_edit_redistribution_profile_command(args))
         elif command == 'pan-os-delete-redistribution-profile':
             return_results(pan_os_delete_redistribution_profile_command(args))
+        elif command == 'pan-os-list-pbf-rules':
+            return_results(pan_os_list_pbf_rules_command(args))
+        elif command == 'pan-os-create-pbf-rule':
+            return_results(pan_os_create_pbf_rule_command(args))
+        elif command == 'pan-os-edit-pbf-rule':
+            return_results(pan_os_edit_pbf_rule_command(args))
+        elif command == 'pan-os-delete-pbf-rule':
+            return_results(pan_os_delete_pbf_rule_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

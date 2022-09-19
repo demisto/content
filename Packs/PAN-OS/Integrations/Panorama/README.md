@@ -8039,3 +8039,190 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Redistribution profile test was deleted successfully.
+### pan-os-list-pbf-rules
+***
+Returns a list of pbf-rules of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-pbf-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to retrieve, if not mentioned will bring all the pbf rules. | Optional | 
+| device-group | The device-group in which the pbf-rules are part of. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of pbf-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing pbf-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.PBF.Name | String | The name of the PBF rule. | 
+| Panorama.PBF.Description | String | The description of the PBF rule. | 
+| Panorama.PBF.Tags | Unknown | The tags of the PBF rule. | 
+| Panorama.PBF.SourceZone | Unknown | The source-zones of the PBF rule. | 
+| Panorama.PBF.SourceInterface | Unknown | The source-interfaces of the PBF rule. | 
+| Panorama.PBF.SourceAddress | Unknown | The source-addresses of the PBF rule. | 
+| Panorama.PBF.SourceUser | Unknown | The source-users of the PBF rule. | 
+| Panorama.PBF.DestinationAddress | Unknown | The destination-addresses of the PBF rule. | 
+| Panorama.PBF.EnforceSymmetricReturn | Unknown | The enforce-symmetric-return of the PBF rule. | 
+| Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
+| Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
+| Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+
+#### Command example
+```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "PBF": {
+            "Action": {
+                "forward": {
+                    "egress-interface": "a2",
+                    "monitor": {
+                        "disable-if-unreachable": "no",
+                        "ip-address": "1.1.1.1",
+                        "profile": "profile"
+                    },
+                    "nexthop": {
+                        "ip-address": "2.2.2.2"
+                    }
+                }
+            },
+            "Application": "3pc",
+            "Description": "this is a test description",
+            "DestinationAddress": "1.1.1.1",
+            "EnforeSymmetricReturn": {
+                "enabled": "yes",
+                "nexthop-address-list": {
+                    "entry": {
+                        "@name": "1.1.1.1"
+                    }
+                }
+            },
+            "Name": "test",
+            "Service": "application-default",
+            "SourceAddress": "1.1.1.1",
+            "SourceInterface": null,
+            "SourceUser": "pre-logon",
+            "SourceZone": "1.1.1.1",
+            "Tags": [
+                "test tag",
+                "dag_test_tag"
+            ],
+            "Target": {
+                "negate": "no"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Based Forwarding Rules:
+>|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
+>|---|---|---|---|---|---|---|---|
+>| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+
+### pan-os-create-pbf-rule
+***
+Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF-rule to create. | Required | 
+| description | The description that the new PBF-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| tags | The tags that the rule will be created with. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| source_address | A comma-separated list of source addresses. Default is any. | Optional | 
+| source_user | A comma-separated list of source users. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| destination_address | A comma-separated list of destination addresses. Default is any. | Optional | 
+| application | A comma-separated list of applications. Default is any. | Optional | 
+| action | The action that the rule will be created with. Possible values are: forward, discard, no-pbf. | Required | 
+| egress_interface | The egress interface the rule will be created with. must be provided if action == forward. | Optional | 
+| nex thop | The next-hop type when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
+| nexthop_value | The next-hop value when action = forward, could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
+| enforce_symmetric_return | Whether to enforce symmetric return. Possible values are: yes, no. Default is no. | Optional | 
+| negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
+| negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
+| nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https```
+#### Human Readable Output
+
+>PBF rule test4 was created successfully.
+### pan-os-edit-pbf-rule
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF rule to edit. | Required | 
+| device-group | The device-group in which the PBF rule is in. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_value | The value of the element to change. Can be a list for some of the elements. when element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF test4 was edited successfully.
+### pan-os-delete-pbf-rule
+***
+Deletes a PBF rule.
+
+
+#### Base Command
+
+`pan-os-delete-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to delete. | Required | 
+| device-group | The device-group in which the pbf-rule should be deleted from. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF rule test4 was deleted successfully.

@@ -8640,6 +8640,261 @@ script:
     description: Deletes a redistribution-profile from a virtual-router.
     name: pan-os-delete-redistribution-profile
     outputs: []
+  - arguments:
+    - description: The name of the pbf-rule to retrieve, if not mentioned will bring all the pbf rules.
+      isArray: false
+      name: rulename
+      required: false
+    - description: The device-group in which the pbf-rules are part of.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed rules or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of pbf-rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing pbf-rules, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of pbf-rules of either Panorama/firewall instance.
+    name: pan-os-list-pbf-rules
+    outputs:
+    - contextPath: Panorama.PBF.Name
+      description: The name of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Description
+      description: The description of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Tags
+      description: The tags of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceZone
+      description: The source-zones of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceInterface
+      description: The source-interfaces of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceAddress
+      description: The source-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceUser
+      description: The source-users of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.DestinationAddress
+      description: The destination-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.EnforceSymmetricReturn
+      description: The enforce-symmetric-return of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Target
+      description: The target of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Application
+      description: The applications of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Service
+      description: The services of the PBF rule.
+      type: Unknown
+  - arguments:
+    - description: The name of the PBF-rule to create.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The description that the new PBF-rule should have.
+      isArray: false
+      name: description
+      required: false
+    - description: The device-group in which the new rule should be created. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The tags that the rule will be created with.
+      isArray: true
+      name: tags
+      required: false
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+    - description: A comma-separated list of source addresses.
+      isArray: true
+      name: source_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of source users.
+      isArray: false
+      name: source_user
+      required: false
+      defaultValue: 'any'
+    - description: The service in which the rule will be created with.
+      isArray: true
+      name: service
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of destination addresses.
+      isArray: true
+      name: destination_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of applications.
+      isArray: true
+      name: application
+      required: false
+      defaultValue: 'any'
+    - auto: PREDEFINED
+      predefined:
+      - forward
+      - discard
+      - no-pbf
+      description: The action that the rule will be created with.
+      isArray: false
+      name: action
+      required: true
+    - description: The egress interface the rule will be created with. must be provided if action == forward.
+      isArray: false
+      name: egress_interface
+      required: false
+    - defaultValue: 'none'
+      auto: PREDEFINED
+      predefined:
+      - ip-address
+      - fqdn
+      - none
+      description: The next-hop type when action = forward.
+      isArray: false
+      name: nexthop
+      required: false
+    - description: The next-hop value when action = forward, could be an IP address or FQDN. Required when nexthop is not none.
+      isArray: false
+      name: nexthop_value
+      required: false
+    - description: Whether to enforce symmetric return.
+      isArray: false
+      defaultValue: 'no'
+      name: enforce_symmetric_return
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      description: Whether to negate the source.
+      isArray: false
+      name: negate_source
+      required: false
+    - description: Whether to negate the destination.
+      isArray: false
+      name: negate_destination
+      required: false
+      defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The nexthop addresses list for the symmetric return.
+      isArray: true
+      name: nexthop_address_list
+      required: false
+    description: Creates a new policy-based-forwarding (PBF) rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+    name: pan-os-create-pbf-rule
+    outputs: []
+  - arguments:
+    - description: The name of the PBF rule to edit.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group in which the PBF rule is in.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - source_zone
+      - source_address
+      - source_user
+      - service
+      - destination_address
+      - application
+      - negate_source
+      - negate_destination
+      - nexthop_address_list
+      - enforce_symmetric_return
+      - action_forward_egress_interface
+      - action_forward_nexthop_ip
+      - action_forward_nexthop_fqdn
+      - action_forward_discard
+      - action_forward_no_pbf
+    - description: The value of the element to change. Can be a list for some of the elements. when element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
+      isArray: true
+      name: element_value
+      required: true
+    - auto: PREDEFINED
+      description: The operation to perform on the PBF rule.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+      defaultValue: 'replace'
+    description: Edits a PBF rule.
+    name: pan-os-edit-pbf-rule
+  - arguments:
+    - description: The name of the pbf-rule to delete.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group in which the pbf-rule should be deleted from. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre rule or post rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Deletes a PBF rule.
+    name: pan-os-delete-pbf-rule
   dockerimage: demisto/pan-os-python:1.0.0.31643
   feed: false
   isfetch: false
