@@ -17,7 +17,6 @@ def create_json_output_file(result, file_name):
     ('collection_example.xml', 'indicators_example.json'),
     ('STIX_Domain_Watchlist.xml', 'STIX_Domain_Watchlist_result.json'),
     ('STIX_FileHash_Watchlist.xml', 'STIX_FileHash_Watchlist_result.json'),
-    ('STIX_IP_Watchlist.xml', 'STIX_IP_Watchlist_result.json'),
     ('STIX_URL_Watchlist.xml', 'STIX_URL_Watchlist_result.json'),
     ('STIX_Phishing_Indicator.xml', 'STIX_Phishing_Indicator_result.json'),
 ])
