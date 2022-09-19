@@ -12,6 +12,7 @@ create-instances-with-graph:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
+  allow_failure: true
 
   needs: []
   stage: create-instances
@@ -90,6 +91,7 @@ prepare-testing-bucket-mpv2-with-graph:
     KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
+  allow_failure: true
   script:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-mp-v2]
