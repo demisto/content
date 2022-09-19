@@ -1,6 +1,7 @@
 from typing import Tuple
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -16,6 +17,7 @@ class Client:
     """
     The integration's client
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         self.fe_client: FireEyeClient = FireEyeClient(base_url=base_url, username=username, password=password,
                                                       verify=verify, proxy=proxy)
@@ -23,6 +25,10 @@ class Client:
 
 @logger
 def run_test_module(client: Client) -> str:
+    """
+    Improved documentation of the test-module
+
+    """
     client.fe_client.get_alerts_request({'info_level': 'concise'})
     return 'ok'
 

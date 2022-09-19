@@ -1,4 +1,5 @@
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
