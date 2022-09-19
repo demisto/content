@@ -1219,7 +1219,7 @@ class FileObject(object):
             value_list = value.split('##comma##')
             for v in value_list:
                 result.append({
-                    'indicator': v,
+                    'indicator': v.strip(),
                     'htype': htype,
                     'type': 'File'
                 })
