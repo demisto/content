@@ -8,6 +8,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+API_ERRORS = {1: 'Quota', 2: 'MissingParameterError', 3: 'InvalidParameterError', 4: 'InvalidApiKeyError',
+              5: 'ServerOfflineError', 6: 'InternalServerError', 7: 'PermissionError', 8: 'UnknownEndpointError'}
 
 
 class Client(jbxapi.JoeSandbox):
@@ -31,6 +33,35 @@ class Client(jbxapi.JoeSandbox):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def update_metrics(res: Dict[str, Any], exe_metrics: ExecutionMetrics):
+    """
+        Helper function that supports the update of the execution metrics.
+
+        Args:
+            res: Dict(str, any): Analysis result returned by the API.
+            metrics: ExecutionMetrics: Execution metrics object.
+
+        Returns:
+            result: ExecutionMetrics: The updated execution metrics object.
+    """
+    from jbxapi import ApiError
+
+    if isinstance(res, ApiError):
+        match API_ERRORS.get(res.code):
+            case 'Quota':
+                exe_metrics.quota_error += 1
+            case 'InvalidApiKeyError' | 'PermissionError':
+                exe_metrics.auth_error += 1
+            case 'ServerOfflineError' | 'InternalServerError':
+                exe_metrics.connection_error += 1
+            case _:
+                exe_metrics.general_error += 1
+    elif isinstance(res, Exception):
+        exe_metrics.general_error += 1
+    else:
+        exe_metrics.success += 1
 
 
 def paginate(args: Dict[str, Any], results: Generator) -> List:
@@ -406,7 +437,7 @@ def build_reputiation_command_result(client: Client, analyses: List[Dict[str, An
     """
     command_res_ls = []
     for analysis in analyses:
-        command_res, _ = build_indicator_object(client, analysis)
+        command_res, _ = build_indicator_object(client, analysis, analyses)
         command_res_ls.append(command_res)
 
     return command_res_ls
@@ -441,10 +472,10 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
             if relationship:
                 relationships.append(relationship)
             command_results.append(command_res)
-    command_results.append(
-        CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
-                       readable_output=tableToMarkdown('Submission Results:', hr, headers=headers),
-                       relationships=relationships))
+    context_entry = {'Joe.Submission': res, 'Joe.Analysis': res.pop('analyses')}
+    command_results.append(CommandResults(outputs=context_entry, outputs_key_field='submission_id',
+                                          readable_output=tableToMarkdown('Submission Results:', hr, headers=headers),
+                                          relationships=relationships))
     return command_results
 
 
@@ -486,7 +517,8 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], file: str) -> PollResult:
+def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], file: str,
+                    exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Helper function that submits a file to Joe Sandbox.
 
@@ -495,6 +527,7 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
             args: (Dict[str, Any]): The command arguments.
             params: (Dict[str, Any]): The submission parameters.
             file: (str): The file to submit.
+            exe_metrics
 
          Returns:
              result: (PollResult): The parsed PollResult object.
@@ -502,6 +535,7 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
     file_path = demisto.getFilePath(file)
     with open(file_path['path'], 'rb') as f:
         res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
+        update_metrics(res, exe_metrics)
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
         return PollResult(
@@ -510,7 +544,8 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
             partial_result=partial_res)
 
 
-def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], url: str) -> PollResult:
+def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any], url: str,
+                   exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Helper function that submits a URL to Joe Sandbox.
 
@@ -519,11 +554,12 @@ def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any],
             args: (Dict[str, Any]): The command arguments.
             params: (Dict[str, Any]): The submission parameters.
             url: (str): The URL to submit.
-
+            exe_metrics: (ExecutionMetrics): The execution metrics.
          Returns:
              result: (PollResult): The parsed PollResult object.
      """
     res = client.submit_url(url=url, params=params)
+    update_metrics(res, exe_metrics)
     partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
     return PollResult(
         response=CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id'),
@@ -533,7 +569,8 @@ def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any],
 
 @polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 1200)), interval=10,
                   requires_polling_arg=False)
-def polling_submission_command(args: Dict[str, Any], client: Client, params: Dict[str, Any]) -> PollResult:
+def polling_submission_command(args: Dict[str, Any], client: Client, params: Dict[str, Any],
+                               exe_metrics: ExecutionMetrics) -> PollResult:
     """
          Helper function that polls the analysis result.
 
@@ -541,6 +578,7 @@ def polling_submission_command(args: Dict[str, Any], client: Client, params: Dic
             args: (Dict[str, Any]): The command arguments.
             client (Client): The client class.
             params: (Dict[str, Any]): The submission parameters.
+            exe_metrics: (ExecutionMetrics): The execution metrics.
          Returns:
              result: (Dict[str, Any]): The analysis result.
      """
@@ -557,9 +595,9 @@ def polling_submission_command(args: Dict[str, Any], client: Client, params: Dic
             continue_to_poll=status != 'finished', args_for_next_run=args)
     else:
         if file := args.get('entry_id'):
-            return file_submission(client, args, params, file)
+            return file_submission(client, args, params, file, exe_metrics)
         elif url := args.get('url'):
-            return url_submission(client, args, params, url)
+            return url_submission(client, args, params, url, exe_metrics)
         else:
             raise DemistoException('No file or URL was provided.')
 
@@ -591,6 +629,7 @@ def is_online_command(client: Client) -> CommandResults:
 
          Args:
             client: (Client) The client class.
+            exe_metrics: (ExecutionMetrics) The execution metrics.
 
          Returns:
              result: (CommandResults) The CommandResults object .
@@ -672,7 +711,7 @@ def search_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults
     return CommandResults(readable_output='No Results were found.')
 
 
-def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
     """
         The file reputation command.
 
@@ -684,16 +723,18 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
              result: (CommandResults) The CommandResults object.
     """
     analyses = []
-    files = argToList(args.get('file', ''))
+    files = set(argToList(args.get('file', '')))
 
     for file in files:
-        response = client.analysis_search(query=file)
-        analyses.extend(response)
-
+        res = client.analysis_search(query=file)
+        if res:
+            analyses.append(res[0])
+        else:
+            return CommandResults(readable_output=f'No Results were found.')
     return build_reputiation_command_result(client, analyses)
 
 
-def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
     """
         The url reputation command.
 
@@ -705,11 +746,14 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
              result: (CommandResults) The CommandResults object.
     """
     analyses = []
-    urls = argToList(args.get('url', ''))
+    urls = set(argToList(args.get('url', '')))
 
     for url in urls:
-        response = client.analysis_search(query=url)
-        analyses.extend(response)
+        res = client.analysis_search(query=url)
+        if res:
+            analyses.append(res[0])
+        else:
+            return CommandResults(readable_output=f'No Results were found.')
     return build_reputiation_command_result(client, analyses)
 
 
@@ -791,7 +835,7 @@ def submission_info_command(client: Client, args: Dict[str, Any]) -> List[Comman
     return command_results
 
 
-def submission_sample_command(client: Client, args: Dict[str, Any]) -> PollResult:
+def submission_sample_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Upload a sample to Joe server.
          Args:
@@ -802,10 +846,10 @@ def submission_sample_command(client: Client, args: Dict[str, Any]) -> PollResul
              result: (CommandResults) The CommandResults object.
     """
     params = build_submission_params(args)
-    return polling_submission_command(args, client, params)
+    return polling_submission_command(args, client, params, exe_metrics)
 
 
-def submission_url_command(client: Client, args: Dict[str, Any]) -> PollResult:
+def submission_url_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Upload a URL to Joe server.
          Args:
@@ -817,7 +861,7 @@ def submission_url_command(client: Client, args: Dict[str, Any]) -> PollResult:
     """
     params = build_submission_params(args)
     params.update({'url-reputation': argToBoolean(args.get('url_reputation', False))})
-    return polling_submission_command(args, client, params)
+    return polling_submission_command(args, client, params, exe_metrics)
 
 
 ''' MAIN FUNCTION '''
@@ -837,6 +881,7 @@ def main() -> None:  # pragma: no cover
     create_relationships = demisto.params().get('create_relationships', False)
     command = demisto.command()
     args = demisto.args()
+    exe_metrics = ExecutionMetrics()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -868,13 +913,15 @@ def main() -> None:  # pragma: no cover
         elif command == 'joe-submission-info':
             return_results(submission_info_command(client, args))
         elif command == 'joe-submission-sample':
-            return_results(submission_sample_command(client, args))
+            return_results(submission_sample_command(client, args, exe_metrics))
         elif command == 'joe-submission-url':
-            return_results(submission_url_command(client, args))
+            return_results(submission_url_command(client, args, exe_metrics))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
+        update_metrics(e, exe_metrics)
+        return_results(CommandResults(execution_metrics=exe_metrics._metrics))
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

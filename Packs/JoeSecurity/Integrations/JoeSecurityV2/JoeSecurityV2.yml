@@ -549,9 +549,7 @@ script:
           predefined:
             - "true"
             - "false"
-      deprecated: false
       description: Retrieve the submission info.
-      execution: false
       outputs:
         - contextPath: DBotScore.Indicator
           description: ''
@@ -586,54 +584,84 @@ script:
         - contextPath: File.SHA256
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.analysisid
+        - contextPath: Joe.Analysis.analysisid
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.classification
+        - contextPath: Joe.Analysis.classification
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.comments
+        - contextPath: Joe.Analysis.comments
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.detection
+        - contextPath: Joe.Analysis.detection
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.encrypted
-          description: ''
-          type: Boolean
-        - contextPath: Joe.Submission.analyses.filename
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.md5
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.score
+        - contextPath: Joe.Analysis.duration
           description: ''
           type: Number
-        - contextPath: Joe.Submission.analyses.scriptname
+        - contextPath: Joe.Analysis.encrypted
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.filename
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.sha1
+        - contextPath: Joe.Analysis.md5
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.sha256
+        - contextPath: Joe.Analysis.runs.detection
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.status
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.threatname
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.time
-          description: ''
-          type: Date
-        - contextPath: Joe.Submission.analyses.webid
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.most_relevant_analysis
+        - contextPath: Joe.Analysis.runs.error
           description: ''
           type: Unknown
+        - contextPath: Joe.Analysis.runs.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Analysis.runs.sigma
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.runs.snort
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.runs.system
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.runs.yara
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Analysis.scriptname
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.sha1
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.sha256
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.status
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.threatname
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.time
+          description: ''
+          type: Date
+        - contextPath: Joe.Analysis.webid
+          description: ''
+          type: String
+        - contextPath: Joe.Submission.most_relevant_analysis.detection
+          description: ''
+          type: String
+        - contextPath: Joe.Submission.most_relevant_analysis.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Submission.most_relevant_analysis.webid
+          description: ''
+          type: String
         - contextPath: Joe.Submission.name
           description: ''
           type: String
@@ -793,99 +821,129 @@ script:
           defaultValue: 'false'
       polling: true
       outputs:
-        - contextPath: DBotScore.Indicator
-          description: ''
-          type: String
-        - contextPath: DBotScore.Reliability
-          description: ''
-          type: String
-        - contextPath: DBotScore.Score
-          description: ''
-          type: Number
-        - contextPath: DBotScore.Type
-          description: ''
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: ''
-          type: String
-        - contextPath: File.Hashes.type
-          description: ''
-          type: String
-        - contextPath: File.Hashes.value
-          description: ''
-          type: String
-        - contextPath: File.MD5
-          description: ''
-          type: String
-        - contextPath: File.Name
-          description: ''
-          type: String
-        - contextPath: File.SHA1
-          description: ''
-          type: String
-        - contextPath: File.SHA256
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.analysisid
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.classification
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.comments
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.detection
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.encrypted
-          description: ''
-          type: Boolean
-        - contextPath: Joe.Submission.analyses.filename
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.md5
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.score
-          description: ''
-          type: Number
-        - contextPath: Joe.Submission.analyses.scriptname
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.sha1
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.sha256
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.status
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.threatname
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.time
-          description: ''
-          type: Date
-        - contextPath: Joe.Submission.analyses.webid
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.most_relevant_analysis
-          description: ''
-          type: Unknown
-        - contextPath: Joe.Submission.name
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.status
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.submission_id
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.time
-          description: ''
-          type: Date
+      - contextPath: DBotScore.Indicator
+        description: ''
+        type: String
+      - contextPath: DBotScore.Reliability
+        description: ''
+        type: String
+      - contextPath: DBotScore.Score
+        description: ''
+        type: Number
+      - contextPath: DBotScore.Type
+        description: ''
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: ''
+        type: String
+      - contextPath: File.Hashes.type
+        description: ''
+        type: String
+      - contextPath: File.Hashes.value
+        description: ''
+        type: String
+      - contextPath: File.MD5
+        description: ''
+        type: String
+      - contextPath: File.Name
+        description: ''
+        type: String
+      - contextPath: File.SHA1
+        description: ''
+        type: String
+      - contextPath: File.SHA256
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.analysisid
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.classification
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.comments
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.detection
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.duration
+        description: ''
+        type: Number
+      - contextPath: Joe.Analysis.encrypted
+        description: ''
+        type: Boolean
+      - contextPath: Joe.Analysis.filename
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.md5
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.runs.detection
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.runs.error
+        description: ''
+        type: Unknown
+      - contextPath: Joe.Analysis.runs.score
+        description: ''
+        type: Number
+      - contextPath: Joe.Analysis.runs.sigma
+        description: ''
+        type: Boolean
+      - contextPath: Joe.Analysis.runs.snort
+        description: ''
+        type: Boolean
+      - contextPath: Joe.Analysis.runs.system
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.runs.yara
+        description: ''
+        type: Boolean
+      - contextPath: Joe.Analysis.score
+        description: ''
+        type: Number
+      - contextPath: Joe.Analysis.scriptname
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.sha1
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.sha256
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.status
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.threatname
+        description: ''
+        type: String
+      - contextPath: Joe.Analysis.time
+        description: ''
+        type: Date
+      - contextPath: Joe.Analysis.webid
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.most_relevant_analysis.detection
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.most_relevant_analysis.score
+        description: ''
+        type: Number
+      - contextPath: Joe.Submission.most_relevant_analysis.webid
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.name
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.status
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.submission_id
+        description: ''
+        type: String
+      - contextPath: Joe.Submission.time
+        description: ''
+        type: Date
     - name: joe-submission-url
       arguments:
         - name: url
@@ -1055,57 +1113,81 @@ script:
         - contextPath: DBotScore.Vendor
           description: ''
           type: String
+        - contextPath: File.Hashes.type
+          description: ''
+          type: String
         - contextPath: URL.Data
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.analysisid
+        - contextPath: Joe.Analysis.analysisid
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.classification
+        - contextPath: Joe.Analysis.classification
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.comments
+        - contextPath: Joe.Analysis.comments
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.detection
+        - contextPath: Joe.Analysis.detection
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.encrypted
-          description: ''
-          type: Boolean
-        - contextPath: Joe.Submission.analyses.filename
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.md5
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.score
+        - contextPath: Joe.Analysis.duration
           description: ''
           type: Number
-        - contextPath: Joe.Submission.analyses.scriptname
+        - contextPath: Joe.Analysis.encrypted
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.filename
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.sha1
+        - contextPath: Joe.Analysis.runs.detection
           description: ''
           type: String
-        - contextPath: Joe.Submission.analyses.sha256
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.status
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.threatname
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.analyses.time
-          description: ''
-          type: Date
-        - contextPath: Joe.Submission.analyses.webid
-          description: ''
-          type: String
-        - contextPath: Joe.Submission.most_relevant_analysis
+        - contextPath: Joe.Analysis.runs.error
           description: ''
           type: Unknown
+        - contextPath: Joe.Analysis.runs.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Analysis.runs.sigma
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.runs.snort
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.runs.system
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.runs.yara
+          description: ''
+          type: Boolean
+        - contextPath: Joe.Analysis.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Analysis.scriptname
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.status
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.threatname
+          description: ''
+          type: String
+        - contextPath: Joe.Analysis.time
+          description: ''
+          type: Date
+        - contextPath: Joe.Analysis.webid
+          description: ''
+          type: String
+        - contextPath: Joe.Submission.most_relevant_analysis.detection
+          description: ''
+          type: String
+        - contextPath: Joe.Submission.most_relevant_analysis.score
+          description: ''
+          type: Number
+        - contextPath: Joe.Submission.most_relevant_analysis.webid
+          description: ''
+          type: String
         - contextPath: Joe.Submission.name
           description: ''
           type: String
