@@ -509,6 +509,8 @@ class FeedIndicatorType(object):
     URL = "URL"
     AS = "ASN"
     MUTEX = "Mutex"
+    Malware = "Malware"
+
 
     @staticmethod
     def is_valid_type(_type):
@@ -528,7 +530,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.SSDeep,
             FeedIndicatorType.URL,
             FeedIndicatorType.AS,
-            FeedIndicatorType.MUTEX
+            FeedIndicatorType.MUTEX,
+            FeedIndicatorType.Malware
         )
 
     @staticmethod
