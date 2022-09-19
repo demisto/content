@@ -7,7 +7,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },
@@ -24,7 +24,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },
@@ -41,7 +41,7 @@
         "name1": "value1",
         "name2": "value2"
       },
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },
@@ -52,7 +52,7 @@
       "value": "aaa ${incident.name1} bbb ${incident.name2} ccc",
       "ctx_demisto": null,
       "ctx_inputs": null,
-      "ctx_incident": {
+      "ctx_inc": {
         "name1": "value1",
         "name2": "value2"
       },
@@ -70,7 +70,7 @@
         }
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },
@@ -86,7 +86,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": "{,}",
       "keep_symbol_to_null": false
     },
@@ -100,7 +100,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": "%%,%%",
       "keep_symbol_to_null": false
     },
@@ -114,7 +114,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": "$",
       "keep_symbol_to_null": false
     },
@@ -128,7 +128,7 @@
         "name2": "value2"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },
@@ -141,7 +141,7 @@
         "name1": "value1"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": true
     },
@@ -155,7 +155,7 @@
         "name2": null
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": true
     },
@@ -168,7 +168,7 @@
         "name1": "value1"
       },
       "ctx_inputs": null,
-      "ctx_incident": null,
+      "ctx_inc": null,
       "variable_markers": null,
       "keep_symbol_to_null": false
     },

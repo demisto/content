@@ -1,0 +1,228 @@
+[
+  {
+    "comments": "value, prefix and suffix have string values",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxxzzz"
+  },
+  {
+    "comments": "value and prefix has a string value, suffix is null",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
+    "comments": "value and prefix has a string value, suffix is 0",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": 0,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx0"
+  },
+  {
+    "comments": "value and suffix has a string value, prefix is null",
+    "args": {
+      "value": "xxx",
+      "prefix": null,
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
+  },
+  {
+    "comments": "value and suffix has a string value, prefix is 0",
+    "args": {
+      "value": "xxx",
+      "prefix": 0,
+      "suffix": "zzz",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "0xxxzzz"
+  },
+  {
+    "comments": "value is integer 123, prefix and suffix are null",
+    "args": {
+      "value": 123,
+      "prefix": null,
+      "suffix": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": 123
+  },
+  {
+    "comments": "value has a string value, prefix and suffix include raw DT values",
+    "args": {
+      "value": "xxx",
+      "prefix": "${name1}",
+      "suffix": "${name2}",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "value1xxxvalue2"
+  },
+  {
+    "comments": "value has a string value, prefix and suffix include DT values",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "value has a string value, prefix and suffix include DT values with {}",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa {name1} {inputs.name1} {incident.name1} bbb",
+      "suffix": "ccc {name2} {inputs.name2} {incident.name2} ddd",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": "{,}",
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "value has a string value, prefix and suffix include DT values, but a value is missing",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_demisto": {
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa  inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "value has a string value, prefix and suffix include DT values, but a value is missing (keep_symbol_to_null=true)",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_demisto": {
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "results": "aaa ${name1} inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "Nested DT expressions",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name${name1}} bbb",
+      "suffix": "ccc",
+      "ctx_demisto": {
+        "name1": "2",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value2 bbbxxxccc"
+  }
+]

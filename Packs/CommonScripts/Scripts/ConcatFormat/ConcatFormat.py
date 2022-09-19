@@ -125,7 +125,7 @@ class Formatter:
             return str(out) + source[si:], ci
 
     def build(self,
-              template: Any,
+              template: str,
               extractor: Callable[[str,
                                    Optional[ContextData]],
                                   Optional[Dict[str, Any]]],
@@ -137,16 +137,7 @@ class Formatter:
         :param dx: The context instance.
         :return: The text built from the template.
         """
-        if isinstance(template, dict):
-            return {
-                self.build(k, extractor, dx): self.build(v, extractor, dx)
-                for k, v in template.items()}
-        elif isinstance(template, list):
-            return [self.build(v, extractor, dx) for v in template]
-        elif isinstance(template, str):
-            return self.__extract(template, extractor, dx, 0, None)[0] if template else ''
-        else:
-            return template
+        return self.__extract(template, extractor, dx, 0, None)[0] if template else ''
 
 
 def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
@@ -165,7 +156,9 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
 def main():
     args = demisto.args()
     try:
-        template = args.get('value')
+        value = args['value']
+        prefix = args.get('prefix')
+        suffix = args.get('suffix')
         variable_markers = argToList(args.get('variable_markers') or '${,}')
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
@@ -187,13 +180,24 @@ def main():
             variable_markers[0],
             variable_markers[1],
             argToBoolean(args.get('keep_symbol_to_null') or False))
-        output = formatter.build(template, extract_dt, dx)
+
+        if prefix is not None and prefix != '':
+            prefix = formatter.build(str(prefix), extract_dt, dx)
+            prefix = '' if prefix is None else str(prefix)
+            value = prefix + str(value)
+
+        if suffix is not None and suffix != '':
+            suffix = formatter.build(str(suffix), extract_dt, dx)
+            suffix = '' if suffix is None else str(suffix)
+            value = str(value) + suffix
+
     except Exception as err:
         # Don't return an error by return_error() as this is transformer.
         raise DemistoException(str(err))
 
-    return_results(output)
+    return_results(value)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
+
