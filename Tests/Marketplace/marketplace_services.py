@@ -2209,6 +2209,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
                         preview = self.get_preview_image_gcp_path(pack_file_name)
+                        logging.info(f"preview is {preview}")
                         dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
