@@ -1,0 +1,20 @@
+{
+    "name": "appNovi",
+    "description": "Search your combined security data in appNovi via simplified search or search via the appNovi security graph.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "appNovi",
+    "url": "https://appnovi.com/support",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

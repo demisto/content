@@ -1,0 +1,210 @@
+id: appNovi-MAC-Address-Lookup
+version: -1
+name: appNovi-MAC-Address-Lookup
+description: Lookup servers and IPs by MAC address
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47b1dae6-bf61-4d85-87dd-a612459ccbb2
+    type: start
+    task:
+      id: 47b1dae6-bf61-4d85-87dd-a612459ccbb2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fccc12c8-9367-4853-8cf4-7b21c41d9ae8
+    type: regular
+    task:
+      id: fccc12c8-9367-4853-8cf4-7b21c41d9ae8
+      version: -1
+      name: search-appnovi-connected
+      description: Search for Components connected to supplied identity
+      script: appNovi|||search-appnovi-connected
+      type: regular
+      iscommand: true
+      brand: appNovi
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      category:
+        simple: Server,IPAddress
+      identity:
+        keyvalue:
+        - key: value
+          value:
+            simple: ${inputs.mac_address}
+        - key: type
+          value:
+            simple: mac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 16dc732b-5992-4312-8458-381acf2e6220
+    type: condition
+    task:
+      id: 16dc732b-5992-4312-8458-381acf2e6220
+      version: -1
+      name: appNovi integration enabled?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand=="appNovi")}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 27423745-5047-459e-8511-82fe9f14d631
+    type: title
+    task:
+      id: 27423745-5047-459e-8511-82fe9f14d631
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7505b15a-6dc1-4c40-8798-bfca3f224fc6
+    type: condition
+    task:
+      id: 7505b15a-6dc1-4c40-8798-bfca3f224fc6
+      version: -1
+      name: MAC address in incident?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.macaddress
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 830,
+        "x": 1200,
+        "y": -480
+      }
+    }
+  }
+inputs:
+- key: mac_address
+  value:
+    simple: ${incident.macaddress}
+  required: true
+  description: mac address
+  playbookInputQuery:
+outputs:
+- contextPath: appNovi.attached
+  description: list of Servers and IPs associated with MAC address
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
