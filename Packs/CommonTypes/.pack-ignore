@@ -300,6 +300,14 @@ urlRep
 Vectra
 sAMAccountName
 Dst
+domainRepUnified
+hostRep
+ipRep
+unifiedFileRep
+registryKey
+emailRep
+accountRep
+cveRep
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
