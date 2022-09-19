@@ -551,28 +551,35 @@ def create_incident_from_ticket(issue, should_get_attachments, should_get_commen
 def get_project_id(project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')
+
     result: dict = {}
-    demisto.debug("Before try")
+
     try:
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
-        demisto.debug("After first api call")
-        demisto.debug(f'{result=}')
     except DemistoException as de:
-        demisto.debug("After except")
-        demisto.debug(f'{de.res=}')
-        demisto.debug(f'{de.message=}')
-        demisto.debug(f'{de.exception=}')
-        demisto.debug(f'{de.error_type=}')
-        if de.message == "Could not connect to the Jira server. Verify that the server URL is correct.":
+
+        if de.message == 'Status code: 404\nMessage: Issue Does Not Exist':
             demisto.debug("Could not connect to the Jira server."
                           " Trying again with a new endpoint for Jira version 9.0.0 and above")
-        # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
-        result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
-    demisto.debug("After second api call")
-    demisto.debug(f'{result=}')
-    for project in result.get('projects'):
-        if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
-            return project.get('id')
+
+            # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
+            result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
+
+    # Jira used to respond with a dictionary with the 'projects' key until version 9.0.0
+    if isinstance(result, dict):
+        for project in result.get('projects'):
+            if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
+                return project.get('id')
+
+    # Jira's response changed to a list of projects from version 9.0.0
+    elif isinstance(result, list):
+        projects_lst = list(filter(lambda x: x.get('key').lower() == project_key.lower() or
+                                     x.get('name').lower() == project_name.lower(), result))
+
+        # Filtering should give us a list with one project
+        if projects_lst:
+            return projects_lst[0].get('id')
+
     return_error('Project not found')
 
 
