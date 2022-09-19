@@ -55,6 +55,7 @@ XPATH_RULEBASE = ''
 
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
+DEFAULT_LIMIT_PAGE_SIZE = 50
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -11280,8 +11281,8 @@ def pan_os_list_nat_rules_command(args):
     if not name:
         # filter the nat-rules by limit - name means we get only a single entry anyway.
         page = arg_to_number(args.get('page'))
-        page_size = arg_to_number(args.get('page_size')) or 50
-        limit = arg_to_number(args.get('limit')) or 50
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
@@ -11608,15 +11609,23 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
     human_readable, context = [], []
 
     for entry in entries:
+        name = entry.get('@name')
+        interface = extract_objects_info_by_key(entry, 'interface')
+        rip = entry.get('protocol', {}).get('rip')
+        ospf = entry.get('protocol', {}).get('ospf')
+        ospf_v3 = entry.get('protocol', {}).get('ospfv3')
+        bgp = entry.get('protocol', {}).get('bgp')
+        multicast = entry.get('multicast')
+
         human_readable.append(
             {
-                'Name': entry.get('@name'),
-                'Interface': extract_objects_info_by_key(entry, 'interface'),
-                'RIP': extract_objects_info_by_key(entry.get('protocol', {}).get('rip', {}), 'enable'),
-                'OSPF': extract_objects_info_by_key(entry.get('protocol', {}).get('ospf', {}), 'enable'),
-                'OSPFv3': extract_objects_info_by_key(entry.get('protocol', {}).get('ospfv3', {}), 'enable'),
-                'BGP': extract_objects_info_by_key(entry.get('protocol', {}).get('bgp', {}), 'enable'),
-                'Multicast': extract_objects_info_by_key(entry.get('multicast', {}), 'enable'),
+                'Name': name,
+                'Interface': interface,
+                'RIP': extract_objects_info_by_key(rip or {}, 'enable'),
+                'OSPF': extract_objects_info_by_key(ospf or {}, 'enable'),
+                'OSPFv3': extract_objects_info_by_key(ospf_v3 or {}, 'enable'),
+                'BGP': extract_objects_info_by_key(bgp or {}, 'enable'),
+                'Multicast': extract_objects_info_by_key(multicast or {}, 'enable'),
                 'Static Route': extract_objects_info_by_key(
                     entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
                         'entry', {}),
@@ -11629,13 +11638,13 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
         )
         context.append(
             {
-                'Name': entry.get('@name'),
-                'Interface': extract_objects_info_by_key(entry, 'interface'),
-                'RIP': entry.get('protocol', {}).get('rip'),
-                'OSPF': entry.get('protocol', {}).get('ospf'),
-                'OSPFv3': entry.get('protocol', {}).get('ospfv3'),
-                'BGP': entry.get('protocol', {}).get('bgp'),
-                'Multicast': entry.get('multicast', {}),
+                'Name': name,
+                'Interface': interface,
+                'RIP': rip,
+                'OSPF': ospf,
+                'OSPFv3': ospf_v3,
+                'BGP': bgp,
+                'Multicast': multicast,
                 'StaticRoute': entry.get('routing-table'),
                 'RedistributionProfile': entry.get('protocol', {}).get('redist-profile'),
                 'ECMP': entry.get('ecmp')
@@ -11645,7 +11654,12 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
     return human_readable, context
 
 
-def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
+def do_pagination(
+    entries,
+    page: Optional[int] = None,
+    page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
+    limit: int = DEFAULT_LIMIT_PAGE_SIZE
+):
     if page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
@@ -11663,15 +11677,15 @@ def pan_os_list_virtual_routers_command(args):
     raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
     result = raw_response.get('response', {}).get('result', {})
 
-    entries = result.get('virtual-router', {}).get('entry') or [result.get('entry')]
+    entries = dict_safe_get(result, ['virtual-router', 'entry'], default_return_value=result.get('entry'))
     if not isinstance(entries, list):
         entries = [entries]
 
     if not name:
         # if name was provided, api returns one entry so no need to do limit/pagination
         page = arg_to_number(args.get('page'))
-        page_size = arg_to_number(args.get('page_size')) or 50
-        limit = arg_to_number(args.get('limit')) or 50
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
         entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
@@ -12059,30 +12073,39 @@ def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
     human_readable, context = [], []
 
     for entry in entries:
+        name = extract_objects_info_by_key(entry, '@name')
+        description = extract_objects_info_by_key(entry, 'description')
+        tags = extract_objects_info_by_key(entry, 'tag')
+        source_zone = extract_objects_info_by_key(entry.get('from', {}), 'zone')
+        source_interface = extract_objects_info_by_key(entry.get('from', {}), 'interface')
+        source_address = extract_objects_info_by_key(entry, 'source')
+        source_user = extract_objects_info_by_key(entry, 'source-user')
+        destination_address = extract_objects_info_by_key(entry, 'destination')
+
         human_readable.append(
             {
-                'Name': extract_objects_info_by_key(entry, '@name'),
-                'Description': extract_objects_info_by_key(entry, 'description'),
-                'Tags': extract_objects_info_by_key(entry, 'tag'),
-                'Source Zone': extract_objects_info_by_key(entry.get('from', {}), 'zone'),
-                'Source Interface': extract_objects_info_by_key(entry.get('from', {}), 'interface'),
-                'Source Address': extract_objects_info_by_key(entry, 'source'),
-                'Source User': extract_objects_info_by_key(entry, 'source-user'),
-                'Destination Address': extract_objects_info_by_key(entry, 'destination'),
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'Source Zone': source_zone,
+                'Source Interface': source_interface,
+                'Source Address': source_address,
+                'Source User': source_user,
+                'Destination Address': destination_address,
                 'Action': list(entry['action'].keys())[0] if entry.get('action') else None
             }
         )
 
         context.append(
             {
-                'Name': extract_objects_info_by_key(entry, '@name'),
-                'Description': extract_objects_info_by_key(entry, 'description'),
-                'Tags': extract_objects_info_by_key(entry, 'tag'),
-                'SourceZone': extract_objects_info_by_key(entry.get('from', {}), 'zone'),
-                'SourceInterface': extract_objects_info_by_key(entry.get('from', {}), 'interface'),
-                'SourceAddress': extract_objects_info_by_key(entry, 'source'),
-                'SourceUser': extract_objects_info_by_key(entry, 'source-user'),
-                'DestinationAddress': extract_objects_info_by_key(entry, 'destination'),
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'SourceZone': source_zone,
+                'SourceInterface': source_interface,
+                'SourceAddress': source_address,
+                'SourceUser': source_user,
+                'DestinationAddress': destination_address,
                 'Action': entry.get('action'),
                 'EnforceSymmetricReturn': entry.get('enforce-symmetric-return'),
                 'Target': entry.get('target'),
@@ -12103,21 +12126,16 @@ def pan_os_list_pbf_rules_command(args):
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
-    entries = (result.get('pbf', {}).get('rules', {}).get('entry')) or [result.get('entry')]
+    entries = dict_safe_get(result, ['pbf', 'rules', 'entry'], default_return_value=result.get('entry'))
     if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
         entries = [entries]
 
     if not name:
         # filter the pbf-rules by limit - name means we get only a single entry anyway.
         page = arg_to_number(args.get('page'))
-        if page is not None:
-            if page <= 0:
-                raise DemistoException(f'page {page} must be a positive number')
-            page_size = arg_to_number(args.get('page_size')) or 50
-            entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-        else:
-            limit = arg_to_number(args.get('limit')) or 50
-            entries = entries[:limit]
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
 
     table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
 

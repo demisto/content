@@ -4061,7 +4061,7 @@ class TestPanOSListVirtualRouters:
                         'routing-options': {'graceful-restart': {'enable': 'yes'}}},
                 'ECMP': {'algorithm': {'ip-modulo': 'None'}},
                 'Interface': None,
-                'Multicast': {},
+                'Multicast': None,
                 'Name': 'test',
                 'OSPF': {'enable': 'no'},
                 'OSPFv3': {'enable': 'no'},
@@ -4102,7 +4102,7 @@ class TestPanOSListRedistributionProfiles:
         ]
     )
     def test_pan_os_list_redistribution_profiles_main_flow(
-            self, mocker, args, params, expected_url_params
+        self, mocker, args, params, expected_url_params
     ):
         """
         Given:

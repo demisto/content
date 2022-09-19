@@ -8875,7 +8875,7 @@ script:
       - replace
       - add
       - remove
-    defaultValue: 'replace'
+      defaultValue: 'replace'
     description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
   - arguments:
