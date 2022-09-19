@@ -2,16 +2,22 @@
     "name": "Cofense Intelligence v2",
     "description": "Cofense Intelligence allows users to search for threat intelligence reports based on domains, IPs, email address, file hashes, URLs and extracted strings.",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Malware"],
+    "tags": [
+        "Malware"
+    ],
     "useCases": [],
-    "keywords": ["Cofense", "Phishing", "Intelligence"],
+    "keywords": [
+        "Cofense",
+        "Phishing",
+        "Intelligence"
+    ],
     "githubUser": [
         "elebow"
     ],
