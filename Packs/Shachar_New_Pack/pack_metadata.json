@@ -1,0 +1,21 @@
+{
+    "name": "Shachar_new_Pack",
+    "description": "This pack includes.... ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shachar Kidor",
+    "url": "",
+    "email": "",
+    "created": "2022-09-19T18:35:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ShacharKidor"
+    ]
+}
