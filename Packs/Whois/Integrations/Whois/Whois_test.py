@@ -266,6 +266,7 @@ def test_parse_raw_whois_empty_nameserver():
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
 
+
 def test_parse_nic_contact():
     data = ["%%\n%% This is the AFNIC Whois server.\n%%\n%% complete date format : YYYY-MM-DDThh:mm:ssZ\n%% short date "
             "format    : DD/MM\n%% version              : FRNIC-2.5\n%%\n%% Rights restricted by copyright.\n%% See "
@@ -323,6 +324,7 @@ def test_parse_nic_contact():
                  'street4': None, 'country': 'US', 'phone': '+1.2083895740', 'fax': '+1.2083895771',
                  'email': 'ccops@markmonitor.com', 'changedate': '2021-10-05T15:17:57Z nic.fr'}]
     assert res == expected
+
 
 def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     """
