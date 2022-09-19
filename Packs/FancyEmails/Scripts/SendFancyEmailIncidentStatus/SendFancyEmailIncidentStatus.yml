@@ -1,0 +1,58 @@
+args:
+- defaultValue: id,name
+  description: Headers to use for the table in the same order of the fields.
+  isArray: true
+  name: incident_headers
+  required: true
+- defaultValue: id,name
+  description: Fields to pull for the table from the incident
+  name: incident_fields
+  required: true
+- description: Query to use for the indicator table
+  name: indicator_query
+- description: Name to use for indicator table
+  name: indicator_table_name
+- description: Whether to use the alt_link feature of the indicator table
+  name: use_alt_link
+- defaultValue: "40"
+  description: Max number of charachter in the indicator name field
+  name: max_name_chars
+- isArray: true
+  name: to
+- isArray: true
+  name: cc
+- isArray: true
+  name: bcc
+- name: subject
+- description: Warning Banner Text
+  name: banner
+- auto: PREDEFINED
+  defaultValue: "False"
+  description: Whether to include notes in the Email
+  name: include_notes
+  predefined:
+  - "True"
+  - "False"
+- description: 'Custom CSS to '
+  name: custom_css
+- name: attachIDs
+- name: attachNames
+commonfields:
+  id: SendFancyEmailIncidentStatus
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: SendFancyEmailIncidentStatus
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

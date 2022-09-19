@@ -1,0 +1,21 @@
+{
+    "name": "Fancy Emails",
+    "description": "Professional email templating for sophisticated SOCs.\n\n- Easy Logo Implementation\n- Consistent Layout & Theme\n- Customizable Color Scheme, Footers, Logo, etc\n- Automatic conversion of datetime to local times\n- Themed Table Generation with support for Custom HTML\n- Easy creation of professional looking indicator tables (!MakeFancyEmailIndicatorTable)\n- Use out of the box with the Cortex Theme or Customize it\n- Comes with a Generic Email Template (!SendFancyEmail) and an Incident Status Template (!SendFancyEmailIncidentStatus)",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Evan Yandle",
+    "url": "",
+    "email": "",
+    "created": "2022-09-19T20:19:54Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "eyandle-pan"
+    ]
+}

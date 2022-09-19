@@ -1,0 +1,48 @@
+args:
+- description: Header of the Email
+  name: body_header
+- description: Text Body of the email. Can be text or HTML
+  name: htmlBody
+- description: Text to display in the warning banner
+  name: banner
+- description: Passed to send-mail
+  name: to
+  type: textArea
+- description: Passed to send-mail
+  name: cc
+  type: textArea
+- description: Passed to send-mail
+  name: bcc
+  type: textArea
+- description: Passed to send-mail
+  name: attachIDs
+- description: Passed to send-mail
+  name: using
+- description: Passed to send-mail
+  name: subject
+- description: Plain text body of email
+  name: body
+- description: Passed to send-mail
+  name: from
+- description: Custom CSS to include in the HTML Style
+  name: custom_css
+comment: Sends a simple email using the fancy email template
+commonfields:
+  id: SendFancyEmail
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: SendFancyEmail
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

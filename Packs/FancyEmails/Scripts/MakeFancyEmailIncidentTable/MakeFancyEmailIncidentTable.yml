@@ -1,0 +1,27 @@
+args:
+- description: Headers to display in the same order of the fields (i.e. occurredtime, id) -> 'Occured Time', 'ID'
+  isArray: true
+  name: incident_headers
+- description: Fields to pull from the incident for the table.
+  isArray: true
+  name: incident_fields
+comment: Makes an HTML table out of the current incident.
+commonfields:
+  id: MakeFancyEmailIncidentTable
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: MakeFancyEmailIncidentTable
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

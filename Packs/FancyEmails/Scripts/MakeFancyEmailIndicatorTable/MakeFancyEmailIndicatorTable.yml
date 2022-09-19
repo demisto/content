@@ -1,0 +1,37 @@
+args:
+- description: Query to use when fetching indicators
+  name: query
+- description: Name of the Table for the header and context
+  name: name
+- auto: PREDEFINED
+  description: Create a link to the indicator in a separate column, rather than turning the name to a link. (Use for Domain, URL, and IP like indicators)
+  name: use_alt_link
+  predefined:
+  - "True"
+  - "False"
+- defaultValue: "40"
+  description: Max characters to use in the name field before truncating
+  name: max_name_characters
+comment: Makes an HTML indicator table using the FancyEmail integration
+commonfields:
+  id: MakeFancyEmailIndicatorTable
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dependson:
+  must:
+  - '|||fancy-email-make-table'
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: MakeFancyEmailIndicatorTable
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
