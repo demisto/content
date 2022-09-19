@@ -6,11 +6,11 @@ import time
 
 import requests
 
-GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'
+GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 2
 
 
-def get_pipeline_status(pipeline_id, token):
+def get_pipeline_info(pipeline_id, token):
     url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id
     res = requests.get(url,
                        headers={'Authorization': f'Bearer {token}'},
@@ -22,12 +22,42 @@ def get_pipeline_status(pipeline_id, token):
 
     try:
         pipeline_info = json.loads(res.content)
-        pipeline_status = pipeline_info['status']
     except Exception as e:
         logging.error(f'Unable to parse pipeline status response: {e}')
         sys.exit(1)
 
-    return pipeline_status
+    return pipeline_info
+
+
+def get_upload_job_status(pipeline_id, token):
+    """
+    We poll and check the pipelines status, where we only want to make sure the job 'upload packs to marketplace' has
+    been reached. If not, this means some other job failed, and that the upload did not happen.
+    """
+    url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id + '/jobs'
+    res = requests.get(url,
+                       headers={'Authorization': f'Bearer {token}'},
+                       verify=False)
+    if res.status_code != 200:
+        logging.error(f'Failed to get status of pipeline {pipeline_id}, request to '
+                      f'{GITLAB_CONTENT_PIPELINES_BASE_URL} failed with error: {str(res.content)}')
+        sys.exit(1)
+
+    try:
+        jobs_info = json.loads(res.content)
+        pipeline_status = jobs_info[0].get('pipeline', {}).get('status')
+        upload_job_status = get_job_status('upload-packs-to-marketplace', jobs_info)
+    except Exception as e:
+        logging.error(f'Unable to parse pipeline status response: {e}')
+        sys.exit(1)
+
+    return pipeline_status, upload_job_status
+
+
+def get_job_status(job_name, pipelines_jobs_response):
+    for job in pipelines_jobs_response:
+        if job.get('name') == job_name:
+            return job.get('status'), job.get('web')
 
 
 def main():
@@ -40,24 +70,29 @@ def main():
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
 
-    status = get_pipeline_status(pipeline_id, token)
+    pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
 
     # initialize timer
     start = time.time()
     elapsed: float = 0
 
-    while status not in ['failed', 'success'] and elapsed < TIMEOUT:
-        logging.info(f'Pipeline {pipeline_id} status is {status}')
+    while pipeline_status not in ['failed', 'success'] and elapsed < TIMEOUT:
+        logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         time.sleep(300)
-        status = get_pipeline_status(pipeline_id, token)
+        pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
         logging.critical(f'Timeout reached while waiting for upload to complete, pipeline number: {pipeline_id}')
         sys.exit(1)
 
-    # We don't care if the status is success, since we are also checking failures of the upload
-    logging.success(f'The upload flow with pipeline {pipeline_id} has finished.')
+    pipeline_url = get_pipeline_info(pipeline_id, token).get('web_url')
+
+    if upload_job_status == 'skipped':
+        logging.critical(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
+        sys.exit(1)
+
+    logging.success(f'The upload has finished. See successful pipeline here: {pipeline_url}')
 
 
 if __name__ == "__main__":
