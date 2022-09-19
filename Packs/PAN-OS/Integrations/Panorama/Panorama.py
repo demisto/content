@@ -1322,84 +1322,7 @@ def panorama_create_address_command(args: dict):
     })
 
 
-def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
-    if is_entry:
-        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
-    if is_empty_tag:
-        return {key: f'<{value}/>'}
-    return {key: {'member': argToList(value)}} if is_list else {key: value}
-
-
-def build_body_request_to_edit_pan_os_object(
-    behavior,
-    object_name,
-    element_value,
-    is_listable,
-    xpath='',
-    should_contain_entries=True,
-    is_entry=False,
-    is_empty_tag=False
-):
-    """
-    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
-    the requested behavior and a full xpath to the object.
-
-    Args:
-        behavior (str): must be one of add/remove/replace.
-        object_name (str): the name of the object that needs to be updated.
-        element_value (str): the value of the new element.
-        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
-        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
-        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
-        is_entry (bool): whether the element should be of the following form:
-            <entry name="{entry_name}"/>
-        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
-
-    Returns:
-        dict: a body request for the new object to update it.
-    """
-
-    if behavior not in {'replace', 'remove', 'add'}:
-        raise ValueError(f'behavior argument must be one of replace/remove/add values')
-
-    if behavior == 'replace':
-        element = prepare_pan_os_objects_body_request(
-            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
-        )
-    else:  # add or remove is only for listable objects.
-        current_objects_items = panorama_get_current_element(
-            element_to_change=object_name, xpath=xpath, is_commit_required=False
-        )
-        if behavior == 'add':
-            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
-        else:  # remove
-            updated_object_items = [item for item in current_objects_items if item not in element_value]
-            if not updated_object_items and should_contain_entries:
-                raise DemistoException(f'The object {xpath} must have at least one entry.')
-
-        element = prepare_pan_os_objects_body_request(
-            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
-        )
-
-    return element
-
-
-def dict_to_xml(_dictionary, contains_xml_chars=False):
-    """
-    Transforms a dict object to an XML object.
-    Args:
-        _dictionary (dict): the dict to parse into XML
-        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
-    Returns:
-        str: the dict representation in XML.
-    """
-    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
-    if contains_xml_chars:
-        return xml.replace('&gt;', '>').replace('&lt;', '<')
-    return xml
-
-
-def pan_os_pan_os_edit_address(name, element_value, element_to_change, is_listable):
+def pan_os_edit_address(name, element_value, element_to_change, is_listable):
 
     params = {
         'xpath': f'{XPATH_OBJECTS}address/entry[@name="{name}"]/{element_to_change}',
@@ -1422,7 +1345,7 @@ def pan_os_edit_address_command(args):
     address_name = args.get('name')
     element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
 
-    raw_response = pan_os_pan_os_edit_address(
+    raw_response = pan_os_edit_address(
         name=address_name,
         element_to_change=element_to_change.replace('_', '-'),
         element_value=element_value,
@@ -12465,62 +12388,6 @@ def pan_os_delete_pbf_rule_command(args):
         raw_response=raw_response,
         readable_output=f'PBF rule {rule_name} was deleted successfully.'
     )
-
-
-def do_pagination(entries, page: Optional[int] = None, page_size: int = 50, limit: int = 50):
-    if page is not None:
-        if page <= 0:
-            raise DemistoException(f'page {page} must be a positive number')
-        return entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
-        return entries[:limit]
-
-
-def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
-    """
-    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
-    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
-    from the response recursively so the response would be just like an object that was already committed.
-    This must be done to keep the context aligned with both committed and un-committed objects.
-
-    Args:
-        dictionary (dict): The entry that the pan-os objects is in.
-        keys_to_remove (list): keys which should be removed from the pan-os api response
-    """
-
-    for key in keys_to_remove:
-        if key in dictionary:
-            del dictionary[key]
-
-    for key in dictionary:
-        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
-            dictionary[key] = dictionary[key]['#text']
-        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
-                and dictionary[key][0].get('#text'):
-            dictionary[key] = [text.get('#text') for text in dictionary[key]]
-
-    for value in dictionary.values():
-        if isinstance(value, dict):
-            parse_pan_os_un_committed_data(value, keys_to_remove)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    parse_pan_os_un_committed_data(item, keys_to_remove)
-
-
-def extract_objects_info_by_key(_entry, _key):
-    if isinstance(_entry, dict):
-        key_info = _entry.get(_key)
-        if not key_info:  # api could not return the key
-            return None
-
-        if isinstance(key_info, dict) and (_member := key_info.get('member')):
-            return _member
-        elif isinstance(key_info, str):
-            return key_info
-    elif isinstance(_entry, list):
-        return [item.get(_key) for item in _entry]
-    return None
 
 
 def build_application_groups_xpath(name: Optional[str], element: Optional[str] = None):
