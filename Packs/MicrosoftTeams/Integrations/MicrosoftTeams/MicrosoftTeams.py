@@ -237,7 +237,6 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
-            demisto.debug(f"team member is: {team_member}")
             if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '').lower()}:
                 return team_member.get('id')
 
