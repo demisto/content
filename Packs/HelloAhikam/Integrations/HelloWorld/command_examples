@@ -1,0 +1,9 @@
+!helloAhikam-say-hello name="Hello Dbot"
+!helloAhikam-scan-start hostname="example.com"
+!helloAhikam-scan-status scan_id="100"
+!helloAhikam-scan-results scan_id=100 format=json
+!helloAhikam-search-alerts severity="Critical" start_time="3 days" max_results=2 status="ACTIVE"
+!helloAhikam-get-alert alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0
+!helloAhikam-update-alert-status alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0 status="CLOSED"
+!ip ip="8.8.8.8"
+!domain domain="demisto.com"

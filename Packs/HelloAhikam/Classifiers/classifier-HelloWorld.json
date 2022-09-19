@@ -1,0 +1,62 @@
+{
+    "id": "HelloAhikam",
+    "name": "Hello Ahikam - Classification",
+    "type": "classification",
+    "description": "Classifies Hello Ahikam alerts.",
+    "fromVersion": "6.0.0",
+    "defaultIncidentType": "",
+    "keyTypeMap": {
+        "Hello Ahikam Alert": "Hello Ahikam Alert"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "name"
+                            }
+                        },
+                        "operator": "startWith",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "Hello Ahikam Alert"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "name",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "17"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "version": -1
+}

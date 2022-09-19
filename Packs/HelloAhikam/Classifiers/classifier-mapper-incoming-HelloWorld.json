@@ -1,0 +1,32 @@
+{
+    "id": "HelloAhikam-mapper",
+    "name": "Hello Ahikam - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Hello Ahikam alert fields.",
+    "fromVersion": "6.0.0",
+    "defaultIncidentType": "",
+    "mapping": {
+        "Hello Ahikam Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Hello Ahikam ID": {
+                    "complex": null,
+                    "simple": "alert_id"
+                },
+                "Hello Ahikam Status": {
+                    "complex": null,
+                    "simple": "alert_status"
+                },
+                "Hello Ahikam Type": {
+                    "complex": null,
+                    "simple": "alert_type"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "version": -1
+}
