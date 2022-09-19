@@ -434,6 +434,17 @@ slack-notify-nightly-build:
       fi
     - section_end "Run Tests"
 
+    - section_start "Test Modeling Rules"
+    - |
+      if [[ -f "$ARTIFACTS_FOLDER/mrs_to_test.txt" ]]; then
+        cp "$ARTIFACTS_FOLDER/mrs_to_test.txt" "./artifact/mrs_to_test.txt"
+        echo "Testing Modeling Rules"
+        ./Tests/scripts/test_modeling_rules.py || EXIT_CODE=$?
+      else
+        echo "No modeling rules were marked for testing during test collection"
+      fi
+    - section_end "Test Modeling Rules"
+
     - section_start "XSIAM Machine information"
     - ./Tests/scripts/print_xsiam_machine_details.sh
     - section_end "XSIAM Machine information"
