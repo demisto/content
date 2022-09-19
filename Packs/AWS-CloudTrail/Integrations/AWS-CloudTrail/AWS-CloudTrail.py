@@ -418,7 +418,7 @@ def test_function():
 
 
 def calculate_fetch_start_time(last_fetch, first_fetch):
-    #if last_fetch is None:
+    # if last_fetch is None:
     if not last_fetch:
         if not first_fetch:
             first_fetch = '5 days'
@@ -428,12 +428,13 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
     else:
         return float(last_fetch)
 
+
 def fetch_incidents(args: dict, params: dict):
     client = aws_session(
-         region=args.get('region'),
-         roleArn=args.get('roleArn'),
-         roleSessionName=args.get('roleSessionName'),
-         roleSessionDuration=args.get('roleSessionDuration'),
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
     )
 
     last_fetch = demisto.getLastRun()
@@ -444,7 +445,7 @@ def fetch_incidents(args: dict, params: dict):
         attribute_key = 'EventName'
     attribute_value = params.get('AttributeValue')
 
-    fetch_limit = int(params.get('fetch_limit'))
+    fetch_limit = int(params.get('max_fetch'))
     if fetch_limit > 50 or fetch_limit <= 0:
         fetch_limit = 50
 
@@ -475,8 +476,8 @@ def fetch_incidents(args: dict, params: dict):
                 'ResourceName': event.get('Resources')[0].get('ResourceName') if event.get('Resources') else None,
                 'ResourceType': event.get('Resources')[0].get('ResourceType') if event.get('Resources') else None,
                 'CloudTrailEvent': event.get('CloudTrailEvent'),
-                'Username' : event.get('Username'),
-                'rawJSON':json.dumps(event, indent=4, sort_keys=True, default=str)
+                'Username': event.get('Username'),
+                'rawJSON': json.dumps(event, indent=4, sort_keys=True, default=str)
             }
             incidents.append(incident)
             incident_created_time = (event.get('EventTime', '01-01-01T00:00:00') + timedelta(seconds=1)).timestamp()
@@ -500,7 +501,7 @@ try:
     if demisto.command() == 'test-module':
         test_function()
     if demisto.command() == 'fetch-incidents':
-        fetch_incidents(args,params)
+        fetch_incidents(args, params)
     if demisto.command() == 'aws-cloudtrail-create-trail':
         create_trail(args)
     if demisto.command() == 'aws-cloudtrail-delete-trail':
