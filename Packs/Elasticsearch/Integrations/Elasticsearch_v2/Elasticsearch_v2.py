@@ -122,6 +122,8 @@ def elasticsearch_builder(proxies):
         "proxies": proxies,
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
+        # "http_compress": True,
+        # "request_timeout": None
     }
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
@@ -267,7 +269,7 @@ def search_command(proxies):
             search = search.extra(explain=True)
 
         if time_range_dict:
-            search.filter(time_range_dict)
+            search = search.filter(time_range_dict)
 
         if fields is not None:
             fields = fields.split(',')
