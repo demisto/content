@@ -509,6 +509,8 @@ class FeedIndicatorType(object):
     URL = "URL"
     AS = "ASN"
     MUTEX = "Mutex"
+    Malware = "Malware"
+
 
     @staticmethod
     def is_valid_type(_type):
@@ -528,7 +530,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.SSDeep,
             FeedIndicatorType.URL,
             FeedIndicatorType.AS,
-            FeedIndicatorType.MUTEX
+            FeedIndicatorType.MUTEX,
+            FeedIndicatorType.Malware
         )
 
     @staticmethod
@@ -7163,6 +7166,9 @@ class ExecutionMetrics(object):
     def timeout_error(self, value):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    def get_metric_list(self):
+        return self._metrics
 
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
