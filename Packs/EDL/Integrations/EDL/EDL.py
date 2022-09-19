@@ -1,3 +1,4 @@
+import io
 import tempfile
 
 import demistomock as demisto
@@ -641,7 +642,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
     iocs.seek(0)
-    formatted_indicators = tempfile.TemporaryFile(mode='w+t')
+    formatted_indicators = tempfile.NamedTemporaryFile(mode='w+t')
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
@@ -701,8 +702,9 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         for ip in ipv6_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
+    unique_formatted_indicators = sort_and_uniq_file(formatted_indicators)
 
-    return formatted_indicators
+    return unique_formatted_indicators
 
 
 def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping: bool, url_truncate: bool) -> str:
@@ -783,6 +785,30 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 def get_bool_arg_or_param(args: dict, params: dict, key: str):
     val = args.get(key)
     return val.lower() == 'true' if isinstance(val, str) else params.get(key, False)
+
+
+def sort_and_uniq_file(text_file, close_file=True):
+    """
+    Use the unix sort command to sort the text output and to remove duplicates
+    """
+    try:
+        uniq_text_file = tempfile.NamedTemporaryFile('w+t')
+        cmd_options = ['sort', '-uo', uniq_text_file.name, text_file.name]
+        text_file.seek(0)
+        subprocess.run(cmd_options, capture_output=True, check=True, text=True)
+
+        # sort is expected to add newline in end of file
+        # remove new line in end of file to match the behavior of other export files
+        end_position = uniq_text_file.seek(0, io.SEEK_END)
+        if end_position > 0:
+            uniq_text_file.truncate(end_position - 1)
+
+        if close_file:
+            text_file.close()
+    except subprocess.CalledProcessError as ce:
+        demisto.error(f'EDL sort process exception: {ce}. Return code: {ce.returncode}. Stderr: {ce.stderr}')
+        return text_file
+    return uniq_text_file
 
 
 ''' ROUTE FUNCTIONS '''
