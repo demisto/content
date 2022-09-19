@@ -3024,9 +3024,9 @@ class Pack(object):
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, self._pack_name, BucketUploadFlow.README_IMAGES)
+                        new_name=os.path.join(storage_base_path, self._pack_name, BucketUploadFlow.README_IMAGES,
+                                              readme_image_name)
                     )
-                    logging.info('trying to copy')
                     if not copied_blob.exists():
                         logging.error(
                             f"Copy {self._pack_name} integration readme image: {build_bucket_image_blob.name} "
