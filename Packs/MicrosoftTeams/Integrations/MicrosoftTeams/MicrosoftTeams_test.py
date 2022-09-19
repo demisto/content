@@ -962,7 +962,7 @@ def test_get_team_aad_id(mocker, requests_mock):
 
     # verify non existing team raises value error
     requests_mock.get(
-        "https://graph.microsoft.com/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')",
+        "https://graph.microsoft.com/beta/groups?$filter=displayName eq 'The-B-Team' and resourceProvisioningOptions/Any(x:x eq 'Team')",
         json={
             '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
             'value': [
