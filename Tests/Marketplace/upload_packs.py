@@ -1056,6 +1056,8 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    uploaded_packs_dir = Path(packs_artifacts_path).parent / f'uploaded_packs-{build_number}'
+    uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
     if storage_bucket_name:
         GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
@@ -1182,7 +1184,7 @@ def main():
                 continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
-        shutil.copyfile(pack.zip_path, Path(packs_artifacts_path).parent / f'uploaded_packs-{build_number}' / f"{pack.name}.zip")
+        shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
                                                                 override_all_packs or pack.is_modified,
                                                                 storage_base_path)
