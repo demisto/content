@@ -297,6 +297,9 @@ longText
 XSOAR
 mutex
 urlRep
+Vectra
+sAMAccountName
+Dst
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
