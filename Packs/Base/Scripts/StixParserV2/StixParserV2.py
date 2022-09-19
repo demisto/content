@@ -1163,8 +1163,7 @@ class DomainNameObject(object):
             return []
 
         if domain_value := props.find('Value'):
-            debug = domain_value.string
-            domain_list = debug.split('##comma##')
+            domain_list = domain_value.string.split('##comma##')
             for domain in domain_list:
                 domains.append({
                     'indicator': domain,
@@ -1217,12 +1216,13 @@ class FileObject(object):
             if value is None:
                 continue
             value = value.string.lower()
-
-            result.append({
-                'indicator': value,
-                'htype': htype,
-                'type': 'File'
-            })
+            value_list = value.split('##comma##')
+            for v in value_list:
+                result.append({
+                    'indicator': v,
+                    'htype': htype,
+                    'type': 'File'
+                })
 
         for r in result:
             for r2 in result:
@@ -1244,6 +1244,7 @@ class URIObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
+        urls = []
         utype = props.get('type', 'URL')
         if utype == 'URL':
             type_ = 'URL'
@@ -1252,14 +1253,15 @@ class URIObject(object):
         else:
             return []
 
-        url = props.find('Value')
-        if url is None:
-            return []
+        if url_value := props.find('Value'):
+            url_list = url_value.string.split('##comma##')
+            for url in url_list:
+                urls.append({
+                    'indicator': url,
+                    'type': type_
+                })
 
-        return [{
-            'indicator': url.string.encode('utf8', 'replace').decode(),
-            'type': type_
-        }]
+        return urls
 
 
 class SocketAddressObject(object):
@@ -1382,11 +1384,6 @@ class StixDecode(object):
         ttp_result: Dict[str, dict] = {}
 
         package = BeautifulSoup(content, 'xml')
-
-        # if package.contents[0].name != 'STIX_Package':
-        #     return None, None, None, None
-        #
-        # package = package.contents[0]
 
         timestamp = package.get('timestamp', None)
         if timestamp is not None:
