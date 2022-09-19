@@ -55,12 +55,31 @@ class Client(BaseClient):
         featureName: str feature to update
         fields: Dict fields to update
         """
-        payload = '{"feature":<replace>}'.replace("<replace>", json.dumps(fields))
+        name = fields.get("name")
+        desc = fields.get("description")
+        status = fields.get("status")
+        payload = {"feature": {"name": name, "description": desc,
+                   "workflow_status": {"name": status}}}
+        demisto.info(f"DANF payload: {payload}")
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{featureName}", headers=headers,
+                                      resp_type='json', data=json.dumps(payload))
+
+        return response
+
+
+    def close_feature(self, featureName: str) -> Dict:
+        """
+        Sets a Aha! feature status to Closed
+        Args:
+        featureName: str feature staus to close
+        """
+        payload = '{"feature":{"workflow_status": {"name": "Closed" }}}'
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{featureName}", headers=headers,
                                       resp_type='json', data=payload)
-
         return response
 
 
@@ -147,6 +166,26 @@ def edit_feature(client: Client, featureName: str, fields: Dict) -> CommandResul
     return command_results
 
 
+def close_feature(client: Client, featureName: str) -> CommandResults:
+    message: str = ''
+    try:
+        result = client.close_feature(featureName=featureName)
+        if result:
+            message = result['feature']
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    command_results = CommandResults(
+        outputs_prefix='AHA.ActionStatus',
+        outputs_key_field='',
+        outputs=message,
+        raw_response=message
+    )
+    return command_results
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -192,17 +231,22 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'get-all-features':
-            fromDate = args['fromDate', '2020-01-01']
+            fromDate = args.get('fromDate', '2020-01-01')
             commandResult = get_all_features(client, fromDate=fromDate)
             return_results(commandResult)
         elif command == 'get-feature':
-            featureName = args['featureName', '']
+            featureName = args.get('featureName', '')
             commandResult = get_feature(client, featureName=featureName)
             return_results(commandResult)
         elif command == 'edit-feature':
-            featureName = args['featureName', '']
-            fields = args['fields', {}]
+            featureName = args.get('featureName', '')
+            fields = json.loads(args.get('fields', {}))
+            demisto.info(f"DANF \nfeatureName:{featureName}\n fields:{fields}")
             commandResult = edit_feature(client, featureName=featureName, fields=fields)
+            return_results(commandResult)
+        elif command == 'close-feature':
+            featureName = args.get('featureName', '')
+            commandResult = close_feature(client, featureName=featureName)
             return_results(commandResult)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

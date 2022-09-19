@@ -1,3 +1,4 @@
+from Integrations.AHA.AHA import edit_feature
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AHA import Client, get_all_features, get_feature
@@ -5,7 +6,8 @@ import pytest
 import io
 
 
-apikey = demisto.params().get('api_key')
+apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
+
 headers = {
     'Authorization': f"Bearer {apikey}",
 }
@@ -86,12 +88,13 @@ def test_getSpecificFeatureWithSpecificFields(mocker):
 def test_updateFeatureField(mocker):
     """
         When:
-            - Requesting to update a field in a feautre.
+            - Requesting to update fields in a feautre.
         Then:
-            - Return the feature with field updated.
+            - Return the feature with updated fields.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
-    fields = {"score": 29, "workflow_status": {"name": "Closed"}}
-    result = client.update_feature(featureName="DEMO-10", fields=fields)
-    assert result['feature']['reference_num'] == "DEMO-10"
-    assert result['feature']['workflow_status']['name'] == "Closed"
+    result = edit_feature(client=client, featureName="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
+                          "status": "Closed"})
+    assert result.outputs['name'] == "DEMO-10"
+    assert result.outputs['description']['body'] == "new description"
+    assert result.outputs['workflow_status']['name'] == "Closed"

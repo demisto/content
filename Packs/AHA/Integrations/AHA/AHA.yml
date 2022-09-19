@@ -35,17 +35,57 @@ script:
     - name: get-all-features
       description: will get all features from service
       deprecated: false
-      arguments: []
+      arguments:
+        - name: fromDate
+          description: Get features from a date
+          required: false
+          isArray: false
+          defaultValue: 2020-01-01
+          predefined:
+            - ""
       outputs: []
     - name: get-feature
       description: returns a specific feature
       deprecated: false
-      arguments: []
+      arguments:
+        - name: featureName
+          description: Get a feature with the name specified
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
       outputs: []
     - name: edit-feature
       description: change value of a field in feature
       deprecated: false
-      arguments: []
+      arguments:
+        - name: featureName
+          description: Select features to edit
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: fields
+          description: Fields to edit in a feature
+          required: true
+          isArray: false
+          defaultValue: '{workflow_status": {"name": "Closed"}}'
+          predefined:
+            - ""
+      outputs: []
+    - name: close-feature
+      description: Sets a feature status to closed
+      deprecated: false
+      arguments:
+        - name: featureName
+          description: Select a specific feature to close.
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
       outputs: []
   isfetch: false
   runonce: false
