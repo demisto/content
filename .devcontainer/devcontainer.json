@@ -60,8 +60,8 @@
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
-		"PYTHONPATH": "${containerWorkspaceFolder}/${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
-		"MYPYPATH": "${containerWorkspaceFolder}/${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"MYPYPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
 		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
 		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
@@ -89,5 +89,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && touch .env && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/* | xargs):$PYTHONPATH && printf 'PYTHONPATH=$path >> .env && printf 'export MYPYPATH=$path' >> .env && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && touch .env && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && printf 'PYTHONPATH=$path' >> .env && echo 'MYPYPATH=$path' >> .env && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
 }
