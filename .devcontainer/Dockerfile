@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3
+FROM python:3.10-slim-bullseye
 
 ADD create_certs.sh .
 RUN apt-get update && apt-get install dos2unix -y \
