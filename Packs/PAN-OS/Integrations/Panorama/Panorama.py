@@ -305,11 +305,11 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
     This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
     from the response recursively so the response would be just like an object that was already committed.
     This must be done to keep the context aligned with both committed and un-committed objects.
+
     Args:
         dictionary (dict): The entry that the pan-os objects is in.
         keys_to_remove (list): keys which should be removed from the pan-os api response
     """
-
     for key in keys_to_remove:
         if key in dictionary:
             del dictionary[key]
@@ -3867,6 +3867,8 @@ def panorama_list_applications_command(predefined: Optional[str] = None):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+    for edl in edls_arr:
+        parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
 
     pretty_edls_arr = []
     if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
