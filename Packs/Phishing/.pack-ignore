@@ -139,6 +139,9 @@ ignore=IF115
 [file:incidentfield-reported_email_origin.json]
 ignore=IF116
 
+[file:Process_Email_-_Generic_v2_README.md]
+ignore=RM106
+
 [known_words]
 CheckEmailAuthenticity
 DeleteReportedEmail

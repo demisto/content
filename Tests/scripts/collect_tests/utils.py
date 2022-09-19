@@ -102,6 +102,9 @@ class DictBased:
     def __getitem__(self, key):
         return self.content[key]
 
+    def __contains__(self, item):
+        return item in self.content
+
     def _calculate_from_version(self) -> Version | NegativeInfinityType:
         # all three options are equivalent
         if value := (
@@ -164,13 +167,22 @@ class ContentItem(DictFileBased):
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
-        self._is_pack_metadata = self.path.name == 'pack_metadata.json'
 
     @property
-    def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
-        if self._is_pack_metadata:
+    def _has_no_id(self):
+        # some content files may not have an id
+        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+
+    @property
+    def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
+        if self._has_no_id:
             return None
-        return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
+        # todo use get_id from the SDK once https://github.com/demisto/demisto-sdk/pull/2345 is merged & released
+        if 'commonfields' in self:
+            return self['commonfields']['id']
+        if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
+            return self['layout']['id']
+        return self['id']
 
     @property
     def name(self) -> str:
@@ -292,3 +304,10 @@ def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
     """
     return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
            {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)
+
+
+def hotfix_detect_old_script_yml(path: Path):
+    # a hotfix until SDK v1.7.5 is released
+    if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
+        return FileType.SCRIPT
+    return None
