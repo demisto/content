@@ -781,3 +781,65 @@ data_test_batch = [
 @pytest.mark.parametrize('input_enumerator, batch_size, expected_output', data_test_batch)
 def test_batch_iocs(input_enumerator, batch_size, expected_output):
     assert list(batch_iocs(input_enumerator, batch_size=batch_size)) == expected_output
+
+
+def test_overriding_severity_xsoar():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    # for testing
+    Client.severity = 'some hardcoded severity value'
+
+    # constants
+    custom_severity_field = 'custom_severity_field'
+    dummy_demisto_ioc = {'value': '1.1.1.1', 'indicator_type': 'FILE_123',
+                         'CustomFields': {custom_severity_field: 'critical'}}
+
+    # default behavior
+    assert Client.override_severity is True
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    Client.xsoar_severity_field = custom_severity_field
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'critical'
+
+    # behavior when there is no custom severity value
+    dummy_demisto_ioc['CustomFields'][custom_severity_field] = None
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # behavior when there is no custom severity field
+    del dummy_demisto_ioc['CustomFields'][custom_severity_field]
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+def test_overriding_severity_xdr_to_demisto():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    Client.severity = 'some hardcoded severity value'
+    severity_field = 'custom_severity_field'
+
+    Client.xsoar_severity_field = severity_field
+    dummy_xdr_ioc = {'IOC_TYPE': 'IP', 'RULE_EXPIRATION_TIME': -1, 'RULE_SEVERITY': 'SEV_050_CRITICAL'}
+
+    # default behavior
+    assert Client.override_severity is True  # this should always be the default
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == Client.severity
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == 'CRITICAL'
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+

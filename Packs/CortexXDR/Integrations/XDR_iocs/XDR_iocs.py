@@ -52,9 +52,11 @@ def batch_iocs(generator, batch_size=200):
 
 
 class Client:
-    severity: str = ''
+    # All values here are the defaults, which may be changed via params, on main()
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
-    xsoar_severity_field: str = 'sourceoriginalseverity'
+    override_severity: bool = True
+    severity: str = ''  # used when override_severity is True
+    xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
@@ -217,7 +219,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         demisto.debug(f'Raw outgoing IOC: {ioc}')
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
-            'severity': Client.severity,  # may be overwritten with the value from the severity_field
+            'severity': Client.severity,  # default, may be overwritten, see below
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
@@ -244,8 +246,10 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
 
-        if severity := custom_fields.get(Client.xsoar_severity_field):
-            xdr_ioc['severity'] = severity  # NOTE: these do NOT need translation to the XDR, 0x0_xxxx_xxxx format
+        if (not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)):
+            # Override is True: use Client.severity
+            # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
+            xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
 
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
@@ -371,6 +375,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
+    severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
 
     entry: Dict = {
         "value": indicator,
@@ -380,7 +385,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.xsoar_severity_field: xdr_severity_to_demisto[ioc['RULE_SEVERITY']],
+            Client.xsoar_severity_field: severity,
         },
         "rawJSON": ioc
     }
@@ -510,10 +515,12 @@ def main():  # pragma: no cover
     # In this integration, arguments are set in the *class level*, the defaults are in the class definition.
     if query := params.get('query'):
         Client.query = query
-    if xsoar_severity_field := params.get('xsoar_severity_field'):
-        Client.xsoar_severity_field = xsoar_severity_field
     if tag := (params.get('feedTags') or params.get('tag')):
         Client.tag = tag
+    if override_severity := params.get('override_severity', 'true'):
+        Client.severity = argToBoolean(override_severity)
+    if xsoar_severity_field := params.get('xsoar_severity_field'):
+        Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
 
     client = Client(params)
     commands = {
