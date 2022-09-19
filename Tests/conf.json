@@ -5115,7 +5115,7 @@
                 "Whois",
                 "Rasterize"
             ],
-            "memory_threshold": 120
+            "memory_threshold": 150
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
