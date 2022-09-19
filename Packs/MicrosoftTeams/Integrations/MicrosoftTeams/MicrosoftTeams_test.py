@@ -1002,6 +1002,44 @@ def test_get_team_aad_id(mocker, requests_mock):
         get_team_aad_id('The-B-Team')
     assert str(e.value) == 'Could not find requested team.'
 
+    requests_mock.get(
+        "https://graph.microsoft.com/beta/groups?$filter=displayName eq 'MyGreatTeam' and resourceProvisioningOptions/Any(x:x eq 'Team')",
+        json={
+            '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+            'value': [
+                {
+                    'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
+                    'displayName': 'MyGreatTeam',
+                    'groupTypes': [
+                        'Unified'
+                    ],
+                    'mailEnabled': True,
+                    'resourceBehaviorOptions': [],
+                    'resourceProvisioningOptions': [
+                        'Team'
+                    ],
+                    'securityEnabled': False,
+                    'visibility': 'Private'
+                },
+                {
+                    'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
+                    'displayName': 'WooahTeam',
+                    'groupTypes': [
+                        'Unified'
+                    ],
+                    'mailEnabled': True,
+                    'mailNickname': 'X1050LaunchTeam',
+                    'resourceBehaviorOptions': [],
+                    'resourceProvisioningOptions': [
+                        'Team'
+                    ],
+                    'securityEnabled': False,
+                    'visibility': 'Private'
+                }
+            ]
+        }
+    )
+
     # verify team ID for team which is not in integration context
     assert get_team_aad_id('MyGreatTeam') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
 
