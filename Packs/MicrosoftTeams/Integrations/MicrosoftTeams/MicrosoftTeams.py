@@ -233,7 +233,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     """
     demisto.debug(f"requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-
+    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
