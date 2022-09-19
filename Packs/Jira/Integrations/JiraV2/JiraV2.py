@@ -76,12 +76,12 @@ def jira_req(
             demisto.debug(str(ve))
             if result.status_code == 401:
                 raise DemistoException('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG}')
+                                       f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
                 raise DemistoException("Could not connect to the Jira server. Verify that the server URL is correct.")
             elif result.status_code == 500 and files:
                 raise DemistoException(f"Failed to execute request, status code: 500\nBody: {result.text}"
-                             f"\nMake sure file name doesn't contain any special characters")
+                                       f"\nMake sure file name doesn't contain any special characters")
             else:
                 raise DemistoException(
                     f"Failed reaching the server. status code: {result.status_code}")
@@ -573,8 +573,9 @@ def get_project_id(project_key='', project_name=''):
 
     # Jira's response changed to a list of projects from version 9.0.0
     elif isinstance(result, list):
-        projects_lst = list(filter(lambda x: x.get('key').lower() == project_key.lower() or
-                                     x.get('name').lower() == project_name.lower(), result))
+        projects_lst = list(filter(
+            lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(),
+            result))
 
         # Filtering should give us a list with one project
         if projects_lst:
