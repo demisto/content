@@ -382,7 +382,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (username:${alert.awsUser.[0]} or hostip:${alert.hostip.[0]}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: true

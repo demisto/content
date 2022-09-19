@@ -840,7 +840,7 @@ tasks:
       FileRemediation:
         simple: Quarantine
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       IP:
         complex:
           root: ExtractedIndicators
@@ -928,7 +928,7 @@ tasks:
         FileRemediation:
           simple: Quarantine
         IAMUserDomain:
-          simple: '@demisto.com'
+          simple: ''
         UserContainment:
           simple: "False"
         Username:
@@ -1096,7 +1096,7 @@ tasks:
           complex:
             root: inputs.FileRemediation
         IAMUserDomain:
-          simple: '@demisto.com'
+          simple: ''
         UserContainment:
           simple: "False"
       exitCondition: ""

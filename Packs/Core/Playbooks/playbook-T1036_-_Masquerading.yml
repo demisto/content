@@ -408,7 +408,7 @@ tasks:
         complex:
           root: inputs.FileRemediation
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: "False"
       Username:
@@ -569,7 +569,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]} or username:${alert.username.[0]} or url:${alert.url.[0]}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip} or username:${alert.username} or url:${alert.url}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: false
@@ -858,7 +858,7 @@ tasks:
       FileRemediation:
         simple: Quarantine
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: "False"
       Username:
