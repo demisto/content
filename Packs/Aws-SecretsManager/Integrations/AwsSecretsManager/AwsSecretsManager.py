@@ -1,11 +1,8 @@
-
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import json
 from datetime import datetime, date
-
 
 import requests
 from typing import Dict, Any
@@ -14,15 +11,14 @@ from AWSApiModule import *  # noqa: E402
 
 SERVICE = 'secretsmanager'
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 
-
 ''' HELPER FUNCTIONS '''
+
+
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
@@ -81,7 +77,6 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     if general_search:
         filters.append({'Key': 'all', 'Values': general_search})
 
-
     response = aws_client.list_secrets(Filters=filters, SortOrder=sort, MaxResults=limit)
 
     output = json.dumps(response, cls=DatetimeEncoder)
@@ -131,7 +126,6 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
     if not response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return_error(f'Get command encountered an issue, got unexpected result! {response["ResponseMetadata"]}')
 
-
     readable_output = {'Name': response.get('Name', ''),
                        'ARN': response.get('ARN', ''),
                        'SecretBinary': response.get('SecretBinary', ''),
@@ -165,12 +159,13 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args):
     if args.get('delete_immediately') is not None:
         if args.get('days_of_recovery'):
             raise Exception('Delete command cannot be executed with both args: delete_immediately and days_of_recovery')
-        kwargs['ForceDeleteWithoutRecovery'] = argToBoolean(args.get('delete_immediately')) == True
+        kwargs['ForceDeleteWithoutRecovery'] = argToBoolean(args.get('delete_immediately'))
 
     response = client.delete_secret(**kwargs)
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Secret was Deleted")
+
 
 def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str, Any]):
     client = client.aws_session(
@@ -218,7 +213,7 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
     ))
 
 
-def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cover
+def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no cover
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -256,7 +251,7 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]): # pragma: no cov
     demisto.credentials(credentials)
 
 
-def main(): # pragma: no cover:
+def main():  # pragma: no cover:
     try:
         params = demisto.params()
         aws_default_region = params.get('defaultRegion')
