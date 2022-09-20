@@ -28,9 +28,24 @@ class Client(BaseClient):
     # TODO: Optional - add a function that prints the errors in a more human readable form
 
     def get_full_url(self, full_url: str, params: Dict = None) -> Dict:
+        """ Makes a general GET request according to the given fill_url.
+        Args:
+            full_url: str - The full url for the GET method.
+            params: Dict - the params to the api call.
+        Returns:
+            A dictionary, response object from the given full_url.
+        """
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     def get_project_list_request(self, params: Dict, project_key: str = None) -> Dict:
+        """ Makes a GET request {self.serverUrl}/workspaces/{self.workspace}/projects/ endpoint to get a list of all the
+            project in Bitbucket. If a specific project_key is given, it will return the informatiom about this project.
+        Args:
+            project_key: str - A key to a specific project.
+            params: Dict - the params to the api call.
+        Returns:
+            A dictionary, response object from /repositories/workspace/repository/refs/branches endpoint.
+        """
         if not project_key:
             full_url = f'{self.serverUrl}/workspaces/{self.workspace}/projects/'
         else:
@@ -39,14 +54,39 @@ class Client(BaseClient):
         return self._http_request(method='GET', full_url=full_url, params=params)
 
     def get_open_branch_list_request(self, repo: str, params: Dict) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/refs/branches endpoint to get a list of all the open
+            branches in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            params: Dict - the params to the api call.
+        Returns:
+            A dictionary, response object from /repositories/workspace/repository/refs/branches endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def get_branch_request(self, branch_name: str, repo: str = None) -> Dict:
+        """ Makes a GET request /repositories/workspace/repository/refs/branches/{branch_name} endpoint to get
+            the information of a specific branch in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            branch_name: str - The name of the branch to create.
+        Returns:
+            A dictionary, response object from /repositories/workspace/repository/refs/branches/{branch_name} endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def branch_create_request(self, name: str, target_branch: str, repo: str = None) -> Dict:
+        """ Makes a POST request /repositories/workspace/repository/refs/branches endpoint to create
+            a branch in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            name: str - The name of the branch to create.
+            target_branch: str - The branch from which to create the new branch.
+        Returns:
+            A dictionary, response object from /repositories/workspace/repository/refs/branches endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
         body = {
             "target": {
@@ -57,10 +97,25 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def branch_delete_request(self, branch_name: str, repo: str = None) -> Response:
+        """ Makes a Delete request /repositories/workspace/repository/refs/branches/{branch_name} endpoint to delete
+            a branch in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            branch_name: str - The name of the branch to delete.
+        Returns:
+            A Response object from /repositories/workspace/repository/refs/branches/{branch_name} endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
     def commit_create_request(self, body: Dict, repo: str = None) -> Response:
+        """ Makes a POST request /repositories/workspace/repository/src endpoint to create a commit in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - additional information to the api call.
+        Returns:
+            A Response object from /repositories/workspace/repository/src endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
@@ -69,6 +124,17 @@ class Client(BaseClient):
 
     def commit_list_request(self, repo: str, params: Dict, excluded_list: list = None,
                             included_list: list = None) -> Dict:
+        """ Makes a POST request /repositories/workspace/repository/commits endpoint to get a list of commits
+            from Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            params: Dict - The params to the api call
+            excluded_list: list - A list of branches that the user wants to filter there related commits away from the
+                list.
+            included_list: list - A list of branches that the user wants to have in the list of commits.
+        Returns:
+            A dictionary, response object from /repositories/workspace/repository/commits endpoint.
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/commits'
         param_list = ""
         if excluded_list:
@@ -84,6 +150,13 @@ class Client(BaseClient):
                                   params=params)
 
     def file_delete_request(self, body: Dict, repo: str = None) -> Response:
+        """ Makes a POST request /repositories/workspace/repository/src endpoint to delete a file in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - additional information to the api call.
+        Returns:
+            A Response object from /repositories/workspace/repository/src endpoint
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/src'
         return self._http_request(method='POST',
                                   url_suffix=url_suffix,
@@ -91,23 +164,38 @@ class Client(BaseClient):
                                   resp_type='response')
 
     def raw_file_get_request(self, repo: str, file_path: str, commit_hash: str) -> Response:
+        """ Makes a GET request /repositories/workspace/repository/issues endpoint to get a content of a file in
+        Bitbucket.
+        Args:
+            repo: str - The repository the user entered, if he did.
+            file_path: str - The name of the file
+            commit_hash: str - The hash of the relevant commit.
+        Returns:
+            A Response object from /repositories/workspace/repository/issues endpoint
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
     def issue_create_request(self, repo: str, body: dict) -> Dict:
+        """ Makes a POST request /repositories/workspace/repository/issues endpoint to create an issue in Bitbucket.
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - additional information to the api call
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/issues endpoint
+        """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def issue_list_request(self, repo: str, params: Dict, issue_id: str) -> Dict:
         """ Makes a GET request /repositories/workspace/repository/issues/issue_id endpoint to get
             A list of all the issues or 1 issue a specific id is added to the api call.
-            :param repo: str - The repository the user entered if he did.
-            :param params: Dict - the params to the api call
-            :param issue_id: str - an id to a specific issue to get.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered if he did.
+            params: Dict - the params to the api call.
+            issue_id: str - an id to a specific issue to get.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/issues/issue_id endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/'
         if issue_id:
@@ -116,38 +204,36 @@ class Client(BaseClient):
 
     def issue_update_request(self, repo: str, body: dict, issue_id: int) -> Dict:
         """ Makes a PUT request /repositories/workspace/repository/issues/issue_id endpoint to update an issue.
-            :param repo: str - The repository the user entered if he did.
-            :param body: Dict - the params to the api call
-            :param issue_id: str - an id to a specific issue to update.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/issue_id endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - the params to the api call
+            issue_id: str - an id to a specific issue to update.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/issues/issue_id endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
         """ Makes a POST request /repositories/workspace/repository/pullrequests endpoint to create a pull request.
-            :param repo: str - The repository the user entered if he did.
-            :param body: Dict - the params to the api call
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - the params to the api call
+        Returns:
+            A dictionary response from /repositories/workspace/repository/pullrequests endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def pull_request_update_request(self, repo: str, body: Dict, pr_id: str) -> Dict:
-        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update a pull request.
-            :param repo: str - The repository the user entered if he did.
-            :param body: Dict - the params to the api call
-            :param pr_id: str - an id to a specific pull request to update.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
-            :rtype Dict[str, Any]
+        """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id} endpoint to update
+            a pull request.
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - the params to the api call
+            pr_id: str - an id to a specific pull request to update.
+        Returns:
+            A response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
@@ -156,13 +242,12 @@ class Client(BaseClient):
         """ Makes a GET request to /repositories/workspace/repository/pullrequests/{pr_id} endpoint to get information
             about a specific pull request. if there isn't a pull request id, makes a GET request to
              /repositories/workspace/repository/pullrequests endpoint to get a list of pull requests.
-            :param repo: str - The repository the user entered if he did.
-            :param params: Dict - the params to the api call
-            :param pr_id: str - an id to a specific pull request to update.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered if he did.
+            params: Dict - the params to the api call
+            pr_id: str - an id to a specific pull request to update.
+        Returns:
+            A dictionary response from /repositories/workspace/repository/pullrequests/{pr_id} endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
         if pr_id:
@@ -172,27 +257,26 @@ class Client(BaseClient):
     def issue_comment_create_request(self, repo: str, issue_id: str, body: Dict) -> Dict:
         """ Makes a POST request /repositories/workspace/repository/issues/{issue_id}/comments endpoint to create
             a comment on an issue.
-            :param repo: str - The repository the user entered if he did.
-            :param body: Dict - The content of the comment, in a dictionary form.
-            :param issue_id: str - an id to a specific issue to comment on.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered if he did.
+            body: Dict - The content of the comment, in a dictionary form.
+            issue_id: str - an id to a specific issue to comment on.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/issues/{issue_id}/comments endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def issue_comment_delete_request(self, repo: str, issue_id: str, comment_id: str) -> Response:
-        """ Makes a DELETE request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to delete
-            a comment in an issue.
-            :param repo: str - The repository the user entered, if he did.
-            :param issue_id: str - an id to a specific issue to delete one of its comments.
-            :param comment_id: str - an id of a specific comment to delete.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
-            :rtype Dict[str, Any]
+        """ Makes a DELETE request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
+            to delete a comment in an issue.
+        Args:
+            repo: str - The repository the user entered, if he did.
+            issue_id: str - an id to a specific issue to delete one of its comments.
+            comment_id: str - an id of a specific comment to delete.
+        Returns:
+            A Response object from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id}
+            endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
@@ -200,30 +284,29 @@ class Client(BaseClient):
     def issue_comment_update_request(self, repo: str, issue_id: str, comment_id: str, body: Dict) -> Dict:
         """ Makes a PUT request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to
             update a comment in an issue.
-            :param repo: str - The repository the user entered, if he did.
-            :param issue_id: str - an id to a specific issue to update one of its comments.
-            :param comment_id: str - an id of a specific comment to update.
-            :param body: Dict - an id of a specific comment to update.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered, if he did.
+            issue_id: str - an id to a specific issue to update one of its comments.
+            comment_id: str - an id of a specific comment to update.
+            body: Dict - an id of a specific comment to update.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id}
+            endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, params: Dict) -> Dict:
-        """ Makes a GET request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to get
-            information about a specific comment to an issue. if there is no comment_id than Makes a GET request
+        """ Makes a GET request /repositories/workspace/repository/issues/{issue_id}/comments/{comment_id} endpoint to
+            get information about a specific comment to an issue. if there is no comment_id than Makes a GET request
             /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific issue.
-            :param repo: str - The repository the user entered, if he did.
-            :param issue_id: str - an id to a specific issue to get its comments.
-            :param comment_id: str - an id of a specific comment.
-            :param params: Dict - a dictionary containing the information about the pagination if needed.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/issues/{issue_id}/{comment_id} endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered, if he did.
+            issue_id: str - an id to a specific issue to get its comments.
+            comment_id: str - an id of a specific comment.
+            params: Dict - a dictionary containing the information about the pagination if needed.
+        Returns:
+            A dictionary response from /repositories/workspace/repository/issues/{issue_id}/{comment_id} endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/'
         if comment_id:
@@ -233,29 +316,29 @@ class Client(BaseClient):
     def pull_request_comment_create_request(self, repo: str, pr_id: int, body: Dict) -> Dict:
         """ Makes a POST request /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint to create
             a new pull request.
-            :param repo: str - The repository the user entered, if he did.
-            :param pr_id: str - an id to a specific pull request to add a comment to.
-            :param body: Dict - a dictionary containing information about the content of the comment.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered, if he did.
+            pr_id: str - an id to a specific pull request to add a comment to.
+            body: Dict - a dictionary containing information about the content of the comment.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/pullrequests/{pr_id}/comments endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def pull_request_comment_list_request(self, repo: str, pr_id: int, params: Dict, comment_id: str) -> Dict:
         """ Makes a GET request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
-            to get information about a specific comment of a pull request. If there is no comment_id than Makes a GET request
-            /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of a specific pull request.
-            :param repo: str - The repository the user entered, if he did.
-            :param pr_id: str - an id to a specific pull request to add a comment to.
-            :param params: Dict - a dictionary containing information about the pagination, if needed.
-            :param comment_id: str - an id to a specific comment, in order to get info about it.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
-            :rtype Dict[str, Any]
+            to get information about a specific comment of a pull request. If there is no comment_id than Makes a
+            GET request /repositories/workspace/repository/issues/{issue_id}/comments/ to get all the comments of
+            a specific pull request.
+        Args:
+            repo: str - The repository the user entered, if he did.
+            pr_id: str - an id to a specific pull request to add a comment to.
+            params: Dict - a dictionary containing information about the pagination, if needed.
+            comment_id: str - an id to a specific comment, in order to get info about it.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id}
+            endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments'
         if comment_id:
@@ -265,40 +348,39 @@ class Client(BaseClient):
     def pull_request_comment_update_request(self, repo: str, pr_id: int, body: Dict, comment_id: str) -> Dict:
         """ Makes a PUT request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
             to update a specific comment in a pull request.
-            :param repo: str - The repository the user entered, if he did.
-            :param pr_id: str - an id to a specific pull.
-            :param body: Dict - a dictionary with the updated content of the comment.
-            :param comment_id: str - an id to a specific comment to update.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
-            :rtype Dict[str, Any]
+        Args:
+            repo: str - The repository the user entered, if he did.
+            pr_id: str - an id to a specific pull.
+            body: Dict - a dictionary with the updated content of the comment.
+            comment_id: str - an id to a specific comment to update.
+        Returns:
+            A dictionary, response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id}
+            endpoint
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
     def pull_request_comment_delete_request(self, repo: str, pr_id: int, comment_id: str) -> Response:
-        """ Makes a DELETE request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
-            to delete a specific comment in a pull request.
-            :param repo: str - The repository the user entered, if he did.
-            :param pr_id: str - an id to a specific pull request to add a comment to.
-            :param comment_id: str - an id to a specific comment to delete.
-
-            Creates the url and makes the api call
-            :return JSON response from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id} endpoint
-            :rtype Dict[str, Any]
+        """ Makes a DELETE request /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id}
+            endpoint to delete a specific comment in a pull request.
+            Args:
+                repo: str - The repository the user entered, if he did.
+                pr_id: str - an id to a specific pull request to add a comment to.
+                comment_id: str - an id to a specific comment to delete.
+            Returns:
+                a Response object from /repositories/workspace/repository/pullrequests/{pr_id}/comments/{comment_id}
+                endpoint.
         """
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
     def workspace_member_list_request(self, params: Dict) -> Dict:
-        """ Makes a GET request /workspaces/{workspace}/members endpoint
-            to return a list of the members in the workspace.
-            :param params: Dict - The pagination params if needed
-
-            Creates the url and makes the api call
-            :return JSON response from /workspaces/{workspace}/members endpoint
-            :rtype Dict[str, Any]
+        """ Makes a GET request /workspaces/{workspace}/members endpoint to return a list of the members
+            in the workspace.
+            Args:
+                params: Dict - The pagination params if needed
+            Returns:
+                return a dictionary, response from /workspaces/{workspace}/members endpoint
         """
         url_suffix = f'/workspaces/{self.workspace}/members'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -308,6 +390,14 @@ class Client(BaseClient):
 
 
 def check_pagination(client: Client, response: Dict, limit: int) -> List:
+    """ Test the connection to bitbucket.
+    Args:
+        client: A Bitbucket client.
+        response: A response from the API call.
+        limit: A limit to the list
+    Returns:
+        'ok' if the connection was successful, else throws exception.
+    """
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
     pagelen = response.get('pagelen', None)
@@ -318,6 +408,14 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
 
 
 def get_paged_results(client: Client, response: Dict, limit: int) -> List:
+    """ Test the connection to bitbucket.
+    Args:
+        client: A Bitbucket client.
+        response: A response from the API call.
+        limit: A limit to the list
+    Returns:
+        'ok' if the connection was successful, else throws exception.
+    """
     results = []
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
@@ -338,6 +436,11 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
 
 
 def check_args(limit: int = None, page: int = None):
+    """ Test the connection to bitbucket.
+    Args:
+        limit: the parameter limit that is given to a command that returns a list.
+        page: the wanted page in the api response.
+    """
     if limit is not None and limit < 1:
         raise Exception('The limit value must be equal to 1 or bigger.')
     if page is not None and page < 1:
@@ -346,6 +449,17 @@ def check_args(limit: int = None, page: int = None):
 
 def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
                              description: str, close_source_branch: str) -> Dict:
+    """ Test the connection to bitbucket.
+    Args:
+        title: the title of the pull request.
+        source_branch: the source branch in Bitbucket.
+        destination_branch: the destination branch in Bitbucket.
+        reviewer_id: a list of account_id of the people who should make a review to the pull request.
+        description: the description of the pull request.
+        close_source_branch: should the branch close after the merging of the pull request.
+    Returns:
+        'ok' if the connection was successful, else throws exception.
+    """
     body: Dict = {}  # TODO support a list of reviewers
     if title:
         body["title"] = title
@@ -378,6 +492,12 @@ def create_pull_request_body(title: str, source_branch: str, destination_branch:
 
 
 def test_module(client: Client) -> str:
+    """ Test the connection to bitbucket.
+    Args:
+        client: A Bitbucket client.
+    Returns:
+        'ok' if the connection was successful, else throws exception.
+    """
     params = {'pagelen': 1}
     try:
         client.get_project_list_request(params=params)
@@ -387,6 +507,13 @@ def test_module(client: Client) -> str:
 
 
 def project_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of all the projects in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     limit = int(args.get('limit', 50))
     project_key = args.get('project_key')
     page = arg_to_number(args.get('page', 1))
@@ -431,6 +558,13 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of all the open branches in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with the list of the branches.
+    """
     limit = int(args.get('limit', 50))
     repo = args.get('repo', None)
     page = int(args.get('page', 1))
@@ -467,6 +601,13 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def branch_get_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns the information on a given branch in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with the information about the branch.
+    """
     repo = args.get('repo', None)
     branch_name = args.get('branch_name', None)
     if not repo:
@@ -492,6 +633,13 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def branch_create_command(client: Client, args: Dict) -> CommandResults:
+    """ creates a branch in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     repo = args.get('repo', None)
     name = args.get('name', None)
     target_branch = args.get('target_branch', None)
@@ -507,6 +655,13 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
 
 
 def branch_delete_command(client: Client, args: Dict) -> CommandResults:
+    """ Deletes a branch in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     repo = args.get('repo', None)
     branch_name = args.get('branch_name', None)
     if not repo:
@@ -519,6 +674,13 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
 
 
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
+    """ creates a commit in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     repo = args.get('repo', None)
     message = args.get('message', None)
     branch = args.get('branch', None)
@@ -554,6 +716,13 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
 
 
 def commit_list_command(client: Client, args: Dict) -> CommandResults:
+    """ Returns a list of all the commits according to the given params/.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with the list of commits.
+    """
     repo = args.get('repo', None)
     file_path = args.get('file_path', None)
     excluded_branches = args.get('excluded_branches', None)
@@ -601,6 +770,13 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def file_delete_command(client: Client, args: Dict) -> CommandResults:
+    """ Deletes a file in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     repo = args.get('repo', None)
     message = args.get('message', None)
     branch = args.get('branch', None)
@@ -624,6 +800,13 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
 
 
 def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
+    """ Returns the content of a given file.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A list containing a CommandResult object and a fileResult object.
+    """
     repo = args.get('repo', None)
     file_path = args.get('file_path', None)
     branch = args.get('branch', None)
@@ -659,6 +842,13 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
 
 
 def issue_create_command(client: Client, args: Dict) -> CommandResults:
+    """ creates an issue in Bitbucket.
+    Args:
+        client: A Bitbucket client.
+        args: Demisto args.
+    Returns:
+        A CommandResult object with a success message, in case of a successful action.
+    """
     repo = args.get('repo', None)
     title = args.get('title', None)
     state = args.get('state', 'new')

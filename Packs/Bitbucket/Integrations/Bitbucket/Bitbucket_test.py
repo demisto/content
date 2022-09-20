@@ -288,3 +288,30 @@ def test_commit_create_command(mocker, bitbucket_client):
                                     url_suffix='/repositories/workspace/repository/src',
                                     data=expected_body,
                                     resp_type='response')
+
+
+def test_commit_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-commit-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import commit_list_command
+    args = {'included_branches': 'master', 'limit': '3'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_commit_list_command')
+    mocker.patch.object(bitbucket_client, 'commit_list_request', return_value=response)
+    expected_human_readable = '### The list of commits\n' \
+                              '|Author|Commit|Message|CreatedAt|\n' \
+                              '|---|---|---|---|\n' \
+                              '| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 ' \
+                              '| delete the new file | 2022-09-18T00:00:00+00:00 |\n' \
+                              '| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 ' \
+                              '| checking master | 2022-09-18T00:00:00+00:00 |\n' \
+                              '| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 ' \
+                              '| delete the new file | 2022-09-18T00:00:00+00:00 |\n'
+    result = commit_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')
