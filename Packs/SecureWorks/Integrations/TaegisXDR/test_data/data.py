@@ -7,6 +7,22 @@ TAEGIS_ALERT = {
     }
 }
 
+TAEGIS_COMMENT = {
+    "author_user": {
+        "email_normalized": "myuser@email.com",
+        "given_name": "John",
+        "family_name": "Smith",
+        "id": "auth0|000000000000000000000001",
+    },
+    "id": "ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f",
+    "comment": "This is a comment in an investigation",
+    "created_at": "2022-01-01T13:04:57.17234Z",
+    "deleted_at": None,
+    "modified_at": None,
+    "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+    "parent_type": "investigation",
+}
+
 TAEGIS_ENVIRONMENT = "us1"
 
 TAEGIS_INVESTIGATION = {
@@ -92,6 +108,64 @@ FETCH_ALERTS_BY_ID_RESPONSE = {
                 "list": [TAEGIS_ALERT]
             },
             "total_results": 1,
+        }
+    }
+}
+
+CREATE_COMMENT_RESPONSE = {
+    "data": {
+        "createComment": {
+            "comment": TAEGIS_COMMENT["comment"],
+            "id": TAEGIS_COMMENT["id"],
+            "parent_id": TAEGIS_COMMENT["parent_id"],
+            "parent_type": TAEGIS_COMMENT["parent_type"],
+        }
+    }
+}
+
+CREATE_UPDATE_COMMENT_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "Comment cannot be empty",
+            "path": [
+                "comment",
+            ]
+        }
+    ]
+}
+
+FETCH_COMMENT_RESPONSE = {
+    "data": {
+        "comment": TAEGIS_COMMENT
+    }
+}
+
+FETCH_COMMENTS_RESPONSE = {
+    "data": {
+        "commentsByParent": [TAEGIS_COMMENT]
+    }
+}
+
+FETCH_COMMENTS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "Comment not found",
+            "path": [
+                "comment",
+            ]
+        }
+    ]
+}
+
+UPDATE_COMMENT_RESPONSE = {
+    "data": {
+        "updateComment": {
+            "comment": TAEGIS_COMMENT["comment"],
+            "id": TAEGIS_COMMENT["id"],
+            "parent_id": TAEGIS_COMMENT["parent_id"],
+            "parent_type": TAEGIS_COMMENT["parent_type"],
         }
     }
 }
