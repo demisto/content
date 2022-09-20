@@ -47,7 +47,7 @@ def disable_user(args: dict):
         The CommandResults of all the supported commands.
     """
     if not argToBoolean(args.get('approve_action', False)):
-        raise ValueError('approve_action must be `yes`')
+        return 'approve_action must be `yes`'
     username = args.get('username')
     if not username:
         raise ValueError('username is not specified')

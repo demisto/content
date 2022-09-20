@@ -68,9 +68,8 @@ def test_disable_user_disapproved():
     Then:
         assert the right ValueError is raised.
     """
-    with pytest.raises(ValueError) as e:
-        disable_user({'username': 'some_user', 'approve_action': 'no'})
-    assert 'approve_action must be `yes`' in str(e)
+    result = disable_user({'username': 'some_user', 'approve_action': 'no'})
+    assert 'approve_action must be `yes`' in result
 
 
 def test_disable_user_no_username():
