@@ -1,5 +1,6 @@
 import json
 import io
+import pytest
 import demistomock as demisto
 from AzureSQLManagement import Client
 
@@ -16,7 +17,8 @@ def mock_client(mocker, http_request_result=None):
         subscription_id='subscriptionID',
         resource_group_name='resourceGroupName',
         verify=False,
-        proxy=False
+        proxy=False,
+        auth_type='Device'
     )
     if http_request_result:
         mocker.patch.object(client, 'http_request', return_value=http_request_result)
@@ -140,3 +142,27 @@ def test_azure_sql_db_threat_policy_create_update_command(mocker):
     assert '### Create Or Update Database Threat Detection Policies' in results.readable_output
     assert results.outputs.get('retentionDays') == 5
     assert results.outputs.get('emailAddresses')[0] == 'test1@test.com'
+
+
+@pytest.mark.parametrize('params, expected_results', [
+    ({'auth_type': 'Device Code'}, "When using device code flow configuration"),
+    ({'auth_type': 'Authorization Code'}, "When using user auth flow configuration")])
+def test_test_module_command(mocker, params, expected_results):
+    """
+        Given:
+            - Case 1: Integration params with 'Device' as auth_type.
+            - Case 2: Integration params with 'User Auth' as auth_type.
+        When:
+            - Calling test-module command.
+        Then
+            - Assert the right exception was thrown.
+            - Case 1: Should throw an exception related to Device-code-flow config and return True.
+            - Case 2: Should throw an exception related to User-Auth-flow config and return True.
+    """
+    from AzureSQLManagement import test_module
+    import AzureSQLManagement as sql_management
+    mocker.patch.object(sql_management, "test_connection", side_effect=Exception('mocked error'))
+    mocker.patch.object(demisto, 'params', return_value=params)
+    with pytest.raises(Exception) as e:
+        test_module(None)
+    assert expected_results in str(e.value)

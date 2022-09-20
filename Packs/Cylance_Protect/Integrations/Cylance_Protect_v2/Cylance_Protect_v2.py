@@ -7,7 +7,7 @@ import requests
 import json
 import re
 import zipfile
-from StringIO import StringIO
+from io import BytesIO
 from datetime import datetime, timedelta
 
 # disable insecure warnings
@@ -51,8 +51,8 @@ SCOPE_OPTICS_GET = 'opticssurvey:read'  # Read a InstaQuery
 def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub(r'/[\/]+$/', '', url)
+    url = re.sub(r'\/$', '', url)
     return url
 
 
@@ -88,7 +88,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             'Authorization': 'Bearer ' + access_token
         }
 
-    url = '%s/%s' % (SERVER_URL, uri)
+    url = '{}/{}'.format(SERVER_URL, uri)
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
@@ -312,7 +312,7 @@ def get_device():
 def get_device_request(device_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '%s/%s' % (URI_DEVICES, device_id)
+    uri = '{}/{}'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -386,7 +386,7 @@ def get_hostname_request(hostname):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '%s/%s' % (URI_HOSTNAME, hostname)
+    uri = '{}/{}'.format(URI_HOSTNAME, hostname)
     res = api_call(uri=uri, method='get', access_token=access_token)
     if not res:
         return None
@@ -446,7 +446,7 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
     if not body:
         raise Exception('No changes detected')
 
-    uri = '%s/%s' % (URI_DEVICES, device_id)
+    uri = '{}/{}'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -470,7 +470,7 @@ def get_device_threats():
     if device_threats:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in dbot_score_entry.items():
+            for key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
@@ -499,7 +499,7 @@ def get_device_threats_request(device_id, page=None, page_size=None):  # pragma:
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    uri = '%s/%s/threats' % (URI_DEVICES, device_id)
+    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -628,7 +628,7 @@ def get_zone():
 def get_zone_request(zone_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
 
-    uri = '%s/%s' % (URI_ZONES, zone_id)
+    uri = '{}/{}'.format(URI_ZONES, zone_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -677,7 +677,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no co
     if not body:
         raise Exception('No changes detected')
 
-    uri = '%s/%s' % (URI_ZONES, zone_id)
+    uri = '{}/{}'.format(URI_ZONES, zone_id)
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -714,7 +714,7 @@ def get_threat():
 def get_threat_request(sha256):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
-    uri = '%s/%s' % (URI_THREATS, sha256)
+    uri = '{}/{}'.format(URI_THREATS, sha256)
     res = api_call(uri=uri, method='get', access_token=access_token, body={}, params={}, accept_404=False)
     return res
 
@@ -745,7 +745,7 @@ def get_threats():
 
     dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
     for dbot_score_entry in dbot_score_array:
-        for key, value in dbot_score_entry.items():
+        for key, value in list(dbot_score_entry.items()):
             dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -854,7 +854,7 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragm
     if page_size:
         params['page_size'] = page_size
 
-    uri = '%s/%s/devices' % (URI_THREATS, threat_hash)
+    uri = '{}/{}/devices'.format(URI_THREATS, threat_hash)
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -876,7 +876,7 @@ def get_list():
     if lst:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in dbot_score_entry.items():
+            for key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -979,7 +979,7 @@ def update_device_threats_request(device_id, threat_id, event):  # pragma: no co
         'event': event
     }
 
-    uri = '%s/%s/threats' % (URI_DEVICES, device_id)
+    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
     res = api_call(uri=uri, method='post', access_token=access_token, body=body)
 
     return res
@@ -996,12 +996,12 @@ def download_threat():
     threat_file = requests.get(threat_url, allow_redirects=True, verify=USE_SSL)
     if threat_file.status_code == 200:
         if demisto.args()['unzip'] == "yes":
-            file_archive = StringIO(threat_file.content)
+            file_archive = BytesIO(threat_file.content)
             zip_file = zipfile.ZipFile(file_archive)
-            file_data = zip_file.read(sha256.upper(), pwd='infected')
+            file_data = zip_file.read(sha256.upper(), pwd=b'infected')
             demisto.results(fileResult(sha256, file_data))
         else:
-            demisto.results(fileResult(sha256, threat_file.content + '.zip'))
+            demisto.results(fileResult(sha256, threat_file.content + b'.zip'))
     else:
         return_error('Could not fetch the file')
 
@@ -1060,7 +1060,7 @@ def download_threat():
 def download_threat_request(hash):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
-    uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
+    uri = '{}/{}/{}'.format(URI_THREATS, "download", hash)
     res = api_call(uri=uri, method='get', access_token=access_token)
     if not res['url']:
         return_error('No url was found')
@@ -1103,7 +1103,7 @@ def add_hash_to_list():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully added to ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully added to {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
@@ -1147,7 +1147,7 @@ def delete_hash_from_lists():
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(
-            'The requested threat has been successfully removed from ' + list_type + ' hashlist.', contents),
+            f'The requested threat has been successfully removed from {list_type} hashlist.', contents),
         'EntryContext': context
     })
 
@@ -1340,7 +1340,7 @@ def get_policy_details():
 def get_policy_details_request(policy_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
 
-    uri = '%s/%s' % (URI_POLICIES, policy_id)
+    uri = '{}/{}'.format(URI_POLICIES, policy_id)
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -1381,7 +1381,7 @@ def create_instaquery():
 
     # Process the match value
     if artifact in match_value_type:
-        value_type = re.findall('(?<=\.).*', match_value_type)[0]  # Remove the artifact prefix
+        value_type = re.findall(r'(?<=\.).*', match_value_type)[0]  # Remove the artifact prefix
     else:
         demisto.error('The value type is not suitable with the selected artifact')
 
@@ -1526,7 +1526,7 @@ def main():    # pragma: no cover
     USE_SSL = not demisto.params().get('unsecure', False)
     command = demisto.command()
 
-    LOG('Command being called is {command}'.format(command=command))
+    LOG(f'Command being called is {command}')
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
