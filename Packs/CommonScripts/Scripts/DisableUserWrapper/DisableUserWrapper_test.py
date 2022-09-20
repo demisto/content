@@ -1,5 +1,5 @@
 from CommonServerPython import CommandRunner
-from DisableUser import disable_user
+from DisableUserWrapper import disable_user
 import pytest
 
 
@@ -21,7 +21,7 @@ def test_disable_user(mocker):
         username
         approve_action = yes
     When:
-        running DisableUser script
+        running DisableUserWrapper script
     Then:
         assert the result returned is the run_commands_with_summary result
         assert run_commands_with_summary is called with the right commands
@@ -64,7 +64,7 @@ def test_disable_user_disapproved():
         username
         approve_action = no
     When:
-        running DisableUser
+        running DisableUserWrapper
     Then:
         assert the right ValueError is raised.
     """
@@ -79,7 +79,7 @@ def test_disable_user_no_username():
         no username
         approve_action = yes
     When:
-        running DisableUser
+        running DisableUserWrapper
     Then:
         assert the right ValueError is raised.
     """

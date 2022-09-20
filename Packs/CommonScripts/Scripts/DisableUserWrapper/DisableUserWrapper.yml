@@ -17,10 +17,10 @@ args:
   - No
 comment: This script allows disabling specified user using SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser and IAM.
 commonfields:
-  id: DisableUser
+  id: DisableUserWrapper
   version: -1
 enabled: false
-name: DisableUser
+name: DisableUserWrapper
 outputs:
 
   # IdentityIQ outputs
