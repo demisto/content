@@ -97,6 +97,8 @@ def get_tag(vsphere_client, args):
         if cat_details.name == args.get('category'):
             relevant_category = cat_details.id
             break
+    if not relevant_category:
+        raise Exception("The category {} was not found".format(args.get('category')))
     tags = vsphere_client.tagging.Tag.list_tags_for_category(relevant_category)
     for tag in tags:
         tag_details = vsphere_client.tagging.Tag.get(tag)
@@ -561,7 +563,7 @@ def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(vsphere_client, args)
     # Added this condition to avoid 'vsphere_client.tagging.TagAssociation.list_attached_objects' errors
     if not relevant_tag:
-        raise Exception("The given tag does not exist - so relevant tag is None - tag id didn't found")
+        raise Exception("The tag {} was not found".format(args.get('tag')))
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
     vms_details = []
