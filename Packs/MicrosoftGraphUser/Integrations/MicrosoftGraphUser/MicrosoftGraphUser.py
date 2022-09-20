@@ -298,7 +298,8 @@ def create_user_command(client: MsGraphClient, args: Dict):
     user_data = client.get_user(user, '*')
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} was created successfully:", t=user_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} was created successfully:",
+                                     t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
 
@@ -330,7 +331,8 @@ def get_delta_command(client: MsGraphClient, args: Dict):
     headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID', 'User Principal Name']))
 
     users_readable, users_outputs = parse_outputs(users_data)
-    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', headers=headers, t=users_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', headers=headers,
+                                     t=users_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
     return human_readable, outputs, users_data
 
@@ -351,11 +353,13 @@ def get_user_command(client: MsGraphClient, args: Dict):
     # In case the request returned a 404 error display a proper message to the war room
     if user_data.get('NotFound', ''):
         error_message = user_data.get('NotFound')
-        human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\n### User {user} was not found.\nMicrosoft Graph Response: {error_message}'
+        human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\n### User {user} was not found.\n' \
+                         f'Microsoft Graph Response: {error_message}'
         return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} data", t=user_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} data", t=user_readable,
+                                     removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
 
@@ -374,7 +378,8 @@ def list_users_command(client: MsGraphClient, args: Dict):
         # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
         outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
 
-    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
+    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', t=users_readable,
+                                     removeNull=True, metadata=metadata)
 
     return human_readable, outputs, users_data
 
@@ -386,7 +391,8 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     raw_reports = client.get_direct_reports(user)
 
     reports_readable, reports = parse_outputs(raw_reports)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - direct reports", t=reports_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - direct reports",
+                                     t=reports_readable, removeNull=True)
     outputs = {
         'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
             'Manager': user,
@@ -402,7 +408,8 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - manager", t=manager_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - manager",
+                                     t=manager_readable, removeNull=True)
     outputs = {
         'MSGraphUserManager(val.User == obj.User)': {
             'User': user,
@@ -417,8 +424,8 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
     client.assign_manager(user, manager)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nA manager was assigned to user "{user}". It might take ' \
-                     f'several minutes for the changes ' \
+    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nA manager was assigned to user "{user}". ' \
+                     f'It might take several minutes for the changes ' \
                      'to take affect across all applications.'
     return human_readable, None, None
 
@@ -427,11 +434,12 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nUser: "{user}" sessions have been revoked successfully.'
+    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nUser: "{user}" sessions have been revoked ' \
+                     f'successfully.'
     return human_readable, None, None
 
 
-def main():
+def main():  # pragma: no cover
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('tenant_id')
@@ -491,5 +499,5 @@ def main():
 
 from MicrosoftApiModule import *  # noqa: E402
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
     main()

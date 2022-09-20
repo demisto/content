@@ -264,7 +264,8 @@ class Client(BaseClient):
 
     def verify_push_factor(self, user_id, factor_id):
         """
-        Creates a new transaction and sends an asynchronous push notification to the device for the user to approve or reject.
+        Creates a new transaction and sends an asynchronous push notification to the device for the user to
+        approve or reject.
         You must poll the transaction to determine when it completes or expires.
         """
         uri = f'users/{user_id}/factors/{factor_id}/verify'
@@ -382,7 +383,8 @@ class Client(BaseClient):
                 if user.get('group'):
                     additionalData['Group'] = user.get('group')
                 users_verbose += f"### User:{profile.get('Login')}\n" \
-                                 f"{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
+                                 f"{tableToMarkdown('Profile', profile)}\n " \
+                                 f"{tableToMarkdown('Additional Data', additionalData)}"
             return users_verbose
 
         else:
@@ -747,7 +749,8 @@ def get_user_factors_command(client, args):
             'ID': user_id
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nFactors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nFactors for user: {user_id}\n " \
+                      f"{tableToMarkdown('Factors', factors)}"
     return (
         readable_output,
         outputs,
@@ -780,7 +783,8 @@ def set_password_command(client, args):
     password = args.get('password')
 
     raw_response = client.set_password(user_id, password)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n{args.get('username')} password was last changed " \
+                      f"on {raw_response.get('passwordChanged')}"
     return (
         readable_output,
         {},
@@ -799,7 +803,8 @@ def add_user_to_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} added to group: {args.get('groupName')} successfully"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} added to group: " \
+                      f"{args.get('groupName')} successfully"
     return (
         readable_output,
         {},
@@ -818,7 +823,8 @@ def remove_from_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.remove_user_from_group(user_id, group_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} was removed from group: {args.get('groupName')} successfully"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} was removed from group: " \
+                      f"{args.get('groupName')} successfully"
     return (
         readable_output,
         {},
@@ -838,7 +844,8 @@ def get_groups_for_user_command(client, args):
             'Type': 'Okta'
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nOkta groups for user: {args.get('username')}\n {tableToMarkdown('Groups', groups)}"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nOkta groups for user: {args.get('username')}\n " \
+                      f"{tableToMarkdown('Groups', groups)}"
 
     return (
         readable_output,
@@ -863,7 +870,8 @@ def verify_push_factor_command(client, args):
             "VerifyPushResult": poll_response.get('factorResult')
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nVerify push factor result for user {user_id}: {poll_response.get('factorResult')}"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nVerify push factor result for user {user_id}: " \
+                      f"{poll_response.get('factorResult')}"
     return (
         readable_output,
         outputs,
@@ -887,7 +895,8 @@ def search_command(client, args):
         if verbose == 'true':
             readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n {users_readable}"
         else:
-            readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n {tableToMarkdown('Users:', users_readable)} "
+            readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n " \
+                              f"{tableToMarkdown('Users:', users_readable)} "
         return (
             readable_output,
             outputs,
@@ -944,7 +953,8 @@ def update_user_command(client, args):
     profile = client.build_profile(args)
     profile['login'] = args.get('username')
     raw_response = client.update_user(user_id, profile, cred)
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta user: {args.get('username')} Updated:", raw_response.get('profile'))
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta user: {args.get('username')} "
+                                      f"Updated:", raw_response.get('profile'))
     return (
         readable_output,
         {},
@@ -966,12 +976,14 @@ def get_group_members_command(client, args):
     }
     if args.get('verbose') == 'true':
         return (
-            f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Users for group: {args.get('groupName') or group_id}:\n {users_readable}",
+            f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Users for group: {args.get('groupName') or group_id}:\n "
+            f"{users_readable}",
             outputs,
             raw_members
         )
     return (
-        tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Users for group: {args.get('groupName') or group_id}", users_readable),
+        tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Users for group: {args.get('groupName') or group_id}",
+                        users_readable),
         outputs,
         raw_members
     )
@@ -1266,7 +1278,8 @@ def create_group_command(client, args):
     outputs = {
         'OktaGroup(val.ID && val.ID === obj.ID)': createContext(group_context)
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nGroup Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
+    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nGroup Created: [GroupID:{raw_response['id']}, " \
+                      f"GroupName: {raw_response['profile']['name']}]"
     return (
         readable_output,
         outputs,
