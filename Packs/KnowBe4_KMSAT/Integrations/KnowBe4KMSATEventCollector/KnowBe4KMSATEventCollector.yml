@@ -74,7 +74,7 @@ script:
       description: The target mail for this event.
       type: String
     - contextPath: KMSat.Event.user.id
-      description: The iIDd of the user the event is targeted to.
+      description: The ID of the user the event is targeted to.
       type: Number
     - contextPath: KMSat.Event.user.archived
       description: Whether the user is archived or not.
