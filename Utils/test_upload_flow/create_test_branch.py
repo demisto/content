@@ -1,11 +1,8 @@
 import argparse
-import shutil
 import time
 
 from git import GitCommandError, Repo, Head
-from pathlib import Path
-import subprocess
-import json
+
 from Tests.Marketplace.marketplace_services import *
 versions_dict = {}
 pack_items_dict = {}
@@ -220,12 +217,13 @@ if __name__ == "__main__":
         modify_item_path(packs_path /
                          'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
                          'Alibaba_schema.json', packs_path / 'AlibabaActionTrail')
+
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
-        #p = subprocess.Popen(['git', 'remote', 'add', 'origin', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git'])  # disable-secrets-detection
         repo.git.commit(m="Added Test file", no_verify=True)
-        repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+        repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'
+                                        f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
         logging.error(e)

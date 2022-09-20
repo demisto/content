@@ -2,7 +2,6 @@ import argparse
 import json
 import tempfile
 
-
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_services import *
 import functools
@@ -35,6 +34,7 @@ def logger(func):
         except FileNotFoundError as e:
             logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             self.is_valid = False
+
     return wrapper
 
 
@@ -50,7 +50,8 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name
+                        in pack_items.items()]
         return all(version_exists) and all(items_exists), pack_id
 
     @logger
@@ -93,8 +94,8 @@ class BucketVerifier:
         """
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
-        return gcp.get_max_version(pack_id) and readme in \
-               self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md'), pack_id
+        return gcp.get_max_version(pack_id) and \
+               readme in self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md'), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):
@@ -134,7 +135,8 @@ class GCP:
         self.storage_bucket = storage_client.bucket(storage_bucket_name)
         self.storage_base_path = storage_base_path
         self.extracting_destination = tempfile.mkdtemp()
-        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination, self.storage_base_path) # fix arguments
+        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
+                                                           self.storage_base_path)
 
     def download_and_extract_pack(self, pack_id, pack_version):
         pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
@@ -261,7 +263,7 @@ if __name__ == "__main__":
     bv.verify_rn('Box', expected_rn)
 
     # verify 1.0.0 rn was added
-    expected_rn = f"""
+    expected_rn = """
                     #### Integrations
                     ##### BPA
                     first release note
@@ -288,7 +290,8 @@ if __name__ == "__main__":
     bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 
     # verify image
-    bv.verify_new_image('Armis', Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
+    bv.verify_new_image('Armis', Path(
+        __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
     logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
     if not is_valid:
