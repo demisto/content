@@ -3,8 +3,11 @@
 
 import argparse
 import filecmp
+import json
 from pathlib import Path
 from zipfile import ZipFile
+
+import dictdiffer
 
 
 def compare_zips(zip1: Path, zip2: Path):
@@ -21,7 +24,13 @@ def compare_zips(zip1: Path, zip2: Path):
     for file in dir_compare.common_files:
         if file.endswith('json'):
             # compare the json files
-            pass
+            with open(Path(zip1.stem) / file) as file1, open(Path(zip2.stem) / file) as file2:
+                json1 = json.load(file1)
+                json2 = json.load(file2)
+                if json1 != json2:
+                    print(f'JSON files {file} are different')
+                    print(dictdiffer.diff(json1, json2))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
