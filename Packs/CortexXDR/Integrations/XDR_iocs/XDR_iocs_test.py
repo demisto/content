@@ -803,7 +803,7 @@ def test_overriding_severity_xsoar():
     # behavior when override_severity is False
     Client.override_severity = False
     Client.xsoar_severity_field = custom_severity_field
-    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'critical'
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'CRITICAL'
 
     # behavior when there is no custom severity value
     dummy_demisto_ioc['CustomFields'][custom_severity_field] = None

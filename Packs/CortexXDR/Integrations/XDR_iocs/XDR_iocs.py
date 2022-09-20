@@ -249,7 +249,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if (not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)):
             # Override is True: use Client.severity
             # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
-            xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
+            xdr_ioc['severity'] = custom_severity.upper()  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
 
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
