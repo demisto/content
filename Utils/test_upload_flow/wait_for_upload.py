@@ -89,10 +89,10 @@ def main():
     pipeline_url = get_pipeline_info(pipeline_id, token).get('web_url')
 
     if upload_job_status == 'skipped':
-        logging.critical(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
+        print(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
         sys.exit(1)
 
-    logging.success(f'The upload has finished. See successful pipeline here: {pipeline_url}')
+    print(f'The upload has finished. See successful pipeline here: {pipeline_url}') # TODO: check why logging lib is not present in gitlab build
 
 
 if __name__ == "__main__":
