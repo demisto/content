@@ -188,18 +188,22 @@ def create_investigation_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['createInvestigation']['id']}"
-    readable_output = f"""
-## Results
-* Created Investigation: [{result['data']['createInvestigation']['id']}]({investigation_url})
-"""
-    outputs = result["data"]["createInvestigation"]
+    try:
+        investigation = result["data"]["createInvestigation"]
+        investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
+    except KeyError:
+        raise ValueError(f"Failed to create investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Investigation",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation",
+            investigation,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -237,18 +241,19 @@ def execute_playbook_command(client: Client, env: str, args=None):
     if not result.get("data"):
         raise ValueError(f"Failed to execute playbook: {result['errors'][0]['message']}")
 
-    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{result['data']['executePlaybookInstance']['id']}"
-    readable_output = f"""
-## Results
-* Executed Playbook Instance: [{result['data']['executePlaybookInstance']['id']}]({execution_url})
-"""
-    outputs = result["data"]["executePlaybookInstance"]
+    execution = result["data"]["executePlaybookInstance"]
+    execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Execution",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=execution,
+        readable_output=tableToMarkdown(
+            "Taegis Playbook Execution",
+            execution,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -350,19 +355,19 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     result = client.graphql_run(query=query, variables=variables)
     alerts = result["data"][field]["alerts"]["list"]
 
-    readable_output = f'## Results\nFound {len(alerts)} alerts'
-
-    if alerts:
-        readable_output += "\n\n### Alerts\n"
-        for alert in alerts:
-            alert_id: str = alert['id'].replace('/', '%2F')
-            readable_output += f"* [{alert['metadata']['title']}]({ENV_URLS[env]['xdr']}/alerts/{alert_id})\n"
+    for alert in alerts:
+        alert.update({"url": generate_id_url(env, "alerts", alert["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Alerts",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=readable_output,
+        readable_output=tableToMarkdown(
+            "Taegis Alerts",
+            alerts,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -618,25 +623,26 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     """
 
     variables = {"page": page, "perPage": page_size, "investigation_id": investigation_id}
-
     result = client.graphql_run(query=query, variables=variables)
 
-    if not result.get("data"):
-        readable_output = f"## Results\nCould not locate investigation '{investigation_id}'"
+    try:
+        alerts = result["data"]["investigationAlerts"]["alerts"]
+    except KeyError:
         alerts = []
-    else:
-        alerts = result["data"]["investigationAlerts"].get("alerts", [])
-        readable_output = f"## Results\nFound {len(alerts)} alerts related to investigation {investigation_id}"
-        if alerts:
-            readable_output += "## Investigation Alerts"
-        for alert in alerts:
-            readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
+
+    for alert in alerts:
+        alert.update({"url": generate_id_url(env, "alerts", alert["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.InvestigationAlerts",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=readable_output,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Alerts",
+            alerts,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -719,24 +725,23 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         result = client.graphql_run(query=query, variables=variables)
 
     try:
-        outputs = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
+        investigations = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
     except KeyError:
-        outputs = []
+        investigations = []
 
-    readable_output = f"## Results\nFound {len(outputs)} investigation(s)"
-
-    for investigation in outputs:
-        readable_output += f"""\n\n### [{investigation['description']}]({ENV_URLS[env]['xdr']}/investigations/{investigation["id"]})
-* ID: {investigation['id']}
-* Priority: {investigation['priority']}
-* Status: {investigation['status']}
-"""
+    for investigation in investigations:
+        investigation.update({"url": generate_id_url(env, "investigations", investigation["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Investigations",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigations,
+        readable_output=tableToMarkdown(
+            "Taegis Investigations",
+            investigations,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -774,33 +779,22 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    if not result.get("data"):
-        readable_output = f"## Results\n* Could not locate execution '{execution_id}': {result['errors'][0]['message']}"
-        outputs = {}
-    else:
+    try:
         execution = result['data']["playbookExecution"]
-        execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{execution['id']}"
-        readable_output = f"""
-## Results
-* Playbook Name: {execution['instance']['playbook']['name']}
-* Playbook Instance Name: {execution['instance']['name']}
-* Executed Playbook Instance: [{execution['id']}]({execution_url})
-* Executed Time: {execution['createdAt']}
-* Run Time: {execution['executionTime']}
-* Execution State: {execution['state']}
-* Execution Outputs:
-
-```
-{execution['outputs']}
-```
-"""
-        outputs = result["data"]["playbookExecution"]
+        execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
+    except KeyError:
+        raise ValueError(f"Failed to fetch playbook execution: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.PlaybookExecution",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=execution,
+        readable_output=tableToMarkdown(
+            "Taegis Playbook Execution",
+            execution,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -883,15 +877,22 @@ def update_investigation_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['updateInvestigation']['id']}"
-    readable_output = f"## Results\n* Updated Investigation: [{result['data']['updateInvestigation']['id']}]({investigation_url})"
-    outputs = result["data"]["updateInvestigation"]
+    try:
+        investigation = result["data"]["updateInvestigation"]
+        investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
+    except KeyError:
+        raise ValueError(f"Failed to update investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.InvestigationUpdate",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation",
+            investigation,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -907,6 +908,14 @@ def test_module(client: Client) -> str:
         return "ok"
     except DemistoException as exception:
         raise DemistoException(exception)
+
+
+""" UTILITIES """
+
+
+def generate_id_url(env: str, endpoint: str, element_id: str):
+    element_id: str = element_id.replace('/', '%2F')
+    return f"{ENV_URLS[env]['xdr']}/{endpoint}/{element_id}"
 
 
 """ MAIN """
