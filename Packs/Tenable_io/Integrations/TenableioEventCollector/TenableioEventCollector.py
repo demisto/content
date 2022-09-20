@@ -84,7 +84,7 @@ class Client(BaseClient):
         Returns: The UUID of the vulnerabilities export job.
 
         """
-        payload = {
+        payload: Dict[str, Union[Any]] = {
             "filters":
                 {
                     "severity": severity
@@ -292,11 +292,24 @@ def run_vulnerabilities_fetch(last_run: dict, first_fetch: Optional[datetime], v
 
 
 @polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
-def get_vulnerabilities_command(client: Client, last_found: Optional[float] = None, severity: list = [],
-                                num_assets: int = 5000, export_uuid: str = None):
+def get_vulnerabilities_command(args: Dict[str, Any], client: Client):
+    """
+    Getting vulnerabilities from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
+    Args:
+        args: arguments from user (last_found, severity and num_assets)
+        client: Client class object.
+
+    Returns: Vulnerabilities from API.
+
+    """
     vulnerabilities = []
+    last_found = arg_to_number(args.get('last_found'))
+    num_assets = arg_to_number(args.get('num_assets')) or 5000
+    severity = argToList(args.get('severity'))
+    export_uuid = args.get('export_uuid')
     if not export_uuid:
-        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found, severity=severity)
+        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found, severity=severity)  # type:
+        # ignore
 
     status, chunks_available = client.get_export_status(export_uuid=export_uuid)
     if status == 'FINISHED':
@@ -311,16 +324,16 @@ def get_vulnerabilities_command(client: Client, last_found: Optional[float] = No
                                  outputs=vulnerabilities,
                                  readable_output=readable_output,
                                  raw_response=vulnerabilities)
-        return PollResult(response=(results, vulnerabilities))
+        return PollResult(response=results)
     elif status in ['CANCELLED', 'ERROR']:
         results = CommandResults(readable_output='Export job failed',
                                  entry_type=entryTypes['error'])
-        return PollResult(response=(results, vulnerabilities))
+        return PollResult(response=results)
     else:
         results = CommandResults(readable_output='Export job failed',
                                  entry_type=entryTypes['error'])
-        return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid},
-                          response=(results, vulnerabilities))
+        return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
+                          response=results)
 
 
 def test_module(client: Client) -> str:
@@ -353,8 +366,8 @@ def main() -> None:  # pragma: no cover
     events = []
     vulnerabilities = []
 
-    access_key = params.get('access_key', {}).get('password')
-    secret_key = params.get('secret_key', {}).get('password')
+    access_key = params.get('credentials', {}).get('identifier', '')
+    secret_key = params.get('credentials', {}).get('password', '')
     vuln_fetch_interval = arg_to_number(params.get('vuln_fetch_interval', 240)) * 60  # type: ignore
     severity = argToList(params.get('severity'))
 
@@ -387,11 +400,10 @@ def main() -> None:  # pragma: no cover
                                                          target_id=args.get('target_id'),
                                                          limit=args.get('limit'))
                 return_results(results)
-            if command == 'tenable-get-vulnerabilities':
-                results, vulnerabilities = get_vulnerabilities_command(client,
-                                                                       last_found=args.get('last_found'),
-                                                                       num_assets=arg_to_number(args.get('num_assets')) or 5000,
-                                                                       severity=argToList(args.get('severity')))
+            elif command == 'tenable-get-vulnerabilities':
+                results = get_vulnerabilities_command(args, client)
+                if hasattr(results, 'outputs') and results.outputs:  # pylint: disable=E1101
+                    vulnerabilities = results.outputs  # pylint: disable=E1101
                 return_results(results)
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
@@ -401,7 +413,9 @@ def main() -> None:  # pragma: no cover
                     new_last_run_vuln = generate_export_uuid(client, first_fetch, last_run, severity)
 
                 vulnerabilities, events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
+                demisto.info(new_last_run)
                 new_last_run.update(new_last_run_vuln)
+                demisto.info(new_last_run)
                 demisto.setLastRun(new_last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):

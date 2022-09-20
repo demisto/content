@@ -3,15 +3,10 @@ commonfields:
   id: Tenable.io Event Collector
   version: -1
 configuration:
-- displaypassword: Access Key
-  additionalinfo: Tenable API access key.
-  name: access_key
-  required: true
-  hiddenusername: true
-  type: 9
 - displaypassword: Secret Key
-  additionalinfo: Tenable API secret key.
-  name: secret_key
+  display: Access Key
+  additionalinfo: Tenable API access and secret key.
+  name: credentials
   required: true
   hiddenusername: true
   type: 9
@@ -52,7 +47,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Tenable.io Event Collector integration.
+description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs from Tenable.
 display: Tenable.io Event Collector
 name: Tenable.io Event Collector
 script:
@@ -125,6 +120,8 @@ script:
       secret: false
     - name: hide_polling_output
       description: Hide polling output.
+      deprecated: true
+    - name: export_uuid
       deprecated: true
     deprecated: false
     description: Returns vulnerabilities extracted from Tenable io.
