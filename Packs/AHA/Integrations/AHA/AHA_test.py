@@ -40,8 +40,8 @@ def test_getFeatures(mocker):
             - Asserts get all features
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get_features(client=client, fromDate="2022-01-01")
-    assert len(results.outputs) == 30
+    results = get_features(client=client, from_date="2022-01-01")
+    assert len(results.outputs) == 3
 
 
 def test_getFeaturesFromDate(mocker):
@@ -52,7 +52,7 @@ def test_getFeaturesFromDate(mocker):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
-    results = get_features(client=client, fromDate="3000-01-01")
+    results = get_features(client=client, from_date="3000-01-01")
     assert len(results.outputs) == 0
 
 
@@ -64,7 +64,7 @@ def test_getSpecificFeature(mocker):
             - Return the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get_feature(client=client, featureName="DEMO-10")
+    result = get_feature(client=client, feature_name="DEMO-10")
     assert result.outputs['reference_num'] == "DEMO-10"
 
 
@@ -76,7 +76,7 @@ def test_getSpecificFeatureWithSpecificFields(mocker):
             - Return the requested feature with the specified fields
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature_specific_fields.json'))
-    result = get_feature(client=client, featureName="DEMO-10", fieldsList=["workflow_status", "name"])
+    result = get_feature(client=client, feature_name="DEMO-10", fields_list=["workflow_status", "name"])
     if "reference_num" in result.outputs:
         pytest.fail("There should NOT be a reference_num field in output.")
     assert result.outputs['name'] == "Push based weather alerts"
@@ -90,7 +90,7 @@ def test_updateFeatureField(mocker):
             - Return the feature with updated fields.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
-    result = edit_feature(client=client, featureName="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
+    result = edit_feature(client=client, feature_name="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
                           "status": "Closed"})
     assert result.outputs['name'] == "DEMO-10"
     assert result.outputs['description']['body'] == "new description"

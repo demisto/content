@@ -22,37 +22,37 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self._headers = headers
 
-    def get_features(self, fromDate: str = "2020-01-01") -> Dict:
+    def get_features(self, from_date: str = "2020-01-01") -> Dict:
         """
         Retrieves a list of features from AHA
         Args:
-            fromDate: str format: YYYY-MM-DD
+            from_date: str format: YYYY-MM-DD
         """
         headers = self._headers
-        response = self._http_request(method='GET', url_suffix=f"{URL_SUFFIX}?updated_since={fromDate}", headers=headers,
+        response = self._http_request(method='GET', url_suffix=f"{URL_SUFFIX}?updated_since={from_date}", headers=headers,
                                       resp_type='json')
         return response
 
-    def get_feature(self, featureName: str, fieldsList: Optional[List]) -> Dict:
+    def get_feature(self, feature_name: str, fields_list: Optional[List]) -> Dict:
         """
         Retrieves a specific feature from AHA
         Args:
-            featureName: str
+            feature_name: str
         """
         headers = self._headers
-        url_suffix = f"{URL_SUFFIX}{featureName}"
-        if fieldsList:
-            fields = ",".join(fieldsList)
+        url_suffix = f"{URL_SUFFIX}{feature_name}"
+        if fields_list:
+            fields = ",".join(fields_list)
             url_suffix = f"{url_suffix}?fields={fields}"
         response = self._http_request(method='GET', url_suffix=url_suffix, headers=headers,
                                       resp_type='json')
         return response
 
-    def edit_feature(self, featureName: str, fields: Dict) -> Dict:
+    def edit_feature(self, feature_name: str, fields: Dict) -> Dict:
         """
         Updates fields in a feature from AHA
         Args:
-            featureName: str feature to update
+            feature_name: str feature to update
             fields: Dict fields to update
         """
         name = fields.get("name")
@@ -63,21 +63,21 @@ class Client(BaseClient):
         demisto.debug(f"payload: {payload}")
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{featureName}", headers=headers,
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}", headers=headers,
                                       resp_type='json', data=json.dumps(payload))
 
         return response
 
-    def close_feature(self, featureName: str) -> Dict:
+    def close_feature(self, feature_name: str) -> Dict:
         """
         Sets a Aha! feature status to Closed
         Args:
-            featureName: str feature staus to close
+            feature_name: str feature staus to close
         """
         payload = '{"feature":{"workflow_status": {"name": "Closed" }}}'
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{featureName}", headers=headers,
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}", headers=headers,
                                       resp_type='json', data=payload)
         return response
 
@@ -101,10 +101,10 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_features(client: Client, fromDate: str) -> CommandResults:
+def get_features(client: Client, from_date: str) -> CommandResults:
     message: str = ''
     try:
-        result = client.get_features(fromDate=fromDate)
+        result = client.get_features(from_date=from_date)
         if result:
             message = result['features']
     except DemistoException as e:
@@ -121,10 +121,10 @@ def get_features(client: Client, fromDate: str) -> CommandResults:
     return command_results
 
 
-def get_feature(client: Client, featureName: str, fieldsList: Optional[List] = None) -> CommandResults:
+def get_feature(client: Client, feature_name: str, fields_list: Optional[List] = None) -> CommandResults:
     message: str = ''
     try:
-        result = client.get_feature(featureName=featureName, fieldsList=fieldsList)
+        result = client.get_feature(feature_name=feature_name, fields_list=fields_list)
         if result:
             message = result['feature']
     except DemistoException as e:
@@ -141,10 +141,10 @@ def get_feature(client: Client, featureName: str, fieldsList: Optional[List] = N
     return command_results
 
 
-def edit_feature(client: Client, featureName: str, fields: Dict) -> CommandResults:
+def edit_feature(client: Client, feature_name: str, fields: Dict) -> CommandResults:
     message: str = ''
     try:
-        result = client.edit_feature(featureName=featureName, fields=fields)
+        result = client.edit_feature(feature_name=feature_name, fields=fields)
         if result:
             message = result['feature']
     except DemistoException as e:
@@ -161,10 +161,10 @@ def edit_feature(client: Client, featureName: str, fields: Dict) -> CommandResul
     return command_results
 
 
-def close_feature(client: Client, featureName: str) -> CommandResults:
+def close_feature(client: Client, feature_name: str) -> CommandResults:
     message: str = ''
     try:
-        result = client.close_feature(featureName=featureName)
+        result = client.close_feature(feature_name=feature_name)
         if result:
             message = result['feature']
     except DemistoException as e:
@@ -212,22 +212,22 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'aha-get-features':
-            fromDate = args.get('fromDate', '2020-01-01')
-            commandResult = get_features(client, fromDate=fromDate)
-            return_results(commandResult)
+            from_date = args.get('from_date', '2020-01-01')
+            command_result = get_features(client, from_date=from_date)
+            return_results(command_result)
         elif command == 'aha-get-feature':
-            featureName = args.get('featureName', '')
-            commandResult = get_feature(client, featureName=featureName)
-            return_results(commandResult)
+            feature_name = args.get('feature_name', '')
+            command_result = get_feature(client, feature_name=feature_name)
+            return_results(command_result)
         elif command == 'aha-edit-feature':
-            featureName = args.get('featureName', '')
+            feature_name = args.get('feature_name', '')
             fields = json.loads(args.get('fields', {}))
-            commandResult = edit_feature(client, featureName=featureName, fields=fields)
-            return_results(commandResult)
+            command_result = edit_feature(client, feature_name=feature_name, fields=fields)
+            return_results(command_result)
         elif command == 'aha-close-feature':
-            featureName = args.get('featureName', '')
-            commandResult = close_feature(client, featureName=featureName)
-            return_results(commandResult)
+            feature_name = args.get('feature_name', '')
+            command_result = close_feature(client, feature_name=feature_name)
+            return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:

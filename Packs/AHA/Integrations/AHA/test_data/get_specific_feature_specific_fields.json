@@ -4,8 +4,8 @@
         "name": "Push based weather alerts",
         "created_by_user": {
             "id": "7142047370286614216",
-            "name": "Danny Fried",
-            "email": "dfried@paloaltonetworks.com"
+            "name": "User",
+            "email": "user@email.com"
         },
         "workflow_status": {
             "id": "7142047373292237665",

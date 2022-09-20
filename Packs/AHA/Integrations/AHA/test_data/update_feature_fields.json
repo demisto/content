@@ -18,8 +18,8 @@
         "status_changed_on": "2022-09-14",
         "created_by_user": {
             "id": "7142047370286614216",
-            "name": "Danny Fried",
-            "email": "dfried@paloaltonetworks.com",
+            "name": "User",
+            "email": "user@email.com",
             "created_at": "2022-09-11T09:11:26.224Z",
             "updated_at": "2022-09-14T10:23:24.795Z"
         },
@@ -42,8 +42,8 @@
         },
         "attachments": [],
         "integration_fields": [],
-        "url": "https://paloalto-networks.aha.io/features/DEMO-10",
-        "resource": "https://paloalto-networks.aha.io/api/v1/features/DEMO-10",
+        "url": "https://example.com.aha.io/features/DEMO-10",
+        "resource": "https://example.com.aha.io/api/v1/features/DEMO-10",
         "release": {
             "id": "7142047392704264269",
             "reference_num": "DEMO-R-3",
@@ -54,12 +54,12 @@
             "created_at": "2022-09-11T09:11:33.199Z",
             "product_id": "7142047389388652071",
             "integration_fields": [],
-            "url": "https://paloalto-networks.aha.io/releases/DEMO-R-3",
-            "resource": "https://paloalto-networks.aha.io/api/v1/releases/DEMO-R-3",
+            "url": "https://example.com.aha.io/releases/DEMO-R-3",
+            "resource": "https://example.com.aha.io/api/v1/releases/DEMO-R-3",
             "owner": {
                 "id": "7142047370286614216",
-                "name": "Danny Fried",
-                "email": "dfried@paloaltonetworks.com",
+                "name": "User",
+                "email": "user@email.com",
                 "created_at": "2022-09-11T09:11:26.224Z",
                 "updated_at": "2022-09-14T10:23:24.795Z"
             },
@@ -97,8 +97,8 @@
             "id": "7142047389806640688",
             "reference_num": "DEMO-S-3",
             "name": "Mobile Fredwin Cycling Tracker App upgrades",
-            "url": "https://paloalto-networks.aha.io/initiatives/DEMO-S-3",
-            "resource": "https://paloalto-networks.aha.io/api/v1/initiatives/DEMO-S-3",
+            "url": "https://example.com.aha.io/initiatives/DEMO-S-3",
+            "resource": "https://example.com.aha.io/api/v1/initiatives/DEMO-S-3",
             "created_at": "2022-09-11T09:11:33.031Z",
             "description": {
                 "id": "7142047389835002618",
@@ -112,8 +112,8 @@
             {
                 "id": "7142047387627910934",
                 "name": "Most used mobile apps",
-                "url": "https://paloalto-networks.aha.io/strategic_imperatives/7142047387627910934",
-                "resource": "https://paloalto-networks.aha.io/api/v1/goals/7142047387627910934",
+                "url": "https://example.com.aha.io/strategic_imperatives/7142047387627910934",
+                "resource": "https://example.com.aha.io/api/v1/goals/7142047387627910934",
                 "created_at": "2022-09-11T09:11:30.399Z",
                 "description": {
                     "id": "7142047387664021169",
