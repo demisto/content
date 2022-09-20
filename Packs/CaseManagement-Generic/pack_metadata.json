@@ -19,7 +19,6 @@
     ],
     "beta": true,
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

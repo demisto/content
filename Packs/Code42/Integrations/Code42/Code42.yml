@@ -8,10 +8,11 @@ configuration:
   name: console_url
   required: true
   type: 0
-- display: Username
+- display: API Client ID
   name: credentials
   required: true
   type: 9
+  displaypassword: API Client Secret
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -23,8 +24,9 @@ configuration:
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
   options:
+  - Critical
   - High
-  - Medium
+  - Moderate
   - Low
   required: false
   type: 16
@@ -33,7 +35,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '5'
   display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
   required: false
@@ -43,6 +45,11 @@ configuration:
   name: include_files
   required: false
   type: 8
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: '3'
+  required: false
+  type: 19
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
@@ -389,7 +396,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a user from the High Risk Employee List.
+    description: Adds a user to the High Risk Employee List.
     execution: false
     name: code42-highriskemployee-add
     outputs:
@@ -787,7 +794,131 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.23290
+  - name: code42-watchlists-list
+    description: List all existing watchlists in your environment.
+    outputs:
+    - contextPath: Code42.Watchlists.ListType
+      description: The Type of Watchlist.
+      type: string
+    - contextPath: Code42.Watchlists.Id
+      description: The ID of the Watchlist.
+      type: string
+    - contextPath: Code42.Watchlists.IncludedUserCount
+      description: The count of included users on the Watchlist.
+      type: integer
+  - name: code42-watchlists-add-user
+    description: Add a user to a watchlist.
+    arguments:
+    - name: username
+      default: false
+      required: true
+      description: Email id of the user to add to Watchlist.
+      secret: false
+      isArray: false
+    - name: watchlist
+      default: false
+      required: true
+      description: WatchlistID or WatchlistType to add user to.
+      secret: false
+      isArray: false
+    outputs:
+    - contextPath: Code42.UsersAddedToWatchlists.Watchlist
+      description: The ID/Type of the watchlist user was added to.
+      type: string
+    - contextPath: Code42.UsersAddedToWatchlists.Username
+      description: The username added to watchlist.
+      type: string
+    - contextPath: Code42.UsersAddedToWatchlists.Success
+      description: If the user was added successfully.
+      type: boolean
+  - name: code42-watchlists-remove-user
+    description: Remove a user from a watchlist.
+    arguments:
+    - name: username
+      default: false
+      required: true
+      description: Email id of the user to add to Watchlist.
+      secret: false
+      isArray: false
+    - name: watchlist
+      default: false
+      required: true
+      description: WatchlistID or WatchlistType to remove user from.
+      secret: false
+      isArray: false
+    outputs:
+    - contextPath: Code42.UsersRemovedFromWatchlists.Watchlist
+      description: The ID/Type of the watchlist user was removed from.
+      type: string
+    - contextPath: Code42.UsersRemovedFromWatchlists.Username
+      description: The username removed from watchlist.
+      type: string
+    - contextPath: Code42.UsersRemovedFromWatchlists.Success
+      description: If the user was removed successfully.
+      type: boolean
+  - name: code42-watchlists-list-included-users
+    description: List all users who have been explicitly added to a given watchlist.
+    arguments:
+    - name: watchlist
+      description: The WatchlistID or WatchlistType to get a list of included users for.
+      required: true
+      secret: false
+      isArray: false
+      default: false
+    outputs:
+    - contextPath: Code42.WatchlistUsers.WatchlistID
+      description: The ID of the Watchlist.
+      type: string
+    - contextPath: Code42.WatchlistUsers.Username
+      description: The username on the watchlist.
+      type: string
+    - contextPath: Code42.WatchlistUsers.AddedTime
+      description: The datetime the user was added to the watchlist.
+      type: datetime
+  - name: code42-user-update-risk-profile
+    description: Update a user's risk profile.
+    arguments:
+    - name: username
+      description: The user to update.
+      required: true
+      secret: false
+      isArray: false
+      default: false
+    - name: start_date
+      description: The user's start date (useful for New Employee Watchlist).
+      required: false
+      secret: false
+      isArray: false
+      default: false
+    - name: end_date
+      description: The user's end date (useful for Departing Employee Watchlist).
+      required: false
+      secret: false
+      isArray: false
+      default: false
+    - name: notes
+      description: Risk profile notes.
+      required: false
+      secret: false
+      isArray: false
+      default: false
+    outputs:
+    - contextPath: Code42.UpdatedUserRiskProfiles.Username
+      description: The user that was updated.
+      type: string
+    - contextPath: Code42.UpdatedUserRiskProfiles.StartDate
+      description: The startDate value of the UserRiskProfile after the update.
+      type: date
+    - contextPath: Code42.UpdatedUserRiskProfiles.EndDate
+      description: The startDate value of the UserRiskProfile after the update.
+      type: date
+    - contextPath: Code42.UpdatedUserRiskProfiles.Notes
+      description: The notes value of the UserRiskProfile after the update.
+      type: string
+    - contextPath: Code42.UpdatedUserRiskProfiles.Success
+      description: If the risk profile update was successful.
+      type: boolean
+  dockerimage: demisto/py42:1.0.0.33857
   feed: false
   isfetch: true
   longRunning: false
@@ -797,3 +928,7 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+defaultclassifier: Code42 - Classifier
+defaultmapperin: Code42 - Mapping
+tests:
+- No tests (auto formatted)
