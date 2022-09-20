@@ -344,6 +344,7 @@ class QueryStatus(str, Enum):
     WAIT = 'wait'
     ERROR = 'error'
     SUCCESS = 'success'
+    PARTIAL = 'partial'
 
 
 ''' CLIENT CLASS '''
@@ -3561,14 +3562,14 @@ def qradar_search_retrieve_events_command(
                                   readable_output='Not all events were fetched. Searching again.',
                                   outputs_prefix='QRadar.SearchEvents',
                                   outputs_key_field='ID',
-                                  outputs={'Events': events, 'ID': search_id, 'Status': 'Partial'},
+                                  outputs={'Events': events, 'ID': search_id, 'Status': QueryStatus.PARTIAL},
                                   )
 
         else:
             return CommandResults(
                 outputs_prefix='QRadar.SearchEvents',
                 outputs_key_field='ID',
-                outputs={'Events': events, 'ID': search_id, 'Status': 'Success'},
+                outputs={'Events': events, 'ID': search_id, 'Status': QueryStatus.SUCCESS},
                 readable_output=tableToMarkdown(f'{get_num_events(events)} Events returned from search_id {search_id}',
                                                 events,
                                                 ),
@@ -3585,11 +3586,12 @@ def qradar_search_retrieve_events_command(
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
+    outputs = {'ID': search_id, 'Status': QueryStatus.WAIT}
     return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                           readable_output=f'Search ID: {search_id}',
                           outputs_prefix='QRadar.SearchEvents',
                           outputs_key_field='ID',
-                          outputs=search_command_results.outputs if search_command_results else None,
+                          outputs=outputs,
                           )
 
 
