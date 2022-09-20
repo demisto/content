@@ -483,6 +483,30 @@ def test_search_file_command(mock_response, file_hash, expected_results):
     assert results[0].outputs.get('IndicatorValue') in expected_results
 
 
+@pytest.mark.parametrize(argnames='mock_response, domain',
+                         argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
+def test_search_domain_command(mock_response, domain):
+    """
+     Given:
+         - A domain.
+     When:
+         - When running search_domain_command.
+     Then:
+         - Ensure the indicator contains the correct domain.
+     """
+
+    from AutofocusV2 import search_domain_command
+
+    with open(f'test_data/{mock_response}.json') as f:
+        response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
+        results = search_domain_command(domain, None, False)
+
+    assert results[0].indicator.domain == domain
+
+
 @pytest.mark.parametrize(argnames='ioc_type, ioc_val',
                          argvalues=[('url', 'test_url'),
                                     ('domain', 'test_domain'),

@@ -1156,14 +1156,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://example.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
               simple: http://test.com#fragment3
       - - operator: containsGeneral
           left:
@@ -1188,7 +1180,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://_23_11.redacted.com
+              simple: http://_23_11.redacted.com./#redactedredactedredacted
       - - operator: containsGeneral
           left:
             value:
@@ -1327,14 +1319,6 @@ tasks:
           right:
             value:
               simple: http://foo.bar/foo(bar)baz quux
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.foo.bar/baz?x=3())
     view: |-
       {
         "position": {

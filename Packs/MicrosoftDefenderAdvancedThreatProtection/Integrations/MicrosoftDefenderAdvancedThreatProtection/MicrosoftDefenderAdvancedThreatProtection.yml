@@ -31,6 +31,26 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_type
+  defaultvalue: Client Credentials
+  options:
+  - Authorization Code
+  - Client Credentials
+  type: 15
+- display: Application redirect URI (for authorization code mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions section
+  hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
@@ -110,6 +130,10 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - deprecated: false
+    description: Tests connectivity to Microsoft Defender for Endpoint.
+    execution: false
+    name: microsoft-atp-test
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -3681,6 +3705,12 @@ script:
       name: rbac_group_names
       required: false
       secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified indicator.
     execution: false
@@ -3856,6 +3886,12 @@ script:
       description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
+      required: false
+      secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
       required: false
       secret: false
     deprecated: false
@@ -5796,7 +5832,7 @@ script:
     - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
       description: Troubleshooting information.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.34100
   feed: false
   isfetch: true
   longRunning: false
