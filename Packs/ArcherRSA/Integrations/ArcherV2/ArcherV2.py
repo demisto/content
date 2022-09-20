@@ -965,7 +965,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
     context: dict = {
         'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return_outputs(ec, context, {})
+    return_outputs(ec, context, json.loads(xml2json(raw_res)))
 
 
 def search_options_command(client: Client, args: Dict[str, str]):
@@ -991,7 +991,7 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
         'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
             field_data
     }
-    return_outputs(markdown, context, {})
+    return_outputs(markdown, context, field_data)
 
 
 def upload_file_command(client: Client, args: Dict[str, str]) -> str:
@@ -1144,7 +1144,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     markdown = tableToMarkdown('Search records results', hr)
     context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
-    return_outputs(markdown, context, {})
+    return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
 
 def search_records_by_report_command(client: Client, args: Dict[str, str]):
