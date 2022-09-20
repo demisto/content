@@ -2051,6 +2051,7 @@ class Pack(object):
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
+
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.add_pack_type_tags(content_item, 'Integration')

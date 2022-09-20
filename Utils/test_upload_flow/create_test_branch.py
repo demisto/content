@@ -1,6 +1,7 @@
 import argparse
 import time
-
+import logging
+import os
 from git import GitCommandError, Repo, Head
 
 from Tests.Marketplace.marketplace_services import *

@@ -3,7 +3,7 @@ import json
 from Tests.scripts.utils import logging_wrapper as logging
 import sys
 import time
-
+import os
 import requests
 
 GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
