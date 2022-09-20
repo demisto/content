@@ -158,6 +158,8 @@ def stringify(value: Any) -> str:
        (isinstance(value, dict) and (not value)) or\
        (isinstance(value, list) and (not value)):
         return ''
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
     return str(value)
 
 
@@ -197,6 +199,7 @@ def main():
         if suffix:
             value = stringify(value) + stringify(formatter.build(suffix, extract_dt, dx))
 
+        value = [] if value is None else value
     except Exception as err:
         # Don't return an error by return_error() as this is transformer.
         raise DemistoException(str(err))

@@ -1,6 +1,57 @@
 [
   {
-    "comments": "value is null, prefix and suffix have string values",
+    "comments": "null(prefix) + null(value) + null(suffix) = empty array",
+    "args": {
+      "value": null,
+      "prefix": null,
+      "suffix": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": []
+  },
+  {
+    "comments": "bool:false(prefix) + str(value) + null(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": false,
+      "suffix": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "falsexxx"
+  },
+  {
+    "comments": "bool:true(prefix) + str(value) + null(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": true,
+      "suffix": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "truexxx"
+  },
+  {
+    "comments": "str(prefix) + null(value) + str(suffix)",
     "args": {
       "value": null,
       "prefix": "yyy",
@@ -17,7 +68,7 @@
     "results": "yyyzzz"
   },
   {
-    "comments": "value, prefix and suffix have string values",
+    "comments": "str(prefix) + str(value) + str(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "yyy",
@@ -34,7 +85,7 @@
     "results": "yyyxxxzzz"
   },
   {
-    "comments": "value and prefix has a string value, suffix is null",
+    "comments": "str(prefix) + str(value) + null(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "yyy",
@@ -51,7 +102,7 @@
     "results": "yyyxxx"
   },
   {
-    "comments": "value and prefix has a string value, suffix is 0",
+    "comments": "str(prefix) + str(value) + int:0(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "yyy",
@@ -68,7 +119,7 @@
     "results": "yyyxxx0"
   },
   {
-    "comments": "value and prefix has a string value, suffix is empty dict",
+    "comments": "str(prefix) + str(value) + dict:empty(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "yyy",
@@ -85,7 +136,7 @@
     "results": "yyyxxx"
   },
   {
-    "comments": "value and prefix has a string value, suffix is empty array",
+    "comments": "str(prefix) + str(value) + array:empty(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "yyy",
@@ -102,7 +153,7 @@
     "results": "yyyxxx"
   },
   {
-    "comments": "value and suffix has a string value, prefix is null",
+    "comments": "null(prefix) + str(value) + str(suffix)",
     "args": {
       "value": "xxx",
       "prefix": null,
@@ -119,7 +170,7 @@
     "results": "xxxzzz"
   },
   {
-    "comments": "value and suffix has a string value, prefix is 0",
+    "comments": "int:0(prefix) + str(value) + str(suffix)",
     "args": {
       "value": "xxx",
       "prefix": 0,
@@ -136,7 +187,7 @@
     "results": "0xxxzzz"
   },
   {
-    "comments": "value and suffix has a string value, prefix is empty dict",
+    "comments": "dict:empty(prefix) + str(value) + str(suffix)",
     "args": {
       "value": "xxx",
       "prefix": {},
@@ -153,7 +204,7 @@
     "results": "xxxzzz"
   },
   {
-    "comments": "value and suffix has a string value, prefix is empty array",
+    "comments": "array:empty(prefix) + str(value) + str(suffix)",
     "args": {
       "value": "xxx",
       "prefix": [],
@@ -170,7 +221,7 @@
     "results": "xxxzzz"
   },
   {
-    "comments": "value is integer 123, prefix and suffix are null",
+    "comments": "null(prefix) + str(value) + str(suffix)",
     "args": {
       "value": 123,
       "prefix": null,
@@ -187,7 +238,7 @@
     "results": 123
   },
   {
-    "comments": "value has a string value, prefix and suffix include raw DT values",
+    "comments": "DT:single(prefix) + str(value) + DT:single(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "${name1}",
@@ -204,7 +255,7 @@
     "results": "value1xxxvalue2"
   },
   {
-    "comments": "value has a string value, prefix and suffix include DT values",
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix)",
     "args": {
       "value": "xxx",
       "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
@@ -227,7 +278,7 @@
     "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
   },
   {
-    "comments": "value has a string value, prefix and suffix include DT values with {}",
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), variable_markers={}",
     "args": {
       "value": "xxx",
       "prefix": "aaa {name1} {inputs.name1} {incident.name1} bbb",
@@ -250,7 +301,7 @@
     "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
   },
   {
-    "comments": "value has a string value, prefix and suffix include DT values, but a value is missing",
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), DT value is missing",
     "args": {
       "value": "xxx",
       "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
@@ -272,7 +323,7 @@
     "results": "aaa  inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
   },
   {
-    "comments": "value has a string value, prefix and suffix include DT values, but a value is missing (keep_symbol_to_null=true)",
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), DT value is missing (keep_symbol_to_null=true)",
     "args": {
       "value": "xxx",
       "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
@@ -294,7 +345,7 @@
     "results": "aaa ${name1} inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
   },
   {
-    "comments": "Nested DT expressions",
+    "comments": "Nested DT",
     "args": {
       "value": "xxx",
       "prefix": "aaa ${name${name1}} bbb",
