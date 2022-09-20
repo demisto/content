@@ -1,7 +1,6 @@
 commonfields:
   id: appNovi
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: appNovi
 display: appNovi
 category: Analytics & SIEM
@@ -21,8 +20,14 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 script:
+  script: '-'
   type: python
+  subtype: python3
   commands:
   - name: search-appnovi-components
     arguments:
@@ -125,8 +130,7 @@ script:
     arguments:
     - name: identity
       required: true
-      description: appNovi identifier key-value or use key "_id" when searching via
-        appNovi ID
+      description: appNovi identifier key-value or use key "_id" when searching via appNovi ID
       type: keyValue
     - name: category
       auto: PREDEFINED
@@ -354,7 +358,7 @@ script:
       type: textArea
       description: Server IP to search
     description: Search for servers using IP address
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
