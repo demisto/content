@@ -47,7 +47,7 @@ class EntityAPI(ABC):
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
-class PlaybookAPI(EntityAPI):
+class PlaybookAPI(EntityAPI):  # works
     name = 'playbook'
 
     def search_specific_id(self, specific_id: str):
@@ -61,7 +61,7 @@ class PlaybookAPI(EntityAPI):
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: check
+    def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/playbook/delete',
                                 'body': {'id': specific_id}},
@@ -233,7 +233,7 @@ class DashboardAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
-class ReportAPI(EntityAPI):
+class ReportAPI(EntityAPI):  # works
     name = 'report'
 
     def search_specific_id(self, specific_id: str):
@@ -246,9 +246,9 @@ class ReportAPI(EntityAPI):
                                {'uri': '/reports'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):   # TODO: doesn't work
+    def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-delete',
-                               {'uri': f'/reports/{specific_id}'},
+                               {'uri': f'/report/{specific_id}'},
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str], name: str):
