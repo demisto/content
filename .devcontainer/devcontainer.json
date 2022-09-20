@@ -4,6 +4,11 @@
 		"dockerfile": "Dockerfile",
 
 	},
+	"runArgs": [
+		"--init",
+		"--privileged"
+	],
+	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
 		"source=node-modules,target=${containerWorkspaceFolder}/node-modules,type=volume",
@@ -58,6 +63,7 @@
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
+		"PATH": "${containerWorkspaceFolder}/.venv/bin/demisto-sdk:${containerEnv:PATH}}",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -89,5 +95,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && touch .env && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap"
 }
