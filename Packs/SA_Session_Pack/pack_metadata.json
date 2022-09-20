@@ -1,0 +1,21 @@
+{
+    "name": "SA_Session_Pack",
+    "description": "The new SA Pack is a ..... it includes the following.... ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shachar Kidor",
+    "url": "",
+    "email": "",
+    "created": "2022-09-20T18:32:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ShacharKidor"
+    ]
+}
