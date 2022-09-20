@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: Create user
       description: Create a new user
-      script: Delinea|||delinea-user-create
+      script: DelineaSS|||delinea-user-create
       type: regular
       iscommand: true
       brand: Delinea
@@ -86,7 +86,7 @@ tasks:
       version: -1
       name: Search user
       description: Search, filter, sort, and page users
-      script: Delinea|||delinea-user-search
+      script: DelineaSS|||delinea-user-search
       type: regular
       iscommand: true
       brand: Delinea
@@ -134,7 +134,7 @@ tasks:
       version: -1
       name: Update User
       description: Update a single user by ID
-      script: Delinea|||delinea-user-update
+      script: DelineaSS|||delinea-user-update
       type: regular
       iscommand: true
       brand: Delinea
@@ -191,7 +191,7 @@ tasks:
       version: -1
       name: Delete user
       description: Delete a user by ID
-      script: Delinea|||delinea-user-delete
+      script: DelineaSS|||delinea-user-delete
       type: regular
       iscommand: true
       brand: Delinea
@@ -234,4 +234,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Delinea-Test
+- DelineaSS-Test

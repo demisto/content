@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: Create new folder
       description: Create a new secret folder
-      script: Delinea|||delinea-folder-create
+      script: DelineaSS|||delinea-folder-create
       type: regular
       iscommand: true
       brand: Delinea
@@ -78,7 +78,7 @@ tasks:
       version: -1
       name: Search folder
       description: Search folder by name folder
-      script: Delinea|||delinea-folder-search
+      script: DelineaSS|||delinea-folder-search
       type: regular
       iscommand: true
       brand: Delinea
@@ -117,7 +117,7 @@ tasks:
       version: -1
       name: Update folder
       description: Update a single secret folder by ID
-      script: Delinea|||delinea-folder-update
+      script: DelineaSS|||delinea-folder-update
       type: regular
       iscommand: true
       brand: Delinea
@@ -160,7 +160,7 @@ tasks:
       version: -1
       name: Search folder updated
       description: Search folder by name folder
-      script: Delinea|||delinea-folder-search
+      script: DelineaSS|||delinea-folder-search
       type: regular
       iscommand: true
       brand: Delinea
@@ -200,7 +200,7 @@ tasks:
       version: -1
       name: Delete modify folder
       description: Delete a folder by ID
-      script: Delinea|||delinea-folder-delete
+      script: DelineaSS|||delinea-folder-delete
       type: regular
       iscommand: true
       brand: Delinea
@@ -267,4 +267,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Delinea-Test
+- DelineaSS-Test

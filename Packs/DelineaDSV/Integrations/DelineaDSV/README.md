@@ -1,5 +1,5 @@
 Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
-This integration was integrated and tested with version xx of DelineaDSV
+This integration was integrated and tested with version 1.37.0 of DelineaDSV
 
 ## Configure DelineaDSV on Cortex XSOAR
 
