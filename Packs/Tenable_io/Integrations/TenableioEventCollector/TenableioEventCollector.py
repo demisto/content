@@ -4,8 +4,7 @@ import requests
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from typing import Dict, Any, Tuple
-from enum import Enum
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -70,7 +69,7 @@ class Client(BaseClient):
         if limit:
             query = self.add_query(query, f'limit={limit}')
         else:
-            query = self.add_query(query, f'limit=5000')
+            query = self.add_query(query, 'limit=5000')
         res = super()._http_request(method='GET', url_suffix=f'/audit-log/v1/events{query}', headers=self._headers)
         return res.get('events', [])
 
@@ -88,11 +87,13 @@ class Client(BaseClient):
         payload = {
             "filters":
                 {
-                    "severity": severity,
-                    "last_found": last_found
+                    "severity": severity
                 },
             "num_assets": num_assets
         }
+        if last_found:
+            payload['filters'].update({"last_found": last_found})
+
         res = super()._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
 
@@ -162,7 +163,9 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
     return results, audit_logs
 
 
-def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_run: dict, limit: int = 1000):
+def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_run: dict, limit: int = 1000):  #
+    # pragma: no cover
+
     """
     Fetches vulnerabilities if job has succeeded, and audit logs.
     Args:
@@ -178,7 +181,6 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
     last_fetch = last_run.get('next_fetch')
     last_id_fetched = last_run.get('last_id')
     vulnerabilities = []
-    new_last_run = {}
     index = 0
     if not last_fetch and first_fetch:
         start_date = first_fetch.strftime(DATE_FORMAT)
@@ -211,12 +213,10 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
         # set params for next run
         if finished_fetching:
             set_integration_context({'export_uuid': None})
-            next_run_vuln = time.mktime(datetime.now(tz=timezone.utc).timetuple())
-            new_last_run = {'next_fetch_vunl': next_run_vuln}
 
     next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    new_last_run.update({'last_id': audit_logs[-1].get('id') if audit_logs else last_id_fetched,
-                         'next_fetch': next_run})  # type : ignore
+    new_last_run = {'last_id': audit_logs[-1].get('id') if audit_logs else last_id_fetched,
+                    'next_fetch': next_run}
 
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {new_last_run=}.')
     demisto.info(f'{len(vulnerabilities)=}, {len(audit_logs)=}')
@@ -245,7 +245,8 @@ def try_get_chunks(client: Client, export_uuid: str):
     return vulnerabilities, True
 
 
-def generate_export_uuid(client: Client, first_fetch: Optional[datetime], last_run: dict, severity: List[str]):
+def generate_export_uuid(client: Client, first_fetch: Optional[datetime], last_run: Dict[str, str | float | None],
+                         severity: List[str]):
     """
     Generate a job export uuid in order to fetch vulnerabilities.
 
@@ -258,13 +259,18 @@ def generate_export_uuid(client: Client, first_fetch: Optional[datetime], last_r
     """
     demisto.info("Getting export uuid for report.")
     last_fetch = last_run.get('next_fetch_vunl')
-    last_found = time.mktime(first_fetch.timetuple()) if not last_fetch and first_fetch else last_fetch  # type : ignore
+    last_found: float = time.mktime(
+        first_fetch.timetuple()) if not last_fetch and first_fetch else last_fetch  # type: ignore
     demisto.info(f'{last_found=}')
-    export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found, severity=severity)  # type : ignore
+    export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found, severity=severity)
     set_integration_context({'export_uuid': export_uuid})
 
+    next_run_vuln = time.mktime(datetime.now(tz=timezone.utc).timetuple())
+    new_last_run = {'next_fetch_vunl': next_run_vuln}
+    return new_last_run
 
-def run_vulnerabilities_fetch(last_run: dict, first_fetch: datetime, vuln_fetch_interval: int):
+
+def run_vulnerabilities_fetch(last_run: dict, first_fetch: Optional[datetime], vuln_fetch_interval: int):
     """
 
     Args:
@@ -277,12 +283,44 @@ def run_vulnerabilities_fetch(last_run: dict, first_fetch: datetime, vuln_fetch_
     """
     integration_context = get_integration_context()
     if not last_run.get('next_fetch_vunl'):
-        time_to_check = time.mktime(first_fetch.timetuple())
+        time_to_check = time.mktime(first_fetch.timetuple())  # type: ignore
     else:
         time_to_check = last_run.get('next_fetch_vunl')  # type: ignore
     if time.time() - time_to_check > vuln_fetch_interval and not integration_context.get('export_uuid'):
         return True
     return False
+
+
+@polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
+def get_vulnerabilities_command(client: Client, last_found: Optional[float] = None, severity: list = [],
+                                num_assets: int = 5000, export_uuid: str = None):
+    vulnerabilities = []
+    if not export_uuid:
+        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found, severity=severity)
+
+    status, chunks_available = client.get_export_status(export_uuid=export_uuid)
+    if status == 'FINISHED':
+        for chunk_id in chunks_available:
+            vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+        readable_output = tableToMarkdown('Vulnerabilities List:', vulnerabilities,
+                                          removeNull=True,
+                                          headerTransform=string_to_table_header)
+
+        results = CommandResults(outputs_prefix='Tenable.Vulnerabilities',
+                                 outputs_key_field='id',
+                                 outputs=vulnerabilities,
+                                 readable_output=readable_output,
+                                 raw_response=vulnerabilities)
+        return PollResult(response=(results, vulnerabilities))
+    elif status in ['CANCELLED', 'ERROR']:
+        results = CommandResults(readable_output='Export job failed',
+                                 entry_type=entryTypes['error'])
+        return PollResult(response=(results, vulnerabilities))
+    else:
+        results = CommandResults(readable_output='Export job failed',
+                                 entry_type=entryTypes['error'])
+        return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid},
+                          response=(results, vulnerabilities))
 
 
 def test_module(client: Client) -> str:
@@ -312,6 +350,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     params = demisto.params()
+    events = []
+    vulnerabilities = []
 
     access_key = params.get('access_key', {}).get('password')
     secret_key = params.get('secret_key', {}).get('password')
@@ -337,7 +377,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command in ('tenable-get-audit-logs', 'fetch-events'):
+        elif command in ('tenable-get-audit-logs', 'tenable-get-vulnerabilities', 'fetch-events'):
 
             if command == 'tenable-get-audit-logs':
                 results, events = get_audit_logs_command(client,
@@ -347,15 +387,22 @@ def main() -> None:  # pragma: no cover
                                                          target_id=args.get('target_id'),
                                                          limit=args.get('limit'))
                 return_results(results)
-
+            if command == 'tenable-get-vulnerabilities':
+                results, vulnerabilities = get_vulnerabilities_command(client,
+                                                                       last_found=args.get('last_found'),
+                                                                       num_assets=arg_to_number(args.get('num_assets')) or 5000,
+                                                                       severity=argToList(args.get('severity')))
+                return_results(results)
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
+                new_last_run_vuln = {}
                 if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
                                              vuln_fetch_interval=vuln_fetch_interval):
-                    generate_export_uuid(client, first_fetch, last_run, severity)
+                    new_last_run_vuln = generate_export_uuid(client, first_fetch, last_run, severity)
 
-                vulnerabilities, events, last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-                demisto.setLastRun(last_run)
+                vulnerabilities, events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
+                new_last_run.update(new_last_run_vuln)
+                demisto.setLastRun(new_last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

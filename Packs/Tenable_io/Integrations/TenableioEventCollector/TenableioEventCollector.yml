@@ -98,9 +98,39 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns events extracted from SaaS traffic and or logs.
+    description: Returns audit logs extracted from Tenable io.
     execution: false
     name: tenable-get-audit-logs
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: Returns vulnerabilities that were last found between the specified date (in Unix time) and now.
+      isArray: false
+      name: last_found
+      required: false
+      secret: false
+    - default: false
+      description: The severity of the vulnerabilities to include in the export.
+      isArray: false
+      name: num_assets
+      required: false
+      secret: false
+    - name: hide_polling_output
+      description: Hide polling output.
+      deprecated: true
+    deprecated: false
+    description: Returns vulnerabilities extracted from Tenable io.
+    execution: false
+    polling: true
+    name: tenable-get-vulnerabilities
   isfetch: false
   runonce: false
   script: '-'
