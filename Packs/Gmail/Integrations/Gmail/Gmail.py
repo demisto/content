@@ -9,11 +9,11 @@ import base64
 from datetime import datetime, timedelta
 from typing import *
 import httplib2
-import urlparse
+from urllib.parse import urlparse
 from distutils.util import strtobool
 import sys
-from HTMLParser import HTMLParser, HTMLParseError
-from htmlentitydefs import name2codepoint
+from html.parser import HTMLParser
+from html.entities import name2codepoint
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
@@ -26,7 +26,7 @@ import random
 import string
 from apiclient import discovery
 from oauth2client import service_account
-import itertools as itgi
+import itertools as it
 import concurrent.futures
 
 ''' GLOBAL VARS '''
@@ -50,7 +50,7 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):  # noqa: F841¥
+    def handle_starttag(self, tag, attrs):  # noqa: F841
         if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):
@@ -74,14 +74,14 @@ class TextExtractHtmlParser(HTMLParser):
 
     def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
-            self._texts.append(unichr(name2codepoint[name]))
+            self._texts.append(chr(name2codepoint[name]))
 
     def handle_charref(self, name):
         if not self._ignore:
             if name.startswith('x'):
-                c = unichr(int(name[1:], 16))
+                c = chr(int(name[1:], 16))
             else:
-                c = unichr(int(name))
+                c = chr(int(name))
             self._texts.append(c)
 
     def get_text(self):
@@ -93,7 +93,7 @@ def html_to_text(html):
     try:
         parser.feed(html)
         parser.close()
-    except HTMLParseError:
+    except Exception:
         pass
     return parser.get_text()
 
@@ -107,7 +107,7 @@ def get_http_client_with_proxy(proxies):
         https_proxy = proxies['https']
         if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
             https_proxy = 'https://' + https_proxy
-        parsed_proxy = urlparse.urlparse(https_proxy)
+        parsed_proxy = urlparse(https_proxy)
         proxy_info = httplib2.ProxyInfo(
             proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
             proxy_host=parsed_proxy.hostname,
@@ -151,8 +151,8 @@ def get_service(serviceName, version, additional_scopes=None, delegated_user=Non
 
 
 def parse_mail_parts(parts):
-    body = u''
-    html = u''
+    body = ''
+    html = ''
     attachments = []  # type: list
     for part in parts:
         if 'multipart' in part['mimeType']:
@@ -162,7 +162,7 @@ def parse_mail_parts(parts):
             html += part_html
             attachments.extend(part_attachments)
         elif len(part['filename']) == 0:
-            text = unicode(base64.urlsafe_b64decode(
+            text = str(base64.urlsafe_b64decode(
                 part['body'].get('data', '').encode('ascii')), 'utf-8')
             if 'text/html' in part['mimeType']:
                 html += text
@@ -260,7 +260,7 @@ def get_email_context(email_data, mailbox):
         'From': headers.get('from'),
         'To': headers.get('to'),
         # only for format 'full'
-        'Body': unicode(parsed_body, 'utf-8'),
+        'Body': str(parsed_body, 'utf-8'),
 
         # only for incident
         'Cc': headers.get('cc', []),
@@ -281,7 +281,7 @@ def get_email_context(email_data, mailbox):
         'From': headers.get('from'),
         'To': headers.get('to'),
         # only for format 'full'
-        'Body/Text': unicode(parsed_body, 'utf-8'),
+        'Body/Text': str(parsed_body, 'utf-8'),
 
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
@@ -337,7 +337,7 @@ def create_incident_labels(parsed_msg, headers):
                    for cc in headers.get('Cc', '').split(',')])
     labels.extend([{'type': 'Email/bcc', 'value': bcc}
                    for bcc in headers.get('Bcc', '').split(',')])
-    for key, val in headers.items():
+    for key, val in list(headers.items()):
         labels.append({'type': 'Email/Header/' + key, 'value': val})
 
     return labels
@@ -674,7 +674,7 @@ def dict_keys_snake_to_camelcase(dictionary):
     """
     underscore_pattern = re.compile(r'_([a-z])')  # pylint: disable=E1101
     return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
-            dictionary.items()}
+            list(dictionary.items())}
 
 
 def get_millis_from_date(date, arg_name):
@@ -719,6 +719,7 @@ def list_users_command():
 def list_labels_command():
     args = demisto.args()
     user_key = args.get('user-id')
+    # user_key = "gcp-demisto@demistodev.com"
     labels = list_labels(user_key)
     return labels_to_entry('Labels for UserID {}:'.format(user_key), labels, user_key)
 
@@ -1202,7 +1203,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'has': 'attachment' if has_attachments else ''
     }
     q = ' '.join('%s:%s ' % (name, value,)
-                 for name, value in query_values.iteritems() if value != '')
+                 for name, value in list(query_values.items()) if value != '')
     q = ('%s %s' % (q, query,)).strip()
 
     command_args = {
@@ -1556,7 +1557,7 @@ def remove_filter_command():
 
     user_id = args.get('user-id', ADMIN_EMAIL)
     ids = args.get('filter_ids', '')
-    if isinstance(ids, STRING_TYPES):  # alternativly it could be an array
+    if isinstance(ids, STRING_OBJ_TYPES):  # alternativly it could be an array
         ids = ids.split(',')
 
     for _id in ids:
@@ -1597,7 +1598,7 @@ def header(s):
         return None
 
     s_no_newlines = ' '.join(s.splitlines())
-    return Header(s_no_newlines, 'utf-8')
+    return Header(s_no_newlines)
 
 
 def template_params(paramsStr):
@@ -1637,7 +1638,7 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
         transientFileCID = []
 
     attachments = []
-    for file_name, file_data, file_cid in it.izip_longest(transientFile, transientFileContent, transientFileCID):
+    for file_name, file_data, file_cid in it.zip_longest(transientFile, transientFileContent, transientFileCID):
         if file_name is None:
             break
 
@@ -1679,9 +1680,9 @@ def handle_html(htmlBody):
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': 'image%d.%s' % (i, subtype)
+            'name': f"image{i}.{subtype}"
         }
-        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        att['cid'] = f'{str(att.get("name"))}@{randomword(8)}.{randomword(8)}'
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -1737,7 +1738,8 @@ def collect_manual_attachments():
                 data = fp.read()
         else:
             with open(path, 'rb') as fp:
-                data = fp.read()
+                data = fp.read()  # type: ignore [assignment]
+
         attachments.append({
             'name': attachment['FileName'],
             'maintype': maintype,
@@ -1917,7 +1919,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             header_name, header_value = h.split('=')
             message[header_name] = header(header_value)
 
-    encoded_message = base64.urlsafe_b64encode(message.as_string())
+    encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     command_args = {
         'userId': emailfrom,
         'body': {
@@ -2037,15 +2039,15 @@ def send_as_add_command():
     args = demisto.args()
     user_id = args.pop('user_id', '')
 
-    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in args.items() if
+    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in list(args.items()) if
                        key.startswith('smtp_')}
 
-    args = {key: value for (key, value) in args.items() if not key.startswith('smtp_')}
+    args = {key: value for (key, value) in list(args.items()) if not key.startswith('smtp_')}
 
     send_as_settings = dict_keys_snake_to_camelcase(args)
 
     if smtp_msa_object:
-        if any(field not in smtp_msa_object.keys() for field in SEND_AS_SMTP_FIELDS):
+        if any(field not in list(smtp_msa_object.keys()) for field in SEND_AS_SMTP_FIELDS):
             raise ValueError('SMTP configuration missing. Please provide all the SMTP field values.')
         smtp_msa_object['securityMode'] = smtp_msa_object.pop('securitymode', '')
         send_as_settings['smtpMsa'] = smtp_msa_object
@@ -2059,7 +2061,7 @@ def send_as_add_command():
     context = result.copy()
     context['userId'] = user_id
 
-    for (key, value) in context.pop('smtpMsa', {}).items():
+    for (key, value) in list(context.pop('smtpMsa', {}).items()):
         context['smtpMsa' + (key[0].upper() + key[1:])] = value
 
     hr_fields = ['sendAsEmail', 'displayName', 'replyToAddress', 'isPrimary', 'treatAsAlias']
@@ -2209,5 +2211,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

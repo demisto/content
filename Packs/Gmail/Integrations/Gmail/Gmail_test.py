@@ -162,7 +162,8 @@ def test_parse_privileges():
     from Gmail import parse_privileges
     privileges = [{'serviceId': '', 'privilegeName': 'name_no_id'}, {'serviceId': '', 'privilegeName': ''},
                   {'serviceId': 'id', 'privilegeName': 'name'}]
-    assert sorted(parse_privileges(privileges)) == sorted([{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}])
+    assert sorted(parse_privileges(privileges), key=lambda i: i['Name']) == sorted(
+        [{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}], key=lambda i: i['Name'])
 
 
 def test_dict_keys_snake_to_camelcase():
