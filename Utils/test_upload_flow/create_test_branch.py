@@ -17,13 +17,13 @@ def add_changed_pack(func):
         global changed_packs
         global versions_dict
         global pack_items_dict
-        print(f'Running {func.__name__}', end=" ")
+        logging.info(f'Running {func.__name__}', end=" ")
         pack, version, pack_items = func(*args, **kwargs)
         changed_packs.add(pack)
         versions_dict[str(pack.name)] = version
         if pack_items:
             pack_items_dict[str(pack.name)] = pack_items
-        print("Done")
+        logging.info("Done")
 
         return pack, version, pack_items
     return wrapper
@@ -169,7 +169,7 @@ def get_all_packs_items_dict(pack: Path):
 def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
     branch = repo.create_head(new_branch_name)
     branch.checkout()
-    print(f"Created new branch {repo.active_branch}")
+    logging.info(f"Created new branch {repo.active_branch}")
     return branch
 
 
@@ -228,7 +228,7 @@ if __name__ == "__main__":
         repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
-        print(e)
+        logging.error(e)
 
     finally:
         repo.git.checkout(original_branch)
