@@ -1,0 +1,21 @@
+{
+    "name": "Shachar_Test",
+    "description": "This pack is ... it includes:\n1. A new integration ...",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shachar Kidor",
+    "url": "",
+    "email": "",
+    "created": "2022-09-20T13:06:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ShacharKidor"
+    ]
+}
