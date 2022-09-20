@@ -63,7 +63,7 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    client.build_iterator()
+    fetch_indicators(client=client, limit=1)
     return 'ok'
 
 
