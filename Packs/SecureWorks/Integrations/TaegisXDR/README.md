@@ -79,8 +79,38 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 {
     "TaegisXDR": {
-        "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        "Investigation": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
     }
+}
+```
+
+
+### taegis-execute-playbook
+
+#### Base Command
+`!taegis-execute-playbook`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook instance ID to execute | True |
+| inputs | JSON object of inputs to pass into the playbook execution | False |
+
+#### Command Example
+
+```
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg=
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
+```
+
+#### Context Example
+
+```
+{
+    "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
 }
 ```
 
@@ -110,45 +140,18 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
-    "TaegisXDR": [
-        {
-            "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-            "metadata": {
-                "title": "Test Alert",
-                "description": "This is a test alert",
-                "severity": 0.5,
+    "TaegisXDR": {
+        "Alerts": [
+            {
+                "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
+                "metadata": {
+                    "title": "Test Alert",
+                    "description": "This is a test alert",
+                    "severity": 0.5,
+                }
             }
-        }
-    ]
-}
-```
-
-
-
-### taegis-execute-playbook
-
-#### Base Command
-`!taegis-execute-playbook`
-
-#### Inputs
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Playbook instance ID to execute | True |
-| inputs | JSON object of inputs to pass into the playbook execution | False |
-
-#### Command Example
-
-```
-!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg=
-!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
-```
-
-#### Context Example
-
-```
-{
-    "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
+        ]
+    }
 }
 ```
 
@@ -273,6 +276,30 @@ After you successfully execute a command, a DBot message appears in the War Room
 !taegis-fetch-investigation id=936c1cc1-db8f-430c-837c-1c914fcca35a
 ```
 
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Investigations": [
+            {
+                "archived_at": None,
+                "created_at": "2022-02-02T13:53:35Z",
+                "description": "Test Investigation",
+                "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "key_findings": "",
+                "priority": 2,
+                "service_desk_id": "",
+                "service_desk_type": "",
+                "status": "Open",
+                "alerts2": [],
+                "url": "https://ctpx.secureworks.com/investigations/c2e09554-833e-41a1-bc9d-8160aec0d70d",
+            }
+        ]
+    }
+}
+```
+
 
 ### taegis-fetch-investigation-alerts
 
@@ -295,14 +322,16 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
-    "TaegisXDR": [
-        {
-            "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-            "description": "Test Alert",
-            "message": "This is a test alert",
-            "severity": 0.5,
-        }
-    ]
+    "TaegisXDR": {
+        "InvestigationAlerts": [
+            {
+                "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
+                "description": "Test Alert",
+                "message": "This is a test alert",
+                "severity": 0.5,
+            }
+        ]
+    }
 }
 ```
 
@@ -330,17 +359,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
-    "TaegisXDR": [
-        {
-            "description": "Test Investigation",
-            "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-            "key_findings": "",
-            "priority": 2,
-            "service_desk_id": "",
-            "service_desk_type": "",
-            "status": "Open"
-        }
-    ]
+    "TaegisXDR": {
+        "Investigations": [
+            {
+                "description": "Test Investigation",
+                "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "key_findings": "",
+                "priority": 2,
+                "service_desk_id": "",
+                "service_desk_type": "",
+                "status": "Open"
+            }
+        ]
+    }
 }
 ```
 
@@ -366,6 +397,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
+    "TaegisXDR": {
+        "PlaybookExecution": {
             "createdAt": "2022-01-01T13:51:24Z",
             "executionTime": 1442,
             "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4",
@@ -384,6 +417,8 @@ After you successfully execute a command, a DBot message appears in the War Room
             "state": "Completed",
             "updatedAt": "2022-01-01T13:51:31Z"
         }
+    }
+}
 ```
 
 
@@ -461,7 +496,9 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
 ```
 {
     "TaegisXDR": {
-        "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        "InvestigationUpdate": {
+            "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        }
     }
 }
 ```
