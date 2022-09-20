@@ -1,12 +1,12 @@
 # Microsoft IIS WEB SERVER
 
-This pack includes XSIAM content 
+This pack includes XSIAM content.
 
-## Configuration on Server Side
+## Configuration on the Server Side
 
-1. Open the IIS Manager
-2. Click on the site.
-3. In the window on the right, click on "Logging".
+1. Open the IIS Manager.
+2. Click the site.
+3. In the window on the right, click **Logging**.
 4. Ensure the format is set to W3C.
 ## Collect Events from Vendor
 In order to use the collector, you need to use the following option to collect events from the vendor:
@@ -21,9 +21,9 @@ You will need to use the information described [here](https://docs.paloaltonetwo
 
 You can configure the vendor and product by replacing [vendor]_[product]raw with [vendor]_[product]_raw. 
 
-When configuring the instance, you should use a YAML that configures the vendor and product, just as seen in the below configuration for the Microsoft IIS product.
+When configuring the instance, you should use a YAML file that configures the vendor and product, as seen in the configuration below for the Microsoft IIS product.
 
-Copy and paste the below YAML in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles").
+Copy and paste the content of the following YAML file in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
 
 #### Filebeat Configuration file:
 
