@@ -7,17 +7,33 @@ from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_services import *
 import functools
 
+MSG_DICT = {
+    'verify_new_pack': 'Verify the pack is in the index, verify version 1.0.0 zip exists under the pack path',
+    'verify_modified_pack': 'Verify the packs new version is in the index, verify the new version zip exists under '
+                            'the packs path, verify all the new items are present in the pack',
+    'verify_new_version': 'Verify a new version exists in the index, verify the rn is parsed correctly to the '
+                          'changelog',
+    'verify_rn': 'Verify the content of the RN is in the changelog under the right version',
+    'verify_hidden': 'Verify the pack does not exist in index',
+    'verify_readme': 'Verify readme content is parsed correctly, verify that there was no version bump'
+                     'if only readme was modified',
+    'verify_failed_pack': 'Verify commit hash is not updated in the pack metadata in the index.zip',
+    'verify_modified_path': 'Verify the path of the item is modified',
+    'verify_dependency': 'Verify the new dependency is in the metadata',
+    'verify_new_image': 'Verify the new image was uploaded'
+}
+
 
 def logger(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
-        print(f'Starting {func.__name__}')
+        logging.info(f'Starting {func.__name__}')
         try:
-            result, pack_id = func(self, *args, **kwargs)
+            result, pack_id, msg = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            print(f'Result of {func.__name__} for {pack_id} is {result}')
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
         except FileNotFoundError as e:
-            print(f'Result of {func.__name__} is False: {e}')
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             self.is_valid = False
     return wrapper
 
@@ -30,21 +46,29 @@ class BucketVerifier:
 
     @logger
     def verify_new_pack(self, pack_id, pack_items):
-        # verify in index, verify version 1.0.0 exists in packs path
+        """
+        Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
+        """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
-        return all(version_exists) and all(items_exists), pack_id
+        return all(version_exists) and all(items_exists), pack_id, msg
 
     @logger
     def verify_modified_pack(self, pack_id, pack_items):
+        """
+        Verify the pack's new version is in the index, verify the new version zip exists under the pack's path,
+        verify all the new items are present in the pack
+        """
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         version_exists = [self.gcp.is_in_index(pack_id), pack_path]
         items_exists = [get_items_dict(pack_path, pack_id) == pack_items]
-        return all(version_exists) and all(items_exists), pack_id
+        return all(version_exists) and all(items_exists), pack_id, msg
 
     @logger
     def verify_new_version(self, pack_id, rn):
-        # check: RN, new version exists
+        """
+        Verify a new version exists in the index, verify the rn is parsed correctly to the changelog
+        """
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id)
@@ -52,39 +76,54 @@ class BucketVerifier:
 
     @logger
     def verify_rn(self, pack_id, rn):
-        # verify by version the content of the RN
+        """
+        Verify the content of the RN is in the changelog under the right version
+        """
         return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id
 
     @logger
     def verify_hidden(self, pack_id):
-        # verify not in index
+        """
+        Verify the pack does not exist in index
+        """
         return not self.gcp.is_in_index(pack_id), pack_id
 
     @logger
     def verify_readme(self, pack_id, readme):
-        # verify readme content, no version bump
+        """
+        Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
+        """
         return gcp.get_max_version(pack_id) and readme in \
                self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md'), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):
-        # verify commit hash is not updated
+        """
+        Verify commit hash is not updated in the pack's metadata in the index.zip
+        """
         gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
     @logger
     def verify_modified_path(self, pack_id, item_type, item_file_name, extension):
-        # verify the path of the item is modified
+        """
+        Verify the path of the item is modified
+        """
         gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         return self.gcp.is_item_in_pack(pack_id, item_type, item_file_name, extension), pack_id
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
-        # verify the new dependency is in the metadata
+        """
+        Verify the new dependency is in the metadata
+        """
         return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies').keys(), pack_id
 
     @logger
     def verify_new_image(self, pack_id, new_image_path):
+        """
+        Verify the new image was uploaded
+        """
         image_in_bucket_path = gcp.download_image(pack_id)
         return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read()
 
@@ -206,11 +245,12 @@ if __name__ == "__main__":
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
     bv = BucketVerifier(gcp, versions_dict)
-    # # verify new pack - TestUploadFlow
-    # bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
-    #
-    # # verify dependencies handling
-    # bv.verify_dependency('Armis', 'TestUploadFlow')
+
+    # verify new pack - TestUploadFlow
+    bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
+
+    # verify dependencies handling
+    bv.verify_dependency('Armis', 'TestUploadFlow')
 
     # verify new version
     expected_rn = 'testing adding new RN'
@@ -250,4 +290,6 @@ if __name__ == "__main__":
     # verify image
     bv.verify_new_image('Armis', Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
-    print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+    logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+    if not is_valid:
+        sys.exit(1)
