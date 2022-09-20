@@ -63,6 +63,9 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
     "dn", "cn", "ou"
 ]
 
+INTEGRATON_NAME = 'Active Directory Query v2'
+INSTANCE_NAME = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1423,7 +1426,7 @@ def disable_user(default_base_dn, default_page_size):
     demisto_entry = {
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
-        'Contents': "User {} was disabled".format(sam_account_name)
+        'Contents': "{} - {}:\nUser {} was disabled".format(INTEGRATON_NAME, INSTANCE_NAME, sam_account_name)
     }
     demisto.results(demisto_entry)
 
