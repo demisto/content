@@ -34,4 +34,6 @@ FW
 dst
 feedExpirationPolicy
 feedExpirationInterval
+pan-os-list-edls
+EDLs
 pbf
