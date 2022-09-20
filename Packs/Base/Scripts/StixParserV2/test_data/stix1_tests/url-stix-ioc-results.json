@@ -4,10 +4,9 @@
         "type": "URL",
         "title": null,
         "description": null,
-        "stixindicatorname": null,
-        "stixindicatordescription": null,
+        "name": null,
+        "stixdescription": null,
         "confidence": null,
-        "fields": {},
         "rawJSON": {
             "indicator": "http://demisto.com/4712",
             "type": "URL",

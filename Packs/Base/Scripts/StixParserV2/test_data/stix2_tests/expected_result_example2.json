@@ -27,7 +27,7 @@
             "resource_level": "organization",
             "primary_motivation": "personal-gain"
         },
-        "fields": {
+        "customFields": {
             "stixid": "threat-actor--dfaa8d77-07e2-4e28-b2c8-92e9f7b04428",
             "firstseenbysource": "2014-11-19T23:39:03.893Z",
             "modified": "2014-11-19T23:39:03.893Z",

@@ -18,10 +18,27 @@
             "valid_from": "2014-06-29T13:49:37.079Z",
             "value": "http://example.com/4712/"
         },
-        "fields": {
+        "customFields": {
             "description": "This organized threat actor group operates to create profit from all types of crime.",
             "tags": []
-        }
+        },
+        "relationships": [
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "http://example.com/4712/",
+                "entityAFamily": "Indicator",
+                "entityAType": "URL",
+                "entityB": "x4z9arb backdoor",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T18:03:58.029Z",
+                    "firstseenbysource": "2020-02-29T18:03:58.029Z"
+                }
+            }
+        ]
     },
     {
         "value": "x4z9arb backdoor",
@@ -47,7 +64,7 @@
                 }
             ]
         },
-        "fields": {
+        "customFields": {
             "stixid": "malware--162d917e-766f-4611-b5d6-652791454fca",
             "firstseenbysource": "2014-06-30T09:15:17.182Z",
             "modified": "2014-06-30T09:15:17.182Z",
@@ -67,25 +84,5 @@
             "sample_refs": [],
             "tags": []
         }
-    },
-    {
-        "value": "$$DummyIndicator$$",
-        "relationships": [
-            {
-                "name": "indicated-by",
-                "reverseName": "indicator-of",
-                "type": "IndicatorToIndicator",
-                "entityA": "Malicious site hosting downloader",
-                "entityAFamily": "Indicator",
-                "entityAType": "URL",
-                "entityB": "x4z9arb backdoor",
-                "entityBFamily": "Indicator",
-                "entityBType": "Malware",
-                "fields": {
-                    "lastseenbysource": "2020-02-29T18:03:58.029Z",
-                    "firstseenbysource": "2020-02-29T18:03:58.029Z"
-                }
-            }
-        ]
     }
 ]

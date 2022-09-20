@@ -67,7 +67,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "report": ThreatIntel.ObjectsNames.REPORT,
-    "Threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
@@ -153,6 +153,7 @@ class STIX2Parser:
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
         self.id_to_object: Dict[str, Any] = {}
+        self.parsed_object_id_to_object: Dict[str, Any] = {}
 
     @staticmethod
     def get_indicator_publication(indicator: Dict[str, Any]):
@@ -177,8 +178,8 @@ class STIX2Parser:
     @staticmethod
     def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str, Any]):
         indicator['type'] = f'STIX {indicator["type"]}'
-        indicator['fields']['stixkillchainphases'] = indicator['fields'].pop('killchainphases', None)
-        indicator['fields']['stixdescription'] = indicator['fields'].pop('description', None)
+        indicator['customFields']['stixkillchainphases'] = indicator['customFields'].pop('killchainphases', None)
+        indicator['customFields']['stixdescription'] = indicator['customFields'].pop('description', None)
 
         return indicator
 
@@ -282,7 +283,7 @@ class STIX2Parser:
             "publications": publications,
         }
 
-        attack_pattern["fields"] = fields
+        attack_pattern["customFields"] = fields
 
         if not is_demisto_version_ge('6.2.0'):
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
@@ -315,7 +316,7 @@ class STIX2Parser:
             "tags": list(set(report_obj.get('labels', []))),
         }
 
-        report["fields"] = fields
+        report['customFields'] = fields
 
         return [report]
 
@@ -349,7 +350,7 @@ class STIX2Parser:
             "tags": list(set(threat_actor_obj.get('labels', []))),
         }
 
-        threat_actor["fields"] = fields
+        threat_actor['customFields'] = fields
 
         return [threat_actor]
 
@@ -380,7 +381,7 @@ class STIX2Parser:
             "modified": infrastructure_obj.get('modified'),
         }
 
-        infrastructure["fields"] = fields
+        infrastructure['customFields'] = fields
         return [infrastructure]
 
     @staticmethod
@@ -416,7 +417,7 @@ class STIX2Parser:
             "tags": list((set(malware_obj.get('labels', [])))),
         }
 
-        malware["fields"] = fields
+        malware['customFields'] = fields
         return [malware]
 
     @staticmethod
@@ -446,7 +447,7 @@ class STIX2Parser:
             "tool_version": tool_obj.get('tool_version', ''),
         }
 
-        tool["fields"] = fields
+        tool['customFields'] = fields
         return [tool]
 
     @staticmethod
@@ -473,7 +474,7 @@ class STIX2Parser:
             "publications": publications,
         }
 
-        course_of_action["fields"] = fields
+        course_of_action['customFields'] = fields
         return [course_of_action]
 
     @staticmethod
@@ -498,7 +499,7 @@ class STIX2Parser:
             "objective": campaign_obj.get('objective', ''),
         }
 
-        campaign["fields"] = fields
+        campaign['customFields'] = fields
         return [campaign]
 
     @staticmethod
@@ -528,7 +529,7 @@ class STIX2Parser:
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
         }
-        intrusion_set["fields"] = fields
+        intrusion_set['customFields'] = fields
         return [intrusion_set]
 
     @staticmethod
@@ -551,7 +552,7 @@ class STIX2Parser:
             'stixid': sco_object.get('id')
         }
 
-        sco_indicator['fields'] = fields
+        sco_indicator['customFields'] = fields
         return [sco_indicator]
 
     @staticmethod
@@ -564,7 +565,7 @@ class STIX2Parser:
         """
         autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(autonomous_system_obj,
                                                                               value_mapping='number')
-        autonomous_system_indicator[0]['fields']['name'] = autonomous_system_obj.get('name')
+        autonomous_system_indicator[0]['customFields']['name'] = autonomous_system_obj.get('name')
 
         return autonomous_system_indicator
 
@@ -584,7 +585,7 @@ class STIX2Parser:
         file_obj['value'] = value
 
         file_indicator = STIX2Parser.parse_general_sco_indicator(file_obj)
-        file_indicator[0]['fields'].update(
+        file_indicator[0]['customFields'].update(
             {
                 'associatedfilenames': file_obj.get('name'),
                 'size': file_obj.get('size'),
@@ -616,7 +617,7 @@ class STIX2Parser:
             account_obj (dict): indicator as an observable object of account type.
         """
         account_indicator = STIX2Parser.parse_general_sco_indicator(account_obj, value_mapping='user_id')
-        account_indicator[0]['fields'].update(
+        account_indicator[0]['customFields'].update(
             {
                 'displayname': account_obj.get('user_id'),
                 'accounttype': account_obj.get('account_type')
@@ -633,7 +634,7 @@ class STIX2Parser:
             registry_key_obj (dict): indicator as an observable object of registry_key type.
         """
         registry_key_indicator = STIX2Parser.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
-        registry_key_indicator[0]['fields'].update(
+        registry_key_indicator[0]['customFields'].update(
             {
                 'registryvalue': registry_key_obj.get('values'),
                 'modified_time': registry_key_obj.get('modified_time'),
@@ -642,13 +643,13 @@ class STIX2Parser:
         )
         return registry_key_indicator
 
-    def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
 
         Returns:
-            A list of processed relationships an indicator object.
+            A dict of relationship value to processed relationships as indicator object.
         """
-        relationships_list = []
+        a_value_to_relationship = {}
         for relationships_object in relationships_lst:
             relationship_type = relationships_object.get('relationship_type')
             if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
@@ -658,18 +659,18 @@ class STIX2Parser:
                     demisto.debug(f"Invalid relation type: {relationship_type}")
                     continue
 
-            a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, '')  # type: ignore
-            if a_threat_intel_type == 'indicator':
-                id = relationships_object.get('source_ref', '')
-                a_type = self.get_ioc_type(id, self.id_to_object)
+            a_stixid = relationships_object.get('source_ref', '')
+            a_object = self.parsed_object_id_to_object.get(a_stixid, {})
+            b_stixid = relationships_object.get('target_ref', '')
+            b_object = self.parsed_object_id_to_object.get(b_stixid, {})
 
-            b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, '')  # type: ignore
-            if b_threat_intel_type == 'indicator':
-                b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
+            if not a_object or not b_object:
+                continue
 
-            if not a_type or not b_type:
+            a_value, a_type = a_object.get('value'), a_object.get('type')
+            b_value, b_type = b_object.get('value'), b_object.get('type')
+
+            if not (a_value and a_type and b_value and b_type):
                 continue
 
             mapping_fields = {
@@ -677,22 +678,19 @@ class STIX2Parser:
                 'firstseenbysource': relationships_object.get('created'),
             }
 
-            entity_a = self.get_ioc_value(relationships_object.get('source_ref'), self.id_to_object)
-            entity_b = self.get_ioc_value(relationships_object.get('target_ref'), self.id_to_object)
-
             entity_relation = EntityRelationship(name=relationship_type,
-                                                 entity_a=entity_a,
+                                                 entity_a=a_value,
                                                  entity_a_type=a_type,
-                                                 entity_b=entity_b,
+                                                 entity_b=b_value,
                                                  entity_b_type=b_type,
                                                  fields=mapping_fields)
-            relationships_list.append(entity_relation.to_indicator())
+            indicator_relationship = entity_relation.to_indicator()
+            if a_value_to_relationship.get(a_value):
+                a_value_to_relationship[a_value].append(indicator_relationship)
+            else:
+                a_value_to_relationship[a_value] = [indicator_relationship]
 
-        dummy_indicator = {
-            "value": "$$DummyIndicator$$",
-            "relationships": relationships_list
-        }
-        return [dummy_indicator] if relationships_list else []
+        return a_value_to_relationship
 
     def parse_stix2(self, js_content) -> List[Dict[str, str]]:
         """
@@ -752,12 +750,14 @@ class STIX2Parser:
                     result = parse_objects_func[obj_type](obj)
                     if not result:
                         continue
+                    self.parsed_object_id_to_object[obj.get('id')] = result[0]
                     indicators.extend(result)
             else:
                 relationships_list.extend(stix_objects)
 
         if relationships_list:
-            indicators.extend(self.parse_relationships(relationships_list))
+            relationships_mapping = self.parse_relationships(relationships_list)
+            STIX2Parser.add_relationship_to_indicator(relationships_mapping, indicators)
         return indicators
 
     @staticmethod
@@ -849,7 +849,7 @@ class STIX2Parser:
 
         fields["tags"] = tags
 
-        indicator["fields"] = fields
+        indicator['customFields'] = fields
         return indicator
 
     @staticmethod
@@ -870,44 +870,16 @@ class STIX2Parser:
         return groups
 
     @staticmethod
-    def get_ioc_value(ioc, id_to_obj):
+    def add_relationship_to_indicator(relationships_mapping, indicators):
         """
-        Get IOC value from the indicator name field.
-
-        Args:
-            ioc: the indicator to get information on.
-            id_to_obj: a dict in the form of - id: stix_object.
-
-        Returns:
-            str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix,
-            if its attack pattern remove the id from the name.
+        Adds relationship to right indicator
+        :param relationships_mapping: maps a_value to relationship object
+        :param indicators: all indicators that were fetched from file.
         """
-        ioc_obj = id_to_obj.get(ioc)
-        if ioc_obj:
-            if ioc_obj.get('type') == 'report':
-                return ioc_obj.get('name')
-            elif ioc_obj.get('type') == 'attack-pattern':
-                return ioc_obj.get('name')
-            elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
-                return STIX2Parser.get_ioc_value_from_ioc_name(ioc_obj)
-            else:
-                return ioc_obj.get('name')
-
-    @staticmethod
-    def get_ioc_value_from_ioc_name(ioc_obj):
-        """
-        Extract SHA-256 from string:
-        ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
-        """
-        ioc_value = ioc_obj.get('name', '')
-        try:
-            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
-            if ioc_value_groups:
-                ioc_value = ioc_value_groups.group(0)
-        except AttributeError:
-            ioc_value = None
-        return ioc_value
-
+        for indicator in indicators:
+            if a_value := indicator.get('value'):
+                if relationships := relationships_mapping.get(a_value):
+                    indicator['relationships'] = relationships
 
 # STIX 1 Parsing
 
@@ -1523,19 +1495,16 @@ def parse_stix(file_name):
                 'type': item.get('type'),
                 'title': item.get('stix_title'),
                 'description': item.get('stix_description'),
-                'stixindicatorname': item.get('stix_indicator_name'),
-                'stixindicatordescription': item.get('stix_indicator_description'),
+                'name': item.get('stix_indicator_name'),
+                'stixdescription': item.get('stix_indicator_description'),
                 'confidence': item.get('confidence'),
             }
 
-            fields: Dict[str, str] = {}
-            indicator_obj['fields'] = fields
-
             if item.get('relationships'):
-                indicator_obj['relationships'] = create_relationships(item)
+                relationships = create_relationships(item)
+                indicator_obj['relationships'] = relationships
 
             indicator_obj['rawJSON'] = item
-
             indicators.append(indicator_obj)
 
     # Create the indicators from the ttps
@@ -1548,7 +1517,7 @@ def parse_stix(file_name):
                 'title': item.get('title'),
                 'description': item.get('description'),
                 'shortdescription': item.get('short_description'),
-                'stixindicatordescription': item.get('ttp_description'),
+                'stixdescription': item.get('ttp_description'),
                 'stixttptitle': item.get('stix_ttp_title'),
             }
 
@@ -1557,8 +1526,6 @@ def parse_stix(file_name):
                 indicator_obj['stixmalwaretypes'] = item.get('malware_type', '').lower().replace(' ', '-')
             else:
                 indicator_obj['score'] = ThreatIntel.ObjectsScore.ATTACK_PATTERN
-
-            indicator_obj['fields'] = {}
 
             indicator_obj['rawJSON'] = item
 
@@ -1594,6 +1561,7 @@ def main():     # pragma: no cover
         readable_output=tableToMarkdown(name='Parsed STIX', t=observables),
         outputs=observables,
         outputs_prefix='STIXParser'
+        # todo: add relationships
     )
     return_results(results)
 

@@ -17,7 +17,7 @@
             "type": "infrastructure",
             "spec_version": "2.1"
         },
-        "fields": {
+        "customFields": {
             "stixid": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
             "description": "",
             "infrastructure_types": [
@@ -27,7 +27,24 @@
             "kill_chain_phases": [],
             "firstseenbysource": "2016-05-07T11:22:30.000Z",
             "modified": "2016-05-07T11:22:30.000Z"
-        }
+        },
+        "relationships": [
+            {
+                "name": "controls",
+                "reverseName": "controlled-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Poison Ivy C2",
+                "entityAFamily": "Indicator",
+                "entityAType": "Infrastructure",
+                "entityB": "Poison Ivy",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2016-05-09T08:17:27.000Z",
+                    "firstseenbysource": "2016-05-09T08:17:27.000Z"
+                }
+            }
+        ]
     },
     {
         "value": "Example target-list-hosting",
@@ -47,7 +64,7 @@
             "type": "infrastructure",
             "spec_version": "2.1"
         },
-        "fields": {
+        "customFields": {
             "stixid": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
             "description": "",
             "infrastructure_types": [
@@ -78,7 +95,7 @@
             "type": "malware",
             "spec_version": "2.1"
         },
-        "fields": {
+        "customFields": {
             "stixid": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
             "firstseenbysource": "2016-05-08T14:31:09.000Z",
             "modified": "2016-05-08T14:31:09.000Z",
@@ -114,7 +131,7 @@
             ],
             "spec_version": "2.1"
         },
-        "fields": {
+        "customFields": {
             "stixid": "malware--3a41e552-999b-4ad3-bedc-332b6d9ff80c",
             "firstseenbysource": "2016-11-12T14:31:09.000Z",
             "modified": "2016-11-12T14:31:09.000Z",
@@ -130,52 +147,8 @@
             "capabilities": [],
             "sample_refs": [],
             "tags": []
-        }
-    },
-    {
-        "value": "10.10.10.10",
-        "score": 0,
-        "rawJSON": {
-            "id": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956",
-            "type": "ipv4-addr",
-            "value": "10.10.10.10"
         },
-        "type": "IP",
-        "fields": {
-            "stixid": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956"
-        }
-    },
-    {
-        "value": "example.com",
-        "score": 0,
-        "rawJSON": {
-            "id": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b",
-            "type": "domain-name",
-            "value": "example.com"
-        },
-        "type": "Domain",
-        "fields": {
-            "stixid": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b"
-        }
-    },
-    {
-        "value": "$$DummyIndicator$$",
         "relationships": [
-            {
-                "name": "controls",
-                "reverseName": "controlled-by",
-                "type": "IndicatorToIndicator",
-                "entityA": "Poison Ivy C2",
-                "entityAFamily": "Indicator",
-                "entityAType": "Infrastructure",
-                "entityB": "Poison Ivy",
-                "entityBFamily": "Indicator",
-                "entityBType": "Malware",
-                "fields": {
-                    "lastseenbysource": "2016-05-09T08:17:27.000Z",
-                    "firstseenbysource": "2016-05-09T08:17:27.000Z"
-                }
-            },
             {
                 "name": "uses",
                 "reverseName": "used-by",
@@ -192,5 +165,31 @@
                 }
             }
         ]
+    },
+    {
+        "value": "10.10.10.10",
+        "score": 0,
+        "rawJSON": {
+            "id": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956",
+            "type": "ipv4-addr",
+            "value": "10.10.10.10"
+        },
+        "type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956"
+        }
+    },
+    {
+        "value": "example.com",
+        "score": 0,
+        "rawJSON": {
+            "id": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b",
+            "type": "domain-name",
+            "value": "example.com"
+        },
+        "type": "Domain",
+        "customFields": {
+            "stixid": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b"
+        }
     }
 ]

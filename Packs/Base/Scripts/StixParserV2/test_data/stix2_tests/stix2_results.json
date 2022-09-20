@@ -16,7 +16,7 @@
             "valid_from": "2019-05-28T16:38:17.837119Z",
             "value": "http://demisto.com"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "url"
             ]
@@ -39,7 +39,7 @@
             "valid_from": "2019-05-28T16:38:17.83887Z",
             "value": "4e0daff2b6a2db421e79fb64228943be"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "file md5"
             ]
@@ -62,7 +62,7 @@
             "valid_from": "2019-05-28T16:38:17.841314Z",
             "value": "demisto.com"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "domain"
             ]
@@ -85,7 +85,7 @@
             "valid_from": "2019-05-28T16:38:17.847309Z",
             "value": "384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "ssdeep"
             ]
@@ -108,7 +108,7 @@
             "valid_from": "2019-05-28T16:38:17.848778Z",
             "value": "HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "registry path reputation"
             ]
@@ -131,7 +131,7 @@
             "valid_from": "2019-05-28T16:38:17.850114Z",
             "value": "9.9.9.9"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "ipv4"
             ]
@@ -154,7 +154,7 @@
             "valid_from": "2019-05-28T16:38:17.851906Z",
             "value": "2001:0db8:85a3:1337:0000:8a2e:0370:7334"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "ipv6"
             ]
@@ -177,7 +177,7 @@
             "valid_from": "2019-05-28T16:38:17.851906Z",
             "value": "8.3.3.3"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "ip"
             ]
@@ -200,7 +200,7 @@
             "valid_from": "2019-05-28T16:38:17.853086Z",
             "value": "ip-8-8-8-8"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "hostname"
             ]
@@ -223,7 +223,7 @@
             "valid_from": "2019-05-28T16:38:17.854465Z",
             "value": "115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "file sha-256 v2"
             ]
@@ -246,7 +246,7 @@
             "valid_from": "2019-05-28T16:38:17.857271Z",
             "value": "d76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "file sha-256"
             ]
@@ -269,7 +269,7 @@
             "valid_from": "2019-05-28T16:38:17.858716Z",
             "value": "d7a10a4b3fd245dc44c1bb143d1a7f12816cdef7"
         },
-        "fields": {
+        "customFields": {
             "tags": [
                 "file sha-1"
             ]

@@ -4,10 +4,9 @@
         "type": "File",
         "title": null,
         "description": null,
-        "stixindicatorname": null,
-        "stixindicatordescription": null,
+        "name": null,
+        "stixdescription": null,
         "confidence": null,
-        "fields": {},
         "rawJSON": {
             "indicator": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
             "htype": "md5",

@@ -18,10 +18,27 @@
             "valid_from": "2014-02-20T09:00:00Z",
             "value": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c"
         },
-        "fields": {
+        "customFields": {
             "description": "This file hash indicates that a sample of Poison Ivy is present.",
             "tags": []
-        }
+        },
+        "relationships": [
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
+                "entityAFamily": "Indicator",
+                "entityAType": "File",
+                "entityB": "Poison Ivy",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T18:09:12.808Z",
+                    "firstseenbysource": "2020-02-29T18:09:12.808Z"
+                }
+            }
+        ]
     },
     {
         "value": "Poison Ivy",
@@ -39,7 +56,7 @@
             ],
             "is_family": false
         },
-        "fields": {
+        "customFields": {
             "stixid": "malware--fdd60b30-b67c-41e3-b0b9-f01faf20d111",
             "firstseenbysource": "2014-02-20T09:16:08.989Z",
             "modified": "2014-02-20T09:16:08.989Z",
@@ -56,25 +73,5 @@
             "sample_refs": [],
             "tags": []
         }
-    },
-    {
-        "value": "$$DummyIndicator$$",
-        "relationships": [
-            {
-                "name": "indicated-by",
-                "reverseName": "indicator-of",
-                "type": "IndicatorToIndicator",
-                "entityA": "File hash for Poison Ivy variant",
-                "entityAFamily": "Indicator",
-                "entityAType": "File",
-                "entityB": "Poison Ivy",
-                "entityBFamily": "Indicator",
-                "entityBType": "Malware",
-                "fields": {
-                    "lastseenbysource": "2020-02-29T18:09:12.808Z",
-                    "firstseenbysource": "2020-02-29T18:09:12.808Z"
-                }
-            }
-        ]
     }
 ]
