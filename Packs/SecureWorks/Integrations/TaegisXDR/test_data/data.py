@@ -118,10 +118,7 @@ FETCH_ALERTS_BY_ID_RESPONSE = {
 CREATE_COMMENT_RESPONSE = {
     "data": {
         "createComment": {
-            "comment": TAEGIS_COMMENT["comment"],
             "id": TAEGIS_COMMENT["id"],
-            "parent_id": TAEGIS_COMMENT["parent_id"],
-            "parent_type": TAEGIS_COMMENT["parent_type"],
         }
     }
 }
@@ -165,10 +162,7 @@ FETCH_COMMENTS_BAD_RESPONSE = {
 UPDATE_COMMENT_RESPONSE = {
     "data": {
         "updateComment": {
-            "comment": TAEGIS_COMMENT["comment"],
             "id": TAEGIS_COMMENT["id"],
-            "parent_id": TAEGIS_COMMENT["parent_id"],
-            "parent_type": TAEGIS_COMMENT["parent_type"],
         }
     }
 }

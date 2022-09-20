@@ -129,10 +129,7 @@ def create_comment_command(client: Client, env: str, args=None):
     query = """
     mutation createComment ($comment: CommentInput!) {
         createComment(comment: $comment) {
-            comment
             id
-            parent_id
-            parent_type
         }
     }
     """
@@ -811,10 +808,7 @@ def update_comment_command(client: Client, env: str, args=None):
     query = """
     mutation updateComment ($comment_id: ID!, $comment: CommentUpdate!) {
         updateComment(comment_id: $comment_id, comment: $comment) {
-            comment
             id
-            parent_id
-            parent_type
         }
     }
     """

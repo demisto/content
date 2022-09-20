@@ -45,10 +45,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 {
     "TaegisXDR": {
         "CommentCreate": {
-            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
-            "comment": "This is a test comment",
-            "parent_id": "219da0ee-8642-4363-827c-8a6fbd479082",
-            "parent_type": "investigation"
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
         }
     }
 }
@@ -447,10 +444,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 {
     "TaegisXDR": {
         "CommentUpdate": {
-            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
-            "comment": "Newly updated comment",
-            "parent_id": "219da0ee-8642-4363-827c-8a6fbd479082",
-            "parent_type": "investigation"
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
         }
     }
 }

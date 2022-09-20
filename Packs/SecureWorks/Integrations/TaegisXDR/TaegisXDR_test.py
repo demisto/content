@@ -131,8 +131,8 @@ def test_create_comment(requests_mock):
         assert create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args={"comment": "test"})
 
     args = {
-        "comment": CREATE_COMMENT_RESPONSE["data"]["createComment"]["comment"],
-        "parent_id": CREATE_COMMENT_RESPONSE["data"]["createComment"]["parent_id"],
+        "comment": FETCH_COMMENT_RESPONSE["data"]["comment"]["comment"],
+        "parent_id": FETCH_COMMENT_RESPONSE["data"]["comment"]["parent_id"],
         "parent_type": "bad_parent_type",
     }
 
@@ -216,8 +216,8 @@ def test_update_comment(requests_mock):
         assert update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args={"id": "test"})
 
     args = {
-        "comment": UPDATE_COMMENT_RESPONSE["data"]["updateComment"]["comment"],
-        "id": UPDATE_COMMENT_RESPONSE["data"]["updateComment"]["id"],
+        "comment": FETCH_COMMENT_RESPONSE["data"]["comment"]["comment"],
+        "id": FETCH_COMMENT_RESPONSE["data"]["comment"]["id"],
     }
 
     #  # Successful fetch - Comment created
