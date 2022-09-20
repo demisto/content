@@ -412,6 +412,20 @@ def test_file_types_with_specific_collection_logic_are_not_ignored():
     }.isdisjoint(IGNORED_FILE_TYPES | ONLY_INSTALL_PACK_FILE_TYPES)
 
 
+def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch):
+    """
+    give    a non content item and unknown file type which no tests should be collected
+    when    collecting with a BranchTestCollector
+    then    make sure no tests are collected
+    """
+    mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=None)
+    mocker.patch.object(BranchTestCollector, '_get_changed_files',
+                        return_value=('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',))
+
+    _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
+          expected_packs=(), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
+
+
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
 def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
     """

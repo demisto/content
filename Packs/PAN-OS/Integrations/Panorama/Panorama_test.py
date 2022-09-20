@@ -1267,6 +1267,50 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
     }
 
 
+def test_panorama_list_edls_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - EDLs from panorama (including un-committed).
+
+    When -
+        running the pan-os-list-edls command through the main flow.
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the http request was sent as expected.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-list-edls')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value=load_json('test_data/list-edls-including-un-committed-edl.json')
+    )
+
+    result = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'get', 'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/external-list/entry",
+        'key': 'thisisabogusAPIKEY!'
+    }
+
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+        {
+            'Name': 'test-1', 'Type': 'domain', 'URL': 'http://test.com',
+            'Recurring': 'hourly', 'DeviceGroup': 'Lab-Devices'
+        },
+        {
+            'Name': 'test-2', 'Type': 'ip', 'URL': 'http://test1.com',
+            'Recurring': 'five-minute', 'DeviceGroup': 'Lab-Devices'
+        }
+    ]
+
+
 def test_panorama_edit_edl_command_main_flow(mocker):
     """
     Given
