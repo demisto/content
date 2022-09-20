@@ -133,11 +133,15 @@ script:
       predefined:
       - Open
       - Active
+      - Awaiting Action
       - Suspended
       - 'Closed: Authorized Activity'
-      - 'Closed: False Positive alert'
+      - 'Closed: Confirmed Security Incident'
+      - 'Closed: False Positive Alert'
+      - 'Closed: Inconclusive'
       - 'Closed: Informational'
       - 'Closed: Not Vulnerable'
+      - 'Closed: Threat Mitigated'
       description: New status for the investigation
     - name: service_desk_id
       description: An ticket or ID for to an external system for reference

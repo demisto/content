@@ -20,10 +20,11 @@ COMMENT_TYPES = set((
 ))
 INVESTIGATION_STATUSES = set((
     "Open",
-    "Suspended",
     "Active",
     "Awaiting Action",
+    "Suspended",
     "Closed: Authorized Activity",
+    "Closed: Confirmed Security Incident",
     "Closed: False Positive Alert",
     "Closed: Inconclusive",
     "Closed: Informational",
