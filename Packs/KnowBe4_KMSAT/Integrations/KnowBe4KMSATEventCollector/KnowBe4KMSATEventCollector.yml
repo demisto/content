@@ -12,7 +12,7 @@ configuration:
   - https://api.events.knowbe4.com
   - https://api-eu.events.knowbe4.com
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
   hiddenusername: true
@@ -24,7 +24,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The Fetch interval, it's recommended to set it to 5 hours as there're not much events for this api and there's an api-calls daily-limit for the basic api key.
+- additionalinfo: The fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key.
   defaultvalue: 300
   display: Events Fetch Interval
   hidden: false
@@ -39,24 +39,24 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: KnowBe4_KMSAT Allows you to push and pull your external data to and from the KnowBe4 console.
+description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
 script:
   commands:
   - deprecated: false
-    description: Manual command to fetch events and display them.
+    description: Manual command to fetch and display events.
     execution: false
     name: kms-get-events
     arguments:
     - name: occurred_date
-      description: Filter by Occurred Date (YYYY-MM-DD).
+      description: Filter by the date the event occurred (YYYY-MM-DD).
     - name: risk_level
-      description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
+      description: Filter by the risk level by entering a value from -10 (low risk) to 10 (high risk).
     - name: per_page
-      description: How many results to bring per page (the max & default is 100).
+      description: The number of results to display per page (the maximum and  default is 100).
     - name: page
-      description: Which results page to bring.
+      description: The results page to display.
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
@@ -68,19 +68,19 @@ script:
       required: true
     outputs:
     - contextPath: KMSat.Event.id
-      description: Event id.
+      description: Event ID.
       type: Number
     - contextPath: KMSat.Event.user.email
       description: The target mail for this event.
       type: String
     - contextPath: KMSat.Event.user.id
-      description: The id of the user the event is targeted to.
+      description: The iIDd of the user the event is targeted to.
       type: Number
     - contextPath: KMSat.Event.user.archived
       description: Whether the user is archived or not.
       type: Boolean
     - contextPath: KMSat.Event.external_id
-      description: The event's external id.
+      description: The event's external ID.
       type: String
     - contextPath: KMSat.Event.source
       description: The source of the event.
@@ -101,10 +101,10 @@ script:
       description: The risk's decay mode.
       type: String
     - contextPath: KMSat.Event.risk.expire_date
-      description: The event's expire date.
+      description: The event's expiration date.
       type: String
     - contextPath: KMSat.Event.event_type.id
-      description: The id of the event type.
+      description: The ID of the event type.
       type: Number
     - contextPath: KMSat.Event.event_type.name
       description: The name of the event type.
