@@ -64,17 +64,23 @@ script:
     - default: true
       description: Hashes of the files to query. Supports "MD5", "SHA1", and "SHA256"
       isArray: false
-      name: files
+      name: file
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the reputation for the specified hashes. Can be "MD5", "SHA1",
+    description: Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1",
       or "SHA256".
     execution: false
-    name: tie-files-reputation
+    name: file
     outputs:
+    - contextPath: File.Hashes.type
+      description: The type of the hash.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The value of the hash.
+      type: String
     - contextPath: File.MD5
-      description: ' The MD5 hash of the file.'
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
@@ -82,12 +88,12 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: File.TrustLevel
-      description: File lowest trust level.
-      type: String
-    - contextPath: File.Vendor
+    - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
+    - contextPath: File.Malicious.Description
+      description: A description of why this file was found malicious. 
+      type: Number
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -100,21 +106,18 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
       type: String
-    - contextPath: File.Malicious.Vendor
-      description: The vendor that reported the file as malicious.
-      type: String
-    - contextPath: File.Malicious.Score
-      description: The actual score.
-      type: Number
+    # - contextPath: McAfee.TIE.Reputations.GTI.Create_Date
   - arguments:
     - default: true
       description: Hashes of the files for which to set the reputation. Can be "MD5",
         "SHA1", or "SHA256".
       isArray: false
-      name: files
+      name: file
       required: true
       secret: false
     - auto: PREDEFINED
@@ -148,18 +151,18 @@ script:
       secret: false
     deprecated: false
     description: Sets the “Enterprise” reputation (trust level, filename, and comment) of the specified hashes.
-      Hashes that represent the same file can have different "Enterprise" reputation if they are given different
+      Hashes that represent the same file can have a different "Enterprise" reputation if they are given different
       reputations.
       Permissions are required to invoke this method. See the 'How-to' in instance
       instruction.
     execution: false
-    name: tie-set-files-reputation
+    name: tie-set-file-reputation
   - arguments:
     - default: true
       description: 'Hashes of the files for which to search. Can be "MD5", "SHA1",
         or "SHA256".'
       isArray: false
-      name: files
+      name: file
       required: true
       secret: false
     - default: false
@@ -173,7 +176,7 @@ script:
     description: Retrieves the set of systems which have referenced (typically executed)
       the specified hashes.
     execution: false
-    name: tie-files-references
+    name: tie-file-references
     outputs:
     - contextPath: File.Hashes.type
       description: The type of the hash.
@@ -181,11 +184,23 @@ script:
     - contextPath: File.Hashes.value
       description: The value of the hash.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: McAfee.TIE.References.AgentGuid
       description: The GUID of the system that referenced the file.
       type: String
     - contextPath: McAfee.TIE.References.Date
       description: The time the system first referenced the file.
+      type: String
+    - contextPath: McAfee.TIE.Hash
+      description: The value of the hash.
       type: String
   dockerimage: devdemisto/dxl:1.0.0.33137
   feed: false
