@@ -15,6 +15,9 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
+COMMENT_TYPES = set((
+    "investigation",
+))
 INVESTIGATION_STATUSES = set((
     "Open",
     "Suspended",
@@ -107,6 +110,63 @@ class Client(BaseClient):
 
 
 """ COMMANDS """
+
+
+def create_comment_command(client: Client, env: str, args=None):
+    if not args.get("comment"):
+        raise ValueError("Cannot create comment, comment cannot be empty")
+
+    if not args.get("parent_id"):
+        raise ValueError("Cannot create comment, parent_id cannot be empty")
+
+    parent_type = args.get("parent_type", "investigation").lower()
+    if parent_type not in COMMENT_TYPES:
+        raise ValueError(
+            f"The provided comment parent type, {parent_type}, is not valid. "
+            f"Supported Parent Types Values: {COMMENT_TYPES}"
+        )
+
+    query = """
+    mutation createComment ($comment: CommentInput!) {
+        createComment(comment: $comment) {
+            comment
+            id
+            parent_id
+            parent_type
+        }
+    }
+    """
+
+    variables = {
+        "comment": {
+            "comment": args.get("comment"),
+            "parent_id": args.get("parent_id"),
+            "parent_type": parent_type,
+            "section_id": args.get("section_id", ""),
+            "section_type": args.get("section_type", ""),
+        }
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["createComment"]
+    except KeyError:
+        raise ValueError(f"Failed to create comment: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.CommentCreate",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
 
 
 def create_investigation_command(client: Client, env: str, args=None):
@@ -303,6 +363,113 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         outputs_key_field="id",
         outputs=alerts,
         readable_output=readable_output,
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_comment_command(client: Client, env: str, args=None):
+    comment_id = args.get("id")
+    if not comment_id:
+        raise ValueError("Cannot fetch comment, missing comment_id")
+
+    query = """
+    query comment ($comment_id: ID!) {
+        comment(comment_id: $comment_id) {
+            author_user {
+                id
+                family_name
+                given_name
+                email_normalized
+            }
+            id
+            comment
+            modified_at
+            deleted_at
+            created_at
+            parent_id
+            parent_type
+        }
+    }
+    """
+
+    variables = {"comment_id": comment_id}
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["comment"]
+    except KeyError:
+        raise ValueError("Could not locate comment by provided ID")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Comment",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_comments_command(client: Client, env: str, args=None):
+    if not args.get("parent_id"):
+        raise ValueError("Cannot fetch comments, missing parent_id")
+
+    parent_type = args.get("parent_type", "investigation")
+    if parent_type not in COMMENT_TYPES:
+        raise ValueError((
+            f"The provided comment parent type, {parent_type}, is not valid. "
+            f"Supported Parent Types Values: {parent_type}"
+        ))
+
+    query = """
+    query commentsByParent ($parent_type: String!, $parent_id: String!) {
+        commentsByParent(parent_type: $parent_type,parent_id:$parent_id) {
+            author_user {
+                id
+                family_name
+                given_name
+                email_normalized
+            }
+            id
+            comment
+            modified_at
+            deleted_at
+            created_at
+            parent_id
+            parent_type
+        }
+    }
+    """
+
+    variables = {
+        "parent_id": args.get("parent_id"),
+        "parent_type": parent_type
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comments = result["data"]["commentsByParent"]
+    except KeyError:
+        raise ValueError(f"Failed to fetch comments: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Comments",
+        outputs_key_field="id",
+        outputs=comments,
+        readable_output=tableToMarkdown(
+            "Taegis Comments",
+            comments,
+            removeNull=True,
+        ),
         raw_response=result,
     )
 
@@ -640,6 +807,52 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     return results
 
 
+def update_comment_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot update comment, comment id cannot be empty")
+
+    if not args.get("comment"):
+        raise ValueError("Cannot update comment, comment cannot be empty")
+
+    query = """
+    mutation updateComment ($comment_id: ID!, $comment: CommentUpdate!) {
+        updateComment(comment_id: $comment_id, comment: $comment) {
+            comment
+            id
+            parent_id
+            parent_type
+        }
+    }
+    """
+    variables = {
+        "comment_id": args.get("id"),
+        "comment": {
+            "comment": args.get("comment")
+        },
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["updateComment"]
+    except KeyError:
+        raise ValueError(f"Failed to update comment: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.CommentUpdate",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
@@ -705,12 +918,16 @@ def main():
 
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
+        "taegis-create-comment": create_comment_command,
         "taegis-create-investigation": create_investigation_command,
         "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
+        "taegis-fetch-comment": fetch_comment_command,
+        "taegis-fetch-comments": fetch_comments_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
+        "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
         "test-module": test_module,
     }

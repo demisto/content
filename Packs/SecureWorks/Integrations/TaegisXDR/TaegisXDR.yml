@@ -185,6 +185,54 @@ script:
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
   dockerimage: demisto/python3:3.10.5.31928
+  - name: taegis-fetch-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to fetch
+    outputs:
+    - contextPath: TaegisXDR.Comment
+      description: Return the comment
+    description: Fetch comment by comment ID
+  - name: taegis-fetch-comments
+    arguments:
+    - name: parent_id
+      required: true
+      description: The ID of the parent related to the comments
+    - name: parent_type
+      description: The parent type that the comments belong to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.Comments
+      description: A list of comments to return
+    description: Fetch comments by Parent Type and ID
+  - name: taegis-create-comment
+    arguments:
+    - name: comment
+      required: true
+      description: The comment string to add to the parent
+    - name: parent_id
+      required: true
+      description: The parent that the comment is being added to
+    - name: parent_type
+      description: The parent type that the comment is being added to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.CommentCreate
+      description: The created comment information
+    description: Create a comment on an investigation
+  - name: taegis-update-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to update
+    - name: comment
+      required: true
+      description: String to update/replace the comment with
+    outputs:
+    - contextPath: TaegisXDR.CommentUpdate
+      description: The comment update results
+    description: Update an existing comment
   runonce: false
   subtype: python3
   isfetch: true
