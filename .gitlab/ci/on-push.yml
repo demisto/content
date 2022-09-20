@@ -108,26 +108,27 @@ create-instances:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Collect Tests and Content Packs (old)" --collapsed
-    - |
-      if [ -n "${INSTANCE_TESTS}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-      fi
-    - section_end "Collect Tests and Content Packs (old)"
+    # - section_start "Collect Tests and Content Packs (old)" --collapsed
+    # - |
+    #   if [ -n "${INSTANCE_TESTS}" ]; then
+    #     echo "Skipping - not running in INSTANCE_TESTS build"
+    #   else
+    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #     python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+    #   fi
+    # - section_end "Collect Tests and Content Packs (old)"
 
-    - section_start "Collect Tests V2"
-    - |
-      if [ -n "${INSTANCE_TESTS}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-      fi
-    - section_end "Collect Tests V2"
-    
+    # - section_start "Collect Tests V2"
+    # - |
+    #   if [ -n "${INSTANCE_TESTS}" ]; then
+    #     echo "Skipping - not running in INSTANCE_TESTS build"
+    #   else
+    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #     python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+    #   fi
+    # - section_end "Collect Tests V2"
+    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
@@ -189,17 +190,19 @@ prepare-testing-bucket-mpv2:
     - popd
     - section_end "Replace Cortex XSOAR"
 
-    - section_start "Collect Tests and Content Packs"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests and Content Packs"
+    # - section_start "Collect Tests and Content Packs"
+    # - |
+    #   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #   python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+    # - section_end "Collect Tests and Content Packs"
     
-    - section_start "Collect Tests V2"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests V2"
+    # - section_start "Collect Tests V2"
+    # - |
+    #   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+    #   python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+    # - section_end "Collect Tests V2"
+    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+
 
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"

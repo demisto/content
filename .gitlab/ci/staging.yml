@@ -116,16 +116,16 @@ graph-prepare-testing-bucket-mpv2:
     - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
 
-    # - section_start "Replace Cortex XSOAR" --collapsed
-    # - pushd "$ARTIFACTS_FOLDER"
-    # - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
-    # - pushd content_packs; zip -r ../content_packs.zip *; popd
+    - section_start "Replace Cortex XSOAR" --collapsed
+    - pushd "$ARTIFACTS_FOLDER"
+    - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+    - pushd content_packs; zip -r ../content_packs.zip *; popd
     # - pushd all_content; zip -r ../all_content.zip *; popd
     # - pushd content_new; zip -r ../content_new.zip *; popd
     # - pushd content_test; zip -r ../content_test.zip *; popd
     # - rm -rf content_packs all_content content_new content_test
-    # - popd
-    # - section_end "Replace Cortex XSOAR"
+    - popd
+    - section_end "Replace Cortex XSOAR"
 
     # - section_start "Collect Tests and Content Packs"
     # - |
@@ -152,6 +152,7 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
-    - python3 ./Tests/scripts/compare_zips.py -zip1 $ARTIFACTS_FOLDER/base/uploaded_packs-id_set/Base.zip -zip2 $ARTIFACTS_FOLDER/base/uploaded_packs-graph/Base.zip
+    - python3 ./Tests/scripts/utils/compare_zips.py -zip_id_set $ARTIFACTS_FOLDER/xsoar/uploaded_packs-id_set -zip_graph $ARTIFACTS_FOLDER/xsoar/uploaded_packs-graph
+    - python3 ./Tests/scripts/utils/compare_zips.py -zip_id_set $ARTIFACTS_FOLDER/martketplacev2/uploaded_packs-id_set -zip_graph $ARTIFACTS_FOLDER/marketplacev2/uploaded_packs-graph
 
 
