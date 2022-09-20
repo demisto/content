@@ -1,9 +1,10 @@
-from typing import Union, Optional
-
-from requests_oauthlib import OAuth1
-from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
+from typing import Optional, Union
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from requests_oauthlib import OAuth1
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1011,6 +1012,8 @@ def delete_issue_command(issue_id_or_key):
 def test_module() -> str:
     """
     Performs basic get request to get item samples
+
+    ##### Improved test module #####
     """
     user_data = jira_req('GET', 'rest/api/latest/myself', resp_type='json')
     if demisto.params().get('isFetch'):
