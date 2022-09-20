@@ -42,8 +42,12 @@ script:
           - 'False'
         required: true
   dockerimage: demisto/python3:3.10.1.25933
-  runonce: false
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   isfetchevents: true
+  runonce: false
   subtype: python3
 fromversion: 6.8.0
 marketplaces:

@@ -1,8 +1,8 @@
 from CommonServerPython import *
 import demistomock as demisto
 
-VENDOR = 'Abnormal-Security'
-PRODUCT = 'Email-Protection'
+VENDOR = 'Abnormal_Security'
+PRODUCT = 'Email_Protection'
 
 
 class Client(BaseClient):
