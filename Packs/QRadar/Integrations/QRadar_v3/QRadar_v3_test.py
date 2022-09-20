@@ -37,7 +37,7 @@ from CommonServerPython import DemistoException, set_integration_context, Comman
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
 
 QRadar_v3.FAILURE_SLEEP = 0
-QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
+QRadar_v3.SLEEP_FETCH_EVENT_RETRIES = 0
 
 client = Client(
     server='https://192.168.0.1',

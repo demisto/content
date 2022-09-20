@@ -1,0 +1,36 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "occurred(d)",
+            "severity"
+        ],
+        "keys": [
+            "avg|triagesla.totalDuration / 60"
+        ],
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "-category:job and triagesla.runStatus:ended",
+    "modified": "2022-09-15T14:41:40.238841202Z",
+    "name": "MTTT by Severity",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "7a8e67c4-e080-4d93-8606-df50c4dc4391",
+    "widgetType": "line",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

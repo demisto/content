@@ -1,4 +1,7 @@
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import (SAMPLES_DIR,
+                                                   TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 
 XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with integration',
@@ -28,7 +31,7 @@ DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOA
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
-    'playbook-Jask_Test-4.0.0.yml'
+    'playbook-Jask_Test-4.0.0.yml',
     'playbook-Recorded_Future_Test_4_0.yml',
     'playbook-TestCommonPython_4_1.yml',
 }
@@ -88,3 +91,5 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
 }
+
+NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}

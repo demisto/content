@@ -11,7 +11,7 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 
-integration_params = {
+integration_firewall_params = {
     'port': '443',
     'vsys': 'vsys1',
     'server': 'https://1.1.1.1',
@@ -23,6 +23,13 @@ mock_demisto_args = {
     'vulnerability_profile': "mock_vuln_profile"
 }
 
+integration_panorama_params = {
+    'port': '443',
+    'device_group': 'Lab-Devices',
+    'server': 'https://1.1.1.1',
+    'key': 'thisisabogusAPIKEY!',
+}
+
 
 def load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -31,7 +38,7 @@ def load_json(path):
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params)
+    mocker.patch.object(demisto, 'params', return_value=integration_firewall_params)
     mocker.patch.object(demisto, 'args', return_value=mock_demisto_args)
 
 
@@ -40,7 +47,7 @@ def patched_requests_mocker(requests_mock):
     """
     This function mocks various PANOS API responses so we can accurately test the instance
     """
-    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    base_url = "{}:{}/api/".format(integration_firewall_params['server'], integration_firewall_params['port'])
     # Version information
     mock_version_xml = """
     <response status = "success">
@@ -52,7 +59,7 @@ def patched_requests_mocker(requests_mock):
         </result>
     </response>
     """
-    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key'])
+    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_firewall_params['key'])
     requests_mock.get(version_path, text=mock_version_xml, status_code=200)
     mock_response_xml = """
     <response status="success" code="20">
@@ -837,35 +844,167 @@ class TestPcap:
             panorama_get_pcap_command({'pcapType': 'filter-pcap'})
 
 
-@pytest.mark.parametrize('panorama_version', [8, 9])
-def test_panorama_list_applications_command(mocker, panorama_version):
+class TestPanoramaListApplicationsCommand:
+
+    @staticmethod
+    @pytest.mark.parametrize('panorama_version', [8, 9])
+    def test_panorama_list_applications_command(mocker, panorama_version):
+        """
+        Given
+           - http response of the list of applications.
+           - panorama version 8 & 9.
+
+        When
+           - getting a list of all the applications in panorama 8/9.
+
+        Then
+           - a valid context output is returned.
+        """
+        from Panorama import panorama_list_applications_command
+
+        mocker.patch(
+            'Panorama.http_request', return_value=load_json('test_data/list_applications_response.json')
+        )
+        mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+
+        res = mocker.patch('demistomock.results')
+        panorama_list_applications_command(predefined='false')
+
+        assert res.call_args.args[0]['Contents'] == {
+            '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
+            'category': 'networking',
+            'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+        }
+
+    @staticmethod
+    @pytest.mark.parametrize('panorama_version', [8, 9])
+    def test_panorama_list_applications_command_main_flow(mocker, panorama_version):
+        """
+        Given
+         - integrations parameters.
+         - pan-os-list-applications command arguments including device_group
+
+        When -
+            running the pan-os-list-applications command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(demisto, 'args', return_value={'predefined': 'false', 'device-group': 'new-device-group'})
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-applications')
+
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=load_json('test_data/list_applications_response.json')
+        )
+        mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert res.call_args.args[0]['Contents'] == {
+            '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
+            'category': 'networking',
+            'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+        }
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'config', 'action': 'get',
+            'key': 'thisisabogusAPIKEY!',
+            'xpath': "/config/devices/entry/device-group/entry[@name='new-device-group']/application/entry"
+        }
+
+
+def test_get_security_profiles_command_main_flow(mocker):
     """
     Given
-       - http response of the list of applications.
-       - panorama version 8 & 9.
+     - integrations parameters.
+     - pan-os-get-security-profiles command arguments including device_group
 
-    When
-       - getting a list of all the applications in panorama 8/9.
+    When -
+        running the pan-os-get-security-profiles command through the main flow
 
     Then
-       - a valid context output is returned.
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
     """
-    from Panorama import panorama_list_applications_command
-    mocker.patch('Panorama.http_request', return_value=load_json('test_data/list_applications_response.json'))
-    mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(demisto, 'args', return_value={'device-group': 'new-device-group'})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-get-security-profiles')
+    expected_security_profile_response = load_json('test_data/get_security_profiles_response.json')
+    request_mock = mocker.patch(
+        'Panorama.http_request', return_value=expected_security_profile_response
+    )
     res = mocker.patch('demistomock.results')
-    panorama_list_applications_command(predefined='false')
-    assert res.call_args.args[0]['Contents'] == {
-        '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure', 'category': 'networking',
-        'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+    main()
+
+    assert res.call_args.args[0]['Contents'] == expected_security_profile_response
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'get', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                 "/device-group/entry[@name='new-device-group']/profiles",
+        'key': 'thisisabogusAPIKEY!'
     }
+
+
+def test_apply_security_profiles_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-apply-security-profile command arguments including device_group
+
+    When -
+        running the pan-os-apply-security-profile command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'data-filtering',
+            'profile_name': 'test-profile',
+            'rule_name': 'rule-test'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
+        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
+    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
     @staticmethod
-    def test_sanity(mocker):
+    @pytest.fixture()
+    def reset_device_group():
+        import Panorama
+        Panorama.DEVICE_GROUP = ''
+
+    @staticmethod
+    def test_sanity(mocker, reset_device_group):
         import Panorama
         args = {
             'rulename': 'TestRule',
@@ -890,7 +1029,7 @@ class TestPanoramaEditRuleCommand:
         Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
-    def test_add_to_element_on_uncommited_rule(mocker):
+    def test_add_to_element_on_uncommited_rule(mocker, reset_device_group):
         import Panorama
         args = {
             'rulename': 'TestRule',
@@ -925,7 +1064,7 @@ class TestPanoramaEditRuleCommand:
             Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
-    def test_edit_rule_to_disabled_flow(mocker):
+    def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
         """
         Given -
             arguments to change a pre-rule to 'disabled'
@@ -974,6 +1113,341 @@ class TestPanoramaEditRuleCommand:
         )
         panorama_edit_rule_command(args)
         assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
+
+    @staticmethod
+    def test_edit_rule_main_flow(mocker):
+        """
+        Given
+         - integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+
+        When -
+            running the pan-os-edit-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "disabled",
+                "element_value": "no",
+                "behaviour": "replace",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'config', 'action': 'edit', 'key': 'thisisabogusAPIKEY!',
+            'element': '<disabled>no</disabled>',
+            'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/pre-rulebase"
+                     "/security/rules/entry[@name='test']/disabled"
+        }
+        assert res.call_args.args[0]['Contents'] == {
+            'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+        }
+
+
+def test_panorama_edit_address_group_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-address-group command arguments including device_group
+
+    When -
+        running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'description': 'test', 'match': '1.1.1.1', 'device-group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address-group')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit', 'type': 'config', 'key': 'thisisabogusAPIKEY!',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']"
+                 "/address-group/entry[@name='test']/description", 'element': '<description>test</description>'
+    }
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+    assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
+
+
+@pytest.mark.parametrize(
+    'action, existing_url_categories_mock, category', [
+        (
+            'add',
+            {'list': {'member': []}},
+            'category1'
+        ),
+        (
+            'remove',
+            {'list': {'member': ['category2']}},
+            'category2'
+        )
+    ]
+)
+def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, existing_url_categories_mock, category):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-custom-url-category command arguments including device_group
+
+    When -
+        running the pan-os-edit-custom-url-category command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'action': action, 'categories': ['category1'], 'device-group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-custom-url-category')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch('Panorama.panorama_get_custom_url_category', return_value=existing_url_categories_mock)
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    expected_body_request = {
+        'action': 'edit', 'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/profiles/custom-url-category"
+                 "/entry[@name='test']",
+        'element': f"<entry name='test'><list><member>{category}<"
+                   f"/member></list><type>Category Match</type></entry>",
+        'key': 'thisisabogusAPIKEY!'
+    }
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == expected_body_request
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
+
+def test_panorama_list_edls_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - EDLs from panorama (including un-committed).
+
+    When -
+        running the pan-os-list-edls command through the main flow.
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the http request was sent as expected.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-list-edls')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value=load_json('test_data/list-edls-including-un-committed-edl.json')
+    )
+
+    result = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'get', 'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/external-list/entry",
+        'key': 'thisisabogusAPIKEY!'
+    }
+
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+        {
+            'Name': 'test-1', 'Type': 'domain', 'URL': 'http://test.com',
+            'Recurring': 'hourly', 'DeviceGroup': 'Lab-Devices'
+        },
+        {
+            'Name': 'test-2', 'Type': 'ip', 'URL': 'http://test1.com',
+            'Recurring': 'five-minute', 'DeviceGroup': 'Lab-Devices'
+        }
+    ]
+
+
+def test_panorama_edit_edl_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-edl command arguments including device_group
+
+    When -
+        running the pan-os-edit-edl command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'name': 'test', 'element_to_change': 'description',
+            'element_value': 'edl1', 'device-group': 'new device group'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-edl')
+    mocker.patch('Panorama.panorama_get_edl', return_value={'type': {'test': 'test'}})
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit',
+        'type': 'config',
+        'key': 'thisisabogusAPIKEY!',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/external-list/ent"
+                 "ry[@name='test']/type/test/description",
+        'element': '<description>edl1</description>'
+    }
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
+
+def test_panorama_edit_service_group_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-service-group command arguments including device_group
+
+    When -
+        running the pan-os-edit-service-group command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'tag': 'tag1', 'device-group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-service-group')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit',
+        'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']/"
+                 "service-group/entry[@name='test']/tag",
+        'element': '<tag><member>tag1</member></tag>', 'key': 'thisisabogusAPIKEY!'
+    }
+
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
+
+def test_panorama_edit_url_filter_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-url-filter command arguments including device_group
+
+    When -
+        running the pan-os-edit-url-filter command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'element_to_change': 'description', 'device-group': 'new device group'}
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-url-filter')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch('Panorama.panorama_get_url_filter', return_value={})
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == {
+        'action': 'edit',
+        'type': 'config',
+        'key': 'thisisabogusAPIKEY!',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device group']"
+                 "/profiles/url-filtering/entry[@name='test']/description",
+        'element': '<description>None</description>'
+    }
+
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
 
 
 class MockedResponse:
