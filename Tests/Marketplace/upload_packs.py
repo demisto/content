@@ -1055,7 +1055,7 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    uploaded_packs_dir = Path(packs_artifacts_path).parent / f'uploaded_packs-{build_number}'
+    uploaded_packs_dir = Path(packs_artifacts_path).parent / f'uploaded_packs-{"id_set" if id_set else "graph"}'
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
     if storage_bucket_name:

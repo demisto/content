@@ -74,8 +74,7 @@ validate-content-conf:
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
-    - section_end "Validate content-test-conf Branch Merged"
-
+    - section_end "Validate content-tesgt-conf Branch Merged"
 
 create-instances:
   tags:
@@ -210,7 +209,6 @@ prepare-testing-bucket-mpv2:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
-
 
 .test_content_on_xsoar_server_instances_base:
   tags:

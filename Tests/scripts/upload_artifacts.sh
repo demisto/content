@@ -7,6 +7,16 @@ set -e
 BRANCH=${CI_COMMIT_BRANCH:-unknown}
 ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
 
+# check if ID_SET exists
+ID_SET=$ARTIFACTS_FOLDER/id_set.json
+# check if ID_SET exists
+POSTFIX=""
+if [ ! -f "$ID_SET" ]; then
+    echo "ID_SET file not found at $ID_SET"
+    POSTFIX="_graph"
+fi
+
+
 if [[ ! -d "$ARTIFACTS_DIR" ]]; then
     echo "Directory [$ARTIFACTS_DIR] not found. Nothing to upload. Skipping!"
     exit 0
@@ -38,6 +48,6 @@ if [[ ! -f "$GCS_ARTIFACTS_KEY" ]]; then
 fi
 
 gcloud auth activate-service-account --key-file=$GCS_ARTIFACTS_KEY > auth.out 2>&1
-TARGET_PATH="content/$BRANCH/$CI_PIPELINE_ID"
+TARGET_PATH="content/$BRANCH/$CI_PIPELINE_ID$POSTFIX"
 echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target path: $TARGET_PATH ..."
 gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
