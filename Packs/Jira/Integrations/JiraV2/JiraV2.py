@@ -558,28 +558,27 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message == 'Status code: 404\nMessage: Issue Does Not Exist':
-            demisto.debug("Could not connect to the Jira server."
-                          " Trying again with a new endpoint for Jira version 9.0.0 and above")
+        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+            raise de
 
-            # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
-            result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
+        demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
+                      f'Trying another endpoint: {BASE_URL}/api/latest/project.')
+
+        # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
+        result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
+
+        # Jira's response changed to a list of projects from version 9.0.0
+        projects_lst = list(filter(lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(), result))
+
+        # Filtering should give us a list with one project, only one project should match the filter's conditions
+        if projects_lst:
+            return projects_lst[0].get('id')
 
     # Jira used to respond with a dictionary with the 'projects' key until version 9.0.0
     if isinstance(result, dict):
         for project in result.get('projects', []):
             if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
                 return project.get('id')
-
-    # Jira's response changed to a list of projects from version 9.0.0
-    elif isinstance(result, list):
-        projects_lst = list(filter(
-            lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(),
-            result))
-
-        # Filtering should give us a list with one project
-        if projects_lst:
-            return projects_lst[0].get('id')
 
     return_error('Project not found')
 
