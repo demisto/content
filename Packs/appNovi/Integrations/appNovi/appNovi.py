@@ -393,6 +393,7 @@ def main() -> None:
     # get the service API url
     # base_url = urljoin(demisto.params()['appnovi_url'], API_PREFIX)
     base_url = demisto.params()["appnovi_url"]
+    base_url = urljoin(base_url, API_PREFIX)
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
