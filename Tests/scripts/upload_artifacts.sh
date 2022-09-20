@@ -9,7 +9,6 @@ ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
 
 # check if ID_SET exists
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
-# check if ID_SET exists
 POSTFIX=""
 if [ ! -f "$ID_SET" ]; then
     echo "ID_SET file not found at $ID_SET"
