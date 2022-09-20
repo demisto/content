@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: VMware - Dev
+  id: VMware
   version: -1
 configuration:
 - name: url
@@ -30,8 +30,8 @@ configuration:
   additionalinfo:
 description: VMware vCenter server is a centralized management application that lets
   you manage virtual machines and ESXi hosts centrally.
-display: VMware - Dev
-name: VMware - Dev
+display: VMware
+name: VMware
 script:
   commands:
   - arguments:
