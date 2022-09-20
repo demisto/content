@@ -297,6 +297,14 @@ longText
 XSOAR
 mutex
 urlRep
+domainRepUnified
+hostRep
+ipRep
+unifiedFileRep
+registryKey
+emailRep
+accountRep
+cveRep
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
