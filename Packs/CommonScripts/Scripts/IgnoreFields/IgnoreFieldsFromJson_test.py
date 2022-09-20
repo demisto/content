@@ -14,6 +14,7 @@ INPUTS = [
 
 ]
 
+
 @pytest.mark.parametrize("json_obj, fields, expected", INPUTS)
 def test_ignore_fields(mocker, json_obj, fields, expected):
     from IgnoreFieldsFromJson import ignore_fields
@@ -25,6 +26,7 @@ def test_ignore_fields(mocker, json_obj, fields, expected):
 FAILED_INPUTS = [
     ('invalid json format', ["a"], 'invalid json format'),  # case removing from invalid json
 ]
+
 
 @pytest.mark.parametrize("json_obj, fields, expected", FAILED_INPUTS)
 def test_ignore_fields_fail(mocker, json_obj, fields, expected):
