@@ -712,7 +712,7 @@ class MsGraphClient:
         emails_as_html_and_text = []
 
         for email_as_html in emails_as_html:
-            body_as_text = text_emails_ids.get(email_as_html.get('id')).get('body')
+            body_as_text = text_emails_ids.get(email_as_html.get('id'), {}).get('body')
             if body_as_html := email_as_html.get('body'):
                 email_as_html['body'] = [body_as_html, body_as_text]
             emails_as_html_and_text.append(email_as_html)
@@ -762,7 +762,7 @@ class MsGraphClient:
     def get_email_body_content(_email_body, content_type):
 
         if content_type not in {'text', 'html'}:
-            raise ValueError(f'content-type must be text or html')
+            raise ValueError('content-type must be text or html')
 
         for _email_body_data in _email_body:
             if _email_body_data.get('contentType') == content_type:
