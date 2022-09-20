@@ -568,7 +568,9 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
 
         # Jira's response changed to a list of projects from version 9.0.0
-        projects_lst = list(filter(lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(), result))
+        projects_lst = list(filter(
+            lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(),
+            result))
 
         # Filtering should give us a list with one project, only one project should match the filter's conditions
         if projects_lst:
