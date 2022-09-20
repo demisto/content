@@ -1039,7 +1039,6 @@ def main():
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
-    build_number += '_id_set' if id_set else '_graph'
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
