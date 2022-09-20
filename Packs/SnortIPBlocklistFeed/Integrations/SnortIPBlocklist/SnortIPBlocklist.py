@@ -138,7 +138,7 @@ def get_indicators_command(client: Client,
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
-    human_readable = tableToMarkdown('Indicators from Snort IP Blocklist Feed:', indicators,
+    human_readable = tableToMarkdown(f'Indicators from Snort IP Blocklist Feed: (first {limit} indicators)', indicators,
                                      headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
