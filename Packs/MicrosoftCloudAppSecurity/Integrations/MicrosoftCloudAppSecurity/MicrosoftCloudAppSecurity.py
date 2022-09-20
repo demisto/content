@@ -908,8 +908,6 @@ def main():  # pragma: no cover
     args = demisto.args()
 
     try:
-        if not app_id and not token:
-            raise Exception('Application ID or Token must be provided.')
 
         client = Client(
             app_id=app_id,
