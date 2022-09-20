@@ -29,7 +29,7 @@ def logger(func):
     def wrapper(self, *args, **kwargs):
         logging.info(f'Starting {func.__name__}')
         try:
-            result, pack_id, msg = func(self, *args, **kwargs)
+            result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
             logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
         except FileNotFoundError as e:
@@ -51,7 +51,7 @@ class BucketVerifier:
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name in pack_items.items()]
-        return all(version_exists) and all(items_exists), pack_id, msg
+        return all(version_exists) and all(items_exists), pack_id
 
     @logger
     def verify_modified_pack(self, pack_id, pack_items):
@@ -62,7 +62,7 @@ class BucketVerifier:
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         version_exists = [self.gcp.is_in_index(pack_id), pack_path]
         items_exists = [get_items_dict(pack_path, pack_id) == pack_items]
-        return all(version_exists) and all(items_exists), pack_id, msg
+        return all(version_exists) and all(items_exists), pack_id
 
     @logger
     def verify_new_version(self, pack_id, rn):
