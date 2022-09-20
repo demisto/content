@@ -1,7 +1,7 @@
 import io
 import json
 from CommonServerPython import arg_to_datetime
-from Tenable_ioEventCollector import Client
+from TenableioEventCollector import Client
 import demistomock as demisto
 
 def util_load_json(path):
@@ -26,7 +26,7 @@ def test_get_audit_logs_command(requests_mock):
         - Verify that when a list of events exists, it will take the last timestamp
         - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
     """
-    from Tenable_ioEventCollector import get_audit_logs_command
+    from TenableioEventCollector import get_audit_logs_command
     client = Client(verify=False, headers={}, proxy=False)
     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_ENTRY)
 
@@ -47,7 +47,7 @@ def test_vulnerabilities_process(requests_mock):
         - Verify export uuid being updated in the integration context
         - Verify vulnerabilities returned and finished flag is up.
     """
-    from Tenable_ioEventCollector import generate_export_uuid, try_get_chunks, run_vulnerabilities_fetch
+    from TenableioEventCollector import generate_export_uuid, try_get_chunks, run_vulnerabilities_fetch
     client = Client(verify=False, headers={}, proxy=False)
     requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)

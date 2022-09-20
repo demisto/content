@@ -1,5 +1,5 @@
 Tenable.io Event Collector integration.
-This integration was integrated and tested with version xx of Tenable.io Event Collector
+This integration was integrated and tested with version 1.0 of Tenable.io Event Collector
 
 ## Configure Tenable.io Event Collector on Cortex XSOAR
 
