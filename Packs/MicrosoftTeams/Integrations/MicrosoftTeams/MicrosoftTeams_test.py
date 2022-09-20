@@ -55,8 +55,8 @@ team_members: list = [
         'name': 'Denzel Washington',
         'givenName': 'Denzel',
         'surname': 'Washington',
-        'email': 'dwashinton@email.com',
-        'userPrincipalName': 'dwashinton@email.com',
+        'email': 'DwashintoN@email.com',
+        'userPrincipalName': 'DwashintoN@email.com',
         'tenantId': tenant_id
     }
 ]
