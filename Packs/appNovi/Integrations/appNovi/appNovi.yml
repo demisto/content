@@ -40,48 +40,48 @@ script:
       defaultValue: "25"
       description: Number of results
     outputs:
-    - contextPath: appnovi._key
-      description: 'appNovi database key'
+    - contextPath: appnovi.components.name
+      description: Name of thing
       type: String
-    - contextPath: appnovi._id
-      description: appNovi database ID.
+    - contextPath: appnovi.components.coll
+      description: Collection containing thing
       type: String
-    - contextPath: appnovi.category
-      description: appNovi Category (e.g. Interface, Server)
+    - contextPath: appnovi.components.u._id
+      description: appNovi Database ID.
       type: String
-    - contextPath: appnovi.firstSeen
-      description: When was this Thing first seen?
-      type: Date
-    - contextPath: appnovi.identity.company
+    - contextPath: appnovi.components.u._key
+      description: appNovi Database Key.
+      type: String
+    - contextPath: appnovi.components.u.identity.company
       description: Company ID
       type: String
-    - contextPath: appnovi.identity.datacenter
-      description: Datacenter ID
-      type: String
-    - contextPath: appnovi.identity.domain
-      description: Domain ID
-      type: String
-    - contextPath: appnovi.identity.type
+    - contextPath: appnovi.components.u.identity.type
       description: Thing type
       type: String
-    - contextPath: appnovi.identity.value
-      description: Identity value
+    - contextPath: appnovi.components.u.identity.value
+      description: Thing name
       type: String
-    - contextPath: appnovi.lastSeen
-      description: Last time thing was seen
+    - contextPath: appnovi.components.u.identity.datacenter
+      description: Datacenter ID
+      type: String
+    - contextPath: appnovi.components.u.identity.domain
+      description: Domain ID
+      type: String
+    - contextPath: appnovi.components.u.lastSeen
+      description: Time thing was last seen.
       type: Date
-    - contextPath: appnovi.name
-      description: Name of entity.
-      type: String
-    - contextPath: appnovi.source
-      description: This is information about the source of the entity.
-      type: Unknown
-    - contextPath: appnovi.userProperties
+    - contextPath: appnovi.components.u.source
+      description: This is information about the source of the entity. 
+      type: Date
+    - contextPath: appnovi.components.u.userProperties
       description: These are the custom properties of the entity.
       type: String
-    - contextPath: appnovi.applications
-      description: List of applications
-      type: String
+    - contextPath: appnovi.components.connections
+      description: Number of connections.
+      type: Number
+    - contextPath: appnovi.time
+      description: Query time (for diagnostics)
+      type: Number
     description: Search for Components by name or value
   - name: search-appnovi-connected
     outputs:
@@ -297,6 +297,62 @@ script:
     description: Search for servers with matching CVE
   - name: search-appnovi-component-property
     outputs:
+    - contextPath: appnovi.components.name
+      description: Name of thing
+      type: String
+    - contextPath: appnovi.components.coll
+      description: Collection containing thing
+      type: String
+    - contextPath: appnovi.components.u._id
+      description: appNovi Database ID.
+      type: String
+    - contextPath: appnovi.components.u._key
+      description: appNovi Database Key.
+      type: String
+    - contextPath: appnovi.components.u.identity.company
+      description: Company ID
+      type: String
+    - contextPath: appnovi.components.u.identity.type
+      description: Thing type
+      type: String
+    - contextPath: appnovi.components.u.identity.value
+      description: Thing name
+      type: String
+    - contextPath: appnovi.components.u.identity.datacenter
+      description: Datacenter ID
+      type: String
+    - contextPath: appnovi.components.u.identity.domain
+      description: Domain ID
+      type: String
+    - contextPath: appnovi.components.u.lastSeen
+      description: Time thing was last seen.
+      type: Date
+    - contextPath: appnovi.components.u.source
+      description: This is information about the source of the entity. 
+      type: Date
+    - contextPath: appnovi.components.u.userProperties
+      description: These are the custom properties of the entity.
+      type: String
+    - contextPath: appnovi.components.connections
+      description: Number of connections.
+      type: Number
+    - contextPath: appnovi.time
+      description: Query time (for diagnostics)
+      type: Number
+    arguments:
+    - name: property
+      required: true
+      description: Name of property
+    - name: value
+      required: true
+      description: Value of property
+    - name: max_results
+      default: true
+      description: Number of results
+      defaultValue: "25"
+    description: Search for Components by property and value
+  - name: search-appnovi-server-by-ip
+    outputs:
     - contextPath: appnovi._key
       description: 'appNovi database key'
       type: String
@@ -339,19 +395,6 @@ script:
     - contextPath: appnovi.applications
       description: List of applications
       type: String
-    arguments:
-    - name: property
-      required: true
-      description: Name of property
-    - name: value
-      required: true
-      description: Value of property
-    - name: max_results
-      default: true
-      description: Number of results
-      defaultValue: "25"
-    description: Search for Components by property and value
-  - name: search-appnovi-server-by-ip
     arguments:
     - name: ip
       required: true

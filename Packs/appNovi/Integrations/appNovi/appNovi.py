@@ -374,7 +374,7 @@ def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandRe
         readable_output=readable_output,
         outputs_prefix="appnovi",
         outputs_key_field="",
-        outputs=servers,
+        outputs=[v for k, v in servers.items()],
     )
 
 

@@ -13,6 +13,7 @@ This integration was integrated and tested with appNovi v2.0
     | Full URL of appNovi instance API. |  | True |
     | API Token | appNovi token URL for authentication | True |
     | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -38,20 +39,20 @@ Search for Components by name or value
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| appnovi._key | String | appNovi database key | 
-| appnovi._id | String | appNovi database ID. | 
-| appnovi.category | String | appNovi Category \(e.g. Interface, Server\) | 
-| appnovi.firstSeen | Date | When was this Thing first seen? | 
-| appnovi.identity.company | String | Company ID | 
-| appnovi.identity.datacenter | String | Datacenter ID | 
-| appnovi.identity.domain | String | Domain ID | 
-| appnovi.identity.type | String | Thing type | 
-| appnovi.identity.value | String | Identity value | 
-| appnovi.lastSeen | Date | Last time thing was seen | 
-| appnovi.name | String | Name of entity. | 
-| appnovi.source | Unknown | This is information about the source of the entity. | 
-| appnovi.userProperties | String | These are the custom properties of the entity. | 
-| appnovi.applications | String | List of applications | 
+| appnovi.components.name | String | Name of thing | 
+| appnovi.components.coll | String | Collection containing thing | 
+| appnovi.components.u._id | String | appNovi Database ID. | 
+| appnovi.components.u._key | String | appNovi Database Key. | 
+| appnovi.components.u.identity.company | String | Company ID | 
+| appnovi.components.u.identity.type | String | Thing type | 
+| appnovi.components.u.identity.value | String | Thing name | 
+| appnovi.components.u.identity.datacenter | String | Datacenter ID | 
+| appnovi.components.u.identity.domain | String | Domain ID | 
+| appnovi.components.u.lastSeen | Date | Time thing was last seen. | 
+| appnovi.components.u.source | Date | This is information about the source of the entity. | 
+| appnovi.components.u.userProperties | String | These are the custom properties of the entity. | 
+| appnovi.components.connections | Number | Number of connections. | 
+| appnovi.time | Number | Query time \(for diagnostics\) | 
 
 ### search-appnovi-connected
 ***
@@ -145,20 +146,20 @@ Search for Components by property and value
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| appnovi._key | String | appNovi database key | 
-| appnovi._id | String | appNovi database ID. | 
-| appnovi.category | String | appNovi Category \(e.g. Interface, Server\) | 
-| appnovi.firstSeen | Date | When was this Thing first seen? | 
-| appnovi.identity.company | String | Company ID | 
-| appnovi.identity.datacenter | String | Datacenter ID | 
-| appnovi.identity.domain | String | Domain ID | 
-| appnovi.identity.type | String | Thing type | 
-| appnovi.identity.value | String | Identity value | 
-| appnovi.lastSeen | Date | Last time thing was seen | 
-| appnovi.name | String | Name of entity. | 
-| appnovi.source | Unknown | This is information about the source of the entity. | 
-| appnovi.userProperties | String | These are the custom properties of the entity. | 
-| appnovi.applications | String | List of applications | 
+| appnovi.components.name | String | Name of thing | 
+| appnovi.components.coll | String | Collection containing thing | 
+| appnovi.components.u._id | String | appNovi Database ID. | 
+| appnovi.components.u._key | String | appNovi Database Key. | 
+| appnovi.components.u.identity.company | String | Company ID | 
+| appnovi.components.u.identity.type | String | Thing type | 
+| appnovi.components.u.identity.value | String | Thing name | 
+| appnovi.components.u.identity.datacenter | String | Datacenter ID | 
+| appnovi.components.u.identity.domain | String | Domain ID | 
+| appnovi.components.u.lastSeen | Date | Time thing was last seen. | 
+| appnovi.components.u.source | Date | This is information about the source of the entity. | 
+| appnovi.components.u.userProperties | String | These are the custom properties of the entity. | 
+| appnovi.components.connections | Number | Number of connections. | 
+| appnovi.time | Number | Query time \(for diagnostics\) | 
 
 ### search-appnovi-server-by-ip
 ***
@@ -177,4 +178,19 @@ Search for servers using IP address
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| appnovi._key | String | appNovi database key | 
+| appnovi._id | String | appNovi database ID. | 
+| appnovi.category | String | appNovi Category \(e.g. Interface, Server\) | 
+| appnovi.firstSeen | Date | When was this Thing first seen? | 
+| appnovi.identity.company | String | Company ID | 
+| appnovi.identity.datacenter | String | Datacenter ID | 
+| appnovi.identity.domain | String | Domain ID | 
+| appnovi.identity.type | String | Thing type | 
+| appnovi.identity.value | String | Identity value | 
+| appnovi.lastSeen | Date | Last time thing was seen | 
+| appnovi.name | String | Name of entity. | 
+| appnovi.source | Unknown | This is information about the source of the entity. | 
+| appnovi.userProperties | String | These are the custom properties of the entity. | 
+| appnovi.applications | String | List of applications | 

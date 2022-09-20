@@ -224,8 +224,7 @@ def test_find_server_by_ip_command(client, create_connected_components_mock):
     )
 
     res = find_server_by_ip_command(client, args={"ip": "10.142.45.111"})
-    assert "Things/1450" in res.outputs
-    assert res.outputs["Things/1450"]["name"] == "vm-4864371498218"
+    assert res.outputs[0]["name"] == "vm-4864371498218"
 
     res = find_server_by_ip_command(client, args={"ip": "11.34.34.34"})
     assert not res.outputs
