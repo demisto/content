@@ -1,6 +1,6 @@
 {
     "name": "Exterro/AccessData",
-    "description": "Use the Exterro package to integrate with the Exterro FTK Suite, enabling the playbook automation of incident response workflows upon detection of a possible threat. \\\\n With the Exterro FTK Connect automation platform, users can now leverage Cortex XSOARs security orchestration and automation capabilities to trigger the immediate capture and preservation of endpoint evidence by FTK Enterprise, FTK Central, or FTK Lab. This seamless handoff of data is crucial for incident investigation and recovery, as well as avoiding potential data spoliation.",
+    "description": "Use the Exterro package to integrate with the Exterro FTK Suite, enabling the playbook automation of incident response workflows upon detection of a possible threat.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Exterro",
