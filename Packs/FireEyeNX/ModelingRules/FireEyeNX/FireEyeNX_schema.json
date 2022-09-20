@@ -1,7 +1,7 @@
 {
     "msft_radius_raw": {
-      "_time": {
-        "type": "string",
+      "rt": {
+        "type": "number",
         "is_array": false
       },
       "dpt": {
