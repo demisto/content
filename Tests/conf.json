@@ -5360,7 +5360,7 @@
         "Elasticsearch_v2_test-v8": "CRTX-61980",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Process Email - Generic - Test - Incident Starter": "Issue /CIAC-4161"
+        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
