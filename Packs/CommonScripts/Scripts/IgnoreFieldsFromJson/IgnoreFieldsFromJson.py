@@ -16,7 +16,7 @@ def ignore_fields(value, fields):
     return value
 
 
-def main():
+def main():   # pragma: no cover
     try:
         args = demisto.args()
         json_obj = args.get("json_object")
@@ -26,5 +26,5 @@ def main():
         return_error(str(e), e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):   # pragma: no cover
     main()
