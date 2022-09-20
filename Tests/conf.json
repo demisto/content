@@ -2781,7 +2781,8 @@
                 "Image OCR"
             ],
             "playbookID": "Rasterize Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Rasterize",
@@ -3996,13 +3997,6 @@
             ]
         },
         {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "fromversion": "6.1.0",
-            "integrations": [
-                "Panorama"
-            ]
-        },
-        {
             "playbookID": "GoogleCloudSCC-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5113,7 +5107,8 @@
             "integrations": [
                 "Whois",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 150
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
@@ -5678,6 +5673,7 @@
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
         "HelloWorld",
+        "Image OCR",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
