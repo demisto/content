@@ -57,7 +57,7 @@ def get_upload_job_status(pipeline_id, token):
 def get_job_status(job_name, pipelines_jobs_response):
     for job in pipelines_jobs_response:
         if job.get('name') == job_name:
-            return job.get('status'), job.get('web')
+            return job.get('status')
 
 
 def main():
