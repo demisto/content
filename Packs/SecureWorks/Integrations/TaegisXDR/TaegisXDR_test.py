@@ -329,9 +329,8 @@ def test_fetch_playbook_execution(requests_mock):
         assert fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
     client = mock_client(requests_mock, FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE)
-    response = fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.readable_output == f"""## Results
-* Could not locate execution '{args['id']}': {FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE['errors'][0]['message']}"""
+    with pytest.raises(ValueError, match="Failed to fetch playbook execution"):
+        assert fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_create_investigation(requests_mock):
@@ -347,6 +346,11 @@ def test_create_investigation(requests_mock):
 
     assert response.outputs["id"] == CREATE_INVESTIGATION_RESPONSE["data"]["createInvestigation"]["id"]
 
+    # Investigation creation failed
+    client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to create investigation:"):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
 
 def test_update_investigation(requests_mock):
     """Tests taegis-update-investigation command function
@@ -361,14 +365,22 @@ def test_update_investigation(requests_mock):
 
     assert response.outputs["id"] == args["id"]
 
+    # investigation_id not set
     with pytest.raises(ValueError, match="Cannot fetch investigation without investigation_id defined"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
+    # Investigation update failure
+    client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to update investigation"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Invalid investigation status
     args["status"] = "BadStatus"
     bad_status = r"The provided status, BadStatus, is not valid for updating an investigation. Supported Status Values:.*"
     with pytest.raises(ValueError, match=bad_status):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
+    # No valid update fields set
     args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"]}
     invalid_fields = r"No valid investigation fields provided. Supported Update Fields:.*"
     with pytest.raises(ValueError, match=invalid_fields):

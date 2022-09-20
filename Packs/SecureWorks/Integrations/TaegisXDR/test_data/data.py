@@ -3,8 +3,9 @@ TAEGIS_ALERT = {
     "metadata": {
         "title": "Test Alert",
         "description": "This is a test alert",
-        "severity": 0.5
-    }
+        "severity": 0.5,
+    },
+    "url": "https://ctpx.secureworks.com/alerts/c4f33b53-eaba-47ac-8272-199af0f7935b",
 }
 
 TAEGIS_COMMENT = {
@@ -35,7 +36,8 @@ TAEGIS_INVESTIGATION = {
     "service_desk_id": "",
     "service_desk_type": "",
     "status": "Open",
-    "alerts2": []
+    "alerts2": [],
+    "url": "https://ctpx.secureworks.com/investigations/c2e09554-833e-41a1-bc9d-8160aec0d70d",
 }
 
 TAEGIS_PLAYBOOK_EXECUTION = {
@@ -62,7 +64,8 @@ TAEGIS_PLAYBOOK_EXECUTION = {
     },
     "outputs": "25f16f6c-dbc1-4efe-85a7-385e73f94efc",
     "state": "Completed",
-    "updatedAt": "2022-02-10T13:51:31Z"
+    "updatedAt": "2022-02-10T13:51:31Z",
+    "url": "https://ctpx.secureworks.com/automations/playbook-executions/UGxheWJvb2tFeGVjdXRpb246ZjkxNWYzMjMtZDFlNS00MWQ2LTg4NzktYzE4ZTBhMmYzZmNh",
 }
 
 TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246M2NiM2FmYWItYTZiNy00ZWNmLTk1NDUtY2JlNjg1OTdhODY1"
