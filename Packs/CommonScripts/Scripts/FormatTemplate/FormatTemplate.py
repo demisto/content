@@ -188,6 +188,7 @@ def main():
             variable_markers[1],
             argToBoolean(args.get('keep_symbol_to_null') or False))
         output = formatter.build(template, extract_dt, dx)
+        output = [] if output is None else output
     except Exception as err:
         # Don't return an error by return_error() as this is transformer.
         raise DemistoException(str(err))

@@ -1,6 +1,17 @@
 [
   {
     "args": {
+      "value": null,
+      "ctx_demisto": null,
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": []
+  },
+  {
+    "args": {
       "value": "aaa ${name1} bbb ${name2} ccc",
       "ctx_demisto": {
         "name1": "value1",
