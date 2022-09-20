@@ -54,12 +54,12 @@ script:
     - name: risk_level
       description: Filter by the risk level by entering a value from -10 (low risk) to 10 (high risk).
     - name: per_page
-      description: The number of results to display per page (the maximum and  default is 100).
+      description: The number of results to display per page. The maximum and default is 100.
     - name: page
       description: The results page to display.
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False', the returned events will be lost.
       isArray: false
       name: should_push_events
       predefined:
