@@ -204,7 +204,7 @@ class PackFolders(enum.Enum):
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
-    AGENT_CONFIG = 'AgentConfig'
+    AGENT_CONFIG = 'AgentConfigs'
 
     @classmethod
     def pack_displayed_items(cls):
