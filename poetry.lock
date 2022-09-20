@@ -373,11 +373,11 @@ langdetect = ["langdetect"]
 
 [[package]]
 name = "db-dtypes"
-version = "1.0.3"
+version = "1.0.4"
 description = "Pandas Data Types for SQL systems (BigQuery, Spanner)"
 category = "main"
 optional = false
-python-versions = ">=3.7, <3.11"
+python-versions = ">=3.7"
 
 [package.dependencies]
 numpy = ">=1.16.6,<2.0dev"
@@ -501,8 +501,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "f3ceb0bebe516c0a1174d8b6f0e0bf80626587e3"
-resolved_reference = "f3ceb0bebe516c0a1174d8b6f0e0bf80626587e3"
+reference = "7c83535f0759aea01028ee8f9b63fe2162dceee4"
+resolved_reference = "7c83535f0759aea01028ee8f9b63fe2162dceee4"
 
 [[package]]
 name = "Deprecated"
@@ -1841,7 +1841,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "starkbank-ecdsa"
-version = "2.0.3"
+version = "2.1.0"
 description = "A lightweight and fast pure python ECDSA library"
 category = "main"
 optional = false
@@ -2255,7 +2255,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "167da90c60fc7abc5c8279d91c3fc1b7ff405c9b747a03547eea98bf7f750148"
+content-hash = "fd5a15aa21d9d4af7c3766605ce8558a0ba49428b0da4b6b540d86de1b927bf0"
 
 [metadata.files]
 aiohttp = [
@@ -2592,8 +2592,8 @@ dateparser = [
     {file = "dateparser-1.1.1.tar.gz", hash = "sha256:038196b1f12c7397e38aad3d61588833257f6f552baa63a1499e6987fa8d42d9"},
 ]
 db-dtypes = [
-    {file = "db-dtypes-1.0.3.tar.gz", hash = "sha256:a46f85c53b8a242412f037eb6d524ef3adf698c7c1c71db53724bcb54df4e194"},
-    {file = "db_dtypes-1.0.3-py2.py3-none-any.whl", hash = "sha256:3cce84cab13a8687d5295b82ebf0f6c47ea42478ba641a5773c397addfb1b699"},
+    {file = "db-dtypes-1.0.4.tar.gz", hash = "sha256:6527cd2ae956e1d91c6c79387fb2a2217938139efc14449f6c662bd768994e9e"},
+    {file = "db_dtypes-1.0.4-py2.py3-none-any.whl", hash = "sha256:996c0250051c0c3faef8a9bd02b30a182d553e6a9b8d34b5344a30fe2fb9de33"},
 ]
 decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
@@ -3678,7 +3678,7 @@ soupsieve = [
     {file = "soupsieve-2.3.2.post1.tar.gz", hash = "sha256:fc53893b3da2c33de295667a0e19f078c14bf86544af307354de5fcf12a3f30d"},
 ]
 starkbank-ecdsa = [
-    {file = "starkbank-ecdsa-2.0.3.tar.gz", hash = "sha256:73b62b1b3de54bbaa05dedb1a2d951c033432bb074de899e19d4a96a36b21df6"},
+    {file = "starkbank-ecdsa-2.1.0.tar.gz", hash = "sha256:24422395e8682ac22a5b20ba3d7418d62e1a927aef29e8ddb5e678662be6b643"},
 ]
 stevedore = [
     {file = "stevedore-4.0.0-py3-none-any.whl", hash = "sha256:87e4d27fe96d0d7e4fc24f0cbe3463baae4ec51e81d95fbe60d2474636e0c7d8"},
