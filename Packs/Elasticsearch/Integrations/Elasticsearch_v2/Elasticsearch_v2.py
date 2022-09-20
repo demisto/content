@@ -752,7 +752,7 @@ def get_mapping_fields_command():
                     elastic_mapping[key] = {"_id": "doc_id", "_index": key}
                     elastic_mapping[key]["_source"] = parse_subtree(my_map)
 
-        elif index.endwith('*') or index.endwith('_all'):
+        elif index.endswith('*') or index.endswith('_all'):
             prefix_index = re.compile(index.rstrip('_all').rstrip('*'))
             for key in res_json.keys():
                 demisto.debug(f'{prefix_index=} and {key=}')
