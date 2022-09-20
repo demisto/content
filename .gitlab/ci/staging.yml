@@ -152,5 +152,6 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
+    - python3 ./Tests/scripts/compare_zips.py -zip1 $ARTIFACTS_FOLDER/base/uploaded_packs-id_set/Base.zip -zip2 $ARTIFACTS_FOLDER/base/uploaded_packs-graph/Base.zip
 
 
