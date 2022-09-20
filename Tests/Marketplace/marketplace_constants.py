@@ -204,7 +204,7 @@ class PackFolders(enum.Enum):
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
-    AGENT_CONFIG = 'AgentConfigs'
+    AGENT_CONFIGS = 'AgentConfigs'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -217,7 +217,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIG.value,
+            PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIGS.value,
         }
 
     @classmethod
@@ -235,7 +235,8 @@ class PackFolders(enum.Enum):
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
-            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIG.value,
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
+            PackFolders.AGENT_CONFIGS.value,
         }
 
 
@@ -286,7 +287,8 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
     PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
     PackFolders.TRIGGERS.value: "Triggers",
-    PackFolders.WIZARDS.value: "Wizards"
+    PackFolders.WIZARDS.value: "Wizards",
+    PackFolders.AGENT_CONFIGS.value: "AgentConfigs"
 }
 
 
