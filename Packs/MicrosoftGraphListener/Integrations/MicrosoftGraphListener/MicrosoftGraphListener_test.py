@@ -64,7 +64,7 @@ def emails_data():
 
 @pytest.fixture()
 def emails_data_full_body():
-    with open('test_data/emails_data_full_body') as emails_json:
+    with open('test_data/emails_data_full_body_html') as emails_json:
         return json.load(emails_json)
 
 
