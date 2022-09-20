@@ -718,7 +718,16 @@ def main():
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags, tlp_color, create_relationships)
             for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
+                try:
+                    demisto.createIndicators(iter_)
+                except Exception as e:
+                    # find problematic indicator
+                    for indicator in iter_:
+                        try:
+                            demisto.createIndicators([indicator])
+                        except Exception as err:
+                            demisto.debug(f'createIndicators Error: failed to create the following indicator: {indicator}\n {err}')
+                    raise e
 
         elif command == 'unit42-get-indicators':
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
