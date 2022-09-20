@@ -8,7 +8,6 @@ configuration:
   additionalinfo: Tenable API access and secret key.
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
 - display: Vulnerabilities Fetch Interval
   additionalinfo: Fetch interval in minutes.
