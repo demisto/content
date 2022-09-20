@@ -651,6 +651,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.MARKETPLACES: self._marketplaces,
             Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
@@ -2033,6 +2034,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('comment', ''),
                             'tags': content_item_tags,
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
@@ -2047,6 +2049,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INTEGRATIONS.value:
@@ -2060,6 +2063,7 @@ class Pack(object):
                             'commands': [
                                 {'name': c.get('name', ''), 'description': c.get('description', '')}
                                 for c in integration_commands],
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
@@ -2068,6 +2072,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
@@ -2079,12 +2084,14 @@ class Pack(object):
                             'hours': int(content_item.get('hours', 0)),
                             'days': int(content_item.get('days', 0)),
                             'weeks': int(content_item.get('weeks', 0)),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
@@ -2093,6 +2100,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.REPORTS.value:
@@ -2100,6 +2108,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
@@ -2108,12 +2117,14 @@ class Pack(object):
                             'details': content_item.get('details', ''),
                             'reputationScriptName': content_item.get('reputationScriptName', ''),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.LAYOUTS.value:
                         layout_metadata = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
@@ -2125,6 +2136,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name') or content_item.get('id', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.WIDGETS.value:
@@ -2133,12 +2145,14 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'dataType': content_item.get('dataType', ''),
                             'widgetType': content_item.get('widgetType', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.LISTS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
-                            'name': content_item.get('name', '')
+                            'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
@@ -2146,6 +2160,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
@@ -2154,6 +2169,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'type': content_item.get('type', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
@@ -2161,6 +2177,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
@@ -2168,6 +2185,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
@@ -2175,6 +2193,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.JOBS.value:
@@ -2183,6 +2202,7 @@ class Pack(object):
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.PARSING_RULES.value:
@@ -2190,6 +2210,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
@@ -2197,6 +2218,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
@@ -2205,6 +2227,7 @@ class Pack(object):
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
@@ -2214,8 +2237,9 @@ class Pack(object):
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
-
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
+
                         if preview:
                             dashboard.update({"preview": preview})
                         folder_collected_items.append(dashboard)
@@ -2225,6 +2249,7 @@ class Pack(object):
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.TRIGGERS.value:
@@ -2232,6 +2257,7 @@ class Pack(object):
                             'id': content_item.get('trigger_id', ''),
                             'name': content_item.get('trigger_name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.WIZARDS.value:
@@ -2242,6 +2268,7 @@ class Pack(object):
                             'dependency_packs': content_item.get('dependency_packs', {}),
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     else:
