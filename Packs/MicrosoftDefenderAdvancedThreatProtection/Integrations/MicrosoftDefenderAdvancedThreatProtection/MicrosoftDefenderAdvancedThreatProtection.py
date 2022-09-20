@@ -6,7 +6,6 @@ from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 from requests import Response
-import json
 
 # Disable insecure warnings
 urllib3.disable_warnings()

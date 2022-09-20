@@ -853,7 +853,7 @@ script:
       type: Date
   - arguments:
     - default: true
-      description: The query to run. Must be passed if query_batch argument is empty.
+      description: The query to run. Must be passed if query_batch argument is not provided.
       isArray: false
       name: query
       required: false
@@ -866,7 +866,7 @@ script:
       required: false
       secret: false
     - name: time_range
-      description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, will be applied to all queries in the array.
+      description: Time range to look back. The expected syntax is a human-readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
       required: false
       isArray: false
       defaultValue: ''
@@ -874,7 +874,7 @@ script:
       - ''
     - default: false
       description:  |-
-        A JSON array of queries, limited to 10 queries. Must be passed if query argument is empty. Example for input:
+        A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input
         { "queries": [
             {
             "query": "query #1",	// Mandatory
