@@ -1,7 +1,7 @@
 import json
 import demistomock as demisto
 import pytest
-from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query
+from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, create_types_query
 
 
 def load_json_file(path):
@@ -36,9 +36,9 @@ def test_create_or_query():
 
 
 @pytest.mark.parametrize("params, expected_result",
-                        [({'indicatorActive': False, "groupType": ['All'], "indicatorType": ['All'],
+                        [({'indicatorActive': False, "group_type": ['All'], "indicator_type": ['All'],
                            'retrieveRelationships': False}, ''),
-                         ({'indicatorActive': True, "groupType": ['File'], "indicatorType": [],
+                         ({'indicatorActive': True, "group_type": ['File'], "indicator_type": [],
                            'retrieveRelationships': False}, 'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
     """
@@ -54,5 +54,23 @@ def test_set_tql_query(mocker, params, expected_result):
     from_date = ''
     mocker.patch.object(demisto, 'params', return_value=params)
     output = set_tql_query(from_date)
+
+    assert output == expected_result
+
+@pytest.mark.parametrize("params, expected_result",
+                        [({"group_type": ['All'], "indicator_type": []}, 'typeName IN ("Attack Pattern","Campaign",'
+                          '"Course of Action","Intrusion Set","Malware","Report","Tool","Vulnerability")'),
+                         ({"group_type": ['File'], "indicator_type": []}, 'typeName IN ("File")')])
+def test_create_types_query(mocker, params, expected_result):
+    """
+    Given:
+        - an empty from_date value and demisto params
+    When:
+        - running set_tql_query command
+    Then:
+        - validate the tql output
+    """
+    mocker.patch.object(demisto, 'params', return_value=params)
+    output = create_types_query()
 
     assert output == expected_result

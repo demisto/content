@@ -182,8 +182,9 @@ def suppress_stdout():
 
 
 def set_fields_query() -> str:
+    """Creating fields query to add information to the API response"""
     fields_str = '&fields=threatAssess&fields=tags'
-    if demisto.getParam('retrieveRelationships'):
+    if demisto.getParam('createRelationships'):
         fields_str += '&fields=associatedGroups&fields=associatedIndicators'
 
     return fields_str
@@ -191,8 +192,8 @@ def set_fields_query() -> str:
 
 def create_types_query() -> str:
     """Creating TypeName query to fetch different types of indicators"""
-    group_types = argToList(demisto.getParam('groupType'))
-    indicator_types = argToList(demisto.getParam('indicatorType'))
+    group_types = argToList(demisto.getParam('group_type'))
+    indicator_types = argToList(demisto.getParam('indicator_type'))
     types = []
 
     if not group_types and not indicator_types:
@@ -210,11 +211,8 @@ def create_types_query() -> str:
         types.extend(group_types)
         types.extend(indicator_types)
 
-    query = 'typeName IN ('
-    for item in types:
-        query += f'"{item}",'
-    query = query[:len(query) - 1]
-    query += ')'
+    query = 'typeName IN ("' + '","'.join(types) + '")'
+
     return query
 
 
@@ -245,26 +243,28 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
-    fields = create_indicator_fields(indicator, indicator_type, indicator_value)
-
+    fields = create_indicator_fields(indicator, indicator_type)
+    relationships = create_indicator_relationships(fields, indicator_type, indicator_value)
     indicator_obj = {
         "value": indicator_value,
         "type": indicator_type,
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
-        "fields": fields
+        "fields": fields,
+        "relationships": relationships
+
     }
 
     return indicator_obj
 
 
-def create_indicator_fields(indicator, indicator_type, indicator_value):
+def create_indicator_fields(indicator, indicator_type):
     """Creating an indicator fields from a raw indicator"""
     params = demisto.params()
-    indicator_fields = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
+    indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
     fields: dict = {}
 
-    for indicator_key, xsoar_indicator_key in indicator_fields.items():
+    for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
         fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
 
     raw_tags = indicator.get('tags', {}).get('data', [])
@@ -287,23 +287,19 @@ def create_indicator_fields(indicator, indicator_type, indicator_value):
     if tlp_color:
         fields['trafficlightprotocol'] = tlp_color  # type: ignore
 
-    if argToBoolean(params.get('retrieveRelationships')):
-        relationships = create_indicator_relationships(fields, indicator_type, indicator_value)
-        if relationships:
-            fields['relationships'] = relationships
-
     remove_nulls_from_dictionary(fields)
 
     return fields
 
 
 def create_indicator_relationships(indicator, indicator_type, indicator_value):
-    relationships_list: List[EntityRelationship] = []
-    entities_b = indicator.get('feedrelatedindicators', [])
-    for entity_b in entities_b:
-        entity_b_value = entity_b.get('summary') or entity_b.get('name')
-        entity_b_type = entity_b.get('type')
-        relationships_list.extend(create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
+    relationships_list = []
+    if argToBoolean(demisto.getParam('createRelationships')):
+        b_entities = indicator.get('feedrelatedindicators', [])
+        for entity_b in b_entities:
+            entity_b_value = entity_b.get('summary') or entity_b.get('name')
+            entity_b_type = entity_b.get('type')
+            relationships_list.extend(create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
 
     return relationships_list
 
@@ -312,16 +308,18 @@ def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entit
     """
     Create a list of entityRelationship object from the api result
     """
-    relationships_list: List[EntityRelationship] = []
+    relationships_list = []
 
     if entity_b and entity_b_type:
-        relationships_list.append(
-            EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=EntityRelationship.Relationships.RELATED_TO,
-                               entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=demisto.getParam(
-                                   'feedReliability'),
-                               brand=INTEGRATION_NAME))
+        relationship_entity = EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type,
+                                                 name=EntityRelationship.Relationships.RELATED_TO,
+                                                 entity_b=entity_b, entity_b_type=entity_b_type,
+                                                 source_reliability=demisto.getParam('feedReliability'),
+                                                 brand=INTEGRATION_NAME)
+        relationships_list.append(relationship_entity.to_indicator())
+        demisto.debug(f'Created relationsip between {entity_a} and {entity_b}')
     else:
-        demisto.info(
+        demisto.debug(
             f"WARNING: Relationships will not be created to entity A {entity_a}" \
             f" with relationship name {EntityRelationship.Relationships.RELATED_TO}")
     return relationships_list
@@ -400,6 +398,7 @@ def module_test_command(client: Client):  # pragma: no cover
     if status == 'Success':
         return "ok", {}, {}
     else:
+        demisto.debug(response)
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred, if it persist please contact your '
                                                            'local help desk'))
@@ -431,8 +430,9 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         tql = f'?tql={tql}'
     else:
         tql = ''
-    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=200&sorting=dateAdded%20ASC'
+    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
+        # replacing only the first occurence of & if ? is not present in url 
         url = url.replace('&', '?', 1)  # type: ignore
 
     indicators = []
@@ -452,6 +452,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
 
 
 def set_tql_query(from_date):
+    """Creating tql query to add information to the API response"""
     params = demisto.params()
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
@@ -486,26 +487,27 @@ def get_indicators_command(client: Client):  # pragma: no cover
     offset = args.get('offset', '0')
 
     owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
-    active_only = f'AND indicatorActive EQ {args.get("indicatorActive")} ' if argToBoolean(args.get("indicatorActive")) else ''
+    active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' if argToBoolean(args.get("active_indicators")) else ''
     confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
-    threat_score = f'AND threatAssessScore GT {args.get("threatAssessScore")} ' if args.get("threatAssessScore") else ''
+    threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
 
     types = argToList(demisto.getArg("indicator_type"))
     query = ''
     if types and 'All' not in types:
-        query = 'AND typeName IN ('
-        for item in types:
-            query += f'"{item}",'
-        query = query[:len(query) - 1]
-        query += ')'
+        query = 'AND typeName IN ("' + '","'.join(types) + '")'
 
-    tql = active_only + confidence + threat_score + confidence + owners + query
-    tql = tql.replace('AND ', '', 1)
-    tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
-    tql = f'?tql={tql}'
+    tql = args.get('tql_query', '')
+    if not tql:
+        tql = active_only + confidence + threat_score + confidence + owners + query
+        tql = tql.replace('AND ', '', 1)
+        tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
+
+    if tql:
+        tql = f'?tql={tql}'
 
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
+        # replacing only the first occurence of & if ? is not present in url 
         url = url.replace('&', '?', 1)  # type: ignore
 
     response, status = client.make_request(Method.GET, url)
@@ -556,7 +558,9 @@ def main():  # pragma: no cover
             if indicators:
                 demisto.info('Last run set:' + str(indicators[-1].get('dateAdded')))
                 demisto.setLastRun({'from_date': indicators[-1].get('dateAdded')})
+                demisto.debug(f'The last indicator is: {indicators[-1]}')
             indicators = [parse_indicator(indicator) for indicator in indicators]
+            demisto.debug(f'The number of new indicators is:{len(indicators)}')
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
