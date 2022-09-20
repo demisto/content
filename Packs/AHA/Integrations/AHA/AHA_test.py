@@ -1,7 +1,6 @@
-from Integrations.AHA.AHA import edit_feature
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from AHA import Client, get_all_features, get_feature
+from AHA import Client, get_features, get_feature, edit_feature
 import pytest
 import io
 
@@ -33,8 +32,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO change name
-# TODO this is an example of how to work with mock
 def test_getFeatures(mocker):
     """
         When:
@@ -43,7 +40,7 @@ def test_getFeatures(mocker):
             - Asserts get all features
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get_all_features(client=client, fromDate="2022-01-01")
+    results = get_features(client=client, fromDate="2022-01-01")
     assert len(results.outputs) == 30
 
 
@@ -55,7 +52,7 @@ def test_getFeaturesFromDate(mocker):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
-    results = get_all_features(client=client, fromDate="3000-01-01")
+    results = get_features(client=client, fromDate="3000-01-01")
     assert len(results.outputs) == 0
 
 

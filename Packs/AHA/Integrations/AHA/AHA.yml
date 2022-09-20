@@ -12,13 +12,13 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: "true"
+    defaultvalue: true
     type: 8
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
+    defaultvalue: ''
     type: 8
     additionalinfo: null
   - name: api_key
@@ -32,19 +32,19 @@ display: AHA
 name: Aha
 script:
   commands:
-    - name: get-all-features
+    - name: aha-get-features
       description: will get all features from service
       deprecated: false
       arguments:
         - name: fromDate
-          description: Get features from a date
+          description: list features starting from a date
           required: false
           isArray: false
           defaultValue: 2020-01-01
           predefined:
             - ""
       outputs: []
-    - name: get-feature
+    - name: aha-get-feature
       description: returns a specific feature
       deprecated: false
       arguments:
@@ -56,7 +56,7 @@ script:
           predefined:
             - ""
       outputs: []
-    - name: edit-feature
+    - name: aha-edit-feature
       description: change value of a field in feature
       deprecated: false
       arguments:
@@ -75,7 +75,7 @@ script:
           predefined:
             - ""
       outputs: []
-    - name: close-feature
+    - name: aha-close-feature
       description: Sets a feature status to closed
       deprecated: false
       arguments:

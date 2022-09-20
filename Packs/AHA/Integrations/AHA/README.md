@@ -1,6 +1,3 @@
-Aha!
-This integration was integrated and tested with version xx of Aha
-
 ## Configure AHA on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -18,14 +15,14 @@ This integration was integrated and tested with version xx of Aha
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### get-all-features
+### aha-get-features
 ***
 will get all features from service
 
 
 #### Base Command
 
-`get-all-features`
+`aha-get-features`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -36,14 +33,14 @@ will get all features from service
 #### Context Output
 
 There is no context output for this command.
-### get-feature
+### aha-get-feature
 ***
 returns a specific feature
 
 
 #### Base Command
 
-`get-feature`
+`aha-get-feature`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,14 +51,14 @@ returns a specific feature
 #### Context Output
 
 There is no context output for this command.
-### edit-feature
+### aha-edit-feature
 ***
 change value of a field in feature
 
 
 #### Base Command
 
-`edit-feature`
+`aha-edit-feature`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,14 +70,14 @@ change value of a field in feature
 #### Context Output
 
 There is no context output for this command.
-### close-feature
+### aha-close-feature
 ***
 Sets a feature status to closed
 
 
 #### Base Command
 
-`close-feature`
+`aha-close-feature`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
