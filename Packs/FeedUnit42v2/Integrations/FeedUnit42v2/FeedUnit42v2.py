@@ -140,7 +140,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
                     }
 
                     if "file:hashes.'SHA-256' = '" in indicator_obj['value']:
-                        if ioc_value := extract_ioc_value(indicator_obj['value']) is not None:
+                        if ioc_value := extract_ioc_value(indicator_obj['value']):
                             indicator_obj['value'] = ioc_value
 
                     if tlp_color:
