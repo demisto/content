@@ -16,6 +16,7 @@ from TaegisXDR import (
     fetch_playbook_execution_command,
     create_investigation_command,
     update_investigation_command,
+    test_module as connectivity_test,
 )
 
 from test_data.data import (
@@ -54,6 +55,7 @@ def mock_client(requests_mock, mock_response):
     base_url = "https://api.ctpx.secureworks.com"
 
     requests_mock.post(f"{base_url}/graphql", json=mock_response)
+    requests_mock.get(f"{base_url}/assets/version", json=mock_response)
     client = Client(
         client_id="TestID",
         client_secret="TestSecret",
@@ -226,6 +228,12 @@ def test_update_comment(requests_mock):
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to update comment:"):
         assert update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_connectivity(requests_mock):
+    response = {"revision": "1e9c12c7f3f51d5ecc0da91d1ac8bcb27e3566a7", "timestamp": "2022-01-01T17:02:01Z"}
+    client = mock_client(requests_mock, response)
+    assert connectivity_test(client=client) == "ok"
 
 
 def test_fetch_incidents(requests_mock):
