@@ -10,9 +10,10 @@ import demisto_client
 from Tests.Marketplace.search_and_uninstall_pack import (reset_base_pack_version,
                                                          uninstall_all_packs,
                                                          wait_for_uninstallation_to_complete)
+from Tests.Marketplace.configure_and_install_packs import install_packs_from_content_packs_to_install_path
 from Tests.scripts.collect_tests.path_manager import PathManager
 
-from Tests.configure_and_test_integration_instances import XSIAMBuild
+from Tests.configure_and_test_integration_instances import XSIAMBuild, XSIAMServer
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.content.objects.pack_objects.modeling_rule.modeling_rule import ModelingRule, MRule
@@ -31,12 +32,23 @@ def options_handler(args=None):
     """
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
 
+    parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
+    parser.add_argument('-n', '--is-nightly', default=False,
+                        action=argparse.BooleanOptionalAction, help='Is nightly build')
+    parser.add_argument('--branch', help='GitHub branch name', required=True)
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
     parser.add_argument('--xsiam_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
+    parser.add_argument(
+        '--mr', '--modeling-rules-to-test',
+        help=('Path to file with the modeling rules that require testing as a newline separated list '
+              'where each item is "<pack-name>/ModelingRules/<name-of-modeling-rule-dir>/"'
+              '. If no path is passed then will search for the file at "./artifacts/mrs_to_test.txt"')
+    )
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -51,13 +63,12 @@ def options_handler(args=None):
     return options
 
 
-def clean_xsiam_tenant(xsiam_build: XSIAMBuild) -> bool:
-    client = xsiam_build.servers[0].client
+def clean_xsiam_tenant(xsiam_server: XSIAMServer) -> bool:
+    client = xsiam_server.client
     if not client:
-        err_msg = (f'expected {xsiam_build=} to have a "server" property whose value is a list of Server class'
-                   'instances with a length of at least 1 where the server instance has a "client" property.')
+        err_msg = (f'expected {xsiam_server=} to have a "client" property.')
         raise AttributeError(err_msg)
-    host = xsiam_build.xsiam_machine
+    host = xsiam_server.name
     success = reset_base_pack_version(client)
     success = success and uninstall_all_packs(client, host) and wait_for_uninstallation_to_complete(client)
     return success
@@ -83,12 +94,12 @@ def get_modeling_rules_to_test(paths_manager: PathManager) -> list[Path]:
     return modeling_rules
 
 
-def create_google_pubsub_client(project_id: str, service_account_filepath: Optional[str]) -> PublisherClient:
+def create_google_pubsub_client(service_account_filepath: Optional[str]) -> PublisherClient:
     if service_account_filepath:
         credentials = service_account.Credentials.from_service_account_file(service_account_filepath)
-        publisher = PublisherClient(project=project_id, credentials=credentials)
+        publisher = PublisherClient(credentials=credentials)
     else:
-        publisher = PublisherClient(project=project_id)
+        publisher = PublisherClient()
     return publisher
 
 
@@ -101,7 +112,7 @@ def create_google_bigquery_client(project_id: str, service_account_filepath: Opt
     return bigquery_client
 
 
-def create_dataset(xsiam_build: XSIAMBuild, modeling_rule: ModelingRule, pub_sub_client: PublisherClient) -> bool:
+def create_dataset(xsiam_server: XSIAMServer, modeling_rule: ModelingRule, pub_sub_client: PublisherClient) -> bool:
     if not modeling_rule.testdata_path:
         testdata_filepath = modeling_rule.path.parent / f'{modeling_rule.path.parent.name}_testdata.json'
         raise ModelingRuleTestException(f'No file with test data was found in {testdata_filepath}')
@@ -116,8 +127,8 @@ def create_dataset(xsiam_build: XSIAMBuild, modeling_rule: ModelingRule, pub_sub
         event_data: list[dict[str, Any]] = data.get('event_data')
         event_data_as_str = '\n'.join([json.dumps(event) for event in event_data])
         pubsub_msg = BytesIO(bytes(f'{json.dumps(metablob)}\n{event_data_as_str}', encoding='utf-8'))
-        xsiam_project_number = xsiam_build.xsiam_machine.split('-')[-1]
-        topic = pub_sub_client.topic_path(xsiam_build.xsiam_machine, f'ext-logs-{xsiam_project_number}')
+        xsiam_project_number = xsiam_server.name.split('-')[-1]
+        topic = pub_sub_client.topic_path(xsiam_server.name, f'ext-logs-{xsiam_project_number}')
         # topic_name = f'projects/{xsiam_build.xsiam_machine}/topics/ext-logs-{xsiam_project_number}'
         future = pub_sub_client.publish(topic, pubsub_msg.getvalue())
         future.result()
@@ -174,21 +185,21 @@ def get_xql_query_results(client: demisto_client.ApiClient, execution_id: str) -
         raise ModelingRuleTestException(err_msg)
 
 
-def execute_xql_query(xsiam_build: XSIAMBuild, m_rule: MRule) -> bool:
+def execute_xql_query(xsiam_server: XSIAMServer, m_rule: MRule) -> bool:
     """Verify that a modeling rule maps to fields correctly given the test dataset
 
     Perform an xql query using the modeling rule's fields to check that the data in the dataset
     created from the test data has been mapped correctly in the system
 
     Args:
-        xsiam_build (XSIAMBuild): XSIAM build context object
+        xsiam_server (XSIAMServer): XSIAM Server object
         m_rule (MRule): Individual rule from a modeling rule xif file
 
     Returns:
         bool: Whether the fields were mapped correctly or not
     """
     xql_query = f'config timeframe = 5y | datamodel = {m_rule.datamodel} | fields {", ".join(m_rule.fields)}'
-    client = xsiam_build.servers[0].reconnect_client()
+    client = xsiam_server.client
     execution_id = start_xql_query(client, xql_query)
     xql_query_results_data = get_xql_query_results(client, execution_id)
     data = xql_query_results_data[0]
@@ -209,19 +220,34 @@ def execute_xql_query(xsiam_build: XSIAMBuild, m_rule: MRule) -> bool:
     return True
 
 
-def test_modeling_rule(xsiam_build: XSIAMBuild, modeling_rule: ModelingRule, pubsub_client: PublisherClient) -> bool:
+class BuildContext:
+    def __init__(self, branch_name: str, build_number: str):
+        self.branch_name = branch_name if branch_name else 'master'
+        self.build_number = build_number
+
+
+def install_packs_on_xsiam_server(server: XSIAMServer, ctx: BuildContext, pack_ids: list[str]) -> bool:
+    XSIAMBuild.set_marketplace_url(
+        servers=[server], branch_name=ctx.branch_name, ci_build_number=ctx.build_number
+    )
+    install_packs_from_content_packs_to_install_path([server], pack_ids, server.name)
+    return True
+
+
+def test_modeling_rule(xsiam_server: XSIAMServer, ctx: BuildContext, modeling_rule: ModelingRule,
+                       pubsub_client: PublisherClient) -> bool:
     # clean tenant
-    if not clean_xsiam_tenant(xsiam_build):
+    if not clean_xsiam_tenant(xsiam_server):
         raise ModelingRuleTestException(f'Failed to clean the xsiam tenant for testing of {modeling_rule.path.parent}')
 
     # install pack of modeling rule
     pack_id = modeling_rule.path.parts[modeling_rule.path.parts.index('Packs') + 1]
-    if not xsiam_build.install_packs([pack_id]):
+    if not install_packs_on_xsiam_server(xsiam_server, ctx, [pack_id]):
         raise ModelingRuleTestException(f'Failed to install the pack for testing of {modeling_rule.path.parent}')
 
     try:
         # create dataset from modeling rule's testdata
-        create_dataset(xsiam_build, modeling_rule, pubsub_client)
+        create_dataset(xsiam_server, modeling_rule, pubsub_client)
     except ModelingRuleTestException as e:
         testdata_filepath = modeling_rule.path.parent / f'{modeling_rule.path.parent.name}_testdata.json'
         no_testdata_err = f'No file with test data was found in {testdata_filepath}'
@@ -237,7 +263,7 @@ def test_modeling_rule(xsiam_build: XSIAMBuild, modeling_rule: ModelingRule, pub
     for m_rule in modeling_rule.rules:
         try:
             # perform xql query
-            execute_xql_query(xsiam_build, m_rule)
+            execute_xql_query(xsiam_server, m_rule)
         except ModelingRuleTestException as e:
             valid = False
             errors.append(e)
@@ -256,7 +282,15 @@ def main():
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
-    xsiam_build = XSIAMBuild(options)
+    # xsiam_build = XSIAMBuild(options)
+    xsiam_machine = options.xsiam_machine
+    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(
+        xsiam_machine,
+        options.xsiam_servers_path,
+        options.xsiam_servers_api_keys)
+    # Configure the Server
+    server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
+    ctx = BuildContext(options.branch, options.build_number)
 
     cur_filepath = Path(__file__).absolute()
     try:
@@ -266,18 +300,18 @@ def main():
     paths_manager = PathManager(cur_filepath.parents[content_dir_up])
     modeling_rules_to_test = get_modeling_rules_to_test(paths_manager)
 
-    pubsub_client = create_google_pubsub_client(xsiam_build.xsiam_machine, options.service_account)
-    bq_client = create_google_bigquery_client(xsiam_build.xsiam_machine, options.service_account)
+    pubsub_client = create_google_pubsub_client(options.service_account)
+    bq_client = create_google_bigquery_client(server.name, options.service_account)
 
     # e.g. the numbers off the google project "qa2-test-9918425195851" would be "9918425195851"
-    project_name_number = xsiam_build.xsiam_machine.split('-')[-1]
+    project_name_number = server.name.split('-')[-1]
 
     errs = []
     success = True
     for modeling_rule in modeling_rules_to_test:
         mr = ModelingRule(modeling_rule.as_posix())
         try:
-            if not test_modeling_rule(xsiam_build, mr, pubsub_client):
+            if not test_modeling_rule(server, ctx, mr, pubsub_client):
                 success = False
         except ModelingRuleTestException as e:
             if mr.testdata_path and mr.testdata_path.exists():
