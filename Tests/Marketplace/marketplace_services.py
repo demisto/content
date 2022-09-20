@@ -1973,7 +1973,7 @@ class Pack(object):
                 PackFolders.XSIAM_REPORTS.value: "xsiamreport",
                 PackFolders.TRIGGERS.value: "trigger",
                 PackFolders.WIZARDS.value: "wizard",
-                PackFolders.AGENT_CONFIG.value: "agentconfig",
+                PackFolders.AGENT_CONFIGS.value: "agentconfig",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -2239,7 +2239,7 @@ class Pack(object):
                             'toVersion': content_item.get('toVersion', ''),
                         })
 
-                    elif current_directory == PackFolders.AGENT_CONFIG.value:
+                    elif current_directory == PackFolders.AGENT_CONFIGS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
