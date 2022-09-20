@@ -2231,7 +2231,7 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
-                        preview = self.get_preview_image_gcp_path(pack_file_name)
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
                         logging.info(f"preview is {preview}")
                         dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
@@ -2245,12 +2245,16 @@ class Pack(object):
                         folder_collected_items.append(dashboard)
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
+                        report = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                        }
+                        if preview:
+                            report.update({"preview": preview})
+                        folder_collected_items.append(report)
 
                     elif current_directory == PackFolders.TRIGGERS.value:
                         folder_collected_items.append({
@@ -3328,17 +3332,15 @@ class Pack(object):
 
         return versions_dict
 
-    def get_preview_image_gcp_path(self, pack_file_name: str) -> Optional[str]:
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name) -> Optional[str]:
         # TODO check names with . maybe should change the split
         name_without_extension = pack_file_name.split('.')[0]
         preview_image_name = name_without_extension + '_image.png'
         try:
-            preview_image_path = os.path.join(self._pack_path,PackFolders.XSIAM_DASHBOARDS.value, preview_image_name)  # disable-secrets-detection
-            logging.info(f"yuval {preview_image_path}")
+            preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
             if os.path.exists(preview_image_path):
-                logging.info(f"yuval {preview_image_path} file exists")
                 return urllib.parse.quote(
-                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, PackFolders.XSIAM_DASHBOARDS.value, preview_image_name))
+                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, folder_name, preview_image_name))
             return None
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
