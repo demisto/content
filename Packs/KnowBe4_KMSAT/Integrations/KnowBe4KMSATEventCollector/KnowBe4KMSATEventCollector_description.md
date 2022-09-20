@@ -1,4 +1,4 @@
-KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
+KnowBe4 KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 
 ## Create the API Key 
 1. Go to your Knowbe4 account settings.
