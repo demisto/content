@@ -998,29 +998,33 @@ class Taxii2FeedClient:
             try:
                 i = 1
                 while envelope.get("more", False):
-                    page_size = self.get_page_size(limit, cur_limit)
-                    envelope = self.collection_to_fetch.get_objects(
-                        limit=page_size, next=envelope.get("next", ""), type=obj_type
-                    )
-                    demisto.debug(f'After calling self.collection_to_fetch.get_objects the {i} time.\n{envelope=}')
-                    i += 1
-                    if isinstance(envelope, Dict):
-                        stix_objects = envelope.get("objects")
-                        if obj_type != "relationship":
-                            for obj in stix_objects:
-                                self.id_to_object[obj.get('id')] = obj
-                                result = parse_objects_func[obj_type](obj)
-                                if not result:
-                                    continue
-                                indicators.extend(result)
-                                self.update_last_modified_indicator_date(obj.get("modified"))
-                        else:
-                            relationships_list.extend(stix_objects)
-                    else:
-                        raise DemistoException(
-                            "Error: TAXII 2 client received the following response while requesting "
-                            f"indicators: {str(envelope)}\n\nExpected output is json"
+                    try:
+                        page_size = self.get_page_size(limit, cur_limit)
+                        envelope = self.collection_to_fetch.get_objects(
+                            limit=page_size, next=envelope.get("next", ""), type=obj_type
                         )
+                        demisto.debug(f'After calling self.collection_to_fetch.get_objects the {i} time.\n{envelope=}')
+                        i += 1
+                        if isinstance(envelope, Dict):
+                            stix_objects = envelope.get("objects")
+                            if obj_type != "relationship":
+                                for obj in stix_objects:
+                                    self.id_to_object[obj.get('id')] = obj
+                                    result = parse_objects_func[obj_type](obj)
+                                    if not result:
+                                        continue
+                                    indicators.extend(result)
+                                    self.update_last_modified_indicator_date(obj.get("modified"))
+                            else:
+                                relationships_list.extend(stix_objects)
+                        else:
+                            raise DemistoException(
+                                "Error: TAXII 2 client received the following response while requesting "
+                                f"indicators: {str(envelope)}\n\nExpected output is json"
+                            )
+                    except HTTPError as e:
+                        demisto.debug(f'CONTINUING - Got HTTPError in while loop {i}: {e}')
+
             except HTTPError as e:
                 demisto.debug(f'CONTINUING - Got HTTPError: {e}')
 
