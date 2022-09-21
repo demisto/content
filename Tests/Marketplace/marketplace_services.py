@@ -2240,12 +2240,13 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.AGENT_CONFIGS.value:
+                        self.add_pack_type_tags(content_item, 'AgentConfig')
                         folder_collected_items.append({
-                            'id': content_item.get('id', ''),
+                            'content_global_id': content_item.get('content_global_id', ''),
                             'name': content_item.get('name', ''),
                             'os_type': content_item.get('os_type', ''),
                             'profile_type': content_item.get('profile_type', ''),
-                            'yaml': content_item.get('yaml', ''),
+                            'yaml_template': content_item.get('yaml_template', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
