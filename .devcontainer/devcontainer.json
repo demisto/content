@@ -20,25 +20,7 @@
 			"zsh": {
 				"path": "/bin/zsh"
 			}
-		},
-		"python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
-		"python.linting.enabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyArgs": [
-			"--follow-imports=silent",
-			"--ignore-missing-imports",
-			"--show-column-numbers",
-			"--no-pretty",
-			"--allow-redefinition",
-			"--no-site-packages",
-			"--namespace-packages"
-		],
-		"python.testing.pytestEnabled": true,
-		"python.testing.pytestArgs": [
-			"."
-		],
-		"python.testing.cwd": "${containerWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+		}
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
