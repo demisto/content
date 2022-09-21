@@ -1011,7 +1011,7 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
                         "id": 589064228,
                         "label": "DESKTOP-IIQVPJ7",
                         "type": {
-                            "id": 9,61.2.193.208
+                            "id": 9,
                             "label": "Roaming Computers",
                             "type": "roaming"
                         }
