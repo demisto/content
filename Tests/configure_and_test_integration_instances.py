@@ -10,6 +10,8 @@ import uuid
 import zipfile
 from abc import abstractmethod
 from datetime import datetime
+
+from demisto_sdk.commands.test_content.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
@@ -186,6 +188,11 @@ class Build:
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
+    @staticmethod
+    def get_secret_service_account_config() -> str:
+        f = open(os.environ['GSM_SERVICE_ACCOUNT'])
+        creds = json.load(f)
+        return json.dumps(creds)
 
     def __init__(self, options):
         self._proxy = None
@@ -197,9 +204,10 @@ class Build:
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
-        self.secret_conf = get_json_file(options.secret)
-        self.username = options.user if options.user else self.secret_conf.get('username')
-        self.password = options.password if options.password else self.secret_conf.get('userPassword')
+        # self.secret_conf = get_json_file(options.secret)
+        self.secret_conf = GoogleSecreteManagerModule(self.get_secret_service_account_config())
+        self.username = options.user if options.user else os.environ['DEMISTO_USERNAME']
+        self.password = options.password if options.password else os.environ['DEMISTO_PASSWORD']
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -398,7 +406,7 @@ class Build:
             placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
             new_ints_params_set = set_integration_params(self,
                                                          new_integrations,
-                                                         self.secret_conf['integrations'],
+                                                         self.secret_conf,
                                                          instance_names_conf,
                                                          placeholders_map)
             ints_to_configure_params_set = set_integration_params(self,
