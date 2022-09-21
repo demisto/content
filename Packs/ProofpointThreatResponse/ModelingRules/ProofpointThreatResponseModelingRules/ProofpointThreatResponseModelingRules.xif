@@ -1,9 +1,12 @@
 [MODEL:model="Email", dataset="proofpoint_threat_response_raw"]
-alter XDM.Email.event_timestamp = created_at
+alter XDM.Email.event_timestamp = updated_at
 | alter XDM.Email.original_event_id = to_string(id)
+| alter XDM.Email.threat.category = json_extract_scalar(event, "$.category")
+| alter XDM.Email.threat.severity = json_extract_scalar(event, "$.severity")
 | alter XDM.Email.Client.user.username = users
-| alter severity = arrayindex( regextract(incident_field_values , "\"name\"\:\"Severity\",\"value\"\:\"([^\"]+)\"") ,0)
-| alter XDM.Email.threat.severity = severity
-| alter category = arrayindex( regextract(incident_field_values , "\"name\"\:\"Classification\",\"value\"\:\"([^\"]+)\"") ,0)
-| alter XDM.Email.threat.category = category
-| alter XDM.Email.original_event_description = to_string(events);
+| alter emails = arrayindex(json_extract_array(event, "$.emails"), 0)
+| alter XDM.Email.sender = json_extract_scalar(emails, "$.sender.email")
+| alter XDM.Email.message_id = json_extract_scalar(emails, "$.messageId")
+| alter XDM.Email.subject = json_extract_scalar(emails, "$.subject")
+| alter XDM.Email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), ""))
+| alter XDM.Email.delivery_timestamp = to_timestamp(to_number(json_extract_scalar(emails, "$.messageDeliveryTime.millis"))); -> todo: check
