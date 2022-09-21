@@ -206,52 +206,52 @@ script:
     execution: false
     name: cybereason-query-processes
     outputs:
-    - contextPath: Cybereason.Process.Name
+    - contextPath: Process.Name
       description: The process name
       type: Unknown
-    - contextPath: Cybereason.Process.Malicious
+    - contextPath: Process.Malicious
       description: Malicious status of the process
       type: Unknown
-    - contextPath: Cybereason.Process.CreationTime
+    - contextPath: Process.CreationTime
       description: The process creation time
       type: Unknown
-    - contextPath: Cybereason.Process.EndTime
+    - contextPath: Process.EndTime
       description: The process end time
       type: Unknown
-    - contextPath: Cybereason.Process.CommandLine
+    - contextPath: Process.CommandLine
       description: The command line of the process
       type: Unknown
-    - contextPath: Cybereason.Process.SignedAndVerified
+    - contextPath: Process.SignedAndVerified
       description: Is the process signed and verified
       type: Unknown
-    - contextPath: Cybereason.Process.ProductType
+    - contextPath: Process.ProductType
       description: The product type
       type: Unknown
-    - contextPath: Cybereason.Process.Children
+    - contextPath: Process.Children
       description: Children of the process
       type: Unknown
-    - contextPath: Cybereason.Process.Parent
+    - contextPath: Process.Parent
       description: The parent process
       type: Unknown
-    - contextPath: Cybereason.Process.OwnerMachine
+    - contextPath: Process.OwnerMachine
       description: The machine's hostname
       type: Unknown
-    - contextPath: Cybereason.Process.User
+    - contextPath: Process.User
       description: The user who ran the process
       type: Unknown
-    - contextPath: Cybereason.Process.ImageFile
+    - contextPath: Process.ImageFile
       description: Image file of the process
       type: Unknown
-    - contextPath: Cybereason.Process.SHA1
+    - contextPath: Process.SHA1
       description: SHA1 of the process file
       type: Unknown
-    - contextPath: Cybereason.Process.MD5
+    - contextPath: Process.MD5
       description: MD5 of the process file
       type: Unknown
-    - contextPath: Cybereason.Process.CompanyName
+    - contextPath: Process.CompanyName
       description: The company's name
       type: Unknown
-    - contextPath: Cybereason.Process.ProductName
+    - contextPath: Process.ProductName
       description: The product's name
       type: Unknown
   - arguments:
@@ -301,40 +301,40 @@ script:
     execution: false
     name: cybereason-query-connections
     outputs:
-    - contextPath: Cybereason.Connection.Name
+    - contextPath: Connection.Name
       description: The connection's name
       type: Unknown
-    - contextPath: Cybereason.Connection.Direction
+    - contextPath: Connection.Direction
       description: OUTGOING/INCOMING
       type: Unknown
-    - contextPath: Cybereason.Connection.ServerAddress
+    - contextPath: Connection.ServerAddress
       description: Address of the Cybereason machine
       type: Unknown
-    - contextPath: Cybereason.Connection.ServerPort
+    - contextPath: Connection.ServerPort
       description: Port of the Cybereason machine
       type: Unknown
-    - contextPath: Cybereason.Connection.PortType
+    - contextPath: Connection.PortType
       description: Type of the connection
       type: Unknown
-    - contextPath: Cybereason.Connection.ReceivedBytes
+    - contextPath: Connection.ReceivedBytes
       description: Received bytes count
       type: Unknown
-    - contextPath: Cybereason.Connection.TransmittedBytes
+    - contextPath: Connection.TransmittedBytes
       description: Transmitted bytes count
       type: Unknown
-    - contextPath: Cybereason.Connection.RemoteCountry
+    - contextPath: Connection.RemoteCountry
       description: The connection's remote country
       type: Unknown
-    - contextPath: Cybereason.Connection.OwnerMachine
+    - contextPath: Connection.OwnerMachine
       description: The machine's hostname
       type: Unknown
-    - contextPath: Cybereason.Connection.OwnerProcess
+    - contextPath: Connection.OwnerProcess
       description: The process which performed the connection
       type: Unknown
-    - contextPath: Cybereason.Connection.CreationTime
+    - contextPath: Connection.CreationTime
       description: Creation time of the connection
       type: Unknown
-    - contextPath: Cybereason.Connection.EndTime
+    - contextPath: Connection.EndTime
       description: End time of the connection
       type: Unknown
   - arguments:
