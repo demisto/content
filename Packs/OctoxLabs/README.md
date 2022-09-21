@@ -6,21 +6,21 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your Octox Labs Platform IP |  | True |
+    | IP | Your Octox Labs Platform IP | True |
     | API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### get-adapters
+### octoxlabs-get-adapters
 ***
 Fetch octoxlabs all adapters
 
 
 #### Base Command
 
-`get-adapters`
+`octoxlabs-get-adapters`
 #### Input
 
 There are no input arguments for this command.
@@ -39,14 +39,14 @@ There are no input arguments for this command.
 | OctoxLabs.Adapters.results.status | Number | Adapter status | 
 | OctoxLabs.Adapters.results.hr_status | String | Adapter human readable status | 
 
-### get-connections
+### octoxlabs-get-connections
 ***
 Fetch octoxlabs connections
 
 
 #### Base Command
 
-`get-connections`
+`octoxlabs-get-connections`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,14 +67,14 @@ Fetch octoxlabs connections
 | OctoxLabs.Connections.results.description | String | Connection description | 
 | OctoxLabs.Connections.results.enabled | Boolean | Connection is enabled? | 
 
-### get-discoveries
+### octoxlabs-get-discoveries
 ***
 Fetch octoxlabs discoveries
 
 
 #### Base Command
 
-`get-discoveries`
+`octoxlabs-get-discoveries`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,14 +94,14 @@ Fetch octoxlabs discoveries
 | OctoxLabs.Discoveries.results.hr_status | String | Discovery human readable status | 
 | OctoxLabs.Discoveries.results.progress | Number | Discovery progress | 
 
-### get-last-discovery
+### octoxlabs-get-last-discovery
 ***
 Get last success discovery
 
 
 #### Base Command
 
-`get-last-discovery`
+`octoxlabs-get-last-discovery`
 #### Input
 
 There are no input arguments for this command.
@@ -117,14 +117,14 @@ There are no input arguments for this command.
 | OctoxLabs.Discovery.hr_status | String | Last discovery human readable status | 
 | OctoxLabs.Discovery.progress | Number | Last discovery progress | 
 
-### search-device
+### octoxlabs-search-devices
 ***
 Search in your devices
 
 
 #### Base Command
 
-`search-device`
+`octoxlabs-search-devices`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,14 +143,14 @@ Search in your devices
 | OctoxLabs.Devices.count | Number | Total devices count | 
 | OctoxLabs.Devices.results | Unknown | List&lt;Dict&gt; Device information | 
 
-### get-device
+### octoxlabs-get-device
 ***
 Fetch your device
 
 
 #### Base Command
 
-`get-device`
+`octoxlabs-get-device`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -164,15 +164,3 @@ Fetch your device
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OctoxLabs.Device | Unknown | &lt;Dict&gt; Octoxlabs Device | 
-
-
-## Command Example
-```
-!get-adapters
-!get-connections page=1
-!get-discoveries page=1
-!get-last-discovery
-!search-devices query="Adapters = active-directory AND Hostname = a*"
-!get-device hostname="octoxlabs01"
-```
-
