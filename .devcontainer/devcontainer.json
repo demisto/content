@@ -10,7 +10,7 @@
 	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
-		"source=node-modules,target=${containerWorkspaceFolder}/node-modules,type=volume",
+		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
 	"remoteUser": "demisto",
@@ -79,6 +79,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node-modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap",
-	"postCreateCommand": "npm install"
+	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node_modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap"
 }
