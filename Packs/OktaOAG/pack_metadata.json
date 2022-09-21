@@ -1,12 +1,11 @@
 {
-    "name": "VMware",
-    "description": "VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.",
+    "name": "Okta Okta Access Gateway",
+    "description": "Okta Access Gateway is a reverse proxy based virtual application, designed to secure web applications that don't natively support SAML or OIDC.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
         "IT Services"
     ],
@@ -14,7 +13,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
