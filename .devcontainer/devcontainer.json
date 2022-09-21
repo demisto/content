@@ -47,11 +47,11 @@
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
-		"PATH": "${containerWorkspaceFolder}/.venv/bin:${PATH}",
+		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
-		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${PYTHONPATH}",
-		"MYPYPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${PYTHONPATH}",
+		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"MYPYPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
 		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
 		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
@@ -79,5 +79,6 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node-modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node-modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap",
+	"postCreateCommand": "npm install"
 }
