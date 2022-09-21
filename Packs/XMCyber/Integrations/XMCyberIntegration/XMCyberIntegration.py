@@ -223,7 +223,7 @@ class XM:
     def search_entities(
         self, field_name_to_value: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
-        params = dict()
+        params: Dict[str, str] = dict()
         for field_name, value in field_name_to_value.items():
             if field_name == "name":
                 params["search"] = f'{{"$regex":"/{value}/i"}}'
