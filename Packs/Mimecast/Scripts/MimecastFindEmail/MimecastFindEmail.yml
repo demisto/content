@@ -1,0 +1,79 @@
+commonfields:
+  id: MimecastFindEmail
+  version: -1
+name: MimecastFindEmail
+script: ''
+type: python
+subtype: python3
+tags:
+- Mimecast
+comment: Find an email across all mailboxes, and return the list of mailboxes where the email was found, as well as Yes if the mail was found anywhere or No otherwise.
+system: true
+args:
+- name: queryXml
+  default: true
+  description: The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments
+- name: text
+  description: search for this text in api messages
+- name: dryRun
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Will no execute the query, but just return the query string builded
+- name: date
+  auto: PREDEFINED
+  predefined:
+  - today
+  - yesterday
+  - last_week
+  - last_month
+  - last_year
+  description: Search in specific dates only
+- name: dateFrom
+  description: search emails from date, format 2015-09-21T23:00:00Z
+- name: dateTo
+  description: search emails to date, format 2015-09-21T23:00:00Z
+- name: sentTo
+  description: filter on messages to a specific address
+- name: sentFrom
+  description: filter on messages from a specific address
+- name: subject
+  description: search email by subject, will override the text argument
+- name: attachmentType
+  auto: PREDEFINED
+  predefined:
+  - optional
+  - any
+  - documents
+  - spreadsheets
+  - presentations
+  - text
+  - images
+  - media
+  - zips
+  - none
+  description: optional - messages with and without attachments any - messages with any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg, avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip, 7z attachments none - No attachments are to be present in the results
+- name: attachmentText
+  description: search for text in attachments
+- name: body
+  description: search email by text in body, will override the text and subject arguments
+- name: pageSize
+  description: Sets the number of results to return per page (default 25)
+- name: startRow
+  description: Sets the result to start returning results (default 0)
+- name: active
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Defines if the search should query recently received messages that are not fully indexed yet (default false). You can search by mailbox and date time across active messages
+scripttarget: 0
+dependson:
+  must:
+  - mimecast-query
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)
