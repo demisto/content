@@ -50,5 +50,5 @@ def main(args):     # pragma: no cover
         return_error('An error occurred: {}'.format(exp), error=exp)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main(demisto.args())
