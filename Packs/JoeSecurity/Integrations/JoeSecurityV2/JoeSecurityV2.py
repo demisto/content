@@ -35,34 +35,30 @@ class Client(jbxapi.JoeSandbox):
 ''' HELPER FUNCTIONS '''
 
 
-def update_metrics(res: Union[Exception, Dict[str, Any]], exe_metrics: ExecutionMetrics):
+def update_metrics(res: Exception, exe_metrics: ExecutionMetrics):
     """
         Helper function that supports the update of the execution metrics.
 
         Args:
-            res: Dict(str, any): Analysis result returned by the API.
+            res: 
             exe_metrics: ExecutionMetrics: Execution metrics object.
 
         Returns:
-            result: ExecutionMetrics: The updated execution metrics object.
+            None
     """
-    from jbxapi import ApiError
-
-    if isinstance(res, ApiError):
-        match API_ERRORS.get(res.code):
-            case 'Quota':
-                exe_metrics.quota_error += 1
-            case 'InvalidApiKeyError' | 'PermissionError':
-                exe_metrics.auth_error += 1
-            case 'ServerOfflineError' | 'InternalServerError':
-                exe_metrics.connection_error += 1
-            case _:
-                exe_metrics.general_error += 1
-    elif isinstance(res, Exception):
-        exe_metrics.general_error += 1
-    else:
-        exe_metrics.success += 1
-
+    # if isinstance(res, jbxapi.ApiError):
+    #     match API_ERRORS.get(res.code):
+    #         case 'Quota':
+    #             exe_metrics.quota_error += 1
+    #         case 'InvalidApiKeyError' | 'PermissionError':
+    #             exe_metrics.auth_error += 1
+    #         case 'ServerOfflineError' | 'InternalServerError':
+    #             exe_metrics.connection_error += 1
+    #         case _:
+    #             exe_metrics.general_error += 1
+    # else:
+    #     exe_metrics.general_error += 1
+    pass
 
 def paginate(args: Dict[str, Any], results: Generator) -> List:
     """
@@ -226,14 +222,13 @@ def build_relationships(threat_name: str, entity: str, entity_type: str) -> Enti
          Returns:
              result: List(EntityRelationship): The relationship entry.
     """
-    # todo: create and change entity_b_type to malware.
     return EntityRelationship(name=EntityRelationship.Relationships.INDICATOR_OF, entity_a=entity,
-                              entity_a_type=entity_type, entity_b=threat_name, entity_b_type=FeedIndicatorType.File,
+                              entity_a_type=entity_type, entity_b=threat_name, entity_b_type=FeedIndicatorType.Malware,
                               reverse_name=EntityRelationship.Relationships.INDICATED_BY)
 
 
-def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]]) \
-        -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool = False) \
+        -> CommandResults:
     """
          Helper function that creates the Indicator object.
 
@@ -241,16 +236,16 @@ def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: L
             client (Client): The client class.
             analysis: Dict(str, any): Analysis result returned by the API.
             analyses: List(Dict(str, any)): List of analysis result returned by the API.
+            is_reputation: (bool): If the command is reputation command.
          Returns:
              result: Tuple(CommandResults, List(EntityRelationship)): The indicator object and the relationship entry.
     """
     if analysis.get('sha256'):
-        return build_file_object(client, analysis, analyses)
-    return build_url_object(client, analysis, analyses)
+        return build_file_object(client, analysis, analyses, is_reputation)
+    return build_url_object(client, analysis, analyses, is_reputation)
 
 
-def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]])\
-        -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool)-> CommandResults:
     """
          Helper function that creates the File object.
 
@@ -258,7 +253,7 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
             client (Client): The client class.
             analysis: Dict(str, any): Analysis result returned by the API.
             analyses: List(Dict(str, any)): List of analysis result returned by the API.
-
+            is_reputation (bool): Whether the command is reputation command.
          Returns:
              result: Tuple(CommandResults, EntityRelationship): Tuple of the File indicator class and the relationship entry.
     """
@@ -278,16 +273,19 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
                                   indicator_type=DBotScoreType.FILE,
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
                                       client.reliability), score=score, malicious_description=description)
-    if client.create_relationships and not threat_name == 'Unknown':
+    if client.create_relationships and threat_name and threat_name.lower() != 'unknown':
         relationships.append(build_relationships(threat_name, sha256, FeedIndicatorType.File))
     indicator = Common.File(name=file_name, sha1=sha1, sha256=sha256, dbot_score=dbot_score, md5=md5, tags=tags,
                             relationships=relationships)
+    if is_reputation:
+        return CommandResults(outputs=hr, indicator=indicator, relationships=relationships, outputs_prefix='Joe.File',
+                              readable_output=tableToMarkdown('File Result:', hr, headers))
     return CommandResults(indicator=indicator, relationships=relationships,
-                          readable_output=tableToMarkdown('File Result:', hr, headers)), relationships
+                          readable_output=tableToMarkdown('File Result:', hr, headers))
 
 
-def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]])\
-        -> Tuple[CommandResults, List[EntityRelationship]]:
+def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool)\
+        -> CommandResults:
     """
          Helper function that creates the URL object.
 
@@ -295,7 +293,7 @@ def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Di
             client (Client): The client class.
             analysis: Dict(str, any): Analysis result returned by the API.
             analyses: List(Dict(str, any)): Analysis results returned by the API.
-
+            is_reputation (bool): Whether the command is reputation command.
          Returns:
              result: Tuple(URL, Optional(EntityRelationship)): Tuple of the URL indicator class and the relationship entry.
     """
@@ -310,11 +308,14 @@ def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Di
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
                                       client.reliability), score=score, malicious_description=description)
 
-    if client.create_relationships and not threat_name == 'Unknown':
+    if client.create_relationships and threat_name and threat_name.lower() != 'unknown':
         relationships.append(build_relationships(threat_name, url, FeedIndicatorType.URL))
     indicator = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
+    if is_reputation:
+        return CommandResults(outputs=url, indicator=indicator, relationships=relationships,outputs_prefix='Joe.URL',
+                              readable_output=tableToMarkdown('Url Result:', {'Url': url}))
     return CommandResults(indicator=indicator, relationships=relationships,
-                          readable_output=tableToMarkdown('Url Result:', {'Url': url})), relationships
+                          readable_output=tableToMarkdown('Url Result:', {'Url': url}))
 
 
 def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
@@ -365,7 +366,7 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
             analyses: (List(Dict(str, any))): The analyses result returned by the API.
             full_display (bool): Whether to display the full analysis result or not.
          Returns:
-             result: (CommandResults) The parsed CommandResults object.
+             result: List(CommandResults) The parsed CommandResults object.
     """
     hr_headers = ['Id', 'SampleName', 'Status', 'Time', 'MD5', 'SHA1', 'SHA256', 'Systems', 'Result', 'Errors',
                   'Comments']
@@ -375,14 +376,11 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
     for analysis in analyses:
         hr_analysis_ls.append(build_analysis_hr(analysis))
         if full_display:
-            command_res, relationship = build_indicator_object(client, analysis, analyses)
+            command_res = build_indicator_object(client, analysis, analyses)
             command_res_ls.append(command_res)
-            if relationship:
-                relationships.append(relationship)
     command_res_ls.append(CommandResults(outputs=analyses,
                                          readable_output=tableToMarkdown('Analysis Result:', hr_analysis_ls,
-                                                                         hr_headers), outputs_prefix='Joe.Analysis',
-                                         relationships=relationships))
+                                                                         hr_headers), outputs_prefix='Joe.Analysis'))
     return command_res_ls
 
 
@@ -395,11 +393,11 @@ def build_reputiation_command_result(client: Client, analyses: List[Dict[str, An
             analyses: (List[Dict(str, any)]): The analyses file or URL returned by the API.
 
          Returns:
-             result: (CommandResults): The parsed CommandResults object.
+             result: List(CommandResults): The parsed CommandResults object.
     """
     command_res_ls = []
     for analysis in analyses:
-        command_res, _ = build_indicator_object(client, analysis, analyses)
+        command_res = build_indicator_object(client, analysis, analyses, is_reputation=True)
         command_res_ls.append(command_res)
 
     return command_res_ls
@@ -419,28 +417,27 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
             exe_metrics: (ExecutionMetrics): The execution metrics.
 
          Returns:
-            result: (CommandResults): The parsed CommandResults object.
+            result: (List[Union[CommandResults, Dict[str, Any]]]): A list of CommandResults objects or fileResult data.
     """
-    command_results: List[Union[CommandResults, Dict[str, Any]]] = []
-    relationships = []
+    command_results = []
     report_type = args.get('report_type')
     full_display = argToBoolean(args.get('full_display', True))
     analyses = res.get('analyses', [])
     hr, headers = build_submission_hr(res, res.get('analyses', []))
+    res_copy = res
+
     if full_display:
         for analysis in analyses:
-            command_res, relationship = build_indicator_object(client, analysis, analyses)
+            command_res = build_indicator_object(client, analysis, analyses)
             web_id = analysis.get('webid')
             if download_report:
                 report = download_report_command(client, {'type': report_type, 'webid': web_id})
                 command_results.append(report)
-            if relationship:
-                relationships.append(relationship)
             command_results.append(command_res)
     context_entry = {'Joe.Submission': res, 'Joe.Analysis': res.pop('analyses')}
     command_results.append(CommandResults(outputs=context_entry, outputs_key_field='submission_id',
                                           readable_output=tableToMarkdown('Submission Results:', hr, headers=headers),
-                                          relationships=relationships, execution_metrics=exe_metrics.get_metric_list()))
+                                          execution_metrics=exe_metrics.get_metric_list(), raw_response=res_copy))
     return command_results
 
 
@@ -500,7 +497,7 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
     file_path = demisto.getFilePath(file)
     with open(file_path['path'], 'rb') as f:
         res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
-        update_metrics(res, exe_metrics)
+        exe_metrics.success += 1
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
         return PollResult(
@@ -524,7 +521,7 @@ def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any],
              result: (PollResult): The parsed PollResult object.
      """
     res = client.submit_url(url=url, params=params)
-    update_metrics(res, exe_metrics)
+    exe_metrics.success += 1
     partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
     return PollResult(
         response=CommandResults(outputs=res, outputs_prefix='Joe.Submission', outputs_key_field='submission_id'),
@@ -557,7 +554,7 @@ def polling_submission_command(args: Dict[str, Any], client: Client, params: Dic
             response=CommandResults(outputs=res,  # this is what the response will be in case job has finished
                                     outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
                                     readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...'),
-            continue_to_poll=status != 'finished', args_for_next_run=args)
+            continue_to_poll=True, args_for_next_run=args)
     else:
         if file := args.get('entry_id'):
             return file_submission(client, args, params, file, exe_metrics)
@@ -604,7 +601,28 @@ def is_online_command(client: Client) -> CommandResults:
                           readable_output=f'Joe server is {status}')
 
 
-def list_analysis_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def joe_analysis_info(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
+    """
+        Get information about a specific analysis.
+
+         Args:
+            client: (Client) The client class.
+            args: (Dict(str, any)) The commands arguments.
+
+         Returns:
+             result: Union[CommandResults, List[CommandResults]] The CommandResults object.
+    """
+    try:
+        res = client.analysis_info(webid=args.get('webid'))
+        command_results = build_analysis_command_result(client, [res], argToBoolean(args.get('full_display')))
+        if command_results:
+            return command_results
+    except jbxapi.InvalidParameterError:
+        pass
+    return CommandResults(readable_output='No Results were found.')
+
+
+def list_analysis_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
     """
         List all analyses in descending order, starting with the most recent.
         The result may be sliced by page and page size or by limit. (default 50)
@@ -614,12 +632,15 @@ def list_analysis_command(client: Client, args: Dict[str, Any]) -> List[CommandR
             args: (Dict(str, any)) The commands arguments.
 
          Returns:
-             result: (CommandResults) The CommandResults object.
+             result: Union(CommandResults, List(CommandResults)): The CommandResults object.
     """
 
     filtered_pages = paginate(args, client.analysis_list_paged())
     analysis_result_ls = client.analysis_info_list(web_ids=[entry.get('webid') for entry in filtered_pages])
-    return build_analysis_command_result(client, analysis_result_ls, argToBoolean(args.get('full_display')))
+    command_results = build_analysis_command_result(client, analysis_result_ls, argToBoolean(args.get('full_display')))
+    if command_results:
+        return command_results
+    return CommandResults(readable_output='No Results were found.')
 
 
 def download_report_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -693,9 +714,9 @@ def file_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, 
         res = client.analysis_search(query=file)
         if res:
             analyses.append(res[0])
-        else:
-            return CommandResults(readable_output='No Results were found.')
-    return build_reputiation_command_result(client, analyses)
+    if analyses:
+        return build_reputiation_command_result(client, analyses)
+    return CommandResults(readable_output='No Results were found.')
 
 
 def url_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
@@ -716,9 +737,9 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, L
         res = client.analysis_search(query=url)
         if res:
             analyses.append(res[0])
-        else:
-            return CommandResults(readable_output='No Results were found.')
-    return build_reputiation_command_result(client, analyses)
+    if analyses:
+        return build_reputiation_command_result(client, analyses)
+    return CommandResults(readable_output='No Results were found.')
 
 
 def list_lia_countries_command(client: Client) -> CommandResults:
@@ -857,6 +878,8 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
         elif command == 'joe-is-online':
             return_results(is_online_command(client))
+        elif command == 'joe-analysis-info':
+            return_results((joe_analysis_info(client, args)))
         elif command == 'joe-list-analysis':
             return_results((list_analysis_command(client, args)))
         elif command == 'joe-download-report':
@@ -877,9 +900,9 @@ def main() -> None:  # pragma: no cover
             return_results(get_account_quota_command(client))
         elif command == 'joe-submission-info':
             return_results(submission_info_command(client, args, exe_metrics))
-        elif command == 'joe-submission-sample':
+        elif command == 'joe-submit-sample':
             return_results(submission_sample_command(client, args, exe_metrics))
-        elif command == 'joe-submission-url':
+        elif command == 'joe-submit-url':
             return_results(submission_url_command(client, args, exe_metrics))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
