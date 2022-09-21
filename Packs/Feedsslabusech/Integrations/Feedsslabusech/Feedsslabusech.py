@@ -1,5 +1,4 @@
-from CommonServerPython import *
-from CSVFeedApiModule import *  # noqa: E402
+from CommonServerPython import *  # noqa: E402
 
 
 def main():
