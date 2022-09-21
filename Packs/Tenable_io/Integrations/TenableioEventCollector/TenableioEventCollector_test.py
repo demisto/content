@@ -66,6 +66,16 @@ def test_vulnerabilities_process(requests_mock):
 
 
 def test_fetch_audit_logs_no_duplications(requests_mock):
+    """
+
+    Given:
+        - last run object and audit log response from API.
+    When:
+        - Running the fetch events process.
+    Then:
+        - Verify no duplicated audit logs are returned from the API.
+
+    """
     from TenableioEventCollector import fetch_events_command
     client = Client(verify=False, headers={}, proxy=False)
     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
