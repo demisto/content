@@ -802,10 +802,10 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
     indicator_id = ''
     summary = ''
     try:
-        int(indicator)
-        indicator_id = indicator
+        int(indicator)  # type: ignore
+        indicator_id = indicator  # type: ignore
     except ValueError:
-        summary = indicator
+        summary = indicator  # type: ignore
     response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator_id,
                                          summary=summary)  # type: ignore
     ec, indicators = create_context(response, include_dbot_score=True)
