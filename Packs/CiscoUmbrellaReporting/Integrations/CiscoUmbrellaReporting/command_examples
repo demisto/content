@@ -1,0 +1,11 @@
+!umbrella-reporting-activity-list limit=2
+!umbrella-reporting-activity-get traffic_type=dns limit=2
+!umbrella-reporting-activity-get traffic_type=proxy limit=2
+!umbrella-reporting-destination-list limit=2
+!umbrella-reporting-category-list limit=2
+!umbrella-reporting-identity-list limit=2
+!umbrella-reporting-threat-list limit=2
+!umbrella-reporting-event-type-list
+!umbrella-reporting-file-list limit=2
+!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com
+

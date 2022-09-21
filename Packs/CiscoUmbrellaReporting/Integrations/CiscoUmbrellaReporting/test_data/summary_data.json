@@ -1,0 +1,19 @@
+{
+    "meta": {},
+    "data": {
+        "applications": 0,
+        "domains": 1743,
+        "requestsblocked": 37,
+        "filetypes": 0,
+        "requests": 21292,
+        "policycategories": 1,
+        "requestsallowed": 21181,
+        "categories": 74,
+        "identitytypes": 2,
+        "applicationsblocked": 0,
+        "files": 9,
+        "identities": 2,
+        "policyrequests": 37,
+        "applicationsallowed": 0
+    }
+}

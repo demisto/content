@@ -1,0 +1,44 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "requests": 10,
+            "identitycount": 1,
+            "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+            "categories": [
+                {
+                    "id": 113,
+                    "type": "content",
+                    "label": "Computer Security",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 67,
+                    "type": "security",
+                    "label": "Malware",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 167,
+                    "type": "content",
+                    "label": "Computers and Internet",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 25,
+                    "type": "content",
+                    "label": "Software/Technology",
+                    "integration": false,
+                    "deprecated": true
+                }
+            ],
+            "filenames": [
+                "eicar.com"
+            ],
+            "filetypes": []
+        }
+    ]
+}
