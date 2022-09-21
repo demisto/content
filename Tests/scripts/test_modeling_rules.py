@@ -1,12 +1,10 @@
 import argparse
-import ast
 from io import BytesIO
 import json
 import os
 from pathlib import Path
 import sys
 from typing import Any, Optional
-import demisto_client
 from Tests.Marketplace.search_and_uninstall_pack import (reset_base_pack_version,
                                                          uninstall_all_packs,
                                                          wait_for_uninstallation_to_complete)
@@ -20,6 +18,9 @@ from demisto_sdk.commands.common.content.objects.pack_objects.modeling_rule.mode
 from google.oauth2 import service_account
 from google.cloud.pubsub_v1 import PublisherClient
 from google.cloud import bigquery
+import requests
+
+
 
 
 class ModelingRuleTestException(BaseException):
@@ -135,53 +136,56 @@ def create_dataset(xsiam_server: XSIAMServer, modeling_rule: ModelingRule, pub_s
         return True
 
 
-def start_xql_query(client: demisto_client.ApiClient, query: str) -> str:
+def start_xql_query(xsiam_server: XSIAMServer, query: str) -> str:
     body = {
         "request_data": {
             "query": query
         }
     }
-    response_data, status_code, _ = demisto_client.generic_request_func(
-        client,
-        path='/public_api/v1/xql/start_xql_query/',
-        method='POST',
-        body=body,
-        _request_timeout=120
-    )
+    url = os.path.join(xsiam_server.base_url, 'public_api/v1/xql/start_xql_query/')
+    headers = {
+        'x-xdr-auth-id': xsiam_server.xdr_auth_id,
+        'Authorization': xsiam_server.api_key,
+        'Content-Type': 'application/json'
+    }
+    logging.info(f'Starting xql query:\nendpoint={url}\n{query=}')
+    response = requests.post(url=url, json=body, headers=headers)
+    data = response.json()
 
-    data = ast.literal_eval(response_data)
-    if 200 <= status_code < 300:
+    if 200 <= response.status_code < 300:
         execution_id = data.get('reply', '')
         return execution_id
     else:
         raise ModelingRuleTestException(
-            f'Failed to start xql query "{query}" - with status code {status_code}\n{data}\n')
+            f'Failed to start xql query "{query}" - with status code {response.status_code}\n{pformat(data)}'
+        )
 
 
-def get_xql_query_results(client: demisto_client.ApiClient, execution_id: str) -> list[dict[str, Any]]:
-    body = {
+def get_xql_query_results(xsiam_server: XSIAMServer, execution_id: str) -> list[dict[str, Any]]:
+    payload = json.dumps({
         "request_data": {
             "query_id": execution_id,
             "pending_flag": False,
             "limit": 1000,
             "format": "json"
         }
+    })
+    url = os.path.join(xsiam_server.base_url, 'public_api/v1/xql/get_query_results/')
+    headers = {
+        'x-xdr-auth-id': xsiam_server.xdr_auth_id,
+        'Authorization': xsiam_server.api_key,
+        'Content-Type': 'application/json'
     }
-    response_data, status_code, _ = demisto_client.generic_request_func(
-        client,
-        path='/public_api/v1/xql/get_query_results/',
-        method='POST',
-        body=body,
-        _request_timeout=120
-    )
+    logging.info(f'Getting xql query results: endpoint={url}')
+    response = requests.post(url=url, data=payload, headers=headers)
+    data = response.json()
 
-    data = ast.literal_eval(response_data)
-    if 200 <= status_code < 300:
+    if 200 <= response.status_code < 300 and data.get('reply', {}).get('status', '') == 'SUCCESS':
         reply_results_data = data.get('reply', {}).get('results', {}).get('data', [])
         return reply_results_data
     else:
         err_msg = (f'Failed to get xql query results for execution_id "{execution_id}"'
-                   f' - with status code {status_code}\n{data}\n')
+                   f' - with status code {response.status_code}\n{pformat(data)}')
         raise ModelingRuleTestException(err_msg)
 
 
@@ -199,9 +203,8 @@ def execute_xql_query(xsiam_server: XSIAMServer, m_rule: MRule) -> bool:
         bool: Whether the fields were mapped correctly or not
     """
     xql_query = f'config timeframe = 5y | datamodel = {m_rule.datamodel} | fields {", ".join(m_rule.fields)}'
-    client = xsiam_server.client
-    execution_id = start_xql_query(client, xql_query)
-    xql_query_results_data = get_xql_query_results(client, execution_id)
+    execution_id = start_xql_query(xsiam_server, xql_query)
+    xql_query_results_data = get_xql_query_results(xsiam_server, execution_id)
     data = xql_query_results_data[0]
     logging.debug(f'xql_query_results_data = {data}')
     err_msgs = []
