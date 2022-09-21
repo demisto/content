@@ -164,11 +164,11 @@ class Client(BaseClient):
         Returns:
             str: ID of the generated report instance.
         """
-        return str(self._http_request(
+        return self._http_request(
             url_suffix=f"/reports/{report_id}/generate",
             method="POST",
             resp_type="json",
-        ).get("id"))
+        )["id"]
 
     def create_report_config(self, scope: dict[str, Any], template_id: str,
                              report_name: str, report_format: str) -> str:
@@ -193,14 +193,15 @@ class Client(BaseClient):
             "format": report_format
         }
 
-        return str(self._http_request(
+        return self._http_request(
             url_suffix="/reports",
             method="POST",
             json_data=post_data,
             resp_type="json",
-        ).get("id"))
+        )["id"]
 
-    def create_site_scan_schedule(self, site_id: str, start_date: str, excluded_asset_groups: Optional[list[int]] = None,
+    def create_site_scan_schedule(self, site_id: str, start_date: str,
+                                  excluded_asset_groups: Optional[list[int]] = None,
                                   excluded_targets: Optional[list[str]] = None,
                                   included_asset_groups: Optional[list[int]] = None,
                                   included_targets: Optional[list[str]] = None,
@@ -208,7 +209,7 @@ class Client(BaseClient):
                                   repeat_behaviour: RepeatBehaviour = None,
                                   frequency: Optional[RepeatFrequencyType] = None,
                                   interval: Optional[int] = None, date_of_month: Optional[int] = None,
-                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None,) -> str:
+                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> str:
         """
         | Create a new site scan schedule.
         |
@@ -292,7 +293,7 @@ class Client(BaseClient):
         )["id"]
 
     def create_site(self, name: str, description: Optional[str] = None, assets: Optional[list[str]] = None,
-                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> dict:
+                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> str:
         """
         | Create a new site.
         |
@@ -331,7 +332,7 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
-        )
+        )["id"]
 
     def delete_scan_schedule(self, site_id: str, scheduled_scan_id: str) -> dict:
         """
@@ -1016,12 +1017,12 @@ class Site:
             self.name = site_name
 
             if client:
-                id = client.find_site_id(site_name)
+                site_id = client.find_site_id(site_name)
 
-                if not id:
+                if not site_id:
                     raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
 
-                self.id = id
+                self.id = site_id
 
             else:
                 raise ValueError("Can't fetch site ID as no Client was provided.")
@@ -1638,7 +1639,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
         report_format (ReportFileFormat, optional): Format of the report that will be generated. Defaults to PDF.
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
-        """
+    """
     scope = {"scan": scan_id}
 
     return create_report(
@@ -1744,7 +1745,7 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
     """
     site_importance_str = site_importance.name.lower() if site_importance else None
 
-    response = client.create_site(
+    site_id = client.create_site(
         name=name,
         description=description,
         assets=assets,
@@ -1752,11 +1753,11 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
         template_id=template_id)
 
     output = {
-        "Id": response["id"]
+        "Id": site_id
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown("New site created", output),
+        readable_output=f"New site has been created with ID {site_id}.",
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
         outputs=output,
@@ -2259,6 +2260,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         results_output) > 0 else ""
     solutions_md = tableToMarkdown("Solutions", solutions_output, solutions_headers,
                                    removeNull=True) if solutions_output is not None else ""
+    md = vulnerabilities_md + results_md + solutions_md
 
     cves = []
 
@@ -2692,8 +2694,6 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
         },
         recursive=True,
     )
-    endpoints = [{"IP": asset["Address"], "HostName": asset["Name"], "OS": asset["OperatingSystem"]}
-                 for asset in outputs]
 
     result = []
 
@@ -2884,8 +2884,8 @@ def main():
                     client=client,
                 ),
                 enabled=args.get("enabled"),
-                repeat_behaviour=RepeatBehaviour(args.get("on_scan_repeat").upper().replace(' ', '_')),
-                start_date=args.get("start"),
+                repeat_behaviour=RepeatBehaviour(args["on_scan_repeat"].upper().replace(' ', '_')),
+                start_date=args["start"],
                 excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
                 excluded_targets=argToList(args.get("excluded_addresses")),
                 included_asset_groups=[int(asset_id) for asset_id in argToList(args.get("included_asset_group_ids"))],

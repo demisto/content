@@ -906,6 +906,7 @@ script:
       secret: false
     - default: false
       description: The scheduled start date and time formatted in ISO 8601 format.
+        Repeating schedules will determine the next schedule to begin based on this date and time.
       isArray: false
       name: start
       required: true
