@@ -2568,10 +2568,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Symantec Advanced Threat Protection",
-            "playbookID": "Symantec ATP Test"
-        },
-        {
             "playbookID": "HTTPListRedirects - Test SSL",
             "has_api": true
         },
