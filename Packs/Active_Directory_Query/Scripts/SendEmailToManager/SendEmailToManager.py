@@ -168,8 +168,8 @@ def main():
                 incident_subject=additional_info['incident_subject'],
                 investigation_id=demisto.investigation().get('id'),
                 allow_reply=argToBoolean(demisto.args().get('allowReply')),
-                persistent=demisto.args().get('persistent'),
-                reply_entries_tag=demisto.args().get('persistent')
+                persistent=argToBoolean(demisto.args().get('persistent')),
+                reply_entries_tag=demisto.args().get('replyEntriesTag')
             ),
             'body': mail_body,
         }))
