@@ -34,4 +34,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Example-Delinea-Retrieved Username and Password](../doc_files/Example-Delinea-Retrieved_Username_and_Password.png)
+There are no images for this playbook.

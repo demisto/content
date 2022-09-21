@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Example-Delinea-User object operations](../doc_files/Example-Delinea-User_object_operations.png)
+There are no images for this playbook.

@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Example-Delinea-Secret Object Operations](../doc_files/Example-Delinea-Secret_Object_Operations.png)
+There are no images for this playbook.
