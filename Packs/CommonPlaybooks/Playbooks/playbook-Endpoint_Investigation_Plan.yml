@@ -403,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+    taskid: 4814aba4-bd30-4c19-895a-8d3e28e73393
     type: condition
     task:
-      id: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+      id: 4814aba4-bd30-4c19-895a-8d3e28e73393
       version: -1
       name: Should investigate by attacker fields?
       description: Whether to hunt by the attacker indicators.
@@ -436,7 +436,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.attackerRemoteHost
+                root: inputs.attackerExternalHost
             iscontext: true
         - operator: isNotEmpty
           left:
@@ -693,12 +693,7 @@ tasks:
         complex:
           root: inputs.timeRange
       query:
-        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053*
-          or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or
-          mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005*
-          or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or
-          mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*)
-          and agentid:${inputs.agentID}
+        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053* or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005* or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*) and agentid:${inputs.agentID}
     separatecontext: false
     view: |-
       {
@@ -1158,7 +1153,7 @@ tasks:
       version: -1
       name: Hunt Reconnaissance techniques
       description: |-
-        Searches Cortex XSOAR incidents.
+        Searches Cortex XSIAM incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1200,7 +1195,7 @@ tasks:
       version: -1
       name: Hunt Initial Access techniques
       description: |-
-        Searches Cortex XSOAR incidents.
+        Searches Cortex XSIAM incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1841,9 +1836,7 @@ tasks:
         complex:
           root: inputs.timeRange
       query:
-        simple: initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256}
-          or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256}
-          or osparentsha256:${inputs.FileSHA256}
+        simple: initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256}
     separatecontext: false
     view: |-
       {
