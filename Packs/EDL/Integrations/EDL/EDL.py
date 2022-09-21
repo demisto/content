@@ -1,4 +1,3 @@
-import io
 import tempfile
 
 import demistomock as demisto
