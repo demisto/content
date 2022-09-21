@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from AHA import Client, get_features, get_feature, edit_feature
-import pytest
+from AHA import Client, get_features, edit_feature
 import io
 
 
@@ -10,7 +9,7 @@ apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
 headers = {
     'Authorization': f"Bearer {apikey}",
 }
-BASE_URL = "https://paloalto-networks.aha.io/api/v1/"
+BASE_URL = "https://example.com.aha.io/api/v1/"
 
 
 def mock_client(mocker, http_request_result=None, throw_error=False):
@@ -64,25 +63,11 @@ def test_getSpecificFeature(mocker):
             - Return the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get_feature(client=client, feature_name="DEMO-10")
-    assert result.outputs['reference_num'] == "DEMO-10"
+    result = get_features(client=client, from_date="2020-01-01", feature_name="DEMO-10")
+    assert result.outputs['Reference Number'] == "DEMO-10"
 
 
-def test_getSpecificFeatureWithSpecificFields(mocker):
-    """
-        When:
-            - Requesting a specific feature with specific fields
-        Then:
-            - Return the requested feature with the specified fields
-    """
-    client = mock_client(mocker, util_load_json('test_data/get_specific_feature_specific_fields.json'))
-    result = get_feature(client=client, feature_name="DEMO-10", fields_list=["workflow_status", "name"])
-    if "reference_num" in result.outputs:
-        pytest.fail("There should NOT be a reference_num field in output.")
-    assert result.outputs['name'] == "Push based weather alerts"
-
-
-def test_updateFeatureField(mocker):
+def test_editFeatureField(mocker):
     """
         When:
             - Requesting to update fields in a feautre.
@@ -92,6 +77,6 @@ def test_updateFeatureField(mocker):
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
     result = edit_feature(client=client, feature_name="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
                           "status": "Closed"})
-    assert result.outputs['name'] == "DEMO-10"
-    assert result.outputs['description']['body'] == "new description"
-    assert result.outputs['workflow_status']['name'] == "Closed"
+    assert result.outputs['Feature Name'] == "Demo-10"
+    assert result.outputs['Description']['body'] == "test desc"
+    assert result.outputs['Status'] == "Closed"

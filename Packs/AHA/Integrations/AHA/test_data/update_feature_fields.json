@@ -1,162 +1,27 @@
 {
     "feature": {
         "id": "7142047393121670680",
-        "name": "DEMO-10",
+        "name": "Demo-10",
         "reference_num": "DEMO-10",
-        "initiative_reference_num": "DEMO-S-3",
-        "release_reference_num": "DEMO-R-3",
-        "epic_reference_num": null,
-        "position": 3,
-        "score": 19,
-        "created_at": "2022-09-11T09:11:33.224Z",
-        "updated_at": "2022-09-14T10:46:44.701Z",
-        "start_date": null,
-        "due_date": null,
-        "product_id": "7142047389388652071",
-        "progress": null,
-        "progress_source": "progress_manual",
-        "status_changed_on": "2022-09-14",
         "created_by_user": {
             "id": "7142047370286614216",
             "name": "User",
-            "email": "user@email.com",
-            "created_at": "2022-09-11T09:11:26.224Z",
-            "updated_at": "2022-09-14T10:23:24.795Z"
-        },
-        "workflow_kind": {
-            "id": "7142047373244952991",
-            "name": "New"
+            "email": "user@email.com"
         },
         "workflow_status": {
             "id": "7142047373292237665",
             "name": "Closed",
             "position": 6,
             "complete": true,
-            "color": "#689f3b"
+            "color": "#689f3b",
+            "description": {
+                "id": "7142047373307410190",
+                "body": "Is live and available to customers."
+            }
         },
         "description": {
             "id": "7142047393165357275",
-            "body": "new description",
-            "created_at": "2022-09-11T09:11:33.226Z",
-            "attachments": []
-        },
-        "attachments": [],
-        "integration_fields": [],
-        "url": "https://example.com.aha.io/features/DEMO-10",
-        "resource": "https://example.com.aha.io/api/v1/features/DEMO-10",
-        "release": {
-            "id": "7142047392704264269",
-            "reference_num": "DEMO-R-3",
-            "name": "iOS v4.23 Release",
-            "start_date": "2022-09-02",
-            "release_date": "2022-10-05",
-            "parking_lot": false,
-            "created_at": "2022-09-11T09:11:33.199Z",
-            "product_id": "7142047389388652071",
-            "integration_fields": [],
-            "url": "https://example.com.aha.io/releases/DEMO-R-3",
-            "resource": "https://example.com.aha.io/api/v1/releases/DEMO-R-3",
-            "owner": {
-                "id": "7142047370286614216",
-                "name": "User",
-                "email": "user@email.com",
-                "created_at": "2022-09-11T09:11:26.224Z",
-                "updated_at": "2022-09-14T10:23:24.795Z"
-            },
-            "project": {
-                "id": "7142047389388652071",
-                "reference_prefix": "DEMO",
-                "name": "Fredwin Cycling Product (Demo)",
-                "product_line": false,
-                "created_at": "2022-09-11T09:11:33.020Z",
-                "workspace_type": "product_workspace"
-            }
-        },
-        "belongs_to_release_phase": {
-            "id": "7142047392916283333",
-            "name": "Define included features",
-            "start_on": "2022-09-05",
-            "end_on": "2022-09-07",
-            "type": "phase",
-            "release_id": "7142047392704264269",
-            "created_at": "2022-09-11T09:11:33.213Z",
-            "updated_at": "2022-09-14T10:46:44.720Z",
-            "progress": 0,
-            "progress_source": "progress_from_todos",
-            "duration_source": "duration_manual",
-            "description": {
-                "id": "7142047392942881656",
-                "body": "",
-                "created_at": "2022-09-11T09:11:33.215Z",
-                "attachments": []
-            }
-        },
-        "assigned_to_user": null,
-        "requirements": [],
-        "initiative": {
-            "id": "7142047389806640688",
-            "reference_num": "DEMO-S-3",
-            "name": "Mobile Fredwin Cycling Tracker App upgrades",
-            "url": "https://example.com.aha.io/initiatives/DEMO-S-3",
-            "resource": "https://example.com.aha.io/api/v1/initiatives/DEMO-S-3",
-            "created_at": "2022-09-11T09:11:33.031Z",
-            "description": {
-                "id": "7142047389835002618",
-                "body": "<p></p>",
-                "created_at": "2022-09-11T09:11:33.033Z",
-                "attachments": []
-            },
-            "integration_fields": []
-        },
-        "goals": [
-            {
-                "id": "7142047387627910934",
-                "name": "Most used mobile apps",
-                "url": "https://example.com.aha.io/strategic_imperatives/7142047387627910934",
-                "resource": "https://example.com.aha.io/api/v1/goals/7142047387627910934",
-                "created_at": "2022-09-11T09:11:30.399Z",
-                "description": {
-                    "id": "7142047387664021169",
-                    "body": "<p>Increase mobile app downloads to 100,000 total.</p>",
-                    "created_at": "2022-09-11T09:11:30.401Z",
-                    "attachments": []
-                }
-            }
-        ],
-        "comments_count": 0,
-        "score_facts": [
-            {
-                "id": "7142047393162383661",
-                "value": 6,
-                "name": "Sales increase"
-            },
-            {
-                "id": "7142047393169519956",
-                "value": 9,
-                "name": "Retention of customers"
-            },
-            {
-                "id": "7142047393179266454",
-                "value": 10,
-                "name": "PR/Marketing"
-            },
-            {
-                "id": "7142047393173908761",
-                "value": 0,
-                "name": "Operational efficiencies"
-            },
-            {
-                "id": "7142047393173803796",
-                "value": 6,
-                "name": "Effort to develop (subtracted)"
-            }
-        ],
-        "tags": [],
-        "full_tags": [],
-        "custom_fields": [],
-        "feature_links": [],
-        "feature_only_original_estimate": null,
-        "feature_only_remaining_estimate": null,
-        "feature_only_work_done": null
+            "body": "test desc"
+        }
     }
 }

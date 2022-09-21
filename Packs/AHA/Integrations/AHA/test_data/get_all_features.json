@@ -2,30 +2,78 @@
     "features": [
         {
             "id": "7142047390424612198",
-            "reference_num": "DEMO-30",
             "name": "Share places of interest in Italy",
-            "created_at": "2022-09-11T09:11:33.044Z",
-            "url": "https://example.com.aha.io/features/DEMO-30",
-            "resource": "https://example.com.aha.io/api/v1/features/DEMO-30",
-            "product_id": "7142047389388652071"
+            "reference_num": "DEMO-30",
+            "created_by_user": {
+                "id": "7142047370286614216",
+                "name": "User",
+                "email": "user@email.com"
+            },
+            "workflow_status": {
+                "id": "7142047373295465527",
+                "name": "Under consideration",
+                "position": 1,
+                "complete": false,
+                "color": "#80b3c7",
+                "description": {
+                    "id": "7142047373301408001",
+                    "body": "Is being reviewed and may be prioritized."
+                }
+            },
+            "description": {
+                "id": "7142047390469716564",
+                "body": "<p>Italy is a major cycling destination from folks from around the world. As part of the Giro coverage also highlight routes and places of interest for casual travelers.</p>"
+            }
         },
         {
             "id": "7142047390531708532",
-            "reference_num": "DEMO-31",
             "name": "Replace getting started guide",
-            "created_at": "2022-09-11T09:11:33.047Z",
-            "url": "https://example.com.aha.io/features/DEMO-31",
-            "resource": "https://example.com.aha.io/api/v1/features/DEMO-31",
-            "product_id": "7142047389388652071"
+            "reference_num": "DEMO-31",
+            "created_by_user": {
+                "id": "7142047370286614216",
+                "name": "User",
+                "email": "user@email.com"
+            },
+            "workflow_status": {
+                "id": "7142047373295465527",
+                "name": "Under consideration",
+                "position": 1,
+                "complete": false,
+                "color": "#80b3c7",
+                "description": {
+                    "id": "7142047373301408001",
+                    "body": "Is being reviewed and may be prioritized."
+                }
+            },
+            "description": {
+                "id": "7142047390570897954",
+                "body": "<p>Enhance the mobile getting started guide with a picture diagram that explains how best to get started.</p>"
+            }
         },
         {
             "id": "7142047390632056703",
-            "reference_num": "DEMO-32",
             "name": "Syndicate cycling route data",
-            "created_at": "2022-09-11T09:11:33.050Z",
-            "url": "https://example.com.aha.io/features/DEMO-32",
-            "resource": "https://example.com.aha.io/api/v1/features/DEMO-32",
-            "product_id": "7142047389388652071"
+            "reference_num": "DEMO-32",
+            "created_by_user": {
+                "id": "7142047370286614216",
+                "name": "User",
+                "email": "user@email.com"
+            },
+            "workflow_status": {
+                "id": "7142047373295465527",
+                "name": "Under consideration",
+                "position": 1,
+                "complete": false,
+                "color": "#80b3c7",
+                "description": {
+                    "id": "7142047373301408001",
+                    "body": "Is being reviewed and may be prioritized."
+                }
+            },
+            "description": {
+                "id": "7142047390668922035",
+                "body": "<p>Many cities want to make their roads safer and more convenient for cyclists, but they have a problem. They have very little data on where people ride and what influences their choices. We have tons of data that we can make anonymous and sell to these cities.</p>"
+            }
         }
     ],
     "pagination": {

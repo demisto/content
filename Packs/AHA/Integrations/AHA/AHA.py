@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX = '/products/DEMO/features/'
-
+FIELDS = 'reference_num, name, description, workflow_status'
 ''' CLIENT CLASS '''
 
 
@@ -22,30 +22,15 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self._headers = headers
 
-    def get_features(self, from_date: str = "2020-01-01") -> Dict:
+    def get_features(self, feature_name: str, from_date: str) -> Dict:
         """
         Retrieves a list of features from AHA
         Args:
             from_date: str format: YYYY-MM-DD
         """
         headers = self._headers
-        response = self._http_request(method='GET', url_suffix=f"{URL_SUFFIX}?updated_since={from_date}", headers=headers,
-                                      resp_type='json')
-        return response
-
-    def get_feature(self, feature_name: str, fields_list: Optional[List]) -> Dict:
-        """
-        Retrieves a specific feature from AHA
-        Args:
-            feature_name: str
-        """
-        headers = self._headers
-        url_suffix = f"{URL_SUFFIX}{feature_name}"
-        if fields_list:
-            fields = ",".join(fields_list)
-            url_suffix = f"{url_suffix}?fields={fields}"
-        response = self._http_request(method='GET', url_suffix=url_suffix, headers=headers,
-                                      resp_type='json')
+        response = self._http_request(method='GET', url_suffix=f'{URL_SUFFIX}{feature_name}?\
+                                      updated_since={from_date}&fields={FIELDS}', headers=headers, resp_type='json')
         return response
 
     def edit_feature(self, feature_name: str, fields: Dict) -> Dict:
@@ -63,23 +48,28 @@ class Client(BaseClient):
         demisto.debug(f"payload: {payload}")
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}", headers=headers,
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}?fields={FIELDS}", headers=headers,
                                       resp_type='json', data=json.dumps(payload))
 
         return response
 
-    def close_feature(self, feature_name: str) -> Dict:
-        """
-        Sets a Aha! feature status to Closed
-        Args:
-            feature_name: str feature staus to close
-        """
-        payload = '{"feature":{"workflow_status": {"name": "Closed" }}}'
-        headers = self._headers
-        headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}", headers=headers,
-                                      resp_type='json', data=payload)
-        return response
+    ''' HELPER FUNCTIONS'''
+
+
+def parse_features_response(response) -> dict:
+    output: dict = {}
+    if type(response) is list:
+        for res in response:
+            output.update(parse_feature_response(res))
+    else:
+        output = parse_feature_response(response=response)
+    return output
+
+
+def parse_feature_response(response: dict) -> dict:
+    return {'Feature Name': response.get('name'), 'Id': response.get('id'),
+            'Reference Number': response.get('reference_num'), 'Description': response.get('description'),
+            'Status': response.get('workflow_status').get('name')}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -90,7 +80,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        result = client.get_features()
+        result = client.get_features('', '2020-01-01')
         if result:
             message = 'ok'
     except DemistoException as e:
@@ -100,43 +90,43 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
+# TODO remove all paloalto mail from yml file
 
-def get_features(client: Client, from_date: str) -> CommandResults:
-    message: str = ''
+
+def parse_features(response: dict) -> dict:
+    res_dict: dict = {}
+    for res in response:
+        curr = parse_feature(res)
+        res_dict[curr['Reference Number']] = curr
+    return res_dict
+
+
+def parse_feature(response: dict) -> dict:
+    return {'Feature Name': response.get('name'), 'Id': response.get('id'),
+            'Reference Number': response.get('reference_num'), 'Description': response.get('description').get('body'),
+            'Status': response.get('workflow_status').get('name')}
+
+
+def get_features(client: Client, from_date: str, feature_name: str = '') -> CommandResults:
+    message: Dict = {}
     try:
-        result = client.get_features(from_date=from_date)
-        if result:
-            message = result['features']
+        response = client.get_features(feature_name=feature_name, from_date=from_date)
+        if response:
+            message = parse_features(response['features']) if 'features' in response else parse_feature(response['feature'])
+            human_readable = tableToMarkdown('Aha! get features',
+                                             message,
+                                             removeNull=True)
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
+        outputs_prefix='AHA.Features',
+        outputs_key_field='id',
         outputs=message,
-        raw_response=message
-    )
-    return command_results
-
-
-def get_feature(client: Client, feature_name: str, fields_list: Optional[List] = None) -> CommandResults:
-    message: str = ''
-    try:
-        result = client.get_feature(feature_name=feature_name, fields_list=fields_list)
-        if result:
-            message = result['feature']
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
-        outputs=message,
-        raw_response=message
+        raw_response=response,
+        readable_output=human_readable
     )
     return command_results
 
@@ -144,39 +134,23 @@ def get_feature(client: Client, feature_name: str, fields_list: Optional[List] =
 def edit_feature(client: Client, feature_name: str, fields: Dict) -> CommandResults:
     message: str = ''
     try:
-        result = client.edit_feature(feature_name=feature_name, fields=fields)
-        if result:
-            message = result['feature']
+        response = client.edit_feature(feature_name=feature_name, fields=fields)
+        if response:
+            message = parse_feature_response(response['feature'])
+            human_readable = tableToMarkdown('Aha! edit feature',
+                                             message,
+                                             removeNull=True)
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
+        outputs_prefix='AHA.Edit',
+        outputs_key_field='id',
         outputs=message,
-        raw_response=message
-    )
-    return command_results
-
-
-def close_feature(client: Client, feature_name: str) -> CommandResults:
-    message: str = ''
-    try:
-        result = client.close_feature(feature_name=feature_name)
-        if result:
-            message = result['feature']
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    command_results = CommandResults(
-        outputs_prefix='AHA.ActionStatus',
-        outputs_key_field='',
-        outputs=message,
-        raw_response=message
+        readable_output=human_readable,
+        raw_response=response
     )
     return command_results
 
@@ -213,20 +187,13 @@ def main() -> None:
             return_results(result)
         elif command == 'aha-get-features':
             from_date = args.get('from_date', '2020-01-01')
-            command_result = get_features(client, from_date=from_date)
-            return_results(command_result)
-        elif command == 'aha-get-feature':
             feature_name = args.get('feature_name', '')
-            command_result = get_feature(client, feature_name=feature_name)
+            command_result = get_features(client, from_date=from_date, feature_name=feature_name)
             return_results(command_result)
         elif command == 'aha-edit-feature':
             feature_name = args.get('feature_name', '')
             fields = json.loads(args.get('fields', {}))
             command_result = edit_feature(client, feature_name=feature_name, fields=fields)
-            return_results(command_result)
-        elif command == 'aha-close-feature':
-            feature_name = args.get('feature_name', '')
-            command_result = close_feature(client, feature_name=feature_name)
             return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
