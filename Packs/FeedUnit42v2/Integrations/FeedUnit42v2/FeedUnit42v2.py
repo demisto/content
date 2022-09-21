@@ -720,14 +720,15 @@ def main():
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)
-                except Exception as e:
+                except Exception:
                     # find problematic indicator
                     for indicator in iter_:
                         try:
                             demisto.createIndicators([indicator])
                         except Exception as err:
-                            demisto.debug(f'createIndicators Error: failed to create the following indicator: {indicator}\n {err}')
-                    raise e
+                            demisto.debug(f'createIndicators Error: failed to create the following indicator:'
+                                          f' {indicator}\n {err}')
+                    raise
 
         elif command == 'unit42-get-indicators':
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
