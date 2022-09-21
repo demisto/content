@@ -3342,7 +3342,7 @@ class Pack(object):
 
         """
         pack_preview_images = []
-        pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
+        pack_storage_root_path = os.path.join(storage_base_path, GCPConfig.PREVIEW_IMAGES_BASE_PATH,self._pack_name)
 
         try:
             if detect_changes:
@@ -3355,6 +3355,7 @@ class Pack(object):
                     logging.info(f"yuval: image_path {image_path}")
                     image_name = os.path.basename(image_path)
                     image_storage_path = os.path.join(pack_storage_root_path, image_name)
+                    logging.info(f"yuval {image_storage_path}")
                     pack_image_blob = storage_bucket.blob(image_storage_path)
                     with open(image_path, "rb") as image_file:
                         pack_image_blob.upload_from_file(image_file)
