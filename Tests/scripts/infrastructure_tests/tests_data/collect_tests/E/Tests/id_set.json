@@ -30,6 +30,15 @@
           "marketplacev2"
         ]
       },
+      "Sanity Test - Playbook with Unmockable Whois Integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/Sanity Test - Playbook with Unmockable Whois Integration.yml",
+        "pack": "Whois",
+        "marketplaces": [
+          "xsoar",
+          "marketplacev2"
+        ]
+      },
       "myOtherTestPlaybook": {
         "name": "myOtherTestPlaybook",
         "file_path": "Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml",
