@@ -1,15 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 '''IMPORTS'''
 
 import requests
 from cymruwhois import Client  # Python interface to whois.cymru.com
 import csv
+from typing import Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 '''GLOBALS'''
 
@@ -27,21 +27,23 @@ def team_cymru_ip(client: Client, ip: str) -> Optional[Dict[str, Any]]:
     :type ip: ``str``
     :param ip: string to add in the dummy dict that is returned
 
-    :return: dict containing the result of the lookup action as returned from the API (asn, cc, owner, etc.)
+    :return: Dictionary contains the results of the lookup API call.
+    :rtype: Dict[str, str]
     """
     raw_result = client.lookup(ip)
     return vars(raw_result) if raw_result else None
 
 
 def team_cymru_bulk_whois(client: Client, bulk: List[str]) -> Optional[Dict[str, Any]]:
-    """Perform lookups by bulk of ip addresses, returning a dictionary of ip -> record (ASN, Country Code, and Netblock Owner.)
+    """Perform lookups by bulk of ip addresses,
+    returning a dictionary of ip -> record (ASN, Country Code, and Netblock Owner.)
 
     :type client: ``Client``
     :param client: cymruwhois client to use
     :type bulk: ``list``
     :param bulk: list of ip addresses
 
-    :return: dict containing the result of the lookupmany action as returned from the API (asn, cc, owner, etc.)
+    :return: Dictionary contains the results of the lookupmany API call.
     :rtype: Dict[str, Dict[str, str]]
     """
 
@@ -92,7 +94,7 @@ def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
     )
 
 
-def validate_ip_addresses(ips_list: list[str]):
+def validate_ip_addresses(ips_list: list[str]) -> Tuple[list[str], list[str]]:
     """
     Given a list of IP addresses, returns the invalid and valid ips.
     :param ips_list: list of ip addresses
@@ -110,15 +112,15 @@ def validate_ip_addresses(ips_list: list[str]):
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def parse_file(get_file_path_res: dict[str, str], delimiter: str = ",") -> List[str]:
+def parse_file(file_path_res: dict[str, str], delimiter: str = ",") -> List[str]:
     """
     Parses the given file line by line to list.
     :param delimiter: delimiter by which the content of the list is seperated.
-    :param get_file_path_res: Object contains file ID, path and name
+    :param file_path_res: Object contains file ID, path and name
     :return: bulk list of the elements in the file
     """
     bulk_list = []
-    with open(get_file_path_res['path']) as file:
+    with open(file_path_res['path']) as file:
         reader = csv.reader(file, delimiter=delimiter, skipinitialspace=True)
         for row in reader:
             for col in row:
@@ -167,8 +169,6 @@ def test_module(client: Client) -> str:
     message: str = ''
     try:
         result = team_cymru_ip(client, '8.8.8.8')
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
         if result and result.get('owner') == 'GOOGLE, US':
             message = 'ok'
     except DemistoException as e:
@@ -219,11 +219,11 @@ def cymru_bulk_whois_command(client: Client, args: Dict[str, Any]) -> List[Comma
     """
 
     if args.get('entry_id'):
-        demisto.debug('getting the path of the file from its entry_id')
-        get_file_path_res = demisto.getFilePath(args.get('entry_id'))
-        if not get_file_path_res:
+        demisto.debug("Using the entry_id to find the file's path")
+        file_path = demisto.getFilePath(args.get('entry_id'))
+        if not file_path:
             raise ValueError('No file was found for given entry_id')
-        ips_list = parse_file(get_file_path_res, args.get('delimiter', ','))
+        ips_list = parse_file(file_path, args.get('delimiter', ','))
     else:
         raise ValueError('No entry_id specified.')
 
@@ -238,13 +238,7 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -252,7 +246,6 @@ def main() -> None:
         client = Client()
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 

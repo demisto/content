@@ -1,6 +1,6 @@
 {
     "name": "Team Cymru",
-    "description": "## Team Cymru is an internet security firm that offers research services making the internet a more secure place. ##",
+    "description": "Team Cymru is an internet security firm that offers research services making the internet a more secure place.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
