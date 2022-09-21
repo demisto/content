@@ -801,10 +801,13 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
     indicator = args.get('indicator')
     indicator_id = ''
     summary = ''
+    # We do this to check if the given indicator is an ID or a summary
     try:
+        # If it's an int it means that it's an ID
         int(indicator)  # type: ignore
         indicator_id = indicator  # type: ignore
     except ValueError:
+        # If not we'll treat it as a summary
         summary = indicator  # type: ignore
     response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator_id,
                                          summary=summary)  # type: ignore
