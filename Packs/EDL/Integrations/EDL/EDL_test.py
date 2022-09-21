@@ -178,11 +178,10 @@ class TestHelperFunctions:
                                             url_truncate=True)
         edl_vals = edl.create_new_edl(request_args)
 
-        assert edl_vals == 'demisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwert' \
-                           'yuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopq' \
-                           'wertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopq' \
-                           'wertyuiop\ngoogle.com'
-
+        assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
+                           'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
+                           'yuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
+                           'rtyuiopqwertyuiopqwertyuiop\n'
         f = tempfile.TemporaryFile(mode='w+t')
         f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
@@ -764,4 +763,4 @@ def test_get_indicators_to_format_text():
 
     f.seek(0)
     indicators = f.read()
-    assert indicators == 'demisto.com\ndemisto.com/qwertqwer\ngoogle.com'
+    assert indicators == 'google.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com'
