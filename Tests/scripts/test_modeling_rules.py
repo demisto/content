@@ -1,26 +1,33 @@
 import argparse
-from io import BytesIO
 import json
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
+from pprint import pformat
 from typing import Any, Optional
-from Tests.Marketplace.search_and_uninstall_pack import (reset_base_pack_version,
-                                                         uninstall_all_packs,
-                                                         wait_for_uninstallation_to_complete)
-from Tests.Marketplace.configure_and_install_packs import install_packs_from_content_packs_to_install_path
-from Tests.scripts.collect_tests.path_manager import PathManager
 
-from Tests.configure_and_test_integration_instances import XSIAMBuild, XSIAMServer
+import requests
+from demisto_sdk.commands.common.content.objects.pack_objects.modeling_rule.modeling_rule import (
+    ModelingRule, MRule)
+from google.cloud import bigquery
+from google.cloud.pubsub_v1 import PublisherClient
+from google.oauth2 import service_account
+from pydantic import BaseModel, Field, ValidationError, parse_file_as
+from Tests.configure_and_test_integration_instances import (XSIAMBuild,
+                                                            XSIAMServer)
+from Tests.Marketplace.configure_and_install_packs import \
+    install_packs_from_content_packs_to_install_path
+from Tests.Marketplace.search_and_uninstall_pack import (
+    reset_base_pack_version, uninstall_all_packs,
+    wait_for_uninstallation_to_complete)
+from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.content.objects.pack_objects.modeling_rule.modeling_rule import ModelingRule, MRule
-from google.oauth2 import service_account
-from google.cloud.pubsub_v1 import PublisherClient
-from google.cloud import bigquery
-import requests
 
 
+class ModelingRuleTestData(BaseModel):
+    metablob: dict[str, Any] = Field(default_factory=dict)
+    events_data: list[dict[str, Any]]
 
 
 class ModelingRuleTestException(BaseException):
@@ -118,21 +125,28 @@ def create_dataset(xsiam_server: XSIAMServer, modeling_rule: ModelingRule, pub_s
         testdata_filepath = modeling_rule.path.parent / f'{modeling_rule.path.parent.name}_testdata.json'
         raise ModelingRuleTestException(f'No file with test data was found in {testdata_filepath}')
     else:
-        data = json.load(modeling_rule.testdata_path.open('r'))
-        metablob: dict[str, Any] = data.get('metablob', {})
+        vendor = modeling_rule.rules[0].vendor
+        product = modeling_rule.rules[0].product
+        data: ModelingRuleTestData = parse_file_as(path=modeling_rule.testdata_path, type_=ModelingRuleTestData)
+        metablob: dict[str, Any] = data.metablob
         # match the vendor and product in the metablob to the one listed in the modeling_rule's rules -
         # all the rules in a modeling rule xif file should use the same dataset (and ergo the same vendor and product)
-        metablob['vendor'] = modeling_rule.rules[0].vendor
-        metablob['product'] = modeling_rule.rules[0].product
+        metablob['vendor'] = vendor
+        metablob['product'] = product
         metablob.setdefault('format', 'json')
-        event_data: list[dict[str, Any]] = data.get('event_data')
-        event_data_as_str = '\n'.join([json.dumps(event) for event in event_data])
-        pubsub_msg = BytesIO(bytes(f'{json.dumps(metablob)}\n{event_data_as_str}', encoding='utf-8'))
+        events_data: list[dict[str, Any]] = data.events_data
+        events_data_as_str = '\n'.join([json.dumps(event) for event in events_data])
+        msg_str = f'{json.dumps(metablob)}\n{events_data_as_str}'
+        pubsub_msg = msg_str.encode('utf-8')
         xsiam_project_number = xsiam_server.name.split('-')[-1]
         topic = pub_sub_client.topic_path(xsiam_server.name, f'ext-logs-{xsiam_project_number}')
-        # topic_name = f'projects/{xsiam_build.xsiam_machine}/topics/ext-logs-{xsiam_project_number}'
-        future = pub_sub_client.publish(topic, pubsub_msg.getvalue())
+
+        logging.debug(f'pubsub msg:\n {pubsub_msg}')
+        future = pub_sub_client.publish(topic, pubsub_msg)
         future.result()
+        logging.success(
+            f'Successfully created dataset with {vendor=} {product=} from test data at {modeling_rule.testdata_path}'
+        )
         return True
 
 
@@ -179,6 +193,7 @@ def get_xql_query_results(xsiam_server: XSIAMServer, execution_id: str) -> list[
     logging.info(f'Getting xql query results: endpoint={url}')
     response = requests.post(url=url, data=payload, headers=headers)
     data = response.json()
+    logging.debug(pformat(data))
 
     if 200 <= response.status_code < 300 and data.get('reply', {}).get('status', '') == 'SUCCESS':
         reply_results_data = data.get('reply', {}).get('results', {}).get('data', [])
@@ -205,7 +220,7 @@ def execute_xql_query(xsiam_server: XSIAMServer, m_rule: MRule) -> bool:
     xql_query = f'config timeframe = 5y | datamodel = {m_rule.datamodel} | fields {", ".join(m_rule.fields)}'
     execution_id = start_xql_query(xsiam_server, xql_query)
     xql_query_results_data = get_xql_query_results(xsiam_server, execution_id)
-    data = xql_query_results_data[0]
+    data = xql_query_results_data[0] if xql_query_results_data else xql_query_results_data
     logging.debug(f'xql_query_results_data = {data}')
     err_msgs = []
     for field in m_rule.fields:
@@ -217,7 +232,7 @@ def execute_xql_query(xsiam_server: XSIAMServer, m_rule: MRule) -> bool:
             logging.debug(f'{field}: {data.get(field)}')
     if err_msgs:
         grouped_err_msgs = "\n".join(err_msgs)
-        err = ('modeling rule mapping expectatins were not met for the '
+        err = ('modeling rule mapping expectations were not met for the '
                f'xql query "{xql_query}" - \n{grouped_err_msgs}')
         raise ModelingRuleTestException(err)
     return True
@@ -251,6 +266,11 @@ def test_modeling_rule(xsiam_server: XSIAMServer, ctx: BuildContext, modeling_ru
     try:
         # create dataset from modeling rule's testdata
         create_dataset(xsiam_server, modeling_rule, pubsub_client)
+    except ValidationError as e:
+        err_msg = (f'modeling rule test data at "{modeling_rule.testdata_path}"'
+                   f' did not conform to required format: \n{e}')
+        logging.error(err_msg)
+        return False
     except ModelingRuleTestException as e:
         testdata_filepath = modeling_rule.path.parent / f'{modeling_rule.path.parent.name}_testdata.json'
         no_testdata_err = f'No file with test data was found in {testdata_filepath}'
@@ -274,7 +294,7 @@ def test_modeling_rule(xsiam_server: XSIAMServer, ctx: BuildContext, modeling_ru
         logging.debug('leaving the created dataset for user inspection and debugging')
         # group errors into one
         grouped_err_msgs = "\n".join([f"{e}" for e in errors])
-        raise ModelingRuleTestException(f'{grouped_err_msgs}')
+        raise ModelingRuleTestException(f'{modeling_rule.path}\n{grouped_err_msgs}')
     return valid
 
 
@@ -331,7 +351,8 @@ def main():
 
     if not success:
         if errs:
-            logging.error(f'The following errors happened during testing of modeling rules:\n{errs}')
+            errs_str = '\n'.join(errs)
+            logging.error(f'The following errors happened during testing of modeling rules:\n{errs_str}')
         sys.exit(2)
 
 
