@@ -5,7 +5,6 @@
  "name": "Detection End Time",
  "ownerOnly": false,
  "placeholder": "",
- "description": "Timestamp of when the ExtraHop Reveal(x) detection ended",
  "cliName": "detectionendtime",
  "type": "date",
  "closeForm": false,
