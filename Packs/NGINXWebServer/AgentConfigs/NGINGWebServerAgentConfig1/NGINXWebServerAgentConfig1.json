@@ -1,7 +1,7 @@
 {
   "os_type": "AGENT_OS_LINUX",
   "profile_type": "STANDARD",
-  "name": "myAgentConfig",
-  "content_global_id": "1",
+  "name": "Nginx",
+  "content_global_id": "fbac685bf6d04f1fa7aa86cafbaf3697",
   "yaml_template": ""
 }
