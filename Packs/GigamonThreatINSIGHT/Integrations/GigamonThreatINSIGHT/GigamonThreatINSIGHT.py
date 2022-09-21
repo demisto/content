@@ -10,7 +10,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Tuple
 
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
@@ -401,30 +401,15 @@ def formatEvents(r_json):
     return newData
 
 
-def getFirstFetch(firstFetch) -> dict[str, Any]:
+def getFirstFetch(first_fetch_str) -> dict[str, Any]:
 
-    if not firstFetch or not firstFetch.strip():
-        return {'days': 7, 'hours': 0}
+    if not first_fetch_str or not first_fetch_str.strip():
+        first_fetch_str = "7 days"
 
-    pieces = firstFetch.strip().split()
-    unit = pieces[len(pieces) - 1]
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
 
-    try:
-        delta = arg_to_number(
-            arg=pieces[0],
-            arg_name='first_fetch',
-            required=False
-        )
-    except Exception:
-        delta = 0
-
-    days: int = delta if delta and unit == 'days' else 0
-    hours: int = delta if delta and unit == 'hours' else 0
-
-    if days == 0 and hours == 0:
-        days = 7
-
-    return {'days': days, 'hours': hours}
+    return first_fetch_date
 
 
 def mapSeverity(severity) -> int:
@@ -802,8 +787,7 @@ def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, params
 
     demisto.debug(f'last_run retrieved: {last_run}')
 
-    firstFetch = getFirstFetch(params.get('first_fetch'))
-    first_fetch_time = datetime.now() - timedelta(days=firstFetch['days'], hours=firstFetch['hours'])
+    first_fetch_time = getFirstFetch(params.get('first_fetch'))
 
     last_fetch = last_run.get('last_fetch')
 
