@@ -789,11 +789,6 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
 - key: Process
   value: {}
   required: false
