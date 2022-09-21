@@ -166,7 +166,7 @@ class CollectionResult:
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
                 for integration in test_playbook.implementing_integrations:
-                    if reason := conf.skipped_integrations.get(integration):
+                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
                         raise SkippedTestException(
                             test_name=test,
                             skip_place='conf.json (integrations)',
