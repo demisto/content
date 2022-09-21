@@ -8895,7 +8895,7 @@ script:
       - post-rulebase
     description: Deletes a PBF rule.
     name: pan-os-delete-pbf-rule
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false
   longRunning: false
