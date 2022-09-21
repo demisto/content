@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 import base64
 import email
@@ -7,14 +10,12 @@ from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 INTEGRATION_NAME = 'CrowdStrike Falcon'
