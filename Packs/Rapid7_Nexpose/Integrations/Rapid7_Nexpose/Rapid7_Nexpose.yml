@@ -1342,6 +1342,140 @@ script:
         "failed", "complete", "running", "unknown"'
       type: string
     description: Returns the status of a report generation process.
+  - arguments:
+      - default: false
+        description: ID of the site.
+        isArray: false
+        name: site_id
+        required: false
+        secret: false
+      - default: false
+        description: Name of the site (can be used instead of `site_id`)
+        isArray: false
+        name: site_name
+        required: false
+        secret: false
+      - default: false
+        description: ID of the scan schedule to update.
+        isArray: false
+        name: schedule_id
+        required: false
+        secret: false
+      - default: false
+        defaultValue: 'True'
+        description: A flag indicating whether the scheduled scan is enabled or not.
+        isArray: false
+        name: enabled
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
+        secret: false
+      - default: false
+        description: The desired behavior of a repeating scheduled scan when the previous scan was paused
+          due to reaching its maximum duration.
+        isArray: false
+        name: on_scan_repeat
+        predefined:
+          - 'Restart Scan'
+          - 'Resume Scan'
+        required: true
+        secret: false
+      - default: false
+        description: The scheduled start date and time formatted in ISO 8601 format.
+          Repeating schedules will determine the next schedule to begin based on this date and time.
+        isArray: false
+        name: start
+        required: true
+        secret: false
+      - default: false
+        description: A list of ids for asset groups to exclude from the scan.
+        isArray: true
+        name: excluded_asset_group_ids
+        required: false
+        secret: false
+      - default: false
+        description: A list of addresses to exclude from the scan.
+        isArray: true
+        name: excluded_addresses
+        required: false
+        secret: false
+      - default: false
+        description: A list of ids for asset groups to include in the scan.
+        isArray: true
+        name: included_asset_group_ids
+        required: false
+        secret: false
+      - default: false
+        description: A list of addresses to include in the scan.
+        isArray: true
+        name: included_addresses
+        required: false
+        secret: false
+      - default: false
+        description: Maximum duration of the scan in days.
+        isArray: false
+        name: duration_days
+        required: false
+        secret: false
+      - default: false
+        description: Maximum duration of the scan in hours.
+        isArray: false
+        name: duration_hours
+        required: false
+        secret: false
+      - default: false
+        description: Maximum duration of the scan in minutes.
+        isArray: false
+        name: duration_minutes
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        description: How frequent should the schedule to repeat (Every...).
+        isArray: false
+        name: frequency
+        predefined:
+          - 'Hour'
+          - 'Day'
+          - 'Week'
+          - 'Date of month'
+        required: false
+        secret: false
+      - default: false
+        description: The interval time the schedule should repeat. This depends on the value set in `frequency`.
+          For example, if the value of `frequency` is set to "Day" and `interval` is set to 2,
+          then the schedule will repeat every 2 days.
+          Required only if frequency is used.
+        isArray: false
+        name: interval_time
+        required: false
+        secret: false
+      - default: false
+        description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17
+          and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month.
+          Required and used only if frequency is set to `Date of month`.
+        isArray: false
+        name: date_of_month
+        required: false
+        secret: false
+      - default: false
+        description: A unique user-defined name for the scan launched by the schedule.
+          If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
+        isArray: false
+        name: scan_name
+        required: false
+        secret: false
+      - default: false
+        description: ID of the scan template to use.
+        isArray: false
+        name: scan_template
+        required: false
+        secret: false
+    deprecated: false
+    description: Update an existing site scan schedule.
+    execution: false
+    name: nexpose-create-scan-schedule
   isfetch: false
   runonce: false
   script: '-'

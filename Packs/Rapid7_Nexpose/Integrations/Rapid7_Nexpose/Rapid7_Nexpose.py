@@ -973,6 +973,99 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def update_site_scan_schedule(self, site_id: str, scan_schedule_id: int, start_date: str,
+                                  excluded_asset_groups: Optional[list[int]] = None,
+                                  excluded_targets: Optional[list[str]] = None,
+                                  included_asset_groups: Optional[list[int]] = None,
+                                  included_targets: Optional[list[str]] = None,
+                                  duration: Optional[str] = None, enabled: bool = None,
+                                  repeat_behaviour: RepeatBehaviour = None,
+                                  frequency: Optional[RepeatFrequencyType] = None,
+                                  interval: Optional[int] = None, date_of_month: Optional[int] = None,
+                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
+        """
+        | Update a site scan schedule.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to create a new scheduled scan for.
+            scan_schedule_id (int): ID of the scan schedule to update.
+            start_date (str): The scheduled start date and time formatted in ISO 8601 format.
+            excluded_asset_groups (list[int], optional): Asset groups to exclude from the scan.
+            excluded_targets (list[str], optional): Addresses to exclude from the scan. Each address is a string that
+                can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+            included_asset_groups (list[int], optional): Asset groups to include in the scan.
+            included_targets (list[str], optional): Addresses to include in the scan.  Each address is a string that
+                can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+            duration (str, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
+                the scheduled scan is allowed to run.
+            enabled (bool): A flag indicating whether the scan schedule is enabled.
+            repeat_behaviour (RepeatBehaviour, optional): The desired behavior of a repeating scheduled scan
+                when the previous scan was paused due to reaching its maximum duration.
+            frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+            interval (int, optional): The interval time the schedule should repeat.
+                Required if frequency is set to any value other than `DATE_OF_MONTH`.
+            date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
+                Required and used only if frequency is set to `DATE_OF_MONTH`.
+            scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
+                If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
+            scan_template_id (str, optional): ID of the scan template to use.
+
+        Returns:
+            str: ID of the newly created scan schedule.
+        """
+        assets = {}
+        repeat = {}
+
+        repeat_behaviour_str = repeat_behaviour.name.lower().replace("_", "-")
+
+        if excluded_asset_groups:
+            assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
+
+        if excluded_targets:
+            assets["excludedTargets"] = {"addresses": excluded_targets}
+
+        if included_asset_groups:
+            assets["includedAssetGroups"] = {"assetGroupIDs": included_asset_groups}
+
+        if included_targets:
+            assets["includedTargets"] = {"addresses": included_targets}
+
+        if frequency:
+            frequency_str = frequency.name.lower().replace("_", "-")
+
+            if not interval:
+                raise ValueError("'interval' parameter must be set if frequency is used.")
+
+            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+                raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
+
+            repeat = find_valid_params(
+                every=frequency_str,
+                interval=interval,
+                dateOfMonth=date_of_month,
+            )
+
+        post_data = find_valid_params(
+            assets=assets,
+            duration=duration,
+            enabled=enabled,
+            onScanRepeat=repeat_behaviour_str,
+            repeat=repeat,
+            scanName=scan_name,
+            scanTemplateId=scan_template_id,
+            start=start_date,
+        )
+
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
+            method="PUT",
+            json_data=post_data,
+            resp_type="json",
+        )
+
     def find_site_id(self, name: str) -> Optional[str]:
         """
         Find a site ID by its name.
@@ -2829,6 +2922,75 @@ def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -
     )
 
 
+def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: int,
+                                 enabled: bool, repeat_behaviour: RepeatBehaviour, start_date: str,
+                                 excluded_asset_groups: Optional[list[int]] = None,
+                                 excluded_targets: Optional[list[str]] = None,
+                                 included_asset_groups: Optional[list[int]] = None,
+                                 included_targets: Optional[list[str]] = None, duration_days: Optional[int] = None,
+                                 duration_hours: Optional[int] = None, duration_minutes: Optional[int] = None,
+                                 frequency: Optional[RepeatFrequencyType] = None, interval: Optional[int] = None,
+                                 scan_name: Optional[str] = None, date_of_month: Optional[int] = None,
+                                 scan_template_id: Optional[str] = None) -> CommandResults:
+    """
+    Update a site scan schedule.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to create a scheduled scan for.
+        scan_schedule_id (int): ID of the scan schedule to update.
+        enabled (bool, optional): A flag indicating whether the scan schedule is enabled.
+           Defaults to None, which results in using True.
+        repeat_behaviour (RepeatBehaviour): The desired behavior of a repeating scheduled scan
+            when the previous scan was paused due to reaching its maximum duration.
+        start_date (str): The scheduled start date and time formatted in ISO 8601 format.
+        excluded_asset_groups (list[int], optional): Asset groups to exclude from the scan.
+        excluded_targets (list[str], optional): Addresses to exclude from the scan. Each address is a string that
+            can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+        included_asset_groups (list[int], optional): Asset groups to include in the scan.
+        included_targets (list[str], optional): Addresses to include in the scan.  Each address is a string that
+            can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+        duration_days (int, optional): Maximum duration of the scan in days.
+            Can be used along with `duration_hours` and `duration_minutes`.
+        duration_hours (int, optional): Maximum duration of the scan in hours.
+            Can be used along with `duration_days` and `duration_minutes`.
+        duration_minutes (int, optional): Maximum duration of the scan in minutes.
+            Can be used along with `duration_days` and `duration_hours`.
+        frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+        interval (int, optional): The interval time the schedule should repeat.
+            Required if frequency is set to any value other than `DATE_OF_MONTH`.
+        date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
+            Required and used only if frequency is set to `DATE_OF_MONTH`.
+        scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
+            If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
+        scan_template_id (str, optional): ID of the scan template to use.
+    """
+    duration_str = convert_to_duration_time(
+        days=duration_days,
+        hours=duration_hours,
+        minutes=duration_minutes)
+
+    client.update_site_scan_schedule(
+        site_id=site.id,
+        scan_schedule_id=scan_schedule_id,
+        enabled=enabled,
+        repeat_behaviour=repeat_behaviour,
+        start_date=start_date,
+        excluded_asset_groups=excluded_asset_groups,
+        excluded_targets=excluded_targets,
+        included_asset_groups=included_asset_groups,
+        included_targets=included_targets,
+        duration=duration_str,
+        frequency=frequency,
+        interval=interval,
+        date_of_month=date_of_month,
+        scan_name=scan_name,
+        scan_template_id=scan_template_id,
+    )
+
+    return CommandResults(readable_output=f"Scan schedule {scan_schedule_id} has been updated.")
+
+
 def main():
     try:
         args = demisto.args()
@@ -3034,6 +3196,30 @@ def main():
                 scan_id=args["id"],
                 scan_status=ScanStatus.RESUME,
             )
+        elif command == "nexpose-update-scan-schedule":
+            results = update_scan_schedule_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                scan_schedule_id=args["schedule_id"],
+                enabled=args.get("enabled"),
+                repeat_behaviour=RepeatBehaviour(args["on_scan_repeat"].upper().replace(' ', '_')),
+                start_date=args["start"],
+                excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
+                excluded_targets=argToList(args.get("excluded_addresses")),
+                included_asset_groups=[int(asset_id) for asset_id in argToList(args.get("included_asset_group_ids"))],
+                included_targets=argToList(args.get("included_addresses")),
+                duration_days=arg_to_number(args.get("duration_days")),
+                duration_hours=arg_to_number(args.get("duration_hours")),
+                duration_minutes=arg_to_number(args.get("duration_minutes")),
+                frequency=RepeatFrequencyType(args.get("frequency").upper().replace(' ', '_')),
+                interval=arg_to_number(args.get("interval_time")),
+                date_of_month=arg_to_number(args.get("date_of_month")),
+                scan_name=args.get("scan_name"),
+                scan_template_id=args.get("scan_template_id"))
         elif command == "nexpose-search-assets":
             sites: list[Site] = []
 
