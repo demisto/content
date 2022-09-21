@@ -3731,6 +3731,12 @@ script:
       name: rbac_group_names
       required: false
       secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified indicator.
     execution: false
@@ -3906,6 +3912,12 @@ script:
       description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
+      required: false
+      secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
       required: false
       secret: false
     deprecated: false
