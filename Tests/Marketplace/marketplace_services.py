@@ -3343,22 +3343,22 @@ class Pack(object):
         """
         pack_preview_images = []
         pack_storage_root_path = os.path.join(storage_base_path, GCPConfig.PREVIEW_IMAGES_BASE_PATH,self._pack_name)
+        logging.info(f"{pack_storage_root_path} pack_storage_root_path")
 
         try:
-            if detect_changes:
-                for file in diff_files_list:
-                    if self.is_preview_image(file.a_path):
-                        logging.info(f"yuval: file.a_path {file.a_path}")
-                        pack_preview_images.append(file.a_path)
+            for file in diff_files_list:
+                if self.is_preview_image(file.a_path):
+                    logging.info(f"yuval: file.a_path {file.a_path}")
+                    pack_preview_images.append(file.a_path)
 
-                for image_path in pack_preview_images:
-                    logging.info(f"yuval: image_path {image_path}")
-                    image_name = os.path.basename(image_path)
-                    image_storage_path = os.path.join(pack_storage_root_path, image_name)
-                    logging.info(f"yuval {image_storage_path}")
-                    pack_image_blob = storage_bucket.blob(image_storage_path)
-                    with open(image_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
+            for image_path in pack_preview_images:
+                logging.info(f"yuval: image_path {image_path}")
+                image_name = os.path.basename(image_path)
+                image_storage_path = os.path.join(pack_storage_root_path, image_name)
+                logging.info(f"yuval {image_storage_path}")
+                pack_image_blob = storage_bucket.blob(image_storage_path)
+                with open(image_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
 
             return True
         except Exception as e:
@@ -3371,13 +3371,17 @@ class Pack(object):
         Returns:
             bool: True if the file is an integration image or False otherwise
         """
+        # return all([
+        #     file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+        #     file_path.endswith('.png'),
+        #     '_image' in os.path.basename(file_path.lower()),
+        #     (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+        # ])
         return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+            file_path.startswith(os.path.join(PACKS_FOLDER, "HelloAhikam")),
             file_path.endswith('.png'),
-            '_image' in os.path.basename(file_path.lower()),
-            (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+            'image' in os.path.basename(file_path.lower()),
         ])
-
 
 
 # HELPER FUNCTIONS
