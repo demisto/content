@@ -901,14 +901,13 @@ def main():  # pragma: no cover
     first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
     severity = params.get('severity')
-    resolution_status = str(params.get('resolution_status'))
+    resolution_status = params.get('resolution_status')
     look_back = arg_to_number(params.get('look_back')) or 0
 
     command = demisto.command()
     args = demisto.args()
 
     try:
-
         client = Client(
             app_id=app_id,
             verify=verify,
