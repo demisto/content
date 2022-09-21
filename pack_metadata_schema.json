@@ -24,7 +24,7 @@
 			"description": "The Pack version in format",
 			"type": "string",
 			"pattern": "[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}",
-			"minLength": 6
+			"minLength": 5
 		},
 		"author": {
 			"description": "Author of the Pack",
@@ -61,28 +61,94 @@
 			}
 		},
 		"tags": {
-			"description": "Tags to be attached to the Pack in XSOAR Marketplace",
-			"type": "array",
-			"uniqueItems": true
-		},
-		"useCases": {
-			"description": "Use cases associated to the Pack. Taken from https://xsoar.pan.dev/docs/concepts/use-cases",
+			"description": "Tags to be attached to the Pack in XSOAR Marketplace. Taken from Tests/Marketplace/approved_tags.json",
 			"type": "array",
 			"uniqueItems": true,
 			"items": {
 				"type": "string",
 				"enum": [
-					"Analytics and SIEM",
-					"Authentication",
+					"Alerts",
+					"Attack",
+					"Breach",
+					"COVID-19",
+					"Compliance",
+					"Crisis",
+					"Dark Web",
+					"Email",
+					"Forensics",
+					"GDPR",
+					"HIPAA",
+					"IAM",
+					"Incident Handling",
+					"Incident Mirroring",
+					"Incident Response",
+					"IoT",
+					"IT",
+					"Machine Learning",
+					"Malware",
+					"Network",
+					"PII",
+					"Pandemic",
+					"Pcap",
+					"Scam",
+					"Security",
+					"Security Analytics",
+					"Private Offer",
+					"Simulation",
+					"Spam",
+					"TIM",
+					"Threat Intelligence",
+					"VPN",
+					"MITRE ATT&CK",
+					"Courses of Action",
+					"Unit 42",
+					"Best Practices",
+					"Use Case",
+					"New",
+					"Trending",
+					"Relationship",
+					"Elasticsearch",
+					"Iron Bank"
+				]
+			}
+		},
+		"useCases": {
+			"description": "Use cases associated to the Pack. Tests/Marketplace/approved_usecases.json",
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"type": "string",
+				"enum": [
+					"Access",
+					"Asset Management",
+					"Breach Notification",
+					"Breach and Attack Simulation",
+					"Brute Force",
 					"Case Management",
-					"Data Enrichment & Threat Intelligence",
-					"Email Gateway",
-					"Endpoint",
-					"Forensics and Malware Analysis",
-					"Network Security (Firewall)",
-					"Network Security (IDS/IPS)",
+					"Compliance",
+					"Crisis Management",
+					"Default",
+					"Email Communication",
+					"Employee Offboarding",
+					"GDPR Breach Notification",
+					"HIPAA Breach Notification",
+					"Health Check",
+					"Hunting",
+					"Identity and Access Management",
+					"Impossible Traveler",
+					"Incident Response",
+					"Lost or Stolen Device",
+					"Malware",
+					"NIST",
+					"PCAP Analysis",
+					"Phishing",
+					"Ransomware",
+					"SANS",
+					"Threat Intelligence Management",
 					"Vulnerability Management",
-					"IAM (Identity and Access Management)"
+					"Network Security",
+					"IT Services",
+					"Rapid Breach Response"
 				]
 			}
 		},
@@ -94,7 +160,8 @@
 		"marketplaces": {
 			"description": "The marketplaces where this Pack will be available",
 			"type": "array",
-			"prefixItems": {
+			"items": {
+				"type": "string",
 				"enum": ["xsoar", "marketplacev2"]
 			},
 			"uniqueItems": true
