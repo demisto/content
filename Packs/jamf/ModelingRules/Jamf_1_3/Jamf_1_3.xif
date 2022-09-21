@@ -13,4 +13,7 @@ alter
     xdm.source.user.user_type = json_extract_scalar(Event, "$.trigger"),
     xdm.source.user.identifier = json_extract_scalar(Event, "$.patchPolicyId"),
     xdm.event.outcome = coalesce(json_extract_scalar(Event, "$.successful"), json_extract_scalar(Event, "$.operationSuccessful")),
-    xdm.event.operation_sub_type = json_extract_scalar(Event, "$.restAPIOperationType");
+    xdm.event.operation_sub_type = json_extract_scalar(Event, "$.restAPIOperationType"),
+    xdm.target.host.mac_addresses = arraycreate(coalesce(json_extract_scalar(Event, "$.wifiMacAddress"), json_extract_scalar(Event, "$.macAddress"), json_extract_scalar(Event, "$.computer.macAddress"), json_extract_scalar(Event, "$.targetDevice.wifiMacAddress"), "")),
+    xdm.target.host.device_id = coalesce(json_extract_scalar(Event, "$.serialNumber"), json_extract_scalar(Event, "$.computer.serialNumber"), json_extract_scalar(Event, "$.targetDevice.serialNumber"), arraystring(arraymap (json_extract_array ("groupAddedDevices","$."), json_extract_scalar ("@element", "$.serialNumber")), ","), arraystring(arraymap (json_extract_array ("groupRemovedDevices","$."), json_extract_scalar ("@element", "$.serialNumber")), ",")),
+    xdm.target.host.hardware_uuid = coalesce(json_extract_scalar(Event, "$.udid"), json_extract_scalar(Event, "$.computer.udid"), arraystring(arraymap (json_extract_array ("groupAddedDevices","$."), json_extract_scalar ("@element", "$.udid")), ","), arraystring(arraymap (json_extract_array ("groupRemovedDevices","$."), json_extract_scalar ("@element", "$.udid")), ","), json_extract_scalar(Event, "$.targetDevice.udid"));
