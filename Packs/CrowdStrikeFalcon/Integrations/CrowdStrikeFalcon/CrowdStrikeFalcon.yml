@@ -88,16 +88,6 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- additionalinfo: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
-  defaultvalue: 'false'
-  display: Queue Offline
-  name: queue_offline
-  options:
-  - 'false'
-  - 'true'
-  required: true
-  type: 15
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
