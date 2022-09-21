@@ -24,7 +24,6 @@ configuration:
     required: true
     defaultvalue: null
     type: 9
-    additionalinfo: <a href="https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords" target="_blank">click to open a link to create the app password</a>
     displaypassword: App Password
   - name: repository
     display: Repository
@@ -51,7 +50,7 @@ script:
       arguments:
         - name: project_key
           required: false
-          description: Must be uppercase.
+          description: The "id" of the project. Must be uppercase.
           isArray: false
         - name: limit
           required: false
@@ -505,7 +504,7 @@ script:
           isArray: false
         - name: included_branches
           required: false
-          description: Should be comma separated. Will return only commits that are related to the included branches list.
+          description: Should be comma separated. Will return only commits that are in the included branches list.
           isArray: false
         - name: limit
           required: false
@@ -604,11 +603,11 @@ script:
           isArray: false
         - name: branch
           required: true
-          description: This branch will be associated with the commited file.
+          description: The branch of the file to delete.
           isArray: false
         - name: file_name
           required: true
-          description: The name of the file to commit.
+          description: The name of the file to delete.
           isArray: false
         - name: author_name
           required: false
@@ -1160,7 +1159,7 @@ script:
           isArray: false
         - name: reviewer_id
           required: false
-          description: The id of the account of the person to review the pull request. In order to get the reviewer_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId.
+          description: The account_id of the person to review the pull request. Cn be a comma separated list of account_id. In order to get the reviewer_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId.
           isArray: false
         - name: description
           required: false
@@ -2290,4 +2289,4 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.5.31797
 tests:
-  - No tests (auto formatted)
+  - Test_Bitbucket

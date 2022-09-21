@@ -1198,87 +1198,42 @@ There is no context output for this command.
 | Bitbucket.RawFile.file_content | String | The content of the file. | 
 
 #### Command example
-```!bitbucket-raw-file-get file_path=README.md branch=master```
+```!bitbucket-raw-file-get file_path=new.txt branch=branch```
 #### Context Example
 ```json
 {
     "Bitbucket": {
         "RawFile": {
-            "file_content": "**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**\n\nWhen you're done, you can delete the content in this README and update the file with details for others getting started with your repository.\n\n*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video] for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*\n\nA SMALL CHANGE :)\nJUST CHECKING\nhello everyone, do you want a merge?\n---\n\n## Edit a file\n\nYou\u00e2\u0080\u0099ll start by editing this README file to learn how to edit a file in Bitbucket.\n\n1. Click **Source** on the left side.\n2. Click the README.md link from the list of files.\n3. Click the **Edit** button.\n4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*\n5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you\u00e2\u0080\u0099ll see the change you just made.\n6. Go back to the **Source** page.\n\n---\n\n## Create a file\n\nNext, you\u00e2\u0080\u0099ll add a new file to this repository.\n\n1. Click the **New file** button at the top of the **Source** page.\n2. Give the file a filename of **contributors.txt**.\n3. Enter your name in the empty file space.\n4. Click **Commit** and then **Commit** again in the dialog.\n5. Go back to the **Source** page.\n\nBefore you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.\n\n---\n\n## Clone a repository\n\nUse these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first]. If you prefer to clone from the command line, see [Clone a repository].\n\n1. You\u00e2\u0080\u0099ll see the clone button under the **Source** heading. Click that button.\n2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.\n3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you\u00e2\u0080\u0099d like to and then click **Clone**.\n4. Open the directory you just created to see your repository\u00e2\u0080\u0099s files.\n\nNow that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree], or you can [add, commit,] and [push from the command line].",
-            "file_path": "README.md"
+            "file_content":"Hi I am a new file.",
+            "file_path": "new.txt"
         }
     },
     "File": {
         "EntryID": "111111111111-1111-1111-1111-111111111111",
-        "Extension": "md",
-        "Info": "md",
+        "Extension": "txt",
+        "Info": "txt",
         "MD5": "11111111111111111111111111111111",
-        "Name": "README.md",
+        "Name": "new.txt",
         "SHA1": "1111111111111111111111111111111111111111",
         "SHA256": "111111111111111111111111111111111111111111111111111111111111111111",
         "SHA512": "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
         "SSDeep": "11:1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
-        "Size": 2709,
-        "Type": "Unicode text, UTF-8 text, with very long lines (357)"
+        "Size": 19,
+        "Type": "text/plain; charset=utf-8"
     }
 }
 ```
 
 #### Human Readable Output
 
->The content of the file "README.md" is: **Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
->
->When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
->
->*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video] for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
->
->A SMALL CHANGE :)
->JUST CHECKING
->hello everyone, do you want a merge?
->---
->
->## Edit a file
->
->Youâll start by editing this README file to learn how to edit a file in Bitbucket.
->
->1. Click **Source** on the left side.
->2. Click the README.md link from the list of files.
->3. Click the **Edit** button.
->4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
->5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and youâll see the change you just made.
->6. Go back to the **Source** page.
->
->---
->
->## Create a file
->
->Next, youâll add a new file to this repository.
->
->1. Click the **New file** button at the top of the **Source** page.
->2. Give the file a filename of **contributors.txt**.
->3. Enter your name in the empty file space.
->4. Click **Commit** and then **Commit** again in the dialog.
->5. Go back to the **Source** page.
->
->Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
->
->---
->
->## Clone a repository
->
->Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first]. If you prefer to clone from the command line, see [Clone a repository].
->
->1. Youâll see the clone button under the **Source** heading. Click that button.
->2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
->3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if youâd like to and then click **Clone**.
->4. Open the directory you just created to see your repositoryâs files.
->
->Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree], or you can [add, commit,] and [push from the command line].
+>The content of the file "new.txt" is: Hi I am a new file.
 
 ### bitbucket-issue-create
 ***
-Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+Creates an issue in Bitbucket. 
 
+##### Required Permissions
+In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
 
 #### Base Command
 
@@ -1653,8 +1608,10 @@ Creates an issue in Bitbucket. In order to perform this command, please create a
 
 ### bitbucket-issue-update
 ***
-Updates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+Updates an issue in Bitbucket. 
 
+##### Required Permissions
+In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
 
 #### Base Command
 

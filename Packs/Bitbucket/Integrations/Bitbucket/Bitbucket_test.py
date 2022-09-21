@@ -1,6 +1,6 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+"""Bitbucket Integration for Cortex XSOAR - Unit Tests file
 
-Pytest Unit Tests: all funcion names must start with "test_"
+Pytest Unit Tests: all function names must start with "test_"
 
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
@@ -144,7 +144,7 @@ def test_project_list_command(mocker, bitbucket_client):
     expected_result = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result_2')
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
     result = project_list_command(bitbucket_client, args)
-    expected_readable_output = '### List of the projects in workspace\n|Key|Name|Description|IsPrivate|\n' \
+    expected_readable_output = '### List of projects in workspace\n|Key|Name|Description|IsPrivate|\n' \
                                '|---|---|---|---|\n| T1 | Test1 | description | true |\n| T2 | Test1 | description | true |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
@@ -188,7 +188,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
     response = util_load_json('test_data/commands_test_data.json').get('test_open_branch_list_command')
     mocker.patch.object(bitbucket_client, 'get_open_branch_list_request', return_value=response)
     expected_result = response.get('values')
-    expected_human_readable = '### The list of open branches\n' \
+    expected_human_readable = '### Open Branches\n' \
                               '|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|\n' \
                               '|---|---|---|---|\n' \
                               '| branch | Some User | 2022-09-08T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n' \
