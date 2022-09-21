@@ -87,6 +87,7 @@ prepare-testing-bucket-mpv2-upload-flow:
     - .bucket-upload-rule
     - .default-job-settings
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
@@ -149,6 +150,7 @@ install-packs-in-server-master:
     - .bucket-upload-rule
     - .default-job-settings
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
