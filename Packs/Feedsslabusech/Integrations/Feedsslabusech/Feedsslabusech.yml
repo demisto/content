@@ -8,6 +8,7 @@ configuration:
   options:
   - https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
   - https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv
+  - https://sslbl.abuse.ch/blacklist/sslblacklist.csv
   required: true
   type: 16
 - display: Fetch indicators
