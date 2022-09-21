@@ -268,7 +268,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 | channel | The channel to which to send messages. | Optional |
 | message | The message to send to the channel or team member. | Optional |
 | team_member | Display name or email address of the team member to send the message to. | Optional |
-| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional |
+| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. Used only when sending notification to a channel | Optional |
 | adaptive_card | The Microsoft Teams adaptive card to send. | Optional |
 
 
@@ -578,6 +578,7 @@ You can send the message `help` in order to see the supported commands:
    <img height="75" src="./doc_files/cache.png" />
 
    First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
+   If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
 5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
 
 ## Download Demisto Bot
