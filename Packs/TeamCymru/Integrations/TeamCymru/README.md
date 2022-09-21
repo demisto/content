@@ -35,9 +35,9 @@ Checks the reputation of an IP address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | IP address | 
+| IP.Address | String | IP address, | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -101,8 +101,8 @@ Checks the reputation of an IP address.
 
 ### cymru-bulk-whois
 ***
-Checks the reputation of IPv4 addresses within a file. Insert CSV file. 
-Note: Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
+Checks the reputation of a CSV list of IPv4 addresses within a file. 
+Note: Results for queries exceeding 10,000 IPs may take more than a minute given a moderately sized Internet link.
 
 
 #### Base Command
@@ -113,16 +113,16 @@ Note: Queries exceeding 10,000 IPs may return in more than a minute given a mode
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The file's War Room entry ID. | Required | 
-| delimiter | Delimiter by which the content of the file is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+| delimiter | Delimiter by which the content of the file is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | IP address | 
+| IP.Address | String | IP address. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
