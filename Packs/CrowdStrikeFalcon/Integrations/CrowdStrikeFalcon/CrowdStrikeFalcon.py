@@ -2650,7 +2650,8 @@ def run_command():
     full_command = args.get('full_command')
     scope = args.get('scope', 'read')
     target = args.get('target', 'batch')
-    offline = args.get('queue_offline')
+
+    offline = argToBoolean(args.get('queue_offline', False))
 
     output = []
 
