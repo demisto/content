@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -149,9 +150,6 @@ tasks:
       type: regular
       iscommand: true
       brand: AWS - S3
-    nexttasks:
-      '#none#':
-      - "9"
     scriptarguments:
       bucket:
         simple: demisto-test1234
@@ -166,6 +164,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -228,7 +229,7 @@ tasks:
       saveAsFile:
         simple: "yes"
       url:
-        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -320,3 +321,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
