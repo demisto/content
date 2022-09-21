@@ -267,6 +267,10 @@ def expected_incident():
 
 @pytest.fixture()
 def emails_data_as_html():
+    return emails_data_as_html_including_body()
+
+
+def emails_data_as_html_including_body():
     with open('test_data/emails_data_html') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
@@ -274,7 +278,23 @@ def emails_data_as_html():
 
 @pytest.fixture()
 def emails_data_as_text():
+    return emails_data_as_text_including_body()
+
+
+def emails_data_as_text_including_body():
     with open('test_data/emails_data_text') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_html_without_body():
+    with open('test_data/emails_data_html_without_body') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_text_without_body():
+    with open('test_data/emails_data_text_without_body') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
@@ -310,14 +330,39 @@ def last_run_data():
     return last_run
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents(mocker, client, emails_data_as_html, emails_data_as_text, expected_incident, last_run_data):
+@pytest.mark.parametrize(
+    'client, email_content_html, email_content_text', [
+        (
+            oproxy_client(),
+            emails_data_as_html_including_body(),
+            emails_data_as_text_including_body()
+        ),
+        (
+            self_deployed_client(),
+            emails_data_as_html_without_body(),
+            emails_data_as_text_without_body()
+        )
+    ]
+)
+def test_fetch_incidents(client, email_content_html, email_content_text, mocker, last_run_data, expected_incident):
+    """
+    Given
+     - Case A: emails as text and html including the full body key in the api response.
+     - Case B: emails as text and html without the full body key in the api response.
+
+    When
+     - fetching incidents when there is a body key and when there isn't a body key.
+
+    Then
+     - Case A: make sure the 'body' key is being taken even when 'uniqueBody' key exists.
+     - Case B: make sure the 'uniqueBody' is being taken instead of the 'body' key.
+    """
     mocker.patch(
         'CommonServerPython.get_current_time',
         return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
     )
     # the third argument in side effect is for attachments (no-attachments here)
-    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[email_content_html, email_content_text, {}])
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -425,7 +470,7 @@ class TestFetchIncidentsWithLookBack:
             assert next_run['time'] == expected_last_run_timestamps[i - 1]
             assert len(incidents) == 1
             assert incidents[0]['name'] == f'email-{i}'
-            assert 'ID' not in incidents
+            assert 'ID' not in incidents[0]
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])

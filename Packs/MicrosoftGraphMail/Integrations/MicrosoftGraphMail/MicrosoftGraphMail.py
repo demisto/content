@@ -715,6 +715,9 @@ class MsGraphClient:
             body_as_text = text_emails_ids.get(email_as_html.get('id'), {}).get('body')
             if body_as_html := email_as_html.get('body'):
                 email_as_html['body'] = [body_as_html, body_as_text]
+            unique_body_as_text = text_emails_ids.get(email_as_html.get('id'), {}).get('uniqueBody')
+            if unique_body_as_html := email_as_html.get('uniqueBody'):
+                email_as_html['uniqueBody'] = [unique_body_as_html, unique_body_as_text]
             emails_as_html_and_text.append(email_as_html)
 
         return emails_as_html_and_text
@@ -784,9 +787,11 @@ class MsGraphClient:
         parsed_email = {EMAIL_DATA_MAPPING[k]: v for (k, v) in email.items() if k in EMAIL_DATA_MAPPING}
         parsed_email['Headers'] = email.get('internetMessageHeaders', [])
 
-        email_unique_body = email.get('uniqueBody') or []
-        email_body = email.get('body') or []
+        email_unique_body = email.get('uniqueBody') or []  # email-body without replyTo emails.
+        email_body = email.get('body') or []  # email body including replyTo emails.
 
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
         email_content_as_html = self.get_email_body_content(
             email_body, content_type='html'
         ) or self.get_email_body_content(
