@@ -1054,7 +1054,7 @@ tasks:
       - '12'
     scriptarguments:
       bucket:
-        simple: ${incident.s3bucketname}
+        simple: ${incident.cicds3bucketname}
       key:
         simple: ${ConfigurationSetup.CustomPacks.packurl}
     separatecontext: false
