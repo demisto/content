@@ -292,17 +292,17 @@ def create_msg():
                 msg = MIMEText(htmlBody, 'html', UTF_8)
 
     # Add the relevant headers to the most outer message
-    msg['Subject'] = header(subject)
-    msg['From'] = header(demisto.getParam('from'))
+    msg['Subject'] = str(header(subject))
+    msg['From'] = str(header(demisto.getParam('from')))
     if replyTo:
-        msg['Reply-To'] = header(replyTo)
+        msg['Reply-To'] = str(header(replyTo))
     if to:
-        msg['To'] = header(','.join(to))
+        msg['To'] = str(header(','.join(to)))
     if cc:
-        msg['CC'] = header(','.join(cc))
+        msg['CC'] = str(header(','.join(cc)))
     if additional_header:
         for h in additional_header:
-            header_name_and_value = h.split('=', 1)
+            header_name_and_value = str(h).split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
