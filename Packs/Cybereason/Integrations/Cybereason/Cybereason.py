@@ -308,7 +308,7 @@ def query_processes_command(client: Client, args: dict):
 
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Processes', outputs, headers=PROCESS_HEADERS),
-        outputs_prefix='Cybereason.Process',
+        outputs_prefix='Process',
         outputs_key_field='Name',
         outputs=context)
 
@@ -401,7 +401,7 @@ def query_connections_command(client: Client, args: dict):
 
         return CommandResults(
             readable_output=tableToMarkdown(f'Cybereason Connections for: {filter_input}', outputs),
-            outputs_prefix='Cybereason.Connection',
+            outputs_prefix='Connection',
             outputs_key_field='Name',
             outputs=context)
 
