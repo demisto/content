@@ -897,5 +897,6 @@ script:
   runonce: false
   subtype: python3
 fromversion: 6.5.0
+defaultclassifier: Gigamon ThreatINSIGHT
 tests:
 - No tests (auto formatted)
