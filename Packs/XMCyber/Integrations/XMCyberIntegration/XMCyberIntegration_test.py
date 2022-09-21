@@ -298,7 +298,7 @@ def test_get_version(requests_mock):
         "entityId",
         {
             "updater": "1.4.134.11846",
-            "system": "1.38.0.12821",
+            "system": "1.43.0.12821",
             "north": "1.0.3359+6496",
             "south": "2.1.966.348",
             "db": "4.2.3",
