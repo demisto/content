@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
 
 import json
@@ -223,12 +223,12 @@ class XM:
     def search_entities(
         self, field_name_to_value: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
-        params: Dict[str, str] = dict()
+        params: Dict[str, Union[str, Dict[str, Any]]] = dict()
         for field_name, value in field_name_to_value.items():
             if field_name == "name":
                 params["search"] = f'{{"$regex":"/{value}/i"}}'
             else:
-                params.setdefault("filter", {}).update({field_name: value})
+                params.setdefault("filter", {}).update({field_name: value})  # type: ignore
 
         if params.get("filter"):
             params["filter"] = json.dumps(params["filter"])
