@@ -238,9 +238,8 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
-    verify_certificate = not demisto.params().get('insecure', False) # noqa: F841
-    proxy = demisto.params().get('proxy', False) # noqa: F841
-
+    verify_certificate = not demisto.params().get('insecure', False)  # noqa: F841
+    proxy = demisto.params().get('proxy', False)  # noqa: F841
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
