@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 from abc import ABC, abstractmethod
 from typing import Tuple
+from urllib.parse import quote
 
 import json
 
@@ -74,7 +75,7 @@ class PlaybookAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
 
 
-class IntegrationAPI(EntityAPI):
+class IntegrationAPI(EntityAPI):  # works
 
     name = 'integration'
 
@@ -90,10 +91,10 @@ class IntegrationAPI(EntityAPI):
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    # TODO: doesn't work
     def delete_specific_id(self, specific_id: str):
-        return execute_command('demisto-api-delete',
-                               {'uri': f'/settings/integration/{specific_id}'},
+        return execute_command('demisto-api-post',
+                               {'uri': f'/settings/integration-conf/delete',
+                                'body': {'id': quote(specific_id)}},
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
@@ -105,7 +106,7 @@ class IntegrationAPI(EntityAPI):
         return [entity.get('id') for entity in integrations] if type(integrations) is list else []
 
 
-class ScriptAPI(EntityAPI):  # TODO: check
+class ScriptAPI(EntityAPI):  # works :)
     name = 'script'
 
     def search_specific_id(self, specific_id: str):
@@ -120,11 +121,10 @@ class ScriptAPI(EntityAPI):  # TODO: check
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    # TODO: doesn't work
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/automation/delete',
-                                'body': {'id': specific_id}},
+                                'body': {'script': {'id': specific_id}}},
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
@@ -255,7 +255,7 @@ class ReportAPI(EntityAPI):  # works
         return verify_search_response_in_dict(response)
 
 
-class IncidentTypeAPI(EntityAPI):
+class IncidentTypeAPI(EntityAPI):  # checked and works
     name = 'incidenttype'
 
     def search_specific_id(self, specific_id: str):
@@ -268,8 +268,8 @@ class IncidentTypeAPI(EntityAPI):
                                {'uri': '/incidenttypes/export'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: doesn't work
-        return execute_command('demisto-api-delete',
+    def delete_specific_id(self, specific_id: str):
+        return execute_command('demisto-api-post',
                                {'uri': f'/incidenttype/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
@@ -327,7 +327,7 @@ class ReputationAPI(EntityAPI):  # works
         return verify_search_response_in_list(response, name)
 
 
-class LayoutAPI(EntityAPI):
+class LayoutAPI(EntityAPI):  # works
     name = 'layout'
 
     def search_specific_id(self, specific_id: str):
@@ -340,9 +340,10 @@ class LayoutAPI(EntityAPI):
                                {'uri': '/layouts'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):  # TODO: doesn't work
+    def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
-                               {'uri': f'/layout/{specific_id}/remove'},
+                               {'uri': f'/layout/{specific_id}/remove',
+                                'body': {}},
                                fail_on_error=False)
 
     def verify_specific_search_response(self, response: Union[dict, str, list], name: str):
