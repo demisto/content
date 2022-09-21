@@ -2424,17 +2424,22 @@ tasks:
     quietmode: 0
     scriptarguments:
       action_file_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       action_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       actor_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       causality_actor_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       extend-context:
         simple: Hunt_File_Hash
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     skipunavailable: false
     task:
