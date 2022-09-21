@@ -372,6 +372,7 @@ RN_HEADER_BY_PACK_FOLDER = {
     PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
     PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
     PackFolders.WIZARDS.value: 'Wizards',
+    PackFolders.AGENT_CONFIGS.value: "Agent Configs"
 }
 
 # the format is defined in issue #19786, may change in the future
@@ -402,6 +403,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.XSIAM_REPORTS.value: "xsiamreport",
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
+    PackFolders.AGENT_CONFIGS.value: "AgentConfigs"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -431,4 +433,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.AGENT_CONFIGS.value]: "Agent Config",
 }
