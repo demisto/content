@@ -1,11 +1,11 @@
 [MODEL:model="Audit", dataset="knowbe4_kmsat_raw"]
-alter XDM.threat.severity=json_extract(risk, "$.level"),
-xdm.TriggeredBy.identity.uuid=json_extract(user, "$.id"),
-xdm.event_timestamp=occurred_date,
-xdm.audited_resource.id=external_id,
-xdm.threat.original_threat_id=json_extract(event_type, "$.id"),
-xdm.threat.name=event_type -> name,
-xdm.threat.description=event_type -> description,
-xdm.audited_resource.parent_id=to_string(account_id),
-xdm.original_event_description=description,
-xdm.TriggeredBy.project=source;
+alter xdm.alert.severity=json_extract(risk, "$.level"),
+xdm.source.user.identifier=json_extract(user, "$.id"),
+_time=occurred_date,
+xdm.target.resource.id=external_id,
+xdm.alert.original_alert_id=json_extract(event_type, "$.id"),
+xdm.alert.name=event_type -> name,
+xdm.alert.description=event_type -> description,
+xdm.target.resource.parent_id=to_string(account_id),
+xdm.event.description=description,
+xdm.source.cloud.project=source;
