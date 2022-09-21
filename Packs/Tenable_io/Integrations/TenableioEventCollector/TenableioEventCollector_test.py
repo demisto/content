@@ -10,7 +10,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-MOCK_ENTRY = util_load_json('test_data/mock_events.json')
+MOCK_AUDIT_LOGS = util_load_json('test_data/mock_events.json')
 MOCK_CHUNKS_STATUS = util_load_json('test_data/mock_chunks_status.json')
 MOCK_UUID = util_load_json('test_data/mock_export_uuid.json')
 MOCK_CHUNK_CONTENT = util_load_json('test_data/mock_chunk_content.json')
@@ -29,12 +29,12 @@ def test_get_audit_logs_command(requests_mock):
     """
     from TenableioEventCollector import get_audit_logs_command
     client = Client(verify=False, headers={}, proxy=False)
-    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_ENTRY)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_AUDIT_LOGS)
 
     results, audit_logs = get_audit_logs_command(client, limit=2)
 
     assert results.outputs_prefix == "Tenable.AuditLogs"
-    assert len(audit_logs) == 2
+    assert len(audit_logs) == 3
 
 
 def test_vulnerabilities_process(requests_mock):
@@ -63,3 +63,28 @@ def test_vulnerabilities_process(requests_mock):
 
     assert len(vulnerabilities) == 1
     assert finished
+
+
+def test_fetch_audit_logs_no_duplications(requests_mock):
+    from TenableioEventCollector import fetch_events_command
+    client = Client(verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
+    last_run = {'next_fetch': '2022-09-20'}
+    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '1234'
+
+    last_run.update({'last_id': '1234'})
+    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '12345'
+    assert new_last_run.get('last_id') == '12345'
+
+    last_run.update({'last_id': '12345'})
+    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '123456'
+    assert new_last_run.get('last_id') == '123456'

@@ -182,6 +182,7 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
     last_id_fetched = last_run.get('last_id')
     vulnerabilities = []
     index = 0
+    demisto.info(f'here here here {last_run=}')
     if not last_fetch and first_fetch:
         start_date = first_fetch.strftime(DATE_FORMAT)
     else:
@@ -197,7 +198,7 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
             index += 1
     demisto.info(f'{len(audit_logs_from_api)}')
     audit_logs_from_api_len = len(audit_logs_from_api)
-    last_log_to_fetch = min(audit_logs_from_api_len, limit)
+    last_log_to_fetch = min(audit_logs_from_api_len, index + limit)
     demisto.info(f'{index=}, {last_log_to_fetch=}')
     if index < audit_logs_from_api_len and last_log_to_fetch <= audit_logs_from_api_len:
         demisto.info('here again')
@@ -308,8 +309,7 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client):
     severity = argToList(args.get('severity'))
     export_uuid = args.get('export_uuid')
     if not export_uuid:
-        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found, severity=severity)  # type:
-        # ignore
+        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found, severity=severity)  # type: ignore
 
     status, chunks_available = client.get_export_status(export_uuid=export_uuid)
     if status == 'FINISHED':

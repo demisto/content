@@ -33,7 +33,39 @@
       "received": "2022-05-18T16:33:02Z"
     },
     {
-      "id": "1234",
+      "id": "12345",
+      "action": "user.authenticate.password",
+      "crud": "u",
+      "actor": {
+        "id": "1234",
+        "name": "test@test.com"
+      },
+      "target": {
+        "id": "1234",
+        "name": "test@test.com",
+        "type": "User"
+      },
+      "description": "None",
+      "is_anonymous": "None",
+      "is_failure": "True",
+      "fields": [
+        {
+          "key": "X-Forwarded-For",
+          "value": "1.2.3.4, 1.2.3.4"
+        },
+        {
+          "key": "message",
+          "value": "Invalid credentials."
+        },
+        {
+          "key": "X-Request-Uuid",
+          "value": "1234"
+        }
+      ],
+      "received": "2022-05-18T18:34:44Z"
+    },
+    {
+      "id": "123456",
       "action": "user.authenticate.password",
       "crud": "u",
       "actor": {
