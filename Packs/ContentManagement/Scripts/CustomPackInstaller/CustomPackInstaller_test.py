@@ -43,27 +43,19 @@ def test_install_custom_pack_failed(mocker, pack_id, context, err_massage, res):
 @pytest.mark.parametrize(
     argnames='pack_id, context, err_massage, res',
     argvalues=[
+        # given a pack with just a filename and numerical EntryID, when the pack is installed, then no errors should be raised
         ('Pack1', {"File": [{"Name": "Pack1.zip", "EntryID": "1234"}]}, '', True),
-        ('Pack2', {"File": [{"Name": "Pack2.zip", "EntryID": "abcd"}]}, '', True)
-    ])
-def test_install_custom_pack_success(mocker, pack_id, context, err_massage, res):
-    from CustomPackInstaller import install_custom_pack
-
-    mocker.patch.object(demisto, 'context', return_value=context)
-    mocker.patch('CustomPackInstaller.execute_command', return_value=('Ok', ''))
-
-    result, error_message = install_custom_pack(pack_id, 'true', 'true')
-    assert result == res
-    assert error_message == err_massage
-
-
-@pytest.mark.parametrize(
-    argnames='pack_id, context, err_massage, res',
-    argvalues=[
+        
+        # given a pack with just a filename and alphabetical EntryID, when the pack is installed, then no errors should be raised
+        ('Pack2', {"File": [{"Name": "Pack2.zip", "EntryID": "abcd"}]}, '', True),
+        
+        # given a pack with a full path name and numerical EntryID, when the pack is installed, then no errors should be raised
         ('Pack1', {"File": [{"Name": "content/packs/Pack1/0.0.1/Pack1.zip", "EntryID": "1234"}]}, '', True),
+        
+        # given a pack with a full path name and alphabetical EntryID, when the pack is installed, then no errors should be raised
         ('Pack2', {"File": [{"Name": "content/packs/Pack2/0.1.0/Pack2.zip", "EntryID": "abcd"}]}, '', True)
     ])
-def test_install_custom_pack_from_s3_success(mocker, pack_id, context, err_massage, res):
+def test_install_custom_pack_success(mocker, pack_id, context, err_massage, res):
     from CustomPackInstaller import install_custom_pack
 
     mocker.patch.object(demisto, 'context', return_value=context)
