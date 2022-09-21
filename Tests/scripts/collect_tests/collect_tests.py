@@ -7,7 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
@@ -627,6 +627,11 @@ class BranchTestCollector(TestCollector):
 
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
+
+        if file_type is None and path.parent.name not in CONTENT_ENTITIES_DIRS:
+            raise NothingToCollectException(
+                path,
+                f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
         try:
             content_item = ContentItem(path)
