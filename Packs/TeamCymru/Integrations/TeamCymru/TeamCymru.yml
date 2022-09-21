@@ -29,13 +29,13 @@ script:
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
       type: String
     - contextPath: IP.ASOwner
-      description: The autonomous system owner of the IP.
+      description: The autonomous system owner of the IP address.
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
@@ -75,8 +75,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        The file's War Room entry ID.
+      description: The file's War Room entry ID.
       isArray: false
       name: entry_id
       required: true
@@ -84,26 +83,26 @@ script:
     - default: false
       defaultValue: ','
       description: |-
-        Delimiter by which the content of the file is seperated.
+        Delimiter by which the content of the file is separated.
         Eg:  " , " , " : ", " ; "
       isArray: false
       name: delimiter
       required: false
     deprecated: false
     description: |-
-      Checks the reputation of IPv4 addresses within a file. Insert CSV file. 
-      Note: Queries exceeding 10,000 IPs may return in more than a minute given a moderately sized Internet link.
+      Checks the reputation of a CSV list of IPv4 addresses within a file. 
+      Note: Results for queries exceeding 10,000 IPs may take more than a minute given a moderately sized Internet link.
     execution: false
     name: cymru-bulk-whois
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
       type: String
     - contextPath: IP.ASOwner
-      description: The autonomous system owner of the IP.
+      description: The autonomous system owner of the IP address.
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
