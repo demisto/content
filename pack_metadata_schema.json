@@ -1,0 +1,147 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "XSOAR Pack Metadata Schema",
+	"description": "JSON schema for pack_metadata.json",
+	"type": "object",
+	"properties": {
+		"name": {
+			"description": "The name of the Pack",
+			"type": "string"
+		},
+		"description": {
+			"description": "The Pack description",
+			"type": "string"
+		},
+		"support": {
+			"description": "Who supports the Pack",
+			"type": "string"
+		},
+		"author": {
+			"description": "Author of the Pack",
+			"type": "string"
+		},
+		"email": {
+			"description": "Email address of support or author",
+			"type": "string",
+			"format": "email"
+		},
+		"categories": {
+			"description": "Categories applying to Pack. Taken from https://xsoar.pan.dev/docs/packs/packs-format#pack_metadatajson",
+			"type": "array",
+			"uniqueItems": true,
+			"prefixItems": {
+				"enum": [
+					"Analytics & SIEM",
+					"Utilities",
+					"Messaging",
+					"Endpoint",
+					"Network Security",
+					"Vulnerability Management",
+					"Case Management",
+					"Forensics & Malware Analysis",
+					"IT Services",
+					"Data Enrichment & Threat Intelligence",
+					"Authentication",
+					"Database",
+					"Deception",
+					"Email Gateway"
+				]
+			}
+		},
+		"tags": {
+			"description": "Tags to be attached to the Pack in XSOAR Marketplace",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"useCases": {
+			"description": "Use cases associated to the Pack. Taken from https://xsoar.pan.dev/docs/concepts/use-cases",
+			"type": "array",
+			"uniqueItems": true,
+			"prefixItems": {
+				"enum": [
+					"Analytics and SIEM",
+					"Authentication",
+					"Case Management",
+					"Data Enrichment & Threat Intelligence",
+					"Email Gateway",
+					"Endpoint",
+					"Forensics and Malware Analysis",
+					"Network Security (Firewall)",
+					"Network Security (IDS/IPS)",
+					"Vulnerability Management",
+					"IAM (Identity and Access Management)"
+				]
+			}
+		},
+		"keywords": {
+			"description": "Keywords to help the Pack to be discovered in the XSOAR Marketplace",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"marketplaces": {
+			"description": "The marketplaces where this Pack will be available",
+			"type": "array",
+			"prefixItems": {
+				"enum": ["xsoar", "marketplacev2"]
+			},
+			"uniqueItems": true
+		},
+		"hidden": {
+			"description": "(Optional) Whether to hide the pack from Marketplace. Updates to this pack will not be published to Marketplace and the pack cannot be installed.",
+			"type": "boolean"
+		},
+		"eulaLink": {
+			"description": "Premium Packs only. URL to Pack license agreement.",
+			"type": "string",
+			"format": "uri"
+		},
+		"price": {
+			"description": "Premium Packs only. The price in Palo Alto Points",
+			"type": "number",
+			"exclusiveMinimum": 0
+		},
+		"dependencies": {
+			"description": "(Optional) An object that describes the content packs that the pack is dependant on. Should be kept empty on pack creation, as it is calculated by Cortex XSOAR content infrastructure.",
+			"type": "object"
+		},
+		"displayedImages": {
+			"description": "(Optional) Images to be displayed in Cortex XSOAR marketplace. Should be kept empty on pack creation, as it is calculated by Cortex XSOAR content infrastructure.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"githubUser": {
+			"description": "List of Github usernames to receive notification in the PR in case pack files were modified.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"devEmail": {
+			"description": "List of emails to receive notification in the PR in case pack files were modified.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"certification": {
+			"description": "If the pack is certifed the value of this fields should be 'certified'",
+			"type": "string",
+			"prefixItems": {
+				"enum": ["certifed"]
+			}
+		},
+		"itemPrefix": {
+			"description": "String to overwrite pack fields prefix. You can specify an alternative string instead of the default pack name enforced by the validation process.",
+			"type": "string"
+		}
+	},
+	"required": [
+		"name",
+		"description",
+		"support",
+		"author",
+		"email",
+		"categories",
+		"tags",
+		"useCases",
+		"keywords",
+		"githubUser",
+		"marketplaces"
+	]
+}
