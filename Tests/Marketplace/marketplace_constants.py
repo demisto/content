@@ -21,7 +21,7 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'AgentConfig']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XSIAM_START_TAG = "<~XSIAM>"
