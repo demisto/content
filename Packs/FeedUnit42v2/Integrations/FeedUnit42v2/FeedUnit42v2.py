@@ -693,7 +693,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     return command_results
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE FEED PARAMS
     """
