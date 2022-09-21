@@ -7,11 +7,12 @@ category: Case Management
 description: IT service management
 detaileddescription: Zendesk integration requires the API key and a username.
 configuration:
-- display: Zendesk address (e.g. https://demisto.zendesk.com)
+- display: Server URL (e.g. https://demisto.zendesk.com)
   name: base_url
   type: 0
   required: true
-- display: Username
+- display: Username (or '<username>/token' when using API key).
+  additionalinfo: example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key.
   displaypassword: Password/API key
   name: credentials
   type: 9
@@ -32,16 +33,38 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+- display: Close mirrored incidents
+  name: close_incidents
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: If true, XSOAR will mirror also the ticket closeing.
+- additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
+  defaultvalue: mirror
+  display: Mirror tags
+  hidden: false
+  name: mirror_tags
+  required: false
+  type: 0
+- additionalinfo: Fetch comments for a Zendesk ticket.
+  display: Fetch comments.
+  hidden: false
+  name: fetch_comments
+  required: false
+  type: 8
 - display: Ticket types to fetch
   name: ticket_types
+  defaultvalue: all
   type: 16
   required: false
   options:
+  - all
   - problem
   - incident
   - question
   - task
-- name: max_fetch
+- display: Maximum number of incidents per fetch
+  name: max_fetch
   required: false
   type: 0
   defaultvalue: '50'

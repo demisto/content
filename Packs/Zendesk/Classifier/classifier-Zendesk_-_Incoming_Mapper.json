@@ -83,6 +83,9 @@
                 },
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
+                },
+                "IncomingMirrorError": {
+                    "simple": "incomming_mirror_error"
                 }
             }
         }

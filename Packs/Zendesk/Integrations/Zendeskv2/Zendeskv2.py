@@ -1,10 +1,9 @@
+import demistomock as demisto
+from CommonServerPython import *
 from copy import copy
 from functools import lru_cache
 from urllib.parse import urlencode
 from urllib3 import disable_warnings
-import demistomock as demisto
-from CommonServerPython import *
-
 from typing import Callable, Iterable, Optional, List, Union, Iterator
 
 STR_OR_STR_LIST = Union[str, List[str]]
@@ -53,7 +52,9 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }.get(params.get('mirror_direction'))
 FIELDS_TO_REMOVE_FROM_MIROR_IN = ['url', 'id', 'created_at']
-MIRROR_TAGS = params.get('mirror_tags') or ['mirror']
+DEFAULT_UPLOAD_FILES_COMMENT = 'Uploaded from XSOAR.'
+MIRROR_TAGS = params.get('mirror_tags') or []
+MIRROR_COMMENTS_IN = argToBoolean(params.get('fetch_comments', True))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 CACHE = None
 
@@ -125,6 +126,10 @@ class CacheManager:
 
 def datetime_to_iso(date: datetime) -> str:
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def headers_transform(header):
+    return header.replace('_', ' ')
 
 
 def prepare_kwargs(kwargs: Dict[str, Any], ignore_args: STR_OR_STR_LIST = [],
@@ -301,7 +306,8 @@ class CreatedTickets(TicketEvents):
 
     def tickets(self):
         limit = int(self._demisto_params.get('max_fetch', 50))
-        ticket_types = self._demisto_params.get('ticket_types')
+        ticket_types = self._demisto_params.get('ticket_types', [])
+        ticket_types = None if 'all' in ticket_types else ticket_types
 
         def filter_updated_ticket(ticket: Dict):
             return ticket['id'] > self._latest_ticket_id and (not ticket_types or ticket.get('type') in ticket_types)
@@ -315,17 +321,19 @@ class ZendeskClient(BaseClient):
 
     def __init__(self, base_url: str, username: Optional[str] = None, password: Optional[str] = None,
                  proxy: bool = False, verify: bool = True):
-        base_url += '/api/v2/'
+        base_url = urljoin(base_url, '/api/v2/')
         auth = headers = None
         if username and password:
-            auth = (f'{username}/token', password)
+            # auth = (f'{username}/token', password)
+            auth = (username, password)
         elif password:
             headers = {'Authorization': f'Bearer {password}'}
 
         super(ZendeskClient, self).__init__(base_url, auth=auth, proxy=proxy, verify=verify, headers=headers)
 
-    def _http_request(self, method: str, url_suffix='', full_url=None, json_data=None, params=None, data=None,  # type: ignore
-                      content=None, resp_type='json', return_empty_response=False, **kwargs):  # type: ignore
+    def _http_request(self, method: str, url_suffix: str = '', full_url: Optional[str] = None, json_data: Optional[Dict] = None,
+                      params: Dict = None, data: Dict = None, content: bytes = None, resp_type: str = 'json',
+                      return_empty_response: bool = False, **kwargs):  # type: ignore
         if params:
             final_params_list = []
             for k, v in params.items():
@@ -402,7 +410,7 @@ class ZendeskClient(BaseClient):
         raw_results = copy(users)
         context = list(map(_iter_context, users))
         readable_outputs = tableToMarkdown(name='Zendek users:', t=context, headers=USERS_HEADERS,
-                                           headerTransform=lambda x: x.replace('_', ' '))
+                                           headerTransform=headers_transform)
         return CommandResults(outputs_prefix=USER_CONTEXT_PATH, outputs=context,
                               readable_output=readable_outputs, raw_response=raw_results)
 
@@ -509,7 +517,7 @@ class ZendeskClient(BaseClient):
     @staticmethod
     def __command_results_zendesk_organizations(organizations: List[Dict]):  # pragma: no cover
         readable_outputs = tableToMarkdown(name='Zendek organizations:', t=organizations, headers=ORGANIZATIONS_HEADERS,
-                                           headerTransform=lambda x: x.replace('_', ' '))
+                                           headerTransform=headers_transform)
         return CommandResults(outputs_prefix="Zendesk.Organization",
                               outputs=organizations, readable_output=readable_outputs)
 
@@ -531,27 +539,28 @@ class ZendeskClient(BaseClient):
     # ---- ticket releated functions ---- #
 
     @staticmethod
-    def __ticket_context(ticket: Dict[str, Any]):  # pragma: no cover
+    def __ticket_context(ticket: Dict[str, Any]):
         return CACHE.replace_ids_change(ticket, organization_fields=['organization_id'],    # type: ignore
                                         user_fields=['assignee_id', 'collaborator_ids',
                                         'email_cc_ids', 'follower_ids', 'requester_id', 'submitter_id'])
 
     @staticmethod
-    def __command_results_zendesk_tickets(tickets: List[Dict]):  # pragma: no cover
+    def __command_results_zendesk_tickets(tickets: List[Dict]):
         raw = tickets
         context = list(map(ZendeskClient.__ticket_context, tickets))
         readable_outputs = tableToMarkdown(name='Zendek tickets:', t=context, headers=TICKETS_HEADERS,
-                                           headerTransform=lambda x: x.replace('_', ' '))
+                                           headerTransform=headers_transform)
         return CommandResults(outputs_prefix="Zendesk.Ticket",
                               outputs=tickets, readable_output=readable_outputs, raw_response=raw)
 
-    def _get_ticket_by_id(self, ticket_id: str):    # pragma: no cover
+    def _get_ticket_by_id(self, ticket_id: str):
         return self._http_request('GET', f'tickets/{ticket_id}')['ticket']
 
     def zendesk_ticket_list(self, ticket_id: Optional[STR_OR_STR_LIST] = None,
                             filter: Optional[str] = None, user_id: Optional[str] = None,
                             sort: Optional[str] = None, page_number: Optional[int] = None, **kwargs):
         error_msgs = []
+        command_results = []
         if ticket_id is not None:
             tickets = []
             for single_ticket in argToList(ticket_id):
@@ -575,7 +584,7 @@ class ZendeskClient(BaseClient):
             sort_params = None
             if sort is not None:
                 Validators.validate_ticket_sort(sort)
-                if page_number:
+                if page_number is not None:
                     # using the offest paged request
                     sort_list = sort.split('_')
                     sort, order = '_'.join(sort_list[:-1]), sort_list[-1]
@@ -590,10 +599,11 @@ class ZendeskClient(BaseClient):
             tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
                            params=sort_params, page_number=page_number, **kwargs))
 
-        command_results = self.__command_results_zendesk_tickets(tickets) if tickets else 'No outputs.'
+        if tickets:
+            command_results.append(self.__command_results_zendesk_tickets(tickets))
         if error_msgs:
-            command_results = [command_results, error_entry('\n'.join(error_msgs))]
-        return command_results
+            command_results.append(error_entry('\n'.join(error_msgs)))
+        return command_results if command_results else 'No outputs.'
 
     class Ticket:
 
@@ -644,7 +654,7 @@ class ZendeskClient(BaseClient):
         def try_int(value: str) -> Union[int, str]:
             try:
                 return int(value)
-            except ValueError:
+            except (ValueError, TypeError):
                 return value
 
         @staticmethod
@@ -661,7 +671,7 @@ class ZendeskClient(BaseClient):
 
             return follower_or_email_cc
 
-    def zendesk_ticket_create(self, **kwargs):
+    def zendesk_ticket_create(self, **kwargs):  # pragma: no cover
         for argument in ['subject', 'type', 'requester', 'description']:
             assert argument in kwargs, f"'{argument}' is a required argument."
         kwargs['comment'] = kwargs.pop('description')
@@ -669,7 +679,8 @@ class ZendeskClient(BaseClient):
             self._http_request('POST', url_suffix='tickets', json_data={'ticket': dict(self.Ticket(**kwargs))})['ticket']
         ])
 
-    def zendesk_ticket_update(self, ticket_id: str, results: Optional[bool] = True, is_mirror: bool = False, **kwargs):
+    def zendesk_ticket_update(self, ticket_id: str, results: Optional[bool] = True,  # pragma: no cover
+                              is_mirror: bool = False, **kwargs):
         headers = {'user-agent': MIRROR_USER_AGENT} if is_mirror else {}
         res = self._http_request('PUT', url_suffix=f'tickets/{ticket_id}',
                                  json_data={'ticket': dict(self.Ticket(**kwargs))}, headers=headers)
@@ -701,7 +712,7 @@ class ZendeskClient(BaseClient):
     def __command_results_zendesk_ticket_comments(comments: List[Dict]):
         readable_pre_proces = list(map(ZendeskClient._map_comment_attachments, comments))
         readable_outputs = tableToMarkdown(name='Zendek comments:', t=readable_pre_proces, headers=COMMENTS_HEADERS,
-                                           headerTransform=lambda x: x.replace('_', ' '), is_auto_json_transform=True)
+                                           headerTransform=headers_transform, is_auto_json_transform=True)
         return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
                               outputs=comments, readable_output=readable_outputs)
 
@@ -757,7 +768,7 @@ class ZendeskClient(BaseClient):
 
         attachments = list(map(filter_thumbnails, attachments))
         readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
-                                          headers=ATTACHMENTS_HEADERS, headerTransform=lambda x: x.replace('_', ' '))
+                                          headers=ATTACHMENTS_HEADERS, headerTransform=headers_transform)
         results = [CommandResults(outputs_prefix='Zendesk.Attachment',
                                   outputs=attachments, readable_output=readable_output)]
         for attachment_link, attachment_name in map(lambda x: (x['content_url'], x['file_name']), attachments):
@@ -814,11 +825,12 @@ class ZendeskClient(BaseClient):
     def test_module(self):  # pragma: no cover
         for data_type in ['tickets', 'users', 'organizations']:
             self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
+        UpdatedTickets(self, 0).tickets().__next__()
         return 'ok'
 
     @staticmethod
     def _ticket_to_incident(ticket: Dict):
-        ticket = ticket | {
+        ticket |= {
             'severity': PRIORITY_MAP.get(ticket['priority']),
             'mirror_instance': INTEGRATION_INSTANCE,
             'mirror_id': str(ticket['id']),
@@ -863,35 +875,46 @@ class ZendeskClient(BaseClient):
     @staticmethod
     def _create_entry_from_comment(comment: Dict):
         comment_body = comment.get('body')
+        attachments = comment.get('attachments')
+        if attachments:
+            comment_body = f'{comment_body}\n{tableToMarkdown("attachments", attachments, ["file_name", "id"], headerTransform=headers_transform)}'
         return {
             'Type': EntryType.NOTE,
             'Contents': comment_body,
-            'ContentsFormat': EntryFormat.TEXT,
-            'Note': False
+            'ContentsFormat': EntryFormat.MARKDOWN,
+            'Note': True
         }
 
     def get_remote_data(self, **kwargs):
-        parsed_args = GetRemoteDataArgs(kwargs)
-        last_update = datetime_to_iso(dateparser.parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}))
-        ticket_data = self._get_ticket_by_id(parsed_args.remote_incident_id)
-        context = self.__ticket_context(ticket_data)
-        context['severity'] = PRIORITY_MAP.get(ticket_data['priority'])
-        for field_to_delete in FIELDS_TO_REMOVE_FROM_MIROR_IN:
-            if field_to_delete in context:
-                del context[field_to_delete]
+        try:
+            parsed_args = GetRemoteDataArgs(kwargs)
+            demisto.error(f'get_remote_data for {parsed_args.remote_incident_id=}')
+            last_update = datetime_to_iso(dateparser.parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}))
+            ticket_data = self._get_ticket_by_id(parsed_args.remote_incident_id)
+            context = self.__ticket_context(ticket_data)
+            context['severity'] = PRIORITY_MAP.get(ticket_data['priority'])
+            for field_to_delete in FIELDS_TO_REMOVE_FROM_MIROR_IN:
+                if field_to_delete in context:
+                    del context[field_to_delete]
 
-        def filter_comments(comment: Dict):
-            comment['created_at'] > last_update and dict_safe_get(comment, ['metadata', 'system', 'client']) != MIRROR_USER_AGENT
+            def filter_comments(comment: Dict):
+                return comment['created_at'] > last_update and dict_safe_get(comment, ['metadata', 'system', 'client']) != MIRROR_USER_AGENT
 
-        ticket_comments = list(map(
-            self._create_entry_from_comment,
-            filter(filter_comments, self._get_comments(parsed_args.remote_incident_id, limit=200))
-        ))
-        return_results(GetRemoteDataResponse(ticket_data, ticket_comments))
+            ticket_comments = list(map(
+                self._create_entry_from_comment,
+                filter(filter_comments, self._get_comments(parsed_args.remote_incident_id, limit=200))
+            ))
+            return GetRemoteDataResponse(context, ticket_comments)
+        except Exception as e:
+            return GetRemoteDataResponse({
+                'incomming_mirror_error': f'mirroring failed with error: {e}\n{traceback.format_exc()}'
+            })
 
     def update_remote_system(self, **kwargs):
+        demisto.error('starting update_remote_system')
         # TODO: finish outgoing mapper
         args = UpdateRemoteSystemArgs(kwargs)
+        demisto.error('args parsed.')
 
         if 'severity' in args.delta:
             severity = args.delta.pop('severity')
@@ -900,34 +923,46 @@ class ZendeskClient(BaseClient):
                 if severity == severity_val:
                     args.delta['priority'] = priority
                     break
+        demisto.error('delta prepd')
 
         files = []
 
         def upload_files_and_reset_files_list(files: List):
-            if files:
-                self.zendesk_ticket_attachment_add(
-                    file_id=files, ticket_id=args.remote_incident_id, comment='Uploaded from XSOAR.', is_mirror=True)
-                files = []
+            demisto.error(f'{files=}')
+            while files:
+                comment = files[0].get('contents', DEFAULT_UPLOAD_FILES_COMMENT)
+                demisto.error(f'{comment=}')
+                files_to_upload = []
+                while files and files[0].get('contents', DEFAULT_UPLOAD_FILES_COMMENT) == comment:
+                    files_to_upload.append(files.pop(0)['id'])
 
+                demisto.error(f'uploading {files_to_upload=}')
+                self.zendesk_ticket_attachment_add(
+                    file_id=files_to_upload, ticket_id=args.remote_incident_id, comment=comment, is_mirror=True)
+        demisto.error('uploading files nad comments')
         for entry in args.entries or []:
             # Mirroring files as entries
             if entry['type'] in [EntryType.ENTRY_INFO_FILE, EntryType.FILE, EntryType.IMAGE]:
-                files.append(entry['id'])
+                files.append(entry)
             else:
+                demisto.error('uploding files')
                 upload_files_and_reset_files_list(files)
                 # Mirroring comment and work notes as entries
+                demisto.error('uploding comments')
+
                 self.zendesk_ticket_update(ticket_id=args.remote_incident_id,
                                            comment=entry['contents'], results=False, is_mirror=True)
+        demisto.error('uploding files')
 
         upload_files_and_reset_files_list(files)
+        demisto.error('update delta on remotre system')
         self.zendesk_ticket_update(ticket_id=args.remote_incident_id, results=False, **args.delta)
 
+        demisto.error(f'done with: {args.remote_incident_id=}')
         return args.remote_incident_id
 
     def get_mapping_fields(self, **kwargs):  # pragma: no cover
         zendesk_ticket_scheme = SchemeTypeMapping('Zendesk Ticket')
-        zendesk_ticket_scheme.add_field(
-            name='external_id', description='An id you can use to link Zendesk Support tickets to local records.')
         zendesk_ticket_scheme.add_field(
             name='type', description='The type of this ticket. Allowed values are "problem", "incident", "question", or "task".')
         zendesk_ticket_scheme.add_field(name='subject', description='The value of the subject field for this ticket.')
@@ -1017,7 +1052,9 @@ def main():  # pragma: no cover
                 return_results(command_res)
         else:
             raise NotImplementedError(command)
-    except SyntaxError as e:
+        demisto.error('-' * 40)
+    except Exception as e:
+        demisto.error(str(e))
         return_error(str(e))
     finally:
         CACHE.save()
