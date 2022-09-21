@@ -512,7 +512,7 @@ def main():  # pragma: no cover
     Client.severity = params.get('severity', '').upper()
     Client.tlp_color = params.get('tlp_color')
 
-    # In this integration, arguments are set in the *class level*, the defaults are in the class definition.
+    # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     if query := params.get('query'):
         Client.query = query
     if tag := (params.get('feedTags') or params.get('tag')):
