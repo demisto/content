@@ -2422,6 +2422,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
     out_fields = SNOW_ARGS + SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
     for field in out_fields:
         incident_type_scheme.add_field(field)
