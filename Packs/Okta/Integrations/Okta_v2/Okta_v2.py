@@ -1,6 +1,7 @@
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
 # Disable insecure warnings
@@ -654,6 +655,8 @@ def test_module(client, args):
 
     Returns:
         'ok' if test passed, anything else will fail the test.
+
+    ###### change #######
     """
     args
     uri = 'users/me'
