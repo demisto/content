@@ -1,12 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from typing import Tuple, Dict, Any
-from _collections import defaultdict
-import requests
 import hashlib
+from typing import Any, Dict, Tuple
+
+import requests
+from _collections import defaultdict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 DEFAULT_THRESHOLD = 5
+# note for contribution
 
 
 class Error(Exception):

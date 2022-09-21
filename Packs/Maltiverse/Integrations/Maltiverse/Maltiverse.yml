@@ -31,7 +31,6 @@ configuration:
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
@@ -46,17 +45,10 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -116,17 +108,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -204,17 +189,10 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the URL address will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an URL.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -289,17 +267,10 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a file by file hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Name
@@ -395,13 +366,9 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.7.33922
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
