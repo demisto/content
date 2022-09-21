@@ -1,0 +1,92 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: GoogleSafeBrowsing
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Threat Type to search for.
+  defaultvalue: MALWARE,SOCIAL_ENGINEERING,UNWANTED_SOFTWARE,POTENTIALLY_HARMFUL_APPLICATION,THREAT_TYPE_UNSPECIFIED
+  display: Threat Type
+  name: threatTypes
+  options:
+  - MALWARE
+  - SOCIAL_ENGINEERING
+  - UNWANTED_SOFTWARE
+  - POTENTIALLY_HARMFUL_APPLICATION
+  - THREAT_TYPE_UNSPECIFIED
+  required: true
+  type: 16
+- additionalinfo: Types of platform.
+  defaultvalue: ANY_PLATFORM
+  display: Platform Types
+  name: platformTypes
+  options:
+  - PLATFORM_TYPE_UNSPECIFIED
+  - WINDOWS
+  - LINUX
+  - ANDROID
+  - OSX
+  - IOS
+  - ANY_PLATFORM
+  - ALL_PLATFORMS
+  - CHROME
+  required: true
+  type: 16
+- additionalinfo: Threat Entry Types to search for.
+  defaultvalue: URL
+  display: Threat Entry Types
+  name: threatEntryTypes
+  options:
+  - URL
+  required: true
+  type: 16
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ed998385-7e53-4211-8294-80fa07a05a3d
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This integration checks URLs against Googles Safe Browsing API.
+display: GoogleSafeBrowsing
+name: GoogleSafeBrowsing
+script:
+  commands:
+  - arguments:
+    - isArray: true
+      name: url
+      required: true
+    description: The URL to check against Google's Safe Browsing API
+    name: url
+  dockerimage: demisto/python3:3.10.7.33922
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: GoogleSafeBrowsing

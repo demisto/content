@@ -1,0 +1,21 @@
+{
+    "name": "Google Safe Browsing",
+    "description": "Allows a user to query Google's Safe Browsing data with an appropriate API key.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "djmasters",
+    "url": "",
+    "email": "",
+    "created": "2022-09-21T23:13:17Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "djmasters"
+    ]
+}
