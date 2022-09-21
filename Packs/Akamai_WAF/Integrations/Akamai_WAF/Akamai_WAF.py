@@ -2361,6 +2361,7 @@ def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: st
                         context = enrollment['csr']
                         context['existing'] = True
                         context['target_cn'] = target_cn
+                        context['changes'] = enrollment['pendingChanges']
                         return human_readable, {"Akamai.Enrollment": context}, raw_response
         context = raw_response
         context['existing'] = False
