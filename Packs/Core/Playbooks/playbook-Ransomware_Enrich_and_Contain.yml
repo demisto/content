@@ -496,11 +496,7 @@ tasks:
       id: ade305d6-da72-4303-8d53-e61c6461da53
       version: -1
       name: Fetch ransomware file
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the core-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
       script: '|||core-retrieve-files'
       type: regular
       iscommand: true
@@ -720,9 +716,7 @@ tasks:
       id: c074ea2f-9389-402e-826a-ed1bd9ba7d0f
       version: -1
       name: Retrieve file to the playbook's war room
-      description: View the file retrieved by the core-retrieve-files command according
-        to the action ID. Before running this command, use the core-action-status-get
-        command to check if this action completed successfully.
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, use the core-action-status-get command to check if this action completed successfully.
       script: '|||core-retrieve-file-details'
       type: regular
       iscommand: true
@@ -758,11 +752,7 @@ tasks:
       id: b354207a-e502-48a3-8b4d-81cb2606d5a8
       version: -1
       name: Remote attacker enrichment
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
-        of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -798,9 +788,7 @@ tasks:
       id: 28922639-6ad8-4bf1-8aba-df6392955d35
       version: -1
       name: Checks if the containment plan completed successfully
-      description: Check whether given entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1142,8 +1130,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to isolate endpoints which has been detected with the alert
-    IoCs.
+  description: Whether to isolate endpoints which has been detected with the alert IoCs.
   playbookInputQuery:
 - key: FileSHA256
   value:
@@ -1152,6 +1139,14 @@ inputs:
       accessor: initiatorsha256
   required: false
   description: The ransomware file SHA256.
+  playbookInputQuery:
+- key: detonateRansomFile
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.
+    By default is set to True
   playbookInputQuery:
 outputs: []
 tests:
