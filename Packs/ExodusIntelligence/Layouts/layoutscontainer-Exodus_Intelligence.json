@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Exodus Intelligence",
+    "id": "testing-exodus",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -265,7 +265,7 @@
             }
         ]
     },
-    "name": "Exodus Intelligence",
+    "name": "testing-exodus",
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
