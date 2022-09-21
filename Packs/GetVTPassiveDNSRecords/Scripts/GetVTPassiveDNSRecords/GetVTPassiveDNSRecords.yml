@@ -1,0 +1,28 @@
+args:
+- description: Indicator Value
+  name: value
+comment: Gets VirusTotal Passive DNS records using integration command !vt-passive-dns-data and returning the results to a custom indicator Markdown table field in the indicator layout.
+commonfields:
+  id: GetVTPassiveDNSRecords
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dependson:
+  must:
+  - '|||vt-passive-dns-data'
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: GetVTPassiveDNSRecords
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- enhancement
+- indicator-action-button
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

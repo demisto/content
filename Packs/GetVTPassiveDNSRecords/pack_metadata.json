@@ -1,0 +1,21 @@
+{
+    "name": "GetVTPassiveDNSRecords",
+    "description": "This automation takes the results of VirusTotal Passive DNS data enrichment, converts it into a table and displays it into a markdown field in the indicator layout. \nThe automation is intended to be used with a button in the layout, to populate the results. The automation depends on VirusTotal (API v3) (Partner Contribution), which contains the command vt-passive-dns-data.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "asantamarina",
+    "url": "",
+    "email": "",
+    "created": "2022-09-21T14:05:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asantamarina"
+    ]
+}
