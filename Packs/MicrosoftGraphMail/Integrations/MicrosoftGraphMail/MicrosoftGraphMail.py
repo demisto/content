@@ -712,12 +712,19 @@ class MsGraphClient:
         emails_as_html_and_text = []
 
         for email_as_html in emails_as_html:
-            body_as_text = text_emails_ids.get(email_as_html.get('id'), {}).get('body')
+            html_email_id = email_as_html.get('id')
+            text_email_data = text_emails_ids.get(html_email_id) or {}
+            if not text_email_data:
+                demisto.debug(f'There is no matching text email to html email-ID {html_email_id}')
+
+            body_as_text = text_email_data.get('body')
             if body_as_html := email_as_html.get('body'):
-                email_as_html['body'] = [body_as_html, body_as_text]
-            unique_body_as_text = text_emails_ids.get(email_as_html.get('id'), {}).get('uniqueBody')
+                email_as_html['body'] = (body_as_html, body_as_text)
+
+            unique_body_as_text = text_email_data.get('uniqueBody')
             if unique_body_as_html := email_as_html.get('uniqueBody'):
-                email_as_html['uniqueBody'] = [unique_body_as_html, unique_body_as_text]
+                email_as_html['uniqueBody'] = (unique_body_as_html, unique_body_as_text)
+
             emails_as_html_and_text.append(email_as_html)
 
         return emails_as_html_and_text
@@ -762,15 +769,19 @@ class MsGraphClient:
         return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
-    def get_email_body_content(_email_body, content_type):
+    def get_email_content_as_text_and_html(email):
+        email_body = email.get('body') or tuple()  # email body including replyTo emails.
+        email_unique_body = email.get('uniqueBody') or tuple()  # email-body without replyTo emails.
 
-        if content_type not in {'text', 'html'}:
-            raise ValueError('content-type must be text or html')
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
+        try:
+            email_content_as_html, email_content_as_text = email_body or email_unique_body
+        except ValueError:
+            demisto.debug(f'email body content is missing from email {email}')
+            return '', ''
 
-        for _email_body_data in _email_body:
-            if _email_body_data.get('contentType') == content_type:
-                return _email_body_data.get('content') or ''
-        return ''
+        return email_content_as_html.get('content'), email_content_as_text.get('content')
 
     def _parse_item_as_dict(self, email):
         """
@@ -787,21 +798,9 @@ class MsGraphClient:
         parsed_email = {EMAIL_DATA_MAPPING[k]: v for (k, v) in email.items() if k in EMAIL_DATA_MAPPING}
         parsed_email['Headers'] = email.get('internetMessageHeaders', [])
 
-        email_unique_body = email.get('uniqueBody') or []  # email-body without replyTo emails.
-        email_body = email.get('body') or []  # email body including replyTo emails.
-
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
-        email_content_as_html = self.get_email_body_content(
-            email_body, content_type='html'
-        ) or self.get_email_body_content(
-            email_unique_body, content_type='html'
-        )
-        email_content_as_text = self.get_email_body_content(
-            email_body, content_type='text'
-        ) or self.get_email_body_content(
-            email_unique_body, content_type='text'
-        )
+        email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
 
         parsed_email['Body'] = email_content_as_html
         parsed_email['Text'] = email_content_as_text
@@ -914,7 +913,8 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.display_full_email_body:
-            body = self.get_email_body_content(email.get('body', []), content_type='text')
+            _, email_content_as_text = self.get_email_content_as_text_and_html(email)
+            body = email_content_as_text
 
         incident = {
             'name': parsed_email.get('Subject'),
