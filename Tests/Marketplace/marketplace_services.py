@@ -3346,6 +3346,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
+                logging.info(f"yuval file is {file}")
                 if self.is_preview_image(file.a_path):
                     logging.info(f"yuval: file.a_path {file.a_path}")
                     pack_preview_images.append(file.a_path)
@@ -3369,6 +3370,7 @@ class Pack(object):
         Returns:
             bool: True if the file is an integration image or False otherwise
         """
+        logging.info(f"yuval file path {file_path}")
         return all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
             file_path.endswith('.png'),
