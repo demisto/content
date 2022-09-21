@@ -3049,11 +3049,11 @@ class Pack(object):
             self.cleanup()
             return False
 
-        # task_status = self.upload_preview_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
-        # if not task_status:
-        #     self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
-        #     self.cleanup()
-        #     return False
+        task_status = self.upload_preview_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        if not task_status:
+            self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            self.cleanup()
+            return False
 
         return True
 
@@ -3344,6 +3344,21 @@ class Pack(object):
             return None
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
+
+    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list, detect_changes):
+        """ Uploads pack preview images to gcs.
+
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            detect_changes (bool): Whether to detect changes or upload all images in any case.
+            diff_files_list (list): The list of all modified/added files found in the diff
+        Returns:
+            bool: whether the operation succeeded.
+            list: list of dictionaries with uploaded pack integration images.
+
+        """
+
 
 
 # HELPER FUNCTIONS
