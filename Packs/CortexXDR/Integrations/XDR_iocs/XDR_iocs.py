@@ -311,7 +311,7 @@ def get_indicators(indicators: str) -> List:
     if indicators:
         iocs: list = []
         not_found = []
-        for indicator in indicators.split(','):
+        for indicator in argToList(indicators):
             search_indicators = IndicatorsSearcher()
             data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
