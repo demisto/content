@@ -9,8 +9,7 @@ def find_additional_incident_info(incident: dict) -> dict:
     additional_info = {}
 
     if incident.get('labels'):
-        labels = incident['labels']
-        for label in labels:
+        for label in incident['labels']:
             if label['type'] == 'Email/from':
                 additional_info['employee_email'] = label['value'].lower()
 
@@ -25,9 +24,6 @@ def find_additional_incident_info(incident: dict) -> dict:
 
 def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
     additional_info = {}
-
-    if not manager_attribute:
-        manager_attribute = 'manager'
 
     filter_str = fr'(&(objectClass=user)(mail={email}))'
     response = demisto.executeCommand('ad-search', {'filter': filter_str,
@@ -99,8 +95,8 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
     return additional_info
 
 
-def generate_mail_subject(incident_subject: str, investigation_id: str, allow_reply: bool, persistent: Optional[bool] = None,
-                          reply_entries_tag: Optional[str] = None) -> str:
+def generate_mail_subject(incident_subject: str, investigation_id: str, allow_reply: bool,
+                          persistent: Optional[bool] = None, reply_entries_tag: Optional[str] = None) -> str:
     subject = incident_subject + f' - #{investigation_id}'
 
     if allow_reply:
@@ -142,24 +138,41 @@ def generate_mail_body(manager_name: str, employee_name: str, employee_request: 
     body_template = Template(body)
     result_body = body_template.safe_substitute(manager_name=manager_name, employee_name=employee_name)
     result_body = textwrap.dedent(result_body)
-    result_body += '\n----------' + employee_request
-
-    return result_body
+    return result_body + '\n----------' + employee_request
 
 
-def main():
-    additional_info = find_additional_incident_info(demisto.incidents()[0])
-    email = demisto.args().get('email', additional_info.get('employee_email'))
+def main():  # pragma: no cover
+    args = demisto.args()
+    email = args.get('email')
+    manager_attribute = args.get('manager', 'manager')
+    allow_reply = argToBoolean(args.get('allowReply'))
+    mail_body = args.get('body')
+    employee_request = args.get('request')
+    reply_entries_tag = args.get('replyEntriesTag')
+    persistent = argToBoolean(args.get('persistent'))
+
+    last_incident = demisto.incidents()[0]
+
+    additional_info = find_additional_incident_info(last_incident)
 
     if not email:
-        demisto.results('Could not find employee email.')
+        if additional_info.get('employee_email'):
+            email = additional_info.get('employee_email')
 
-    additional_info.update(find_additional_ad_info(email=email, manager_attribute=demisto.args().get('manager')))
+        else:
+            demisto.results('Could not find employee email.')
 
-    mail_body = demisto.args().get('body', generate_mail_body(
-        manager_name=additional_info['manager_name'],
-        employee_name=additional_info['employee_name'],
-        employee_request=demisto.args().get('request', additional_info.get('employee_request'))))
+    additional_info.update(find_additional_ad_info(email=email, manager_attribute=manager_attribute))
+
+    if not employee_request:
+        employee_request = additional_info.get('employee_request')
+
+    if not mail_body:
+        mail_body = generate_mail_body(
+            manager_name=additional_info['manager_name'],
+            employee_name=additional_info['employee_name'],
+            employee_request=employee_request
+        )
 
     demisto.results(
         demisto.executeCommand('send-mail', {
@@ -167,9 +180,9 @@ def main():
             'subject': generate_mail_subject(
                 incident_subject=additional_info['incident_subject'],
                 investigation_id=demisto.investigation().get('id'),
-                allow_reply=argToBoolean(demisto.args().get('allowReply')),
-                persistent=argToBoolean(demisto.args().get('persistent')),
-                reply_entries_tag=demisto.args().get('replyEntriesTag')
+                allow_reply=allow_reply,
+                persistent=persistent,
+                reply_entries_tag=reply_entries_tag
             ),
             'body': mail_body,
         }))

@@ -2,13 +2,11 @@ import re
 
 import pytest
 
-from pathlib import Path
-
 from SendEmailToManager import *
 
 
 def executeCommand_mock(command: str, args: dict) -> list:
-    with open(Path("test_data") / "ad-search.json", "r") as file:
+    with open("test_data/ad-search.json", "r") as file:
         test_data = json.load(file)
 
     if command == "ad-search":
@@ -23,10 +21,10 @@ def executeCommand_mock(command: str, args: dict) -> list:
 
 
 @pytest.mark.parametrize("test_input_path, expected_items_in_dict", [
-    (Path("test_data") / "incident.json", {"employee_email": "employee_email", "incident_subject": "incident_subject",
-                                           "employee_request": "employee_request"}),
+    ("test_data/incident.json", {"employee_email": "employee_email", "incident_subject": "incident_subject",
+                                 "employee_request": "employee_request"}),
 ])
-def test_find_additional_incident_info(test_input_path: Union[Path, str], expected_items_in_dict: dict):
+def test_find_additional_incident_info(test_input_path: str, expected_items_in_dict: dict):
     with open(test_input_path, "r") as file:
         test_input = json.load(file)
 
@@ -52,11 +50,11 @@ def test_find_additional_ad_info(mocker, email: str, manager_attribute: str, exp
 
 
 @pytest.mark.parametrize("test_input_path, incident_subject, investigation_id, allow_reply, entitlement_id", [
-    (Path("test_data") / "addentitlement.json", "test_subject", "1", False, None),
-    (Path("test_data") / "addentitlement.json", "test_subject", "2", True, "9b1b7a14-0c88-432f-8b8f-96b21fcb058e"),
+    ("test_data/addentitlement.json", "test_subject", "1", False, None),
+    ("test_data/addentitlement.json", "test_subject", "2", True, "9b1b7a14-0c88-432f-8b8f-96b21fcb058e"),
 
 ])
-def test_generate_mail_subject(mocker, test_input_path: Union[Path, str], incident_subject: str,
+def test_generate_mail_subject(mocker, test_input_path: str, incident_subject: str,
                                investigation_id: str, allow_reply: bool, entitlement_id: Optional[str]):
     with open(test_input_path, "r") as file:
         example_entitlement = json.load(file)
