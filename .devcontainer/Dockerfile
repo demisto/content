@@ -34,3 +34,11 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
     && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
+
+VOLUME [ "/var/lib/docker" ]
+
+# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
+# inside the container "overrideCommand": false is set in devcontainer.json. 
+# The script will also execute CMD if you need to alter startup behaviors.
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
