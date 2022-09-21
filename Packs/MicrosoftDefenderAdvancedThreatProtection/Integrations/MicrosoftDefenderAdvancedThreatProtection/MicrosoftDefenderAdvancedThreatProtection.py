@@ -1107,12 +1107,28 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
+                 auth_type, redirect_uri, auth_code,
                  is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+        client_args = assign_params(
+            self_deployed=self_deployed,
+            auth_id=auth_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
+            auth_type == 'Authorization Code' else None,
+            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            scope=Scopes.security_center_apt_service,
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            tenant_id=tenant_id,
+            app_name=app_name,
+            enc_key=enc_key,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
+        )
+        self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -1809,7 +1825,8 @@ class MsClient:
                                                     severity: Optional[str] = None,
                                                     indicator_application: Optional[str] = None,
                                                     recommended_actions: Optional[str] = None,
-                                                    rbac_group_names: Optional[list] = None
+                                                    rbac_group_names: Optional[list] = None,
+                                                    generate_alert: Optional[bool] = True
                                                     ) -> Dict:
         """creates or updates (if already exists) a given indicator
 
@@ -1824,6 +1841,7 @@ class MsClient:
             indicator_application: The application associated with the indicator.
             recommended_actions: TI indicator alert recommended actions.
             rbac_group_names: Comma-separated list of RBAC group names the indicator would be.
+            generate_alert: Whether to generate an alert for the indicator.
 
         Returns:
             A response from the API.
@@ -1834,7 +1852,7 @@ class MsClient:
             'action': action,
             'title': indicator_title,
             'description': description,
-            'generateAlert': True,
+            'generateAlert': generate_alert,
         }
         body.update(assign_params(  # optional params
             severity=severity,
@@ -3873,12 +3891,13 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
     indicator_application = args.get('indicator_application', '')
     recommended_actions = args.get('recommended_actions', '')
     rbac_group_names = argToList(args.get('rbac_group_names', []))
+    generate_alert = argToBoolean(args.get('generate_alert', True))
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
         description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
-        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
+        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names, generate_alert=generate_alert
     )
     if indicator:
         indicator_value = indicator.get('indicatorValue')  # type:ignore
@@ -4215,7 +4234,6 @@ def cover_up_command(client, args):  # pragma: no cover
 
 def test_module(client: MsClient):
     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    demisto.results('ok')
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4843,6 +4861,9 @@ def main():  # pragma: no cover
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
     is_gcc = params.get('is_gcc', False)
+    auth_type = params.get('auth_type', 'Client Credentials')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -4853,6 +4874,12 @@ def main():  # pragma: no cover
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:
         raise Exception('Tenant ID must be provided.')
+    if auth_code and redirect_uri:
+        if not self_deployed:
+            raise Exception('In order to use Authorization Code, set Self Deployed: True.')
+    if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
+        raise Exception('In order to use Authorization Code auth flow, you should set: '
+                        '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
@@ -4863,10 +4890,19 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc,
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
         )
         if command == 'test-module':
+            if auth_type == 'Authorization Code':
+                raise Exception('Test-module is not available when using Authentication-code auth flow. '
+                                'Please use `!microsoft-atp-test` command to test the connection')
+            else:
+                test_module(client)
+                demisto.results('ok')
+
+        elif command == 'microsoft-atp-test':
             test_module(client)
+            return_results('✅ Success!')
 
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)

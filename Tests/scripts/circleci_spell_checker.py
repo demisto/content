@@ -6,6 +6,9 @@ from demisto_sdk.commands.common.tools import run_command, find_type
 from demisto_sdk.commands.common.constants import DESCRIPTION_REGEX, FileType
 
 
+IGNORED_FILES = ['.devcontainer/devcontainer.json', '.vscode/extensions.json']
+
+
 def get_modified_files(files_string):
     """Get lists of the modified files in your branch according to the files string.
 
@@ -25,7 +28,8 @@ def get_modified_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
+        if file_path in IGNORED_FILES:
+            continue
         if file_path.endswith('.js') or file_path.endswith('.py'):
             continue
         if file_status.lower().startswith('r'):
