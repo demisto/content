@@ -48,7 +48,6 @@
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": [
-                "",
                 "REG_NONE",
                 "REG_SZ",
                 "REG_EXPAND_SZ",
