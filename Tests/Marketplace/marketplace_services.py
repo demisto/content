@@ -3358,6 +3358,41 @@ class Pack(object):
             list: list of dictionaries with uploaded pack integration images.
 
         """
+        pack_preview_images = []
+        pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
+
+        try:
+            for file in diff_files_list:
+                if self.is_preview_image(file.a_path):
+                    logging.info(f"yuval: file.a_path {file.a_path}")
+                    pack_preview_images.append(file.a_path)
+
+            for image_path in pack_preview_images:
+                logging.info(f"yuval: image_path {image_path}")
+                image_name = os.path.basename(image_path)
+                image_storage_path = os.path.join(pack_storage_root_path, image_name)
+                pack_image_blob = storage_bucket.blob(image_storage_path)
+                with open(image_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+
+            return True
+        except Exception as e:
+            logging.exception(f"yuval Exception {e}")
+
+    def is_preview_image(self, file_path):
+        """ Indicates whether a file_path is an integration image or not
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is an integration image or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+            file_path.endswith('.png'),
+            '_image' in os.path.basename(file_path.lower()),
+            (PackFolders.XSIAM_DASHBOARDS.value in os.path.basename(file_path.lower())
+             or PackFolders.XSIAM_REPORTS.value in os.path.basename(file_path.lower()))
+        ])
 
 
 
