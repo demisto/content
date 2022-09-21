@@ -1,0 +1,21 @@
+{
+    "name": "Lastline v2",
+    "description": "Ignore, internal tests",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "daniel",
+    "url": "",
+    "email": "",
+    "created": "2022-09-21T06:40:59Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "darkushin"
+    ]
+}
