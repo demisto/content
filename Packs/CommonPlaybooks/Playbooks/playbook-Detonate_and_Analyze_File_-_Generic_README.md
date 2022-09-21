@@ -1,4 +1,4 @@
-This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X and Wildfire. 
+This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X, Wildfire and Joe Security.  
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
