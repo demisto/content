@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Should be feed of type .txt. For using other types of feed, modify the parsing in the python file.
-  defaultvalue: https://www.snort.org/downloads/ip-block-list
+- defaultvalue: https://www.snort.org/downloads/ip-block-list
   display: Server's URL
   name: url
   required: true

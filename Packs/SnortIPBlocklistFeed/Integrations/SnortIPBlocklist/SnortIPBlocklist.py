@@ -33,9 +33,8 @@ class Client(BaseClient):
                                  allow_redirects=True
                                  )
 
-        # In this case the feed output is in text format, so extracting the indicators from the response requires
-        # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
-        # require additional processing as well.
+        # In that case the feed output is in text format, so extracting the indicators from the response requires
+        # iterating over it's lines solely:
         try:
             indicators = res.splitlines()
 
