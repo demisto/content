@@ -47,6 +47,7 @@ configuration:
 script:
   commands:
     - name: bitbucket-project-list
+      description: If a project_key is given, returns the requested project. Else, returns a list of the project in the workspace.
       arguments:
         - name: project_key
           required: false
@@ -55,7 +56,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects.
+          description: The maximum number of projects. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -146,6 +147,7 @@ script:
           description: 'Does the project has a publicly visible repositories or not.'
           type: Boolean
     - name: bitbucket-open-branch-list
+      description: Returns a list of the open branches.
       arguments:
         - name: repo
           required: false
@@ -154,7 +156,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -257,6 +259,7 @@ script:
           description: 'The default merge strategy in the branch.'
           type: String
     - name: bitbucket-branch-get
+      description: Returns the information of the requested branch.
       arguments:
         - name: repo
           required: false
@@ -346,6 +349,7 @@ script:
           description: 'The default merge strategy.'
           type: String
     - name: bitbucket-branch-create
+      description: Creates a new branch in Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -439,6 +443,7 @@ script:
           description: 'The default merge strategy in the new branch.'
           type: String
     - name: bitbucket-branch-delete
+      description: Deletes the given branch from Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -449,6 +454,7 @@ script:
           description: The name of the branch to delete.
           isArray: false
     - name: bitbucket-commit-create
+      description: Creates a new commit in Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -472,7 +478,7 @@ script:
           isArray: false
         - name: entry_id
           required: false
-          description: The entry_id of the file to commit.
+          description: The entry_id of the file to commit. This is the EntryId from uploading a file to the War Room.
           isArray: false
         - name: author_name
           required: false
@@ -483,6 +489,7 @@ script:
           description: The email of the author of the file.
           isArray: false
     - name: bitbucket-commit-list
+      description: Returns a list of the commit in accordance to the included and excluded branches.
       arguments:
         - name: repo
           required: false
@@ -503,7 +510,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -585,6 +592,7 @@ script:
           description: 'The unique id of the repository'
           type: String
     - name: bitbucket-file-delete
+      description: Deletes the given file from Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -611,6 +619,7 @@ script:
           description: The email of the author of the file.
           isArray: false
     - name: bitbucket-raw-file-get
+      description: Returns the content of the given file, along with the option to download it.
       arguments:
         - name: repo
           required: false
@@ -631,8 +640,38 @@ script:
         - contextPath: Bitbucket.RawFile.file_content
           description: 'The content of the file.'
           type: String
+        - contextPath: File.Size
+          description: The size of the file.
+          type: Number
+        - contextPath: File.SHA1
+          description: The SHA1 hash of the file.
+          type: String
+        - contextPath: File.SHA256
+          description: The SHA256 hash of the file.
+          type: String
+        - contextPath: File.Name
+          description: The name of the file.
+          type: String
+        - contextPath: File.SSDeep
+          description: The SSDeep hash of the file.
+          type: String
+        - contextPath: File.EntryID
+          description: The entry ID of the file.
+          type: String
+        - contextPath: File.Info
+          description: File information.
+          type: String
+        - contextPath: File.Type
+          description: The file type.
+          type: String
+        - contextPath: File.MD5
+          description: The MD5 hash of the file.
+          type: String
+        - contextPath: File.Extension
+          description: The file extension.
+          type: String
     - name: bitbucket-issue-create
-      description: Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+      description: Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
       arguments:
         - name: repo
           required: false
@@ -686,7 +725,7 @@ script:
           isArray: false
         - name: assignee_id
           required: false
-          description: The id of the assignee of the issue to create.
+          description: The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId.
           isArray: false
         - name: assignee_user_name
           required: false
@@ -802,6 +841,7 @@ script:
           description: 'The watchers of the issue.'
           type: Unknown
     - name: bitbucket-issue-list
+      description: If an issue_id is given, returns the information about it. Else, returns a list of all the issues, according to the limit parameter.
       arguments:
         - name: repo
           required: false
@@ -809,11 +849,11 @@ script:
           isArray: false
         - name: issue_id
           required: false
-          description: The id of the wanted issue.
+          description: The id of the wanted issue. In order to get the issue_id, use the command '!bitbucket-issue-list'
           isArray: false
         - name: limit
           required: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. the default value is 50.
           isArray: false
         - name: page
           required: false
@@ -941,7 +981,7 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to update. To get the issue id, use the command bitbucket-issue-list
+          description: The id of the issue to update. To get the issue_id, use the command '!bitbucket-issue-list'
           isArray: false
         - name: state
           auto: PREDEFINED
@@ -984,7 +1024,7 @@ script:
           isArray: false
         - name: assignee_id
           required: false
-          description: The id of the assignee of the issue to create.
+          description: The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId.
           isArray: false
         - name: assignee_user_name
           required: false
@@ -1100,6 +1140,7 @@ script:
           description: 'The watchers of the issue.'
           type: Number
     - name: bitbucket-pull-request-create
+      description: Creates a pull request in Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -1119,7 +1160,7 @@ script:
           isArray: false
         - name: reviewer_id
           required: false
-          description: The id of the account of the person to review the pull request.
+          description: The id of the account of the person to review the pull request. In order to get the reviewer_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId.
           isArray: false
         - name: description
           required: false
@@ -1285,6 +1326,7 @@ script:
           description: 'The description of the pull request in html format.'
           type: String
     - name: bitbucket-pull-request-update
+      description: Updates a pull request in Bitbucket.
       arguments:
         - name: repo
           required: false
@@ -1292,7 +1334,7 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request to update. In order to get the pull_request_id, use the command bitbucket-pull-request-list
+          description: The id of the pull request to update. In order to get the pull_request_id, use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: title
           required: false
@@ -1308,7 +1350,7 @@ script:
           isArray: false
         - name: reviewer_id
           required: false
-          description: The id of the account of the person to review the pull request.
+          description: The id of the account of the person to review the pull request. In order to get the reviewer_id, use the command 'bitbucket-workspace-member-list, and use the field AccountId.
           isArray: false
         - name: description
           required: false
@@ -1479,7 +1521,7 @@ script:
           isArray: false
         - name: pull_request_id
           required: false
-          description: The id of the pull request to update.
+          description: The id of the pull request to update. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: state
           auto: PREDEFINED
@@ -1494,7 +1536,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -1656,7 +1698,7 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to comment on.
+          description: The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'
           isArray: false
         - name: content
           required: true
@@ -1744,11 +1786,11 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to comment on.
+          description: The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment to delete. In order to get the comment id, use the command "bitbucket-issue-comment-list"
+          description: The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list'
           isArray: false
     - name: bitbucket-issue-comment-list
       description: Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
@@ -1763,12 +1805,12 @@ script:
           isArray: false
         - name: comment_id
           required: false
-          description: The id of the comment to delete.
+          description: The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list' without any parameters.
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -1855,11 +1897,11 @@ script:
           isArray: false
         - name: issue_id
           required: true
-          description: The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list.
+          description: The id of the issue to comment on. In order to get the issue_id please use the command '!bitbucket-issue-list.'
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment to delete. In order to get the issue_id please use the command bitbucket-issue-comment-list.
+          description: The id of the comment to delete. In order to get the issue_id please use the command !'bitbucket-issue-comment-list'.
           isArray: false
         - name: content
           required: true
@@ -1947,7 +1989,7 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request to comment on.
+          description: The id of the pull request to comment on. In order to get the pull request id use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: content
           required: true
@@ -2023,16 +2065,16 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request.
+          description: The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: comment_id
           required: false
-          description: The id of the comment.
+          description: The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false
@@ -2099,7 +2141,7 @@ script:
           description: 'Links to information about the pull request.'
           type: String
     - name: bitbucket-pull-request-comment-update
-      description: updates a comment in a specific pull request.
+      description: updates a specific comment in a specific pull request.
       arguments:
         - name: repo
           required: false
@@ -2107,11 +2149,11 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request.
+          description: The id of the pull request. In order to get the pull request_id use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment.
+          description: The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'
           isArray: false
         - name: content
           required: true
@@ -2179,7 +2221,7 @@ script:
           description: 'Links to information about the pull request.'
           type: String
     - name: bitbucket-pull-request-comment-delete
-      description: deletes a comment in a specific pull request.
+      description: deletes a specific comment in a specific pull request.
       arguments:
         - name: repo
           required: false
@@ -2187,11 +2229,11 @@ script:
           isArray: false
         - name: pull_request_id
           required: true
-          description: The id of the pull request. In order to get the pull request id use the command "!bitbucket-pull-request-list"
+          description: The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'
           isArray: false
         - name: comment_id
           required: true
-          description: The id of the comment. In order to get the comment id use the command "bitbucket-pull-request-comment-list".
+          description: The id of the comment. In order to get the comment_id use the command '!bitbucket-pull-request-comment-list'.
           isArray: false
     - name: bitbucket-workspace-member-list
       description: returns a list of all the members in the workspace.
@@ -2199,7 +2241,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of items in the list.
+          description: The maximum number of items in the list. The default value is 50.
         - name: page
           required: false
           isArray: false

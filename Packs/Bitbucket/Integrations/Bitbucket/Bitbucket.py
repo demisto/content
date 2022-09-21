@@ -566,7 +566,7 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with the list of the branches.
     """
     limit = int(args.get('limit', 50))
-    repo = args.get('repo', None)
+    repo = args.get('repo')
     page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
@@ -580,9 +580,9 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     human_readable = []
     for value in results:
         d = {'Name': value.get('name'),
-             'LastCommitHash': demisto.get(value, 'target.hash'),
-             'LastCommitCreatedBy': demisto.get(value, 'target.author.user.display_name'),
-             'LastCommitCreatedAt': demisto.get(value, 'target.date')}
+             'LastCommitHash': value.get('target').get('hash'),
+             'LastCommitCreatedBy': value.get('target').get('author').get('user').get('display_name'),
+             'LastCommitCreatedAt': value.get('target').get('date')}
         human_readable.append(d)
 
     headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
@@ -608,8 +608,8 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with the information about the branch.
     """
-    repo = args.get('repo', None)
-    branch_name = args.get('branch_name', None)
+    repo = args.get('repo')
+    branch_name = args.get('branch_name', '')
     if not repo:
         repo = client.repository
     response = client.get_branch_request(branch_name, repo)
@@ -640,9 +640,9 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful action.
     """
-    repo = args.get('repo', None)
-    name = args.get('name', None)
-    target_branch = args.get('target_branch', None)
+    repo = args.get('repo')
+    name = args.get('name', '')
+    target_branch = args.get('target_branch', '')
     if not repo:
         repo = client.repository
     response = client.branch_create_request(name, target_branch, repo)
@@ -662,8 +662,8 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful action.
     """
-    repo = args.get('repo', None)
-    branch_name = args.get('branch_name', None)
+    repo = args.get('repo')
+    branch_name = args.get('branch_name', '')
     if not repo:
         repo = client.repository
     response = client.branch_delete_request(branch_name, repo)
@@ -681,9 +681,9 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful action.
     """
-    repo = args.get('repo', None)
-    message = args.get('message', None)
-    branch = args.get('branch', None)
+    repo = args.get('repo')
+    message = args.get('message', '')
+    branch = args.get('branch', '')
     file_name = args.get('file_name', None)
     file_content = args.get('file_content', None)
     entry_id = args.get('entry_id', None)
@@ -712,7 +712,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     if response.status_code == 201:
         return CommandResults(readable_output='The commit was created successfully.')
     else:
-        return CommandResults(readable_output=response)
+        return CommandResults(readable_output='There was a problem in creating the commit.')
 
 
 def commit_list_command(client: Client, args: Dict) -> CommandResults:
@@ -723,7 +723,7 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with the list of commits.
     """
-    repo = args.get('repo', None)
+    repo = args.get('repo')
     file_path = args.get('file_path', None)
     excluded_branches = args.get('excluded_branches', None)
     included_branches = args.get('included_branches', None)
@@ -748,7 +748,7 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     results = check_pagination(client, response, limit)
     human_readable = []
     for value in results:
-        d = {'Author': demisto.get(value, 'author.raw'),
+        d = {'Author': value.get('author').get('raw'),
              'Commit': value.get('hash'),
              'Message': value.get('message'),
              'CreatedAt': value.get('date')}
@@ -777,10 +777,10 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful action.
     """
-    repo = args.get('repo', None)
-    message = args.get('message', None)
-    branch = args.get('branch', None)
-    file_name = args.get('file_name', None)
+    repo = args.get('repo')
+    message = args.get('message', '')
+    branch = args.get('branch', '')
+    file_name = args.get('file_name', '')
     author_name = args.get('author_name', None)
     author_email = args.get('author_email', None)
     body = {
@@ -807,8 +807,8 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
     Returns:
         A list containing a CommandResult object and a fileResult object.
     """
-    repo = args.get('repo', None)
-    file_path = args.get('file_path', None)
+    repo = args.get('repo')
+    file_path = args.get('file_path', '')
     branch = args.get('branch', None)
     params = {
         'path': file_path
@@ -849,8 +849,8 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful action.
     """
-    repo = args.get('repo', None)
-    title = args.get('title', None)
+    repo = args.get('repo')
+    title = args.get('title', '')
     state = args.get('state', 'new')
     issue_type = args.get('type', 'bug')
     priority = args.get('priority', 'major')
@@ -889,7 +889,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with the array of issues as output.
         """
-    repo = args.get('repo', None)
+    repo = args.get('repo')
     issue_id = args.get('issue_id', None)
     limit = int(args.get('limit', 50))
     page = int(args.get('page', 1))
@@ -918,8 +918,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
              'Votes': value.get('votes'),
              'Assignee': demisto.get(value, 'assignee.display_name'),
              'CreatedAt': value.get('created_on'),
-             'UpdatedAt': value.get('updated_on')
-             }
+             'UpdatedAt': value.get('updated_on')}
         human_readable.append(d)
 
     headers = ['Id', 'Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']
@@ -945,9 +944,9 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a dictionary contains the updated issue.
     """
-    repo = args.get('repo', None)
+    repo = args.get('repo')
     issue_id = int(args.get('issue_id', None))
-    title = args.get('title', None)
+    title = args.get('title', '')
     state = args.get('state')
     issue_type = args.get('type')
     priority = args.get('priority')
@@ -989,10 +988,10 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a dictionary contains information about the new pull request.
     """
-    repo = args.get('repo', None)
-    title = args.get('title', None)
-    source_branch = args.get('source_branch', None)
-    destination_branch = args.get('destination_branch', None)
+    repo = args.get('repo')
+    title = args.get('title', '')
+    source_branch = args.get('source_branch', '')
+    destination_branch = args.get('destination_branch', '')
     reviewer_id = args.get('reviewer_id', None)
     description = args.get('description', None)
     close_source_branch = args.get('close_source_branch', None)
@@ -1015,8 +1014,8 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a dictionary contains information about the updated pull request.
     """
-    repo = args.get('repo', None)
-    pull_request_id = args.get('pull_request_id', None)
+    repo = args.get('repo')
+    pull_request_id = args.get('pull_request_id', '')
     title = args.get('title', None)
     source_branch = args.get('source_branch', None)
     destination_branch = args.get('destination_branch', None)
@@ -1044,7 +1043,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         If a state is provided than the list will contain only PR with the wanted status.
         If a state is not provided, by default a list of the open pull requests will return.
     """
-    repo = args.get('repo', None)
+    repo = args.get('repo')
     pull_request_id = args.get('pull_request_id', None)
     state = args.get('state', None)
     limit = int(args.get('limit', 50))
@@ -1106,9 +1105,9 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
         If a state is provided than the list will contain only PR with the wanted status.
         If a state is not provided, by default a list of the open pull requests will return.
     """
-    repo = args.get('repo', None)
-    issue_id = args.get('issue_id', None)
-    content = args.get('content', None)
+    repo = args.get('repo')
+    issue_id = args.get('issue_id', '')
+    content = args.get('content', '')
     body = {
         "content": {
             "raw": content
@@ -1131,9 +1130,9 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful deletion.
     """
-    repo = args.get('repo', None)
-    issue_id = args.get('issue_id', None)
-    comment_id = args.get('comment_id', None)
+    repo = args.get('repo')
+    issue_id = args.get('issue_id', '')
+    comment_id = args.get('comment_id', '')
     if not repo:
         repo = client.repository
     client.issue_comment_delete_request(repo, issue_id, comment_id)
@@ -1152,10 +1151,10 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success message, in case of a successful update.
     """
-    repo = args.get('repo', None)
-    issue_id = args.get('issue_id', None)
-    comment_id = args.get('comment_id', None)
-    content = args.get('content', None)
+    repo = args.get('repo')
+    issue_id = args.get('issue_id', '')
+    comment_id = args.get('comment_id', '')
+    content = args.get('content', '')
     body = {
         'content': {
             'raw': content
@@ -1178,8 +1177,8 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a list of the comments or a single comment on a specific issue.
     """
-    repo = args.get('repo', None)
-    issue_id = args.get('issue_id', None)  # TODO make sure that it is ok to make it a required field
+    repo = args.get('repo')
+    issue_id = args.get('issue_id', '')
     comment_id = args.get('comment_id', None)
     limit = int(args.get('limit', 50))
     page = int(args.get('page', 1))
@@ -1206,8 +1205,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
              'CreatedAt': value.get('created_on'),
              'UpdatedAt': value.get('updated_on'),
              'IssueId': demisto.get(value, 'issue.id'),
-             'IssueTitle': demisto.get(value, 'issue.title'),
-             }
+             'IssueTitle': demisto.get(value, 'issue.title')}
         human_readable.append(d)
 
     headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
@@ -1233,9 +1231,9 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
     Returns:
         A CommandResult object with a success message, in case of a successful creation of a comment.
     """
-    repo = args.get('repo', None)
-    pr_id = int(args.get('pull_request_id', None))
-    content = args.get('content', None)
+    repo = args.get('repo')
+    pr_id = int(args.get('pull_request_id', ''))
+    content = args.get('content', '')
     body = {
         'content': {
             'raw': content
@@ -1258,8 +1256,8 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
     Returns:
         A CommandResult object with a list of the comments or a single comment on a specific issue.
     """
-    repo = args.get('repo', None)
-    pr_id = int(args.get('pull_request_id', None))
+    repo = args.get('repo')
+    pr_id = int(args.get('pull_request_id', ''))
     comment_id = args.get('comment_id', None)
     limit = int(args.get('limit', 50))
     page = int(args.get('page', 1))
@@ -1287,9 +1285,8 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
                  'CreatedBy': demisto.get(value, 'user.display_name'),
                  'CreatedAt': value.get('created_on'),
                  'UpdatedAt': value.get('updated_on'),
-                 'IssueId': demisto.get(value, 'issue.id'),
-                 'IssueTitle': demisto.get(value, 'issue.title'),
-                 }
+                 'PullRequestIdIssueId': demisto.get(value, 'pullrequest.id'),
+                 'PullRequestTitle': demisto.get(value, 'pullrequest.title')}
             human_readable.append(d)
         else:
             records_to_delete.append(value)
@@ -1320,9 +1317,9 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
         Returns:
             A CommandResult object with a success message.
     """
-    repo = args.get('repo', None)
-    pr_id = int(args.get('pull_request_id', None))
-    comment_id = args.get('comment_id', None)
+    repo = args.get('repo')
+    pr_id = int(args.get('pull_request_id', ''))
+    comment_id = args.get('comment_id', '')
     content = args.get('content')
     if not repo:
         repo = client.repository
@@ -1347,9 +1344,9 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
         Returns:
             A CommandResult object with a success message.
     """
-    repo = args.get('repo', None)
-    pr_id = int(args.get('pull_request_id', None))
-    comment_id = args.get('comment_id', None)
+    repo = args.get('repo')
+    pr_id = int(args.get('pull_request_id', ''))
+    comment_id = args.get('comment_id', '')
     if not repo:
         repo = client.repository
     response = client.pull_request_comment_delete_request(repo, pr_id, comment_id)
@@ -1379,9 +1376,8 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
     results = check_pagination(client, response, limit)
     human_readable = []
     for value in results:
-        d = {'Name': demisto.get(value, 'user.display_name'),
-             'AccountId': demisto.get(value, 'user.account_id')
-             }
+        d = {'Name': value.get('user').get('display_name'),
+             'AccountId': value.get('user').get('account_id')}
         human_readable.append(d)
     headers = ['Name', 'AccountId']
     readable_output = tableToMarkdown(
