@@ -136,10 +136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 72c569d3-0951-4897-87df-ed27c3facf76
+    taskid: c7eadede-1a69-467f-824d-1ce6f84ecf51
     type: condition
     task:
-      id: 72c569d3-0951-4897-87df-ed27c3facf76
+      id: c7eadede-1a69-467f-824d-1ce6f84ecf51
       version: -1
       name: Should terminate the process?
       description: Whether to terminate the process automatically, manually, or not at all.
@@ -187,12 +187,6 @@ tasks:
             value:
               simple: "False"
           ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ProcessName
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1083,8 +1077,7 @@ tasks:
       id: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1147,7 +1140,7 @@ view: |-
 inputs:
 - key: AutoEradicate
   value:
-    simple: Auto
+    simple: "True"
   required: false
   description: Set to True to execute the eradication playbook automatically.
   playbookInputQuery:
