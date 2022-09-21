@@ -6,19 +6,30 @@
 	"properties": {
 		"name": {
 			"description": "The name of the Pack",
-			"type": "string"
+			"type": "string",
+			"minLength": 1
 		},
 		"description": {
 			"description": "The Pack description",
-			"type": "string"
+			"type": "string",
+			"minLength": 1
 		},
 		"support": {
 			"description": "Who supports the Pack",
-			"type": "string"
+			"type": "string",
+			"pattern": "xsoar|partner|developer|community",
+			"minLength": 5
+		},
+		"currentVersion": {
+			"description": "The Pack version in format",
+			"type": "string",
+			"pattern": "[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}",
+			"minLength": 6
 		},
 		"author": {
 			"description": "Author of the Pack",
-			"type": "string"
+			"type": "string",
+			"minLength": 1
 		},
 		"email": {
 			"description": "Email address of support or author",
@@ -29,7 +40,8 @@
 			"description": "Categories applying to Pack. Taken from https://xsoar.pan.dev/docs/packs/packs-format#pack_metadatajson",
 			"type": "array",
 			"uniqueItems": true,
-			"prefixItems": {
+			"items": {
+				"type": "string",
 				"enum": [
 					"Analytics & SIEM",
 					"Utilities",
@@ -57,7 +69,8 @@
 			"description": "Use cases associated to the Pack. Taken from https://xsoar.pan.dev/docs/concepts/use-cases",
 			"type": "array",
 			"uniqueItems": true,
-			"prefixItems": {
+			"items": {
+				"type": "string",
 				"enum": [
 					"Analytics and SIEM",
 					"Authentication",
