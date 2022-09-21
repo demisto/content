@@ -16,8 +16,6 @@ Use the Snort IP Block List feed integration to fetch IP indicators from [Snort]
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    |  |  | False |
-    |  |  | False |
     | Tags | Supports CSV values. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
