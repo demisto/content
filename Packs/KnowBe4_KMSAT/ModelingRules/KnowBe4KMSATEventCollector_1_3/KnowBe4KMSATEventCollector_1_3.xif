@@ -1,4 +1,4 @@
-[MODEL:model="Audit", dataset="knowbe4_kmsat_raw"]
+[MODEL: dataset="knowbe4_kmsat_raw"]
 alter xdm.alert.severity=json_extract(risk, "$.level"),
 xdm.source.user.identifier=json_extract(user, "$.id"),
 _time=occurred_date,
