@@ -3,13 +3,15 @@ import re
 import sys
 import requests
 import urllib3
+from blessings import Terminal
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_HOST_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
 JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
-JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
-JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
 
 
@@ -65,6 +67,12 @@ def trigger_generic_webhook(options):
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
+    if not issues_in_pr:
+        t = Terminal()
+        print(f"{t.red}ERROR: No linked issues were found in PR. Make sure you correctly linked issues.{t.normal}")
+
+        sys.exit(1)
+
     print(f"found issues in PR: {issues_in_pr}")
 
     body = {
@@ -86,6 +94,13 @@ def trigger_generic_webhook(options):
             f"Trigger playbook for Linking GitHub PR to Jira Issue failed. Post request to Content"
             f" Gold has status code of {res.status_code}")
         sys.exit(1)
+
+    res_json = res.json()
+    if res_json and isinstance(res_json, list):
+        res_json_response_data = res.json()[0]
+        if res_json_response_data:
+            investigation_id = res_json_response_data.get("id")
+            print(f'{investigation_id=}')
 
 
 def main():
