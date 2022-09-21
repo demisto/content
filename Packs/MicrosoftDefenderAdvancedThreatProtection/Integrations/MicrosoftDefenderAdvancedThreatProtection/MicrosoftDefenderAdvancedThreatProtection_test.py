@@ -2368,8 +2368,8 @@ def test_get_machines(mocker, page_num, page_size, res):
 
 
 @pytest.mark.parametrize('query, query_batch, hr_name, timeout',
-                         [('', '{"queries": [{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
-                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]}', "name1", 20),
+                         [('', '[{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
+                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]', "name1", 20),
                           ('DeviceInfo | where OnboardingStatus == Onboarded | limit 10 | distinct DeviceName', '', "name", 10)])
 def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeout):
     """
