@@ -874,29 +874,27 @@ script:
       - ''
     - default: false
       description:  |-
-        A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input
-        { "queries": [
-            {
-            "query": "query #1",	// Mandatory
-            "name": "name #1",	// Mandatory
-            "timeout": "timeout #1"	// Non-mandatory, will override the {timeout} argument
-            "time_range": "2 days ago"	// Non-mandatory, will override the {time_range} argument
-            },
-            {
-            "query": "query #2",	// Mandatory
-            "name": "name #2",	// Mandatory
-            "timeout": "timeout #2" // Non-mandatory, will override the {timeout} argument
-            "time_range": "6 days ago"	// Non-mandatory, will override the {time_range} argument
-            }
-          ]
-        }
+        A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
+        [{
+          "query": "query #1",
+          "name": "name #1",
+          "timeout": "timeout #1",
+          "time_range": "2 days ago"
+          },
+          {
+          "query": "query #2",
+          "name": "name #2",
+          "timeout": "timeout #2",
+          "time_range": "6 days ago"
+          }]
+        The query and name fields are mendatory, if timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
       isArray: false
       name: query_batch
       required: false
       secret: false
       deprecated: false
     - default: false
-      description: If stated along with query, then the response should be saved in context under the Result.name path.
+      description: If stated along with query, the response will be be saved in context under the Result.name path.
       isArray: false
       name: name
       required: false

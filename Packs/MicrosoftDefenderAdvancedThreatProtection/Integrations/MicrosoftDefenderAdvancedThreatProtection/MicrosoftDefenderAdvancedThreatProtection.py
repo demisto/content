@@ -2561,17 +2561,14 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
                         'query': query
                         })
     else:
-        try:
-            query = json.loads(query_batch).get('queries')
-            queries.extend(query)
-        except Exception as e:
-            raise DemistoException('Please provide a valid JSON query_batch.', e)
+        query = safe_load_json(query_batch)
+        queries.extend(query)
 
     if len(queries) > 10:
         raise DemistoException('Please provide only up to 10 queries.')
 
     human_readable = ''
-    outputs = []
+    outputs: List[Dict[str, Any]] = []
     for query_details in queries:
         query = query_details.get('query')
         name = query_details.get('name')
