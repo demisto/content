@@ -128,7 +128,7 @@ def datetime_to_iso(date: datetime) -> str:
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def headers_transform(header):
+def headers_transform(header: str) -> str:
     return header.replace('_', ' ')
 
 
@@ -331,9 +331,9 @@ class ZendeskClient(BaseClient):
 
         super(ZendeskClient, self).__init__(base_url, auth=auth, proxy=proxy, verify=verify, headers=headers)
 
-    def _http_request(self, method: str, url_suffix: str = '', full_url: Optional[str] = None, json_data: Optional[Dict] = None,
-                      params: Dict = None, data: Dict = None, content: bytes = None, resp_type: str = 'json',
-                      return_empty_response: bool = False, **kwargs):  # type: ignore
+    def _http_request(self, method: str, url_suffix: str = '', full_url: Optional[str] = None,  # type: ignore[override]
+                      json_data: Optional[Dict] = None, params: Dict = None, data: Dict = None, content: bytes = None,
+                      resp_type: str = 'json', return_empty_response: bool = False, **kwargs):
         if params:
             final_params_list = []
             for k, v in params.items():
@@ -877,7 +877,9 @@ class ZendeskClient(BaseClient):
         comment_body = comment.get('body')
         attachments = comment.get('attachments')
         if attachments:
-            comment_body = f'{comment_body}\n{tableToMarkdown("attachments", attachments, ["file_name", "id"], headerTransform=headers_transform)}'
+            attachments_table = tableToMarkdown("attachments", attachments, [
+                                                "file_name", "id"], headerTransform=headers_transform)
+            comment_body = f'{comment_body}\n{attachments_table}'
         return {
             'Type': EntryType.NOTE,
             'Contents': comment_body,
@@ -898,7 +900,8 @@ class ZendeskClient(BaseClient):
                     del context[field_to_delete]
 
             def filter_comments(comment: Dict):
-                return comment['created_at'] > last_update and dict_safe_get(comment, ['metadata', 'system', 'client']) != MIRROR_USER_AGENT
+                return comment['created_at'] > last_update and \
+                    dict_safe_get(comment, ['metadata', 'system', 'client']) != MIRROR_USER_AGENT
 
             ticket_comments = list(map(
                 self._create_entry_from_comment,
@@ -908,7 +911,7 @@ class ZendeskClient(BaseClient):
         except Exception as e:
             return GetRemoteDataResponse({
                 'incomming_mirror_error': f'mirroring failed with error: {e}\n{traceback.format_exc()}'
-            })
+            }, [])
 
     def update_remote_system(self, **kwargs):
         demisto.error('starting update_remote_system')
