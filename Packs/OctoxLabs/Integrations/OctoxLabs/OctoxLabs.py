@@ -184,7 +184,7 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     ip = demisto.params().get("octox_ip")
-    token = demisto.params().get("octox_token")
+    token = demisto.params().get('octox_token', {"password": ""}).get('password')
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
