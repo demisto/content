@@ -9,6 +9,8 @@ import pytest
 import random
 import string
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 
 def getRandomString(length: int):
     # printing lowercase
@@ -33,34 +35,6 @@ def test_map_severity():
     assert mapSeverity('moderate') == 2
     assert mapSeverity('low') == 1
     assert mapSeverity(getRandomString(12)) == 0
-
-
-def test_get_first_fetch_datetime():
-    from GigamonThreatINSIGHT import getFirstFetch
-
-    invalid_unit = getRandomString(12)
-    valid_value = random.randint(0, 9)
-    invalid_value = "value"
-
-    firstFetch = getFirstFetch(f'  {valid_value} hours   ')
-    assert firstFetch['hours'] == valid_value
-    assert firstFetch['days'] == 0
-
-    firstFetch = getFirstFetch(f'{valid_value} days')
-    assert firstFetch['days'] == valid_value
-    assert firstFetch['hours'] == 0
-
-    firstFetch = getFirstFetch(f'  {invalid_value} hours   ')
-    assert firstFetch['days'] == 7
-    assert firstFetch['hours'] == 0
-
-    firstFetch = getFirstFetch(f'  {valid_value} {invalid_unit}')
-    assert firstFetch['days'] == 7
-    assert firstFetch['hours'] == 0
-
-    firstFetch = getFirstFetch(f'{invalid_value} {invalid_unit}   ')
-    assert firstFetch['days'] == 7
-    assert firstFetch['hours'] == 0
 
 
 def test_encode_args():
@@ -246,7 +220,7 @@ def test_fetch_incidents(requests_mock):
     i = 1
     for detection in mock_response.get('detections'):
         timestamp: datetime = datetime.now() - timedelta(days=i)
-        detection['first_seen'] = timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        detection['first_seen'] = timestamp.strftime(DATE_FORMAT)
         if i == 1:
             expected_Last_fetch = detection['first_seen']
         i += 1
