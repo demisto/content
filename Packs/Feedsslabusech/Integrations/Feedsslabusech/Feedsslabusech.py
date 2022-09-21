@@ -1,6 +1,6 @@
 from CommonServerPython import *
+from CSVFeedApiModule import *  # noqa: E402
 
-SSLBLACKLIST = "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
 
 def main():
     feed_url_to_config = {
