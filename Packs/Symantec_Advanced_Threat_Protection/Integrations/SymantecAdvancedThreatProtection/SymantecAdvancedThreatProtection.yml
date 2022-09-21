@@ -2,9 +2,10 @@ commonfields:
   id: Symantec Advanced Threat Protection
   version: -1
 name: Symantec Advanced Threat Protection
-display: Symantec Advanced Threat Protection
+display: Symantec Advanced Threat Protection (Deprecated)
 category: Endpoint
-description: Advanced protection capabilities from Symantec
+description: Deprecated. No available replacement. Advanced protection capabilities from Symantec
+deprecated: true
 configuration:
 - display: Server URL (i.e. https://host:port)
   name: url
