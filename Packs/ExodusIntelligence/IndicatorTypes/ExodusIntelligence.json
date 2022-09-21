@@ -13,5 +13,6 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "layout": "Exodus Intelligence"
 }
