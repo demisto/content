@@ -208,7 +208,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exclusion mode (path exclusion only). 
+      description: Exclusion mode (path exclusion only).
       isArray: false
       name: exclusion_mode
       predefined:
@@ -352,7 +352,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A comma-separated list of mitigation statuses. 
+      description: A comma-separated list of mitigation statuses.
       isArray: true
       name: mitigation_status
       predefined:
@@ -537,7 +537,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scope to use for exclusions. 
+      description: Scope to use for exclusions.
       isArray: false
       name: target_scope
       predefined:
@@ -559,7 +559,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Mitigation action. 
+      description: Mitigation action.
       isArray: false
       name: action
       predefined:
@@ -680,7 +680,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Site type. 
+      description: Site type.
       isArray: false
       name: site_type
       predefined:
@@ -693,7 +693,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns sites that support the specified features. 
+      description: Returns sites that support the specified features.
       isArray: false
       name: features
       predefined:
@@ -704,7 +704,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Site state. 
+      description: Site state.
       isArray: false
       name: state
       predefined:
@@ -715,7 +715,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The suite of product features active for this site. 
+      description: The suite of product features active for this site.
       isArray: false
       name: suite
       predefined:
@@ -1400,7 +1400,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of items to return (1-100). 
+      description: Maximum number of items to return (1-100).
       isArray: false
       name: limit
       required: false
@@ -1524,7 +1524,7 @@ script:
       - true_positive
       - false_positive
       - suspicious
-      description: Analyst verdict action. 
+      description: Analyst verdict action.
     - name: threat_ids
       required: true
       description: A comma-separated list of threat IDs.
@@ -1551,7 +1551,7 @@ script:
       - true_positive
       - false_positive
       - suspicious
-      description: Analyst verdict action. 
+      description: Analyst verdict action.
     - name: alert_ids
       required: true
       description: A comma-separated list of alert IDs.
@@ -1588,7 +1588,7 @@ script:
       predefined:
       - Permanent
       - Temporary
-      description: Type of expiration mode. 
+      description: Type of expiration mode.
     - name: query_type
       required: true
       auto: PREDEFINED
@@ -1627,7 +1627,7 @@ script:
       - Malicious
       - Suspicious
       - UNDEFINED
-      description: The treatAsThreat type. 
+      description: The treatAsThreat type.
     description: Creates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-create-star-rule
     outputs:
@@ -1739,7 +1739,7 @@ script:
       type: Boolean
   - arguments:
     - name: rule_id
-      required: true 
+      required: true
       description: 'Rule ID  Example: "225494730938493804".'
     - name: name
       required: true
@@ -1798,7 +1798,7 @@ script:
       - Malicious
       - Suspicious
       - UNDEFINED
-      description: The treatAsThreat. 
+      description: The treatAsThreat.
     description: Updates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-update-star-rule
     outputs:
@@ -2153,7 +2153,7 @@ script:
     - name: creator_contains
       description: 'A comma-separated list of free-text filtered by the user who uploaded the Threat Intelligence indicator. Example: "admin@sentinelone.com".'
     - name: description_contains
-      description: 'A comma-separated list of free-text filtered by the description of the indicator. Example: "Malicious-activity".' 
+      description: 'A comma-separated list of free-text filtered by the description of the indicator. Example: "Malicious-activity".'
     - name: category_in
       description: 'The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC'
     - name: updated_at_gte
@@ -2161,9 +2161,9 @@ script:
     - name: updated_at_lte
       description: 'The time (less than or equal to) at which the indicator was last updated in the SentinelOne database. Example: "2021-07-13T20:33:29.007906Z".'
     - name: creation_time_gte
-      description: 'Creation time (greater than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".' 
+      description: 'Creation time (greater than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".'
     - name: creation_time_lte
-      description: 'Creation time (less than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".' 
+      description: 'Creation time (less than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".'
     description: Get the IOCs of a specified account that match the filter. Relevant for API version 2.1.
     name: sentinelone-get-iocs
     outputs:
@@ -2320,7 +2320,7 @@ script:
       required: true
       description: 'File encryption password. (At least 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters.)'
     name: sentinelone-fetch-threat-file
-    description: Fetch a file associated with the threat that matches the filter. 
+    description: Fetch a file associated with the threat that matches the filter.
     outputs:
     - contextPath: SentinelOne.Threat.ID
       description: The threat ID.
@@ -2441,7 +2441,7 @@ script:
       type: String
     - contextPath: SentinelOne.Alert.RuleId
       description: Rule ID.
-      type: String  
+      type: String
   - arguments:
     - name: agent_ids
       required: true
@@ -2477,7 +2477,7 @@ script:
     - contextPath: SentinelOne.Agent.Initiated
       description: Whether the scan was initiated.
       type: Boolean
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.7.33922
   isfetch: true
   longRunning: false
   longRunningPort: false
