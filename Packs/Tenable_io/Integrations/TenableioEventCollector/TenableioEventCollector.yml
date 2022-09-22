@@ -3,17 +3,18 @@ commonfields:
   id: Tenable.io Event Collector
   version: -1
 configuration:
+- additionalinfo: This is the API endpoint for the Tenable.io API.
+  defaultvalue: https://cloud.tenable.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
 - displaypassword: Secret Key
   display: Access Key
   additionalinfo: Tenable API access and secret key.
   name: credentials
   required: true
   type: 9
-- display: Vulnerabilities Fetch Interval
-  additionalinfo: Fetch interval in minutes.
-  name: vuln_fetch_interval
-  required: true
-  type: 0
 - display: Severity
   additionalinfo: The severity of the vulnerabilities to include in the export.
   name: severity
@@ -46,6 +47,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Vulnerabilities Fetch Interval in minutes
+  additionalinfo: Time in minutes in which the vulnerabilities get export uuid process will run
+  name: vuln_fetch_interval
+  required: true
+  type: 0
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs from Tenable.
 display: Tenable.io Event Collector
 name: Tenable.io Event Collector
@@ -121,6 +127,7 @@ script:
       description: Hide polling output.
       deprecated: true
     - name: export_uuid
+      description: Export uuid to check status for.
       deprecated: true
     deprecated: false
     description: Returns vulnerabilities extracted from Tenable io.

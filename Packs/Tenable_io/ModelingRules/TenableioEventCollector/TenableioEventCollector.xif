@@ -1,5 +1,5 @@
 [MODEL: model=Endpoint, dataset=tenable_io_raw]
-filter severity_id in (0, 1, 2, 3, 4)
+filter xsiam_type = "vulnerability"
 | alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
         XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
         XDM.Endpoint.Target.host.device_id=replace(json_extract(asset,"$.uuid"),"\"",""),
@@ -14,7 +14,7 @@ filter severity_id in (0, 1, 2, 3, 4)
         XDM.Endpoint.observation_timestamp=indexed;
 
 [MODEL: dataset=tenable_io_raw, model=Audit]
-filter severity_id not in (0, 1, 2, 3, 4)
+filter xsiam_type = "audit_log"
 | alter XDM.Audit.TriggeredBy.identity.uuid=json_extract_scalar(actor, "$.id"),
       XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(actor, "$.name"),
       XDM.Audit.original_event_description=description,
@@ -24,6 +24,7 @@ filter severity_id not in (0, 1, 2, 3, 4)
       XDM.Audit.event_timestamp=received,
       XDM.Audit.original_event_id=id,
       XDM.Audit.operation=action,
+      XDM.Audit.original_event_type=action,
       XDM.Audit.TriggeredBy.ipv4=arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Forwarded-For",json_extract_scalar("@element", "$.value"), null)),","),
       XDM.Audit.TriggeredBy.agent.identifier=arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "X-Request-Uuid",json_extract_scalar("@element", "$.value"), null)),","),
       XDM.Audit.outcome=arraystring(arraymap(json_extract_array(`fields`, "$."), if(json_extract_scalar("@element", "$.key") = "message",json_extract_scalar("@element", "$.value"), null)),","),

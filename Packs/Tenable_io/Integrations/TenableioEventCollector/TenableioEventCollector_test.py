@@ -28,7 +28,7 @@ def test_get_audit_logs_command(requests_mock):
         - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
     """
     from TenableioEventCollector import get_audit_logs_command
-    client = Client(verify=False, headers={}, proxy=False)
+    client = Client(url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_AUDIT_LOGS)
 
     results, audit_logs = get_audit_logs_command(client, limit=2)
@@ -49,7 +49,7 @@ def test_vulnerabilities_process(requests_mock):
         - Verify vulnerabilities returned and finished flag is up.
     """
     from TenableioEventCollector import generate_export_uuid, try_get_chunks, run_vulnerabilities_fetch
-    client = Client(verify=False, headers={}, proxy=False)
+    client = Client(url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
@@ -77,23 +77,23 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
 
     """
     from TenableioEventCollector import fetch_events_command
-    client = Client(verify=False, headers={}, proxy=False)
+    client = Client(url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
     last_run = {'next_fetch': '2022-09-20'}
-    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
     last_run.update({'last_id': '1234'})
-    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
     assert new_last_run.get('last_id') == '12345'
 
     last_run.update({'last_id': '12345'})
-    _, audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '123456'

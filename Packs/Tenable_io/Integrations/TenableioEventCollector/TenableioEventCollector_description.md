@@ -1,4 +1,4 @@
-#Tenable.io Event Collector
+# Tenable.io Event Collector
 Use Tenable.io Event Collector integration to get Audit and Endpoint logs from Tenable.
 
 ## Configuration Parameters
@@ -7,4 +7,7 @@ Use Tenable.io Event Collector integration to get Audit and Endpoint logs from T
 Tenable.io generates a unique set of API keys for each user account (**access and secret key**). These keys allow your application to authenticate to the Tenable.io API without creating a session.
 
 #### Vulnerabilities Fetch Interval
-Time in minutes in which the vulnerabilities get export uuid proccess will run. Be aware that it shouldn't be low, as the process may take some time.
+Time in minutes in which the vulnerabilities get export uuid process will run. Be aware that it should be high (e.g. 240), as the process may take some time.
+
+#### Events Fetch Interval and Max Fetch
+This interval affects only **Audit logs** fetch.
