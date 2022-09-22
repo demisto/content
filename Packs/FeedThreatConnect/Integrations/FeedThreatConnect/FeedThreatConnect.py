@@ -442,8 +442,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         indicators.extend(response)
         # Limit the number of results to not get an error from the API
         if len(indicators) < 15000 and next_link:
-            url = next_link.replace(demisto.getParam('tc_api_path'), '')
-            url = url.replace('+', '%20')
+            url = next_link.replace(demisto.getParam('tc_api_path').rstrip('/'), '')
 
         else:
             break
@@ -486,18 +485,20 @@ def get_indicators_command(client: Client):  # pragma: no cover
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
 
-    owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
-    active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' if argToBoolean(args.get("active_indicators")) else ''
-    confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
-    threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
 
-    types = argToList(demisto.getArg("indicator_type"))
-    query = ''
-    if types and 'All' not in types:
-        query = 'AND typeName IN ("' + '","'.join(types) + '")'
 
     tql = args.get('tql_query', '')
     if not tql:
+        owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
+        active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' if argToBoolean(args.get("active_indicators")) else ''
+        confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
+        threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
+
+        types = argToList(demisto.getArg("indicator_type"))
+        query = ''
+        if types and 'All' not in types:
+            query = 'AND typeName IN ("' + '","'.join(types) + '")'
+
         tql = active_only + confidence + threat_score + confidence + owners + query
         tql = tql.replace('AND ', '', 1)
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
