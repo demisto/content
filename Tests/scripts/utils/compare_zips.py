@@ -14,13 +14,15 @@ import yaml
 def compare_zips(zip1: Path, zip2: Path):
     """Compare two zip files content"""
     # extract zip files
+    zip1_extracted = zip1.parent / zip1.name
+    zip2_extracted = zip2.parent / zip2.name
     with ZipFile(zip1, "r") as zip1_content, ZipFile(zip2, "r") as zip2_content:
         # get the list of files in the zip files
-        zip1_content.extractall()
-        zip2_content.extractall()
+        zip1_content.extractall(path=zip1_extracted)
+        zip2_content.extractall(path=zip2_extracted)
 
     # compare the directories
-    dir_compare = filecmp.dircmp(zip1.stem, zip2.stem)
+    dir_compare = filecmp.dircmp(zip1_extracted, zip2_extracted)
     dir_compare.report_full_closure()
     for file in dir_compare.common_files:
         if (is_json := file.endswith('json')) or file.endswith('yaml'):
@@ -43,6 +45,6 @@ if __name__ == '__main__':
     zip_graph = Path(args.zip_graph)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
-    # dir_cmp.report_full_closure()
+    dir_cmp.report_full_closure()
     for file in dir_cmp.common_files:
         compare_zips(zip_id_set / file, zip_graph / file)
