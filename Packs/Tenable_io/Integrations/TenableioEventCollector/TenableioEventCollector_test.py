@@ -2,7 +2,6 @@ import io
 import json
 from CommonServerPython import arg_to_datetime
 from TenableioEventCollector import Client
-import demistomock as demisto
 
 
 def util_load_json(path):
