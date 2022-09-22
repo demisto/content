@@ -1,0 +1,20 @@
+{
+  "proofpoint_threat_response_raw": {
+    "id": {
+      "type": "int",
+      "is_array": false
+    },
+    "updated_at": {
+      "type": "string",
+      "is_array": false
+    },
+    "users": {
+      "type": "string",
+      "is_array": false
+    },
+    "event": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
