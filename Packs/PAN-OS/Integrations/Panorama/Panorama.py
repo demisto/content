@@ -123,6 +123,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'educational-institutions',
     'entertainment-and-arts',
     'extremism',
+    'financial-services',
     'gambling',
     'games',
     'government',
@@ -176,7 +177,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-based-email',
     'high-risk',
     'medium-risk',
-    'low-risk'
+    'low-risk',
+    'real-time-detection',
+    'ransomware'
 }
 
 class PAN_OS_Not_Found(Exception):
