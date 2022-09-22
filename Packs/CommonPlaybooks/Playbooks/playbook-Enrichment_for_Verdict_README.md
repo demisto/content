@@ -1,4 +1,4 @@
-This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -40,11 +40,11 @@ This playbook does not use any integrations.
 | URL | URL to enrich and give verdict. | alert.url | Optional |
 | User | User to enrich and give verdict. \(AWS IAM or Active Directory\). | alert.username | Optional |
 | Domain | Domain to enrich and give verdict. | alert.domainname | Optional |
-| awsUser | Name of the AWS IAM user to enrich |  | Optional |
-| CommandLine | The CMD to run prevalence check  |  | Optional |
-| ProcessName | The process name to run prevalence check. |  | Optional |
-| RegistryKey | The registry key to run prevalence check. The input registy value must be provided as well |  | Optional |
-| RegistryValue | The registry value to run prevalence check. The input registy key must be provided as well |  | Optional |
+| awsUser | Name of the AWS IAM user to enrich. |  | Optional |
+| CommandLine | The CMD to run the prevalence check.  |  | Optional |
+| ProcessName | The process name to run the prevalence check. |  | Optional |
+| RegistryKey | The registry key to run the prevalence check. The input registry value must be provided as well. |  | Optional |
+| RegistryValue | The registry value to run prevalence check. The input registry key must be provided as well. |  | Optional |
 
 ## Playbook Outputs
 ---
