@@ -425,8 +425,8 @@ def main() -> None:  # pragma: no cover
                 return_results(results)
             elif command == 'tenable-get-vulnerabilities':
                 results = get_vulnerabilities_command(args, client)
-                if hasattr(results, 'outputs') and results.outputs:  # pylint: disable=E1101
-                    vulnerabilities = results.outputs  # pylint: disable=E1101
+                if hasattr(results, 'raw_response') and results.raw_response:  # pylint: disable=E1101
+                    vulnerabilities = results.raw_response  # pylint: disable=E1101
                 return_results(results)
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
