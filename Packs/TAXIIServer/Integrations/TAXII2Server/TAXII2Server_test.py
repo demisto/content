@@ -561,7 +561,7 @@ def test_parse_manifest_and_object_args_with_valid_date(mocker, taxii2_server_v2
             testing parse_manifest_and_object_args.
         Then
             Ensure that Should parsing was done correctly and a valid results message was returned.
-    """    
+    """
     iocs = util_load_json('test_files/ip_iocs.json')
     manifest = util_load_json('test_files/manifest21.json')
     mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
