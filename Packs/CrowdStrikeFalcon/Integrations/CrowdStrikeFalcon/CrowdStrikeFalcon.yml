@@ -88,6 +88,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
@@ -337,15 +338,15 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
+      defaultValue: false
       required: false
-      defaultvalue: 'false'
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
     - description: The type of command to run.
       name: command_type
       required: true
-    - description: The full command to run.
+    - description: 'The full command to run.'
       name: full_command
       required: true
     - auto: PREDEFINED
