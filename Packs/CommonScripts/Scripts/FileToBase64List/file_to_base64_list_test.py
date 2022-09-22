@@ -38,6 +38,6 @@ def test_file_to_base64_list(mocker):
 
 def test_get_file_data(mocker):
     data = get_file_data(TEST_FILE_PATH)
-    assert base64.b64decode(data).strip() == "this is a test file"
+    assert base64.b64decode(data).strip() == b"this is a test file"
     data = get_file_data(TEST_FILE_PATH, True)
-    assert zlib.decompress(base64.b64decode(data)).strip() == "this is a test file"
+    assert zlib.decompress(base64.b64decode(data)).strip() == b"this is a test file"
