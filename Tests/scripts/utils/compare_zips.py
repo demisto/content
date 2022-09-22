@@ -57,7 +57,6 @@ def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
             diffs = [x for x in d.compare(f1lines, f2lines) if x[0] in ('+', '-')]
             if diffs:
                 f.writelines(diffs)
-            # all rows with changes
 
 
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
