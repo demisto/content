@@ -1421,8 +1421,8 @@ tasks:
     task:
       id: 6b1304db-9fb7-4572-8c64-df99a776de46
       version: -1
-      name: 'Get prevalence for IOCs '
-      playbookName: 'Get prevalence for IOCs '
+      name: 'Get prevalence for IOCs'
+      playbookName: 'Get prevalence for IOCs'
       type: playbook
       iscommand: false
       brand: ""
