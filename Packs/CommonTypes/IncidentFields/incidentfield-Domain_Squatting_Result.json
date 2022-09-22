@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "caseInsensitive": true,
+    "cliName": "domainsquattingresult",
+    "closeForm": false,
+    "content": true,
+    "description": "The result of the domain-squatting check for the attacker's email.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_domainsquattingresult",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Domain Squatting Result",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

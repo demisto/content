@@ -278,3 +278,23 @@ Gets indicators shared with this tenant (MT only).
 |---|
 | 1.1.1.1 |
 | 2.2.2.2 |
+
+
+### es-get-indicators
+***
+Gets indicators available in the configured Elasticsearch database.
+
+
+#### Base Command
+
+`es-get-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of indicators to fetch. The default is 50. Default is 50. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

@@ -27,3 +27,6 @@ ignore=IF100
 
 [file:IronDefense_image.png]
 ignore=IM111
+
+[file:classifier-IronDefense.json]
+ignore=BA101

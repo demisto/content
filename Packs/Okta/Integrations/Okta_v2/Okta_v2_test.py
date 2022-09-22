@@ -1,6 +1,7 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
-    get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command
+    get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
+    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param
 import pytest
 import json
 import io
@@ -189,6 +190,49 @@ create_user_response = {
         },
         "self": {
             "href": "https://test.com/api/v1/users/TestID"
+        }
+    }
+}
+create_group_response = {
+    "id": "00g3q8tjdyoOw6fJE1d7",
+    "created": "2022-05-20T14:59:29.000Z",
+    "lastUpdated": "2022-05-20T14:59:29.000Z",
+    "lastMembershipUpdated": "2022-05-20T14:59:29.000Z",
+    "objectClass": ["okta:user_group"],
+    "type": "OKTA_GROUP",
+    "profile": {
+        "name": "TestGroup",
+        "description": "Test Group Description"
+    },
+    "_links": {
+        "logo": [{
+            "name": "medium",
+            "href": "https://op3static.oktacdn.com/assets/img/logos/groups/odyssey/okta-medium.png",
+            "type": "image/png"
+        },
+            {
+                "name": "large",
+                "href": "https://op3static.oktacdn.com/assets/img/logos/groups/odyssey/okta-large.png",
+                "type": "image/png"
+        }],
+        "users": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/users"},
+        "apps": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/apps"}
+    }
+}
+assign_group_to_app_response = {
+    "id": "00g3q8tjdyoOw6fJE1d7",
+    "lastUpdated": "2022-05-20T16:01:16.000Z",
+    "priority": 5,
+    "profile": {},
+    "_links": {
+        "app": {
+            "href": "https://test.com/api/v1/apps/0oa3ik9908vngPiMB1d7"
+        },
+        "self": {
+            "href": "https://test.com/api/v1/apps/0oa3ik9908vngPiMB1d7/groups/00g3q8tjdyoOw6fJE1d7"
+        },
+        "group": {
+            "href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7"
         }
     }
 }
@@ -608,10 +652,62 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     ]
 )
 def test_list_user_command(mocker, args, expected_context, expected_readable):
-    mocker.patch.object(client, 'list_users', return_value=user_data)
+    mocker.patch.object(client, 'list_users', return_value=(user_data, "123dasu23c"))
     readable, outputs, _ = list_users_command(client, args)
     assert outputs.get('Account(val.ID && val.ID == obj.ID)')[0] == expected_context
     assert expected_readable in readable
+    assert "tag: 123dasu23c" in readable
+
+
+@pytest.mark.parametrize("args", [({"userId": "TestID", "username": "", "verbose": 'false'})])
+def test_after_key_list_user_command(mocker, args):
+    """
+    Given
+    - args.
+
+    When
+    - Running list_users command.
+
+    Then
+    - Validate that since there's no more results to show, there's no tag key in the readable output.
+    """
+    mocker.patch.object(client, 'list_users', return_value=(user_data, None))
+    readable, _, _ = list_users_command(client, args)
+    assert "tag:" not in readable
+
+
+@pytest.mark.parametrize("url, expected_after_tag",
+                         [("https://dev-725178.oktapreview.com/api/v1/users?limit=10&after=qazwsx123",
+                           "qazwsx123")])
+def test_get_after_tag_function(url, expected_after_tag):
+    """
+    Given
+    - url.
+    When
+    - Running get_after_tag function.
+
+    Then
+    - Validate that tag was extracted correctly.
+    """
+    after_tag = get_after_tag(url)
+    assert expected_after_tag == after_tag
+
+
+@pytest.mark.parametrize("url, expected_url",
+                         [("https://dev-725178.oktapreview.com/api/v1/users?limit=10&after=qazwsx123",
+                           "https://dev-725178.oktapreview.com/api/v1/users?after=qazwsx123")])
+def test_delete_limit_param_function(url, expected_url):
+    """
+    Given
+    - url.
+    When
+    - Running delete_limit_param function.
+
+    Then
+    - Ensure that the limit param was deleted.
+    """
+    modified_url = delete_limit_param(url)
+    assert expected_url == modified_url
 
 
 @pytest.mark.parametrize(
@@ -673,6 +769,28 @@ def test_create_user_command(mocker, args):
     readable, outputs, _ = create_user_command(client, args)
     assert 'STAGED' in readable
     assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0].get('Status') == 'STAGED'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [({'name': 'TestGroup',
+       'description': 'Test Group Description'})])
+def test_create_group_command(mocker, args):
+    mocker.patch.object(client, 'create_group', return_value=create_group_response)
+    readable, outputs, _ = create_group_command(client, args)
+    assert outputs.get('OktaGroup(val.ID && val.ID === obj.ID)')[0].get('Type') == 'OKTA_GROUP'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [({'groupName': 'TestGroup',
+       'appName': 'TestApp'})])
+def test_assign_group_to_app_command(mocker, args):
+    mocker.patch.object(client, 'get_group_id', return_value='00g3q8tjdyoOw6fJE1d7')
+    mocker.patch.object(client, 'get_app_id', return_value='a456appid654')
+    mocker.patch.object(client, 'assign_group_to_app', return_value=assign_group_to_app_response)
+    readable, outputs, _ = assign_group_to_app_command(client, args)
+    assert _.get('id') == '00g3q8tjdyoOw6fJE1d7'
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,352 @@
+{
+  "empty_response": {
+    "data": {
+      "malwareDetectionTaskResult": {}
+    }
+  },
+  "raw_response": {
+    "data": {
+      "malwareDetectionTaskResult": {
+        "id": "bf687fcf-84d7-47f6-8bd1-54e8cf439680",
+        "indicatorsOfCompromise": [
+          {
+            "iocType": "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME",
+            "iocValue": "/etc/security/access.conf"
+          },
+          {
+            "iocType": "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE",
+            "iocValue": "rule ps_match {strings:$ps_hex_header = {45 7F 46 4C}conditions:$ps_hex_header}"
+          },
+          {
+            "iocType": "INDICATOR_OF_COMPROMISE_TYPE_HASH",
+            "iocValue": "e5c1b9c44be582f895eaea3d3738c5b4"
+          }
+        ],
+        "results": [
+          {
+            "objectId": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-81407",
+            "snapshotResults": [
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-29T07:03:30.669Z",
+                "snapshotId": "b7d6b871-796e-4e7c-99cf-328007c9d5c1",
+                "scanStats": {
+                  "numFiles": 142630,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-11-09T01:03:51.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-28T07:00:09.297Z",
+                "snapshotId": "3779a895-94bf-437e-b63a-61e73e215901",
+                "scanStats": {
+                  "numFiles": 142630,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-11-09T01:03:51.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-26T07:04:07.139Z",
+                "snapshotId": "a871683f-f4fa-475f-806c-58f06e6782dc",
+                "scanStats": {
+                  "numFiles": 142630,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-11-09T01:03:51.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "objectId": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277",
+            "snapshotResults": [
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-29T12:01:43.383Z",
+                "snapshotId": "129f22f4-0359-4e7d-aa53-9edf4e33cff1",
+                "scanStats": {
+                  "numFiles": 142138,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-10-10T14:29:42.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-29T08:01:39.388Z",
+                "snapshotId": "b9264942-c71c-4b91-b9a7-74a7ba0f6166",
+                "scanStats": {
+                  "numFiles": 142138,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-10-10T14:29:42.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+                "snapshotDate": "2021-10-29T00:01:04.357Z",
+                "snapshotId": "9f12b533-b740-4fb9-af94-4411b0aee01d",
+                "scanStats": {
+                  "numFiles": 142139,
+                  "numFilesScanned": 0,
+                  "totalFilesScannedSizeBytes": 0
+                },
+                "matches": [
+                  {
+                    "indicatorIndex": 0,
+                    "paths": [
+                      {
+                        "aclDetails": null,
+                        "creationTime": "2019-10-10T14:29:42.000Z",
+                        "modificationTime": "2016-11-05T23:14:01.000Z",
+                        "path": "/etc/security/access.conf",
+                        "yaraMatchDetails": [],
+                        "requestedHashDetails": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "id": "bf687fcf-84d7-47f6-8bd1-54e8cf439680",
+    "status": "FINISHED",
+    "indicatorsOfCompromise": [
+      {
+        "iocType": "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME",
+        "iocValue": "/etc/security/access.conf"
+      },
+      {
+        "iocType": "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE",
+        "iocValue": "rule ps_match {strings:$ps_hex_header = {45 7F 46 4C}conditions:$ps_hex_header}"
+      },
+      {
+        "iocType": "INDICATOR_OF_COMPROMISE_TYPE_HASH",
+        "iocValue": "e5c1b9c44be582f895eaea3d3738c5b4"
+      }
+    ],
+    "results": [
+      {
+        "objectId": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-81407",
+        "snapshotResults": [
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-29T07:03:30.669Z",
+            "snapshotId": "b7d6b871-796e-4e7c-99cf-328007c9d5c1",
+            "scanStats": {
+              "numFiles": 142630,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-11-09T01:03:51.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-28T07:00:09.297Z",
+            "snapshotId": "3779a895-94bf-437e-b63a-61e73e215901",
+            "scanStats": {
+              "numFiles": 142630,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-11-09T01:03:51.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-26T07:04:07.139Z",
+            "snapshotId": "a871683f-f4fa-475f-806c-58f06e6782dc",
+            "scanStats": {
+              "numFiles": 142630,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-11-09T01:03:51.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "objectId": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277",
+        "snapshotResults": [
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-29T12:01:43.383Z",
+            "snapshotId": "129f22f4-0359-4e7d-aa53-9edf4e33cff1",
+            "scanStats": {
+              "numFiles": 142138,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-10-10T14:29:42.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-29T08:01:39.388Z",
+            "snapshotId": "b9264942-c71c-4b91-b9a7-74a7ba0f6166",
+            "scanStats": {
+              "numFiles": 142138,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-10-10T14:29:42.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "status": "MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED",
+            "snapshotDate": "2021-10-29T00:01:04.357Z",
+            "snapshotId": "9f12b533-b740-4fb9-af94-4411b0aee01d",
+            "scanStats": {
+              "numFiles": 142139,
+              "numFilesScanned": 0,
+              "totalFilesScannedSizeBytes": 0
+            },
+            "matches": [
+              {
+                "indicatorIndex": 0,
+                "paths": [
+                  {
+                    "creationTime": "2019-10-10T14:29:42.000Z",
+                    "modificationTime": "2016-11-05T23:14:01.000Z",
+                    "path": "/etc/security/access.conf"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

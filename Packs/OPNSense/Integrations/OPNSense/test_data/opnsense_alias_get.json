@@ -1,0 +1,85 @@
+{
+    "alias":{
+       "enabled":"1",
+       "name":"NewAlias",
+       "type":{
+          "host":{
+             "value":"Host(s)",
+             "selected":1
+          },
+          "network":{
+             "value":"Network(s)",
+             "selected":0
+          },
+          "port":{
+             "value":"Port(s)",
+             "selected":0
+          },
+          "url":{
+             "value":"URL (IPs)",
+             "selected":0
+          },
+          "urltable":{
+             "value":"URL Table (IPs)",
+             "selected":0
+          },
+          "geoip":{
+             "value":"GeoIP",
+             "selected":0
+          },
+          "networkgroup":{
+             "value":"Network group",
+             "selected":0
+          },
+          "mac":{
+             "value":"MAC address",
+             "selected":0
+          },
+          "external":{
+             "value":"External (advanced)",
+             "selected":0
+          },
+          "dynipv6host":{
+             "value":"Dynamic IPv6 Host",
+             "selected":0
+          }
+       },
+       "proto":{
+          "IPv4":{
+             "value":"IPv4",
+             "selected":0
+          },
+          "IPv6":{
+             "value":"IPv6",
+             "selected":0
+          }
+       },
+       "interface":{
+          "":{
+             "value":"none",
+             "selected":true
+          },
+          "opt1":{
+             "value":"Int1",
+             "selected":0
+          },
+          "opt2":{
+             "value":"Int2",
+             "selected":0
+          },
+          "wan":{
+             "value":"WAN",
+             "selected":0
+          }
+       },
+       "counters":"",
+       "updatefreq":"",
+       "content":{
+        "1.2.3.4":{
+           "value":"1.2.3.4",
+           "selected":1
+        }
+       },
+       "description":"MyNewAlias"
+    }
+ }

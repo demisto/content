@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:MicrosoftCloudAppSecurity.yml]
 ignore=IN145
+
+[file:classifier-MicrosoftCloudAppSecurity.json]
+ignore=BA101

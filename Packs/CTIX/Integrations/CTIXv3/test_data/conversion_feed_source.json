@@ -1,0 +1,68 @@
+{
+    "next": "feed-sources/?page=2&page_size=10&AccessID=48d01bdc-ffd5-45d5-946d-ffd1ab623737&Expires=1652087203&Signature=I09d/gAeTr+ZbHzcZndjFOsF7ns=&object_id=1ff2a18a-0574-4015-bbec-bc7692dccb14&object_type=indicator",
+    "page_size": 10,
+    "previous": null,
+    "results": [
+        {
+            "created": 1651646468,
+            "id": "3d325184-59a5-4583-966b-e38598cd0e99",
+            "name": "threatmailbox",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651841206,
+            "id": "9c82a682-254f-410d-a1c0-dc3514415f79",
+            "name": "tushar-threatmailbox",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651846905,
+            "id": "e0370b90-5eb9-46c3-8b44-db0d657e6231",
+            "name": "AUTOMATESTIN",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651647428,
+            "id": "2aad22e7-2508-4ea8-8396-25fdc9294a0d",
+            "name": "test2x",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651640926,
+            "id": "6b0c5ff3-d824-40f3-af3a-9c21907c5367",
+            "name": "zeus",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651640926,
+            "id": "3cbac291-5e97-49fc-83f8-6303a025a086",
+            "name": "Import",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1652078555,
+            "id": "4e010fe4-fd8a-4692-9780-cea9848154ce",
+            "name": "Virus Total",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1652077497,
+            "id": "9e28e848-6b6c-4717-9f1f-d0b15b743bcc",
+            "name": "test",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651670198,
+            "id": "e70288f2-616f-44be-b4db-0b0d9cf1d608",
+            "name": "Recorded Future",
+            "taxii_option": "2.1"
+        },
+        {
+            "created": 1651819965,
+            "id": "c26328e0-0a80-44a6-97af-678d6e7a3eeb",
+            "name": "Flashpoint",
+            "taxii_option": "2.1"
+        }
+    ],
+    "total": 18
+}

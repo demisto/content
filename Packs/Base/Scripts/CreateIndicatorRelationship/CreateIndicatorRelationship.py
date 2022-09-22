@@ -4,8 +4,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
-
 BRAND = "XSOAR"
 PAGE_SIZE = 2000
 
@@ -208,7 +206,6 @@ def main():
         relationships, human_readable = create_relationships(args)
         return_results(CommandResults(readable_output=human_readable, relationships=relationships))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute CreateIndicatorRelationships automation. Error: {str(e)}')
 
 

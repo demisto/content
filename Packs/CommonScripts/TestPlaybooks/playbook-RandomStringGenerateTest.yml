@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c52944e6-e59d-4aa0-89e1-d5288aedb945
+    taskid: d0bed69d-3497-4495-80e6-8b40efdf9e6c
     type: start
     task:
-      id: c52944e6-e59d-4aa0-89e1-d5288aedb945
+      id: d0bed69d-3497-4495-80e6-8b40efdf9e6c
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -30,12 +30,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6666dfd1-07dd-403c-81ee-1cdf9ae9d0b1
+    taskid: 7d2308b1-c0d9-4443-8a2e-04f63a574e8f
     type: regular
     task:
-      id: 6666dfd1-07dd-403c-81ee-1cdf9ae9d0b1
+      id: 7d2308b1-c0d9-4443-8a2e-04f63a574e8f
       version: -1
       name: Generate String
       scriptName: GenerateRandomString
@@ -60,7 +63,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -68,12 +71,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 096efc65-ed82-4373-83b5-fbd7ac295494
+    taskid: 116aa4f4-cbc7-4ddf-82cc-df26f0d0e348
     type: title
     task:
-      id: 096efc65-ed82-4373-83b5-fbd7ac295494
+      id: 116aa4f4-cbc7-4ddf-82cc-df26f0d0e348
       version: -1
       name: Done
       type: title
@@ -83,22 +89,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 50b94bc2-aa8b-4a29-836a-6de8693c2f0f
+    taskid: 9261e009-e203-48ef-8a82-1c1b36e64bbf
     type: condition
     task:
-      id: 50b94bc2-aa8b-4a29-836a-6de8693c2f0f
+      id: 9261e009-e203-48ef-8a82-1c1b36e64bbf
       version: -1
-      name: Verify generated string
+      name: Verify generated string length
       type: condition
       iscommand: false
       brand: ""
@@ -106,21 +115,24 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "3"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: stringHasLength
           left:
             value:
               complex:
                 root: RandomString
             iscontext: true
+          right:
+            value:
+              simple: "10"
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -128,12 +140,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c6d59023-44ae-4ef8-8baf-7c5c284980a1
+    taskid: 3fc99a46-3ce6-4bd5-899a-637fa89f7001
     type: regular
     task:
-      id: c6d59023-44ae-4ef8-8baf-7c5c284980a1
+      id: 3fc99a46-3ce6-4bd5-899a-637fa89f7001
       version: -1
       name: Print error
       description: Prints an error entry with a given message
@@ -151,20 +166,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6a47cb1f-6874-4033-8a07-77baae267b05
+    taskid: a1df1b52-574d-4453-8624-c4c64d0d76a9
     type: regular
     task:
-      id: 6a47cb1f-6874-4033-8a07-77baae267b05
+      id: a1df1b52-574d-4453-8624-c4c64d0d76a9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -178,15 +196,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -194,13 +208,134 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 80a3629d-b559-4b0e-8b00-22c39889e5ba
+    type: regular
+    task:
+      id: 80a3629d-b559-4b0e-8b00-22c39889e5ba
+      version: -1
+      name: Generate Long String
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "20000"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "True"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0543b7db-0767-4753-80fb-60fb42f33357
+    type: condition
+    task:
+      id: 0543b7db-0767-4753-80fb-60fb42f33357
+      version: -1
+      name: Verify generated string
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              complex:
+                root: RandomString
+            iscontext: true
+          right:
+            value:
+              simple: "10000"
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ab1fdcff-8292-40b7-8311-355f52ddd255
+    type: regular
+    task:
+      id: ab1fdcff-8292-40b7-8311-355f52ddd255
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 492.5,
+        "height": 1435,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -208,4 +343,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.2.0

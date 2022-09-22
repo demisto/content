@@ -1,0 +1,244 @@
+{
+    "description": "Incoming Mapper for Symantec DLP",
+    "feed": false,
+    "id": "Symantec DLP - Incoming Mapper",
+    "mapping": {
+        "Symantec DLP Discover Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description"
+                },
+                "Device Local IP": {
+                    "simple": "endpointMachineIpAddress"
+                },
+                "External ID": {
+                    "simple": "ID"
+                },
+                "File Access Date": {
+                    "simple": "fileAccessDate"
+                },
+                "File Creation Date": {
+                    "simple": "fileCreateDate"
+                },
+                "File Path": {
+                    "simple": "discoverRepositoryLocation"
+                },
+                "First Seen": {
+                    "simple": "detectionDate"
+                },
+                "Item Owner": {
+                    "simple": "fileOwner"
+                },
+                "Item Owner Email": {
+                    "simple": "fileOwnerEmail"
+                },
+                "Last Modified By": {
+                    "simple": "fileModifiedBy"
+                },
+                "Policy Details": {
+                    "simple": "policyName"
+                },
+                "Policy ID": {
+                    "simple": "policyId"
+                },
+                "Resource Name": {
+                    "simple": "discoverName"
+                },
+                "SDLP Scan Start": {
+                    "simple": "discoverScanStartDate"
+                },
+                "SDLP Scanned Machine": {
+                    "simple": "discoverServer"
+                },
+                "SDLP Target": {
+                    "simple": "discoverTargetName"
+                },
+                "Source Created By": {
+                    "simple": "fileCreatedBy"
+                },
+                "Source IP": {
+                    "simple": "senderIPAddress"
+                },
+                "Source Status": {
+                    "simple": "incidentStatusId"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "Symantec DLP Endpoint Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Application Name": {
+                    "simple": "endpointApplicationName"
+                },
+                "Application Path": {
+                    "simple": "endpointApplicationPath"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Detected User": {
+                    "simple": "domainUserName"
+                },
+                "Device Id": {
+                    "simple": "endpointDeviceInstanceId"
+                },
+                "Device Local IP": {
+                    "simple": "endpointMachineIpAddress"
+                },
+                "Device Name": {
+                    "simple": "endpointMachineName"
+                },
+                "Device Status": {
+                    "simple": "endpointConnectionStatus"
+                },
+                "External ID": {
+                    "simple": "ID"
+                },
+                "File Access Date": {
+                    "simple": "fileAccessDate"
+                },
+                "File Name": {
+                    "simple": "endpointFileName"
+                },
+                "File Path": {
+                    "simple": "endpointFilePath"
+                },
+                "First Seen": {
+                    "simple": "detectionDate"
+                },
+                "Item Owner": {
+                    "simple": "dataOwnerName"
+                },
+                "Item Owner Email": {
+                    "simple": "dataOwnerEmail"
+                },
+                "Last Modified By": {
+                    "simple": "fileModifiedBy"
+                },
+                "Policy Details": {
+                    "simple": "policyName"
+                },
+                "Policy ID": {
+                    "simple": "policyId"
+                },
+                "Source Created By": {
+                    "simple": "fileCreatedBy"
+                },
+                "Source IP": {
+                    "simple": "senderIPAddress"
+                },
+                "Source Status": {
+                    "simple": "incidentStatusId"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "Symantec DLP Network Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Destination IP": {
+                    "simple": "recipientInfo.recipientDomain"
+                },
+                "Destination Port": {
+                    "simple": "recipientInfo.recipientPort"
+                },
+                "Device Local IP": {
+                    "simple": "endpointMachineIpAddress"
+                },
+                "Email Subject": {
+                    "simple": "messageSubject"
+                },
+                "Error Message": {
+                    "simple": "errorMessage"
+                },
+                "External ID": {
+                    "simple": "ID"
+                },
+                "First Seen": {
+                    "simple": "detectionDate"
+                },
+                "Item Owner": {
+                    "simple": "dataOwnerName"
+                },
+                "Item Owner Email": {
+                    "simple": "dataOwnerEmail"
+                },
+                "Policy Details": {
+                    "simple": "policyName"
+                },
+                "Policy ID": {
+                    "simple": "policyId"
+                },
+                "SDLP Action Status ID": {
+                    "simple": "preventOrProtectStatusId"
+                },
+                "SDLP Detection Server Name": {
+                    "simple": "detectionServerName"
+                },
+                "SDLP Group Name": {
+                    "simple": "policyGroupName"
+                },
+                "SDLP Incident Type": {
+                    "simple": "messageSource"
+                },
+                "SDLP Message Type": {
+                    "simple": "messageType"
+                },
+                "SDLP Policy Version": {
+                    "simple": "policyVersion"
+                },
+                "SDLP Policy Violations Count": {
+                    "simple": "matchCount"
+                },
+                "SDLP Recipient URL": {
+                    "simple": "recipientInfo.recipientUrl"
+                },
+                "Source IP": {
+                    "simple": "senderIPAddress"
+                },
+                "Source Port": {
+                    "simple": "networkSenderPort"
+                },
+                "Source Status": {
+                    "simple": "incidentStatusId"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Device Local IP": {
+                    "simple": "endpointMachineIpAddress"
+                },
+                "Policy Details": {
+                    "simple": "policyName"
+                },
+                "Policy ID": {
+                    "simple": "policyId"
+                },
+                "Source IP": {
+                    "simple": "senderIPAddress"
+                },
+                "Source Status": {
+                    "simple": "incidentStatusId"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Symantec DLP - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

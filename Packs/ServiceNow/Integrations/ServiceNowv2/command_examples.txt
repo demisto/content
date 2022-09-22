@@ -21,3 +21,6 @@
 !servicenow-get-item-details id=id
 !servicenow-create-item-order id=id quantity=1 variables="hard_drive=16GB;requested_os=linux"
 !servicenow-document-route-to-queue queue_id=id document_id=id
+!servicenow-get-tasks-for-co id="1234"
+!servicenow-create-co-from-template template=1234
+!servicenow-generic-api-call method=GET path="/table/table_name"

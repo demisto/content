@@ -434,9 +434,7 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    demisto.error(traceback.format_exc())
 
 except Exception as e:
-    demisto.error(traceback.format_exc())
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))

@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#C5FE01",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "FortiSIEM",
+    "layout": "FortiSIEM incident Layout",
+    "locked": false,
+    "name": "FortiSIEM",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

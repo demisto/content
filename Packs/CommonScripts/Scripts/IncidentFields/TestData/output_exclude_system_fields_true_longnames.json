@@ -428,8 +428,8 @@
         "type": "number"
     },
     "Detection SLA": {
-        "associatedToAll": true,
-        "associatedTypes": "all",
+        "associatedToAll": false,
+        "associatedTypes": null,
         "name": "Detection SLA",
         "shortName": "detectionsla",
         "type": "timer"

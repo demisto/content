@@ -1,0 +1,202 @@
+{
+    "result": [
+        {
+            "id": "zone_id_1",
+            "name": "fortresscyber.io",
+            "status": "active",
+            "paused": false,
+            "type": "full",
+            "development_mode": 0,
+            "name_servers": [
+                "earl.ns.cloudflare.com",
+                "monroe.ns.cloudflare.com"
+            ],
+            "original_name_servers": [
+                "ns-669.awsdns-19.net",
+                "ns-1219.awsdns-24.org",
+                "ns-64.awsdns-08.com",
+                "ns-1907.awsdns-46.co.uk"
+            ],
+            "original_registrar": "namecheap, inc. (id: 1068)",
+            "original_dnshost": null,
+            "modified_on": "2021-12-08T07:54:43.676430Z",
+            "created_on": "2021-12-01T12:50:43.250444Z",
+            "activated_on": "2021-12-08T07:54:43.676430Z",
+            "meta": {
+                "step": 2,
+                "custom_certificate_quota": 0,
+                "page_rule_quota": 30,
+                "phishing_detected": false,
+                "multiple_railguns_allowed": false
+            },
+            "owner": {
+                "id": "id",
+                "type": "user",
+                "email": "email@email.com"
+            },
+            "account": {
+                "id": "id",
+                "name": "some_name"
+            },
+            "permissions": [
+                "#access:edit",
+                "#access:read",
+                "#analytics:read",
+                "#app:edit",
+                "#auditlogs:read",
+                "#billing:read",
+                "#cache_purge:edit",
+                "#dns_records:edit",
+                "#dns_records:read",
+                "#healthchecks:edit",
+                "#healthchecks:read",
+                "#lb:edit",
+                "#lb:read",
+                "#legal:read",
+                "#logs:edit",
+                "#logs:read",
+                "#member:read",
+                "#organization:edit",
+                "#organization:read",
+                "#ssl:edit",
+                "#ssl:read",
+                "#stream:edit",
+                "#stream:read",
+                "#subscription:edit",
+                "#subscription:read",
+                "#teams:edit",
+                "#teams:read",
+                "#teams:report",
+                "#waf:edit",
+                "#waf:read",
+                "#waitingroom:edit",
+                "#waitingroom:read",
+                "#webhooks:edit",
+                "#webhooks:read",
+                "#worker:edit",
+                "#worker:read",
+                "#zaraz:edit",
+                "#zaraz:read",
+                "#zone:edit",
+                "#zone:read",
+                "#zone_settings:edit",
+                "#zone_settings:read"
+            ],
+            "plan": {
+                "id": "id",
+                "name": "Pro Website",
+                "price": 0,
+                "currency": "USD",
+                "frequency": "",
+                "is_subscribed": true,
+                "can_subscribe": false,
+                "legacy_id": "pro",
+                "legacy_discount": false,
+                "externally_managed": false
+            }
+        },
+        {
+            "id": "zone_id_2",
+            "name": "stronghold.services",
+            "status": "active",
+            "paused": false,
+            "type": "full",
+            "development_mode": 0,
+            "name_servers": [
+                "earl.ns.cloudflare.com",
+                "monroe.ns.cloudflare.com"
+            ],
+            "original_name_servers": [
+                "dns1.registrar-servers.com",
+                "dns2.registrar-servers.com"
+            ],
+            "original_registrar": "namecheap, inc. (id: 1068)",
+            "original_dnshost": null,
+            "modified_on": "2022-01-30T11:04:53.255562Z",
+            "created_on": "2022-01-30T10:47:46.393968Z",
+            "activated_on": "2022-01-30T11:04:53.255562Z",
+            "meta": {
+                "step": 2,
+                "custom_certificate_quota": 0,
+                "page_rule_quota": 3,
+                "phishing_detected": false,
+                "multiple_railguns_allowed": false
+            },
+            "owner": {
+                "id": "id",
+                "type": "user",
+                "email": "some_name"
+            },
+            "account": {
+                "id": "id",
+                "name": "some_name"
+            },
+            "permissions": [
+                "#access:edit",
+                "#access:read",
+                "#analytics:read",
+                "#app:edit",
+                "#auditlogs:read",
+                "#billing:read",
+                "#cache_purge:edit",
+                "#dns_records:edit",
+                "#dns_records:read",
+                "#healthchecks:edit",
+                "#healthchecks:read",
+                "#lb:edit",
+                "#lb:read",
+                "#legal:read",
+                "#logs:edit",
+                "#logs:read",
+                "#member:read",
+                "#organization:edit",
+                "#organization:read",
+                "#ssl:edit",
+                "#ssl:read",
+                "#stream:edit",
+                "#stream:read",
+                "#subscription:edit",
+                "#subscription:read",
+                "#teams:edit",
+                "#teams:read",
+                "#teams:report",
+                "#waf:edit",
+                "#waf:read",
+                "#waitingroom:edit",
+                "#waitingroom:read",
+                "#webhooks:edit",
+                "#webhooks:read",
+                "#worker:edit",
+                "#worker:read",
+                "#zaraz:edit",
+                "#zaraz:read",
+                "#zone:edit",
+                "#zone:read",
+                "#zone_settings:edit",
+                "#zone_settings:read"
+            ],
+            "plan": {
+                "id": "0feeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "name": "Free Website",
+                "price": 0,
+                "currency": "USD",
+                "frequency": "",
+                "is_subscribed": false,
+                "can_subscribe": false,
+                "legacy_id": "free",
+                "legacy_discount": false,
+                "externally_managed": false
+            }
+        }
+    ],
+    "result_info": {
+        "page": 1,
+        "per_page": 20,
+        "total_pages": 1,
+        "count": 2,
+        "total_count": 2
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

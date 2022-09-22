@@ -19,6 +19,10 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
+  "SysAid Change",
+  "SysAid Incident",
+  "SysAid Problem",
+  "SysAid Request",
   "IAM - New Hire",
   "IAM - Terminate User",
   "IAM - Update User",
@@ -26,7 +30,9 @@
   "IAM - Sync User",
   "IAM - Rehire User",
   "Mandiant Automated Defense Incident",
-  "OpsGenie Incident"
+  "OpsGenie Incident",
+  "ThreatConnect",
+  "Vectra Account"
  ],
  "associatedToAll": false,
  "unmapped": false,

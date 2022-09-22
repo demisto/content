@@ -46,3 +46,27 @@ microsoft-atp-live-response-put-file machine_id="4899036531e374137f63289c3267bad
 microsoft-atp-live-response-run-script machine_id=f70f9fe6b29cd9511652434919c6530618f06606 scriptName=test_script.ps1 comment="testing"
 microsoft-atp-live-response-get-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="jas testing" path="C:\\windows\\TEMP\\test_script.ps1"
 microsoft-atp-live-response-result machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f command_index=0
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=network_connections device_name=desktop-s2455r8,desktop-s2455r9 limit=6
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=smb_connections device_name=desktop-s2455r9
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose="management_connection" device_id="4cceb3c642212014e0e9553aa8b59e999ea515ff" query_operation="or" limit="50" timeout="10"
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=scheduled_job device_name=desktop-s2455r8 device_id=4cceb3c642212014e0e9553aa8b59e999ea515ff,96444b946be252d1f4550354edef5fdc23aca2c5 query_operation=or
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_service_created  file_name=installer,services
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=service_updated device_name=msde
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=file_replaced device_name=msde file_name=chrome query_operation=and
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_user device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_group device_id=f70f9fe6b29cd9511652434919c6530618f06606 device_name=desktop  query_operation=and
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=group_user_change device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=local_firewall_change device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=host_file_change device_name=desktop
+microsoft-atp-advanced-hunting-process-details query_purpose=beaconing_evidence file_name=powershell device_name=desktop query_operation=and
+microsoft-atp-advanced-hunting-network-connections query_purpose=external_addresses device_id=48a62a741512515e356c6896d428ebddd0a04c0d
+microsoft-atp-advanced-hunting-network-connections query_purpose=dns_query device_name=desktop-s2455r9,desktop-s2455r8
+microsoft-atp-advanced-hunting-process-details query_purpose=process_excecution_powershell device_name=msde query_operation=and file_name=explorer
+microsoft-atp-advanced-hunting-cover-up query_purpose=file_deleted  file_name=chrome device_name=desktop query_operation=and
+microsoft-atp-advanced-hunting-cover-up query_purpose=event_log_cleared device_name=desktop-s2455r9
+microsoft-atp-advanced-hunting-cover-up query_purpose=compromised_information username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=connected_devices username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=action_types username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=common_files  username=demisto
+microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424

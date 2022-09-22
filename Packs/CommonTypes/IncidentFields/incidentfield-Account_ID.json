@@ -5,7 +5,10 @@
 		"GCP Compute Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
-		"AWS EC2 Instance Misconfiguration"
+		"AWS EC2 Instance Misconfiguration",
+		"Skyhigh Security Alert",
+		"Skyhigh Security Threat",
+		"Vectra Account"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

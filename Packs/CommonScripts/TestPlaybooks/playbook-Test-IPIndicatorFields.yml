@@ -1,38 +1,43 @@
 id: Test IP Indicator Fields
 version: -1
 name: Test IP Indicator Fields
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 840e9af7-bd61-487b-86ff-8ab283b84ce0
+  '0':
+    id: '0'
+    taskid: fb25d265-f826-47f0-8347-889fa5663ce8
     type: start
     task:
-      id: 840e9af7-bd61-487b-86ff-8ab283b84ce0
+      id: fb25d265-f826-47f0-8347-889fa5663ce8
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 7e471176-b33d-4e40-8641-35293e602811
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 54c1c3c9-d968-41d7-863a-01422e18a807
     type: regular
     task:
-      id: 7e471176-b33d-4e40-8641-35293e602811
+      id: 54c1c3c9-d968-41d7-863a-01422e18a807
       version: -1
       name: Create new IP Indicator (5.6.4.1)
       description: commands.local.cmd.new.indicator
@@ -42,157 +47,95 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '5'
     scriptarguments:
-      accounttype: {}
-      actor: {}
-      address: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
       asn:
         simple: test
-      associatedfilenames: {}
-      biosversion: {}
-      comment: {}
-      country: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvss: {}
       detectionengines:
-        simple: "5"
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
+        simple: '5'
       domainname:
         simple: TestName
-      domainstatus: {}
       emailaddress:
         simple: test@demisto.com
-      entryid: {}
-      expirationdate: {}
-      fileextension: {}
-      filetype: {}
-      geocountry: {}
-      geolocation: {}
-      groups: {}
-      hostname: {}
-      id: {}
       internal:
-        simple: "true"
-      ipaddress: {}
-      macaddress: {}
+        simple: 'true'
       malwarefamily:
         simple: test
-      md5: {}
-      memory: {}
-      merge: {}
-      modified: {}
-      name: {}
-      nameservers: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      path: {}
       positivedetections:
-        simple: "1"
-      processor: {}
-      processors: {}
-      published: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      relatedIncidents: {}
-      reputation: {}
-      seenNow: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      source: {}
-      sourceTimeStamp: {}
-      ssdeep: {}
-      subdomains: {}
-      tags: {}
+        simple: '1'
       type:
         simple: IP
-      updateddate: {}
-      username: {}
       value:
         simple: 5.6.4.1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 0248968f-b8f4-47e5-8d89-743b3cb8d5c0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: d804009a-c43d-44a1-8a01-4679a9fb603d
     type: regular
     task:
-      id: 0248968f-b8f4-47e5-8d89-743b3cb8d5c0
+      id: d804009a-c43d-44a1-8a01-4679a9fb603d
       version: -1
       name: Get Created Indicator
-      description: Gets the created indicator
-      scriptName: GetIndicator
+      description: commands.local.cmd.find.indicators
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
+      script: Builtin|||findIndicators
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
-      value:
-        simple: 5.6.4.1
+      extend-context:
+        simple: Indicator=
+      query:
+        simple: value:5.6.4.1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: e325aea4-599a-43cc-88cb-f831331ecc5b
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 89738e96-7498-4717-8fcf-9f7c0427405f
     type: condition
     task:
-      id: e325aea4-599a-43cc-88cb-f831331ecc5b
+      id: 89738e96-7498-4717-8fcf-9f7c0427405f
       version: -1
       name: Assert custom fields were populated
       description: Asserts custom fields were populated correctly
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -213,7 +156,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: '5'
       - - operator: isEqualString
           left:
             value:
@@ -254,43 +197,86 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 610
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: b390bc91-a3ee-4183-8066-40a23f49656c
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 4bc28c68-3753-44a0-81c6-7c08a8231827
     type: title
     task:
-      id: b390bc91-a3ee-4183-8066-40a23f49656c
+      id: 4bc28c68-3753-44a0-81c6-7c08a8231827
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 800
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: e8425cbe-1c92-4c36-8cff-4534405e2a73
+    type: regular
+    task:
+      id: e8425cbe-1c92-4c36-8cff-4534405e2a73
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      seconds:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
+        "height": 910,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
@@ -298,3 +284,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: Test creation of an IP indicator

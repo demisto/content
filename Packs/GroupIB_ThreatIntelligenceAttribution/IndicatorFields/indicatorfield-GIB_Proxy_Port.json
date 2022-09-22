@@ -1,4 +1,7 @@
 {
+    "associatedTypes": [
+        "IP"
+    ],
     "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "gibproxyport",

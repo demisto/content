@@ -9,3 +9,6 @@ Depending on the authentication method that you use, the integration parameters 
 
 In order to use Cortex XSOAR application and allow us access to O365 Outlook Mail Single User, you need to approve our app, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-mail-listener).
 After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user)

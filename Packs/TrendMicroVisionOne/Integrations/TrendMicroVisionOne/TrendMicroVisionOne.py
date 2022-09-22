@@ -12,9 +12,11 @@ from typing import Any, Dict, Union
 from requests.models import HTTPError
 
 '''CONSTANTS'''
+USER_AGENT = 'TMV1CortexXSOARApp/1.1'
 URL = 'url'
 POST = 'post'
 GET = 'get'
+PUT = 'put'
 AUTHORIZATION = 'Authorization'
 BEARER = 'Bearer '
 CONTENT_TYPE_JSON = 'application/json'
@@ -52,6 +54,9 @@ FILE_NAME = 'filename'
 DOCUMENT_PASSWORD = 'document_password'
 ARCHIVE_PASSWORD = 'archive_password'
 ACTION_ID = 'actionId'
+WORKBENCH_ID = 'workbench_id'
+CONTENT = 'content'
+STATUS = 'status'
 # End Points
 ADD_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/block'
 REMOVE_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/restoreBlock'
@@ -69,6 +74,8 @@ GET_COMPUTER_ID_ENDPOINT = '/v2.0/xdr/eiqs/query/agentInfo'
 GET_ENDPOINT_INFO_ENDPOINT = '/v2.0/xdr/eiqs/query/endpointInfo'
 GET_FILE_STATUS = '/v2.0/xdr/sandbox/tasks/{taskId}'
 GET_FILE_REPORT = '/v2.0/xdr/sandbox/reports/{reportId}'
+ADD_NOTE_ENDPOINT = '/v2.0/xdr/workbench/workbenches/{workbenchId}/notes'
+UPDATE_STATUS_ENDPOINT = '/v2.0/xdr/workbench/workbenches/{workbenchId}'
 COLLECT_FORENSIC_FILE = '/v2.0/xdr/response/collectFile'
 DOWNLOAD_INFORMATION_COLLECTED_FILE = '/v2.0/xdr/response/downloadInfo'
 SUBMIT_FILE_TO_SANDBOX = '/v2.0/xdr/sandbox/file'
@@ -90,6 +97,11 @@ SUCCESS_TEST = 'Successfully connected to the vision one API.'
 POLLING_MESSAGE = (
     "The task has not completed, will check status again in 30 seconds"
 )
+# Workbench Statuses
+NEW = 0
+IN_PROGRESS = 1
+RESOLVED_TRUE_POSITIVE = 2
+RESOLVED_FALSE_POSITIVE = 3
 # Table Heading
 TABLE_ADD_TO_BLOCKLIST = 'Add to block list '
 TABLE_REMOVE_FROM_BLOCKLIST = 'Remove from block list '
@@ -108,6 +120,8 @@ TABLE_GET_FILE_ANALYSIS_REPORT = 'File analysis report '
 TABLE_COLLECT_FILE = 'Collect forensic file '
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = 'The download information for collected forensic file '
 TABLE_SUBMIT_FILE_TO_SANDBOX = 'Submit file to sandbox '
+TABLE_ADD_NOTE = 'Add note to workbench alert '
+TABLE_UPDATE_STATUS = 'Update workbench alert status'
 # COMMAND NAMES
 ADD_BLOCKLIST_COMMAND = 'trendmicro-visionone-add-to-block-list'
 REMOVE_BLOCKLIST_COMMAND = 'trendmicro-visionone-remove-from-block-list'
@@ -127,6 +141,8 @@ DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collect
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
 CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
 GET_ENDPOINT_INFO_COMMAND = 'trendmicro-visionone-get-endpoint-info'
+UPDATE_STATUS = 'trendmicro-visionone-update-status'
+ADD_NOTE = 'trendmicro-visionone-add-note'
 FETCH_INCIDENTS = 'fetch-incidents'
 
 table_name = {
@@ -151,22 +167,25 @@ def check_datetime_aware(d):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, api_key: str) -> None:
+    def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool) -> None:
         """
         Inherit the BaseClient class from the demistomock.
         :type base_url: ``str``
         :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
         :type api_key: ``str``
         :param api_key: api token to access the api data.
+        :type proxy: ``bool``
+        :param proxy: Whether the request should use the system proxy settings.
         :type verify: ``bool``
         :param verify: Whether the request should verify the SSL certificate.
         :return: returns None
         :rtype: ``None``
         """
-        super().__init__(base_url=base_url)
         self.base_url = base_url
         self.api_key = api_key
         self.status = None
+
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def http_request(self, method: str, url_suffix: str, json_data=None, params=None, data=None) -> Any:
         """
@@ -187,7 +206,8 @@ class Client(BaseClient):
         """
         header = {
             "Authorization": "Bearer {token}".format(token=self.api_key),
-            "Content-Type": f'{CONTENT_TYPE_JSON}{";charset=utf-8"}'
+            "Content-Type": f'{CONTENT_TYPE_JSON};charset=utf-8',
+            "User-Agent": USER_AGENT,
         }
         try:
             response = self._http_request(method=method, full_url=f'{self.base_url}{url_suffix}', retries=3, json_data=json_data,
@@ -1163,6 +1183,80 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
     return results
 
 
+def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+    """
+    Adds a note to an existing workbench alert
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    workbench_id = args.get(WORKBENCH_ID)
+    content = args.get(CONTENT)
+
+    body = {
+        'content': content
+    }
+    response = client.http_request(
+        POST, ADD_NOTE_ENDPOINT.format(workbenchId=workbench_id), data=json.dumps(body)
+    )
+
+    note_id = response.get("data").get("id")
+    response_code = response.get("info").get("code")
+    response_msg = response.get("info").get("msg")
+    message = {"Workbench_Id": workbench_id, "noteId": note_id, "response_code": response_code, "response_msg": response_msg}
+    results = CommandResults(
+        readable_output=tableToMarkdown(TABLE_ADD_NOTE, message, removeNull=True),
+        outputs_prefix="VisionOne.Add_Note",
+        outputs_key_field="noteId",
+        outputs=message,
+    )
+    return results
+
+
+def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+    """
+    Updates the status of an existing workbench alert
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    workbench_id = args.get(WORKBENCH_ID)
+    status = args.get(STATUS)
+
+    if status == 'new':
+        update_status = NEW
+    elif status == 'in_progress':
+        update_status = IN_PROGRESS
+    elif status == 'resolved_true_positive':
+        update_status = RESOLVED_TRUE_POSITIVE
+    elif status == 'resolved_false_positive':
+        update_status = RESOLVED_FALSE_POSITIVE
+
+    body = {
+        'investigationStatus': update_status
+    }
+    response = client.http_request(
+        PUT, UPDATE_STATUS_ENDPOINT.format(workbenchId=workbench_id), data=json.dumps(body)
+    )
+
+    response_code = response.get("info").get("code")
+    response_msg = response.get("info").get("msg")
+    message = {"Workbench_Id": workbench_id, "response_code": response_code, "response_msg": response_msg}
+    results = CommandResults(
+        readable_output=tableToMarkdown(TABLE_UPDATE_STATUS, message, removeNull=True),
+        outputs_prefix="VisionOne.Update_Status",
+        outputs_key_field="Workbench_Id",
+        outputs=message,
+    )
+    return results
+
+
 def main():
     try:
         ''' GLOBAL VARS '''
@@ -1170,8 +1264,10 @@ def main():
 
         base_url = params.get(URL)
         api_key = params.get(API_TOKEN).get('password')
+        proxy = params.get('proxy', False)
+        verify = not params.get('insecure', False)
 
-        client = Client(base_url, api_key)
+        client = Client(base_url, api_key, proxy, verify)
 
         command = demisto.command()
         demisto.debug(COMMAND_CALLED.format(command=command))
@@ -1221,6 +1317,12 @@ def main():
 
         elif command == FILE_TO_SANDBOX:
             return_results(submit_file_to_sandbox(client, args))
+
+        elif command == UPDATE_STATUS:
+            return_results(update_status(client, args))
+
+        elif command == ADD_NOTE:
+            return_results(add_note(client, args))
 
         elif command == CHECK_TASK_STATUS:
             if args.get("polling") == "true":

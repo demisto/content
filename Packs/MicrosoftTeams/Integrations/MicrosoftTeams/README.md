@@ -12,7 +12,12 @@ The web server for the integration runs within a long-running Docker container. 
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MicrosoftTeamsProtocalDiagram.png)
 
 ## Important Information
- - The messaging endpoint must be either the URL of the Cortex XSOAR server, including the configured port, or the proxy that redirects the messages received from Teams to the Cortex XSOAR server. 
+ - The messaging endpoint must be one of the following:
+ 	- the URL of the Cortex XSOAR server, including the configured port
+ 	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR rerouting](#1-using-cortex-xsoar-rerouting) section for more details)
+ 	- or a proxy that redirects the messages received from Teams to the Cortex XSOAR server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
+ - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accesible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
+In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
  - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
@@ -26,8 +31,21 @@ The web server for the integration runs within a long-running Docker container. 
      ...
      -----END PRIVATE KEY-----
     ```
+ - You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
- 
+ In order to verify which certificate is used, run the following (replace {MESSAGING-ENDPOINT} with the messaging endpoint):
+    ```
+     curl {MESSAGING-ENDPOINT} -vI
+    ```
+     Make sure the output does not contain the following:
+    ```
+     curl: (60) SSL certificate problem: self signed certificate
+    ```
+ - The following domains are used by this integration:
+    - microsoft.com
+    - botframework.com
+    - microsoftonline.com
+
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR rerouting
@@ -39,7 +57,7 @@ The integration instance name, `teams` in this example, needs to be configured i
 
 The port to be configured in [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
-In addition, make sure ***Instance execute external*** is enabled. 
+In addition, make sure ***Instance execute external*** is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
@@ -53,7 +71,7 @@ to the Cortex XSOAR server on HTTP.
 On NGINX, configure the following:
  - SSL certificate under `ssl_certificate` and `ssl_certificate_key`
  - The Cortex XSOAR server (including the port) under `proxy_pass`, e.g. `http://mydemistoinstance.com:7000`
- 
+
 Follow [Configuring Upstream Servers NGINX guide](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/#configuring-upstream-servers) for more details.
 
 The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
@@ -102,11 +120,25 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 3. [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
-*Note:* Microsoft App Studio is being phased out and will be deprecated on January 1, 2022. It is replaced by Microsoft Developer Portal. Steps 1 and 4 differ if using the App Studio or the Developer Portal.
+#### *Note:* Microsoft App Studio is being phased out and will be deprecated on January 1, 2022. It is replaced by Microsoft Developer Portal. Steps 1 and 4 differ if using the App Studio or the Developer Portal.
 
 ### Create the Demisto Bot in Microsoft Teams
 
-#### Using the App Studio
+
+#### Using the Developer Portal
+1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
+2. Navigate to **Bot management**.
+3. Click the **+New Bot** button.
+4. Fill in `Demisto Bot` in the prompt, click the *Add* button, and wait a few seconds until the bot is created.
+5. Record the **Bot ID** of `Demisto Bot` for the next steps.
+6. Click on the line where `Demisto Bot` shows under the **Bot Name**.
+![image](./doc_files/appentry.png)
+7. Navigate to **Configure** and fill in the **Bot endpoint address**.
+8. Navigate to **Client Secrets** and click the **Add a client secret for your bot** button, and wait a few seconds to allow the secret to be generated.
+9. Store the generated secret securely for the next steps.
+
+
+#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
 1. Download the ZIP file located at the bottom of this article.
 2. In Microsoft Teams, access the Store.
 3. Search for and click **App Studio**.
@@ -125,7 +157,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
 10. Configure the settings under the **Scope** section, and click **Create bot**.
   - In the **Name** field, enter *Demisto Bot*.
-  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`. 
+  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`.
 
 11. Record the **Bot ID**, which you will need when configuring the integration in Cortex XSOAR.
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
@@ -137,17 +169,6 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 16. To download the new bot file, which now includes App Details, click **Download**.
 17. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
-#### Using the Developer Portal
-1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
-2. Navigate to **Bot management**.
-3. Click the **+New Bot** button.
-4. Fill in `Demisto Bot` in the prompt, click the *Add* button, and wait a few seconds until the bot is created.
-5. Record the **Bot ID** of `Demisto Bot` for the next steps.
-6. Click on the line where `Demisto Bot` shows under the **Bot Name**.
-![image](./doc_files/appentry.png)
-7. Navigate to **Configure** and fill in the **Bot endpoint address**.
-8. Navigate to **Client Secrets** and click the **Add a client secret for your bot** button, and wait a few seconds to allow the secret to be generated.
-9. Store the generated secret securely for the next steps.
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
@@ -196,29 +217,33 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 ### Add the Demisto Bot to a Team
 
 - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
-#### Using the App Studio
+
+#### Using the Developer Portal
+1. Download the ZIP file located at the bottom of this article.
+2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
+3. Open the `manifest.json` file that was extracted from the ZIP file.
+4. In the `id`, replace the value of the attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+5. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+9. Click the **+Upload** button.
+10. In the pop-up window, click the **Upload** button.
+11. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
+12. Search for **Demisto Bot**.
+13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+14. Click the **Add to team** button.
+15. In the search box, type the name of the team to which you want to add the bot.
+16. Click the **Add** button on the wanted team and then click the **Apply** button.
+
+#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
 1. In Microsoft Teams, access the Store.
 2. Search for **Demisto Bot** and click the Demisto Bot widget.
 3. Click the arrow on the **Open** button and select **Add to a team**.
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
-#### Using the Developer Portal
-1. Download the ZIP file located at the bottom of this article.
-2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
-3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-5. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-6. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-7. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-8. Click the **+Upload** button.
-9. In the pop-up window, click the **Upload** button.
-10. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
-11. Search for **Demisto Bot**.
-12. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-13. Click the **Add to team** button.
-14. In the search box, type the name of the team to which you want to add the bot.
-15. Click the **Add** button on the wanted team and then click the **Apply** button.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -240,11 +265,11 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel | The channel to which to send messages. | Optional | 
-| message | The message to send to the channel or team member. | Optional | 
+| channel | The channel to which to send messages. | Optional |
+| message | The message to send to the channel or team member. | Optional |
 | team_member | Display name or email address of the team member to send the message to. | Optional |
-| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional | 
-| adaptive_card | The Microsoft Teams adaptive card to send. | Optional | 
+| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. Used only when sending notification to a channel | Optional |
+| adaptive_card | The Microsoft Teams adaptive card to send. | Optional |
 
 
 ##### Context Output
@@ -274,11 +299,11 @@ Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mirror_type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. | Optional | 
-| autoclose | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". | Optional | 
-| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional | 
-| team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional | 
-| channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional | 
+| mirror_type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. | Optional |
+| autoclose | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". | Optional |
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional |
+| team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional |
+| channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional |
 
 
 ##### Context Output
@@ -309,7 +334,7 @@ Deletes the specified Microsoft Teams channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel | The name of the channel to close. | Optional | 
+| channel | The name of the channel to close. | Optional |
 
 
 ##### Context Output
@@ -368,7 +393,7 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The display name of the member to call. | Required | 
+| username | The display name of the member to call. | Required |
 
 
 ##### Context Output
@@ -400,9 +425,9 @@ Adds a member (user) to a private channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel | The channel to which to add the add the member to this channel | Required | 
-| team | The channel's team. | Required | 
-| member | The display name of the member to add to the channel. | Required | 
+| channel | The channel to which to add the add the member to this channel | Required |
+| team | The channel's team. | Required |
+| member | The display name of the member to add to the channel. | Required |
 
 
 ##### Context Output
@@ -432,9 +457,9 @@ Creates a new channel in a Microsoft Teams team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel_name | The name of the channel. | Required | 
-| description | The description of the channel. | Optional | 
-| team | The team in which to create the channel. | Required | 
+| channel_name | The name of the channel. | Required |
+| description | The description of the channel. | Optional |
+| team | The team in which to create the channel. | Required |
 
 
 ##### Context Output
@@ -470,10 +495,10 @@ For more information:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subject | The meeting subject. | Required | 
-| member | The user who created the meeting. | Required | 
-| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
-| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
+| subject | The meeting subject. | Required |
+| member | The user who created the meeting. | Required |
+| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional |
+| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional |
 
 
 
@@ -481,13 +506,13 @@ For more information:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time. | 
-| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID. | 
-| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID. | 
-| MicrosoftTeams.CreateMeeting.id | String | Meeting ID. | 
-| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting. | 
-| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID. | 
-| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant. | 
+| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time. |
+| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID. |
+| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID. |
+| MicrosoftTeams.CreateMeeting.id | String | Meeting ID. |
+| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting. |
+| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID. |
+| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant. |
 
 
 #### Command Example
@@ -521,25 +546,27 @@ You can send the message `help` in order to see the supported commands:
 1. The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
 
     If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
-    
+
     This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
-    
+
     In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
-    
+
     From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
-    
+
     You should see the following, assuming port 7000 is used:
-    
-    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
-     
+
+    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
+
     If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
-    
+
      - To the messaging endpoint from a separate box.
      - From the Cortex XSOAR machine to localhost.
-     
+
        - Note: The webserver supports only POST method queries.
-       
-    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
+
+    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
+
+    if you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
 
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
@@ -550,7 +577,9 @@ You can send the message `help` in order to see the supported commands:
 
    <img height="75" src="./doc_files/cache.png" />
 
-   Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
+   First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
+   If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
+5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
 
 ## Download Demisto Bot
 

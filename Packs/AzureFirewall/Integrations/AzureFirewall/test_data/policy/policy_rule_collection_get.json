@@ -1,0 +1,108 @@
+{
+  "properties": {
+    "priority": 105,
+    "ruleCollections": [
+      {
+        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+        "action": {
+          "type": "Allow"
+        },
+        "rules": [
+          {
+            "ruleType": "NetworkRule",
+            "name": "my-ip-rule",
+            "description": "my-poc-collection",
+            "ipProtocols": [
+              "UDP",
+              "TCP"
+            ],
+            "sourceAddresses": [
+              "189.160.40.11",
+              "189.160.40.11"
+            ],
+            "sourceIpGroups": [],
+            "destinationAddresses": [
+              "189.160.40.11",
+              "189.160.40.11"
+            ],
+            "destinationIpGroups": [],
+            "destinationFqdns": [],
+            "destinationPorts": [
+              "8080"
+            ]
+          },
+          {
+            "ruleType": "NetworkRule",
+            "name": "my-ip-group-rule",
+            "description": "my-ip-group-source",
+            "ipProtocols": [
+              "Any"
+            ],
+            "sourceAddresses": [],
+            "sourceIpGroups": [
+              "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group"
+            ],
+            "destinationAddresses": [],
+            "destinationIpGroups": [
+              "/subscriptions/xsoar-subscription/resourcegroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/test-ip-group"
+            ],
+            "destinationFqdns": [],
+            "destinationPorts": [
+              "8080"
+            ]
+          },
+          {
+            "ruleType": "NetworkRule",
+            "name": "my-service-tag-rule",
+            "description": "my-service-tag-source",
+            "ipProtocols": [
+              "Any"
+            ],
+            "sourceAddresses": [
+              "189.160.40.11"
+            ],
+            "sourceIpGroups": [],
+            "destinationAddresses": [
+              "ServiceFabric",
+              "SqlManagement"
+            ],
+            "destinationIpGroups": [],
+            "destinationFqdns": [],
+            "destinationPorts": [
+              "8080"
+            ]
+          },
+          {
+            "ruleType": "NetworkRule",
+            "name": "my-fqdn-rule",
+            "description": "my-fqdn-rule",
+            "ipProtocols": [
+              "Any"
+            ],
+            "sourceAddresses": [
+              "189.160.40.11"
+            ],
+            "sourceIpGroups": [],
+            "destinationAddresses": [],
+            "destinationIpGroups": [],
+            "destinationFqdns": [
+              "google.com",
+              "microsoft.com"
+            ],
+            "destinationPorts": [
+              "8080"
+            ]
+          }
+        ],
+        "name": "my-first-collection",
+        "priority": 105
+      }
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/premium-policy/ruleCollectionGroups/my-first-collection",
+  "name": "my-first-collection",
+  "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+  "etag": "86322f08-3c8c-4ca0-8ea3-70833c88d74a",
+  "location": "westeurope"
+}

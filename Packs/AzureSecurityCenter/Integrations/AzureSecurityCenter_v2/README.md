@@ -637,3 +637,30 @@ Retrieve the Secure Score for the provided subscription and score name
 >|displayName|score|weight|
 >|---|---|---|
 >| ASC score | max: 58<br/>current: 14.51<br/>percentage: 0.2502 | 199 |
+
+
+### 13. azure-sc-update-alert
+***
+Update an alert's state.
+
+
+#### Base Command
+
+`azure-sc-update-alert`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional | 
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required | 
+| alert_id | The alert ID. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+| alert_update_action_type | The update action type. Possible values are: dismiss. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken on the alert. | 
+| AzureSecurityCenter.Alert.ID | string | The alert ID. | 

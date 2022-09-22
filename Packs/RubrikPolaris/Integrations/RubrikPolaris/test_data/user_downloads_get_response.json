@@ -1,0 +1,29 @@
+{
+  "raw_response": {
+    "data": {
+      "getUserDownloads": [
+        {
+          "id": 156,
+          "name": "GDIT-billing-test-oct10",
+          "status": "COMPLETED",
+          "progress": 100,
+          "identifier": "SONAR_DOWNLOAD",
+          "createTime": "2021-10-06T07:25:51.676432470Z",
+          "completeTime": "2021-10-06T07:25:51.856374014Z"
+        }
+      ]
+    }
+  },
+  "outputs": [{
+    "id": 156,
+    "name": "GDIT-billing-test-oct10",
+    "status": "COMPLETED",
+    "progress": 100,
+    "identifier": "SONAR_DOWNLOAD",
+    "createTime": "2021-10-06T07:25:51.676432470Z",
+    "completeTime": "2021-10-06T07:25:51.856374014Z"
+  }],
+  "empty_response": {
+    "data": {}
+  }
+}

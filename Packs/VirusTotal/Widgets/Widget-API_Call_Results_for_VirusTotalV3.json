@@ -1,0 +1,83 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "customGroupBy": [
+            null,
+            {
+                "General Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "GeneralError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "General Error"
+                },
+                "Quota Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "QuotaError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Quota Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "groupBy": [
+            "modified(h)",
+            "apiResponseType"
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "referenceLine": {},
+        "timeFrame": "hours",
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "Time",
+        "yAxisLabel": "Request Counts"
+    },
+    "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\"",
+    "modified": "2022-04-27T15:34:53.64268093Z",
+    "name": "API Call Results for VirusTotal",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "days",
+            "byFrom": "hours",
+            "toValue": 0,
+            "fromValue": 3,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+    "widgetType": "line",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

@@ -29,7 +29,7 @@ def ip_cidr(cidr: str) -> Dict[str, str]:
             'First_address': str(ip_network[0]),
             'Last_address': str(ip_network[-1])
         }
-        return internal_ec
+        return internal_ec  # type: ignore
     except ValueError:
         return {}
 

@@ -1,5 +1,5 @@
 {
-   "ioc_value":"http://zpmagura.com/wp-content/nux5wem-08",
+   "ioc_value":"http://malicious-domain.local/uri/test",
    "fseen":1597622400,
    "lseen":1604966400,
    "collect":1605052800,
@@ -28,6 +28,6 @@
       "emotet"
    ],
    "id":"32a93c79-2ff6-390c-9239-fa1cc8ae6da7",
-   "title":"RST Threat feed. IOC: zpmagura.com/wp-content/nux5wem-08",
+   "title":"RST Threat feed. IOC: malicious-domain.local/uri/test",
    "description":"IOC with tags: malware. Related threats: emotet"
 }

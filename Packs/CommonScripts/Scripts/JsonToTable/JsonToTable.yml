@@ -23,11 +23,11 @@ args:
 - name: is_auto_json_transform
   description: Try transforming complex JSON automatically.
 - name: json_transform_properties
-  description: "Transformation JSON from value to strings. The syntax is: `{\"header_key\": {\"keys\": [<item1>, ...], \"is_nested\": true/false}}` "
+  description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}` '
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook

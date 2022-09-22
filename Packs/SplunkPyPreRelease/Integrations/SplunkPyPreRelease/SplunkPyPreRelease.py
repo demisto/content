@@ -5,8 +5,8 @@ import io
 import ssl
 from datetime import timedelta, datetime
 
-import dateparser
-import pytz
+import dateparser  # type: ignore
+import pytz  # type: ignore[import]
 import requests
 import splunklib.client as client
 import splunklib.results as results
@@ -130,7 +130,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPyPreRelease] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()
+    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec
     extensive_log('[SplunkPyPreRelease] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
@@ -550,7 +550,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()    # nosec
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
@@ -2200,7 +2200,7 @@ def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = service.token if not auth_token else None
+    sessionKey = get_auth_session_key(service) if not auth_token else None
 
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
@@ -2472,6 +2472,13 @@ def get_kv_store_config(kv_store):
     for _key, val in keys.items():
         readable.append('| {} | {} |'.format(_key, val))
     return '\n'.join(readable)
+
+
+def get_auth_session_key(service):
+    """
+    Get the session key or token for POST request based on whether the Splunk basic auth are true or not
+    """
+    return service and service.basic and service._auth_headers[0][1] or service.token
 
 
 def extract_indicator(indicator_path, _dict_objects):

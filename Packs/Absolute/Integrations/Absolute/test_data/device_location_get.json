@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "geoData": {
+      "location": {
+        "point": {
+          "x": -123.13202,
+          "y": 49.288162,
+          "type": "Point",
+          "coordinates": [
+            -123.13202,
+            49.288162
+          ]
+        },
+        "geoAddress": {
+          "city": "TLV",
+          "state": "Israel",
+          "countryCode": "IL",
+          "country": "Israel"
+        },
+        "locationTechnology": "gps",
+        "accuracy": 10,
+        "lastUpdate": 1605747972853
+      }
+    }
+  },
+  {
+    "id": "2",
+    "geoData": {
+      "location": {
+        "point": {
+          "x": -124.1,
+          "y": 59.2,
+          "type": "Point",
+          "coordinates": [
+            -124.1,
+            59.2
+          ]
+        },
+        "geoAddress": {
+          "city": "Jerusalem",
+          "state": "Israel",
+          "countryCode": "IL",
+          "country": "Israel"
+        },
+        "locationTechnology": "gps",
+        "accuracy": 15,
+        "lastUpdate": 1605747972853
+      }
+    }
+  }
+]

@@ -14,5 +14,3 @@ This pack provides the necessary configurations and checks for managing a crisis
 As part of this pack, you will also get out-of-the-box incident fields, type and layout, as well as indicator fields, type and layout, a playbook for managing crisis events, and a full-fledged dashboard showing the health status of your employees. All of these are easily customizable to suit the needs of your organization.
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/employee-status-survey)_
-
-[![Crisis Management in Cortex XSOAR](https://img.youtube.com/vi/J6DcD5y5B_U/0.jpg)](https://www.youtube.com/watch?v=J6DcD5y5B_U)

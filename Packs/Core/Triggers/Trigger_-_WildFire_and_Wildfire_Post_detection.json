@@ -1,0 +1,19 @@
+{
+  "trigger_id": "478f3161aac3290efb445b0841eb1366",
+  "playbook_id": "WildFire Malware",
+  "suggestion_reason": "Recommended for alerts triggered by WildFire",
+  "description": "This trigger is responsible for handling WildFire Malware alerts",
+  "trigger_name": "WildFire and Wildfire Post detection",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "WildFire Malware"
+        }
+      ]
+    }
+  }
+}
+

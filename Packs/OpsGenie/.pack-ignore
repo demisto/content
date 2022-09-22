@@ -9,3 +9,6 @@ ignore=IM111
 
 [file:OpsGenie_image.png]
 ignore=IM111
+
+[file:classifier-OpsGenie_-_Classifier.json]
+ignore=BA101

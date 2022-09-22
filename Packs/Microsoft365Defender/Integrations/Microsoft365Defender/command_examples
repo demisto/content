@@ -5,3 +5,4 @@
 !ms-365-defender-incidents-list status=Active limit=10 assigned_to=user
 !microsoft-365-defender-advanced-hunting query=AlertInfo
 !microsoft-365-defender-incident-update id=264 tags=test1,test2,test3
+!microsoft-365-defender-incident-get id=264

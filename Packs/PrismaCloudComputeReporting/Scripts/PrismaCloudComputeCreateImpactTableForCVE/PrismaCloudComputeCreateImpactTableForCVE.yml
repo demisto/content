@@ -3,7 +3,7 @@ args:
   name: cve
 - description: The markdown field to set
   name: markdownField
-comment: Create a markdown table of impacted images and hosts based on Prisma Cloud Compute CVE data.
+comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateImpactTableForCVE
   version: -1
@@ -19,5 +19,6 @@ tags:
 - indicator-action-button
 type: python
 fromversion: 6.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)

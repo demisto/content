@@ -403,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+    taskid: 4814aba4-bd30-4c19-895a-8d3e28e73393
     type: condition
     task:
-      id: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+      id: 4814aba4-bd30-4c19-895a-8d3e28e73393
       version: -1
       name: Should investigate by attacker fields?
       description: Whether to hunt by the attacker indicators.
@@ -436,7 +436,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.attackerRemoteHost
+                root: inputs.attackerExternalHost
             iscontext: true
         - operator: isNotEmpty
           left:
@@ -492,19 +492,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.agentIP
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
                 root: inputs.agentID
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.agentHostname
             iscontext: true
     view: |-
       {
@@ -1165,7 +1153,7 @@ tasks:
       version: -1
       name: Hunt Reconnaissance techniques
       description: |-
-        Searches Cortex XSOAR incidents.
+        Searches Cortex XSIAM incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1207,7 +1195,7 @@ tasks:
       version: -1
       name: Hunt Initial Access techniques
       description: |-
-        Searches Cortex XSOAR incidents.
+        Searches Cortex XSIAM incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1848,7 +1836,7 @@ tasks:
         complex:
           root: inputs.timeRange
       query:
-        simple: childprocesssha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or parentprocesssha256:${inputs.FileSHA256} or osparentprocesssha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256}
+        simple: initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256}
     separatecontext: false
     view: |-
       {
@@ -2080,7 +2068,7 @@ inputs:
   playbookInputQuery:
 - key: timeRange
   value:
-    simple: 24 hours ago
+    simple: 2 hours ago
   required: false
   description: |-
     A time range to execute the hunting in.

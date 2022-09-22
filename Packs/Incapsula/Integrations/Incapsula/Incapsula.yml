@@ -18,7 +18,6 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:

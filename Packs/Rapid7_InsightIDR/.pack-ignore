@@ -11,3 +11,6 @@ ignore=BA108,BA109,IN145
 
 [file:Rapid7_InsightIDR_image.png]
 ignore=IM111
+
+[file:classifier-Rapid7InsightIDR.json]
+ignore=BA101

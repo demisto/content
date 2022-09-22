@@ -1,4 +1,3 @@
-import traceback
 from typing import Any, Dict, List, Tuple, Union
 
 import urllib3
@@ -114,10 +113,14 @@ def get_suspicious_activity(client: Client, args: Dict[str, str]) -> Union[Comma
                     continue
                 if suspicious_activity_type and activity.get('Type') not in suspicious_activity_type:
                     continue
-                if suspicious_activity_start_time and parse(activity.get('StartTime')).replace(tzinfo=utc) < \
+                start_time_date = parse(activity.get('StartTime'))  # type: ignore
+                assert start_time_date is not None
+                if suspicious_activity_start_time and start_time_date.replace(tzinfo=utc) < \
                         suspicious_activity_start_time.replace(tzinfo=utc):
                     continue
-                if suspicious_activity_end_time and parse(activity.get('EndTime')).replace(tzinfo=utc) > \
+                end_time_date = parse(activity.get('EndTime'))  # type: ignore
+                assert end_time_date is not None
+                if suspicious_activity_end_time and end_time_date.replace(tzinfo=utc) > \
                         suspicious_activity_end_time.replace(tzinfo=utc):
                     continue
                 suspicious_activity_output.append(activity)
@@ -186,10 +189,13 @@ def get_monitoring_alert(client: Client, args: Dict[str, str]) -> Union[CommandR
                     continue
                 if monitoring_alert_type and alert.get('Type') not in monitoring_alert_type:
                     continue
-                if monitoring_alert_start_time and parse(alert.get('StartTime')).replace(tzinfo=utc) < \
+                start_time_date = parse(alert.get('StartTime')).replace(tzinfo=utc)  # type: ignore
+                if monitoring_alert_start_time and start_time_date < \
                         monitoring_alert_start_time.replace(tzinfo=utc):
                     continue
-                if monitoring_alert_end_time and parse(alert.get('EndTime')).replace(tzinfo=utc) > \
+                endtime_date = parse(alert.get('EndTime'))  # type: ignore
+                assert endtime_date is not None
+                if monitoring_alert_end_time and endtime_date.replace(tzinfo=utc) > \
                         monitoring_alert_end_time.replace(tzinfo=utc):
                     continue
                 monitoring_alert_output.append(alert)
@@ -257,8 +263,8 @@ def fetch_incidents(
         activity_type_to_fetch: List
 ) -> Tuple[Dict[str, str], List[Dict[str, str]]]:
     last_fetch = last_run.get('last_fetch', '') if last_run.get('last_fetch') else first_fetch_time
-    last_fetch_dt = parse(last_fetch).replace(tzinfo=utc)
-    latest_start_time = parse(last_fetch).replace(tzinfo=utc)
+    last_fetch_dt = parse(last_fetch).replace(tzinfo=utc)  # type: ignore
+    latest_start_time = parse(last_fetch).replace(tzinfo=utc)  # type: ignore
 
     incidents_fetched = 0
     incidents: List[Dict[str, Any]] = []
@@ -284,7 +290,9 @@ def fetch_incidents(
             demisto.debug(f'Skipping suspicious activity {activity_id} with severity {activity_severity}')
             continue
         activity_start_time = activity.get('StartTime', '')
-        activity_start_time_dt = parse(activity_start_time).replace(tzinfo=utc)
+        activity_start_time_date = parse(activity_start_time)
+        assert activity_start_time_date is not None, f'could not parse {activity_start_time}'
+        activity_start_time_dt = activity_start_time_date.replace(tzinfo=utc)
         if activity_start_time_dt > latest_start_time:
             incidents.append({
                 'name': f'{activity_type} - {activity_id}',
@@ -340,7 +348,6 @@ def main() -> None:
         elif demisto.command() == 'ms-ata-entity-get':
             return_results(get_entity(client, demisto.args()))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

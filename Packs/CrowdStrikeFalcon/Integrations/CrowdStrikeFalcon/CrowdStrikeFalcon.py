@@ -1,18 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 ''' IMPORTS '''
-import json
-import requests
 import base64
 import email
-from enum import Enum
 import hashlib
-from typing import List, Callable
-from dateutil.parser import parse
-from typing import Dict, Tuple, Any, Optional, Union
+import json
+from enum import Enum
 from threading import Timer
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+from dateutil.parser import parse
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -313,7 +312,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 )
             elif safe:
                 return None
-            return_error(err_msg)
+            raise DemistoException(err_msg)
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1634,8 +1633,13 @@ def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
 
 
 def get_detections_by_behaviors(behaviors_id):
-    body = {'ids': behaviors_id}
-    return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+    try:
+
+        body = {'ids': behaviors_id}
+        return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+    except Exception as e:
+        demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
+        return {}
 
 
 ''' MIRRORING COMMANDS '''
@@ -1818,6 +1822,7 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
@@ -2415,15 +2420,15 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
 
@@ -2456,35 +2461,38 @@ def search_device_by_ip(raw_res, ip_address):
     return raw_res
 
 
-def generate_status_fields(endpoint_status):
-    status = ''
+def get_status(device_id):
+    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
+    state = raw_res.get('resources')[0].get('state', '')
+    return 'Online' if state in ['online', 'Online'] else ''
+
+
+def get_isolation_status(endpoint_status):
     is_isolated = ''
 
-    if endpoint_status.lower() == 'normal':
-        status = 'Online'
-    elif endpoint_status == 'containment_pending':
+    if endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
     elif endpoint_status == 'contained':
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-    else:
+    elif endpoint_status.lower() != 'normal':
         raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
-    return status, is_isolated
+    return is_isolated
 
 
 def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
         standard_endpoints.append(endpoint)
@@ -3621,7 +3629,7 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
                                  write_to_context=True) -> \
-        list[CommandResults, dict]:  # type:ignore
+        List[Union[CommandResults, dict]]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
@@ -3739,7 +3747,7 @@ def rtr_polling_retrieve_file_command(args: dict):
         if args.get('SHA256'):
             # the status is ready, we can get the extracted files
             args.pop('SHA256')
-            return rtr_get_extracted_file(get_status_response, args.get('fileName'))  # type:ignore
+            return rtr_get_extracted_file(get_status_response, args.get('filename'))  # type:ignore
 
         else:
             # we should call the polling on status, cause the status is not ready
@@ -3791,7 +3799,6 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,
-                          outputs_key_field='incident_id',
                           readable_output=tableToMarkdown('Detection For Incident', outputs),
                           raw_response=detection_res)
 

@@ -1,0 +1,610 @@
+{
+  "raw_response_list": {
+    "data": {
+      "policyObjs": {
+        "edges": [
+          {
+            "node": {
+              "snapshotFid": "a6d07b4b-cbe9-5a7f-8e53-855c30879ce4",
+              "snapshotTimestamp": 1634585152675,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1634585152675,
+                  "snapshotFid": "a6d07b4b-cbe9-5a7f-8e53-855c30879ce4"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar02",
+                "id": "1b174c2e-f77b-5006-baea-fe37b2ae429f"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "e9a55ef6-7c09-5ae7-a518-a4e7a4e461d2",
+              "snapshotTimestamp": 1635500251639,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635500251639,
+                  "snapshotFid": "e9a55ef6-7c09-5ae7-a518-a4e7a4e461d2"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar17",
+                "id": "283172bc-df7a-5cbb-beaf-8673d8e09622"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "5f9d5ab9-62f1-5c85-9c23-20c1c401b291",
+              "snapshotTimestamp": 1635499070874,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499070874,
+                  "snapshotFid": "5f9d5ab9-62f1-5c85-9c23-20c1c401b291"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar13",
+                "id": "4b4a0eff-8e65-5d3d-8673-ba354d37cd0d"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "fff075cd-ba20-55a9-a844-21d18bac2cbc",
+              "snapshotTimestamp": 1635500710062,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635500710062,
+                  "snapshotFid": "fff075cd-ba20-55a9-a844-21d18bac2cbc"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar18",
+                "id": "86aadbde-8b78-5ee4-a318-1834c82a4571"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "4486ea63-086f-58cf-9372-acbc115f35c9",
+              "snapshotTimestamp": 1630523186192,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1630523186192,
+                  "snapshotFid": "4486ea63-086f-58cf-9372-acbc115f35c9"
+                }
+              },
+              "snappable": {
+                "name": "deviderr-sandbox-w1",
+                "id": "86db05d1-292f-5973-b616-2ae3977f4428"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "959f9f11-37ac-5b3f-ab21-8254017d32c6",
+              "snapshotTimestamp": 1611216184000,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1611216184000,
+                  "snapshotFid": "959f9f11-37ac-5b3f-ab21-8254017d32c6"
+                }
+              },
+              "snappable": {
+                "name": "BMR",
+                "id": "953aad46-89ac-5873-b4f2-9cbab4ee61d6"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "0beebb44-2482-5373-82a2-250ab945ec5c",
+              "snapshotTimestamp": 1635499700708,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499700708,
+                  "snapshotFid": "0beebb44-2482-5373-82a2-250ab945ec5c"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar14",
+                "id": "9fc4d729-1803-5556-bae3-1106a453f1af"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "143b643a-ce8b-5e0c-b259-3db37ff22517",
+              "snapshotTimestamp": 1635491143000,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635491143000,
+                  "snapshotFid": "143b643a-ce8b-5e0c-b259-3db37ff22517"
+                }
+              },
+              "snappable": {
+                "name": "/tmp",
+                "id": "a82e888c-2440-5af9-8c2a-447a97f6746c"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "d36fbe5b-8f9c-5057-af7b-16bebe8c2483",
+              "snapshotTimestamp": 1634570131889,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1634570131889,
+                  "snapshotFid": "d36fbe5b-8f9c-5057-af7b-16bebe8c2483"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar01",
+                "id": "ac0a6844-a2fc-52b0-bb71-6a55f43677be"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "4a518a38-5c8a-5366-acb9-b757d8af59c8",
+              "snapshotTimestamp": 1635494499388,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635494499388,
+                  "snapshotFid": "4a518a38-5c8a-5366-acb9-b757d8af59c8"
+                }
+              },
+              "snappable": {
+                "name": "GDIT-billing-test-oct10",
+                "id": "b167eb74-eb7b-501c-9cf9-f8e598a73b3e"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "afa78cc7-ec6c-5a94-91ca-0d730cede43d",
+              "snapshotTimestamp": 1610179206000,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1610179206000,
+                  "snapshotFid": "afa78cc7-ec6c-5a94-91ca-0d730cede43d"
+                }
+              },
+              "snappable": {
+                "name": "BMR-CENTOS",
+                "id": "be727b7c-46ce-5d06-bde3-ec50f2583be9"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "b2840992-9c61-583e-914b-7e1007b3f8e3",
+              "snapshotTimestamp": 1635499295977,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499295977,
+                  "snapshotFid": "b2840992-9c61-583e-914b-7e1007b3f8e3"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar10",
+                "id": "c8b6cbfc-ec2a-5e44-a846-9e35a46840ff"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "9db85241-a410-5343-9b3d-cbb524e27c4d",
+              "snapshotTimestamp": 1635499177303,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499177303,
+                  "snapshotFid": "9db85241-a410-5343-9b3d-cbb524e27c4d"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar16",
+                "id": "cf2c39a4-fa9a-5f59-91d7-cc2f9afd7875"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "d6238e4b-e923-5213-9f05-7af253401519",
+              "snapshotTimestamp": 1635491010669,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635491010669,
+                  "snapshotFid": "d6238e4b-e923-5213-9f05-7af253401519"
+                }
+              },
+              "snappable": {
+                "name": "GDIT-Linux-300_plus",
+                "id": "dc4f1b47-da71-5a62-a4eb-b94406d74cbc"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "86b495fe-5d90-5ce4-8fa7-7464115ca438",
+              "snapshotTimestamp": 1635499051939,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499051939,
+                  "snapshotFid": "86b495fe-5d90-5ce4-8fa7-7464115ca438"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar11",
+                "id": "dea2b0e4-3fd4-54a2-806e-bfe96d78165c"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "a6af9b51-1670-5bcf-bbe1-2c5443a7e560",
+              "snapshotTimestamp": 1635487831571,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635487831571,
+                  "snapshotFid": "a6af9b51-1670-5bcf-bbe1-2c5443a7e560"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar12",
+                "id": "ea02da6b-49c5-5cb7-abe8-7927abd69536"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "5e37cb07-5e31-516f-926a-b6f8cd3d6015",
+              "snapshotTimestamp": 1611130732000,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1611130732000,
+                  "snapshotFid": "5e37cb07-5e31-516f-926a-b6f8cd3d6015"
+                }
+              },
+              "snappable": {
+                "name": "C",
+                "id": "f9fab095-7d05-52c0-880d-c883f2186c6e"
+              }
+            }
+          },
+          {
+            "node": {
+              "snapshotFid": "afc0f6f0-148a-54c5-9927-c24c7cde1608",
+              "snapshotTimestamp": 1635499539387,
+              "objectStatus": {
+                "latestSnapshotResult": {
+                  "snapshotTime": 1635499539387,
+                  "snapshotFid": "afc0f6f0-148a-54c5-9927-c24c7cde1608"
+                }
+              },
+              "snappable": {
+                "name": "sx1-radar15",
+                "id": "fdb7787f-647b-55ba-9d75-5c775b1c9cc5"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "raw_response": {
+    "data": {
+      "policyObj": {
+        "id": "afc0f6f0-148a-54c5-9927-c24c7cde1608",
+        "rootFileResult": {
+          "hits": {
+            "totalHits": 49684
+          },
+          "analyzerGroupResults": [
+            {
+              "analyzerGroup": {
+                "name": "PCI DSS"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 1967
+                  },
+                  "analyzer": {
+                    "name": "Credit Card"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 1967
+              }
+            },
+            {
+              "analyzerGroup": {
+                "name": "U.S. PII"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 11306
+                  },
+                  "analyzer": {
+                    "name": "US/UK Passport"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7971
+                  },
+                  "analyzer": {
+                    "name": "US ITIN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7612
+                  },
+                  "analyzer": {
+                    "name": "US SSN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 3984
+                  },
+                  "analyzer": {
+                    "name": "US VIN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 5618
+                  },
+                  "analyzer": {
+                    "name": "US EIN"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 36491
+              }
+            },
+            {
+              "analyzerGroup": {
+                "name": "GLBA"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 1967
+                  },
+                  "analyzer": {
+                    "name": "Credit Card"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7971
+                  },
+                  "analyzer": {
+                    "name": "US ITIN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7612
+                  },
+                  "analyzer": {
+                    "name": "US SSN"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 17550
+              }
+            },
+            {
+              "analyzerGroup": {
+                "name": "HIPAA"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 11306
+                  },
+                  "analyzer": {
+                    "name": "US/UK Passport"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 205
+                  },
+                  "analyzer": {
+                    "name": "US NPI"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7971
+                  },
+                  "analyzer": {
+                    "name": "US ITIN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7612
+                  },
+                  "analyzer": {
+                    "name": "US SSN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 200
+                  },
+                  "analyzer": {
+                    "name": "US DEA"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 10817
+                  },
+                  "analyzer": {
+                    "name": "IP Addr"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 38111
+              }
+            },
+            {
+              "analyzerGroup": {
+                "name": "U.S. Financials"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 1967
+                  },
+                  "analyzer": {
+                    "name": "Credit Card"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 2
+                  },
+                  "analyzer": {
+                    "name": "CUSIP"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 1969
+              }
+            },
+            {
+              "analyzerGroup": {
+                "name": "CCPA"
+              },
+              "analyzerResults": [
+                {
+                  "hits": {
+                    "totalHits": 11306
+                  },
+                  "analyzer": {
+                    "name": "US/UK Passport"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7971
+                  },
+                  "analyzer": {
+                    "name": "US ITIN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 7612
+                  },
+                  "analyzer": {
+                    "name": "US SSN"
+                  }
+                },
+                {
+                  "hits": {
+                    "totalHits": 2
+                  },
+                  "analyzer": {
+                    "name": "California DL"
+                  }
+                }
+              ],
+              "hits": {
+                "totalHits": 26891
+              }
+            }
+          ],
+          "filesWithHits": {
+            "totalHits": 536
+          },
+          "openAccessFiles": {
+            "totalHits": 1102
+          },
+          "openAccessFolders": {
+            "totalHits": 1019
+          },
+          "openAccessFilesWithHits": {
+            "totalHits": 0
+          },
+          "staleFiles": {
+            "totalHits": 209364
+          },
+          "staleFilesWithHits": {
+            "totalHits": 385
+          },
+          "openAccessStaleFiles": {
+            "totalHits": 881
+          }
+        }
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": "afc0f6f0-148a-54c5-9927-c24c7cde1608",
+      "totalHits": 49684,
+      "policy_hits": {
+        "CCPA": {
+          "California DL": "2",
+          "US ITIN": "7971",
+          "US SSN": "7612",
+          "US/UK Passport": "11306"
+        },
+        "GLBA": {
+          "Credit Card": "1967",
+          "US ITIN": "7971",
+          "US SSN": "7612"
+        },
+        "HIPAA": {
+          "IP Addr": "10817",
+          "US DEA": "200",
+          "US ITIN": "7971",
+          "US NPI": "205",
+          "US SSN": "7612",
+          "US/UK Passport": "11306"
+        },
+        "PCI DSS": {
+          "Credit Card": "1967"
+        },
+        "U.S. Financials": {
+          "CUSIP": "2",
+          "Credit Card": "1967"
+        },
+        "U.S. PII": {
+          "US EIN": "5618",
+          "US ITIN": "7971",
+          "US SSN": "7612",
+          "US VIN": "3984",
+          "US/UK Passport": "11306"
+        }
+      },
+      "filesWithHits": 536,
+      "openAccessFiles": 1102,
+      "openAccessFilesWithHits": 0,
+      "openAccessFolders": 1019,
+      "staleFiles": 209364,
+      "staleFilesWithHits": 385,
+      "openAccessStaleFiles": 881
+    }
+  ],
+  "empty_response": {"data": {}}
+}

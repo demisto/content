@@ -4,14 +4,25 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 import glob
 import os
 from typing import Dict, Set, Optional
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 import demisto_sdk.commands.common.constants as constants
+from demisto_sdk.commands.common.tools import get_content_path
+# TODO: remove try except clause when demisto-sdk 1.7.3 is released
+try:
+    import demisto_sdk.commands.common.content_constant_paths as content_constant_paths
+    IS_UP_TO_DATE = True
+except ImportError:
+    IS_UP_TO_DATE = False
+
 from demisto_sdk.commands.common.constants import FileType
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
     is_code_test_file, checked_type, SECRETS_WHITE_LIST, LANDING_PAGE_SECTIONS_JSON_PATH,
 )
 from demisto_sdk.commands.common import tools
+install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
 
 
 class ModifiedFiles:
@@ -59,7 +70,9 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         FileType. Conf.json and Metadata files.
     """
     # if conf.json file
-    if checked_type(file_path, [constants.CONF_PATH]):
+    # TODO: remove "if" statement when demisto-sdk 1.7.3 is released
+    if checked_type(file_path, [str(content_constant_paths.CONF_PATH.relative_to(get_content_path()))
+                                if IS_UP_TO_DATE else constants.CONF_PATH]):
         return FileType.CONF_JSON
     # landingPage_sections.json file
     if checked_type(file_path, [LANDING_PAGE_SECTIONS_JSON_PATH]):
@@ -135,12 +148,7 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     types_to_files: Dict[FileType, Set[str]] = dict()
     for line in files_string.split("\n"):
         if line:
-            file_status, file_path = line.split(maxsplit=1)
-            file_status = file_status.lower()
-            # Get to right file_path on renamed
-            if file_status.startswith("r"):
-                _, file_path = file_path.split(maxsplit=1)
-            file_status = file_status.lower()
+            file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
             # ignoring deleted files.
             # also, ignore files in ".circle", ".github" and ".hooks" directories and .
             if file_path:
@@ -156,6 +164,70 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     types_to_files = remove_code_files(types_to_files)
 
     return types_to_files
+
+
+def filter_modified_files_for_specific_marketplace_version(files_string: str, id_set: dict,
+                                                           marketplace_version: str) -> str:
+    """filter out the files in the diff list (files_string) that are not only supported in specific marketplace version
+    Args:
+        files_string (str): The modified files.
+        id_set (dict): The id set object.
+        marketplace_version (str): The marketplace version.
+    Returns:
+        string list of diff files that are supported only in marketplace_version
+    """
+    out_files_string = ''
+    for line in files_string.split("\n"):
+        if line:
+            if 'Tests/scripts/collect_tests' in line:  # quick and dirty, for merging the new collect_tests in
+                logging.info(f'>>> skipping {line}')
+                continue
+            else:
+                logging.info(f'>>> not skipping {line}')
+            file_status, file_path = get_status_and_file_path_from_line_in_git_diff(line)
+            # ignoring deleted files.
+            # also, ignore all files that are not in a pack
+            if file_path:
+                if (file_status in ("m", "a") or file_status.startswith("r")) and file_path.startswith("Packs/"):
+                    file_path = strip_file_path(file_path)
+                    artifact_type = get_artifact_type(file_path)
+                    for artifacts in id_set.get(artifact_type, []):
+                        for artifact_value in artifacts.values():
+                            if file_path in artifact_value.get('file_path') and \
+                                    artifact_value.get('marketplaces') == [marketplace_version]:
+                                out_files_string += f'{line}\n'
+                                break
+    return out_files_string
+
+
+def strip_file_path(file_path):
+    if file_path.endswith('.py'):
+        return file_path.rstrip('py')
+    elif file_path.endswith('_description.md'):
+        return file_path.rstrip('_description.md')
+    elif file_path.endswith('_image.png'):
+        return file_path.rstrip('_image.png')
+    elif file_path.endswith('xif'):
+        return file_path.rstrip('xif')
+    return file_path
+
+
+def get_status_and_file_path_from_line_in_git_diff(line):
+    file_status, file_path = line.split(maxsplit=1)
+    file_status = file_status.lower()
+    # Get to right file_path on renamed
+    if file_status.startswith("r"):
+        _, file_path = file_path.split(maxsplit=1)
+    return file_status, file_path
+
+
+def get_artifact_type(file_path: str):
+    if len(file_path.split('/')) < 2:
+        return None
+    artifact_type = file_path.split('/')[2]
+    if artifact_type in ['Scripts', 'Playbooks', 'Integrations']:
+        artifact_type = artifact_type.lower()
+    return artifact_type
 
 
 def remove_common_files(
@@ -174,6 +246,7 @@ def get_modified_files_for_testing(git_diff: str) -> ModifiedFiles:
     Returns:
         ModifiedFiles instance
     """
+    git_diff = '\n'.join(filter(lambda line: '/collect_tests/' not in line, git_diff.split('\n')))
     types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)  # Mapping of the files FileType: file path
 
     # Checks if any common file exists in types_to_file

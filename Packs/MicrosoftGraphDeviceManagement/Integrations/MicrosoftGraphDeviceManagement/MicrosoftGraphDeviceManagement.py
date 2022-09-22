@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 ''' IMPORTS '''
-import requests
-from typing import Tuple, Any
 import json
+from typing import Any, Tuple
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -42,6 +42,11 @@ class MsGraphClient:
         url_suffix: str = '/deviceManagement/managedDevices'
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', [])[:limit], raw_response
+
+    def find_managed_devices(self, device_name: str) -> Tuple[Any, str]:
+        url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
+        raw_response = self.ms_client.http_request('GET', url_suffix)
+        return raw_response.get('value', []), raw_response
 
     def get_managed_device(self, device_id: str) -> Tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
@@ -238,6 +243,22 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     return_outputs(human_readable, entry_context, raw_response)
 
 
+def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
+    device_name: str = str(args.get('device_name'))
+    list_raw_devices, raw_response = client.find_managed_devices(device_name)
+    list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
+    human_readable: str = f'Managed device {device_name} not found.'
+    if list_devices:
+        name: str = f'List managed devices with name {device_name}'
+        if len(list_devices) == 1:
+            name = f'Managed device {list_devices[0].get("Name", "")}'
+        human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
+                                         headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
+                                         removeNull=True)
+    return_outputs(human_readable, entry_context, raw_response)
+
+
 def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
     device_id: str = str(args.get('device_id'))
     raw_response, device_id = client.get_managed_device(device_id)
@@ -355,7 +376,7 @@ def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> N
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
     keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
     keep_user_data: bool = bool(args.get('keep_user_data'))
-    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code'))
+    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code', ""))
     device_id: str = str(args.get('device_id'))
     client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
     return_outputs('Wipe device action activated successfully.', {}, {})
@@ -449,6 +470,8 @@ def main():
             wipe_device_command(client, args)
         elif command == 'msgraph-update-windows-device-account':
             update_windows_device_account_command(client, args)
+        elif command == 'msgraph-find-managed-devices-by-name':
+            find_managed_devices_command(client, args)
 
     # log exceptions
     except Exception as err:

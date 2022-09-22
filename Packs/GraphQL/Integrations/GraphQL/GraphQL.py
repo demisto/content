@@ -90,7 +90,6 @@ def main() -> None:
         else:
             raise NotImplementedError(f"Received an un-supported command: {command}")
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 

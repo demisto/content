@@ -1,0 +1,1041 @@
+id: Microsoft Defender For Endpoint - Unisolate Endpoint
+version: -1
+name: Microsoft Defender For Endpoint - Unisolate Endpoint
+description: This playbook accepts an endpoint ID, IP, or host name and unisolates it using the Microsoft Defender For Endpoint integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f9d910fa-6833-4a21-85cb-06a5d1bfcfce
+    type: start
+    task:
+      id: f9d910fa-6833-4a21-85cb-06a5d1bfcfce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5716f9b9-d904-4ffd-8d95-bfc68b484f07
+    type: condition
+    task:
+      id: 5716f9b9-d904-4ffd-8d95-bfc68b484f07
+      version: -1
+      name: Is Microsoft Defender For Endpoint Integration Enabled?
+      description: Returns 'yes' if the integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "36"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Defender Advanced Threat Protection
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e05ad26a-f769-482c-8525-43956fbe657e
+    type: title
+    task:
+      id: e05ad26a-f769-482c-8525-43956fbe657e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ed776d4f-060c-444f-846d-d07748b26de6
+    type: condition
+    task:
+      id: ed776d4f-060c-444f-846d-d07748b26de6
+      version: -1
+      name: Is The Device Active?
+      description: Is the device ready for isolation?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.UnisolateList
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d82be97d-6429-43d9-8acb-a054c091f3eb
+    type: regular
+    task:
+      id: d82be97d-6429-43d9-8acb-a054c091f3eb
+      version: -1
+      name: Unisolate Endpoint
+      description: Undo an isolation of a machine.
+      script: '|||microsoft-atp-unisolate-machine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      comment:
+        simple: 'XSOAR Microsoft Defender Unisolate Endpoint - #Inc ${incident.id}'
+      machine_id:
+        simple: ${MicrosoftATP.UnisolateList}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 97b52579-d382-4054-8efb-50c10002f9dd
+    type: condition
+    task:
+      id: 97b52579-d382-4054-8efb-50c10002f9dd
+      version: -1
+      name: Check if the Unisolate command succeeded
+      description: Checks whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. For an array of entries, returns 'yes' if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e080dd2a-b70a-4fbc-8cb3-caa10bc4cdec
+    type: regular
+    task:
+      id: e080dd2a-b70a-4fbc-8cb3-caa10bc4cdec
+      version: -1
+      name: Print a warning to the war room - Device already unisolated
+      description: Prints a device already unisolated message to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: MicrosoftATP.UnisolateList
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: MicrosoftATP.UnisolateList
+                iscontext: true
+              right:
+                value:
+                  simple: MicrosoftATP.MachineAction.MachineID
+                iscontext: true
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    The un-isolate action did not succeed. Please validate your input or check if the machine is already in a non-isolated state. Device ID list:
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fee89135-4019-46e2-8011-0d45ccb1ccb2
+    type: regular
+    task:
+      id: fee89135-4019-46e2-8011-0d45ccb1ccb2
+      version: -1
+      name: Set Unisolate list
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.UnisolateList
+      value:
+        complex:
+          root: MicrosoftATP.Machine
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.Machine.HealthStatus
+                iscontext: true
+              right:
+                value:
+                  simple: Active
+              ignorecase: true
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9d32cb38-f88a-473d-8e5d-02885e958128
+    type: regular
+    task:
+      id: 9d32cb38-f88a-473d-8e5d-02885e958128
+      version: -1
+      name: Set Inactive Device list
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.NonUnisolateList
+      value:
+        complex:
+          root: MicrosoftATP.Machine
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.Machine.HealthStatus
+                iscontext: true
+              right:
+                value:
+                  simple: Active
+              ignorecase: true
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5d184293-53f5-4545-82b4-078e6e0bab66
+    type: regular
+    task:
+      id: 5d184293-53f5-4545-82b4-078e6e0bab66
+      version: -1
+      name: Print those that can't be unisolated as are not active
+      description: Prints an inactive device message to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: |-
+          The following devices can't be isolated. Please validate that those devices are active in the system
+          ${MicrosoftATP.NonUnisolateList}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 505f3eac-974c-4d87-86e8-3958eb0e30d4
+    type: condition
+    task:
+      id: 505f3eac-974c-4d87-86e8-3958eb0e30d4
+      version: -1
+      name: Is There Inactive Device?
+      description: Are there any inactive devices?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.NonUnisolateList
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 08261d13-dd3f-4b84-8779-d3a7b2a22e59
+    type: regular
+    task:
+      id: 08261d13-dd3f-4b84-8779-d3a7b2a22e59
+      version: -1
+      name: Print incorrect Device ID
+      description: Prints an incorrect device ID message to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: "Please note that the following IDs are incorrect. No action was taken on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 1757b5c4-0a1b-4fa9-8106-8369d732c17f
+    type: regular
+    task:
+      id: 1757b5c4-0a1b-4fa9-8106-8369d732c17f
+      version: -1
+      name: Set Incorrect IP
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.IncorrectIPs
+      value:
+        complex:
+          root: inputs.Device_IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Device_IP
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e4946b41-ec64-4883-818c-fa254c69c36c
+    type: regular
+    task:
+      id: e4946b41-ec64-4883-818c-fa254c69c36c
+      version: -1
+      name: Set Incorrect Hostname
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.IncorrectHostnames
+      value:
+        complex:
+          root: inputs.Hostname
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.Hostname
+                iscontext: true
+              right:
+                value:
+                  simple: MicrosoftATP.Machine.ComputerDNSName
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ca909de6-b90a-4ded-81b1-2195f6504ce4
+    type: regular
+    task:
+      id: ca909de6-b90a-4ded-81b1-2195f6504ce4
+      version: -1
+      name: Set Incorrect ID
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.IncorrectIDs
+      value:
+        complex:
+          root: inputs.Device_id
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.Device_id
+                iscontext: true
+              right:
+                value:
+                  simple: MicrosoftATP.Machine.ID
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1a7c9aed-209c-46ca-82d3-0aaadf72d82d
+    type: condition
+    task:
+      id: 1a7c9aed-209c-46ca-82d3-0aaadf72d82d
+      version: -1
+      name: Check if there is any provided incorrect info
+      description: Check if there are any incorrect device IDs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Device_id
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: inputs.Device_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftATP.Machine.ID
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Hostname
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: inputs.Hostname
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftATP.Machine.ComputerDNSName
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Device_IP
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: inputs.Device_IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftATP.Machine.NetworkInterfaces.IPAddresses
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7c1ec123-fa09-4829-8ef5-81fc689e2fbb
+    type: title
+    task:
+      id: 7c1ec123-fa09-4829-8ef5-81fc689e2fbb
+      version: -1
+      name: Normalizing Device info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+      - "35"
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 7a15344c-2373-4a41-8219-0b62f42504e2
+    type: title
+    task:
+      id: 7a15344c-2373-4a41-8219-0b62f42504e2
+      version: -1
+      name: Unisolate Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
+    type: title
+    task:
+      id: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
+      version: -1
+      name: Active Devices
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 575f8c79-4956-4262-8f02-8f68eafcf0f5
+    type: title
+    task:
+      id: 575f8c79-4956-4262-8f02-8f68eafcf0f5
+      version: -1
+      name: Inactive Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 6972b54a-0602-402c-83c1-a15efbd654d1
+    type: title
+    task:
+      id: 6972b54a-0602-402c-83c1-a15efbd654d1
+      version: -1
+      name: Incorrect Input
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 24525b6d-8d9b-47b4-8ca2-e528d8723f11
+    type: condition
+    task:
+      id: 24525b6d-8d9b-47b4-8ca2-e528d8723f11
+      version: -1
+      name: Was any data provided?
+      type: condition
+      iscommand: false
+      description: 'Validate/Enrich inputs through !endpoint'
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Device_id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Device_IP
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6ed55b95-b352-47ca-80c3-1897e0b2ab00
+    type: regular
+    task:
+      id: 6ed55b95-b352-47ca-80c3-1897e0b2ab00
+      version: -1
+      name: Enrich Endpoint info
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Hostname}
+      id:
+        simple: ${inputs.Device_id}
+      ip:
+        simple: ${inputs.Device_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_12_yes": 0.52,
+      "13_2_#default#": 0.18,
+      "1_2_#default#": 0.1,
+      "5_2_#default#": 0.1,
+      "8_2_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2085,
+        "width": 1510,
+        "x": 50,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: Device_id
+  value: {}
+  required: false
+  description: |-
+    The device ID to isolate.
+    For more information about the device, you can use the following commands:
+    !microsoft-atp-get-machine-details
+    !microsoft-atp-get-machines
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: The device host name you want to isolate.
+  playbookInputQuery:
+- key: Device_IP
+  value: {}
+  required: false
+  description: The device IP you want to isolate.
+  playbookInputQuery:
+outputs:
+- contextPath: MicrosoftATP.MachineAction.ID
+  description: The machine action ID.
+  type: string
+- contextPath: MicrosoftATP.NonUnisolateList
+  description: The machine IDs that will not be released from isolation.
+  type: string
+- contextPath: MicrosoftATP.UnisolateList
+  description: The machine IDs that were released from isolation.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIDs
+  description: Incorrect device IDs entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectHostnames
+  description: Incorrect host names entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIPs
+  description: Incorrect device IPs entered.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

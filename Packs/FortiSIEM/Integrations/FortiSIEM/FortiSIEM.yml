@@ -26,18 +26,16 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
   script: '-'
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: fortisiem-get-events-by-incident
     arguments:
@@ -375,7 +373,7 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.24398
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No Test
 fromversion: 5.0.0

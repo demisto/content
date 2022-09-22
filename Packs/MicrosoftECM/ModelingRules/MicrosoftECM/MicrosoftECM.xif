@@ -1,0 +1,100 @@
+
+/* ------ PACKAGE: Microsoft Configuration Manager ------ */
+/* ------ Modeling Rule: Audit------ */
+
+[MODEL: dataset=msft_ecm_raw, model=Audit]
+filter _log_source_file_name in ("adctrl.log", "ADForestDisc.log", "ADService.log", "adsgdis.log", "adsysdis.log", "adusrdis.log", "CollectionAADGroupSyncWorker.log", "colleval.log", "dataldr.log", "ddm.log", "distmgr.log", "EPMgr.log", "EPSetup.log", "EnrollSrv.log", "EnrollWeb.log", "ExternalNotificationsWorker.log", "fspmgr.log", "hman.log", "inboxmgr.log", "inboxmon.log", "mpfdm.log", "Objreplmgr", "OfflineServicingMgr.log", "outboxmon.log", "PkgXferMgr.log", "policypv.log", "ResourceExplorer.log", "ruleengine.log", "schedule.log", "sender.log", "SMS_AZUREAD_DISCOVERY_AGENT.log", "SMS_BUSINESS_APP_PROCESS_MANAGER.log", "SMS_DataEngine.log", "SmsAdminUI.log")
+
+| alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
+| alter date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0)
+| alter dateTime = format_string("%s %s", date, time)
+| alter timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
+| alter component = arrayindex(regextract(_raw_log, "component\=\"(\S+)\""), 0)
+| alter component2 = arrayindex(regextract(_raw_log, "\<(SMS\S+)\>"), 0)
+| alter timestamp = coalesce(timestamp, dateTime)
+| alter component = coalesce(component, component2 )
+| alter thread_id = arrayindex(regextract(_raw_log, "thread\=[\"]?(\d+)"), 0)
+| alter file = arrayindex(regextract(_raw_log, "file\=[\"]?(.+)\""), 0)
+| alter msg = arrayindex(regextract(_raw_log, "^(.+)[\~|\$]"), 0)
+| alter msgLog = arrayindex(regextract(_raw_log, "^\<\!\[LOG\[(.+)\]LOG"), 0)
+| alter msg = coalesce(msg, msgLog)
+| alter ipV4 = arrayindex(regextract(_raw_log, "\b(?:\d{1,3}\.){3}\d{1,3}\b"), 0)
+
+| alter XDM.Audit.event_timestamp = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp)
+| alter XDM.Audit.audited_resource.name = component
+| alter XDM.Audit.session_context_id = thread_id
+| alter XDM.Audit.audited_resource.name = file
+| alter XDM.Audit.original_event_description = msg
+| alter XDM.Audit.TriggeredBy.ipv4 = ipV4;
+
+
+/* ------ Modeling Rule: Endpoint------ */
+[MODEL: dataset=msft_ecm_raw, model=Endpoint]
+filter _log_source_file_name in ("ccm.log", "chmgr.log", "Cidm.log", "ComRegSetup.log", "EPCtrlMgr.log", "Inboxast.log", "mpMSI.log", "MPSetup.log", "ntsvrdis.log", "offersum.log", "PerfSetup.log", "replmgr.log", "sitecomp.log", "sitestat.log", "SMS_REST_PROVIDER.log", "smsbkup.log", "srsrpMSI.log", "statesys.log")
+
+| alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
+| alter date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0)
+| alter dateTime = format_string("%s %s", date, time)
+| alter timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
+| alter component = arrayindex(regextract(_raw_log, "component\=\"(\S+)\""), 0)
+| alter component2 = arrayindex(regextract(_raw_log, "\<(SMS\S+)\>"), 0)
+| alter timestamp = coalesce(timestamp, dateTime)
+| alter component = coalesce(component, component2 )
+| alter thread_id = to_integer(arrayindex(regextract(_raw_log, "thread\=[\"]?(\d+)"), 0))
+| alter file = arrayindex(regextract(_raw_log, "file\=[\"]?(.+)\""), 0)
+| alter msg = arrayindex(regextract(_raw_log, "^(.+)[\~|\$]"), 0)
+| alter msgLog = arrayindex(regextract(_raw_log, "^\<\!\[LOG\[(.+)\]LOG"), 0)
+| alter msg = coalesce(msg, msgLog)
+
+| alter XDM.Endpoint.event_timestamp = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp)
+| alter XDM.Endpoint.Observer.name = component
+| alter XDM.Endpoint.Target.process.thread_id = thread_id
+| alter XDM.Endpoint.Target.file.filename = file
+| alter XDM.Endpoint.operation = msg;
+
+/* ------ Modeling Rule: network------ */
+[MODEL: dataset=msft_ecm_raw, model=Network]
+filter _log_source_file_name in ("adminservice.log", "CertMgr.log", "despool.log", "invproc.log", "mpcontrol.log", "netdisc.log")
+
+| alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
+| alter date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0)
+| alter dateTime = format_string("%s %s", date, time)
+| alter timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
+| alter component = arrayindex(regextract(_raw_log, "component\=\"(\S+)\""), 0)
+| alter component2 = arrayindex(regextract(_raw_log, "\<(SMS\S+)\>"), 0)
+| alter timestamp = coalesce(timestamp, dateTime)
+| alter component = coalesce(component, component2 )
+| alter thread_id = to_integer(arrayindex(regextract(_raw_log, "thread\=[\"]?(\d+)"), 0))
+| alter file = arrayindex(regextract(_raw_log, "file\=[\"]?(.+)\""), 0)
+| alter msg = arrayindex(regextract(_raw_log, "^(.+)[\~|\$]"), 0)
+| alter msgLog = arrayindex(regextract(_raw_log, "^\<\!\[LOG\[(.+)\]LOG"), 0)
+| alter msg = coalesce(msg, msgLog)
+| alter ipV4 = arraycreate(arrayindex(regextract(_raw_log, "\b(?:\d{1,3}\.){3}\d{1,3}\b"), 0))
+
+| alter XDM.Network.event_timestamp = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp)
+| alter XDM.Network.Observer.name = component 
+| alter XDM.Network.Source.process.thread_id = thread_id
+| alter XDM.Network.Source.process.executable.filename = file
+| alter XDM.Network.original_event_description = msg
+| alter XDM.Network.Source.host.ipv4_addresses = ipV4;
+
+/* ------ Modeling Rule: Database------ */
+[MODEL: dataset=msft_ecm_raw, model=Database]
+filter _log_source_file_name in ("rcmctrl.log", "sinvproc.log", "sitectrl.log", "smsdbmon.log", "SMSProv.log")
+
+| alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
+| alter date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0)
+| alter dateTime = format_string("%s %s", date, time)
+| alter timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
+| alter component = arrayindex(regextract(_raw_log, "component\=\"(\S+)\""), 0)
+| alter component2 = arrayindex(regextract(_raw_log, "\<(SMS\S+)\>"), 0)
+| alter timestamp = coalesce(timestamp, dateTime)
+| alter component = coalesce(component, component2 )
+| alter file = arrayindex(regextract(_raw_log, "file\=[\"]?(.+)\""), 0)
+| alter msg = arrayindex(regextract(_raw_log, "^(.+)[\~|\$]"), 0)
+| alter msgLog = arrayindex(regextract(_raw_log, "^\<\!\[LOG\[(.+)\]LOG"), 0)
+| alter msg = coalesce(msg, msgLog)
+
+| alter XDM.Database.event_timestamp = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp)
+| alter XDM.Database.Observer.name = component
+| alter XDM.Database.original_event_description = msg;

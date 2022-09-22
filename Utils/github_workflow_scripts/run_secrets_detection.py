@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
 
 import requests
 import urllib3
@@ -39,9 +38,8 @@ def trigger_generic_webhook(options):
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
 
     if res.status_code != 200:
-        print(
+        raise ConnectionError(
             f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
-        sys.exit(1)
 
     res_json = res.json()
     if res_json and isinstance(res_json, list):
@@ -51,8 +49,7 @@ def trigger_generic_webhook(options):
             print(investigation_id)
             return
 
-    print("Secrets detection playbook has failed")
-    sys.exit(1)
+    raise Exception("Secrets detection playbook has failed")
 
 
 def main():

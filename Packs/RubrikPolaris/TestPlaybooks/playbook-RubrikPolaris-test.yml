@@ -1,0 +1,3178 @@
+id: RubrikPolaris-Test
+version: -1
+name: RubrikPolaris-Test
+description: This playbook uses RubrikPolaris integration and tests all commands of
+  the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fcf207bd-3497-4ecb-8cbe-0d044c85c24b
+    type: start
+    task:
+      id: fcf207bd-3497-4ecb-8cbe-0d044c85c24b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 15f81593-8d0b-4c29-82aa-faede50c5029
+    type: regular
+    task:
+      id: 15f81593-8d0b-4c29-82aa-faede50c5029
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d732c457-87c8-478f-8c29-4a2fc0440652
+    type: regular
+    task:
+      id: d732c457-87c8-478f-8c29-4a2fc0440652
+      version: -1
+      name: rubrik-radar-analysis-status
+      description: Check the Radar Event for updates.
+      script: '|||rubrik-radar-analysis-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      activitySeriesId:
+        complex:
+          root: RubrikPolaris.Event
+          accessor: activitySeriesId
+          transformers:
+          - operator: FirstArrayElement
+      clusterId:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 14e46324-8b78-4678-80b4-fb3dc8b4d177
+    type: condition
+    task:
+      id: 14e46324-8b78-4678-80b4-fb3dc8b4d177
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Rubrik.Radar.EventComplete
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.Radar.Message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.Radar.ActivitySeriesId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.Radar.ClusterId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 30fcb9fa-61ac-4329-87cf-f0bbaf724bf5
+    type: regular
+    task:
+      id: 30fcb9fa-61ac-4329-87cf-f0bbaf724bf5
+      version: -1
+      name: rubrik-sonar-sensitive-hits
+      script: '|||rubrik-sonar-sensitive-hits'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f13f5378-58cc-4bda-834a-6f318f0acda1
+    type: regular
+    task:
+      id: f13f5378-58cc-4bda-834a-6f318f0acda1
+      version: -1
+      name: rubrik-cdm-cluster-location
+      script: '|||rubrik-cdm-cluster-location'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      clusterId:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7dabe060-60cf-45d6-8f3a-b9000e6c233b
+    type: condition
+    task:
+      id: 7dabe060-60cf-45d6-8f3a-b9000e6c233b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.CDM.Cluster.Location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.CDM.ClusterId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 52c84ff5-0fda-4d37-8241-887ded52a8ae
+    type: regular
+    task:
+      id: 52c84ff5-0fda-4d37-8241-887ded52a8ae
+      version: -1
+      name: rubrik-cdm-cluster-connection-state
+      script: '|||rubrik-cdm-cluster-connection-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      clusterId:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1435532a-cbc6-47db-8201-9f5ce4788c2d
+    type: condition
+    task:
+      id: 1435532a-cbc6-47db-8201-9f5ce4788c2d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.CDM.Cluster.ConnectionState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rubrik.CDM.ClusterId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dfaf19e1-7f14-407d-8fa8-c8a89eaa7c52
+    type: regular
+    task:
+      id: dfaf19e1-7f14-407d-8fa8-c8a89eaa7c52
+      version: -1
+      name: rubrik-polaris-object-search
+      script: '|||rubrik-polaris-object-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      object_name:
+        complex:
+          root: RubrikPolaris.Object
+          accessor: name
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 64c36eb8-aef8-4a09-8cf0-9ae7f4bff2d8
+    type: condition
+    task:
+      id: 64c36eb8-aef8-4a09-8cf0-9ae7f4bff2d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GlobalSearchObject.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GlobalSearchObject.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GlobalSearchObject.objectType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d2a98049-1e11-4054-8fd7-4b679b9b4d98
+    type: regular
+    task:
+      id: d2a98049-1e11-4054-8fd7-4b679b9b4d98
+      version: -1
+      name: rubrik-sonar-policies-list
+      script: '|||rubrik-sonar-policies-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f8631660-47c6-48db-8feb-10cf3d773457
+    type: condition
+    task:
+      id: f8631660-47c6-48db-8feb-10cf3d773457
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarPolicy.objectStatuses.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.policyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 77bc8731-50b0-407e-8436-ae0a75464660
+    type: regular
+    task:
+      id: 77bc8731-50b0-407e-8436-ae0a75464660
+      version: -1
+      name: rubrik-sonar-policy-analyzer-groups-list
+      script: '|||rubrik-sonar-policy-analyzer-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f66e04a8-69a8-400e-8b3e-944b04ce5e58
+    type: condition
+    task:
+      id: f66e04a8-69a8-400e-8b3e-944b04ce5e58
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.groupType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.analyzers.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.analyzers.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarAnalyzerGroup.analyzers.analyzerType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a30c277f-e16b-4f22-862e-2d0b2b24fb51
+    type: regular
+    task:
+      id: a30c277f-e16b-4f22-862e-2d0b2b24fb51
+      version: -1
+      name: rubrik-polaris-vm-object-metadata-get
+      script: '|||rubrik-polaris-vm-object-metadata-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 17db5403-5aef-4a6d-8ab7-3040d34762b3
+    type: condition
+    task:
+      id: 17db5403-5aef-4a6d-8ab7-3040d34762b3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.metadata.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.metadata.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.metadata.cluster.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 801c1174-ab5d-4cd5-8b07-d1e12b0c0438
+    type: regular
+    task:
+      id: 801c1174-ab5d-4cd5-8b07-d1e12b0c0438
+      version: -1
+      name: rubrik-polaris-vm-objects-list
+      script: '|||rubrik-polaris-vm-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      sort_by:
+        simple: NAME
+      sort_order:
+        simple: ASC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6c7b1f29-1eb9-4c5a-8e58-eb4f5a5e7904
+    type: condition
+    task:
+      id: 6c7b1f29-1eb9-4c5a-8e58-eb4f5a5e7904
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.objectType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.cluster.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: dc365328-f1bc-4484-852c-03e8263dbe28
+    type: regular
+    task:
+      id: dc365328-f1bc-4484-852c-03e8263dbe28
+      version: -1
+      name: rubrik-sonar-ondemand-scan
+      script: '|||rubrik-sonar-ondemand-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      objects_to_scan:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      sonar_policy_analyzer_groups:
+        complex:
+          root: RubrikPolaris
+          accessor: SonarAnalyzerGroup
+          transformers:
+          - operator: FirstArrayElement
+          - operator: Stringify
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ed751e0f-4a37-4a64-82ba-73b704c62050
+    type: condition
+    task:
+      id: ed751e0f-4a37-4a64-82ba-73b704c62050
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.crawlId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 66f54ce6-2f52-42c5-8ba6-73e748c6bd5c
+    type: regular
+    task:
+      id: 66f54ce6-2f52-42c5-8ba6-73e748c6bd5c
+      version: -1
+      name: rubrik-sonar-ondemand-scan-status
+      script: '|||rubrik-sonar-ondemand-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      crawl_id:
+        complex:
+          root: RubrikPolaris.SonarOndemandScan
+          accessor: crawlId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 37b5e791-95c1-486a-8cd1-9505778955be
+    type: condition
+    task:
+      id: 37b5e791-95c1-486a-8cd1-9505778955be
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.crawlId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.snappable.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.snappable.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.snappable.objectType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Status.cluster.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 4472ad6d-3f3c-49e8-89be-5baeff729734
+    type: regular
+    task:
+      id: 4472ad6d-3f3c-49e8-89be-5baeff729734
+      version: -1
+      name: rubrik-polaris-vm-object-snapshot-list
+      script: '|||rubrik-polaris-vm-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      end_date:
+        simple: now
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.snapshotDistribution.totalCount
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: id
+      start_date:
+        simple: 1 month ago
+      timezone_offset:
+        simple: "5.5"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 3120455e-e8a6-4cac-8b63-c5bd81ff1b92
+    type: condition
+    task:
+      id: 3120455e-e8a6-4cac-8b63-c5bd81ff1b92
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.isIndexed
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.isUnindexable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1e041362-c29a-4869-82ac-1d3cc7d014e2
+    type: regular
+    task:
+      id: 1e041362-c29a-4869-82ac-1d3cc7d014e2
+      version: -1
+      name: rubrik-sonar-ondemand-scan-result
+      script: '|||rubrik-sonar-ondemand-scan-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      crawl_id:
+        complex:
+          root: RubrikPolaris.SonarOndemandScan
+          accessor: crawlId
+      file_type:
+        simple: ANY
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a8f881d3-f651-41d0-87dd-76ae7abb7e92
+    type: condition
+    task:
+      id: a8f881d3-f651-41d0-87dd-76ae7abb7e92
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.crawlId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarOndemandScan.Result.downloadLink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: df34d340-bdbc-4414-897f-1a41dd512521
+    type: regular
+    task:
+      id: df34d340-bdbc-4414-897f-1a41dd512521
+      version: -1
+      name: rubrik-radar-anomaly-csv-analysis
+      script: '|||rubrik-radar-anomaly-csv-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 10c4a860-6004-40eb-8cb3-b60cebde2640
+    type: condition
+    task:
+      id: 10c4a860-6004-40eb-8cb3-b60cebde2640
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarAnomalyCSV.clusterId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarAnomalyCSV.snapshotId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarAnomalyCSV.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 9fcd4604-dccb-4e4a-8bb0-bdf36c7322e0
+    type: regular
+    task:
+      id: 9fcd4604-dccb-4e4a-8bb0-bdf36c7322e0
+      version: -1
+      name: rubrik-sonar-csv-download
+      script: '|||rubrik-sonar-csv-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 570fcff5-1ab7-499c-8eb1-0a570f28e970
+    type: condition
+    task:
+      id: 570fcff5-1ab7-499c-8eb1-0a570f28e970
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarCSVDownload.snapshotId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarCSVDownload.objectId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.SonarCSVDownload.downloadSnapshotResultsCsv.isSuccessful
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 10db73f0-330a-4738-87d9-b074ae4381d4
+    type: regular
+    task:
+      id: 10db73f0-330a-4738-87d9-b074ae4381d4
+      version: -1
+      name: rubrik-gps-snapshot-files-list
+      script: '|||rubrik-gps-snapshot-files-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: be9c5cfd-bec3-4939-8c6b-689907c4f409
+    type: condition
+    task:
+      id: be9c5cfd-bec3-4939-8c6b-689907c4f409
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.snapshotId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.node.absolutePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.node.displayPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.node.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.node.fileMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFile.node.lastModified
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 15978f07-f068-4e69-85c9-7953e2b38594
+    type: regular
+    task:
+      id: 15978f07-f068-4e69-85c9-7953e2b38594
+      version: -1
+      name: rubrik-gps-vm-export
+      script: '|||rubrik-gps-vm-export'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      datastore_id:
+        complex:
+          root: RubrikPolaris.GPSVMHost.Datastore
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      host_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.metadata.physicalPath.objectType
+                iscontext: true
+              right:
+                value:
+                  simple: VSphereHost
+          accessor: metadata.physicalPath.fid
+          transformers:
+          - operator: FirstArrayElement
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.id
+          transformers:
+          - operator: FirstArrayElement
+      vm_name:
+        simple: PAXSOAR-1.1.0-Test-Playbook-Export
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 76fc3e08-dcd5-4f72-835b-dd81e650124d
+    type: regular
+    task:
+      id: 76fc3e08-dcd5-4f72-835b-dd81e650124d
+      version: -1
+      name: rubrik-user-downloads-list
+      script: '|||rubrik-user-downloads-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7ddeac0b-8d3d-4822-8608-8a9914e656d0
+    type: condition
+    task:
+      id: 7ddeac0b-8d3d-4822-8608-8a9914e656d0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserDownload.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserDownload.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserDownload.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserDownload.progress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 55e80586-1e5e-4a3d-8270-3322a2b543d4
+    type: regular
+    task:
+      id: 55e80586-1e5e-4a3d-8270-3322a2b543d4
+      version: -1
+      name: rubrik-gps-sla-domain-list
+      script: '|||rubrik-gps-sla-domain-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: cff4f0f4-a224-493c-8a1a-1ef3935e73c6
+    type: condition
+    task:
+      id: cff4f0f4-a224-493c-8a1a-1ef3935e73c6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSLADomain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSLADomain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSLADomain.protectedObjectCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2f221d78-3f37-4ee9-8d17-d7623460b97c
+    type: regular
+    task:
+      id: 2f221d78-3f37-4ee9-8d17-d7623460b97c
+      version: -1
+      name: rubrik-sonar-csv-result-download
+      script: '|||rubrik-sonar-csv-result-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      download_id:
+        complex:
+          root: RubrikPolaris.UserDownload
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: e6f85ed8-6add-4866-8af9-78e532bee0e6
+    type: condition
+    task:
+      id: e6f85ed8-6add-4866-8af9-78e532bee0e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarCSVDownload.downloadId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SonarCSVDownload.getDownloadUrl.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 22bcba7f-179a-4bf8-8c0a-840eccbd6f6b
+    type: regular
+    task:
+      id: 22bcba7f-179a-4bf8-8c0a-840eccbd6f6b
+      version: -1
+      name: rubrik-gps-vm-snapshot-create
+      script: '|||rubrik-gps-vm-snapshot-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 031e1ca6-6b39-4319-862a-cb4c29f95c16
+    type: condition
+    task:
+      id: 031e1ca6-6b39-4319-862a-cb4c29f95c16
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSOndemandSnapshot.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSOndemandSnapshot.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 18d9f73d-5631-498d-8604-88d7f211ee10
+    type: regular
+    task:
+      id: 18d9f73d-5631-498d-8604-88d7f211ee10
+      version: -1
+      name: rubrik-gps-snapshot-files-download
+      script: '|||rubrik-gps-snapshot-files-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      file_path:
+        complex:
+          root: RubrikPolaris.GPSSnapshotFile.node
+          accessor: absolutePath
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.GPSSnapshotFile
+          accessor: snapshotId
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fe463632-ab3d-4f7b-8c47-30e99bef7d95
+    type: condition
+    task:
+      id: fe463632-ab3d-4f7b-8c47-30e99bef7d95
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFileDownload.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFileDownload.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFileDownload.links.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSSnapshotFileDownload.links.rel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: bbdc6fae-6f32-4acc-8d09-8b3412d03847
+    type: regular
+    task:
+      id: bbdc6fae-6f32-4acc-8d09-8b3412d03847
+      version: -1
+      name: rubrik-gps-vm-livemount
+      script: '|||rubrik-gps-vm-livemount'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      host_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.metadata.physicalPath.objectType
+                iscontext: true
+              right:
+                value:
+                  simple: VSphereHost
+          accessor: metadata.physicalPath.fid
+          transformers:
+          - operator: FirstArrayElement
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.id
+          transformers:
+          - operator: FirstArrayElement
+      vm_name:
+        simple: PAXSOAR-1.1.0-Test-Playbook-Live-Mount
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 69767d35-d9f4-46f9-8e4c-c32be1308dba
+    type: regular
+    task:
+      id: 69767d35-d9f4-46f9-8e4c-c32be1308dba
+      version: -1
+      name: rubrik-gps-vm-host-list
+      script: '|||rubrik-gps-vm-host-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.cluster
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.VSphereVm.cluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c9e35fd2-4eb6-4b9b-8868-71f7c3314b5c
+    type: condition
+    task:
+      id: c9e35fd2-4eb6-4b9b-8868-71f7c3314b5c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.physicalPath.fid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.physicalPath.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.physicalPath.objectType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2c172ca8-b4a5-4098-8edd-98a9d0c7cd27
+    type: regular
+    task:
+      id: 2c172ca8-b4a5-4098-8edd-98a9d0c7cd27
+      version: -1
+      name: rubrik-gps-vm-datastore-list
+      script: '|||rubrik-gps-vm-datastore-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      host_id:
+        complex:
+          root: RubrikPolaris.GPSVMHost
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 075fde6a-6d12-48f0-82f9-8edef003c728
+    type: condition
+    task:
+      id: 075fde6a-6d12-48f0-82f9-8edef003c728
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.Datastore.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.Datastore.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSVMHost.Datastore.datastoreType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: aeb68834-1473-440e-8d5e-2c972d541706
+    type: regular
+    task:
+      id: aeb68834-1473-440e-8d5e-2c972d541706
+      version: -1
+      name: rubrik-event-list
+      script: '|||rubrik-event-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.GPSCluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8bd34398-b97c-452a-871d-bd67c8c811d8
+    type: condition
+    task:
+      id: 8bd34398-b97c-452a-871d-bd67c8c811d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.fid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.activitySeriesId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.lastActivityType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.lastActivityStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.objectType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Event.cluster.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: ac2610ba-f9d5-41fa-8364-14a7ab3c5408
+    type: regular
+    task:
+      id: ac2610ba-f9d5-41fa-8364-14a7ab3c5408
+      version: -1
+      name: rubrik-polaris-object-list
+      script: '|||rubrik-polaris-object-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.GPSCluster.status
+                iscontext: true
+              right:
+                value:
+                  simple: Connected
+          accessor: id
+          transformers:
+          - operator: slice
+            args:
+              from: {}
+              to:
+                value:
+                  simple: "5"
+      type_filter:
+        simple: VmwareVirtualMachine
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 47a36dc8-36fb-46da-85ac-86bac1d78349
+    type: condition
+    task:
+      id: 47a36dc8-36fb-46da-85ac-86bac1d78349
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.effectiveSlaDomain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.objectType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: c6bbdf1c-afc2-460d-80e4-5d33e5a7a1de
+    type: regular
+    task:
+      id: c6bbdf1c-afc2-460d-80e4-5d33e5a7a1de
+      version: -1
+      name: rubrik-polaris-object-snapshot-list
+      script: '|||rubrik-polaris-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      object_id:
+        complex:
+          root: RubrikPolaris.Object
+          accessor: id
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 5b166965-6cd3-45d2-870c-e91df128cecb
+    type: condition
+    task:
+      id: 5b166965-6cd3-45d2-870c-e91df128cecb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.Snapshot.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.Snapshot.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.Snapshot.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.Snapshot.cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.Object.Snapshot.slaDomain.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: aff71fe3-ecaf-4686-86ca-2f19b840a67f
+    type: regular
+    task:
+      id: aff71fe3-ecaf-4686-86ca-2f19b840a67f
+      version: -1
+      name: rubrik-radar-ioc-scan
+      script: '|||rubrik-radar-ioc-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: cluster
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      ioc_type:
+        simple: INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME
+      ioc_value:
+        simple: DummyFileNameIOC
+      max_snapshots_per_object:
+        simple: "1"
+      object_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      scan_name:
+        simple: PAXSOAR-1.1.0-Test-Playbook-Scan
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c0898292-9799-488e-8522-e774bd97e786
+    type: condition
+    task:
+      id: c0898292-9799-488e-8522-e774bd97e786
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: a6ddfae2-1f2c-4bce-8468-af6c9f8797e3
+    type: regular
+    task:
+      id: a6ddfae2-1f2c-4bce-8468-af6c9f8797e3
+      version: -1
+      name: rubrik-radar-ioc-scan-results
+      script: '|||rubrik-radar-ioc-scan-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: cluster
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      scan_id:
+        complex:
+          root: RubrikPolaris.RadarIOCScan
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 4de8717a-2fa4-413e-8d9e-a419cc9919dd
+    type: condition
+    task:
+      id: 4de8717a-2fa4-413e-8d9e-a419cc9919dd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.indicatorsOfCompromise.iocType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.indicatorsOfCompromise.iocValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.results.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 86ac0dfd-0650-40f7-8513-0e5a4974949e
+    type: regular
+    task:
+      id: 86ac0dfd-0650-40f7-8513-0e5a4974949e
+      version: -1
+      name: rubrik-gps-async-result
+      script: '|||rubrik-gps-async-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.VSphereVm
+          accessor: cluster
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      request_id:
+        complex:
+          root: RubrikPolaris.GPSOndemandSnapshot
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: fcbbacba-e647-4704-881b-ca6cb97ca4de
+    type: condition
+    task:
+      id: fcbbacba-e647-4704-881b-ca6cb97ca4de
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSAsyncResult.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSAsyncResult.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSAsyncResult.nodeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSAsyncResult.links.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSAsyncResult.links.rel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 2c4ee937-e75c-4f22-8306-09d87e126cca
+    type: regular
+    task:
+      id: 2c4ee937-e75c-4f22-8306-09d87e126cca
+      version: -1
+      name: rubrik-gps-cluster-list
+      script: '|||rubrik-gps-cluster-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: c8e4b6af-e981-45fb-866a-4ac487f0cff4
+    type: condition
+    task:
+      id: c8e4b6af-e981-45fb-866a-4ac487f0cff4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSCluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSCluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSCluster.type
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: RubrikPolaris.GPSCluster.status
+            iscontext: true
+          right:
+            value:
+              simple: Connected
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.GPSCluster.version
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 0c9099ea-1854-458f-875e-ba7ac965578a
+    type: regular
+    task:
+      id: 0c9099ea-1854-458f-875e-ba7ac965578a
+      version: -1
+      name: rubrik-radar-ioc-scan-list
+      script: '|||rubrik-radar-ioc-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.GPSCluster
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: d6657b17-7d3f-4a2a-87f6-a78b3267818b
+    type: condition
+    task:
+      id: d6657b17-7d3f-4a2a-87f6-a78b3267818b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.startTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.endTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RadarIOCScan.snapshots.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+    type: regular
+    task:
+      id: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+      version: -1
+      name: rubrik-gps-vm-recover-files
+      script: '|||rubrik-gps-vm-recover-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.cluster
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      paths_to_recover:
+        simple: C:/churn.txt
+      restore_path:
+        simple: C:/Users/Administrator
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+    type: title
+    task:
+      id: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11585,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

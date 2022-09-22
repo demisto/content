@@ -1,0 +1,16 @@
+{ "data": [
+    {
+        "createdAt": "1900-01-01T00:00:00",
+        "description": "test description",
+        "id": "1234",
+        "osType": "windows",
+        "scopeName": "scopeName",
+        "scopePath": "scopePath",
+        "source": "source",
+        "type": "type",
+        "updatedAt": "1900-01-01T00:00:00",
+        "userId": "xsoar",
+        "value": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    }
+]
+}

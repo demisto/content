@@ -49,8 +49,8 @@ tags:
 timeout: '0'
 type: python
 runonce: false
-subtype: python2
+subtype: python3
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.4.29342
 tests:
 - CopyContextToFieldTest

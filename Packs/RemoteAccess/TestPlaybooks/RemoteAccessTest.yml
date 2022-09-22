@@ -1,22 +1,22 @@
 id: RemoteAccessTest
 version: -1
 name: RemoteAccessTest
+description: Test playbook for remote access
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a81180c5-f000-4b82-8749-78619623478e
+    taskid: 13810fbc-783e-4a92-884c-0b6454988cc3
     type: start
     task:
-      id: a81180c5-f000-4b82-8749-78619623478e
+      id: 13810fbc-783e-4a92-884c-0b6454988cc3
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d0f5b5bd-d1c4-42a5-8b8e-90871aa5967e
+    taskid: 50232081-3658-470f-86a0-ea3f7e9f9575
     type: regular
     task:
-      id: d0f5b5bd-d1c4-42a5-8b8e-90871aa5967e
+      id: 50232081-3658-470f-86a0-ea3f7e9f9575
       version: -1
       name: Create File In Cortex XSOAR
       description: |
@@ -53,81 +53,7 @@ tasks:
       data:
         simple: test
       filename:
-        simple: test.txt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: ce124ede-8466-4568-8c5f-a55403394ae1
-    type: regular
-    task:
-      id: ce124ede-8466-4568-8c5f-a55403394ae1
-      version: -1
-      name: Copy File To Remote
-      description: Run command on remote system with ssh
-      script: '|||copy-to'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      destination_path:
-        simple: test/test.txt
-      entry_id:
-        complex:
-          root: File
-          accessor: EntryID
-          transformers:
-          - operator: LastArrayElement
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b154fd48-a5a0-4931-8aca-f9bb07372205
-    type: regular
-    task:
-      id: b154fd48-a5a0-4931-8aca-f9bb07372205
-      version: -1
-      name: Create Empty Directory Remote
-      description: Run command on remote system with ssh
-      script: '|||ssh'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      command:
-        simple: mkdir test
+        simple: original-name.txt
     separatecontext: false
     view: |-
       {
@@ -143,12 +69,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 2ab125ba-1f2b-45f4-80f9-48a9315f99d3
+  "2":
+    id: "2"
+    taskid: 0be6ab59-d575-4f92-84b9-665a2f47e1e7
     type: regular
     task:
-      id: 2ab125ba-1f2b-45f4-80f9-48a9315f99d3
+      id: 0be6ab59-d575-4f92-84b9-665a2f47e1e7
+      version: -1
+      name: Copy File To Remote Using destination_path
+      description: Copies the given file from Cortex XSOAR to the remote machine.
+      script: RemoteAccess v2|||copy-to
+      type: regular
+      iscommand: true
+      brand: RemoteAccess v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      destination_path:
+        simple: test-TPB/new-name.txt
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5085cada-259b-4e49-88ce-eed759f6c4f6
+    type: regular
+    task:
+      id: 5085cada-259b-4e49-88ce-eed759f6c4f6
       version: -1
       name: Run ls Command Remote
       description: Run command on remote system with ssh
@@ -160,9 +126,53 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      cmd:
+        simple: ls test-TPB
       command:
         simple: ls test
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c9765d75-7701-4d5e-8659-c9d6a39ca81c
+    type: condition
+    task:
+      id: c9765d75-7701-4d5e-8659-c9d6a39ca81c
+      version: -1
+      name: Validate File Is Found In ls
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: RemoteAccess.Command
+                accessor: output
+            iscontext: true
+          right:
+            value:
+              simple: new-name.txt
     view: |-
       {
         "position": {
@@ -177,37 +187,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 1e7038c2-87fe-40ec-8010-d9fff0ce45f6
-    type: condition
+  "6":
+    id: "6"
+    taskid: cb0d0406-388c-47e9-821a-ff3a980f6385
+    type: regular
     task:
-      id: 1e7038c2-87fe-40ec-8010-d9fff0ce45f6
+      id: cb0d0406-388c-47e9-821a-ff3a980f6385
       version: -1
-      name: Validate File Is Found In ls
-      type: condition
-      iscommand: false
-      brand: ""
+      name: Copy File To Local
+      description: Copies the given file from the remote machine to Cortex XSOAR.
+      script: RemoteAccess v2|||copy-from
+      type: regular
+      iscommand: true
+      brand: RemoteAccess v2
     nexttasks:
-      "yes":
-      - "6"
+      '#none#':
+      - "7"
+    scriptarguments:
+      file_name:
+        simple: test-file-from-remote.txt
+      file_path:
+        simple: test-TPB/new-name.txt
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: RemoteAccess.Command.output
-            iscontext: true
-          right:
-            value:
-              simple: test.txt
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1595
         }
       }
     note: false
@@ -217,27 +223,131 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 3243c6e6-416d-4a8f-81a3-8670e1e4a5b7
-    type: regular
+  "7":
+    id: "7"
+    taskid: 9c14de43-e150-497f-859e-cecb12dfa13a
+    type: condition
     task:
-      id: 3243c6e6-416d-4a8f-81a3-8670e1e4a5b7
+      id: 9c14de43-e150-497f-859e-cecb12dfa13a
       version: -1
-      name: Copy File To Local
-      description: Run command on remote system with ssh
-      script: '|||copy-from'
-      type: regular
-      iscommand: true
+      name: See File Was Copied
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: test-file-from-remote.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c5893e33-4f82-4ff4-8e8a-db9bc7ddc187
+    type: title
+    task:
+      id: c5893e33-4f82-4ff4-8e8a-db9bc7ddc187
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3275417f-22ac-4538-863a-232660d75d99
+    type: regular
+    task:
+      id: 3275417f-22ac-4538-863a-232660d75d99
+      version: -1
+      name: Remove Folder From Remote
+      description: Run the specified command on the remote system with SSH.
+      script: RemoteAccess v2|||ssh
+      type: regular
+      iscommand: true
+      brand: RemoteAccess v2
+    nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
-      file_name:
-        simple: test-file
-      file_path:
-        simple: test/test.txt
+      cmd:
+        simple: rm -rf test-TPB test-dest-dir
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 50456777-7684-4b89-8a41-402cf81842d2
+    type: regular
+    task:
+      id: 50456777-7684-4b89-8a41-402cf81842d2
+      version: -1
+      name: Copy File To Remote Using dest-dir
+      description: Copies the given file from Cortex XSOAR to the remote machine.
+      script: RemoteAccess v2|||copy-to
+      type: regular
+      iscommand: true
+      brand: RemoteAccess v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      dest-dir:
+        simple: test-dest-dir
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
@@ -253,20 +363,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 79e77af1-3ad9-421b-8b25-aa32141f9943
+  "11":
+    id: "11"
+    taskid: aba57f84-d4ed-4d21-8846-7d7715bae2b5
     type: condition
     task:
-      id: 79e77af1-3ad9-421b-8b25-aa32141f9943
+      id: aba57f84-d4ed-4d21-8846-7d7715bae2b5
       version: -1
-      name: See File Was Copied
+      name: Validate File Is Found In ls
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -274,38 +384,13 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: File.Name
+              complex:
+                root: RemoteAccess.Command
+                accessor: output
             iscontext: true
           right:
             value:
-              simple: test-file
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 2bd7b727-a5e6-4e19-82ea-d672af0b63bb
-    type: title
-    task:
-      id: 2bd7b727-a5e6-4e19-82ea-d672af0b63bb
-      version: -1
-      name: Playbook Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
+              simple: original-name.txt
     view: |-
       {
         "position": {
@@ -320,12 +405,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5300762b-72a0-4e19-83a3-9a22762ee277
+    type: regular
+    task:
+      id: 5300762b-72a0-4e19-83a3-9a22762ee277
+      version: -1
+      name: Run ls Command Remote
+      description: Run command on remote system with ssh
+      script: '|||ssh'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      cmd:
+        simple: ls test-dest-dir
+      command:
+        simple: ls test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7124011c-06cb-4f3d-8bce-4dcb7c7518a7
+    type: regular
+    task:
+      id: 7124011c-06cb-4f3d-8bce-4dcb7c7518a7
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: RemoteAccess
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50
@@ -335,4 +495,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Test playbook for remote access

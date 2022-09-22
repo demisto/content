@@ -7,3 +7,7 @@
 - You can get your server URL by identifying your platform in this link: <https://www.qualys.com/platform-identification/>
   
 - Qualys user accounts that have been enabled with VIP two-factor authentication can be used with the Qualys API, however two-factor authentication will not be used when making API requests. Two-factor authentication is only supported when logging into the Qualys GUI.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/qualys-v2)

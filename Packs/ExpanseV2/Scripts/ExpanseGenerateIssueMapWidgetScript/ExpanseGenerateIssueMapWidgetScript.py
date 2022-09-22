@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401  # pylint: disable=unused-wildcard-i
 from CommonServerPython import *  # noqa: F401  # pylint: disable=unused-wildcard-import
 
 import json
-import traceback
 from typing import List, Dict, Tuple, Optional, Any
 from functools import reduce
 from PIL import Image, ImageDraw, ImageFont
@@ -21143,7 +21142,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute script.\nError:\n{str(e)}"
         )

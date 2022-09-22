@@ -1,0 +1,11 @@
+{
+    "id": 5,
+    "sensor_id": 2,
+    "engine": "PORTSCAN",
+    "singleton": true,
+    "name": "Portscan",
+    "description": "port scan module",
+    "started": true,
+    "operational_mode": "",
+    "date_last_update": "1970-01-01T01:00:00.000+01:00"
+}

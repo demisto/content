@@ -646,7 +646,7 @@ Fetches all indicators that have a tag.
 | --- | --- | --- |
 | tag | The name of the tag by which to filter. | Required | 
 | owner | A list of indicators filtered by the owner. | Optional | 
-
+| limit | The limit of the indicators that will be available in the raw response. Default value is 100. NOTICE: In the context you will be able to see up to 100 indicators. Default is 100. | Optional | 
 
 #### Context Output
 
@@ -2457,3 +2457,34 @@ There is no context output for this command.
 >|id|name|type|
 >|---|---|---|
 >| 737 | Demisto Inc. | Organization |
+
+### tc-download-report
+***
+The group report to download in PDF format.
+
+
+#### Base Command
+
+`tc-download-report`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_type | The type of the group. Can be: "adversaries", "campaigns", "emails", "incidents", "signatures", or "threats". Possible values are: adversaries, campaigns, emails, incidents, signatures, threats. | Required | 
+| group_id | The ID of the group. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | The information of the file. | 
+| File.Type | String | The type of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 

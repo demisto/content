@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any
-import traceback
 
 ''' STANDALONE FUNCTION '''
 
@@ -129,7 +128,6 @@ def main():  # pragma: no cover
     try:
         return_results(wrapper_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute PanoramaSecurityPolicyMatchWrapper. Error: {str(ex)}')
 
 

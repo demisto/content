@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'Incident ID to create the task table.'
+  description: Incident ID to create the task table.
   isArray: false
   name: investigation_id
   required: false
@@ -12,7 +12,7 @@ name: GetTasksWithSections
 script: '-'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.4.30607
 tags:
 - Utility
 comment: Groups all tasks for a specific incident according to the task headers (titles).
@@ -59,9 +59,6 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
-dependson:
-  must:
-    - demisto-api-get
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
 fromversion: 6.0.0

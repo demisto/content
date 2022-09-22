@@ -33,6 +33,7 @@ def time_stamp_compare_command(args):
             'TIMEZONE': 'UTC',
             'RELATIVE_BASE': datetime(datetime.now().year, 1, 1)
         })
+        assert parsed_compared_time is not None and parsed_tested_time is not None
         result = compare_times(parsed_compared_time.timestamp(), parsed_tested_time.timestamp())
 
         results.append({

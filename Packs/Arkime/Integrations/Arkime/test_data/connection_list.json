@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "1.1.1.1",
+      "cnt": 1,
+      "sessions": 2,
+      "inresult": 1,
+      "type": 1,
+      "network.bytes": 96415,
+      "totDataBytes": 0,
+      "network.packets": 806,
+      "node": [
+        "localhost"
+      ],
+      "pos": 0
+    }
+  ],
+  "links": [
+    {
+      "value": 2,
+      "source": 0,
+      "target": 1,
+      "network.bytes": 96415,
+      "totDataBytes": 0,
+      "network.packets": 806,
+      "node": [
+        "localhost"
+      ]
+    }
+  ],
+  "recordsFiltered": 2
+}

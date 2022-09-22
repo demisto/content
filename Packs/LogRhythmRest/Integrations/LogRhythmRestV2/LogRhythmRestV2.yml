@@ -104,19 +104,17 @@ configuration:
   type: 8
 - name: proxy
   display: Use system proxy settings
-  defaultvalue: ''
   type: 8
   required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  defaultvalue: ''
   type: 8
   required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   commands:
   - name: lr-alarms-list

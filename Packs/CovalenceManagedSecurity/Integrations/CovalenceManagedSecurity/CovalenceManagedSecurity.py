@@ -56,7 +56,8 @@ class Portal():
             return False
 
     def get(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
-        return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
+        return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain,
+                             **kwargs)
 
     def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
                  remove_subdomain=False, **kwargs):
@@ -151,7 +152,7 @@ def portal_check():
         Portal(bearer=API_KEY)
         return True
     except Exception:
-        demisto.log(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
         return False
 
 
@@ -163,7 +164,8 @@ def fetch_incidents(last_run, first_run_time_range):
     if last_fetch is None:
         aro_time_min = aro_time_max - timedelta(days=first_run_time_range)
     else:
-        aro_time_min = dateparser.parse(last_fetch)
+        aro_time_min = dateparser.parse(last_fetch)  # type: ignore
+    assert aro_time_min is not None
 
     p = Portal(bearer=API_KEY)
     query = {'resolution': 'Unresolved',
@@ -180,6 +182,7 @@ def fetch_incidents(last_run, first_run_time_range):
     for a in reversed(aros):
         if a['ID'] != last_aro_id:
             created_time = dateparser.parse(a['creation_time'])
+            assert created_time is not None, f'could not parse {a["creation_time"]}'
             created_time_str = created_time.strftime(DATE_FORMAT)
 
             if a.get('organization', None):
@@ -193,7 +196,7 @@ def fetch_incidents(last_run, first_run_time_range):
 
             aro_title = a.get('title', 'No title')
 
-            incident = {
+            incident: Dict[str, Any] = {
                 'name': f'''[{org_name}] [{aro_type}] {aro_title}''',
                 'occured': created_time_str,
                 'rawJSON': json.dumps(a)
@@ -330,7 +333,8 @@ def main():
         elif demisto.command() == 'cov-mgsec-list-org':
             r = list_organizations()
             if r:
-                readable_output = tableToMarkdown('Organizations', r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown('Organizations', r, removeNull=True,
+                                                  headerTransform=string_to_table_header)
             else:
                 readable_output = 'No organizations found'
 

@@ -1,0 +1,84 @@
+{
+    "name": "get_compliance_archive_summary",
+    "execute": "response_raw = CimTrak.get_compliance_archive_summary_command(client,{'Start':1,'End':1,'ObjectId':1,'ComplianceScanId':-1})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getComplianceArchiveSummary",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "testdate": "2022-01-28 06:00:03",
+                        "scanid": 4,
+                        "ipaddress": "127.0.0.1",
+                        "datatype": "summary",
+                        "alternatesystemid": "test",
+                        "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                        "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                        "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                        "lobjectid": 10,
+                        "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                        "profile": "Level 1",
+                        "totalfailcount": 0,
+                        "totalpasscount": 0,
+                        "totaltestsskipped": 53,
+                        "totalwaivecount": 0,
+                        "pass": true,
+                        "totaltestsran": 0,
+                        "osversion": "",
+                        "personality": "",
+                        "userId": 2,
+                        "objectid": 10,
+                        "block": true,
+                        "bunlock": true,
+                        "bview": true,
+                        "bedit": true,
+                        "badd": true,
+                        "breports": true,
+                        "blogon": true,
+                        "isadmin": false
+                    }
+                ]
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "testdate": "2022-01-28 06:00:03",
+                "scanid": 4,
+                "ipaddress": "127.0.0.1",
+                "datatype": "summary",
+                "alternatesystemid": "test",
+                "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                "lobjectid": 10,
+                "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                "profile": "Level 1",
+                "totalfailcount": 0,
+                "totalpasscount": 0,
+                "totaltestsskipped": 53,
+                "totalwaivecount": 0,
+                "pass": true,
+                "totaltestsran": 0,
+                "osversion": "",
+                "personality": "",
+                "userId": 2,
+                "objectid": 10,
+                "block": true,
+                "bunlock": true,
+                "bview": true,
+                "bedit": true,
+                "badd": true,
+                "breports": true,
+                "blogon": true
+            }
+        ]
+    }
+}

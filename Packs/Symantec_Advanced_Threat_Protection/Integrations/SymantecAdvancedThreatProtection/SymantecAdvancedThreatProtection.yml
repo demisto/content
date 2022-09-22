@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident data source
@@ -41,7 +39,6 @@ configuration:
   type: 0
   required: false
 - display: Fetch incidents
-  defaultvalue: ""
   name: isFetch
   type: 8
   required: false

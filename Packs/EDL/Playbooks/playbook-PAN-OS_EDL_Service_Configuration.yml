@@ -398,7 +398,7 @@ tasks:
       version: -1
       name: Get IP EDL Object from Panorama
       description: Returns information for an external dynamic list
-      script: '|||panorama-get-edl'
+      script: '|||pan-os-get-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -476,7 +476,7 @@ tasks:
       name: Create IP EDL Object access by instance name
       description: Creates an external dynamic list in PAN-OS and connects it to the
         external file.
-      script: '|||panorama-create-edl'
+      script: '|||pan-os-create-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -521,7 +521,7 @@ tasks:
       name: Create URL EDL Object access by instance name
       description: Creates an external dynamic list in PAN-OS and connects it to the
         external file.
-      script: '|||panorama-create-edl'
+      script: '|||pan-os-create-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -734,7 +734,7 @@ tasks:
       version: -1
       name: Get URL EDL Object from Panorama
       description: Returns information for an external dynamic list
-      script: '|||panorama-get-edl'
+      script: '|||pan-os-get-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -1011,7 +1011,7 @@ tasks:
       name: Create IP EDL Object access by port
       description: Creates an external dynamic list in PAN-OS and connects it to the
         external file.
-      script: '|||panorama-create-edl'
+      script: '|||pan-os-create-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -1056,7 +1056,7 @@ tasks:
       name: Create URL EDL Object access by port
       description: Creates an external dynamic list in PAN-OS and connects it to the
         external file.
-      script: '|||panorama-create-edl'
+      script: '|||pan-os-create-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -1553,7 +1553,7 @@ tasks:
       version: -1
       name: List PAN-OS rules
       description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""

@@ -1,0 +1,25 @@
+!ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-saved-searches
+!ctix-get-server-collections
+!ctix-get-threat-data query=type=indicator
+!ctix-get-allowed-iocs q=type=indicator
+!ctix-add-analyst-score data={\"analyst_score\":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator
+!ctix-add-analyst-tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}
+!ctix-add-indicator-as-false-positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator
+!ctix-add-tag-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1
+!ctix-search-for-tag q=xsoar_test_trial
+!ctix-delete-tag tag_name=xsoar_test_trial
+!ctix-get-tags
+!ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!ctix-remove-allowed-ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea
+!ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator
+!ctix-get-actions action_type=manual object_type=indicator
+!ctix-saved-result-set label_name=test query=type=indicator
+!ctix-allowed-iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2

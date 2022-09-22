@@ -353,7 +353,7 @@ tasks:
       version: -1
       name: Fetch instance info
       description: Run any command supported in the API.
-      script: Panorama|||panorama
+      script: Panorama|||pan-os
       type: regular
       iscommand: true
       brand: Panorama

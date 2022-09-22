@@ -1,0 +1,18 @@
+{
+  "groups": [
+    {
+      "displayName": "xsoar-api-test-2",
+      "groupKey": {
+        "id": "poctest1@xsoar.com"
+      },
+      "name": "groups/group-3-name"
+    },
+    {
+      "displayName": "xsoar-api-test",
+      "groupKey": {
+        "id": "poctest@xsoar.com"
+      },
+      "name": "groups/group-2-name"
+    }
+  ]
+}

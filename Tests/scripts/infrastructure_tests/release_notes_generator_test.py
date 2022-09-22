@@ -1,5 +1,6 @@
 import os
 import re
+import pytest
 from Utils.release_notes_generator import (get_release_notes_dict,
                                            generate_release_notes_summary,
                                            get_pack_entities,
@@ -592,3 +593,38 @@ class TestMergeVersionBlocks:
         rn = construct_entities_block(entities_data)
         assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
+
+    @pytest.mark.parametrize('Pack_name, versions_ls, expected_version', [
+        ("FakePack7", ["1_0_1.md", "1_0_2.md"], "1.0.2"),
+        ("FakePack8", ["1_13_44.md", "1_14_0.md"], '1.14.0')])
+    def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_version):
+        """
+            Given:
+                - Case 1: two consecutive versions of RN, both containing scripts with changes announcments,
+                One of them contain entity with description and one of them contain entity with an empty description.
+                One RN also contain integration changes announcments and the other contain entity with description.
+                - Case 2: two consecutive versions of RN, one contain a script with changes announcments and two entities
+                listed in this announcments and one of them contain a script with an entity with description.
+            When:
+                - Using merge_version_blocks function.
+            Then:
+                Ensure that the merge was done correctly.
+                - Case 1: Should create a merged RN with anouncments as the top descrition of each category, two categories with
+                one entity with descrition each. The other entity with the empty description should be omitted.
+                - Case 2: Should create a merged RN with the anouncment at the top of the category
+                including the two related entities, and under entity with descrition under the anouncment.
+        """
+        release_notes_paths = [os.path.join(TEST_DATA_PATH, Pack_name, 'ReleaseNotes', ver) for ver in versions_ls]
+        expected_results_paths = os.path.join(TEST_DATA_PATH, Pack_name, 'expected_results.md')
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file:
+                pack_versions_dict[get_pack_version_from_path(path)] = file.read()
+
+            with open(expected_results_paths) as file:
+                expected_results = file.read()
+
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+        assert latest_version == expected_version
+        assert rn_block == expected_results

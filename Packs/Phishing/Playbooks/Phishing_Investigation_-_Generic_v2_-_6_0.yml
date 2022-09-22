@@ -565,7 +565,7 @@ tasks:
         complex:
           root: inputs.O365ExchangeLocationExclusion
       O365KQL:
-        simple: from:${incident.emailfrom} AND subject:${incident.emailsubject}
+        simple: from:${incident.emailfrom} AND subject:"${incident.emailsubject}"
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration

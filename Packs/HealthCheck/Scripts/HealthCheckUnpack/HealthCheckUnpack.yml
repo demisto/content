@@ -2,12 +2,11 @@ args:
 - description: War room entryID of the file to read.
   name: entryID
   required: true
-comment: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsupported\
-  \ use cases and unextracted files. "
+comment: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsupported use cases and unextracted files. "
 commonfields:
   id: HealthCheckUnpack
   version: -1
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckUnpack
 outputs:

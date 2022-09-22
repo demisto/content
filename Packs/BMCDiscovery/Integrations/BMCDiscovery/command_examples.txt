@@ -1,0 +1,8 @@
+!bmc-discovery-scan-status-list run_id=7e1c02625b07bf307c9c04026e446973636f7665727952756e
+!bmc-discovery-scan-create ranges="10.0.0.0/8" label="Sample XSOAR Discovery Run"
+!bmc-discovery-scan-summary run_id=539a41625c06894d12830c0f6e446973636f7665727952756e
+!bmc-discovery-scan-stop run_id=539a41625c06894d12830c0f6e446973636f7665727952756e
+!bmc-discovery-scan-results-list result_type=Dropped run_id=539a41625c06894d12830c0f6e446973636f7665727952756e
+!bmc-discovery-search kind=Host hostname="ais-blade"
+!bmc-discovery-search-custom query="SEARCH Host WHERE os_type HAS SUBWORD 'Linux'"
+

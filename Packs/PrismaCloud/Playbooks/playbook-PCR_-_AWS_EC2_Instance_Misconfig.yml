@@ -2,7 +2,7 @@ id: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration
 version: -1
 fromversion: 5.0.0
 name: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration
-description: |
+description: |+
   This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls the following sub-playbooks to perform the remediation:
   - AWS Default Security Group Does Not Restrict All Traffic
   - AWS Security Groups Allow Internet Traffic
@@ -10,6 +10,7 @@ description: |
   - AWS Security Groups allow internet traffic from internet to FTP-Data port (20)
   - AWS Security Groups allow internet traffic from internet to FTP port (21)
   - AWS Security Groups allow internet traffic to SSH port (22)
+  - AWS Security Group allows all traffic on SSH port (22)
   - AWS Security Groups allow internet traffic from internet to Telnet port (23)
   - AWS Security Groups allow internet traffic from internet to SMTP port (25)
   - AWS Security Groups allow internet traffic from internet to DNS port (53)
@@ -35,9 +36,9 @@ tasks:
       id: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -46,21 +47,26 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": -400
+          "y": -420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9089a365-5d5e-44fe-8d37-d0ef1bb270bd
+    taskid: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
     type: condition
     task:
-      id: 9089a365-5d5e-44fe-8d37-d0ef1bb270bd
+      id: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
       version: -1
-      name: Is AWS - EC2 integration enabled?
-      description: Verifies that AWS - EC2 integration is enabled.
+      name: Is AWS - EC2 integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -69,37 +75,12 @@ tasks:
       - "8"
       "yes":
       - "14"
+    scriptarguments:
+      brandname:
+        simple: AWS - EC2
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AWS - EC2
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: AWS - EC2
     view: |-
       {
         "position": {
@@ -110,6 +91,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 77885611-1518-41c5-8929-0da5c8de85cb
@@ -152,6 +137,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
@@ -193,9 +182,15 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
       replyOptions:
       - "Yes"
       - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: f8dfdf9c-3271-4644-89ce-2fdfd9f25e9f
@@ -223,32 +218,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 599730fe-9f1e-4a63-89c5-e941732683b6
+    taskid: 6875afa1-821e-4015-81a8-97e77b6316f5
     type: regular
     task:
-      id: 599730fe-9f1e-4a63-89c5-e941732683b6
+      id: 6875afa1-821e-4015-81a8-97e77b6316f5
       version: -1
       name: Close investigation
       description: Close the current incident.
-      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
       - "8"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id:
-        complex:
-          root: incident
-          accessor: id
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -260,6 +248,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
@@ -268,10 +260,10 @@ tasks:
       id: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -283,6 +275,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 1b01f096-ed50-4e46-8dfc-1fc611535c7a
@@ -339,12 +335,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7c40b3ff-f089-453e-816c-c3830ebf15fe
+    taskid: c68e2c3c-f240-4454-8e97-ebfa0266b1df
     type: condition
     task:
-      id: 7c40b3ff-f089-453e-816c-c3830ebf15fe
+      id: c68e2c3c-f240-4454-8e97-ebfa0266b1df
       version: -1
       name: Execute playbook
       description: Execute the appropriate sub-playbook to perform the actual remediation.
@@ -388,6 +388,15 @@ tasks:
           right:
             value:
               simple: 566686e8-0581-4df5-ae22-5a901ed37b58
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 617b9138-584b-4e8e-ad15-7fbabafbed1a
     - label: internetPorts
       condition:
       - - operator: isEqualString
@@ -553,6 +562,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 0d732bc3-22a0-4b2e-8b03-4d8aa68b9389
@@ -591,6 +604,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: b5281377-31ef-472b-8699-6c94c222e807
@@ -599,11 +616,11 @@ tasks:
       id: b5281377-31ef-472b-8699-6c94c222e807
       version: -1
       name: Prisma Cloud Remediation - AWS EC2 Security Group Misconfiguration
-      description: ""
       playbookName: Prisma Cloud Remediation - AWS EC2 Security Group Misconfiguration
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -616,6 +633,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -626,6 +644,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 3d9a9afc-e7e3-4be6-8142-57b5ef3bffb2
@@ -633,12 +655,14 @@ tasks:
     task:
       id: 3d9a9afc-e7e3-4be6-8142-57b5ef3bffb2
       version: -1
-      name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP Port
-      description: ""
-      playbookName: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP Port
+      name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic
+        To TCP Port
+      playbookName: Prisma Cloud Remediation - AWS Security Groups Allows Internet
+        Traffic To TCP Port
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -655,6 +679,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: f8385099-65e3-47ef-818d-0131c61c0d6f
@@ -683,14 +709,8 @@ tasks:
               field:
                 value:
                   simple: id
-      alert-rule-name: {}
-      alert-status: {}
-      cloud-account: {}
-      cloud-region: {}
-      cloud-type: {}
       dismissal-note:
         simple: ${incident.labels.id} has been remediated by Demisto.
-      policy-compliance-standard: {}
       policy-id:
         complex:
           root: incident
@@ -702,18 +722,6 @@ tasks:
               field:
                 value:
                   simple: policyId
-      policy-label: {}
-      policy-name: {}
-      policy-severity: {}
-      policy-type: {}
-      resource-id: {}
-      resource-name: {}
-      resource-type: {}
-      risk-grade: {}
-      time-range-date-from: {}
-      time-range-date-to: {}
-      time-range-unit: {}
-      time-range-value: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -728,6 +736,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -745,10 +755,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1755,
+        "height": 1775,
         "width": 1530,
         "x": -220,
-        "y": -400
+        "y": -420
       }
     }
   }
@@ -758,6 +768,7 @@ inputs:
     simple: "no"
   required: false
   description: Update AWS EC2 instance automatically?
+  playbookInputQuery: null
 - key: policyId
   value:
     complex:
@@ -772,6 +783,7 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No Test

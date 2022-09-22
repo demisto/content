@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: 'The source of the relationship, for example 1.1.1.1. Only a single value is acceptable.'
+  description: The source of the relationship, for example 1.1.1.1. Only a single value is acceptable.
   isArray: false
   name: entity_a
   required: true
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'The source type of the relationship, for example IP. The value must be an accepted indicator type. Only a single value is acceptable.'
+  description: The source type of the relationship, for example IP. The value must be an accepted indicator type. Only a single value is acceptable.
   isArray: false
   name: entity_a_type
   predefined:
@@ -38,14 +38,14 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'A comma-separated list of destinations or second entity values, for example 3.3.3.3,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument.'
+  description: A comma-separated list of destinations or second entity values, for example 3.3.3.3,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument.
   isArray: true
   name: entity_b
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'The destination type of the relationship, for example IP. Only a single value is acceptable. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument.'
+  description: The destination type of the relationship, for example IP. Only a single value is acceptable. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument.
   isArray: false
   name: entity_b_type
   predefined:
@@ -76,17 +76,17 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.'
+  description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
   isArray: false
   name: entity_b_query
   required: false
   secret: false
 - default: false
   auto: PREDEFINED
-  description: 'The name of relationship to be created.'
+  description: The name of relationship to be created.
   isArray: false
   name: relationship
-  defaultValue: 'related-to'
+  defaultValue: related-to
   predefined:
   - applied
   - attachment-of
@@ -161,8 +161,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: "The reverse name of relationship to be created.
-                If the argument isn't provided by the user, the default reverse relation will be created."
+  description: The reverse name of relationship to be created. If the argument isn't provided by the user, the default reverse relation will be created.
   isArray: false
   auto: PREDEFINED
   name: reverse_relationship
@@ -240,10 +239,10 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Reliability of the source providing the intelligence data.'
+  description: Reliability of the source providing the intelligence data.
   auto: PREDEFINED
   isArray: false
-  defaultValue: 'A - Completely reliable'
+  defaultValue: A - Completely reliable
   name: source_reliability
   predefined:
   - A - Completely reliable
@@ -255,7 +254,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Free text description to add to the relationship.'
+  description: Free text description to add to the relationship.
   isArray: false
   name: description
   required: false
@@ -267,8 +266,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'True, if the non-existing indicators will be created according to the specified entities and their types. Default 
-                is false.'
+  description: True, if the non-existing indicators will be created according to the specified entities and their types. Default is false.
   isArray: false
   auto: PREDEFINED
   name: create_indicator
@@ -278,7 +276,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: 'This automation creates a relationship between indicator objects.'
+comment: This automation creates a relationship between indicator objects.
 commonfields:
   id: CreateIndicatorRelationship
   version: -1
@@ -291,7 +289,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.4.30607
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

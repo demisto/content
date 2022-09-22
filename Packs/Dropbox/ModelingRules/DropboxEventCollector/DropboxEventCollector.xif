@@ -1,0 +1,47 @@
+[RULE:file_copy_events]
+filter json_extract_scalar(event_type, "$['.tag']") in ("file_copy", "file_move", "file_rename", "file_save_copy_reference")
+| alter XDM.Audit.audited_resource.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.display_name"),
+        XDM.Audit.audited_resource.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.file_id"),
+        XDM.Audit.audited_resource_before.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.display_name"),
+        XDM.Audit.audited_resource_before.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.file_id");
+
+[MODEL: dataset=dropbox_dropbox_raw, model=Audit]
+filter json_extract_scalar(event_category, "$['.tag']") != "logins"
+| alter XDM.Audit.event_timestamp = timestamp,
+       XDM.Audit.original_event_type = json_extract_scalar(event_category, "$['.tag']"),
+       XDM.Audit.original_event_sub_type = json_extract_scalar(event_type, "$['.tag']"),
+       XDM.Audit.original_event_description = json_extract_scalar(event_type, "$.description"),
+       XDM.Audit.audited_resource.type = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$['.tag']"),
+       XDM.Audit.audited_resource.name = coalesce(json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.display_name"), json_extract_scalar(details, "$.app_info.display_name")),
+       XDM.Audit.audited_resource.id = coalesce(json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.file_id"), json_extract_scalar(details, "$.app_info.app_id")),
+       XDM.Audit.session_context_id = json_extract_scalar(origin, "$.access_method.end_user.session_id"),
+       XDM.Audit.TriggeredBy.ipv4 = json_extract_scalar(origin, "$.geo_location.ip_address"),
+       XDM.Audit.TriggeredBy.location.city = json_extract_scalar(origin, "$.geo_location.city"),
+       XDM.Audit.TriggeredBy.location.region = json_extract_scalar(origin, "$.geo_location.region"),
+       XDM.Audit.TriggeredBy.location.country = json_extract_scalar(origin, "$.geo_location.country"),
+       XDM.Audit.identity.type = json_extract_scalar(context, "$['.tag']"),
+       XDM.Audit.identity.uuid = json_extract_scalar(context, "$.account_id"),
+       XDM.Audit.identity.name =  json_extract_scalar(context, "$.display_name"),
+       XDM.Audit.TriggeredBy.identity.type = json_extract_scalar(actor, "$['.tag']"),
+       XDM.Audit.TriggeredBy.identity.name = coalesce(json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")),
+       XDM.Audit.TriggeredBy.identity.uuid = coalesce(json_extract_scalar(actor, "$.user.account_id"), json_extract_scalar(actor, "$.admin.account_id")),
+       XDM.Audit.audited_resource.value = coalesce(json_extract_scalar(details, "$.new_value['.tag']"), json_extract_scalar(details, "$.certificate_details.sha1_fingerprint"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
+       XDM.Audit.audited_resource_before.value = coalesce(json_extract_scalar(details, "$.previous_value['.tag']"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
+       XDM.Audit.TriggeredBy.agent.identifier = json_extract_scalar(details, "$.user_agent");
+
+[MODEL: dataset=dropbox_dropbox_raw, model=Auth]
+filter json_extract_scalar(event_category, "$['.tag']") = "logins"
+| alter XDM.Auth.event_timestamp = timestamp,
+       XDM.Auth.original_event_type = json_extract_scalar(event_category, "$['.tag']"),
+       XDM.Auth.original_event_sub_type = json_extract_scalar(event_type, "$['.tag']"),
+       XDM.Auth.original_event_description = json_extract_scalar(event_type, "$.description"),
+       XDM.Auth.session_context_id = json_extract_scalar(origin, "$.access_method.end_user.session_id"),
+       XDM.Auth.Client.ipv4 = json_extract_scalar(origin, "$.geo_location.ip_address"),
+       XDM.Auth.Client.location.city = json_extract_scalar(origin, "$.geo_location.city"),
+       XDM.Auth.Client.location.region = json_extract_scalar(origin, "$.geo_location.region"),
+       XDM.Auth.Client.location.country = json_extract_scalar(origin, "$.geo_location.country"),
+       XDM.Auth.Client.user.user_type = json_extract_scalar(actor, "$['.tag']"),
+       XDM.Auth.Client.user.first_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name"), json_extract_scalar(actor, "$.reseller.reseller_name")), " "), 0),
+       XDM.Auth.Client.user.last_name = arrayindex(split(coalesce(json_extract_scalar(actor, "$.admin.display_name"), json_extract_scalar(actor, "$.user.display_name")), " "), 1),
+       XDM.Auth.Client.user.identifier = coalesce(json_extract_scalar(actor, "$.admin.account_id"), json_extract_scalar(actor, "$.user.account_id")),
+       XDM.Auth.Client.user.username = coalesce(json_extract_scalar(actor, "$.admin.email"), json_extract_scalar(actor, "$.user.email"), json_extract_scalar(actor, "$.reseller.reseller_email"));

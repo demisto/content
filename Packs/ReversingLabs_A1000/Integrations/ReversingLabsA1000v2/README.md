@@ -9177,6 +9177,7 @@ Retrieve classification report for a sample.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hash | The hash of a previously uploaded sample. Supported hash types: SHA1, SHA256, SHA512, MD5 | True | 
+| localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. | True | 
 
 <br>
 

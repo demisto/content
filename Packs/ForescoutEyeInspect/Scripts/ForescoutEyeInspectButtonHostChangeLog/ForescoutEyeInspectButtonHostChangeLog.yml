@@ -1,0 +1,18 @@
+commonfields:
+  id: ForescoutEyeInspectButtonHostChangeLog
+  version: -1
+name: ForescoutEyeInspectButtonHostChangeLog
+script: ""
+type: python
+tags:
+  - incident-action-button
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.4.28442
+runas: DBotWeakRole
+fromversion: 6.1.0
+comment: Get change log of Forescout EyeInspect hosts.
+tests:
+  - No tests (auto formatted)

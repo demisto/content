@@ -3,24 +3,25 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+MAX_EVENTS = 10
+
 
 def main():
     try:
         incident = demisto.incident()
         events = incident.get('CustomFields', {}).get('events', {})
-
         if not events:
             return CommandResults()
-
+        title = f'Offense Events (Showing first {MAX_EVENTS})'
         if isinstance(events, list):
             events_arr = []
             for event in events:
                 events_arr.append(json.loads(event))
-            markdown = tableToMarkdown("Offense Events", events_arr, headers=events_arr[0].keys())
+            markdown = tableToMarkdown(title, events_arr[:MAX_EVENTS], headers=events_arr[0].keys())
         else:
-            markdown = tableToMarkdown("Offense Events", json.loads(events))
+            markdown = tableToMarkdown(title, json.loads(events)[:MAX_EVENTS])
 
-        return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
+        return CommandResults(readable_output=markdown)
     except Exception as exp:
         return_error('could not parse QRadar events', error=exp)
 

@@ -1,0 +1,8 @@
+[file:CybleEvents.yml]
+ignore=IN126
+
+[file:classifier-Cyble_Intel_Alert_Classification.json]
+ignore=BA101
+
+[known_words]
+cyble

@@ -1,5 +1,8 @@
 [file:FeedThreatConnect.yml]
-ignore=IN145
+ignore=IN145,IN124
 
 [file:FeedThreatConnect_image.png]
 ignore=IM111
+
+[known_words]
+ThreatConnect

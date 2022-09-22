@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import traceback
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -263,8 +261,10 @@ def test_module(client: Client, is_fetch: bool = False, first_fetch_time: str = 
     """
     # test with fetch parameters
     if is_fetch:
-        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})  # type: ignore
+        assert last_fetch is not None
         last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
+        assert last_fetch is not None
         client.get_incidents(from_time=last_fetch, state=state, severity=severity, status=status, app_ids=app_ids)
     else:
         client.get_incidents()
@@ -478,8 +478,10 @@ def get_remote_data_command(client, args):
         incident_data = client.get_incident_by_id(remote_args.remote_incident_id)
         delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
 
+        last_update_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+        assert last_update_date is not None, f'could not parse {remote_args.last_update}'
         if not delta or date_to_timestamp(incident_data.get('updated_at'), '%Y-%m-%dT%H:%M:%S.%fZ') \
-                <= int(dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).timestamp()):
+                <= int(last_update_date.timestamp()):
             demisto.debug("Nothing new in the incident.")
             delta = {
                 'id': remote_args.remote_incident_id,
@@ -546,6 +548,7 @@ def get_modified_remote_data_command(client, args):
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    assert last_update_utc is not None, f'could not parse {remote_args.last_update}'
     last_update_utc = last_update_utc.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'  # format ex: 2021-08-23T09:26:25.872Z
     demisto.debug(f'last_update in UTC is {last_update_utc}')
 
@@ -698,7 +701,6 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

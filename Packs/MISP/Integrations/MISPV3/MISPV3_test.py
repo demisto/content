@@ -2,6 +2,7 @@ import pytest
 import io
 from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
+from requests.models import Response
 
 TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
                  ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
@@ -32,7 +33,7 @@ INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
                        'include_decay_score': 0, 'include_sightings': 0, 'include_correlations': 0,
                        'enforceWarninglist': 0, 'tags': 'NOT:param3', 'value': 6, 'category': '7', 'limit': 10,
-                       'org': 7}, {'type_attribute': '1', 'to_ids': 0, 'date_from': '2', 'date_to': '3',
+                       'org': 7}, {'type_attribute': ['1'], 'to_ids': 0, 'date_from': '2', 'date_to': '3',
                                    'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
                                    'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
                                    'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7',
@@ -599,3 +600,101 @@ def test_build_attributes_search_response(mocker):
         for event_field in ATTRIBUTE_FIELDS:
             if actual_attribute.get(event_field):
                 assert actual_attribute.get(event_field) == expected_attribute.get(event_field)
+
+
+def test_warninglist_response(mocker):
+    """
+
+    Given:
+    - A MISP warninglist response (json).
+
+    When:
+    - Running misp-check-warninglist command.
+
+    Then:
+    - Ensure that the readable output to context data is valid and was parsed correctly.
+    """
+    mock_misp(mocker)
+    from MISPV3 import warninglist_command
+    demisto_args = {"value": "8.8.8.8"}
+    warninglist_response = util_load_json("test_data/warninglist_response.json")
+    with io.open("test_data/warninglist_outputs.md", mode="r", encoding="utf-8") as f:
+        warninglist_expected_output = f.read()
+    mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
+    assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output
+
+
+def get_response(status_code, mocker, mock_response_key):
+    the_response = Response()
+    the_response.status_code = status_code
+    the_response.request = mocker.patch.object(
+        demisto,
+        'internalHttpRequest',
+        return_value={
+            'body': json.dumps({'key': 'value'}),
+            'headers': json.dumps({'key': 'value'})
+        }
+    )
+    file = util_load_json("test_data/response_mock_add_email_object_test.json")[mock_response_key]
+
+    def json_func():
+        return file
+    the_response.json = json_func
+    return the_response
+
+
+@pytest.mark.parametrize('file_path, expected_output_key, mock_response_key', [
+    ("test_data/test_add_email_object_case_1.eml", "expected_output_case_1", "response_mock_case_1"),
+    ("test_data/test_add_email_object_case_2.eml", "expected_output_case_2", "response_mock_case_2"),
+    ("test_data/test_add_email_object_case_3.eml", "expected_output_case_3", "response_mock_case_3")])
+def test_add_email_object(file_path, expected_output_key, mock_response_key, mocker):
+    """
+    Given:
+    - file path to a .eml file.
+    - case 1: regular gmail format mail.
+    - case 2: mail from TPB.
+    - case 3: mail with attachments.
+    When:
+    - Running add_email_object command.
+    Then:
+    - Ensure that the extraction of the information occured correctly and in the right format.
+    - case 1: should return true.
+    - case 2: should return true.
+    - case 3: should return true.
+    """
+    from MISPV3 import add_email_object
+    import pymisp
+    event_id = 1231
+    demisto_args: dict = {'entry_id': "", 'event_id': event_id}
+    mocker.patch.object(demisto, "getFilePath", return_value={
+                        "path": file_path
+                        })
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
+    pymisp.ExpandedPyMISP.global_pythonify = False
+    output = add_email_object(demisto_args).outputs
+    expected_output = util_load_json("test_data/response_mock_add_email_object_test.json")[expected_output_key]
+    assert output == expected_output
+
+
+def test_fail_to_add_email_object(mocker):
+    """
+    Given:
+    - case 1: 404 status code.
+    When:
+    - Running add_email_object command.
+    Then:
+    - Ensure that the error code was parsed into the response, was caught and handeled as a DemistoException.
+    - case 1: Should catch a DemistoException and return true.
+    """
+    from MISPV3 import add_email_object
+    import pymisp
+    event_id = 1231
+    demisto_args: dict = {'entry_id': "", 'event_id': event_id}
+    mocker.patch.object(demisto, "getFilePath", return_value={
+                        "path": "test_data/test_add_email_object_case_1.eml"
+                        })
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker, "response_mock_case_1"))
+    pymisp.ExpandedPyMISP.global_pythonify = True
+    with pytest.raises(DemistoException) as exception_info:
+        add_email_object(demisto_args)
+    assert "'errors': (404" in str(exception_info.value)

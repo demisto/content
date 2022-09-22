@@ -1,0 +1,31 @@
+{
+    "id": "incident_emaildeletefrombrand",
+    "version": -1,
+    "modified": "2022-01-02T15:33:29.590862104Z",
+    "name": "Email Delete From Brand",
+    "ownerOnly": false,
+    "cliName": "emaildeletefrombrand",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "fieldCalcScript": "GetBrandDeleteReportedEmail",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Unspecified"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.1.0"
+}

@@ -68,6 +68,20 @@
                 "MD5": "8b84009488f7254a2be3c4409bcf286a",
                 "SHA1": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641",
                 "SHA256": "91ad1155d57e91caa994da40fff6048eb8c10fcf9a6c1b7d5a393f605d718acc",
+                "Hashes": [
+                            {
+                                "type": "MD5",
+                                "value": "8b84009488f7254a2be3c4409bcf286a"
+                            },
+                            {
+                                "type": "SHA1",
+                                "value": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641"
+                            },
+                            {
+                                "type": "SHA256",
+                                "value": "91ad1155d57e91caa994da40fff6048eb8c10fcf9a6c1b7d5a393f605d718acc"
+                            }
+                        ],
                 "Malicious": {
                     "Vendor": "ReversingLabs TitaniumScale",
                     "Description": "\n **TitaniumCloud:** Win32.Trojan.Graftor"

@@ -1,20 +1,20 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import requests
-from distutils.util import strtobool
-from flask import Flask, request, Response
-from gevent.pywsgi import WSGIServer
-import jwt
-import time
-from threading import Thread
-from typing import Match, Union, Optional, cast, Dict, Any, List, Tuple
 import re
-from jwt.algorithms import RSAAlgorithm
+import time
+from distutils.util import strtobool
 from tempfile import NamedTemporaryFile
+from threading import Thread
 from traceback import format_exc
+from typing import Any, Dict, List, Match, Optional, Tuple, Union, cast
+
+import jwt
+import requests
+from flask import Flask, Response, request
+from gevent.pywsgi import WSGIServer
+from jwt.algorithms import RSAAlgorithm
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -23,6 +23,7 @@ requests.packages.urllib3.disable_warnings()
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('bot_password', '')
+tenant_id: str = PARAMS.get('tenant_id', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
@@ -44,6 +45,7 @@ MESSAGE_TYPES: dict = {
 }
 
 if '@' in BOT_ID:
+    demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
 
@@ -230,12 +232,13 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
+    demisto.debug(f"requested team member: {requested_team_member}")
     teams: list = json.loads(integration_context.get('teams', '[]'))
-
+    demisto.debug(f"we've got {len(teams)} teams saved in integration context")
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
-            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '')}:
+            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '').lower()}:
                 return team_member.get('id')
 
     raise ValueError(f'Team member {requested_team_member} was not found')
@@ -702,14 +705,17 @@ def get_team_aad_id(team_name: str) -> str:
     :param team_name: Team name to get AAD ID of
     :return: team AAD ID
     """
+    demisto.debug(f'Team String {team_name}')
     integration_context: dict = get_integration_context()
     if integration_context.get('teams'):
         teams: list = json.loads(integration_context['teams'])
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=displayName eq '{team_name}' " \
+               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    demisto.debug(f'Response {response}')
     teams = response.get('value', [])
     for team in teams:
         if team.get('displayName', '') == team_name:
@@ -1148,6 +1154,7 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
+    demisto.debug("Send message")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -1178,6 +1185,8 @@ def send_message():
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
+        team_member = team_member.lower()
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')
@@ -1572,6 +1581,7 @@ def messages() -> Response:
     try:
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
+
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
@@ -1760,6 +1770,7 @@ def test_module():
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
+    demisto.debug("Main started...")
     commands: dict = {
         'test-module': test_module,
         'long-running-execution': long_running_loop,

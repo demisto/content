@@ -1,8 +1,10 @@
 id: Traps Scan Endpoint
 version: -1
 name: Traps Scan Endpoint
+hidden: true
+deprecated: true
 fromversion: "5.0.0"
-description: Use this playbook to initiate an endpoint scan and retrieve the scan results.
+description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:
   "0":

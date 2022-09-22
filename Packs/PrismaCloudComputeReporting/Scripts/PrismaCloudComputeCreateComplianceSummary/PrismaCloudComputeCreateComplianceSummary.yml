@@ -10,7 +10,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: Create a Compliance summary Report from Prisma Cloud Compute image data.
+comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateComplianceSummary
   version: -1
@@ -25,5 +25,6 @@ subtype: python3
 tags: []
 type: python
 fromversion: 6.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)

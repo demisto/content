@@ -44,24 +44,17 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: FireEye Endpoint Security is an integrated solution that detects what
-  others miss and protects endpoint against known and unknown threats. The HX Demisto
-  integration provides access to information about endpoints, acquisitions, alerts,
-  indicators, and containment. Customers can extract critical data and effectively
-  operate security operations automated playbook
-display: FireEye HX
+description: Deprecated. Use FireEyeHX v2 instead.
+display: FireEye HX (Deprecated)
 name: FireEye HX
 script:
   commands:
   - arguments:
-    - description: The host name to be contained. If the hostName is not specified,
-        the agentId must be specified.
+    - description: The host name to be contained. If the hostName is not specified, the agentId must be specified.
       name: hostName
-    - description: The agent id running on the host to be contained. If the agentId
-        is not specified, the hostName must be specified.
+    - description: The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified.
       name: agentId
-    description: Apply containment for a specific host, so that it no longer has access
-      to other systems.
+    description: Apply containment for a specific host, so that it no longer has access to other systems.
     name: fireeye-hx-host-containment
     outputs:
     - contextPath: FireEyeHX.Hosts._id
@@ -116,8 +109,7 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
-        null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -131,12 +123,11 @@ script:
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
       type: Unknown
+    deprecated: true
   - arguments:
-    - description: The host name to be contained. If the hostName is not specified,
-        the agentId must be specified.
+    - description: The host name to be contained. If the hostName is not specified, the agentId must be specified.
       name: hostName
-    - description: The agent id running on the host to be contained. If the agentId
-        is not specified, the hostName must be specified.
+    - description: The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified.
       name: agentId
     description: Release a specific host from containment.
     name: fireeye-hx-cancel-containment
@@ -193,8 +184,7 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
-        null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -208,10 +198,10 @@ script:
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
       type: Unknown
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
-      description: Identifies which alerts result from indicators with the specified
-        share mode.
+      description: Identifies which alerts result from indicators with the specified share mode.
       name: hasShareMode
       predefined:
       - any
@@ -235,8 +225,7 @@ script:
       name: alertId
     - description: Filter by match detection time. ISO-8601 timestamp.
       name: matchedAt
-    - description: Filter that returns only records with an AlertId field value great
-        than the minId value.
+    - description: Filter that returns only records with an AlertId field value great than the minId value.
       name: minId
     - description: Filter by reported time. ISO-8601 timestamp.
       name: reportedAt
@@ -244,17 +233,17 @@ script:
       description: Source of alert- indicator of compromise
       name: IOCsource
       predefined:
-      - "yes"
+      - yes
     - auto: PREDEFINED
       description: Source of alert - exploit detection
       name: EXDsource
       predefined:
-      - "yes"
+      - yes
     - auto: PREDEFINED
       description: Source of alert - malware alert
       name: MALsource
       predefined:
-      - "yes"
+      - yes
     - description: Limit the results returned
       name: limit
     - auto: PREDEFINED
@@ -274,8 +263,7 @@ script:
       predefined:
       - ascending
       - descending
-    description: Get a list of alerts, use the different arguments to filter the results
-      returned.
+    description: Get a list of alerts, use the different arguments to filter the results returned.
     name: fireeye-hx-get-alerts
     outputs:
     - contextPath: FireEyeHX.Alerts._id
@@ -320,21 +308,20 @@ script:
     - contextPath: FireEyeHX.Alerts.event_type
       description: Event type.
       type: Unknown
+    deprecated: true
   - arguments:
-    - description: The alert id. The alert id is listed in the output of 'get-alerts'
-        command.
+    - description: The alert ID. The alert ID is listed in the output of 'get-alerts' command.
       name: alertId
     description: Suppress alert by ID
     name: fireeye-hx-suppress-alert
+    deprecated: true
   - arguments:
     - description: The indicator category
       name: category
-    - description: The searchTerm can be any name, category, signature, source, or
-        condition value.
+    - description: The searchTerm can be any name, category, signature, source, or condition value.
       name: searchTerm
     - auto: PREDEFINED
-      description: Determines who can see the indicator. You must belong to the correct
-        authorization group .
+      description: Determines who can see the indicator. You must belong to the correct authorization group .
       name: shareMode
       predefined:
       - any
@@ -355,8 +342,8 @@ script:
       description: Whether the indicator resulted in alerts
       name: alerted
       predefined:
-      - "yes"
-      - "no"
+      - yes
+      - no
     - description: Limit the number of results
       name: limit
     description: Get a list of indicators
@@ -395,6 +382,7 @@ script:
     - contextPath: FireEyeHX.Indicators.category.uri_name
       description: URI name of the category.
       type: String
+    deprecated: true
   - arguments:
     - description: Indicator category. Please use the `uri_category` value.
       name: category
@@ -441,12 +429,11 @@ script:
     - contextPath: FireEyeHX.Conditions.enabled
       description: Indicates whether the condition is enabled.
       type: Unknown
+    deprecated: true
   - arguments:
-    - description: The agent ID. If the agent ID is not specified, the host Name must
-        be specified.
+    - description: The agent ID. If the agent ID is not specified, the host Name must be specified.
       name: agentId
-    - description: The host name. If the host name is not specified, the agent ID
-        must be specified.
+    - description: The host name. If the host name is not specified, the agent ID must be specified.
       name: hostName
     description: Get information on a host associated with an agent.
     name: fireeye-hx-get-host-information
@@ -503,8 +490,7 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
-        null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -518,6 +504,7 @@ script:
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The alert ID.
       name: alertId
@@ -567,6 +554,7 @@ script:
     - contextPath: FireEyeHX.Alerts.event_type
       description: Event type.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The file name.
       name: fileName
@@ -575,20 +563,16 @@ script:
       name: filePath
       required: true
     - auto: PREDEFINED
-      description: Whether to aqcuire the file using the API or RAW. By default, raw
-        file will be acquired. Use API option when file is encrypted.
+      description: Whether to aqcuire the file using the API or RAW. By default, a raw file will be acquired. Use the API option when the file is encrypted.
       name: acquireUsing
       predefined:
       - API
       - RAW
-    - description: The agent ID associated with the host that holds the file. If the
-        hostName is not specified, the agentId must be specified.
+    - description: The agent ID associated with the host that holds the file. If the hostName is not specified, the agentId must be specified.
       name: agentId
-    - description: The host that holds the file. If the agentId is not specified,
-        hostName must be specified.
+    - description: The host that holds the file. If the agentId is not specified, hostName must be specified.
       name: hostName
-    description: Aquire a specific file as a password protected zip file. The password
-      for unlocking the zip file is 'unzip-me'.
+    description: Aquire a specific file as a password protected zip file. The password for unlocking the zip file is 'unzip-me'.
     name: fireeye-hx-file-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Files._id
@@ -609,17 +593,18 @@ script:
     - contextPath: FireEyeHX.Acquisitions.Files.host._id
       description: FireEye HX agent ID.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The acquisition ID.
       name: acquisitionId
       required: true
     description: Delete the file acquisition, by ID.
     name: fireeye-hx-delete-file-acquisition
+    deprecated: true
   - arguments:
     - description: Acquisition script in JSON format.
       name: script
-    - description: The script name. If the Acquisition script is specified, the script
-        name must be specified as well.
+    - description: The script name. If the Acquisition script is specified, the script name must be specified as well.
       name: scriptName
     - auto: PREDEFINED
       description: Use default script. Select the host system.
@@ -628,14 +613,11 @@ script:
       - osx
       - win
       - linux
-    - description: The agent ID. If the host name is not specified, the agent ID must
-        be specified.
+    - description: The agent ID. If the host name is not specified, the agent ID must be specified.
       name: agentId
-    - description: The host name. If the agent ID is not specified, the host name
-        must be specified.
+    - description: The host name. If the agent ID is not specified, the host name must be specified.
       name: hostName
-    description: Start a data acquisition process to gather artifacts from the system
-      disk and memory. The data is fetched as mans file.
+    description: Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as mans file.
     name: fireeye-hx-data-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
@@ -652,12 +634,14 @@ script:
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
       description: Agent ID
+    deprecated: true
   - arguments:
     - description: The acquisition ID.
       name: acquisitionId
       required: true
     description: Delete data acquisition.
     name: fireeye-hx-delete-data-acquisition
+    deprecated: true
   - arguments:
     - description: IDs of agents to be searched
       name: agentsIds
@@ -672,8 +656,8 @@ script:
       description: Should search be exhaustive or quick
       name: exhaustive
       predefined:
-      - "yes"
-      - "no"
+      - yes
+      - no
     - description: A valid IPv4 address to search for
       name: ipAddress
     - auto: PREDEFINED
@@ -711,14 +695,12 @@ script:
       - contains
       - not contains
     - auto: PREDEFINED
-      description: Method in which search should be stopped after finding <limit>
-        number of results
+      description: Method by which search should be stopped after finding <limit> number of results
       name: stopSearch
       predefined:
       - stopAndDelete
       - stop
-    description: Search endpoints to check all hosts or a subset of hosts for a specific
-      file or indicator.
+    description: Search endpoints to check all hosts or a subset of hosts for a specific file or indicator.
     name: fireeye-hx-search
     outputs:
     - contextPath: FireEyeHX.Search.Results.Timestamp - Modified
@@ -811,21 +793,17 @@ script:
     - contextPath: FireEyeHX.Search.Results.id
       description: ID of the result
       type: string
+    deprecated: true
   - arguments:
     - description: ID of a specific host set to get
       name: hostSetID
-    - description: Specifies which record to start with in the response. The offset
-        value must be an unsigned 32-bit integer. The default is 0.
+    - description: Specifies which record to start with in the response. The offset value must be an unsigned 32-bit integer. The default is 0.
       name: offset
-    - description: Specifies how many records are returned. The limit value must be
-        an unsigned 32-bit integer. The default is 50.
+    - description: Specifies how many records are returned. The limit value must be an unsigned 32-bit integer. The default is 50.
       name: limit
-    - description: Searches the names of all host sets connected to the specified
-        HX appliance.
+    - description: Searches the names of all host sets connected to the specified HX appliance.
       name: search
-    - description: Sorts the results by the specified field in ascending or descending
-        order. The default is sorting by name in ascending order. Sortable fields
-        are _id (host set ID) and name (host set name).
+    - description: Sorts the results by the specified field in ascending or descending order. The default is sorting by name in ascending order. Sortable fields are _id (host set ID) and name (host set name).
       name: sort
     - description: Specifies the name of host set to look for
       name: name
@@ -849,6 +827,7 @@ script:
     - contextPath: FireEyeHX.HostSets.url
       description: Host set FireEye url
       type: string
+    deprecated: true
   - arguments:
     - description: The indicator category
       name: category
@@ -931,6 +910,7 @@ script:
     - contextPath: FireEyeHX.Indicators.update_actor.username
       description: Update actor name
       type: string
+    deprecated: true
   - arguments:
     - description: The indicator category. Please use the `uri_category` value.
       name: category
@@ -938,13 +918,12 @@ script:
     - description: The name of the indicator. Please use the `uri_name` value.
       name: name
       required: true
-    - description: 'A list of conditions to add. The list can include a list of IPv4
-        addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
+    - description: 'A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
       name: condition
       required: true
-    description: Add conditions to an indicator. Conditions can be MD5, hash values,
-      domain names and IP addresses.
+    description: Add conditions to an indicator. Conditions can be MD5, hash values, domain names and IP addresses.
     name: fireeye-hx-append-conditions
+    deprecated: true
   - arguments: []
     description: Get information on all hosts
     name: fireeye-hx-get-all-hosts-information
@@ -1001,8 +980,7 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
-        null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -1016,11 +994,11 @@ script:
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: Acquisition script in JSON format.
       name: script
-    - description: The script name. If the Acquisition script is specified, the script
-        name must be specified as well.
+    - description: The script name. If the Acquisition script is specified, the script name must be specified as well.
       name: scriptName
     - auto: PREDEFINED
       description: Use default script. Select the host system.
@@ -1029,14 +1007,11 @@ script:
       - osx
       - win
       - linux
-    - description: The agent ID. If the host name is not specified, the agent ID must
-        be specified.
+    - description: The agent ID. If the host name is not specified, the agent ID must be specified.
       name: agentId
-    - description: The host name. If the agent ID is not specified, the host name
-        must be specified.
+    - description: The host name. If the agent ID is not specified, the host name must be specified.
       name: hostName
-    description: Initiate a data acquisition process to gather artifacts from the
-      system disk and memory
+    description: Initiate a data acquisition process to gather artifacts from the system disk and memory
     name: fireeye-hx-initiate-data-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
@@ -1060,12 +1035,12 @@ script:
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
       description: Time when the acquisition finished
       type: date
+    deprecated: true
   - arguments:
     - description: The acquisition unique ID
       name: acquisitionId
       required: true
-    description: Gather artifacts from the system disk and memory for the given acquisition
-      id. The data is fetched as mans file
+    description: Gather artifacts from the system disk and memory for the given acquisition id. The data is fetched as mans file
     name: fireeye-hx-get-data-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
@@ -1089,7 +1064,8 @@ script:
     - contextPath: FireEyeHX.Acquisitions.Data.instance
       description: FIreEye HX instance
       type: date
-  dockerimage: demisto/python3:3.10.1.26972
+    deprecated: true
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   script: ''
@@ -1097,4 +1073,5 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- FireEye HX Test
+- No tests (deprecated)
+deprecated: true

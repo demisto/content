@@ -1,0 +1,25 @@
+{
+  "roles": [
+    {
+      "name": "organizations/xsoar-organization/roles/xsoar_demo_96",
+      "title": "my demo role",
+      "description": "my first role",
+      "includedPermissions": [
+        "accessapproval.requests.approve",
+        "aiplatform.artifacts.get"
+      ],
+      "etag": "BwXTf6L43kI="
+    },
+    {
+      "name": "organizations/xsoar-organization/roles/xsoar_demo_97",
+      "title": "Demo role",
+      "description": "Test role",
+      "includedPermissions": [
+        "accessapproval.requests.approve",
+        "aiplatform.artifacts.get"
+      ],
+      "etag": "BwXTjvmkWFI="
+    }
+  ],
+  "nextPageToken": "CgoHZGF3ZXIxMTIz"
+}

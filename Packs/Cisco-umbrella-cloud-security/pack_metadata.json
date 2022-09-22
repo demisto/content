@@ -2,7 +2,7 @@
     "name": "Cisco Umbrella cloud security",
     "description": "Basic integration with Cisco Umbrella that allows you to add domains to destination lists (e.g. global block / allow)",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Matt Houston",
     "url": "",
     "email": "",

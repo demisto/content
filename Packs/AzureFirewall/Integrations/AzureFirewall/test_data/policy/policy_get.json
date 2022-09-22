@@ -1,0 +1,32 @@
+{
+  "properties": {
+    "sku": {
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Alert",
+    "childPolicies": [],
+    "ruleCollectionGroups": [
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/my-policy/ruleCollectionGroups/DefaultDnatRuleCollectionGroup"
+      },
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/my-policy/ruleCollectionGroups/DefaultNetworkRuleCollectionGroup"
+      },
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/my-policy/ruleCollectionGroups/DefaultApplicationRuleCollectionGroup"
+      }
+    ],
+    "firewalls": [
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/my-policy-firewall"
+      }
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourcegroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy",
+  "name": "xsoar-policy",
+  "type": "Microsoft.Network/FirewallPolicies",
+  "etag": "af910df4-685c-4318-9b8f-20fca2b72769",
+  "location": "westeurope",
+  "tags": {}
+}

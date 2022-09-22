@@ -2,7 +2,13 @@
   "associatedToAll": false,
   "associatedTypes": [
     "Qradar Generic",
-    "FW change management"
+    "FW change management",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident",
+    "Malware",
+    "Microsoft Defender For Endpoint",
+    "Skyhigh Security Alert",
+    "Skyhigh Security Threat"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -15,7 +21,6 @@
   "editForm": true,
   "extractIndicatorTypesIDs": [],
   "fieldCalcScript": "",
-  "fromServerVersion": "",
   "group": 0,
   "hidden": false,
   "id": "incident_sourceips",
@@ -37,7 +42,11 @@
   "system": false,
   "systemAssociatedTypes": [
     "Qradar Generic",
-    "FW change management"
+    "FW change management",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident",
+    "Malware",
+    "Microsoft Defender For Endpoint"
   ],
   "threshold": 72,
   "toServerVersion": "",

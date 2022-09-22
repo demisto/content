@@ -21,6 +21,19 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+XSIAM_MP = "marketplacev2"
+XSOAR_MP = "xsoar"
+XSIAM_START_TAG = "<~XSIAM>"
+XSIAM_END_TAG = "</~XSIAM>"
+XSOAR_START_TAG = "<~XSOAR>"
+XSOAR_END_TAG = "</~XSOAR>"
+TAGS_BY_MP = {
+    XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
+    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG)
+}
+
+
 class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 
@@ -103,6 +116,7 @@ class PackTags(object):
     USE_CASE = "Use Case"
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
+    COLLECTION = "Collection"
 
 
 class Metadata(object):
@@ -138,6 +152,7 @@ class Metadata(object):
     TAGS = 'tags'
     CATEGORIES = 'categories'
     CONTENT_ITEMS = 'contentItems'
+    CONTENT_DISPLAYS = 'contentDisplays'
     SEARCH_RANK = 'searchRank'
     INTEGRATIONS = 'integrations'
     USE_CASES = 'useCases'
@@ -151,10 +166,12 @@ class Metadata(object):
     CONTENT_COMMIT_HASH = 'contentCommitHash'
     PREVIEW_ONLY = 'previewOnly'
     MANDATORY = 'mandatory'
-
+    VIDEOS = 'videos'
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'
+    MARKETPLACES = 'marketplaces'
+    DISABLE_MONTHLY = 'disableMonthly'
 
 
 class PackFolders(enum.Enum):
@@ -182,6 +199,13 @@ class PackFolders(enum.Enum):
     LISTS = 'Lists'
     PREPROCESS_RULES = "PreProcessRules"
     JOBS = 'Jobs'
+    PARSING_RULES = 'ParsingRules'
+    MODELING_RULES = 'ModelingRules'
+    CORRELATION_RULES = 'CorrelationRules'
+    XSIAM_DASHBOARDS = 'XSIAMDashboards'
+    XSIAM_REPORTS = 'XSIAMReports'
+    TRIGGERS = 'Triggers'
+    WIZARDS = 'Wizards'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -191,13 +215,17 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
+            PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
+            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
+            PackFolders.WIZARDS.value,
         }
 
     @classmethod
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
-                PackFolders.TEST_PLAYBOOKS.value}
+                PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
+                PackFolders.CORRELATION_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -207,7 +235,8 @@ class PackFolders(enum.Enum):
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
-            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value
+            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
         }
 
 
@@ -230,6 +259,36 @@ class PackIgnored(object):
         PackFolders.PLAYBOOKS.value: ["_README.md"],
     }
     NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
+
+
+PACK_FOLDERS_TO_ID_SET_KEYS = {
+    PackFolders.SCRIPTS.value: 'scripts',
+    PackFolders.INTEGRATIONS.value: 'integrations',
+    PackFolders.PLAYBOOKS.value: "playbooks",
+    PackFolders.TEST_PLAYBOOKS.value: "TestPlaybooks",
+    PackFolders.CLASSIFIERS.value: "Classifiers",
+    PackFolders.INCIDENT_FIELDS.value: "IncidentFields",
+    PackFolders.INCIDENT_TYPES.value: "IncidentTypes",
+    PackFolders.INDICATOR_FIELDS.value: "IndicatorFields",
+    PackFolders.INDICATOR_TYPES.value: "IndicatorTypes",
+    PackFolders.LISTS.value: "Lists",
+    PackFolders.JOBS.value: "Jobs",
+    PackFolders.GENERIC_TYPES.value: "GenericTypes",
+    PackFolders.GENERIC_FIELDS.value: "GenericFields",
+    PackFolders.GENERIC_MODULES.value: "GenericModules",
+    PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+    PackFolders.LAYOUTS.value: "Layouts",
+    PackFolders.REPORTS.value: "Reports",
+    PackFolders.WIDGETS.value: "Widgets",
+    PackFolders.DASHBOARDS.value: "Dashboards",
+    PackFolders.PARSING_RULES.value: "ParsingRules",
+    PackFolders.MODELING_RULES.value: "ModelingRules",
+    PackFolders.CORRELATION_RULES.value: "CorrelationRules",
+    PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
+    PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
+    PackFolders.TRIGGERS.value: "Triggers",
+    PackFolders.WIZARDS.value: "Wizards"
+}
 
 
 class PackStatus(enum.Enum):
@@ -257,6 +316,18 @@ class PackStatus(enum.Enum):
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
     NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
+    CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE = "Pack changes are not relevant for current marketplace."
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed creating dependencies zip since a depending pack or this " \
+                                               "pack failed signing or zipping"
+    FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
+
+
+SKIPPED_STATUS_CODES = {
+    PackStatus.PACK_ALREADY_EXISTS.name,
+    PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+    PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+    PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
+}
 
 
 class Changelog(object):
@@ -267,3 +338,94 @@ class Changelog(object):
     RELEASE_NOTES = 'releaseNotes'
     DISPLAY_NAME = 'displayName'
     RELEASED = 'released'
+    PULL_REQUEST_NUMBERS = 'pullRequests'
+
+
+RN_HEADER_BY_PACK_FOLDER = {
+    PackFolders.PLAYBOOKS.value: 'Playbooks',
+    PackFolders.INTEGRATIONS.value: 'Integrations',
+    PackFolders.SCRIPTS.value: 'Scripts',
+    PackFolders.INCIDENT_FIELDS.value: 'Incident Fields',
+    PackFolders.INDICATOR_FIELDS.value: 'Indicator Fields',
+    PackFolders.INDICATOR_TYPES.value: 'Indicator Types',
+    PackFolders.INCIDENT_TYPES.value: 'Incident Types',
+    PackFolders.PREPROCESS_RULES.value: 'PreProcess Rules',
+    PackFolders.CLASSIFIERS.value: 'Classifiers',
+    PackFolders.LAYOUTS.value: 'Layouts',
+    PackFolders.REPORTS.value: 'Reports',
+    PackFolders.WIDGETS.value: 'Widgets',
+    PackFolders.DASHBOARDS.value: 'Dashboards',
+    PackFolders.CONNECTIONS.value: 'Connections',
+    PackFolders.GENERIC_DEFINITIONS.value: 'Objects',
+    PackFolders.GENERIC_MODULES.value: 'Modules',
+    PackFolders.GENERIC_TYPES.value: 'Object Types',
+    PackFolders.GENERIC_FIELDS.value: 'Object Fields',
+    PackFolders.LISTS.value: 'Lists',
+    PackFolders.JOBS.value: 'Jobs',
+    PackFolders.PARSING_RULES.value: 'Parsing Rules',
+    PackFolders.MODELING_RULES.value: 'Modeling Rules',
+    PackFolders.CORRELATION_RULES.value: 'Correlation Rules',
+    PackFolders.XSIAM_DASHBOARDS.value: 'XSIAM Dashboards',
+    PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
+    PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
+    PackFolders.WIZARDS.value: 'Wizards',
+}
+
+# the format is defined in issue #19786, may change in the future
+CONTENT_ITEM_NAME_MAPPING = {
+    PackFolders.SCRIPTS.value: "automation",
+    PackFolders.PLAYBOOKS.value: "playbook",
+    PackFolders.INTEGRATIONS.value: "integration",
+    PackFolders.INCIDENT_FIELDS.value: "incidentfield",
+    PackFolders.INCIDENT_TYPES.value: "incidenttype",
+    PackFolders.DASHBOARDS.value: "dashboard",
+    PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
+    PackFolders.REPORTS.value: "report",
+    PackFolders.INDICATOR_TYPES.value: "reputation",
+    PackFolders.LAYOUTS.value: "layoutscontainer",
+    PackFolders.CLASSIFIERS.value: "classifier",
+    PackFolders.WIDGETS.value: "widget",
+    PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
+    PackFolders.GENERIC_FIELDS.value: "genericfield",
+    PackFolders.GENERIC_MODULES.value: "genericmodule",
+    PackFolders.GENERIC_TYPES.value: "generictype",
+    PackFolders.LISTS.value: "list",
+    PackFolders.PREPROCESS_RULES.value: "preprocessrule",
+    PackFolders.JOBS.value: "job",
+    PackFolders.PARSING_RULES.value: "parsingrule",
+    PackFolders.MODELING_RULES.value: "modelingrule",
+    PackFolders.CORRELATION_RULES.value: "correlationrule",
+    PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
+    PackFolders.XSIAM_REPORTS.value: "xsiamreport",
+    PackFolders.TRIGGERS.value: "trigger",
+    PackFolders.WIZARDS.value: "wizard",
+}
+
+ITEMS_NAMES_TO_DISPLAY_MAPPING = {
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.SCRIPTS.value]: "Automation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PLAYBOOKS.value]: "Playbook",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INTEGRATIONS.value]: "Integration",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_FIELDS.value]: "Incident Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_TYPES.value]: "Incident Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.DASHBOARDS.value]: "Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_FIELDS.value]: "Indicator Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.REPORTS.value]: "Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_TYPES.value]: "Reputation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUTS.value]: "Layouts Container",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CLASSIFIERS.value]: "Classifier",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIDGETS.value]: "Widget",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_DEFINITIONS.value]: "Generic Definition",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_FIELDS.value]: "Generic Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_MODULES.value]: "Generic Module",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_TYPES.value]: "Generic Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LISTS.value]: "List",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PREPROCESS_RULES.value]: "Pre Process Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.JOBS.value]: "Job",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PARSING_RULES.value]: "Parsing Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.MODELING_RULES.value]: "Modeling Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
+}

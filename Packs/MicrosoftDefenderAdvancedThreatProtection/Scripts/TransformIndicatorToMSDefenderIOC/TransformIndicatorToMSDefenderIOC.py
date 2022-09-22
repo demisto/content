@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import traceback
 
 POPULATE_INDICATOR_FIELDS = ["value", "indicator_type", "applications", "user", "firstSeen",
                              "expiration", "lastSeen", "score", "title", "description"]
@@ -105,7 +104,6 @@ def main():
         })
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TransformIndicatorToMSDefenderIOC. Error: {str(ex)}')
 
 

@@ -406,7 +406,7 @@ def main() -> None:
     filter = params.get('filter')
     generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
-    max_fetch = min(max_fetch, 10000)
+    max_fetch = min(max_fetch, 10000)  # type: ignore
     feed_tags = argToList(params.get('feedTags'))
     create_relationships = params.get('create_relationships', True)
 
@@ -449,7 +449,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

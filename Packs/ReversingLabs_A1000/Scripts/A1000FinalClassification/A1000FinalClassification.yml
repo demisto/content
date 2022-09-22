@@ -1,0 +1,67 @@
+args:
+- default: false
+  description: A1000 classification report
+  isArray: false
+  name: a1000_classification_report
+  required: true
+  secret: false
+- default: false
+  description: A1000 full report
+  isArray: false
+  name: a1000_full_report
+  required: true
+  secret: false
+comment: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
+commonfields:
+  id: A1000FinalClassification
+  version: -1
+enabled: true
+name: A1000FinalClassification
+outputs:
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The Entry ID.
+  type: String
+- contextPath: File.Info
+  description: Information about the file.
+  type: String
+- contextPath: File.Type
+  description: The type of the file.
+  type: String
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.4.30607
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,1 +1,2 @@
-Note: Support for this pack will be moving to the partner around March, 1, 2022
+Note: Support for this pack was moved to Securonix as of 05/25/2022
+

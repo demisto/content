@@ -1,0 +1,77 @@
+[
+  {
+    "id": "97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553",
+    "name": "GLBA",
+    "groupType": "GLBA",
+    "analyzers": [
+      {
+        "id": "ed30dfa0-334f-55ff-a1b7-03b6bdd7849b",
+        "name": "Credit Card",
+        "analyzerType": "CREDIT_CARD"
+      },
+      {
+        "id": "3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f",
+        "name": "US Bank Acct",
+        "analyzerType": "US_BANK_ACCT"
+      },
+      {
+        "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+        "name": "US ITIN",
+        "analyzerType": "US_ITIN"
+      },
+      {
+        "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+        "name": "US SSN",
+        "analyzerType": "US_SSN"
+      }
+    ]
+  },
+  {
+    "id": "543dd5e0-c72c-50e2-a3d9-1688343f472c",
+    "name": "HIPAA",
+    "groupType": "HIPAA",
+    "analyzers": [
+      {
+        "id": "9da675b3-944b-5da3-a2da-ed149d300075",
+        "name": "US/UK Passport",
+        "analyzerType": "PASSPORT"
+      },
+      {
+        "id": "18665533-c28c-5a40-b747-4b6508fecdfa",
+        "name": "US NPI",
+        "analyzerType": "US_HEALTHCARE_NPI"
+      },
+      {
+        "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+        "name": "US ITIN",
+        "analyzerType": "US_ITIN"
+      },
+      {
+        "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+        "name": "US SSN",
+        "analyzerType": "US_SSN"
+      },
+      {
+        "id": "6bcc8e4e-0ec9-5538-b91d-a506dac47ec6",
+        "name": "US DEA",
+        "analyzerType": "DEA_NUMBER"
+      }
+    ]
+  },
+  {
+    "id": "16bd3864-bad6-513b-b38d-a108e648cf4a",
+    "groupType": "PCI_DSS"
+  },
+  {
+    "id": "c8c8072a-9454-5e68-9a23-bbcb9824838e",
+    "name": "U.S. Financials",
+    "groupType": "US_FINANCE",
+    "analyzers": [
+      {
+        "id": "bb9a929b-3f29-5d3f-a768-de74e8ee5a9c",
+        "analyzerType": "CUSIP_NUMBER"
+      }
+    ]
+  }
+]
+

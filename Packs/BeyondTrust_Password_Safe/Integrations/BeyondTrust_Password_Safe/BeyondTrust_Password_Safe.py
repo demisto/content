@@ -69,8 +69,8 @@ def http_request(method: str, suffix_url: str, data=None):
             data=data,  # type: ignore
             headers=HEADERS
         )
-    except requests.exceptions.SSLError:
-        ssl_error = 'Could not connect to BeyondTrust: Could not verify certificate.'
+    except requests.exceptions.SSLError as e:
+        ssl_error = f'Could not connect to BeyondTrust, SSL error: {e}'
         return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:

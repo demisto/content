@@ -480,7 +480,8 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
             indicator=app_hash,
             indicator_type=DBotScoreType.FILE,
             integration_name='Zimperium',
-            score=score
+            score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
         hash_type = get_hash_type(app_hash)
         if hash_type == 'md5':
@@ -650,6 +651,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str, first_fetc
 
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 last_event_created_time = parse(event_data.get('persistedTime'))
+                assert last_event_created_time is not None
                 incident = {
                     'name': event_data.get('incidentSummary'),
                     'occurred': last_event_created_time.strftime(timestamp_format),

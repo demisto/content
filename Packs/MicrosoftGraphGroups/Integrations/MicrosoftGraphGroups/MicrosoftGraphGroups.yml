@@ -62,6 +62,11 @@ configuration:
   type: 4
   hidden: true
   additionalinfo: Use the "Token" parameter instead.
+- display: Suppress Errors for Non Found Groups
+  name: handle_error
+  required: false
+  defaultvalue: 'true'
+  type: 8
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
@@ -476,7 +481,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.31715
   isfetch: false
   longRunning: false
   longRunningPort: false

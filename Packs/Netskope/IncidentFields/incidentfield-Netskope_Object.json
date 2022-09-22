@@ -1,0 +1,31 @@
+{
+    "id": "incident_netskopeobject",
+    "version": -1,
+    "modified": "2022-03-29T23:47:32.349435649+03:00",
+    "name": "Netskope Object",
+    "ownerOnly": false,
+    "cliName": "netskopeobject",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netskope Behavior Analytics",
+        "Netskope DLP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

@@ -1,0 +1,30 @@
+{
+    "id": "incident_cybleeventsalias",
+    "version": -1,
+    "modified": "2022-03-15T16:35:14.474589386Z",
+    "name": "Cyble Events Alias",
+    "ownerOnly": false,
+    "cliName": "cybleeventsalias",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cyble Intel Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

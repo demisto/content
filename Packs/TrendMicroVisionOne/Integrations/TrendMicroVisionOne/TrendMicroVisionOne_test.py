@@ -13,11 +13,15 @@ from TrendMicroVisionOne import (
     download_information_collected_file,
     submit_file_to_sandbox,
     get_task_status,
-    get_endpoint_info
+    get_endpoint_info,
+    add_note,
+    update_status,
 )
 
 # Provide valid API KEY
 api_key = "test api key"
+proxy = "false"
+verify = "true"
 
 
 # Mock function for add to block list and remove from block list
@@ -42,7 +46,7 @@ def test_add_blocklist(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         add_remove_blocklist_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "file_sha1",
         "targetValue": "2de5c1125d5f991842727ed8ea8b5fda0ffa249b",
@@ -64,7 +68,7 @@ def test_remove_block_list(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         add_remove_blocklist_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "file_sha1",
         "targetValue": "2de5c1125d5f991842727ed8ea8b5fda0ffa249b",
@@ -103,7 +107,7 @@ def test_quarantine_email_message(mocker):
         "TrendMicroVisionOne.Client.http_request",
         quarantine_delete_email_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "messageId": (
             "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn="
@@ -130,7 +134,7 @@ def test_delete_email_message(mocker):
         "TrendMicroVisionOne.Client.http_request",
         quarantine_delete_email_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "messageId": (
             "<CANUJTKTqmuCT12v7mpbxZih_crrP"
@@ -176,7 +180,7 @@ def test_isolate_endpoint(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         isolate_restore_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "hostname",
         "productId": "sao",
@@ -196,7 +200,7 @@ def test_restore_endpoint(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         isolate_restore_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "hostname",
         "productId": "sao",
@@ -216,7 +220,7 @@ def test_terminate_process_endpoint(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         isolate_restore_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "00:50:56:81:87:A8",
         "fileSha1": "12a08b7a3c5a10b64700c0aca1a47941b50a4f8b",
@@ -247,7 +251,7 @@ def test_add_object_to_exception_list(mocker):
         "TrendMicroVisionOne.Client.exception_list_count",
         add_delete_exception_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "type": "domain",
         "value": "1.alisiosanguera.com",
@@ -274,7 +278,7 @@ def test_delete_object_to_exception_list(mocker):
         "TrendMicroVisionOne.Client.exception_list_count",
         add_delete_exception_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "type": "domain",
         "value": "1.alisiosanguera.com.cn",
@@ -305,7 +309,7 @@ def test_add_object_to_suspicious_list(mocker):
         "TrendMicroVisionOne.Client.suspicious_list_count",
         add_delete_suspicious_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "type": "domain",
         "value": "1.alisiosanguera.com.cn",
@@ -331,7 +335,7 @@ def test_delete_object_from_suspicious_list(mocker):
         "TrendMicroVisionOne.Client.suspicious_list_count",
         add_delete_suspicious_mock_response
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {"type": "domain", "value": "1.alisiosanguera.com.cn"}
     result = delete_from_suspicious_list(client, args)
     assert result.outputs["status_code"] is None
@@ -377,7 +381,7 @@ def test_get_file_status(mocker):
         "TrendMicroVisionOne.Client.http_request",
         mock_file_status_response)
     args = {"taskId": "921674d0-9735-4f79-b7de-c852e00a003d"}
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = get_file_analysis_status(client, args)
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
@@ -395,7 +399,7 @@ def test_get_report_id(mocker):
         "TrendMicroVisionOne.Client.http_request",
         mock_file_status_response)
     args = {"taskId": "921674d0-9735-4f79-b7de-c852e00a003d"}
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = get_file_analysis_status(client, args)
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
@@ -430,7 +434,7 @@ def test_get_file_analysis_report(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         mock_file_report_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "reportId": "800f908d-9578-4333-91e5-822794ed5483",
         "type": "suspiciousObject",
@@ -451,7 +455,7 @@ def test_get_file_analysis_report_1(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         mock_file_report_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "reportId": "800f908d-9578-4333-91e5-822794ed5483",
         "type": "suspiciousObject",
@@ -488,7 +492,7 @@ def test_collect_forensic_file(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         mock_collect_file)
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "hostname",
         "description": "collect file",
@@ -526,7 +530,7 @@ def test_get_forensic_file_information(mocker):
         mock_download_collected_file_info_response
     )
     args = {"actionId": "00000700"}
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = download_information_collected_file(client, args)
     assert isinstance(result.outputs["url"], str)
     assert isinstance(result.outputs["expires"], str)
@@ -624,7 +628,7 @@ def test_submit_file_to_sandbox(mocker):
         "archivePassword": "6hn467c8",
         "documentPassword": ""
     }
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = submit_file_to_sandbox(client, args)
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
@@ -652,7 +656,7 @@ def test_check_task_status(mocker):
         "CommonServerPython.ScheduledCommand.raise_error_if_not_supported",
         lambda: None
     )
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "actionId": "00001108"
     }
@@ -702,7 +706,7 @@ def test_get_endpoint_information(mocker):
         mock_get_endpoint_info_response
     )
     args = {"endpoint": "hostname"}
-    client = Client("https://api.xdr.trendmicro.com", api_key)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = get_endpoint_info(client, args)
     assert result.outputs["status"] == "SUCCESS"
     assert isinstance(result.outputs["message"], str)
@@ -713,3 +717,62 @@ def test_get_endpoint_information(mocker):
     assert isinstance(result.outputs["osName"], str)
     assert isinstance(result.outputs["osVersion"], str)
     assert isinstance(result.outputs["productCode"], str)
+
+
+# Mock function for add note.
+def add_note_mock_response(*args, **kwargs):
+    return_value = {
+        "data": {
+            "id": 123
+        },
+        "info": {
+            "code": 3021000,
+            "msg": "Alert notes added successfully."
+        }
+    }
+    return return_value
+
+
+# Test case for add note
+def test_add_note(mocker):
+    mocker.patch(
+        "TrendMicroVisionOne.Client.http_request",
+        add_note_mock_response)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    args = {
+        "workbench_id": "WB-20837-20220418-00000",
+        "content": "This is a new note."
+    }
+    result = add_note(client, args)
+    assert result.outputs["response_msg"] == "Alert notes added successfully."
+    assert isinstance(result.outputs["Workbench_Id"], str)
+    assert isinstance(result.outputs["noteId"], int)
+    assert isinstance(result.outputs["response_code"], int)
+
+
+# Mock function for update alert status
+def update_status_mock_response(*args, **kwargs):
+    return_value = {
+        "data": {},
+        "info": {
+            "code": 3006000,
+            "msg": "Alert status changed successfully."
+        }
+    }
+    return return_value
+
+
+# Test case for update alert status
+def test_update_status(mocker):
+    mocker.patch(
+        "TrendMicroVisionOne.Client.http_request",
+        update_status_mock_response)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    args = {
+        "workbench_id": "WB-20837-20220418-00000",
+        "status": "in_progress"
+    }
+    result = update_status(client, args)
+    assert result.outputs["response_msg"] == "Alert status changed successfully."
+    assert isinstance(result.outputs["Workbench_Id"], str)
+    assert isinstance(result.outputs["response_code"], int)

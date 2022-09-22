@@ -66,30 +66,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "f4032810-769e-11eb-b547-b75a1233ac03",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "lastseen",
-                                "height": 22,
-                                "id": "f8671e70-769e-11eb-b547-b75a1233ac03",
-                                "index": 6,
-                                "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "bitsightrelatedfindings",
                                 "height": 22,
                                 "id": "020c99f0-769f-11eb-b547-b75a1233ac03",
-                                "index": 7,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -98,7 +78,7 @@
                                 "fieldId": "bitsightriskcategory",
                                 "height": 22,
                                 "id": "088e4030-769f-11eb-b547-b75a1233ac03",
-                                "index": 8,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -107,7 +87,7 @@
                                 "fieldId": "bitsightriskvector",
                                 "height": 22,
                                 "id": "108b14c0-769f-11eb-b547-b75a1233ac03",
-                                "index": 9,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -117,7 +97,7 @@
                                 "fieldId": "bitsightriskvectorlabel",
                                 "height": 22,
                                 "id": "17a55180-769f-11eb-b547-b75a1233ac03",
-                                "index": 10,
+                                "index": 8,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -127,7 +107,7 @@
                                 "fieldId": "bitsightrolledupobservationid",
                                 "height": 22,
                                 "id": "1fdc9700-769f-11eb-b547-b75a1233ac03",
-                                "index": 11,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -136,7 +116,7 @@
                                 "fieldId": "severity",
                                 "height": 22,
                                 "id": "258653d0-769f-11eb-b547-b75a1233ac03",
-                                "index": 12,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -145,7 +125,7 @@
                                 "fieldId": "bitsightseveritycategory",
                                 "height": 22,
                                 "id": "26d5de40-769f-11eb-b547-b75a1233ac03",
-                                "index": 13,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -154,16 +134,7 @@
                                 "fieldId": "bitsighttags",
                                 "height": 22,
                                 "id": "2da3f6d0-769f-11eb-b547-b75a1233ac03",
-                                "index": 14,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "duration",
-                                "height": 22,
-                                "id": "338f9ea0-769f-11eb-b547-b75a1233ac03",
-                                "index": 15,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -173,7 +144,7 @@
                                 "fieldId": "bitsightcomments",
                                 "height": 22,
                                 "id": "380a9f70-769f-11eb-b547-b75a1233ac03",
-                                "index": 16,
+                                "index": 13,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -184,15 +155,16 @@
                                 "fieldId": "bitsightremainingdecay",
                                 "height": 22,
                                 "id": "3d286ff0-769f-11eb-b547-b75a1233ac03",
-                                "index": 17,
+                                "index": 14,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "BitSight",
                         "static": false,
@@ -808,10 +780,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_startdate",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_state",
                         "isVisible": true
                     },
@@ -1173,10 +1141,6 @@
                     },
                     {
                         "fieldId": "incident_sourceusername",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_startdate",
                         "isVisible": true
                     },
                     {

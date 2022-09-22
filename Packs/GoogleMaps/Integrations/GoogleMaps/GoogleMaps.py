@@ -120,7 +120,6 @@ def main():
             raise NotImplementedError(f"command '{command}' is not supported")
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # prints the traceback
 
         error_parts = [f'Failed to execute the {command} command.',
                        'Error:',

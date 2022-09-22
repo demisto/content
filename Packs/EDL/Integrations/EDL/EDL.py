@@ -8,9 +8,10 @@ import re
 
 from base64 import b64decode
 from flask import Flask, Response, request
-from netaddr import IPSet
+from netaddr import IPSet, IPNetwork
 from typing import Any, Dict, cast, Iterable, Callable, IO
 from math import ceil
+import tldextract
 import urllib3
 import dateparser
 import hashlib
@@ -26,6 +27,7 @@ PAGE_SIZE: int = 2000
 PAN_OS_MAX_URL_LEN = 255
 APP: Flask = Flask('demisto-edl')
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
+EDL_CIDR_SIZR_MSG: str = 'Please provide a valid integer for CIDR size'
 EDL_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - none, ' \
                             '1 - range, 2 - CIDR'
@@ -50,6 +52,8 @@ _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRS"
 COLLAPSE_TO_RANGES = "To Ranges"
+
+MAXIMUM_CIDR_SIZE_DEFAULT = 8
 
 MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
@@ -87,6 +91,8 @@ class RequestArguments:
     CTX_CSV_TEXT = 'csv_text'
     CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
+    CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
+    CTX_NO_TLD = 'no_wildcard_tld'
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
@@ -109,7 +115,9 @@ class RequestArguments:
                  fields_to_present: str = '',
                  csv_text: bool = False,
                  url_protocol_stripping: bool = False,
-                 url_truncate: bool = False
+                 url_truncate: bool = False,
+                 maximum_cidr_size: int = MAXIMUM_CIDR_SIZE_DEFAULT,
+                 no_wildcard_tld: bool = False,
                  ):
 
         self.query = query
@@ -127,6 +135,8 @@ class RequestArguments:
         self.fields_to_present = self.get_fields_to_present(fields_to_present)
         self.csv_text = csv_text
         self.url_truncate = url_truncate
+        self.maximum_cidr_size = maximum_cidr_size
+        self.no_wildcard_tld = no_wildcard_tld
 
         if category_attribute is not None:
             category_attribute_list = argToList(category_attribute)
@@ -150,7 +160,9 @@ class RequestArguments:
             self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
             self.CTX_CSV_TEXT: self.csv_text,
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
-            self.CTX_URL_TRUNCATE_KEY: self.url_truncate
+            self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
+            self.CTX_MAXIMUM_CIDR: self.maximum_cidr_size,
+            self.CTX_NO_TLD: self.no_wildcard_tld,
 
         }
 
@@ -173,7 +185,9 @@ class RequestArguments:
                 fields_to_present=ctx_dict.get(cls.CTX_FIELDS_TO_PRESENT),
                 csv_text=ctx_dict.get(cls.CTX_CSV_TEXT),
                 url_protocol_stripping=ctx_dict.get(cls.CTX_PROTOCOL_STRIP_KEY),
-                url_truncate=ctx_dict.get(cls.CTX_URL_TRUNCATE_KEY)
+                url_truncate=ctx_dict.get(cls.CTX_URL_TRUNCATE_KEY),
+                maximum_cidr_size=ctx_dict.get(cls.CTX_MAXIMUM_CIDR),
+                no_wildcard_tld=ctx_dict.get(cls.CTX_NO_TLD),
             )
         )
 
@@ -570,6 +584,14 @@ def is_valid_ip(ip: str) -> bool:
             return False
 
 
+def is_large_cidr(cidr: str, prefix_threshold: int):
+    try:
+        return IPNetwork(cidr).prefixlen < prefix_threshold
+    except Exception as e:
+        demisto.debug(str(e))
+        return False
+
+
 def is_valid_cidr(cidr: str) -> bool:
     """
     Args:
@@ -648,8 +670,15 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
-                formatted_indicators.write(new_line + str(indicator.lstrip('*.')))
+                domain = str(indicator.lstrip('*.'))
+                # if we should ignore TLDs and the domain is a TLD
+                if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
+                    continue
+                formatted_indicators.write(new_line + domain)
                 new_line = '\n'
+
+        if ioc_type == FeedIndicatorType.CIDR and is_large_cidr(indicator, request_args.maximum_cidr_size):
+            continue
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
@@ -661,7 +690,6 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             formatted_indicators.write(new_line + str(indicator))
             new_line = '\n'
     iocs.close()
-
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
         for ip in ipv4_formatted_indicators:
@@ -784,7 +812,7 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
-    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'  # guardrails-disable-line
+    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'    # nosec
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if edl.strip():
@@ -842,6 +870,9 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
+    maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get(
+        'maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT)), EDL_CIDR_SIZR_MSG)
+    no_wildcard_tld = argToBoolean(request_args.get('nt', params.get('no_wildcard_tld')))
 
     # handle flags
     if drop_invalids == '':
@@ -897,7 +928,9 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             fields_to_present,
                             csv_text,
                             strip_protocol,
-                            url_truncate
+                            url_truncate,
+                            maximum_cidr_size,
+                            no_wildcard_tld
                             )
 
 
@@ -954,6 +987,8 @@ def update_edl_command(args: Dict, params: Dict):
     out_format = args.get('format', FORMAT_TEXT)
     csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
     url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
+    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT), EDL_CIDR_SIZR_MSG)
+    no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -973,7 +1008,9 @@ def update_edl_command(args: Dict, params: Dict):
                                     fields_to_present,
                                     csv_text,
                                     strip_protocol,
-                                    url_truncate)
+                                    url_truncate,
+                                    maximum_cidr_size,
+                                    no_wildcard_tld)
 
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
@@ -998,6 +1035,8 @@ def initialize_edl_context(params: dict):
     out_format = params.get('format', FORMAT_TEXT)
     csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
+    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT), EDL_CIDR_SIZR_MSG)
+    no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1017,7 +1056,9 @@ def initialize_edl_context(params: dict):
                                     fields_to_present,
                                     csv_text,
                                     url_protocol_stripping,
-                                    url_truncate)
+                                    url_truncate,
+                                    maximum_cidr_size,
+                                    no_wildcard_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()

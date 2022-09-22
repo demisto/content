@@ -1,8 +1,10 @@
 id: PAN-OS EDL Setup v3
 version: -1
 fromversion: 5.0.0
+deprecated: true
+hidden: true
 name: PAN-OS EDL Setup v3
-description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
+description: Deprecated. Use Generic Export Indicators Service instead.
 starttaskid: '0'
 tasks:
   '0':
@@ -283,7 +285,7 @@ tasks:
       version: -1
       name: Create EDL Object
       description: Creates an external dynamic list in PAN-OS and connects it to the external file.
-      script: '|||panorama-create-edl'
+      script: '|||pan-os-create-edl'
       type: regular
       iscommand: true
       brand: ''
@@ -368,7 +370,7 @@ tasks:
       version: -1
       name: Add the list items to the EDL
       description: Creates an internal list in Demisto and creates an external file on the web server.
-      script: '|||pan-os-edl-update'
+      script: 'Panorama|||pan-os-edl-update'
       type: regular
       iscommand: true
       brand: ''
@@ -501,7 +503,7 @@ tasks:
       version: -1
       name: Fetch Instance Info
       description: Run any command supported in the API.
-      script: '|||panorama'
+      script: 'Panorama|||pan-os'
       type: regular
       iscommand: true
       brand: ''
@@ -582,7 +584,7 @@ tasks:
       version: -1
       name: Get EDL Object
       description: Returns information for an external dynamic list
-      script: '|||panorama-get-edl'
+      script: '|||pan-os-get-edl'
       type: regular
       iscommand: true
       brand: ''

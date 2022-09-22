@@ -7,7 +7,6 @@ from CommonServerUserPython import *  # noqa
 
 from typing import Dict, Any
 import ipaddress
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
@@ -83,7 +82,6 @@ def main():
     try:
         return_results(match_ip_in_cidr_indicators(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute MatchIPinCIDRIndicators. Error: {str(ex)}')
 
 

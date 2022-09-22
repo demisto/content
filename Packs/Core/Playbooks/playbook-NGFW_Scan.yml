@@ -1,0 +1,1366 @@
+id: NGFW Scan
+version: -1
+name: NGFW Scan
+description: |-
+  This playbook handles external and internal scanning alerts.
+
+  **Attacker's Goals:**
+
+  Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation. Methods to acquire this information include port scans and vulnerability scans using tools that are brought onto a system.
+
+  **Investigative Actions:**
+
+  Investigate the scanner IP address using:
+
+  * IP enrichment:
+  * NGFW Internal Scan playbook
+  * Endpoint Investigation Plan playbook
+  * Entity enrichment
+
+  **Response Actions**
+
+  The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+  * Automatically block IP address
+  * Report IP address (If configured as true in the playbook inputs)
+
+  When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+  This phase will execute the following containment actions:
+
+  * Automatically isolate involved endpoint
+  * Manual block indicators
+  * Manual file quarantine
+  * Manual disable user
+
+  **External resources:**
+
+  [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
+
+  [Port Scan](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/port-scan.html)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40079701-e9d2-442a-877b-bc4609b5b687
+    type: start
+    task:
+      id: 40079701-e9d2-442a-877b-bc4609b5b687
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fc3beac8-29a6-4c5e-860a-88da98d2f465
+    type: condition
+    task:
+      id: fc3beac8-29a6-4c5e-860a-88da98d2f465
+      version: -1
+      name: Check if scanner IP Address is external
+      description: Checks whether the scanner IP address is internal or external.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Internal:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: Internal
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6e60d2b5-da62-4e51-8288-fa36e88a3b43
+    type: title
+    task:
+      id: 6e60d2b5-da62-4e51-8288-fa36e88a3b43
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 81114969-0dc4-4f7c-846d-9463dee9fabf
+    type: title
+    task:
+      id: 81114969-0dc4-4f7c-846d-9463dee9fabf
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: eb6213f6-9508-4f40-8b7b-57f4fd29a859
+    type: title
+    task:
+      id: eb6213f6-9508-4f40-8b7b-57f4fd29a859
+      version: -1
+      name: Anaylsis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b54cde0f-11ea-44c2-8b0f-68b2e5e77897
+    type: title
+    task:
+      id: b54cde0f-11ea-44c2-8b0f-68b2e5e77897
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cc50c64f-41c7-49cb-873b-88891bef19e6
+    type: condition
+    task:
+      id: cc50c64f-41c7-49cb-873b-88891bef19e6
+      version: -1
+      name: Found additional activity for the attacker IP Address?
+      description: Checks if any other activity was found for the scanner IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 79f7f934-3b5f-4db6-8705-238fc63a2f1a
+    type: regular
+    task:
+      id: 79f7f934-3b5f-4db6-8705-238fc63a2f1a
+      version: -1
+      name: Notify the SOC
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      body:
+        simple: |-
+          XSIAM has identified a malicious scanner activity.
+
+          The malicious scanner IP address, ${inputs.scannerIP}, has been blocked and an investigation on the targeted endpoint.
+          The endpoint investigation playbook raised other suspicious activity related to the IP address.
+
+          We advise you to review alert ID ${alert.id} due to the identified activity.
+
+          XSIAM
+      subject:
+        simple: XSIAM - detected suspicious scanner activity
+      to:
+        complex:
+          root: inputs.SOCEmailAddress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
+    type: playbook
+    task:
+      id: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSIAM user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: inputs.scannerIP
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 02267050-d8c6-44a3-81b6-e3108cc70c34
+    type: condition
+    task:
+      id: 02267050-d8c6-44a3-81b6-e3108cc70c34
+      version: -1
+      name: Was the IP Address identified as malicious?
+      description: Checks if the IP address was identified as malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.scannerIP
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 37657fa8-531d-4142-8b8e-6bfe4b2b63ae
+    type: title
+    task:
+      id: 37657fa8-531d-4142-8b8e-6bfe4b2b63ae
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": -475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
+    type: condition
+    task:
+      id: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
+      version: -1
+      name: Should block repetitive scanning from benign IP Address?
+      description: Checks whether repetitive scanning from benign IP addresses should be blocked.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.blockKnownScanner
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
+    type: playbook
+    task:
+      id: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
+      version: -1
+      name: NGFW Internal Scan
+      description: |-
+        This playbook investigate a scan where the source is an internal IP address.
+
+        An attacker might initiate an internal scan for discovery, lateral movement and more.
+
+        **Attacker's Goals:**
+
+        An attacker can leverage a scan for open ports and vulnerable systems on remote endpoints in an attempt to identify the endpoint operating system, firewall configuration, and exploitable services.
+
+        **Investigative Actions:**
+
+        * Endpoint Investigation Plan playbook
+
+        **Response Actions:**
+
+        * Endpoint isolation
+        * Block indicators
+      playbookName: NGFW Internal Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "false"
+      AutoContainment:
+        simple: "false"
+      HostAutoContainment:
+        simple: "true"
+      scannerIP:
+        complex:
+          root: inputs.scannerIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": -635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 12c20106-b5a4-4d4e-8f08-c81cf9ce2feb
+    type: regular
+    task:
+      id: 12c20106-b5a4-4d4e-8f08-c81cf9ce2feb
+      version: -1
+      name: Search scan incidents from the attacker IP
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      fromdate:
+        simple: 7 days ago
+      query:
+        simple: name:*scan* and localip:${inputs.scannerIP}
+      size:
+        simple: "10"
+      trimevents:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 06dcc969-335b-4309-8e46-5979aeff8158
+    type: playbook
+    task:
+      id: 06dcc969-335b-4309-8e46-5979aeff8158
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: Fasle
+      EndpointID:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: agentid
+      FileContainment:
+        simple: "True"
+      FileHash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        complex:
+          root: inputs.HostAutoContainment
+      IAMUserDomain:
+        simple: '@demisto.com'
+      UserContainment:
+        simple: Fasle
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7284fa76-6c8d-45f9-8edf-f32abd30d498
+    type: regular
+    task:
+      id: 7284fa76-6c8d-45f9-8edf-f32abd30d498
+      version: -1
+      name: Close alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 9d36e4d2-085a-49ec-835a-c1cafe1e89d1
+    type: condition
+    task:
+      id: 9d36e4d2-085a-49ec-835a-c1cafe1e89d1
+      version: -1
+      name: Should execute recovery plan?
+      description: Whether to execute the recovery plan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRecovery
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 603b1088-07d0-4656-8b8d-ce58e06cf7e6
+    type: condition
+    task:
+      id: 603b1088-07d0-4656-8b8d-ce58e06cf7e6
+      version: -1
+      name: Should close alert automatically?
+      description: Whether to close the alert automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseAlert
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 0efdf166-59cc-4539-8732-ce0aa4c08d3e
+    type: regular
+    task:
+      id: 0efdf166-59cc-4539-8732-ce0aa4c08d3e
+      version: -1
+      name: Continue with the incident investigation
+      description: Manual continuation of the investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: b84fcf1d-129f-4b82-822a-be68527e7710
+    type: playbook
+    task:
+      id: b84fcf1d-129f-4b82-822a-be68527e7710
+      version: -1
+      name: Recovery Plan
+      description: |-
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook enables you to recover from the incident with one of the following tasks:
+        * Unisolate endpoint
+        * Restore quarantined file
+
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
+      playbookName: Recovery Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      releaseFile:
+        simple: "false"
+      unIsolateEndpoint:
+        simple: "false"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: c506b4fc-df2d-4f21-8414-d2a062e80aad
+    type: title
+    task:
+      id: c506b4fc-df2d-4f21-8414-d2a062e80aad
+      version: -1
+      name: Recovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6823d96c-3b1f-4738-855f-79eceff629d5
+    type: condition
+    task:
+      id: 6823d96c-3b1f-4738-855f-79eceff629d5
+      version: -1
+      name: Should add alert exclusion?
+      description: Checks whether to add an alert exclusion or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: c61bb207-387d-49a5-8083-409ca876e978
+    type: playbook
+    task:
+      id: c61bb207-387d-49a5-8083-409ca876e978
+      version: -1
+      name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+      playbookName: Handle False Positive Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ShouldCloseAutomatically:
+        complex:
+          root: inputs.AutoCloseAlert
+      alertName:
+        complex:
+          root: alert
+          accessor: name
+      sourceIP:
+        complex:
+          root: inputs.scannerIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 510b6f41-c6c3-4a59-8e41-ab1562467fe4
+    type: regular
+    task:
+      id: 510b6f41-c6c3-4a59-8e41-ab1562467fe4
+      version: -1
+      name: Enrich scanner IP Address
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.scannerIP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: edd23e16-504a-450d-857b-1c93cd09c0d2
+    type: playbook
+    task:
+      id: edd23e16-504a-450d-857b-1c93cd09c0d2
+      version: -1
+      name: Endpoint Investigation Plan
+      description: |-
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook enables you to investigate and hunt for more information using one of the following tasks:
+        * Pre-defined MITRE Tactics
+        * Host fields (Host ID)
+        * Attacker fields (Attacker IP, External host)
+        * MITRE techniques
+        * File hash (currently, the playbook supports only SHA256)
+
+        The playbook inputs enable you to manipulate the execution flow. Review the inputs description.
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      HuntAttacker:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      agentID:
+        complex:
+          root: alert
+          accessor: agentid
+      attackerRemoteIP:
+        complex:
+          root: inputs.scannerIP
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0caa2762-5a38-4642-8525-edd7f4924807
+    type: regular
+    task:
+      id: 0caa2762-5a38-4642-8525-edd7f4924807
+      version: -1
+      name: Report IP address to AbuseIPDB
+      description: Reports an IP address to AbuseIPDB.
+      script: '|||abuseipdb-report-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      categories:
+        simple: "14"
+      ip:
+        complex:
+          root: inputs.scannerIP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: b0f3e23a-43a5-4394-806c-b097064ea017
+    type: condition
+    task:
+      id: b0f3e23a-43a5-4394-806c-b097064ea017
+      version: -1
+      name: Should report the IP to AbuseIPDB ?
+      description: Whether to report the IP the AbuseIPDB or not
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.reportIPAddress
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6958506f-7785-4f9c-87d1-e5c2a9a38cfd
+    type: condition
+    task:
+      id: 6958506f-7785-4f9c-87d1-e5c2a9a38cfd
+      version: -1
+      name: Is AbuseIPDB enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: abuseipdb
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_19_yes": 0.49,
+      "17_43_#default#": 0.16,
+      "26_10_yes": 0.58,
+      "26_28_#default#": 0.47,
+      "28_10_yes": 0.53,
+      "28_47_#default#": 0.51,
+      "42_41_#default#": 0.53,
+      "42_45_yes": 0.49,
+      "43_44_#default#": 0.48,
+      "47_48_Yes": 0.58,
+      "47_5_#default#": 0.12,
+      "4_11_#default#": 0.41,
+      "4_33_Internal": 0.72,
+      "55_14_#default#": 0.28,
+      "55_56_yes": 0.48,
+      "56_14_#default#": 0.43,
+      "56_54_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3855,
+        "width": 1620,
+        "x": -240,
+        "y": -960
+      }
+    }
+  }
+inputs:
+- key: scannerIP
+  value:
+    complex:
+      root: alert
+      accessor: hostip
+  required: false
+  description: The scanner IP address.
+  playbookInputQuery:
+- key: blockKnownScanner
+  value:
+    simple: "true"
+  required: false
+  description: Whether to block the IP address based on previously seen scanning alerts.
+  playbookInputQuery:
+- key: AutoCloseAlert
+  value:
+    simple: "false"
+  required: false
+  description: Whether to close the alert automatically or manually, after an analyst's review.
+  playbookInputQuery:
+- key: AutoRecovery
+  value:
+    simple: "false"
+  required: false
+  description: Whether to execute the Recovery playbook.
+  playbookInputQuery:
+- key: SOCEmailAddress
+  value: {}
+  required: false
+  description: The SOC email address.
+  playbookInputQuery:
+- key: reportIPAddress
+  value:
+    simple: "false"
+  required: false
+  description: Whether to report the IP address to AbuseIPDB.
+  playbookInputQuery:
+- key: AutoContainment
+  value:
+    simple: "false"
+  required: false
+  description: |-
+    Whether to execute automatically or manually the containment plan tasks:
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: HostAutoContainment
+  value:
+    simple: "false"
+  required: false
+  description: Whether to execute endpoint isolation automatically or manually.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted).
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

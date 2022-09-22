@@ -1,5 +1,6 @@
 {
     "autorun": true,
+    "closureScript": "",
     "color": "#2A4AA8",
     "days": 0,
     "daysR": 0,
@@ -149,6 +150,7 @@
     "name": "iDSAR",
     "onChangeRepAlg": 0,
     "playbookId": "DSAR Inventa Handler",
+    "preProcessingScript": "",
     "readonly": false,
     "reputationCalc": 0,
     "sla": 672,

@@ -1,0 +1,436 @@
+{
+    "defaultIncidentType": "",
+    "description": "Maps outgoing GLPI incidents fields.",
+    "feed": false,
+    "id": "GLPI - Outgoing Mapper",
+    "mapping": {
+        "GLPI Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "closedate": {
+                    "simple": "glpiclosingdate"
+                },
+                "content": {
+                    "simple": "glpidescription"
+                },
+                "date": {
+                    "simple": "glpiopeningdate"
+                },
+                "id": {
+                    "simple": "glpiticketid"
+                },
+                "impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpiimpact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "internal_time_to_own": {
+                    "simple": "glpiinternaltimetoown"
+                },
+                "internal_time_to_resolve": {
+                    "simple": "glpiinternaltimetoresolve"
+                },
+                "itilcategories_id": {
+                    "simple": "glpicategory"
+                },
+                "name": {
+                    "simple": "name"
+                },
+                "priority": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpipriority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "requesttypes_id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpirequestsource",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Helpdesk,E-Mail,Phone,Direct,Written,Other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "solvedate": {
+                    "simple": "glpisolveddate"
+                },
+                "status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpistatus",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - New,2 - Processing (assigned),3 - Processing (planned),4 - Pending,5 - Solved,6 - Closed"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "time_to_own": {
+                    "simple": "glpitimetoown"
+                },
+                "time_to_resolve": {
+                    "simple": "glpitimetoresolve"
+                },
+                "type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpitype",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Incident,2 - Request"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "urgency": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpiurgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GLPI Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "closedate": {
+                    "simple": "glpiclosingdate"
+                },
+                "content": {
+                    "simple": "glpidescription"
+                },
+                "date": {
+                    "simple": "glpiopeningdate"
+                },
+                "id": {
+                    "simple": "glpiticketid"
+                },
+                "impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpiimpact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "internal_time_to_own": {
+                    "simple": "glpiinternaltimetoown"
+                },
+                "internal_time_to_resolve": {
+                    "simple": "glpiinternaltimetoresolve"
+                },
+                "itilcategories_id": {
+                    "simple": "glpicategory"
+                },
+                "name": {
+                    "simple": "name"
+                },
+                "priority": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpipriority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "requesttypes_id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpirequestsource",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Helpdesk,E-Mail,Phone,Direct,Written,Other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "solvedate": {
+                    "simple": "glpisolveddate"
+                },
+                "status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpistatus",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - New,2 - Processing (assigned),3 - Processing (planned),4 - Pending,5 - Solved,6 - Closed"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "time_to_own": {
+                    "simple": "glpitimetoown"
+                },
+                "time_to_resolve": {
+                    "simple": "glpitimetoresolve"
+                },
+                "type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpitype",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Incident,2 - Request"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "urgency": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "glpiurgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "GLPI - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

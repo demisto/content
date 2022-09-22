@@ -31,7 +31,7 @@ def get_firewall_serials(pan_os_integration_instance_name: str) -> list:
     fw_query = {'type': 'op', 'cmd': '<show><devices><all></all></devices></show>', 'raw-response': 'true',
                 'using': pan_os_integration_instance_name}
 
-    fw_query_result = demisto.executeCommand("panorama", fw_query)
+    fw_query_result = demisto.executeCommand("pan-os", fw_query)
     if is_error(fw_query_result):
         raise Exception(f'Querying the instance: {pan_os_integration_instance_name} in Cortex Data Lake failed.'
                         f' {fw_query_result[0]["Contents"]}')

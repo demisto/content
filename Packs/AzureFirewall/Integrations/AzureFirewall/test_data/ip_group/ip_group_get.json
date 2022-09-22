@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "firewalls": [
+      {
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/my-rules-fw"
+      }
+    ],
+    "firewallPolicies": [],
+    "ipAddresses": [
+      "189.160.40.11",
+      "189.160.40.11"
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group",
+  "name": "xsoar-ip-group",
+  "type": "Microsoft.Network/IpGroups",
+  "etag": "4e743f13-dbe7-4477-82f6-c4b1f6443a66",
+  "location": "eastus"
+}

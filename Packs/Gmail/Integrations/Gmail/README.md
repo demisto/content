@@ -127,6 +127,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Search a user's Gmail records: **gmail-search**
 - Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
 - List all Google users: **gmail-list-users**
+- List all Labels for a given user: **gmail-list-labels**
 - Revoke a Google user's role: **gmail-revoke-user-role**
 - Create a new user: **gmail-create-user**
 - Delete mail from a mailbox: **gmail-delete-mail**
@@ -1273,6 +1274,13 @@ Searches for Gmail records of a specified Google user.
 ***
 Searches the Gmail records for all Google users.
 
+#### Troubleshooting
+The command iterates over all available **accounts**, and downloads **messages** matching the query for each account. For organizations with many accounts, this can take longer than the default 5 minutes. To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 to a higher value.
+To determine what value should be used, take a look at the logs after a failed execution of the command. The command prints to the logs *info* messages detailing the status of the search for every 100 accounts it successfully searched.
+```
+2022-06-27 09:56:05.1588 info (Gmail_instance_Gmail_gmail-search-all-mailboxes) Still searching. Searched 40% of total accounts (400 / 1000), and found 30 results so far (source: /Users/darbel/dev/go/src/github.com/demisto/server/services/automation/dockercoderunner.go:955)
+```
+Inspecting these messages should allow you to determine what percent the search was able to finish before timing out. Take the given timeout and divide it with the last percent you see in the logs - the new timeout value should be greater than this. Fine tune the correct **execution-timeout**.
 
 #### Base Command
 
@@ -1295,6 +1303,7 @@ Searches the Gmail records for all Google users.
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: false) | Optional | 
 
 
 #### Context Output
@@ -3471,6 +3480,62 @@ Lists all Google users in a domain.
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 113493660192005193453 | user | user test | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
+
+
+### gmail-list-labels
+***
+Lists all lables in a Users Gmail.
+
+
+#### Base Command
+
+`gmail-list-labels`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-id | The user's email address. The special value '*me*' can be used to indicate the authenticated user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GmailLabel.Name | String | The label name. | 
+| GmailLabel.ID | String | The label ID. | 
+| GmailLabel.UserID | String | The User ID the label belongs to. | 
+| GmailLabel.Type | String | The label type. | 
+| GmailLabel.LabelListVisibility | String | The label list visibility. | 
+| GmailLabel.MessageListVisibility | String | The label message list visibility. | 
+
+
+#### Command Example
+```!gmail-list-labels user-id=me```
+
+#### Context Example
+```
+{
+"GmailLabel":
+  [
+       {
+            "ID": "INBOX",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility:: "hide",
+            "Name": "INBOX",
+            "Type": "system",
+            "UserID": "user@domain.io"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Labels for UserID me:
+>|Name|ID|Type|MessageListVisibility|LabelListVisibility|
+>|---|---|---|---|---|
+>| INBOX | INBOX | system | | |
+>| SPAM | SPAM | system | hide | labelShowIfUnread |
 
 
 ### gmail-revoke-user-role

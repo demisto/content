@@ -42,12 +42,7 @@
             "accessor": "",
             "filters": [],
             "root": "start_time",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "TimeStampToDate"
-              }
-            ]
+            "transformers": []
           },
           "simple": ""
         }
@@ -506,18 +501,8 @@
           "simple": "event_count"
         },
         "Number Of Fetched Events": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "count"
-              }
-            ]
-          },
-          "simple": ""
+          "complex": null,
+          "simple": "events_fetched"
         },
         "Number Of Flows": {
           "complex": null,

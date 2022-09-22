@@ -29,8 +29,9 @@ class Client:
     The integration's client
     """
 
-    def __init__(self, params: Dict[str, str]):
+    def __init__(self, params: Dict[str, str], reliability: Optional[DBotScoreReliability] = None):
         self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
+        self.reliability = reliability
         self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
         self.date_params: Dict[str, Dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
@@ -70,15 +71,17 @@ class Client:
                     api_key: Optional[str] = self.date_params.get(key, {}).get('api_key')
                     # Parsing date argument of ISO format or free language into datetime object,
                     # replacing TZ with UTC, taking its timestamp format and rounding it up.
+                    parsed_date = parse(args[key])
+                    assert parsed_date is not None
                     filter_query += f"{api_key}:" \
-                                    f"{operator}{int(parse(args[key]).replace(tzinfo=timezone.utc).timestamp())}+"
+                                    f"{operator}{int(parsed_date.replace(tzinfo=timezone.utc).timestamp())}+"
 
         if filter_query.endswith('+'):
             filter_query = filter_query[:-1]
 
         return filter_query
 
-    def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
+    def get_indicator(self, indicator_value: str) -> Dict[str, Any]:
         # crowdstrike do not allow passing single quotes - so we encode them
         # we are not encoding the entire indicator value, as the other reserved chars (such as + and &) are allowed
         indicator_value = indicator_value.replace("'", "%27")
@@ -86,13 +89,6 @@ class Client:
             'indicator': indicator_value,
             'limit': 1
         }
-        if indicator_type == 'hash':
-            args['type'] = get_indicator_hash_type(indicator_value)
-        elif indicator_type == 'ip':
-            args['type'] = 'ip_address'
-        else:
-            args['type'] = indicator_type
-
         params: Dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
@@ -209,6 +205,25 @@ def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: 
         return None
 
 
+def should_filter_resource_by_type(resource, indicator_type, indicator_value):
+    """
+    checks if a resource should be filtered by his type.
+    :param resource: The resource object
+    :param indicator_type: The indicator type
+    :param indicator_value: The indicator value
+    :return: True if the resource should be filtered (don't match the indicator type) or False otherwise.
+    """
+    # indicator type was not filtered using the query due to a bug in the CrowdStrike API.
+    if indicator_type == 'hash':
+        filter_type = get_indicator_hash_type(indicator_value)
+    elif indicator_type == 'ip':
+        filter_type = 'ip_address'
+    else:
+        filter_type = indicator_type
+
+    return resource.get('type') != filter_type
+
+
 def build_indicator(indicator_value: str, indicator_type: str, title: str, client: Client) -> List[CommandResults]:
     """
     Builds an indicator entry
@@ -218,12 +233,14 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     :param client: The integration's client
     :return: The indicator entry
     """
-    res: Dict[str, Any] = client.get_indicator(indicator_value, indicator_type)
+    res: Dict[str, Any] = client.get_indicator(indicator_value)
     resources: List[Any] = res.get('resources', [])
     results: List[CommandResults] = []
 
     if resources:
         for r in resources:
+            if should_filter_resource_by_type(r, indicator_type, indicator_value):
+                continue
             output = get_indicator_outputs(r)
             score = get_score_from_resource(r)
             dbot_score = Common.DBotScore(
@@ -231,7 +248,8 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
                 indicator_type=get_dbot_score_type(indicator_type),
                 integration_name='CrowdStrike Falcon Intel v2',
                 malicious_description='High confidence',
-                score=score
+                score=score,
+                reliability=client.reliability
             )
             indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
@@ -244,9 +262,9 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
             ))
 
     else:
-        results.append(CommandResults(
-            readable_output=f'No indicator found for {indicator_value}.'
-        ))
+        results.append(create_indicator_result_with_dbotscore_unknown(indicator=indicator_value,
+                                                                      indicator_type=DBotScoreType.FILE
+                                                                      if indicator_type == 'hash' else indicator_type))
 
     return results
 
@@ -458,7 +476,8 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandR
                     indicator_type=get_dbot_score_type(indicator_type),
                     integration_name='CrowdStrike Falcon Intel v2',
                     malicious_description='High confidence',
-                    score=score
+                    score=score,
+                    reliability=client.reliability
                 )
                 indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
@@ -545,12 +564,17 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 def main():
     params: Dict[str, str] = demisto.params()
+
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability) if \
+        DBotScoreReliability.is_valid_type(reliability) else None
+
     args: Dict[str, str] = demisto.args()
     results: Union[CommandResults, List[CommandResults]]
     try:
         command: str = demisto.command()
         LOG(f'Command being called in CrowdStrike Falcon Intel v2 is: {command}')
-        client: Client = Client(params=params)
+        client: Client = Client(params=params, reliability=reliability)
         if command == 'test-module':
             result: Union[str, Exception] = run_test_module(client)
             return_results(result)

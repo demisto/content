@@ -31,8 +31,6 @@ oauth_config:
       - groups:read
       - groups:write
       - im:history
-      - im:read
-      - im:write
       - mpim:history
       - mpim:read
       - mpim:write
@@ -45,7 +43,6 @@ settings:
     user_events:
       - message.channels
       - message.groups
-      - message.im
       - message.mpim
     bot_events:
       - message.channels

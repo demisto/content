@@ -1,4 +1,7 @@
 {
+    "associatedTypes": [
+        "File"
+    ],
     "associatedToAll": false,
     "caseInsensitive": false,
     "cliName": "gibfilename",

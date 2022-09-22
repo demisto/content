@@ -1240,7 +1240,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### ePO Policies:
->### ePO Policies:
 >|status|name|message|id|
 >|---|---|---|---|
 >| 0 | TIE | Assign policy succeeded | 2 |

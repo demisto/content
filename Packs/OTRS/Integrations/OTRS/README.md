@@ -22,6 +22,7 @@ Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in y
 | fetch_queue | Queues to fetch tickets from  \(&quot;Any&quot; fetches from all queues. CSV supported, for example Misc, Raw\) | False |
 | fetch_priority | Fetch tickets in priority | False |
 | fetch_time | First fetch timestamp \(formatted as &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days, 3 months, 1 year\) | False |
+| look_back | Days to look back when fetching | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

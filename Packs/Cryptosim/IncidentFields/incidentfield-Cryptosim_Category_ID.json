@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cryptosimcategoryid",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cryptosimcategoryid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CRYPTOSIM Category ID",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "Cryptosim Correlation Alerts"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

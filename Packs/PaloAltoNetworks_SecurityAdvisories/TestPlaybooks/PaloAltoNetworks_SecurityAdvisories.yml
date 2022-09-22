@@ -1,0 +1,169 @@
+id: Palo Alto Networks Security Advisories
+name: Palo Alto Networks Security Advisories
+version: -1
+fromversion: 6.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 72c7523d-8906-46c1-88ee-e2cb9d80c504
+    type: start
+    task:
+      id: 72c7523d-8906-46c1-88ee-e2cb9d80c504
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 78d250c3-df05-47d3-b9ed-abdecfc012d6
+    type: regular
+    task:
+      id: 78d250c3-df05-47d3-b9ed-abdecfc012d6
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 333e419a-d8fa-438b-ba2b-056d750cea6f
+    type: regular
+    task:
+      id: 333e419a-d8fa-438b-ba2b-056d750cea6f
+      version: -1
+      name: pan-advisories-get-advisories
+      description: ''
+      script: Palo_Alto_Networks_Security_Advisories|||pan-advisories-get-advisories
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: e9b9fa2f-0d76-419a-b4a1-d9bc6fbdf7a6
+    type: condition
+    task:
+      id: e9b9fa2f-0d76-419a-b4a1-d9bc6fbdf7a6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.data_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.data_format
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cve_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cve_date_public
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cve_title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cvss_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cvss_severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.cvss_vector_string
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANSecurityAdvisory.Advisory.affected_version_list
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: f5e52d21-ba1a-4fbb-85cf-53c9316b0df7
+    type: title
+    task:
+      id: f5e52d21-ba1a-4fbb-85cf-53c9316b0df7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Test Playbook for Integration

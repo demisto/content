@@ -1,0 +1,23 @@
+{
+    "id": "Forescout EyeInspect",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Forescout EyeInspect",
+    "prevName": "Forescout EyeInspect",
+    "color": "#418ae6",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "Forescout Eyeinspect General Layout",
+    "fromVersion": "6.1.0"
+}
