@@ -510,6 +510,7 @@ def to_cli_name(field_name: str):
 def main():  # pragma: no cover
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
+    Client.override_severity = argToBoolean(params.get('override_severity', True))
     Client.tlp_color = params.get('tlp_color')
 
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
@@ -517,8 +518,6 @@ def main():  # pragma: no cover
         Client.query = query
     if tag := (params.get('feedTags') or params.get('tag')):
         Client.tag = tag
-    if override_severity := params.get('override_severity', 'true'):
-        Client.severity = argToBoolean(override_severity)
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
 
