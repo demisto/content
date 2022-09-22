@@ -509,8 +509,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
                     continue
                 incident_type_scheme.add_field(name=field.get('cliName'),
                                                description=f"{field.get('name')} - {field.get('type')}")
-            if custom_fields:
-                incident_type_scheme.add_field(name='CustomFields', description=custom_fields)
+        if custom_fields:
+            incident_type_scheme.add_field(name='CustomFields', description=custom_fields)
         all_mappings.add_scheme_type(incident_type_scheme)
 
     default_scheme = SchemeTypeMapping(type_name="Default Mapping")
