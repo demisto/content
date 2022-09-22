@@ -2,6 +2,7 @@ import io
 import json
 
 import pytest as pytest
+import demistomock as demisto
 
 from CommonServerPython import arg_to_datetime
 from TenableioEventCollector import Client
@@ -108,7 +109,7 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
     (MOCK_CHUNKS_STATUS, 'finished'),
     (MOCK_CHUNKS_STATUS_PROCESSING, 'polling'),
     (MOCK_CHUNKS_STATUS_ERROR, 'error')])
-def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_result):
+def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_result, mocker):
     """
     Given:
         - get vulnerabilities arguments (lsat_found, num_assets and sevirity)
@@ -123,6 +124,10 @@ def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_res
     requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=response_to_use_status)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
+    mocker.patch.object(demisto, 'demistoVersion', return_value={
+        'version': '6.2.1',
+        'buildNumber': '12345'
+    })
     args = {
         'last_found': '1663844866',
         'num_assets': '50',
