@@ -35,7 +35,7 @@ Checks the reputation of an IP address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | IP address, | 
+| IP.Address | String | IP address. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.ASOwner | String | The autonomous system owner of the IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
@@ -84,7 +84,9 @@ Checks the reputation of an IP address.
                 "Country": "AU"
             },
             "Registrar": {
-                "Network": "1.1.1.0/24"
+                "Abuse": {
+                    "Network": "1.1.1.0/24"
+                }
             }
         }
     }
@@ -134,7 +136,7 @@ Note: Results for queries exceeding 10,000 IPs may take more than a minute given
 | TeamCymru.IP.ASN | String | The IP ASN. | 
 | TeamCymru.IP.ASOwner | String | The IP AS owner. | 
 | TeamCymru.IP.Geo.Country | String | The IP country. | 
-| TeamCymru.IP.Registrar.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
+| TeamCymru.IP.Registrar.Abuse.Network | String | The IP range relevant for abuse inquiries provided for the IP. | 
 
 #### Command example
 ```!cymru-bulk-whois entry_id=${File.EntryID}```

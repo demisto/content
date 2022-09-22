@@ -69,8 +69,7 @@ def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
                      'ASN': asn,
                      'ASOwner': owner,
                      'Geo': {'Country': country},
-                     'Registrar': {'Network': prefix}
-                     }
+                     'Registrar': {'Abuse': {'Network': prefix}}}
     indicator = Common.IP(
         ip=ip,
         asn=asn,
