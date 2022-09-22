@@ -3031,13 +3031,6 @@ class Pack(object):
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
-
-        task_status = self.upload_preview_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
-        if not task_status:
-            self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
-            self.cleanup()
-            return False
-
         return True
 
     def cleanup(self):
@@ -3320,22 +3313,24 @@ class Pack(object):
         preview_image_name = self.find_preview_image_path(pack_file_name)
         try:
             preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
+            logging.info(f"yuval preview path {preview_image_path}")
             if os.path.exists(preview_image_path):
                 if not self._current_version:
                     self._current_version = ''
-                return urllib.parse.quote(
+                x = urllib.parse.quote(
                 os.path.join(GCPConfig.CONTENT_PACKS_PATH, self._pack_name, self._current_version, folder_name, preview_image_name))
+                logging.info(f"yuval x is {x}")
+                return x
             return None
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
 
-    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list, detect_changes):
+    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
         """ Uploads pack preview images to gcs.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             storage_base_path (str): The target destination of the upload in the target bucket.
-            detect_changes (bool): Whether to detect changes or upload all images in any case.
             diff_files_list (list): The list of all modified/added files found in the diff
         Returns:
             bool: whether the operation succeeded.
@@ -3385,9 +3380,12 @@ class Pack(object):
         try:
             prefixes = ['xsiamdashboard', 'xsiamreport']
             file_name = file_name.replace('external-', '')
+            logging.info(f"yuval file name 1 {file_name}")
             for prefix in prefixes:
                 file_name = file_name.replace(f'{prefix}-', '')
+                logging.info(f"yuval file name 2 {file_name}")
             image_file_name = file_name.split('.')[0] + '_image.png'
+            logging.info(f"yuval file name 1 {image_file_name}")
             return image_file_name
         except Exception as e:
             logging.warning(f'could not conclude preview image path. Skipping {file_name}. Additional info: {e}')

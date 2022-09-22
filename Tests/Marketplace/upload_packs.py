@@ -1191,6 +1191,12 @@ def main():
             pack.cleanup()
             continue
 
+        task_status = pack.upload_preview_images(storage_bucket, storage_base_path, diff_files_list)
+        if not task_status:
+            pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            pack.cleanup()
+            return False
+
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
