@@ -782,7 +782,14 @@
         {
             "integrations": "Server Message Block (SMB) v2",
             "playbookID": "SMB_v2-Test",
-            "has_api": false
+            "has_api": false,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB test",
+            "has_api": false,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -4339,14 +4346,6 @@
             ]
         },
         {
-            "playbookID": "SMB test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Server Message Block (SMB) v2",
-                "Server Message Block (SMB)"
-            ]
-        },
-        {
             "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -4640,34 +4639,6 @@
                 "OpenLDAP"
             ],
             "instance_names": "LDAP Authentication (Active Directory)"
-        },
-        {
-            "playbookID": "Splunk-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPySearch_Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy KV commands",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy-Test-V2",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
