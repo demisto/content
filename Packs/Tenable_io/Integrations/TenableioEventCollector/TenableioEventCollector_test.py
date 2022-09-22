@@ -1,5 +1,8 @@
 import io
 import json
+
+import pytest as pytest
+
 from CommonServerPython import arg_to_datetime
 from TenableioEventCollector import Client
 
@@ -11,6 +14,8 @@ def util_load_json(path):
 
 MOCK_AUDIT_LOGS = util_load_json('test_data/mock_events.json')
 MOCK_CHUNKS_STATUS = util_load_json('test_data/mock_chunks_status.json')
+MOCK_CHUNKS_STATUS_PROCESSING = util_load_json('test_data/mock_chunks_status_processing.json')
+MOCK_CHUNKS_STATUS_ERROR = util_load_json('test_data/mock_chunks_status_error.json')
 MOCK_UUID = util_load_json('test_data/mock_export_uuid.json')
 MOCK_CHUNK_CONTENT = util_load_json('test_data/mock_chunk_content.json')
 BASE_URL = 'https://cloud.tenable.com'
@@ -97,3 +102,37 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '123456'
     assert new_last_run.get('last_id') == '123456'
+
+
+@pytest.mark.parametrize('response_to_use_status, expected_result', [
+    (MOCK_CHUNKS_STATUS, 'finished'),
+    (MOCK_CHUNKS_STATUS_PROCESSING, 'polling'),
+    (MOCK_CHUNKS_STATUS_ERROR, 'error')])
+def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_result):
+    """
+    Given:
+        - get vulnerabilities arguments (lsat_found, num_assets and sevirity)
+    When:
+        - Running the get vulnerabilities command.
+    Then:
+        - Verify results when error and success.
+        - Verify scheduled command result is in the right format in case of polling.
+    """
+    from TenableioEventCollector import get_vulnerabilities_command
+    client = Client(url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=response_to_use_status)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
+    args = {
+        'last_found': '1663844866',
+        'num_assets': '50',
+        'severity': 'test1, test2'
+    }
+    res = get_vulnerabilities_command(args, client)
+    if expected_result == 'finished':
+        assert len(res.raw_response) == 1
+    elif expected_result == 'polling':
+        assert res.scheduled_command._args.get('export_uuid') == '123'
+        assert res.readable_output == 'Fetching Results:'
+    else:  # error
+        assert res.readable_output == 'Export job failed'
