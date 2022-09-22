@@ -48,10 +48,8 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, 
         context_files = [context_files]
 
     for file_in_context in context_files:
-        if (
-            file_in_context.get('Name', '').split('/')[-1] == f'{pack_id}.zip'
-            or file_in_context.get('Name', '') == f'{pack_id}.zip'
-        ):
+        file_in_context_name = file_in_context.get('Name', '')
+        if file_in_context_name.split('/')[-1] == f'{pack_id}.zip' or file_in_context_name == f'{pack_id}.zip':
             pack_file_entry_id = file_in_context.get('EntryID')
             break
 
