@@ -233,7 +233,9 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
                                       removeNull=True,
                                       headerTransform=string_to_table_header)
 
-    results = CommandResults(outputs=audit_logs,
+    results = CommandResults(outputs_prefix='Tenable.AuditLogs',
+                             outputs_key_field='id',
+                             outputs=audit_logs,
                              readable_output=readable_output,
                              raw_response=audit_logs)
     return results, audit_logs
@@ -267,7 +269,8 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client):
                                           removeNull=True,
                                           headerTransform=string_to_table_header)
 
-        results = CommandResults(outputs=vulnerabilities,
+        results = CommandResults(outputs_prefix='Tenable.Vulnerabilities',
+                                 outputs=vulnerabilities,
                                  readable_output=readable_output,
                                  raw_response=vulnerabilities)
         return PollResult(response=results)

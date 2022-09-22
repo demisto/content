@@ -54,10 +54,11 @@ def test_vulnerabilities_process(requests_mock):
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
     first_fetch = arg_to_datetime('3 days')
-    assert run_vulnerabilities_fetch(first_fetch=first_fetch, last_run={}, vuln_fetch_interval=0)
+    last_run = {}
+    assert run_vulnerabilities_fetch(first_fetch=first_fetch, last_run=last_run, vuln_fetch_interval=0)
 
-    generate_export_uuid(client, first_fetch, last_run={}, severity=[])
-    assert demisto.getIntegrationContext().get('export_uuid') == '123'
+    generate_export_uuid(client, first_fetch, last_run=last_run, severity=[])
+    assert last_run.get('export_uuid') == '123'
 
     vulnerabilities, finished = try_get_chunks(client, '123')
 
@@ -85,14 +86,14 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
-    last_run.update({'last_id': '1234'})
+    last_run.update({'last_id': '1234', 'next_fetch': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
     assert new_last_run.get('last_id') == '12345'
 
-    last_run.update({'last_id': '12345'})
+    last_run.update({'last_id': '12345', 'next_fetch': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
