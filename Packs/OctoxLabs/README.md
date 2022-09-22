@@ -1,6 +1,6 @@
-OctoxLabs is an asset, user, application and vulnerability management platform. 
-You can create queries/filters with our query wizard and review your gaps in your systems. 
-OctoxLabs collect data from all your defined adapters(active directory, security products, vulnerability scanners etc.) daily and allows you to search/report.
+OctoxLabs is cyber asset attack surface management platform. This platform included asset, user, application and vulnerability modules.
+You can create queries/filters with the query wizard. Find the gaps in your domain. 
+OctoxLabs collects data from all pre-defined adapters(active directory, security products, vulnerability scanners etc.) daily and allows you to search/report.
 
 
 ## What does this pack do?
