@@ -60,7 +60,7 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 )
 
 ''' HANDLE PROXY '''
-if not PROXY:
+if not PROXY:  # pragma: no cover
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
@@ -1021,7 +1021,7 @@ def set_user_command(args):
 ''' EXECUTION CODE '''
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
 
     LOG('command is %s' % (command,))
