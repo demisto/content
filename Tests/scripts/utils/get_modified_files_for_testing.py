@@ -8,6 +8,14 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 import demisto_sdk.commands.common.constants as constants
+from demisto_sdk.commands.common.tools import get_content_path
+# TODO: remove try except clause when demisto-sdk 1.7.3 is released
+try:
+    import demisto_sdk.commands.common.content_constant_paths as content_constant_paths
+    IS_UP_TO_DATE = True
+except ImportError:
+    IS_UP_TO_DATE = False
+
 from demisto_sdk.commands.common.constants import FileType
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
@@ -62,7 +70,9 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         FileType. Conf.json and Metadata files.
     """
     # if conf.json file
-    if checked_type(file_path, [constants.CONF_PATH]):
+    # TODO: remove "if" statement when demisto-sdk 1.7.3 is released
+    if checked_type(file_path, [str(content_constant_paths.CONF_PATH.relative_to(get_content_path()))
+                                if IS_UP_TO_DATE else constants.CONF_PATH]):
         return FileType.CONF_JSON
     # landingPage_sections.json file
     if checked_type(file_path, [LANDING_PAGE_SECTIONS_JSON_PATH]):

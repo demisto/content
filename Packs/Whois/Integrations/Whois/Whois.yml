@@ -8,8 +8,7 @@ configuration:
   required: false
   type: 8
 - display: Proxy URL
-  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080).
-  Will effect all commands except for the `ip` command."
+  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
   required: false
   type: 0
@@ -41,10 +40,13 @@ script:
   - arguments:
     - default: false
       description: The domain to enrich.
-      isArray: false
+      isArray: true
       name: query
       required: true
       secret: false
+    - name: recursive
+      description: Whether to get the raw response from the whois servers recursively. Default value is True.
+      defaultValue: true
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -198,6 +200,9 @@ script:
       name: domain
       required: true
       secret: false
+    - name: recursive
+      description: Whether to get the raw response from the whois servers recursively. Default value is True.
+      defaultValue: true
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -426,8 +431,7 @@ script:
     name: ip
     outputs:
     - contextPath: Whois.IP.asn
-      description: Globally unique identifier used for routing information exchange
-        with Autonomous Systems.
+      description: Globally unique identifier used for routing information exchange with Autonomous Systems.
       type: string
     - contextPath: Whois.IP.asn_cidr
       description: Network routing block assigned to an ASN.
@@ -445,8 +449,7 @@ script:
       description: ASN assigned regional internet registry.
       type: string
     - contextPath: Whois.IP.entities
-      description: list of object names referenced by an RIR network. Map these to
-        the objects dictionary keys.
+      description: list of object names referenced by an RIR network. Map these to the objects dictionary keys.
       type: string
     - contextPath: Whois.IP.network.cidr
       description: Network routing block an IP address belongs to.
@@ -538,14 +541,14 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks:1.0.0.24033
+  dockerimage: demisto/ippysocks-py3:1.0.0.33007
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 defaultEnabled: false
 tests:

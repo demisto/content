@@ -14,7 +14,7 @@ configuration:
   hiddenusername: true
   displaypassword: API Token
 - defaultvalue: '2.1'
-  display: API Version.
+  display: API Version
   required: true
   name: api_version
   options:
@@ -40,12 +40,12 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '10'
-  display: 'Fetch limit: the maximum number of incidents to fetch'
+  display: 'Fetch limit: The maximum number of incidents to fetch'
   name: fetch_limit
   required: false
   type: 0
 - display: Site IDs
-  additionalinfo: Comma-separated list of Site IDs to fetch incidents for. Leave blank to fetch all sites.
+  additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
   name: fetch_site_ids
   type: 0
   required: false
@@ -70,7 +70,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Filter by computer name.
+      description: The computer name by which to filter the results.
       isArray: false
       name: computer_name
       required: false
@@ -89,7 +89,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Included OS types, for example: "windows".'
+      description: 'Included operating system types, for example: "windows".'
       isArray: true
       name: os_type
       predefined:
@@ -171,7 +171,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser.'
+      description: Exclusion item type.
       isArray: false
       name: exclusion_type
       predefined:
@@ -190,7 +190,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions.
+      description: Operating system type. Required for hash exclusions.
       isArray: false
       name: os_type
       predefined:
@@ -201,14 +201,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Description for adding then exclusion item.
+      description: Description for adding the exclusion item.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep", "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep".
+      description: Exclusion mode (path exclusion only). 
       isArray: false
       name: exclusion_mode
       predefined:
@@ -243,10 +243,10 @@ script:
     name: sentinelone-create-white-list-item
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
-      description: The entity ID on allow list.
+      description: The entity ID on the allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.Type
-      description: The item type on allow list.
+      description: The item type on the allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.CreatedAt
       description: Time when the allow list item was created.
@@ -260,7 +260,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'A comma-separated list of OS types by which to filter, for example: "windows, linux".'
+      description: 'A comma-separated list of operating system types by which to filter, for example: "windows, linux".'
       isArray: true
       name: os_types
       predefined:
@@ -272,7 +272,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exclusion type. Can be "file_type", "path", "white_hash", "certificate", "browser".
+      description: Exclusion type.
       isArray: false
       name: exclusion_type
       predefined:
@@ -311,16 +311,16 @@ script:
       description: Source of the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UserID
-      description: User ID of the user that added the exclusion item.
+      description: User ID of the user qho added the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UpdatedAt
       description: Timestamp when the exclusion item was updated.
       type: date
     - contextPath: SentinelOne.Exclusions.OsType
-      description: OS type of the exclusion item.
+      description: Operating system type of the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UserName
-      description: User name of the user that added the exclusion item.
+      description: User name of the user who added the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.Mode
       description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
@@ -345,14 +345,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The content hash of the threat. Supports a comma-separated list of hashes.
+      description: A comma-separated list of content hashes of the threat.
       isArray: true
       name: content_hash
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A comma-separated list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved".
+      description: A comma-separated list of mitigation statuses. 
       isArray: true
       name: mitigation_status
       predefined:
@@ -407,7 +407,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of threats to return. Default is 20.
+      description: The maximum number of threats to return.
       isArray: false
       name: limit
       required: false
@@ -426,7 +426,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of threat classifications to search, for example: "Malware", "Network", "Benign".'
+      description: 'A comma-separated list of threat classifications to search, for example: "Malware", "Network", "Benign".'
       isArray: false
       name: classifications
       predefined:
@@ -443,7 +443,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of Site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
       required: false
@@ -469,7 +469,7 @@ script:
       description: The threat classification.
       type: string
     - contextPath: SentinelOne.Threat.ClassificationSource
-      description: Source of the threat Classification.
+      description: Source of the threat classification.
       type: string
     - contextPath: SentinelOne.Threat.ConfidenceLevel
       description: SentinelOne threat confidence level.
@@ -497,7 +497,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a dashboard threat summary.
+    description: Returns a dashboard threat summary. Can only be used with API V2.1.
     execution: false
     name: sentinelone-threat-summary
     outputs:
@@ -537,7 +537,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scope to use for exclusions. Can be "site" or "tenant".
+      description: Scope to use for exclusions. 
       isArray: false
       name: target_scope
       predefined:
@@ -546,7 +546,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Marks suspicious threats as threats.
+    description: Marks suspicious threats as threats. Can only be used with API V2.0.
     execution: false
     name: sentinelone-mark-as-threat
     outputs:
@@ -559,7 +559,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Mitigation action. Can be "kill", "quarantine", "un-quarantine", "remediate", or "rollback-remediation".
+      description: Mitigation action. 
       isArray: false
       name: action
       predefined:
@@ -598,7 +598,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Resolves threats using the threat ID.
+    description: Resolves threats using the threat ID. Can only be used with API V2.0.
     execution: false
     name: sentinelone-resolve-threat
     outputs:
@@ -680,7 +680,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR".
+      description: Site type. 
       isArray: false
       name: site_type
       predefined:
@@ -693,7 +693,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc".
+      description: Returns sites that support the specified features. 
       isArray: false
       name: features
       predefined:
@@ -704,7 +704,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Site state. Can be "active", "deleted", or "expired".
+      description: Site state. 
       isArray: false
       name: state
       predefined:
@@ -715,7 +715,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The suite of product features active for this site. Can be "Core" or "Complete".
+      description: The suite of product features active for this site. 
       isArray: false
       name: suite
       predefined:
@@ -865,7 +865,7 @@ script:
       isArray: false
       name: site_id
       required: true
-    - description: If false an expiration should be supplied
+    - description: If false, an expiration should be supplied.
       name: unlimited
       required: false
       isArray: false
@@ -1091,7 +1091,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The rank sets the priority of a dynamic group over others, for example, "1", which is the highest priority.
+      description: The priority of a dynamic group over others, for example, "1", which is the highest priority.
       isArray: false
       name: rank
       required: false
@@ -1114,13 +1114,13 @@ script:
       description: If the group is dynamic, the name of the filter which is used to associate agents.
       type: String
     - contextPath: SentinelOne.Group.creatorId
-      description: The ID of the user that created the group.
+      description: The ID of the user who created the group.
       type: String
     - contextPath: SentinelOne.Group.name
       description: The name of the group.
       type: String
     - contextPath: SentinelOne.Group.creator
-      description: The user that created the group.
+      description: The user who created the group.
       type: String
     - contextPath: SentinelOne.Group.rank
       description: The rank, which sets the priority of a dynamic group over others.
@@ -1181,6 +1181,10 @@ script:
     description: Deletes a group, by the group ID.
     execution: false
     name: sentinelone-delete-group
+    outputs:
+    - contextPath: SentinelOne.DeleteGroup.Success
+      description: The status of the command.
+      type: String
   - arguments:
     - default: false
       description: The ID of the agent from which to retrieve the processes.
@@ -1219,7 +1223,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Connects agents to network.
+    description: Connects agents to the network.
     execution: false
     name: sentinelone-connect-agent
     outputs:
@@ -1237,7 +1241,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disconnects agents from network.
+    description: Disconnects agents from the network.
     execution: false
     name: sentinelone-disconnect-agent
     outputs:
@@ -1249,7 +1253,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Message to broadcast to agents.
+      description: The message to broadcast to agents.
       isArray: false
       name: message
       required: true
@@ -1265,13 +1269,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of Group IDs by which to filter the results.
+      description: A comma-separated list of group IDs by which to filter the results.
       isArray: true
       name: group_id
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of Agent IDs by which to filter the results.
+      description: A comma-separated list of agent IDs by which to filter the results.
       isArray: true
       name: agent_id
       required: false
@@ -1286,10 +1290,14 @@ script:
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
+    outputs:
+    - contextPath: SentinelOne.BroadcastMessage.Affected
+      description: Number of affected endpoints.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Maximum number of items to return (1-100). Default is "50".
+      description: Maximum number of items to return (1-100).
       isArray: false
       name: limit
       required: false
@@ -1312,7 +1320,7 @@ script:
       description: SHA256 hash of the file.
       type: String
     - contextPath: SentinelOne.Event.AgentOS
-      description: OS type. Can be "windows", "linux", "macos", or "windows_legac".
+      description: Operating system type. Can be "windows", "linux", "macos", or "windows_legac".
       type: String
     - contextPath: SentinelOne.Event.ProcessID
       description: The process ID.
@@ -1367,7 +1375,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Runs a Deep Visibility Query and returns the queryId. You can use the queryId for all other commands, such as the sentinelone-get-events command.
+    description: Runs a Deep Visibility query and returns the queryId. You can use the queryId for all other commands, such as the sentinelone-get-events command.
     execution: false
     name: sentinelone-create-query
     outputs:
@@ -1392,7 +1400,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of items to return (1-100). Default is "50".
+      description: Maximum number of items to return (1-100). 
       isArray: false
       name: limit
       required: false
@@ -1455,7 +1463,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term)."
+      description: "A free-text search term that will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term (not if they contain the search term)."
       isArray: false
       name: query
       required: false
@@ -1482,7 +1490,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term)."
+      description: "A free-text search term that will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term (not if they contain the search term)."
       isArray: false
       name: query
       required: false
@@ -1503,10 +1511,379 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
+    outputs:
+    - contextPath: SentinelOne.uninstall.Affected
+      description: Number of affected agents.
+      type: String
+  - arguments:
+    - name: verdict
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. 
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of threats that match
+      the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-update-threats-verdict
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Updated
+      description: Whether the threat was successfully updated in the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Update.Action
+      description: Name of the analyst verdict action performed on the threats.
+      type: String
+  - arguments:
+    - name: verdict
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. 
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of alert IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of alerts that match
+      the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-update-alerts-verdict
+    outputs:
+    - contextPath: SentinelOne.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.Updated
+      description: Whether the alert was successfully updated in the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Alert.Update.Action
+      description: Name of the analyst verdict action performed on the alerts.
+      type: String
+  - arguments:
+    - name: name
+      required: true
+      description: The name of the STAR rule.
+    - name: rule_severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: The rule severity.
+    - name: expiration_mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Permanent
+      - Temporary
+      description: Type of expiration mode. 
+    - name: query_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: Type of the query. For now it's "events"
+    - name: query
+      required: true
+      description: The query string for which to return events.
+    - name: description
+      description: The description of the STAR rule.
+    - name: expiration_date
+      description: 'If expiration mode is "Temporary" then it should be supplied,
+        for example, "2019-08-03T04:49:26.257525Z" '
+    - name: site_ids
+      description: A comma-separated list of site IDs.
+      isArray: true
+    - name: group_ids
+      description: A comma-separated list of Group IDs.
+      isArray: true
+    - name: account_ids
+      description: A comma-separated list of Account IDs.
+      isArray: true
+    - name: network_quarantine
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether to enable the network quarantine of the STAR rule.
+    - name: treatAsThreat
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Malicious
+      - Suspicious
+      - UNDEFINED
+      description: The treatAsThreat type. 
+    description: Creates a custom STAR rule. Relevant for API version 2.1.
+    name: sentinelone-create-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The STAR rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Name
+      description: The STAR rule name.
+      type: String
+    - contextPath: SentinelOne.StarRule.Status
+      description: The status of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The severity of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.Description
+      description: The description of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.NetworkQuarantine
+      description: The network quarantine of the STAR rule.
+      type: Boolean
+    - contextPath: SentinelOne.StarRule.TreatAsThreat
+      description: The Treat As Threat of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ExpirationMode
+      description: The expiration mode of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ExpirationDate
+      description: The expiration date of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ScopeHierarchy
+      description: The scope hierarchy of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.CreatedAt
+      description: The created time for the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.UpdatedAt
+      description: The updated time for the STAR rule.
+      type: String
+  - arguments:
+    - name: status
+      description: 'A comma-separated list of the status of the STAR rule. Available options are: "Activating, Active, Deleted, Deleting, Disabled, Disabling and Draft".Example: "Draft,Active".'
+    - name: creator_contains
+      description: 'Free-text filter by rule creator (supports multiple values). Example:
+        "Service Pack 1".'
+    - name: queryType
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: 'Return rules with the filtered type. Example: "events".'
+    - name: query
+      description: 'Free-text filter by S1 query (supports multiple values). Example:
+        "Service Pack 1".'
+    - name: description_contains
+      description: 'Free-text filter by rule description (supports multiple values).
+        Example: "Service Pack 1".'
+    - name: ruleIds
+      description: 'A comma-separated list of Rules IDs. Example: "225494730938493804,225494730938493915".'
+    - name: name_contains
+      description: 'Free-text filter by rule name (supports multiple values). Example: "Service Pack 1".'
+    - name: accountIds
+      description: 'A comma-separated list of Account IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    - name: expirationMode
+      auto: PREDEFINED
+      predefined:
+      - Temporary
+      - Permanent
+      description: 'Return rules with the filtered expiration mode. Example: "Permanent".'
+    - name: limit
+      description: 'Limit number of returned items (1-1000). Example: "10".'
+    - name: siteIds
+      description: 'A comma-separated list of site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    name: sentinelone-get-star-rules
+    description: Get a list of custom detection rules for a given scope. Relevant for API version 2.1.
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The STAR rule ID.
+      type: Number
+    - contextPath: SentinelOne.StarRule.Creator
+      description: The STAR rule creator.
+      type: string
+    - contextPath: SentinelOne.StarRule.Name
+      description: The STAR rule name.
+      type: string
+    - contextPath: SentinelOne.StarRule.Status
+      description: The STAR rule status.
+      type: string
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The STAR rule severity.
+      type: string
+    - contextPath: SentinelOne.StarRule.GeneratedAlerts
+      description: The number of STAR rule generated alerts.
+      type: Number
+    - contextPath: SentinelOne.StarRule.Description
+      description: The STAR rule description.
+      type: string
+    - contextPath: SentinelOne.StarRule.StatusReason
+      description: The STAR rule status reason.
+      type: string
+    - contextPath: SentinelOne.StarRule.ExpirationMode
+      description: The STAR rule expiration mode.
+      type: string
+    - contextPath: SentinelOne.StarRule.ExpirationDate
+      description: The STAR rule expiration date.
+      type: Date
+    - contextPath: SentinelOne.StarRule.Expired
+      description: Whether the STAR rule expired.
+      type: Boolean
+  - arguments:
+    - name: rule_id
+      required: true 
+      description: 'Rule ID  Example: "225494730938493804".'
+    - name: name
+      required: true
+      description: The name of the STAR rule.
+    - name: rule_severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: The rule severity.
+    - name: expiration_mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Permanent
+      - Temporary
+      description: Type of expiration mode.
+    - name: query_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: Type of the query. For now it's "events"
+    - name: query
+      required: true
+      description: The query string for which to return events.
+    - name: description
+      description: The description of the STAR rule.
+    - name: expiration_date
+      description: 'If expiration mode is "Temporary" then it should be supplied,
+        for example, "2019-08-03T04:49:26.257525Z".'
+    - name: site_ids
+      description: A comma-separated list of site IDs.
+      isArray: true
+    - name: group_ids
+      description: A comma-separated list of group IDs.
+      isArray: true
+    - name: account_ids
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: network_quarantine
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether to enable the network quarantine of the STAR rule.
+    - name: treatAsThreat
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Malicious
+      - Suspicious
+      - UNDEFINED
+      description: The treatAsThreat. 
+    description: Updates a custom STAR rule. Relevant for API version 2.1.
+    name: sentinelone-update-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The STAR rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Name
+      description: The STAR rule name.
+      type: String
+    - contextPath: SentinelOne.StarRule.Status
+      description: The status of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The severity of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.Description
+      description: The description of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.NetworkQuarantine
+      description: The network quarantine of the STAR rule.
+      type: Boolean
+    - contextPath: SentinelOne.StarRule.TreatAsThreat
+      description: The Treat As Threat of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ExpirationMode
+      description: The expiration mode of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ExpirationDate
+      description: The expiration date of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.ScopeHierarchy
+      description: The scope hierarchy of the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.CreatedAt
+      description: The created time for the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.UpdatedAt
+      description: The updated time for the STAR rule.
+      type: String
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of STAR rule IDs.
+      isArray: true
+    description: Activate Custom Detection rules that match the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-enable-star-rules
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Enabled
+      description: Whether the STAR rule was successfully enabled.
+      type: Boolean
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of STAR rule IDs.
+      isArray: true
+    description: Disable Custom Detection rules that match the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-disable-star-rules
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Disabled
+      description: Whether the STAR rule was successfully disabled.
+      type: Boolean
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of STAR rule IDs.
+      isArray: true
+    description: Deletes Custom Detection Rules that match the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-delete-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Deleted
+      description: Whether the STAR rule was successfully deleted.
+      type: Boolean
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Access global list. (Same as `tenant` flag in API docs.)
+      description: Whether the global list is accessible. (Same as `tenant` flag in API docs.)
       name: global
       predefined:
       - 'true'
@@ -1533,7 +1910,7 @@ script:
       description: When entry was most recently updated.
       type: String
     - contextPath: SentinelOne.Blocklist.Value
-      description: File Hash.
+      description: File hash.
       type: String
     - contextPath: SentinelOne.Blocklist.ScopePath
       description: SentinelOne list scope.
@@ -1557,10 +1934,10 @@ script:
       description: Operating system type block is enforced on.
       type: String
     - contextPath: SentinelOne.Blocklist.ScopeName
-      description: Name of the block list scope.
+      description: Name of the blocklist scope.
       type: String
   - arguments:
-    - description: SHA1 hash to add to the Global blocklist.
+    - description: SHA1 hash to add to the global blocklist.
       name: sha1
     - defaultValue: XSOAR
       description: String describing the source of the block.
@@ -1576,7 +1953,7 @@ script:
     - defaultValue: Blocked from XSOAR
       description: Note stored in SentinelOne about the block.
       name: description
-    description: Add a hash to the Global blocklist in SentinelOne.
+    description: Add a hash to the global blocklist in SentinelOne.
     name: sentinelone-add-hash-to-blocklist
     outputs:
     - contextPath: SentinelOne.AddHashToBlocklist.hash
@@ -1584,7 +1961,7 @@ script:
     - contextPath: SentinelOne.AddHashToBlocklist.status
       description: Status of the action to add a hash to the blocklist.
   - arguments:
-    - description: SHA1 hash to remove from the Global blocklist.
+    - description: SHA1 hash to remove from the global blocklist.
       name: sha1
     - auto: PREDEFINED
       description: Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms.
@@ -1593,7 +1970,7 @@ script:
       - windows
       - macos
       - linux
-    description: Remove a hash from the Global blocklist in SentinelOne
+    description: Remove a hash from the global blocklist in SentinelOne
     name: sentinelone-remove-hash-from-blocklist
     outputs:
     - contextPath: SentinelOne.RemoveHashFromBlocklist.hash
@@ -1625,7 +2002,482 @@ script:
       required: true
     description: Download a file fetched using th sentinelone-fetch-file command to submit the request and the sentinelone-get-activities command to get the download path.
     name: sentinelone-download-fetched-file
-  dockerimage: demisto/python3:3.10.5.31797
+  - arguments:
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    - name: note
+      required: true
+      description: Threat Note Text
+    description: Add a threat note to one or more threats. Relevant for API version 2.1.
+    name: sentinelone-write-threat-note
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Note
+      description: The threat note.
+      type: String
+    - contextPath: SentinelOne.Threat.Status
+      description: Whether the note was added successfully.
+      type: String
+  - arguments:
+    - name: name
+      required: true
+      description: Threat Intelligence indicator name.
+    - name: source
+      required: true
+      description: The source of the identified Threat Intelligence indicator.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DNS
+      - IPV4
+      - IPV6
+      - MD5
+      - SHA1
+      - SHA256
+      - URL
+      description: The type of the Threat Intelligence indicator.
+    - name: method
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - EQUALS
+      description: The comparison method used by SentinelOne to trigger the event.
+    - name: validUntil
+      required: true
+      description: Expiration date for the Threat Intelligence indicator.
+    - name: value
+      required: true
+      description: The value of the Threat Intelligence indicator.
+    - name: account_ids
+      required: true
+      description: List of account IDs to filter by.
+      isArray: true
+    - name: externalId
+      description: The unique identifier of the indicator as provided by the Threat Intelligence source.
+    - name: description
+      description: Description of the Threat Intelligence indicator.
+    description: Add an IoC to the Threat Intelligence database. Relevant for API version 2.1.
+    name: sentinelone-create-ioc
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Name
+      description: Threat Intelligence indicator name.
+      type: String
+    - contextPath: SentinelOne.IOC.Source
+      description: The source of the identified Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Type
+      description: The type of the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.BatchId
+      description: The IOC batch ID.
+      type: String
+    - contextPath: SentinelOne.IOC.Creator
+      description: The IOC creator.
+      type: String
+    - contextPath: SentinelOne.IOC.Scope
+      description: The IOC scope.
+      type: String
+    - contextPath: SentinelOne.IOC.ScopeId
+      description: The IOC scope ID.
+      type: String
+    - contextPath: SentinelOne.IOC.ValidUntil
+      description: Expiration date for the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Description
+      description: Description of the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.ExternalId
+      description: The unique identifier of the indicator as provided by the Threat Intelligence source.
+      type: String
+  - arguments:
+    - name: account_ids
+      required: true
+      description: List of account IDs to filter by.
+      isArray: true
+    - name: uuids
+      required: true
+      description: UUID of Threat Intelligence indicator.
+    description: Delete an IOC from the Threat Intelligence database that matches a filter. Relevant for API version 2.1.
+    name: sentinelone-delete-ioc
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Deleted
+      description: Whether the Threat Intelligence indicator was deleted.
+      type: Boolean
+  - arguments:
+    - name: account_ids
+      required: true
+      description: List of account IDs to filter by.
+      isArray: true
+    - name: limit
+      description: 'Limit number of returned items (1-1000). Default is 1000.'
+    - name: upload_time_gte
+      description: 'The time (greater than or equal to) at which the Threat Intelligence indicator was uploaded to the SentinelOne database. Example: "2022-07-13T20:33:29.007906Z".'
+    - name: upload_time_lte
+      description: 'The time (less than or equal to) at which the Threat Intelligence indicator was uploaded to the SentinelOne database. Example: "2022-07-13T20:33:29.007906Z".'
+    - name: cursor
+      description: 'Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=".'
+    - name: uuids
+      description: 'A list of unique IDs of the parent process of the indicator of compromise. Example: "2cffae871197f20d864fe8363eee6651".'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - DNS
+      - IPV4
+      - IPV6
+      - MD5
+      - SHA1
+      - SHA256
+      - URL
+      description: The type of the Threat Intelligence indicator.
+    - name: batch_id
+      description: 'Unique ID of the uploaded indicators batch. Example: "atmtn000000028a881bcf939dc6d92ab55443".'
+    - name: source
+      description: 'List of the sources of the identified Threat Intelligence indicator. Example: "AlienVault".'
+    - name: value
+      description: 'The value of the Threat Intelligence indicator. Example: "175.0.x.x".'
+    - name: external_id
+      description: 'The unique identifier of the indicator as provided by the Threat Intelligence source. Example: "e277603e-1060-5ad4-9937-c26c97f1ca68".'
+    - name: name_contains
+      description: 'A comma-separated list of free-text filtered by the indicator name. Example: "foo.dll".'
+    - name: creator_contains
+      description: 'A comma-separated list of free-text filtered by the user who uploaded the Threat Intelligence indicator. Example: "admin@sentinelone.com".'
+    - name: description_contains
+      description: 'A comma-separated list of free-text filtered by the description of the indicator. Example: "Malicious-activity".' 
+    - name: category_in
+      description: 'The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC'
+    - name: updated_at_gte
+      description: 'The time (greater or equal to) at which the indicator was last updated in the SentinelOne database. Example: "2021-07-13T20:33:29.007906Z".'
+    - name: updated_at_lte
+      description: 'The time (less than or equal to) at which the indicator was last updated in the SentinelOne database. Example: "2021-07-13T20:33:29.007906Z".'
+    - name: creation_time_gte
+      description: 'Creation time (greater than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".' 
+    - name: creation_time_lte
+      description: 'Creation time (less than or equal to) as set by the user. Example: "2021-07-13T20:33:29.007906Z".' 
+    description: Get the IOCs of a specified account that match the filter. Relevant for API version 2.1.
+    name: sentinelone-get-iocs
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Creator
+      description: Threat Intelligence indicator creator.
+      type: String
+    - contextPath: SentinelOne.IOC.Name
+      description: Threat Intelligence indicator name.
+      type: String
+    - contextPath: SentinelOne.IOC.Value
+      description: Threat Intelligence indicator value.
+      type: String
+    - contextPath: SentinelOne.IOC.Description
+      description: Threat Intelligence indicator description.
+      type: String
+    - contextPath: SentinelOne.IOC.Type
+      description: Threat Intelligence indicator type.
+      type: String
+    - contextPath: SentinelOne.IOC.ExternalId
+      description: Threat Intelligence indicator external ID.
+      type: String
+    - contextPath: SentinelOne.IOC.Source
+      description: Threat Intelligence indicator source.
+      type: String
+    - contextPath: SentinelOne.IOC.UploadTime
+      description: Threat Intelligence indicator upload time.
+      type: String
+    - contextPath: SentinelOne.IOC.ValidUntil
+      description: Threat Intelligence indicator expiration time.
+      type: String
+  - arguments:
+    - name: query
+      required: true
+      description: Events matching the query search term will be returned.
+    - name: from_date
+      required: true
+      description: Events created after this timestamp.
+    - name: to_date
+      required: true
+      description: Events created before or at this timestamp
+    - name: limit
+      description: Limit number of returned items (1-100000).
+    description: Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1
+    name: sentinelone-create-power-query
+  - arguments:
+    - name: queryId
+      required: true
+      description: QueryId.
+    description: Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
+    name: sentinelone-ping-power-query
+  - arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - resolved
+      - unresolved
+      description: Incident status.
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    description: Updates the incident status to a group of threats that match
+      the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-update-threats-status
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Updated
+      description: Whether the threat was successfully updated.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Status
+      description: Name of the status performed on the threats.
+      type: String
+  - arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - resolved
+      - unresolved
+      description: Incident status.
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of alert IDs.
+      isArray: true
+    description: Updates the incident status to a group of alerts that match
+      the specified input filter. Relevant for API version 2.1.
+    name: sentinelone-update-alerts-status
+    outputs:
+    - contextPath: SentinelOne.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.Updated
+      description: Whether the alert was successfully updated.
+      type: Boolean
+    - contextPath: SentinelOne.Alert.Status
+      description: The status performed on the alerts.
+      type: String
+  - arguments:
+    - name: site_id
+      required: true
+      description: A valid site ID.
+    description: Expire the site of the given ID
+    name: sentinelone-expire-site
+    outputs:
+    - contextPath: SentinelOne.Site.ID
+      description: The site ID.
+      type: String
+    - contextPath: SentinelOne.Site.Name
+      description: The site name.
+      type: String
+    - contextPath: SentinelOne.Site.State
+      description: The site state.
+      type: String
+    - contextPath: SentinelOne.Site.SKU
+      description: The SKU of product features active for this site.
+      type: String
+    - contextPath: SentinelOne.Site.SiteType
+      description: The site type.
+      type: String
+    - contextPath: SentinelOne.Site.Suite
+      description: The site suite.
+      type: String
+    - contextPath: SentinelOne.Site.TotalLicenses
+      description: The total licenses.
+      type: String
+    - contextPath: SentinelOne.Site.AccountID
+      description: The account ID.
+      type: String
+    - contextPath: SentinelOne.Site.Creator
+      description: Full name of the creating user.
+      type: String
+    - contextPath: SentinelOne.Site.CreatorID
+      description: ID of the creating user.
+      type: String
+    - contextPath: SentinelOne.Site.Description
+      description: Description of the site.
+      type: String
+    - contextPath: SentinelOne.Site.Expiration
+      description: Expiration date of the site.
+      type: String
+  - arguments:
+    - name: threat_id
+      required: true
+      description: 'Please provide the Valid Threat ID. Example: 14629133470822878.'
+    - name: password
+      required: true
+      description: 'File encryption password. (At least 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters.)'
+    name: sentinelone-fetch-threat-file
+    description: Fetch a file associated with the threat that matches the filter. 
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Downloadable
+      description: Whether the file is downloadable.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.ZippedFile
+      description: Details of the zipped folder.
+      type: String
+  - arguments:
+    - name: created_from
+      required: true
+      description: 'Greater than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z".'
+    - name: created_until
+      required: true
+      description: 'Less than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z".'
+    - name: ruleName
+      description: 'Free-text filter by rule name. Example: "rule1".'
+    - name: incidentStatus
+      description: 'Incident status. Example: "IN_PROGRESS".'
+    - name: analystVerdict
+      description: 'Analyst verdict. Example: "TRUE_POSITIVE".'
+    - name: alert_ids
+      description: A comma-separated list of alert IDs.
+    - name: limit
+      description: Limit number of returned items (1-1000). Default is 1000.
+    - name: site_ids
+      description: 'A comma-separated list of site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    - name: cursor
+      description: 'Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=".'
+    name: sentinelone-get-alerts
+    description: Get the list of alerts that matches the filter provided. Relevant for API version 2.1.
+    outputs:
+    - contextPath: SentinelOne.Alert.EventType
+      description: Event type.
+      type: String
+    - contextPath: SentinelOne.Alert.RuleName
+      description: The rule name.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcUser
+      description: Source process user.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcName
+      description: Source process name.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcPath
+      description: Source process file path.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcCommandline
+      description: The command line
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcSHA1
+      description: Source process SHA1 file hash.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcStartTime
+      description: PID start time.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcStorylineId
+      description: Source process story line ID.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcName
+      description: Source parent process name.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcPath
+      description: Source parent process file path.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcCommandline
+      description: Source parent process command line.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcStartTime
+      description: PID start time.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcUser
+      description: Source parent process user.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcSHA1
+      description: Source parent process SHA1 file hash.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcSignerIdentity
+      description: Source process file signer identity.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcSignerIdentity
+      description: Source parent process file signer identity.
+      type: String
+    - contextPath: SentinelOne.Alert.AlertCreatedAt
+      description: The the alert was created.
+      type: String
+    - contextPath: SentinelOne.Alert.AlertId
+      description: Alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.AnalystVerdict
+      description: Analyst verdict.
+      type: String
+    - contextPath: SentinelOne.Alert.IncidentStatus
+      description: Incident status
+      type: String
+    - contextPath: SentinelOne.Alert.EndpointName
+      description: Endpoint name
+      type: String
+    - contextPath: SentinelOne.Alert.AgentId
+      description: Agent ID.
+      type: String
+    - contextPath: SentinelOne.Alert.AgentUUID
+      description: Agent UUID.
+      type: String
+    - contextPath: SentinelOne.Alert.dvEventId
+      description: Deep Visibility event ID.
+      type: String
+    - contextPath: SentinelOne.Alert.AgentOS
+      description: Agent operating system.
+      type: String
+    - contextPath: SentinelOne.Alert.AgentVersion
+      description: Agent version.
+      type: String
+    - contextPath: SentinelOne.Alert.SiteId
+      description: Site ID.
+      type: String
+    - contextPath: SentinelOne.Alert.RuleId
+      description: Rule ID.
+      type: String  
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: 'A comma-separated list of agent IDs. Example: 14629133470822878,14627455454652878'
+    name: sentinelone-get-installed-applications
+    description: Get the installed applications for a specific agent.
+    outputs:
+    - contextPath: SentinelOne.Application.Name
+      description: The application name.
+      type: String
+    - contextPath: SentinelOne.Application.Publisher
+      description: The publisher.
+      type: String
+    - contextPath: SentinelOne.Application.Size
+      description: The size of the application in bytes.
+      type: String
+    - contextPath: SentinelOne.Application.Version
+      description: The version of the application.
+      type: String
+    - contextPath: SentinelOne.Application.InstalledOn
+      description: The date the application was installed.
+      type: String
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: 'A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878'
+    name: sentinelone-initiate-endpoint-scan
+    description: Initiate the endpoint virus scan on provided agent IDs.
+    outputs:
+    - contextPath: SentinelOne.Agent.AgentID
+      description: The Agent ID.
+      type: String
+    - contextPath: SentinelOne.Agent.Initiated
+      description: Whether the scan was initiated.
+      type: Boolean
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   longRunning: false
   longRunningPort: false

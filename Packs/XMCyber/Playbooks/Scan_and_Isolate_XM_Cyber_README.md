@@ -18,14 +18,6 @@ This playbook does not use any scripts.
 ### Commands
 This playbook does not use any commands.
 
-## Playbook Inputs
----
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| IP | The IP address to enrich. | IP.Address | Optional |
-| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
-
 ## Playbook Outputs
 ---
 
@@ -41,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Scan and Isolate - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/Scan_and_isolate_XM_Cyber.png)
+![Scan and Isolate - XM Cyber](../doc_files/Scan_and_Isolate_-_XM_Cyber.png)
