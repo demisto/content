@@ -1,0 +1,41 @@
+alert_category: User Defined
+alert_description: alert_desc eyal legacy correlation user mapping
+alert_fields:
+  actor_image: null
+  actor_path: auth_domain
+  cmd: actor_type
+  domain: null
+  hash: action_country
+  hostname: null
+  local_ip: null
+  remote_ip: action_app_id_risk
+  remote_port: null
+  username: null
+alert_name: eyal legacy correlation user mapping
+alert_source: Some alert source
+crontab: '*/10 * * * *'
+dataset: alerts
+description: desc eyal legacy correlation user mapping
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 2328EFF6-654D-46AF-BD11-11B898FD7A90
+investigation_query_link: 'dataset = xdr_data | fields action_app_id_risk,action_country,actor_type,agent_id,agent_version,auth_domain,sso_severity,action_category_of_app_id | limit 1'
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1078 - Valid Accounts
+  - 'T1078.004 - Valid Accounts: Cloud Accounts'
+  TA0005 - Defense Evasion:
+  - 'T1027.001 - Obfuscated Files or Information: Binary Padding'
+  - T1006 - Direct Volume Access
+  TA0008 - Lateral Movement:
+  - 'T1021.001 - Remote Services: Remote Desktop Protocol'
+name: eyal legacy correlation user mapping
+search_window: 1 hours
+severity: User Defined
+suppression_duration: 5 hours
+suppression_enabled: true
+suppression_fields: action_app_id_risk
+user_defined_category: action_category_of_app_id
+user_defined_severity: sso_severity
+xql_query: 'dataset = xdr_data | filter agent_hostname contains "FED" | limit 2'
