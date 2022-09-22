@@ -36,8 +36,8 @@ def compare_zips(zip1: Path, zip2: Path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('zip-id-set', help='id_set zip file to compare')
-    parser.add_argument('zip-graph', help='graph_id_set zip file to compare')
+    parser.add_argument('--zip-id-set', help='id_set zip file to compare')
+    parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
     args = parser.parse_args()
     zip_id_set = Path(args.zip_id_set)
     zip_graph = Path(args.zip_graph)
