@@ -3317,14 +3317,14 @@ class Pack(object):
 
     def get_preview_image_gcp_path(self, pack_file_name: str, folder_name) -> Optional[str]:
         # TODO check names with . maybe should change the split
-        name_without_extension = pack_file_name.split('.')[0]
-        preview_image_name = name_without_extension + '_image.png'
+        preview_image_name = self.find_preview_image_path(pack_file_name)
         try:
             preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
             if os.path.exists(preview_image_path):
-                self._current_version
+                if not self._current_version:
+                    self._current_version = ''
                 return urllib.parse.quote(
-                os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, folder_name, preview_image_name))
+                os.path.join(GCPConfig.CONTENT_PACKS_PATH, self._pack_name, self._current_version, folder_name, preview_image_name))
             return None
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
@@ -3343,7 +3343,7 @@ class Pack(object):
 
         """
         pack_preview_images = []
-        pack_storage_root_path = os.path.join(storage_base_path, GCPConfig.PREVIEW_IMAGES_BASE_PATH,self._pack_name)
+        pack_storage_root_path = os.path.join(storage_base_path, self._pack_name, self._current_version)
         logging.info(f"{pack_storage_root_path} pack_storage_root_path")
 
         try:
@@ -3379,11 +3379,20 @@ class Pack(object):
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
         # ontent/builds/previrew_images/3702025/marketplacev2/content/packs/content/previews/Intezer/MyDashboard2_image.png
-        return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, "HelloAhikam")),
-            file_path.endswith('.png'),
-            'image' in os.path.basename(file_path.lower()),
-        ])
+
+    @staticmethod
+    def find_preview_image_path(file_name):
+        try:
+            prefixes = ['xsiamdashboard', 'xsiamreport']
+            file_name = file_name.replace('external-', '')
+            for prefix in prefixes:
+                file_name = file_name.replace(f'{prefix}-', '')
+            image_file_name = file_name.split('.')[0] + '_image.png'
+            return image_file_name
+        except Exception as e:
+            logging.warning(f'could not conclude preview image path. Skipping {file_name}. Additional info: {e}')
+
+
 
 
 # HELPER FUNCTIONS
