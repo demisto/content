@@ -1,13 +1,5 @@
-import json
 from CommonServerPython import *
 from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command
-
-
-def create_json_output_file(result, file_name):
-    json_object = json.dumps(result, indent=4)
-    # Writing to sample.json
-    with open(f'test_data/expected_result.json', "w") as outfile:
-        outfile.write(json_object)
 
 
 def test_fetch_events_command(requests_mock):
