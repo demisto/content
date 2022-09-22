@@ -27,16 +27,14 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
 
 def main(args):     # pragma: no cover
     try:
-        encoded_id = args.get('ids').encode('utf-8') if type(args.get('ids')) != int else args.get('ids')
+        encoded_id = args.get('ids')
 
-        additional_polling_command_arg_names = args.get('additionalPollingCommandArgNames').encode('utf-8') if type(
-            args.get('additionalPollingCommandArgNames')) != int else args.get('additionalPollingCommandArgNames')
+        additional_polling_command_arg_names = args.get('additionalPollingCommandArgNames')
 
-        additional_polling_command_arg_values = args.get('additionalPollingCommandArgValues').encode('utf-8') if type(
-            args.get('additionalPollingCommandArgValues')) != int else args.get('additionalPollingCommandArgValues')
+        additional_polling_command_arg_values = args.get('additionalPollingCommandArgValues')
 
         using = args.get('using', '')
-        using_instance = using.encode('utf-8') if type(using) != int and using else using
+        using_instance = using
 
         args = prepare_arg_dict(args.get('pollingCommandArgName'),
                                 encoded_id,
@@ -50,5 +48,5 @@ def main(args):     # pragma: no cover
         return_error('An error occurred: {}'.format(exp), error=exp)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main(demisto.args())

@@ -114,8 +114,8 @@ class SkippedTestException(InvalidTestException):
         :param skip_place: where the test was skipped (conf.json or pack_ignore)
         :param skip_reason: the reason the test was skipped (if available, mostly when skipped in conf.json)
         """
-        skip_reason_str = f': {skip_reason}' if skip_reason else ''
-        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_str}')
+        skip_reason_suffix = f': {skip_reason}' if skip_reason else ''
+        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_suffix}')
 
 
 class PrivateTestException(InvalidTestException):
