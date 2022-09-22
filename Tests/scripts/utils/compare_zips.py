@@ -43,6 +43,6 @@ if __name__ == '__main__':
     zip_graph = Path(args.zip_graph)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
-    dir_cmp.report_full_closure()
+    # dir_cmp.report_full_closure()
     for file in dir_cmp.common_files:
         compare_zips(zip_id_set / file, zip_graph / file)
