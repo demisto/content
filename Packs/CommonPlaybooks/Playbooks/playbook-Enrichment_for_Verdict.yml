@@ -1616,22 +1616,22 @@ inputs:
 - key: CommandLine
   value: {}
   required: false
-  description: "The CMD to run prevalence check"
+  description: The CMD to run the prevalence check.
   playbookInputQuery:
 - key: ProcessName
   value: {}
   required: false
-  description: "The process name to run prevalence check"
+  description: The process name to run the prevalence check.
   playbookInputQuery:
 - key: RegistryKey
   value: {}
   required: false
-  description: "The registry key to run prevalence check. The input registy value must be provided as well"
+  description: The registry key to run the prevalence check. The input registry value must be provided as well.
   playbookInputQuery:
 - key: RegistryValue
   value: {}
   required: false
-  description: "The registry value to run prevalence check. The input registy key must be provided as well"
+  description: The registry value to run prevalence check. The input registry key must be provided as well.
   playbookInputQuery:
 outputs:
 - contextPath: PreviousVerdict
