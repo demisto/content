@@ -53,10 +53,9 @@ class Client(BaseClient):
         }
         return self._http_request("POST", "/aioc-rest-web/rest/sc/sapm/searchSapmAccounts", json_data=body)
 
-    def show_password(self, sapm_user_name: str, password_expiration_in_minute=int, sapm_db_id=int,
+    def show_password(self, password_expiration_in_minute=int, sapm_db_id=int,
                       comment=str):
         body = {
-            "sapmUserName": sapm_user_name,
             "passwordExpirationInMinute": password_expiration_in_minute,
             "sapmDbId": sapm_db_id,
             "comment": comment
@@ -107,9 +106,9 @@ def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> Di
     return response
 
 
-def show_password_command(client: Client, sapm_user_name: str, password_expiration_in_minute=int, sapm_db_id=int,
+def show_password_command(client: Client, password_expiration_in_minute=int, sapm_db_id=int,
                           comment=str) -> Dict[str, str]:
-    response = client.show_password(sapm_user_name, password_expiration_in_minute, sapm_db_id, comment)
+    response = client.show_password(password_expiration_in_minute, sapm_db_id, comment)
     return response
 
 
