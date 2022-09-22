@@ -1,5 +1,14 @@
 id: 97393cfc-2fc4-4dfe-8b6e-af64067fc436
-version: -1
+version: 11
+contentitemexportablefields:
+  contentitemfields:
+    packID: AWS-S3
+    packName: AWS - S3
+    itemVersion: 1.2.3
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: AWS - S3 Test Playbook
 starttaskid: "0"
 tasks:
@@ -13,11 +22,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -49,6 +58,7 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -87,6 +97,7 @@ tasks:
       key:
         simple: ${File.Name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -123,6 +134,7 @@ tasks:
       key:
         simple: binks
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -150,10 +162,14 @@ tasks:
       type: regular
       iscommand: true
       brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       bucket:
         simple: demisto-test1234
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -164,9 +180,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "9"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -191,6 +204,7 @@ tasks:
       bucket:
         simple: demisto-test1234
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -229,8 +243,9 @@ tasks:
       saveAsFile:
         simple: "yes"
       url:
-        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg  # disable-secrets-detection
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -265,6 +280,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -293,6 +309,7 @@ tasks:
       iscommand: true
       brand: AWS - S3
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,6 +324,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -321,5 +339,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''
