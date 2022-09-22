@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -745,12 +746,12 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
+                'closeNotes': incident_data.get('resolve_comment')
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
-        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
+        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
+        incident_data['closeNotes'] = f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment")}'
 
         if incident_data.get('status') == 'resolved_known_issue':
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
@@ -969,29 +970,15 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
 
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
-    status = args.get('status')
 
-    last_seen_gte = arg_to_timestamp(
-        arg=args.get('last_seen_gte'),
-        arg_name='last_seen_gte'
-    )
-
-    last_seen_lte = arg_to_timestamp(
-        arg=args.get('last_seen_lte'),
-        arg_name='last_seen_lte'
-    )
-
-    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte,
-                                                              last_seen_lte=last_seen_lte)
-
-    ec = {'status': status, 'count': endpoints_count}
-
+    res = [{'args': {'ip_address': '8.8.8.8'}, 'value': False, 'data': {'prevalence': {'value': 0.4166666667, 'description': 'The prevalence of the ip.'}, 'local_prevalence': {'value': 0.0552016985, 'description': 'The local prevalence of the ip.'}, 'global_prevalence': {'value': 0.4166666667, 'description': 'The global prevalence of the ip.'}}, 'debug': {'tenant_count_distinct_internal_src_hosts': {'value': 471, 'description': 'The number of distinct agents in the organization'}, 'ip_local_prevalence_by_target_ip': {'value': 0.0552016985, 'description': 'The prevalence of the ip according to target_ip profile.'}, 'ip_global_prevalence_by_global_target_ip': {'value': 0.4166666667, 'description': 'The prevalence of the ip according to global_target_ip profile.'}}}, {
+        'args': {'ip_address': '1.1.1.1'}, 'value': False, 'data': {'prevalence': {'value': 0.125, 'description': 'The prevalence of the ip.'}, 'local_prevalence': {'value': 0.0021231423, 'description': 'The local prevalence of the ip.'}, 'global_prevalence': {'value': 0.125, 'description': 'The global prevalence of the ip.'}}, 'debug': {'tenant_count_distinct_internal_src_hosts': {'value': 471, 'description': 'The number of distinct agents in the organization'}, 'ip_local_prevalence_by_target_ip': {'value': 0.0021231423, 'description': 'The prevalence of the ip according to target_ip profile.'}, 'ip_global_prevalence_by_global_target_ip': {'value': 0.125, 'description': 'The prevalence of the ip according to global_target_ip profile.'}}}]
     return CommandResults(
-        readable_output=f'{status} endpoints count: {endpoints_count}',
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
-        outputs_key_field='status',
-        outputs=ec,
-        raw_response=raw_res)
+        readable_output="test",
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.AnalyticsPrevalence.IP',
+        outputs=res,
+        raw_response=res,
+    )
 
 
 def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
@@ -1456,6 +1443,7 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-get-contributing-event':
             return_results(get_contributing_event_command(client, args))
+            print(dss)
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
