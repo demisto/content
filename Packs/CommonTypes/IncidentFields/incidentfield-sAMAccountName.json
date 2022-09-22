@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Access",
-        "Brute Force"
+        "Brute Force",
+        "Vectra Account"
     ],
     "breachScript": "",
     "caseInsensitive": true,
