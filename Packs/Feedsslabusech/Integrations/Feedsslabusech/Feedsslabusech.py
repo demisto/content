@@ -1,4 +1,4 @@
-from CommonServerPython import *  # noqa: E402
+from CommonServerPython import *
 
 
 def main():
