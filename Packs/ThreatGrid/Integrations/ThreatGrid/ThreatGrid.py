@@ -246,7 +246,7 @@ def upload_sample():
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
-                             files={'sample': (encode_sample_file_name(demisto.getArg('filename')), f)},
+                             files={'sample': (demisto.getArg('filename', '').replace('"', '').replace('\n', ''), f)},
                              data=args, verify=VALIDATE_CERT)
         if r.status_code != requests.codes.ok:
             if r.status_code == 503:
@@ -264,13 +264,6 @@ def upload_sample():
             'Contents': r.json()
         })
         return sample.get('ID')
-
-
-def encode_sample_file_name(filename):
-    """
-    Encodes sample file name
-    """
-    return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
 
 
 def get_html_report_by_id():
