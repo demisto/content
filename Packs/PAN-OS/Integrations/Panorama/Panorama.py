@@ -55,6 +55,7 @@ XPATH_RULEBASE = ''
 
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
+DEFAULT_LIMIT_PAGE_SIZE = 50
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -331,6 +332,37 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
             for item in value:
                 if isinstance(item, dict):
                     parse_pan_os_un_committed_data(item, keys_to_remove)
+
+
+def do_pagination(
+    entries: list,
+    page: Optional[int] = None,
+    page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
+    limit: int = DEFAULT_LIMIT_PAGE_SIZE
+):
+    if page is not None:
+        if page <= 0:
+            raise DemistoException(f'page {page} must be a positive number')
+        entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
+    else:
+        entries = entries[:limit]
+
+    return entries
+
+
+def extract_objects_info_by_key(_entry, _key):
+    if isinstance(_entry, dict):
+        key_info = _entry.get(_key)
+        if not key_info:  # api could not return the key
+            return None
+
+        if isinstance(key_info, dict) and (_member := key_info.get('member')):
+            return _member
+        elif isinstance(key_info, str):
+            return key_info
+    elif isinstance(_entry, list):
+        return [item.get(_key) for item in _entry]
+    return None
 
 
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
@@ -11170,6 +11202,102 @@ def pan_os_get_merged_config(args: dict):
     return fileResult("merged_config", result)
 
 
+def build_template_xpath(name: Optional[str]):
+    _xpath = "/config/devices/entry[@name='localhost.localdomain']/template"
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def parse_list_templates_response(entries):
+
+    def parse_template_variables(_variables):
+
+        # when there is only one variable it is not returned as a list
+        if isinstance(_variables, dict):
+            _variables = [_variables]
+
+        return [
+            {
+                'Name': variable.get('@name'),
+                'Type': list(variable.get('type').keys())[0] if variable.get('type') else None,
+                'Value':list(variable.get('type').values())[0] if variable.get('type') else None,
+                'Description': variable.get('description')
+            }
+            for variable in _variables
+        ]
+
+    table, context = [], []
+
+    for entry in entries:
+        parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+        name = entry.get('@name')
+        description = entry.get('description')
+        variables = entry.get('variable', {}).get('entry', [])
+        context.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Variable': parse_template_variables(variables)
+            }
+        )
+        table.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Variable': extract_objects_info_by_key(variables, '@name')
+            }
+        )
+
+    return table, context
+
+
+def pan_os_list_templates(template_name: Optional[str]):
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_template_xpath(template_name)
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def pan_os_list_templates_command(args):
+    template_name = args.get('template_name')
+    if not DEVICE_GROUP and VSYS:
+        raise DemistoException('The pan-os-list-templates should only be used for Panorama instances')
+
+    raw_response = pan_os_list_templates(template_name)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = dict_safe_get(result, ['template', 'entry'], default_return_value=result.get('entry'))
+    if not isinstance(entries, list):  # when only one template is returned it could be returned as a dict.
+        entries = [entries]
+
+    if not template_name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    table, templates = parse_list_templates_response(entries)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=templates,
+        readable_output=tableToMarkdown(
+            'Templates:',
+            table,
+            removeNull=True
+        ),
+        outputs_prefix='Panorama.Template',
+        outputs_key_field='Name'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -11820,6 +11948,8 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-templates':
+            return_results(pan_os_list_templates_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
