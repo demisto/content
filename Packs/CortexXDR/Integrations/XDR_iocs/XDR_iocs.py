@@ -138,17 +138,19 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        demisto.debug(f'writing to {file_path=}')
-        for ios in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
-            demisto.debug(f'\t{ios=}')
-            _file.write(ios + '\n')
+        has_iocs = False
+        for ioc in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+            has_iocs = True
+            _file.write(ioc + '\n')
+
+        if not has_iocs:
+            demisto.debug('All indicators that follow the "Sync Query" are expired, adding a space to the iocs_to_keep file.')
+            _file.write(' ')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        demisto.debug(f'writing to {file_path=}')
         for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
-            demisto.debug(f'\t{ioc=}')
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
 
@@ -247,17 +249,12 @@ def get_temp_file() -> str:
 def sync(client: Client):
     temp_file_path: str = get_temp_file()
     try:
-        demisto.debug('calling create_file_sync')
-        create_file_sync(temp_file_path)
-        demisto.debug('calling get_requests_kwargs')
+        create_file_sync(temp_file_path)  # can be empty
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-        demisto.debug(f'{requests_kwargs=}')
         path: str = 'sync_tim_iocs'
-        demisto.debug('calling http_request')
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    demisto.debug('calling set_integration_context')
     set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
                              'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
                              'iocs_to_keep_time': create_iocs_to_keep_time()})
@@ -267,13 +264,9 @@ def sync(client: Client):
 def iocs_to_keep(client: Client):
     temp_file_path: str = get_temp_file()
     try:
-        demisto.debug('calling create_file_iocs_to_keep')
-        create_file_iocs_to_keep(temp_file_path)
-        demisto.debug('calling get_requests_kwargs')
+        create_file_iocs_to_keep(temp_file_path)  # can't be empty
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-        demisto.debug(f'{requests_kwargs=}')
         path = 'iocs_to_keep'
-        demisto.debug('calling http_request')
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
