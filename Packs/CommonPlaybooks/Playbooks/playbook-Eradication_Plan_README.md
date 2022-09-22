@@ -28,7 +28,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoEradicate | Set to True to execute the eradication playbook automatically. | Auto | Optional |
+| AutoEradicate | Set to True to execute the eradication playbook automatically. | True | Optional |
 | EndpointID | The endpoint ID. | alert.agentid | Optional |
 | FilePath | The file path for the file deletion task. | foundIncidents.CustomFields.initiatorpath | Optional |
 | Username | The username to reset the password for. | foundIncidents.CustomFields.username | Optional |
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Eradication Plan](https://raw.githubusercontent.com/demisto/content/48a7f1a1a628a2755201c55c24bc68d94e0dd49c/Packs/CommonPlaybooks/doc_files/Eradication_Plan.png)
+![Eradication Plan](../doc_files/Eradication_Plan.png)

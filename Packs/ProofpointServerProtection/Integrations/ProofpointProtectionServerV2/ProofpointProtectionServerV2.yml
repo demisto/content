@@ -26,10 +26,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: 'Final disposition action message. Possible values are: "accept",
-        "continue", "discard", "redirect", "reject", "retry".'
-      isArray: false
+      description: 'Final disposition action message. Possible values are: "accept", "continue", "discard", "redirect", "reject", "retry".'
       name: action
       predefined:
       - accept
@@ -38,100 +35,35 @@ script:
       - redirect
       - reject
       - retry
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text
-        (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ,
-        e.g., 2020-01-25T10:00:00Z).
-      isArray: false
+    - defaultValue: 24 hours
+      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Time of when the search should end. Can be either free text (<number>
-        <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g.,
-        2020-01-25T10:00:00Z).
-      isArray: false
+    - description: Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of the detected virus names that infected
-        the message.
-      isArray: false
+    - description: Comma-separated list of the detected virus names that infected the message.
       name: virus
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the sender.
-      isArray: false
+    - description: Email address of the sender.
       name: sender
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the recipient.
-      isArray: false
+    - description: Email address of the recipient.
       name: recipient
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of the message attachments.
-      isArray: false
+    - description: Comma-separated list of the message attachments.
       name: attachment
-      required: false
-      secret: false
-    - default: false
-      description: ID of the message queue.
-      isArray: false
+    - description: ID of the message queue.
       name: queue_id
-      required: false
-      secret: false
-    - default: false
-      description: The host or IP address of the sent email message.
-      isArray: false
+    - description: The host or IP address of the sent email message.
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: The SID of the email message.
-      isArray: false
+    - description: The SID of the email message.
       name: sid
-      required: false
-      secret: false
-    - default: false
-      description: The subject of the email message.
-      isArray: false
+    - description: The subject of the email message.
       name: subject
-      required: false
-      secret: false
-    - default: false
-      description: The global unique ID of the email message.
-      isArray: false
+    - description: The global unique ID of the email message.
       name: guid
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the header message. This corresponds to the Message ID
-        field in the UI.
-      isArray: false
+    - description: The ID of the header message. This corresponds to the Message ID field in the UI.
       name: message_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
-      description: The maximum number of email messages to return. The maximum value
-        is set by the com.proofpoint.pss.query.default-count value in the filter.cfg
-        file.
-      isArray: false
+    - defaultValue: '100'
+      description: The maximum number of email messages to return. The maximum value is set by the com.proofpoint.pss.query.default-count value in the filter.cfg file.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Trace and analyze information about messages after they have been
-      filtered by the Proofpoint Protection Server.
-    execution: false
+    description: Trace and analyze information about messages after they have been filtered by the Proofpoint Protection Server.
     name: proofpoint-pps-smart-search
     outputs:
     - contextPath: Proofpoint.SmartSearch.Rule_ID
@@ -264,64 +196,23 @@ script:
       description: The size of the email message.
       type: String
   - arguments:
-    - default: false
-      description: 'Envelope message sender equals, starts with, ends with, or is
-        in a domain such as "bar.com". At least one of the following arguments must
-        be specified: sender, recipient, subject.'
-      isArray: false
+    - description: 'Envelope message sender equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject.'
       name: sender
-      required: false
-      secret: false
-    - default: false
-      description: 'Envelope message recipient equals, starts with, ends with, or
-        is in a domain such as "bar.com". At least one of the following arguments
-        must be specified: sender, recipient, subject.'
-      isArray: false
+    - description: 'Envelope message recipient equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject.'
       name: recipient
-      required: false
-      secret: false
-    - default: false
-      description: 'Message subject starts with, ends with, or contains. At least
-        one of the following arguments must be specified: sender, recipient, subject.'
-      isArray: false
+    - description: 'Message subject starts with, ends with, or contains. At least one of the following arguments must be specified: sender, recipient, subject.'
       name: subject
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text
-        (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ,
-        e.g., 2020-01-25T10:00:00Z).
-      isArray: false
+    - defaultValue: 24 hours
+      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Time of when the search should end. Can be either free text (<number>
-        <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g.,
-        2020-01-25T10:00:00Z).
-      isArray: false
+    - description: Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Quarantine
+    - defaultValue: Quarantine
       description: Quarantine folder name.
-      isArray: false
       name: folder_name
-      required: false
-      secret: false
-    - default: false
-      description: Message Global Unique Identifier (generated by PPS) to retrieve
-        raw data for a message. If it is specified and a message is found, the message’s
-        raw data is returned.
-      isArray: false
+    - description: Message Global Unique Identifier (generated by PPS) to retrieve raw data for a message. If it is specified and a message is found, the message’s raw data is returned.
       name: guid
-      required: false
-      secret: false
-    deprecated: false
     description: Search for quarantined messages.
-    execution: false
     name: proofpoint-pps-quarantine-messages-list
     outputs:
     - contextPath: Proofpoint.QuarantinedMessage.processingserver
@@ -361,237 +252,237 @@ script:
       description: The local GUID of the quarantined message.
       type: String
   - arguments:
-    - default: false
-      description: Name of the folder where the message is stored (e.g., HIPAA).
-      isArray: false
+    - description: Name of the folder where the message is stored (e.g., HIPAA).
       name: folder_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
-        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
-        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list
-        command.
-      isArray: false
+    - description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       name: local_guid
       required: true
-      secret: false
-    - default: false
-      description: Name of the folder to move the message to. The folder must be for
-        quarantined messages from the same type of module. For example, you cannot
-        send deleted spam messages to a folder for deleted DLP incidents, and vice
-        versa.
-      isArray: false
+    - description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP incidents, and vice versa.
       name: deleted_folder
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: 'Whether to rescan the message by the DLP and Attachment Defense
-        filtering modules. Possible values are: "true" and "false".'
-      isArray: false
+      description: 'Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false".'
       name: scan
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: When encryption is licensed, the Branding Template to use when
-        an encrypted message is released. The Branding Templates are listed on the
-        System > End User Services > Branding Templates page in the management interface
-        (admin GUI).
-      isArray: false
+    - description: When encryption is licensed, the Branding Template to use when an encrypted message is released. The Branding Templates are listed on the System > End User Services > Branding Templates page in the management interface (admin GUI).
       name: brand_template
-      required: false
-      secret: false
-    - default: false
-      description: The Secure Reader response profile to use when a release is used
-        for an encrypted message.The Response Profiles are listed on the Information
-        Protection > Encryption > Response Profiles page in the management interface
-        (admin UI).
-      isArray: false
+    - description: The Secure Reader response profile to use when a release is used for an encrypted message.The Response Profiles are listed on the Information Protection > Encryption > Response Profiles page in the management interface (admin UI).
       name: security_policy
-      required: false
-      secret: false
-    deprecated: false
-    description: Releases the message to the email infrastructure without further
-      scanning. The message remains in the folder and will be moved to the `deleted_folder`
-      if specified.
-    execution: false
+    description: Releases the message to the email infrastructure without further scanning. The message remains in the folder and will be moved to the `deleted_folder` if specified.
     name: proofpoint-pps-quarantine-message-release
   - arguments:
-    - default: false
-      description: Name of the folder where the message is stored (e.g., HIPAA).
-      isArray: false
+    - description: Name of the folder where the message is stored (e.g., HIPAA).
       name: folder_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
-        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
-        wmmxwP6lQkr5k7).
-      isArray: false
+    - description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7).
       name: local_guid
       required: true
-      secret: false
-    deprecated: false
-    description: Resubmits the message to the filtering modules. The message is removed
-      from the folder and will not be moved to any folder.
-    execution: false
+    description: Resubmits the message to the filtering modules. The message is removed from the folder and will not be moved to any folder.
     name: proofpoint-pps-quarantine-message-resubmit
   - arguments:
-    - default: false
-      description: Name of the folder where the message is stored (e.g., HIPAA).
-      isArray: false
+    - description: Name of the folder where the message is stored (e.g., HIPAA).
       name: folder_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
-        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
-        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list
-        command.
-      isArray: false
+    - description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       name: local_guid
       required: true
-      secret: false
-    - default: false
-      description: Name of the folder to move the message to. The folder must be for
-        quarantined messages from the same type of module. For example, you cannot
-        send deleted spam messages to a folder for deleted DLP Incidents, and vice
-        versa.
-      isArray: false
+    - description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa.
       name: deleted_folder
-      required: false
-      secret: false
-    - default: false
-      description: The new subject with which to overwrite the original subject for
-        the message.
-      isArray: false
+    - description: The new subject with which to overwrite the original subject for the message.
       name: subject
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: 'Whether to append the original subject to the string specified
-        in the subject argument. Possible values are: "true" and "false".'
-      isArray: false
+      description: 'Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false".'
       name: append_old_subject
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The envelope email address of the sender.
-      isArray: false
+    - description: The envelope email address of the sender.
       name: sender
-      required: false
-      secret: false
-    - default: false
-      description: The header from email address.
-      isArray: false
+    - description: The header from email address.
       name: header_from
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separate list of recipient email addresses.
-      isArray: false
+    - description: Comma-separate list of recipient email addresses.
       name: recipient
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         New message body. (The original message is
         sent as an attachment.)
-      isArray: false
       name: comment
-      required: false
-      secret: false
-    deprecated: false
-    description: Forwards the message to another recipient. The message remains in
-      the folder and will be moved to the deleted_folder if specified.
-    execution: false
+    description: Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
     name: proofpoint-pps-quarantine-message-forward
   - arguments:
-    - default: false
-      description: Name of the folder where the message is stored (e.g., HIPAA).
-      isArray: false
+    - description: Name of the folder where the message is stored (e.g., HIPAA).
       name: folder_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
         wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
-      isArray: false
       name: local_guid
       required: true
-      secret: false
-    - default: false
-      description: Name of the folder to move the email message to (e.g., PCI).The
-        folder for moved messages must be for quarantined messages from the same type
-        of module. For example, you cannot move spam messages to a folder for DLP
-        incidents, and vice versa.
-      isArray: false
+    - description: Name of the folder to move the email message to (e.g., PCI).The folder for moved messages must be for quarantined messages from the same type of module. For example, you cannot move spam messages to a folder for DLP incidents, and vice versa.
       name: target_folder
       required: true
-      secret: false
-    deprecated: false
     description: Moves the message to the specified target folder.
-    execution: false
     name: proofpoint-pps-quarantine-message-move
   - arguments:
-    - default: false
-      description: Name of the folder where the message is stored (e.g., HIPAA).
-      isArray: false
+    - description: Name of the folder where the message is stored (e.g., HIPAA).
       name: folder_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
         wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
-      isArray: false
       name: local_guid
       required: true
-      secret: false
-    - default: false
-      description: Name of the folder to move the message to. The folder must be for
-        quarantined messages from the same type of module. For example, you cannot
-        send deleted spam messages to a folder for deleted DLP Incidents, and vice
-        versa.
-      isArray: false
+    - description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa.
       name: deleted_folder
-      required: false
-      secret: false
-    deprecated: false
-    description: Deletes the message from the quarantine folder. The message is removed
-      from its folder and moved to the deleted_folder if specified.
-    execution: false
+    description: Deletes the message from the quarantine folder. The message is removed from its folder and moved to the deleted_folder if specified.
     name: proofpoint-pps-quarantine-message-delete
   - arguments:
-    - default: false
-      description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7).
-        Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
-      isArray: false
+    - description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       name: guid
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a quarantine email message's raw data.
-    execution: false
     name: proofpoint-pps-quarantine-message-download
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - arguments:
+    - description: Email address of the user
+      name: email
+    - description: UID of the user
+      name: uid
+    description: Gets the end user resource with the specified email address or UID.
+    name: proofpoint-pps-get-user
+    outputs:
+    - contextPath: Proofpoint.User.alias
+      description: List of aliases for the enduser.
+    - contextPath: Proofpoint.User.attributes
+      description: All attributes for this user profile. The value of these attributes is calculated based on the Organization, Sub-Org/Group membership and Profile settings. For a description of these attributes, see the table at the end of this document.
+    - contextPath: Proofpoint.User.blocklist
+      description: List of all block list entries for the enduser.
+    - contextPath: Proofpoint.User.created
+      description: Timestamp when profile was created (in UTC).
+    - contextPath: Proofpoint.User.creationsource
+      description: Source for the profile creation (see the table below).
+    - contextPath: Proofpoint.User.email
+      description: Primary email address of the enduser.
+    - contextPath: Proofpoint.User.firstname
+      description: First name of enduser.
+    - contextPath: Proofpoint.User.groups
+      description: List of all the groups to which the user belongs.
+    - contextPath: Proofpoint.User.lastmodified
+      description: Timestamp when profile changes were made (in UTC).
+    - contextPath: Proofpoint.User.lastname
+      description: Last name of enduser.
+    - contextPath: Proofpoint.User.lastpasswordchange
+      description: Timestamp for the last password change.
+    - contextPath: Proofpoint.User.lastsignon
+      description: Timestamp for the last login by the end user.
+    - contextPath: Proofpoint.User.safelist
+      description: List of all safe list entries for the enduser.
+    - contextPath: Proofpoint.User.suborg
+      description: Defines the sub-organization to which this user profile belongs.
+    - contextPath: Proofpoint.User.type
+      description: 0=User 1=Mailing List
+    - contextPath: Proofpoint.User.uid
+      description: uid of the user.
+  - arguments:
+    - description: Email address of the user
+      name: email
+      required: true
+    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup)
+      name: fields
+    - description: Attributes in JSON string format
+      name: attributes
+    description: Creates a new end user resource with the specified email address.
+    name: proofpoint-pps-create-user
+    outputs:
+    - contextPath: Proofpoint.User.alias
+      description: List of aliases for the enduser.
+    - contextPath: Proofpoint.User.attributes
+      description: All attributes for this user profile. The value of these attributes is calculated based on the Organization, Sub-Org/Group membership and Profile settings. For a description of these attributes, see the table at the end of this document.
+    - contextPath: Proofpoint.User.blocklist
+      description: List of all block list entries for the enduser.
+    - contextPath: Proofpoint.User.created
+      description: Timestamp when profile was created (in UTC).
+    - contextPath: Proofpoint.User.creationsource
+      description: Source for the profile creation (see the table below).
+    - contextPath: Proofpoint.User.email
+      description: Primary email address of the enduser.
+    - contextPath: Proofpoint.User.firstname
+      description: First name of enduser.
+    - contextPath: Proofpoint.User.groups
+      description: List of all the groups to which the user belongs.
+    - contextPath: Proofpoint.User.lastmodified
+      description: Timestamp when profile changes were made (in UTC).
+    - contextPath: Proofpoint.User.lastname
+      description: Last name of enduser.
+    - contextPath: Proofpoint.User.lastpasswordchange
+      description: Timestamp for the last password change.
+    - contextPath: Proofpoint.User.lastsignon
+      description: Timestamp for the last login by the end user.
+    - contextPath: Proofpoint.User.safelist
+      description: List of all safe list entries for the enduser.
+    - contextPath: Proofpoint.User.suborg
+      description: Defines the sub-organization to which this user profile belongs.
+    - contextPath: Proofpoint.User.type
+      description: 0=User 1=Mailing List
+    - contextPath: Proofpoint.User.uid
+      description: uid of the user.
+  - arguments:
+    - description: Email address of the user
+      name: email
+    - description: UID of the user
+      name: UID
+    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup)
+      name: fields
+    - description: Attributes in JSON string format
+      name: attributes
+    description: Modifies a user profile.
+    name: proofpoint-pps-modify-user
+    outputs:
+    - contextPath: Proofpoint.User.alias
+      description: List of aliases for the enduser.
+    - contextPath: Proofpoint.User.attributes
+      description: All attributes for this user profile. The value of these attributes is calculated based on the Organization, Sub-Org/Group membership and Profile settings. For a description of these attributes, see the table at the end of this document.
+    - contextPath: Proofpoint.User.blocklist
+      description: List of all block list entries for the enduser.
+    - contextPath: Proofpoint.User.created
+      description: Timestamp when profile was created (in UTC).
+    - contextPath: Proofpoint.User.creationsource
+      description: Source for the profile creation (see the table below).
+    - contextPath: Proofpoint.User.email
+      description: Primary email address of the enduser.
+    - contextPath: Proofpoint.User.firstname
+      description: First name of enduser.
+    - contextPath: Proofpoint.User.groups
+      description: List of all the groups to which the user belongs.
+    - contextPath: Proofpoint.User.lastmodified
+      description: Timestamp when profile changes were made (in UTC).
+    - contextPath: Proofpoint.User.lastname
+      description: Last name of enduser.
+    - contextPath: Proofpoint.User.lastpasswordchange
+      description: Timestamp for the last password change.
+    - contextPath: Proofpoint.User.lastsignon
+      description: Timestamp for the last login by the end user.
+    - contextPath: Proofpoint.User.safelist
+      description: List of all safe list entries for the enduser.
+    - contextPath: Proofpoint.User.suborg
+      description: Defines the sub-organization to which this user profile belongs.
+    - contextPath: Proofpoint.User.type
+      description: 0=User 1=Mailing List
+    - contextPath: Proofpoint.User.uid
+      description: uid of the user.
+  - arguments:
+    - description: Email address of the user
+      name: email
+    - description: UID of the user
+      name: uid
+    description: Delete a user profile.
+    name: proofpoint-pps-delete-user
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

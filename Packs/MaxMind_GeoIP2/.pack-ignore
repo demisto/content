@@ -1,2 +1,5 @@
 [file:MaxMind_GeoIP2.yml]
 ignore=BA108,BA109,IN144
+
+[known_words]
+MaxMind
