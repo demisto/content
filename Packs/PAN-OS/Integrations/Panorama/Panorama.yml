@@ -9036,7 +9036,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false
   longRunning: false

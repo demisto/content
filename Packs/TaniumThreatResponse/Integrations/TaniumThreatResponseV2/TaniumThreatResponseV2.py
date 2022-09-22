@@ -1182,10 +1182,10 @@ def create_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    ip = data_args.get('ip')
-    client_id = data_args.get('client_id')
-    hostname = data_args.get('hostname')
-    platform = data_args.get('platform')
+    ip = str(data_args.get('ip'))
+    client_id = str(data_args.get('client_id'))
+    hostname = str(data_args.get('hostname'))
+    platform = str(data_args.get('platform'))
 
     target = assign_params(hostname=hostname, clientId=client_id, ip=ip, platform=platform)
     body = {
