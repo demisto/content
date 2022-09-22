@@ -152,6 +152,7 @@ class Metadata(object):
     TAGS = 'tags'
     CATEGORIES = 'categories'
     CONTENT_ITEMS = 'contentItems'
+    CONTENT_DISPLAYS = 'contentDisplays'
     SEARCH_RANK = 'searchRank'
     INTEGRATIONS = 'integrations'
     USE_CASES = 'useCases'
@@ -169,6 +170,7 @@ class Metadata(object):
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'
+    MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
 
 
@@ -367,4 +369,63 @@ RN_HEADER_BY_PACK_FOLDER = {
     PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
     PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
     PackFolders.WIZARDS.value: 'Wizards',
+}
+
+# the format is defined in issue #19786, may change in the future
+CONTENT_ITEM_NAME_MAPPING = {
+    PackFolders.SCRIPTS.value: "automation",
+    PackFolders.PLAYBOOKS.value: "playbook",
+    PackFolders.INTEGRATIONS.value: "integration",
+    PackFolders.INCIDENT_FIELDS.value: "incidentfield",
+    PackFolders.INCIDENT_TYPES.value: "incidenttype",
+    PackFolders.DASHBOARDS.value: "dashboard",
+    PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
+    PackFolders.REPORTS.value: "report",
+    PackFolders.INDICATOR_TYPES.value: "reputation",
+    PackFolders.LAYOUTS.value: "layoutscontainer",
+    PackFolders.CLASSIFIERS.value: "classifier",
+    PackFolders.WIDGETS.value: "widget",
+    PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
+    PackFolders.GENERIC_FIELDS.value: "genericfield",
+    PackFolders.GENERIC_MODULES.value: "genericmodule",
+    PackFolders.GENERIC_TYPES.value: "generictype",
+    PackFolders.LISTS.value: "list",
+    PackFolders.PREPROCESS_RULES.value: "preprocessrule",
+    PackFolders.JOBS.value: "job",
+    PackFolders.PARSING_RULES.value: "parsingrule",
+    PackFolders.MODELING_RULES.value: "modelingrule",
+    PackFolders.CORRELATION_RULES.value: "correlationrule",
+    PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
+    PackFolders.XSIAM_REPORTS.value: "xsiamreport",
+    PackFolders.TRIGGERS.value: "trigger",
+    PackFolders.WIZARDS.value: "wizard",
+}
+
+ITEMS_NAMES_TO_DISPLAY_MAPPING = {
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.SCRIPTS.value]: "Automation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PLAYBOOKS.value]: "Playbook",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INTEGRATIONS.value]: "Integration",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_FIELDS.value]: "Incident Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_TYPES.value]: "Incident Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.DASHBOARDS.value]: "Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_FIELDS.value]: "Indicator Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.REPORTS.value]: "Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_TYPES.value]: "Reputation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUTS.value]: "Layouts Container",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CLASSIFIERS.value]: "Classifier",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIDGETS.value]: "Widget",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_DEFINITIONS.value]: "Generic Definition",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_FIELDS.value]: "Generic Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_MODULES.value]: "Generic Module",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_TYPES.value]: "Generic Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LISTS.value]: "List",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PREPROCESS_RULES.value]: "Pre Process Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.JOBS.value]: "Job",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PARSING_RULES.value]: "Parsing Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.MODELING_RULES.value]: "Modeling Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
 }
