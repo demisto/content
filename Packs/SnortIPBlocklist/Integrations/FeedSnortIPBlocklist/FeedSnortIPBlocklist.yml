@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Snort IP Blocklist
+  id: Snort IP Blocklist Feed
   version: -1
 configuration:
 - defaultvalue: "true"
@@ -86,8 +86,8 @@ configuration:
   required: false
   type: 0
 description: This is the Snort IP Block List feed obtained from https://snort.org/
-display: Snort IP Blocklist
-name: Snort IP Blocklist
+display: Snort IP Blocklist Feed
+name: Snort IP Blocklist Feed
 script:
   commands:
   - arguments:

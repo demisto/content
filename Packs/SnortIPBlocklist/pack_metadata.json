@@ -1,5 +1,5 @@
 {
-    "name": "Snort IP Blocklist Feed",
+    "name": "Snort IP Blocklist",
     "description": "Snort IP Blocklist feed from https://www.snort.org/",
     "support": "community",
     "currentVersion": "1.0.0",
