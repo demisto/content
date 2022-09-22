@@ -44,7 +44,7 @@ tasks:
       version: -1
       name: 'Check previous alerts '
       description: |-
-        Searches Demisto incidents.
+        Searches XSIAM alerts.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2be9ff23-85bc-41f5-8d82-9efef006b280
+    taskid: fe58cf5d-a46a-4011-8943-753ddf08eaf0
     type: condition
     task:
-      id: 2be9ff23-85bc-41f5-8d82-9efef006b280
+      id: fe58cf5d-a46a-4011-8943-753ddf08eaf0
       version: -1
       name: Were previous alerts closed as false positive?
       description: "Were previous alerts closed as false positive?"
@@ -112,6 +112,21 @@ tasks:
                       value:
                         simple: ','
             iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.threshold
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1457,6 +1472,7 @@ tasks:
         complex:
           root: inputs.RegistryValue
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1505,9 +1521,7 @@ view: |-
 inputs:
 - key: threshold
   value:
-    complex:
-      root: alert
-      accessor: hostip
+    simple: "2"
   required: false
   description: The number of previous alerts that were closed as false positive alerts.
     This threshold establishes whether the Previous Verdict key
@@ -1538,11 +1552,6 @@ inputs:
     - Resolved - Duplicate Incident
     - Resolved - Other
     - Resolved - Auto
-  playbookInputQuery:
-- key: FileMD5
-  value: {}
-  required: false
-  description: File MD5 to enrich and give verdict.
   playbookInputQuery:
 - key: FileSHA256
   value:
