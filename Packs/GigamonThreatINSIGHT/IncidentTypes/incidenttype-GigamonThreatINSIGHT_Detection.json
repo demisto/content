@@ -1,0 +1,21 @@
+{
+    "fromVersion": "6.5.0",
+    "autorun": false,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Gigamon ThreatINSIGHT Detection",
+    "locked": false,
+    "name": "Gigamon ThreatINSIGHT Detection",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "layout": "Gigamon ThreatINSIGHT Detection"
+}
