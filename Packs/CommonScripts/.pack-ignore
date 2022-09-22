@@ -89,3 +89,4 @@ formatter
 FPs
 GetIndicatorDBotScore
 stringify
+GenericPolling
