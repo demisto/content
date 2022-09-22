@@ -1,0 +1,31 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#00C853",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "FieldsType",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "FieldsType",
+	"packID": "c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6",
+	"playbookId": "access_investigation_-_generic",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
