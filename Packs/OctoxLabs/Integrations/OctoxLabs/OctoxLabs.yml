@@ -1,0 +1,218 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: OctoxLabs
+  version: -1
+configuration:
+- defaultvalue: 127.0.0.1
+  display: IP
+  additionalinfo: Your Octox Labs Platform IP
+  name: octox_ip
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: Your Octox Labs API Key. (https://github.com/octoxlabs/py-octoxlabs#getting-started)
+  name: octox_token
+  required: true
+  hiddenusername: true
+  type: 9
+description: 'Octox Labs Cyber Security Asset Management platform'
+display: 'OctoxLabs'
+name: OctoxLabs
+script:
+  commands:
+    - name: octoxlabs-get-adapters
+      deprecated: false
+      description: 'Fetch octoxlabs all adapters'
+      execution: false
+      outputs:
+      - contextPath: OctoxLabs.Adapters.count
+        description: 'Adapters count'
+        type: Number
+      - contextPath: OctoxLabs.Adapters.results.id
+        description: 'Adapter id'
+        type: Number
+      - contextPath: OctoxLabs.Adapters.results.name
+        description: 'Adapter name'
+        type: String
+      - contextPath: OctoxLabs.Adapters.results.slug
+        description: 'Adapter slug'
+        type: String
+      - contextPath: OctoxLabs.Adapters.results.description
+        description: 'Adapter description'
+        type: String
+      - contextPath: OctoxLabs.Adapters.results.groups
+        description: 'List<string> Adapter groups'
+        type: Unknown
+      - contextPath: OctoxLabs.Adapters.results.beta
+        description: 'Adapter is beta?'
+        type: Boolean
+      - contextPath: OctoxLabs.Adapters.results.status
+        description: 'Adapter status'
+        type: Number
+      - contextPath: OctoxLabs.Adapters.results.hr_status
+        description: 'Adapter human readable status'
+        type: String
+    - name: octoxlabs-get-connections
+      deprecated: false
+      description: 'Fetch octoxlabs connections'
+      execution: false
+      arguments:
+        - default: true
+          description: 'Page number'
+          isArray: false
+          name: page
+          required: false
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Connections.count
+          description: 'Connections count'
+          type: Number
+        - contextPath: OctoxLabs.Connections.results.id
+          description: 'Connection id'
+          type: Number
+        - contextPath: OctoxLabs.Connections.results.adapter_id
+          description: 'Connection adapter id'
+          type: Number
+        - contextPath: OctoxLabs.Connections.results.adapter_name
+          description: 'Connection adapter name'
+          type: String
+        - contextPath: OctoxLabs.Connections.results.name
+          description: 'Connection name'
+          type: String
+        - contextPath: OctoxLabs.Connections.results.status
+          description: 'Connection status'
+          type: Boolean
+        - contextPath: OctoxLabs.Connections.results.description
+          description: 'Connection description'
+          type: String
+        - contextPath: OctoxLabs.Connections.results.enabled
+          description: 'Connection is enabled?'
+          type: Boolean
+    - name: octoxlabs-get-discoveries
+      deprecated: false
+      description: 'Fetch octoxlabs discoveries'
+      execution: false
+      arguments:
+        - default: true
+          description: 'Page number'
+          isArray: false
+          name: page
+          required: false
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Discoveries.count
+          description: 'Total discovery count'
+          type: Number
+        - contextPath: OctoxLabs.Discoveries.results.id
+          description: 'Discovery id'
+          type: Number
+        - contextPath: OctoxLabs.Discoveries.results.start_time
+          description: 'Discovery start time'
+          type: String
+        - contextPath: OctoxLabs.Discoveries.results.end_time
+          description: 'Discovery end time'
+          type: String
+        - contextPath: OctoxLabs.Discoveries.results.status
+          description: 'Discovery status'
+          type: Number
+        - contextPath: OctoxLabs.Discoveries.results.hr_status
+          description: 'Discovery human readable status'
+          type: String
+        - contextPath: OctoxLabs.Discoveries.results.progress
+          description: 'Discovery progress'
+          type: Number
+    - name: octoxlabs-get-last-discovery
+      deprecated: false
+      description: 'Get last success discovery'
+      execution: false
+      outputs:
+        - contextPath: OctoxLabs.Discovery.id
+          description: 'Last discovery id'
+          type: Number
+        - contextPath: OctoxLabs.Discovery.start_time
+          description: 'Last discovery start time'
+          type: String
+        - contextPath: OctoxLabs.Discovery.end_time
+          description: 'Last discovery end time'
+          type: String
+        - contextPath: OctoxLabs.Discovery.status
+          description: 'Last discovery status'
+          type: Number
+        - contextPath: OctoxLabs.Discovery.hr_status
+          description: 'Last discovery human readable status'
+          type: String
+        - contextPath: OctoxLabs.Discovery.progress
+          description: 'Last discovery progress'
+          type: Number
+    - name: octoxlabs-search-devices
+      deprecated: false
+      description: 'Search in your devices'
+      execution: false
+      arguments:
+        - default: null
+          description: 'Query'
+          isArray: false
+          name: query
+          required: false
+          secret: false
+        - default: null
+          description: 'Fields'
+          isArray: true
+          name: fields
+          required: false
+          secret: false
+        - default: null
+          description: 'Page'
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - default: null
+          description: 'Size'
+          isArray: false
+          name: size
+          required: false
+          secret: false
+        - default: null
+          description: 'Specific Discovery Id'
+          isArray: false
+          name: discovery_id
+          required: false
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Devices.count
+          description: 'Total devices count'
+          type: Number
+        - contextPath: OctoxLabs.Devices.results
+          description: 'List<Dict> Device information'
+          type: Unknown
+    - name: octoxlabs-get-device
+      deprecated: false
+      description: 'Fetch your device'
+      execution: false
+      arguments:
+        - default: false
+          required: true
+          isArray: false
+          name: hostname
+          description: 'Your device hostname'
+          secret: false
+        - default: false
+          required: false
+          isArray: false
+          name: discovery_id
+          description: 'Your device at specific discovery'
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Device
+          description: '<Dict> Octoxlabs Device'
+          type: Unknown
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/octoxlabs:1.0.0.34636
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
