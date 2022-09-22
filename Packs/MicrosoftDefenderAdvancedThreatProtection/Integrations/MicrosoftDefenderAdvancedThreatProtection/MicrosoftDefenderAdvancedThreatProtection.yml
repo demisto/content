@@ -4295,6 +4295,12 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified indicator.
     execution: false
@@ -4495,6 +4501,12 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new indicator.
     execution: false

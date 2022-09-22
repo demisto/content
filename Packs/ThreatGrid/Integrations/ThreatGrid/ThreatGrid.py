@@ -650,7 +650,7 @@ def handle_artifact_from_analysis_json(ec, hr, analysis_json, limit):
 def create_analysis_json_human_readable(hr):
     hr_str = tableToMarkdown('Files scanned:', hr['File'], SAMPLE_ANALYSIS_HEADERS_MAP['File'])
     tmp_hr_str = ''
-    for k in hr['Sample'].keys():
+    for k in hr['Sample'].copy():
         if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0
                                                  and k in SAMPLE_ANALYSIS_HEADERS_MAP):
             tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k],

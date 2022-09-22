@@ -145,6 +145,7 @@ create-instances:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 prepare-testing-bucket-mpv2:
   tags:
@@ -207,6 +208,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 .test_content_on_xsoar_server_instances_base:
   tags:
@@ -221,6 +223,7 @@ prepare-testing-bucket-mpv2:
   needs: ["create-instances"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -343,6 +346,7 @@ slack-notify-nightly-build:
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 

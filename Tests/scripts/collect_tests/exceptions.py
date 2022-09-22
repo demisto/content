@@ -41,6 +41,15 @@ class SkippedPackException(UnsupportedPackException):
         super().__init__(pack_name, 'Pack is skipped')
 
 
+class NonNightlyPackInNightlyBuildException(Exception):
+    def __init__(self, pack_name: str):
+        self.message = f'Skipping tests for pack {pack_name}: ' \
+                       f'This is a nightly build, and the pack is not in the list of nightly packs'
+
+    def __str__(self):
+        return self.message
+
+
 class NonDictException(Exception):
     def __init__(self, path: Optional[Path]):
         self.message = path
@@ -105,8 +114,8 @@ class SkippedTestException(InvalidTestException):
         :param skip_place: where the test was skipped (conf.json or pack_ignore)
         :param skip_reason: the reason the test was skipped (if available, mostly when skipped in conf.json)
         """
-        skip_reason_str = f': {skip_reason}' if skip_reason else ''
-        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_str}')
+        skip_reason_suffix = f': {skip_reason}' if skip_reason else ''
+        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_suffix}')
 
 
 class PrivateTestException(InvalidTestException):

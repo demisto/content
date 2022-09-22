@@ -1827,7 +1827,8 @@ class MsClient:
                                                     severity: Optional[str] = None,
                                                     indicator_application: Optional[str] = None,
                                                     recommended_actions: Optional[str] = None,
-                                                    rbac_group_names: Optional[list] = None
+                                                    rbac_group_names: Optional[list] = None,
+                                                    generate_alert: Optional[bool] = True
                                                     ) -> Dict:
         """creates or updates (if already exists) a given indicator
 
@@ -1842,6 +1843,7 @@ class MsClient:
             indicator_application: The application associated with the indicator.
             recommended_actions: TI indicator alert recommended actions.
             rbac_group_names: Comma-separated list of RBAC group names the indicator would be.
+            generate_alert: Whether to generate an alert for the indicator.
 
         Returns:
             A response from the API.
@@ -1852,7 +1854,7 @@ class MsClient:
             'action': action,
             'title': indicator_title,
             'description': description,
-            'generateAlert': True,
+            'generateAlert': generate_alert,
         }
         body.update(assign_params(  # optional params
             severity=severity,
@@ -3891,12 +3893,13 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
     indicator_application = args.get('indicator_application', '')
     recommended_actions = args.get('recommended_actions', '')
     rbac_group_names = argToList(args.get('rbac_group_names', []))
+    generate_alert = argToBoolean(args.get('generate_alert', True))
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
         description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
-        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
+        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names, generate_alert=generate_alert
     )
     if indicator:
         indicator_value = indicator.get('indicatorValue')  # type:ignore
