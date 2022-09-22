@@ -262,6 +262,7 @@ DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
+# comment for resubmit
 
 
 class Client(BaseClient):

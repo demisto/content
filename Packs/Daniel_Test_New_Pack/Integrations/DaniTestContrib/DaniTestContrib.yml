@@ -92,6 +92,15 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 14b0e287-9975-45a7-831a-b35dc1365d90
+    packName: Daniel_test_new_pack
+    propagationLabels: []
+    toServerVersion: ""
 description: This is the Hello World integration for getting started.
 display: Dani-test-contrib
 name: Dani-test-contrib
@@ -198,7 +207,6 @@ script:
       description: List of IPs.
       isArray: true
       name: ip
-      required: true
     - defaultValue: "65"
       description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
@@ -339,7 +347,6 @@ script:
       description: List of Domains.
       isArray: true
       name: domain
-      required: true
     - defaultValue: "65"
       description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
@@ -553,12 +560,9 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
