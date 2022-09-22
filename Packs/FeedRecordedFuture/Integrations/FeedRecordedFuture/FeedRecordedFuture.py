@@ -1,19 +1,20 @@
-import gzip
-import json
+import csv
+import queue
+import threading
+import urllib.parse
+from collections import namedtuple
+from typing import Tuple
+
+import requests
+import urllib3
 
 from CommonServerPython import *
-# IMPORTS
-import urllib3
-import csv
-import requests
-import traceback
-import urllib.parse
-from typing import Tuple, Optional, List, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
 INTEGRATION_NAME = 'Recorded Future'
+INDICATOR_VALUES_SET: Set[str] = set()
 
 # taken from recorded future docs
 RF_CRITICALITY_LABELS = {
@@ -133,6 +134,7 @@ class Client(BaseClient):
         Returns:
             list of feed dictionaries.
         """
+        file_name = risk_rule+'.txt' if risk_rule else 'response.txt'
         _session = requests.Session()
         prepared_request = self._build_request(service, indicator_type, risk_rule)
         # this is to honour the proxy environment variables
@@ -163,16 +165,17 @@ class Client(BaseClient):
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
             response_content = response_content.decode('utf-8')
-            with open("response.txt", "w") as f:
+            with open(file_name, "w") as f:
                 f.write(response_content)
         else:
-            with open("response.txt", "w") as f:
+            with open(file_name, "w") as f:
                 f.write(response.text)
 
-    def get_batches_from_file(self, limit):
+    def get_batches_from_file(self, limit, risk_rule=None):
         # we do this try to make sure the file gets deleted at the end
+        file_name = risk_rule + '.txt' if risk_rule else 'response.txt'
         try:
-            file_stream = open("response.txt", 'rt')
+            file_stream = open(file_name, 'rt')
             columns = file_stream.readline()  # get the headers from the csv file.
             columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
@@ -184,10 +187,10 @@ class Client(BaseClient):
                 if not feed_batch:
                     file_stream.close()
                     return
-                yield csv.DictReader(feed_batch, fieldnames=columns)
+                yield csv.DictReader((l.replace('\0', '') for l in feed_batch), fieldnames=columns)
         finally:
             try:
-                os.remove("response.txt")
+                os.remove(file_name)
             except OSError:
                 pass
 
@@ -261,7 +264,7 @@ def is_valid_risk_rule(client: Client, risk_rule):
         return False
 
 
-def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
+def not_test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client(Client): Recorded Future Feed client.
@@ -276,7 +279,7 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
         # if there are risk rules, select the first one for test
         risk_rule = client.risk_rule[0] if client.risk_rule else None
         client.build_iterator(service, client.indicator_type, risk_rule)
-        client.get_batches_from_file(limit=1)
+        client.get_batches_from_file(limit=1, risk_rule=None)
     return 'ok', {}, {}
 
 
@@ -364,32 +367,49 @@ def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
     Returns: None.
 
     """
-    for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
+    for indicators in fetch_indicators_command(client, client.indicator_type, client.risk_rule):
         demisto.createIndicators(indicators)
 
 
-def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
+def fetch_indicators_command(client, indicator_type, risk_rules: Optional[list] = None, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client
         indicator_type(str): The indicator type
-        risk_rule(str): A risk rule that limits the fetched indicators
+        risk_rules(str): A risk rule that limits the fetched indicators
         limit(int): Optional. The number of the indicators to fetch
     Returns:
         list. List of indicators from the feed
     """
-    indicators_value_set: Set[str] = set()
-    for service in client.services:
+    threads = []
+    q = queue.Queue()
+    thread_limiter = threading.BoundedSemaphore(4)
+    Service = namedtuple("Service", "client indicator_type service risk_rule limit queue thread_limiter")
+    for risk_rule in risk_rules:
+        t = threading.Thread(target=process_service, args=Service(
+            client=client, indicator_type=indicator_type, service=client.services[0], risk_rule=risk_rule,
+            limit=limit, queue=q, thread_limiter=thread_limiter))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+    return q.get()
+
+
+def process_service(client, indicator_type, service, risk_rule: Optional[str] = None, limit: Optional[int] = None,
+                    q=None, thread_limiter=None):
+    thread_limiter.acquire()
+    try:
         client.build_iterator(service, indicator_type, risk_rule)
-        feed_batches = client.get_batches_from_file(limit)
+        feed_batches = client.get_batches_from_file(limit, risk_rule)
         for feed_dicts in feed_batches:
             indicators = []
             for item in feed_dicts:
                 raw_json = dict(item)
                 raw_json['value'] = value = item.get('Name')
-                if value in indicators_value_set:
+                if value in INDICATOR_VALUES_SET:
                     continue
-                indicators_value_set.add(value)
+                INDICATOR_VALUES_SET.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
                 risk = item.get('Risk')
@@ -426,7 +446,9 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
 
                 indicators.append(indicator_obj)
 
-            yield indicators
+            q.put(indicators)
+    finally:
+        thread_limiter.release()
 
 
 def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
@@ -508,18 +530,13 @@ def main():  # pragma: no cover
     demisto.info('Command being called is {}'.format(command))
     # Switch case
     commands = {
-        'test-module': test_module,
+        'test-module': not_test_module,
         'rf-feed-get-indicators': get_indicators_command,
         'rf-feed-get-risk-rules': get_risk_rules_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            if client.risk_rule:
-                for risk_rule in client.risk_rule:
-                    fetch_and_create_indicators(client, risk_rule)
-            else:  # there are no risk rules
-                fetch_and_create_indicators(client)
-
+            fetch_and_create_indicators(client)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
