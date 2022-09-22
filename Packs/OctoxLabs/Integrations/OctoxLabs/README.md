@@ -1,4 +1,4 @@
-Octox Labs Cyber Security Asset Management platform
+This integration is for search your assets and fetch details them in OctoxLabs Asset Management Platform.
 This integration was integrated and tested with version 3.0.1 of OctoxLabs
 
 ## Configure OctoxLabs on Cortex XSOAR
