@@ -1290,7 +1290,7 @@ def panorama_get_address_command(args: dict):
 
 @logger
 def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
-                            description: str = None, tags: list = None):
+                            description: str = None, tags: list = None, ip_wildcard: str = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
@@ -1298,6 +1298,7 @@ def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str
               'element': (add_argument(fqdn, 'fqdn', False)
                           + add_argument(ip_netmask, 'ip-netmask', False)
                           + add_argument(ip_range, 'ip-range', False)
+                          + add_argument(ip_wildcard, 'ip-wildcard', False)
                           + add_argument(description, 'description', False)
                           + add_argument_list(tags, 'tag', True))
               }
@@ -1320,14 +1321,18 @@ def panorama_create_address_command(args: dict):
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
     ip_range = args.get('ip_range')
+    ip_wildcard = args.get('ip_wildcard')
 
-    if not fqdn and not ip_netmask and not ip_range:
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+    # make sure only one of fqdn/ip_netmask/ip_range/ip_wildcard was provided.
 
-    if (fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range):
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+    if sum(
+        map(bool, [(fqdn is not None), (ip_netmask is not None), (ip_range is not None), (ip_wildcard is not None)])
+    ) != 1:
+        raise DemistoException(
+            f'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
+        )
 
-    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags)
+    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags, ip_wildcard)
 
     address_output = {'Name': address_name}
     if DEVICE_GROUP:
@@ -1353,6 +1358,42 @@ def panorama_create_address_command(args: dict):
             "Panorama.Addresses(val.Name == obj.Name)": address_output
         }
     })
+
+
+def pan_os_edit_address(name, element_value, element_to_change, is_listable):
+
+    params = {
+        'xpath': f'{XPATH_OBJECTS}address/entry[@name="{name}"]/{element_to_change}',
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior='replace',
+                object_name=element_to_change,
+                element_value=element_value,
+                is_listable=is_listable,
+            ),
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_address_command(args):
+    address_name = args.get('name')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+
+    raw_response = pan_os_edit_address(
+        name=address_name,
+        element_to_change=element_to_change.replace('_', '-'),
+        element_value=element_value,
+        is_listable=element_to_change == 'tag',
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Address {address_name} was edited successfully.'
+    )
 
 
 @logger
@@ -3372,7 +3413,7 @@ def panorama_create_rule_command(args: dict):
 
 
 @logger
-def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
+def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_required: bool = True) -> list:
     """
     Get the current element value from
     """
@@ -3389,11 +3430,13 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     current_object = result.get(element_to_change, {})
-    if '@dirtyId' in result or '@dirtyId' in current_object:
-        LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the rule.')
-
-    current_objects_items = []
+    if is_commit_required:
+        if '@dirtyId' in result or '@dirtyId' in current_object:
+            LOG(f'Found uncommitted item:\n{result}')
+            raise DemistoException('Please commit the instance prior to editing the Security rule.')
+    else:
+        # remove un-relevant committed data
+        parse_pan_os_un_committed_data(result, ['@admin', '@dirtyId', '@time'])
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
@@ -12355,6 +12398,165 @@ def pan_os_delete_pbf_rule_command(args):
     )
 
 
+def build_application_groups_xpath(name: Optional[str], element: Optional[str] = None):
+    _xpath = f"{XPATH_OBJECTS}application-group"
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
+    return _xpath
+
+
+def pan_os_list_application_groups(name: Optional[str], show_uncommitted: bool):
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_application_groups_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_list_application_groups_command(args):
+    name = args.get('name')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_application_groups(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = result.get('application-group', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId'])
+
+    application_groups = []
+    for entry in entries:
+        applications = extract_objects_info_by_key(entry, 'members')
+        if not isinstance(applications, list):
+            applications = [applications]
+        application_groups.append(
+            {
+                'Name': extract_objects_info_by_key(entry, '@name'),
+                'Applications': applications,
+                'Members': len(applications)
+            }
+        )
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=application_groups,
+        readable_output=tableToMarkdown(
+            f'Application groups:',
+            application_groups,
+            removeNull=True
+        ),
+        outputs_prefix='Panorama.ApplicationGroup',
+        outputs_key_field='Name'
+    )
+
+
+def pan_os_create_application_group(application_group_name, applications):
+    params = {
+        'xpath': build_application_groups_xpath(application_group_name),
+        'element': dict_to_xml(prepare_pan_os_objects_body_request('members', applications)),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = argToList(args.get('applications'))
+
+    raw_response = pan_os_create_application_group(application_group_name, applications)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was created successfully.',
+        outputs={'Name': application_group_name, 'Applications': applications, 'Members': len(applications)},
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
+    )
+
+
+def pan_os_edit_application_group(name, applications, action):
+    xpath = build_application_groups_xpath(name=name, element='members')
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(
+            build_body_request_to_edit_pan_os_object(
+                behavior=action, object_name='members', element_value=applications, is_listable=True, xpath=xpath
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = argToList(args.get('applications'))
+    action = args.get('action')
+
+    raw_response = pan_os_edit_application_group(name=application_group_name, applications=applications, action=action)
+
+    updated_applications = panorama_get_current_element(
+        element_to_change='members',
+        xpath=build_application_groups_xpath(application_group_name, 'members'),
+        is_commit_required=False
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was edited successfully.',
+        outputs={
+            'Name': application_group_name, 'Applications': updated_applications, 'Members': len(updated_applications)
+        },
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
+    )
+
+
+def pan_os_delete_application_group(name):
+    params = {
+        'xpath': build_application_groups_xpath(name),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_application_group_command(args):
+    application_group_name = args.get('name')
+
+    raw_response = pan_os_delete_application_group(application_group_name)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was deleted successfully.'
+    )
+
+
 def main():
     try:
         args = demisto.args()
@@ -12399,6 +12601,9 @@ def main():
 
         elif command == 'panorama-create-address' or command == 'pan-os-create-address':
             panorama_create_address_command(args)
+
+        elif command == 'pan-os-edit-address':
+            return_results(pan_os_edit_address_command(args))
 
         elif command == 'panorama-delete-address' or command == 'pan-os-delete-address':
             panorama_delete_address_command(args)
@@ -13031,6 +13236,14 @@ def main():
             return_results(pan_os_edit_pbf_rule_command(args))
         elif command == 'pan-os-delete-pbf-rule':
             return_results(pan_os_delete_pbf_rule_command(args))
+        elif command == 'pan-os-list-application-groups':
+            return_results(pan_os_list_application_groups_command(args))
+        elif command == 'pan-os-create-application-group':
+            return_results(pan_os_create_application_group_command(args))
+        elif command == 'pan-os-edit-application-group':
+            return_results(pan_os_edit_application_group_command(args))
+        elif command == 'pan-os-delete-application-group':
+            return_results(pan_os_delete_application_group_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

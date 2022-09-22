@@ -3774,6 +3774,8 @@ script:
       name: ip_netmask
     - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
       name: ip_range
+    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255
+      name: ip_wildcard
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag for the new address.
@@ -3803,6 +3805,31 @@ script:
     - contextPath: Panorama.Addresses.Tag
       description: The address tag.
       type: String
+  - arguments:
+    - description: The name of the address to edit.
+      isArray: false
+      name: name
+      required: true
+    - description: The device-group in which the address is in.
+      isArray: false
+      name: device-group
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - fqdn
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - description
+      - tag
+    - description: the value of the element that needs to be changed. Can be a list when element_to_change == 'tag' only.
+      isArray: true
+      name: element_value
+      required: true
+    description: Edits an address object.
+    name: pan-os-edit-address
   - arguments:
     - description: The name of the address to delete.
       name: name
@@ -8895,6 +8922,120 @@ script:
       - post-rulebase
     description: Deletes a PBF rule.
     name: pan-os-delete-pbf-rule
+  - arguments:
+    - description: The name of the application-group to retrieve, if not mentioned will bring all the application-groups.
+      isArray: false
+      name: name
+      required: false
+    - description: The device-group in which the nat-rules are part of.
+      isArray: false
+      name: device-group
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed application-groups or not. can be true or false.
+      isArray: false
+      name: show_uncommitted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: The maximum number of application-groups to retrieve, will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the application-groups to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing application-groups, must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of application-groups of either Panorama/firewall instance.
+    name: pan-os-list-application-groups
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the application that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name for the application-group to be created with.
+      isArray: false
+      name: name
+      required: true
+    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      isArray: true
+      name: applications
+      required: true
+    - description: The device-group in which the application-group should be created. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    description: Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
+    name: pan-os-create-application-group
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name for the application-group to be created with.
+      isArray: false
+      name: name
+      required: true
+    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      isArray: true
+      name: applications
+      required: true
+    - description: The device-group in which the application-group should be created. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - description: The action to perform on the application-group.
+      isArray: false
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      defaultValue: 'add'
+    description: Edits an application-group
+    name: pan-os-edit-application-group
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name of the application-group to delete.
+      isArray: false
+      name: name
+      required: true
+    - description: The device-group in which the application-group is part of. Only for Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    description: Deletes an application-group
+    name: pan-os-delete-application-group
+    outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false

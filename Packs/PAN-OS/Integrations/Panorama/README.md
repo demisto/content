@@ -668,14 +668,15 @@ Creates an address object.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | New address name. | Required | 
-| description | New address description. | Optional | 
-| fqdn | FQDN of the new address. | Optional | 
-| ip_netmask | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
-| ip_range | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | The tag for the new address. | Optional | 
+|-------------------| --- | --- |
+| name              | New address name. | Required | 
+| description       | New address description. | Optional | 
+| fqdn              | FQDN of the new address. | Optional | 
+| ip_netmask        | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
+| ip_range          | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
+| ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
+| device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
+| tag               | The tag for the new address. | Optional | 
 
 
 #### Context Output
@@ -8226,3 +8227,192 @@ There is no context output for this command.
 #### Human Readable Output
 
 >PBF rule test4 was deleted successfully.
+### pan-os-list-application-groups
+***
+Returns a list of application-groups of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-application-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
+| device-group | The device-group in which the nat-rules are part of. | Optional | 
+| show_uncommitted | Whether to show the un-committed application-groups or not. can be true or false. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of application-groups to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the application-groups to return. Default is 50. | Optional | 
+| page | The page at which to start listing application-groups, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+
+#### Command example
+```!pan-os-list-application-groups show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": [
+            {
+                "Applications": [
+                    "1c-enterprise"
+                ],
+                "Members": 1,
+                "Name": "test"
+            },
+            {
+                "Applications": [
+                    "2ch-base",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-2"
+            },
+            {
+                "Applications": [
+                    "1c-enterprise",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-3"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Application groups:
+>|Applications|Members|Name|
+>|---|---|---|
+>| 1c-enterprise | 1 | test |
+>| 2ch-base,<br/>4shared | 2 | test-2 |
+>| 1c-enterprise,<br/>4shared | 2 | test-3 |
+
+
+### pan-os-create-application-group
+***
+Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
+
+
+#### Base Command
+
+`pan-os-create-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+
+#### Command example
+```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise",
+                "4shared"
+            ],
+            "Members": 2,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was created successfully.
+### pan-os-edit-application-group
+***
+Edits an application-group
+
+
+#### Base Command
+
+`pan-os-edit-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+| action | The action to perform on the application-group. Possible values are: add, remove. Default is add. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group | 
+
+#### Command example
+```!pan-os-edit-application-group name=test-3 action=remove applications=4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise"
+            ],
+            "Members": 1,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was edited successfully.
+### pan-os-delete-application-group
+***
+Deletes an application-group
+
+
+#### Base Command
+
+`pan-os-delete-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to delete. | Required | 
+| device-group | The device-group in which the application-group is part of. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-application-group name=test-3```
+#### Human Readable Output
+
+>application-group test-3 was deleted successfully.
