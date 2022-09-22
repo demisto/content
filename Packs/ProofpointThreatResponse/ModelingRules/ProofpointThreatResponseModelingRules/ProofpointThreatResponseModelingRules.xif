@@ -9,4 +9,5 @@ alter XDM.Email.event_timestamp = updated_at
 | alter XDM.Email.message_id = json_extract_scalar(emails, "$.messageId")
 | alter XDM.Email.subject = json_extract_scalar(emails, "$.subject")
 | alter XDM.Email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), ""))
-| alter XDM.Email.delivery_timestamp = to_timestamp(to_number(json_extract_scalar(emails, "$.messageDeliveryTime.millis"))); -> todo: check
+| alter millis_timestamp = json_extract_scalar(emails, "$.messageDeliveryTime.millis")
+| alter XDM.Email.delivery_timestamp = parse_timestamp("%s",arrayindex( regextract(to_string(millis_timestamp),"(\d+)\d{3}"),0));
