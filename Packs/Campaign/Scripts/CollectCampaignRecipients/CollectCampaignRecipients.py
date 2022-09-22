@@ -43,7 +43,10 @@ def collect_campaign_recipients(args):
         if ALL_INCIDENTS not in selected_ids:
             incidents = filter(lambda incident: incident['id'] in selected_ids, incidents)
 
-        recipient_set = {recipient for incident in incidents for recipient in incident['recipients']}
+        recipient_set = {
+            recipient for incident in incidents
+            for recipient in filter(None, incident['recipients'])
+        }
         return ','.join(recipient_set)
     except KeyError as e:
         raise DemistoException(f'Missing required arg: {str(e)}') from e
