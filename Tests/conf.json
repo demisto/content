@@ -786,6 +786,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB test",
+            "has_api": false,
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "ConvertFile-Test",
             "fromversion": "4.5.0"
         },
