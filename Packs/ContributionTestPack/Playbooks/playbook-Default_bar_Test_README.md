@@ -4,8 +4,8 @@ This playbook executes when no other playbook is associated with an incident. It
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Calculate Severity - Generic v2
 * Entity Enrichment - Generic v2
+* Calculate Severity - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -14,8 +14,8 @@ This playbook does not use any integrations.
 * AssignAnalystToIncident
 
 ### Commands
-* closeInvestigation
 * extractIndicators
+* closeInvestigation
 
 ## Playbook Inputs
 ---
