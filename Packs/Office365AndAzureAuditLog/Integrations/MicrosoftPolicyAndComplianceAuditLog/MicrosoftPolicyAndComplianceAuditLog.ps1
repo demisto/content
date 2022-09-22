@@ -648,6 +648,11 @@ function Main {
 
     try
     {
+        if($insecure){
+            # disable the certificate verification in case the instance configured to trusting any certificate
+            Disable-WSManCertVerification -All
+        }
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
