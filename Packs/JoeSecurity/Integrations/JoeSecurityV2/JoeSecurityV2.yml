@@ -900,6 +900,7 @@ script:
       - name: email_notification
         description: Send an email notification once the analysis completes.
         defaultValue: 'false'
+    description: Submit a sample for sandbox analysis.
     polling: true
     outputs:
       - contextPath: DBotScore.Indicator
@@ -1161,6 +1162,7 @@ script:
       - name: email_notification
         description: Send an email notification once the analysis completes.
         defaultValue: 'false'
+    description: Submit an URL for sandbox analysis.
     polling: true
     outputs:
       - contextPath: DBotScore.Indicator
@@ -1262,9 +1264,10 @@ script:
       - contextPath: Joe.Submission.time
         description: The time.
         type: Date
+  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/joe-security:1.0.0.33098
 fromversion: 6.8.0
 tests:
-  - No tests (auto formatted)
+  - testplaybook- JoeSecuirtyV2

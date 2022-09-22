@@ -1,6 +1,5 @@
-id: 07c5b111-3824-46cf-8ce8-6d0d5603ee21
-version: 27
-vcShouldKeepItemLegacyProdMachine: false
+id: testplaybook- JoeSecuirtyV2
+version: -1
 name: testplaybook- JoeSecuirtyV2
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -41,8 +40,7 @@ tasks:
       id: babee61a-3e37-4fce-8a2b-dfe0deb262a8
       version: -1
       name: Is server online
-      description: Check if the Joe Sandbox analysis back end is online or in maintenance
-        mode.
+      description: Check if the Joe Sandbox analysis back end is online or in maintenance mode.
       script: JoeSecurityV2|||joe-is-online
       type: regular
       iscommand: true
@@ -51,7 +49,6 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -89,7 +86,6 @@ tasks:
             value:
               simple: Joe.ServerStatus.Online
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -115,8 +111,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -151,7 +147,6 @@ tasks:
       limit:
         simple: "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -192,7 +187,6 @@ tasks:
           right:
             value:
               simple: "5"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -215,9 +209,7 @@ tasks:
       id: 89c7df9d-e4d6-4010-8a09-8116fc13428b
       version: -1
       name: Download report
-      description: Download a resource belonging to a report. This can be the full
-        report, dropped binaries, etc. See integration README for the full supported
-        report types.
+      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
       script: JoeSecurityV2|||joe-download-report
       type: regular
       iscommand: true
@@ -235,7 +227,6 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -283,7 +274,6 @@ tasks:
           right:
             value:
               simple: .json
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -323,7 +313,6 @@ tasks:
       key:
         simple: all=true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -355,7 +344,6 @@ tasks:
       '#none#':
       - "12"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -413,7 +401,6 @@ tasks:
           right:
             value:
               simple: "0"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -451,7 +438,6 @@ tasks:
       url:
         simple: ${inputs.url}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -509,7 +495,6 @@ tasks:
           right:
             value:
               simple: w7
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -546,7 +531,6 @@ tasks:
       submission_ids:
         simple: ${Joe.Submission.submission_id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -586,7 +570,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -621,7 +604,6 @@ tasks:
       query:
         simple: ${inputs.url}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -661,7 +643,6 @@ tasks:
       key:
         simple: all=true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -711,7 +692,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -749,7 +729,6 @@ tasks:
       systems:
         simple: macvm
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -787,7 +766,6 @@ tasks:
       filename:
         simple: test_submit_sample.txt
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -852,7 +830,6 @@ tasks:
           right:
             value:
               simple: macvm
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -892,7 +869,6 @@ tasks:
       key:
         simple: all=true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -924,7 +900,6 @@ tasks:
       '#none#':
       - "30"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -982,7 +957,6 @@ tasks:
           right:
             value:
               simple: "0"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1022,7 +996,6 @@ tasks:
       key:
         simple: all=true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1062,7 +1035,6 @@ tasks:
       key:
         simple: all=true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1097,5 +1069,6 @@ inputs:
     simple: example.com
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.5.0

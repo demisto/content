@@ -580,8 +580,19 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
-    client.server_online()
+    try:
+        client.server_online()
+    except Exception as e:
+        if isinstance(e, jbxapi.ApiError):
+            match API_ERRORS.get(e.code):
+                case 'InvalidApiKeyError':
+                    return "Invalid Api Key"
+                case 'PermissionError':
+                    return "Permission Error"
+                case 'ServerOfflineError' | 'InternalServerError':
+                    return "Server error, please verify the Server URL or check if the server is offline"
+        else:
+            return "Server error, please verify the server url or check if the server is online"
     return 'ok'
 
 
