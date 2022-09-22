@@ -1,0 +1,26 @@
+commonfields:
+  id: df2c1652-04bb-4ae3-815d-eda342ae6add
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9f74339a-ac57-4b76-8d89-65bcc5cd702b
+    packName: Testing new entity master
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: TestingScriptEntity
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
