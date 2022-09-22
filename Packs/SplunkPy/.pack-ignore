@@ -32,3 +32,15 @@ SplunkPy
 
 [file:classifier-SplunkPy.json]
 ignore=BA101
+
+[file:playbook-SplunkPy-Test-V2.yml]
+ignore=auto-test
+
+[file:playbook-SplunkPySearch_Test.yml]
+ignore=auto-test
+
+[file:SplunkPy_KV_commands.yml]
+ignore=auto-test
+
+[file:playbook-SplunkTest2.yml]
+ignore=auto-test
