@@ -199,21 +199,22 @@ class MicrosoftClient(BaseClient):
 
         if self.retry_on_rate_limit and not overwrite_rate_limit_retry and response.status_code == 429 and \
                 is_demisto_version_ge('6.2.0'):
-            args = demisto.args()
-            ran_once_flag = args.get('ran_once_flag')
-            demisto.info(f'429 MS rate limit for command {demisto.command()}')
+            command_args = demisto.args()
+            ran_once_flag = command_args.get('ran_once_flag')
+            demisto.info(f'429 MS rate limit for command {demisto.command()}, where ran_once_flag is {ran_once_flag}')
             # We want to retry on rate limit only once
             if ran_once_flag:
                 try:
                     error_message = response.json()
                 except Exception:
                     error_message = 'Rate limit reached on retry - 429 Response'
+                demisto.log(f'Error in retry for MS rate limit - {error_message}')
                 raise DemistoException(error_message)
 
             else:
                 demisto.info(f'Scheduling command {demisto.command()}')
-                args['ran_once_flag'] = True
-                return_results(self.run_retry_on_rate_limit(args))
+                command_args['ran_once_flag'] = True
+                return_results(self.run_retry_on_rate_limit(command_args))
                 sys.exit(0)
 
         try:

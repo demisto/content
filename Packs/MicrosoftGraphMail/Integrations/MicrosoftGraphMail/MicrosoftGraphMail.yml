@@ -259,6 +259,7 @@ script:
       description: A token to pass to the next list command to retrieve additional
         results.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -382,6 +383,7 @@ script:
       description: The email address of the user in the 'toRecipients' field of the
         email.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -412,6 +414,7 @@ script:
     description: Deletes an email.
     execution: false
     name: msgraph-mail-delete-email
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -458,6 +461,7 @@ script:
     - contextPath: MSGraphMailAttachment.UserID
       description: The ID of the user.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -525,6 +529,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -568,6 +573,7 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread emails in the folder.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -617,6 +623,7 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread email messages in the folder.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -665,6 +672,7 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread email messages in the folder.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -713,6 +721,7 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The unread emails count inside the folder.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -736,6 +745,7 @@ script:
     description: Deletes the specified mail folder.
     execution: false
     name: msgraph-mail-delete-folder
+    polling: true
   - arguments:
     - default: false
       description: The unique ID of the mail. You cannot use the the 'MessageID' key
@@ -776,6 +786,7 @@ script:
     - contextPath: MSGraphMail.MovedEmails.UserID
       description: The user ID.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: User ID or principal ID (usually an email address in the format
@@ -835,6 +846,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of email addresses for the 'to' field.
@@ -1003,6 +1015,7 @@ script:
     - contextPath: MicrosoftGraph.Draft.ConversationID
       description: The conversation ID of the draft email.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of email addresses for the 'to' field.
@@ -1156,6 +1169,7 @@ script:
     - contextPath: MicrosoftGraph.Email.replyTo
       description: The replyTo recipients of the email.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The ID of the message.
@@ -1210,6 +1224,7 @@ script:
     description: The replies to the recipients of a message.
     execution: false
     name: msgraph-mail-reply-to
+    polling: true
   - arguments:
     - default: false
       description: The ID of the draft email.
@@ -1232,6 +1247,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
+    polling: true
   - arguments:
     - default: false
       description: A CSV list of email addresses for the 'to' field.
@@ -1340,7 +1356,8 @@ script:
     - contextPath: MicrosoftGraph.SentMail.replyTo
       description: The replyTo recipients of the email.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+    polling: true
+  dockerimage: demisto/crypto:1.0.0.34720
   feed: false
   isfetch: true
   longRunning: false
