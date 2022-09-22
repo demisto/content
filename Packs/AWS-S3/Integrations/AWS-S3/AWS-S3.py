@@ -271,7 +271,7 @@ def main():  # pragma: no cover
             download_file_command(args, aws_client)
 
         elif command == 'aws-s3-list-bucket-objects':
-            list_objects_command(args, aws_client)
+            return_results(list_objects_command(args, aws_client))
 
         elif command == 'aws-s3-upload-file':
             return_results(upload_file_command(args, aws_client))
