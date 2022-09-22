@@ -201,9 +201,10 @@ class CollectionResult:
             except NonXsoarSupportedPackException:
                 if skip_pack_compatibility:
                     logger.info(f'overriding pack compatibility check for {pack} - not compliant, but IS collected')
-                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    return
-                raise
+                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    pass
+                else:
+                    raise
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type:ignore[union-attr]
