@@ -1,415 +1,166 @@
 category: Utilities
 commonfields:
-  id: Aha
-  version: -1
+    id: Aha
+    version: -1
 configuration:
-  - name: url
-    display: Your server URL
-    required: true
-    defaultvalue: https://example.com/
-    type: 0
-    additionalinfo: null
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: true
-    type: 8
-    additionalinfo: null
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    defaultvalue: ''
-    type: 8
-    additionalinfo: null
-  - name: api_key
-    display: Api Key
-    required: true
-    defaultvalue: null
-    type: 0
-    additionalinfo: "API Key to access service REST API "
-description: Aha!
-display: AHA
+    - name: url
+      display: Your server URL
+      required: true
+      defaultvalue: https://example.com/
+      type: 0
+      additionalinfo: null
+    - name: insecure
+      display: Trust any certificate (not secure)
+      required: false
+      defaultvalue: true
+      type: 8
+      additionalinfo: null
+    - name: proxy
+      display: Use system proxy settings
+      required: false
+      defaultvalue: ""
+      type: 8
+      additionalinfo: null
+    - name: api_key
+      display: Api Key
+      required: true
+      defaultvalue: null
+      type: 0
+      additionalinfo: "API Key to access service REST API "
+description: Use the Aha! integration to list and manage Cortex XSOAR features
+    from Aha. The integration also mirrors Jira tickets to Aha! features when closing Jira tickets.
+display: Aha
 name: Aha
 script:
-  commands:
-    - name: aha-get-features
-      description: will get all features from service
-      deprecated: false
-      arguments:
-        - name: from_date
-          description: list features starting from a date
-          required: false
-          isArray: false
-          defaultValue: 2020-01-01
-          predefined:
-            - ""
-      outputs: [{
-                "features": [
-                    {
-                        "id": "7142047390424612198",
-                        "reference_num": "DEMO-30",
-                        "name": "Share places of interest in Italy",
-                        "created_at": "2022-09-11T09:11:33.044Z",
-                        "url": "https://paloalto-networks.aha.io/features/DEMO-30",
-                        "resource": "https://paloalto-networks.aha.io/api/v1/features/DEMO-30",
-                        "product_id": "7142047389388652071"
-                    }
-                ],
-                "pagination": {
-                    "total_records": 1,
-                    "total_pages": 1,
-                    "current_page": 1
-                }
-            }]
-    - name: aha-get-feature
-      description: returns a specific feature
-      deprecated: false
-      arguments:
-        - name: feature_name
-          description: Get a feature with the name specified
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs: [{
-              "feature": {
-                  "id": "7142106945924227094",
-                  "name": "test name",
-                  "reference_num": "DEMO-36",
-                  "initiative_reference_num": null,
-                  "release_reference_num": "DEMO-R-3",
-                  "epic_reference_num": null,
-                  "position": 1,
-                  "score": 29,
-                  "created_at": "2022-09-11T13:02:37.261Z",
-                  "updated_at": "2022-09-19T11:52:18.903Z",
-                  "start_date": null,
-                  "due_date": null,
-                  "product_id": "7142047389388652071",
-                  "progress": 0,
-                  "progress_source": "progress_manual",
-                  "status_changed_on": "2022-09-14",
-                  "created_by_user": {
-                      "id": "7142047370286614216",
-                      "name": "User",
-                      "email": "user@email.com",
-                      "created_at": "2022-09-11T09:11:26.224Z",
-                      "updated_at": "2022-09-14T10:23:24.795Z"
-                  },
-                  "workflow_kind": {
-                      "id": "7142047373244952991",
-                      "name": "New"
-                  },
-                  "workflow_status": {
-                      "id": "7142047373292237665",
-                      "name": "Closed",
-                      "position": 6,
-                      "complete": true,
-                      "color": "#689f3b"
-                  },
-                  "description": {
-                      "id": "7142106946238992066",
-                      "body": "<p>test desc</p>",
-                      "created_at": "2022-09-11T13:02:37.335Z",
-                      "attachments": []
-                  },
-                  "attachments": [],
-                  "integration_fields": [],
-                  "url": "https://paloalto-networks.aha.io/features/DEMO-36",
-                  "resource": "https://paloalto-networks.aha.io/api/v1/features/DEMO-36",
-                  "release": {
-                      "id": "7142047392704264269",
-                      "reference_num": "DEMO-R-3",
-                      "name": "iOS v4.23 Release",
-                      "start_date": "2022-09-02",
-                      "release_date": "2022-10-05",
-                      "parking_lot": false,
-                      "created_at": "2022-09-11T09:11:33.199Z",
-                      "product_id": "7142047389388652071",
-                      "integration_fields": [],
-                      "url": "https://paloalto-networks.aha.io/releases/DEMO-R-3",
-                      "resource": "https://paloalto-networks.aha.io/api/v1/releases/DEMO-R-3",
-                      "owner": {
-                          "id": "7142047370286614216",
-                          "name": "User",
-                          "email": "user@email.com",
-                          "created_at": "2022-09-11T09:11:26.224Z",
-                          "updated_at": "2022-09-14T10:23:24.795Z"
-                      },
-                      "project": {
-                          "id": "7142047389388652071",
-                          "reference_prefix": "DEMO",
-                          "name": "Fredwin Cycling Product (Demo)",
-                          "product_line": false,
-                          "created_at": "2022-09-11T09:11:33.020Z",
-                          "workspace_type": "product_workspace"
-                      }
-                  },
-                  "assigned_to_user": null,
-                  "requirements": [],
-                  "goals": [],
-                  "comments_count": 0,
-                  "score_facts": [
-                      {
-                          "id": "7142106945995827466",
-                          "value": 10,
-                          "name": "PR/Marketing"
-                      },
-                      {
-                          "id": "7142106946052573142",
-                          "value": 9,
-                          "name": "Retention of customers"
-                      },
-                      {
-                          "id": "7142106946091996281",
-                          "value": 0,
-                          "name": "Operational efficiencies"
-                      },
-                      {
-                          "id": "7142106946140813364",
-                          "value": 6,
-                          "name": "Effort to develop (subtracted)"
-                      },
-                      {
-                          "id": "7142106946181832154",
-                          "value": 6,
-                          "name": "Sales increase"
-                      }
-                  ],
-                  "tags": [],
-                  "full_tags": [],
-                  "custom_fields": [],
-                  "feature_links": [],
-                  "feature_only_original_estimate": null,
-                  "feature_only_remaining_estimate": null,
-                  "feature_only_work_done": null
-              }
-          }]
-    - name: aha-edit-feature
-      description: change value of a field in feature
-      deprecated: false
-      arguments:
-        - name: feature_name
-          description: Select features to edit
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: fields
-          description: Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status
-          required: true
-          isArray: false
-          defaultValue: '{"name": "name", "description": "desc", "status" : "Closed"}'
-          predefined:
-            - ""
-      outputs: [{
-                "feature": {
-                    "id": "7142047393121670680",
-                    "name": "name from postman",
-                    "created_by_user": {
-                        "id": "7142047370286614216",
-                        "name": "User",
-                        "email": "user@email.com"
-                    },
-                    "workflow_status": {
-                        "id": "7142047373292237665",
-                        "name": "Closed",
-                        "position": 6,
-                        "complete": true,
-                        "color": "#689f3b",
-                        "description": {
-                            "id": "7142047373307410190",
-                            "body": "Is live and available to customers."
-                        }
-                    },
-                    "description": {
-                        "id": "7142047393165357275",
-                        "body": "updated from postman"
-                    }
-                }
-            }]
-    - name: aha-close-feature
-      description: Sets a feature status to closed
-      deprecated: false
-      arguments:
-        - name: feature_name
-          description: Select a specific feature to close.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs: [{
-    "feature": {
-        "id": "7142047393121670680",
-        "name": "name from postman",
-        "reference_num": "DEMO-10",
-        "initiative_reference_num": "DEMO-S-3",
-        "release_reference_num": "DEMO-R-3",
-        "epic_reference_num": null,
-        "position": 3,
-        "score": 19,
-        "created_at": "2022-09-11T09:11:33.224Z",
-        "updated_at": "2022-09-20T13:55:47.008Z",
-        "start_date": null,
-        "due_date": null,
-        "product_id": "7142047389388652071",
-        "progress": null,
-        "progress_source": "progress_manual",
-        "status_changed_on": "2022-09-20",
-        "created_by_user": {
-            "id": "7142047370286614216",
-            "name": "User",
-            "email": "user@email.com",
-            "created_at": "2022-09-11T09:11:26.224Z",
-            "updated_at": "2022-09-14T10:23:24.795Z"
-        },
-        "workflow_kind": {
-            "id": "7142047373244952991",
-            "name": "New"
-        },
-        "workflow_status": {
-            "id": "7142047373292237665",
-            "name": "Closed",
-            "position": 6,
-            "complete": true,
-            "color": "#689f3b"
-        },
-        "description": {
-            "id": "7142047393165357275",
-            "body": "updated from postman",
-            "created_at": "2022-09-11T09:11:33.226Z",
-            "attachments": []
-        },
-        "attachments": [],
-        "integration_fields": [],
-        "url": "https://paloalto-networks.aha.io/features/DEMO-10",
-        "resource": "https://paloalto-networks.aha.io/api/v1/features/DEMO-10",
-        "release": {
-            "id": "7142047392704264269",
-            "reference_num": "DEMO-R-3",
-            "name": "iOS v4.23 Release",
-            "start_date": "2022-09-02",
-            "release_date": "2022-10-05",
-            "parking_lot": false,
-            "created_at": "2022-09-11T09:11:33.199Z",
-            "product_id": "7142047389388652071",
-            "integration_fields": [],
-            "url": "https://paloalto-networks.aha.io/releases/DEMO-R-3",
-            "resource": "https://paloalto-networks.aha.io/api/v1/releases/DEMO-R-3",
-            "owner": {
-                "id": "7142047370286614216",
-                "name": "User",
-                "email": "user@email.com",
-                "created_at": "2022-09-11T09:11:26.224Z",
-                "updated_at": "2022-09-14T10:23:24.795Z"
-            },
-            "project": {
-                "id": "7142047389388652071",
-                "reference_prefix": "DEMO",
-                "name": "Fredwin Cycling Product (Demo)",
-                "product_line": false,
-                "created_at": "2022-09-11T09:11:33.020Z",
-                "workspace_type": "product_workspace"
-            }
-        },
-        "belongs_to_release_phase": {
-            "id": "7142047392916283333",
-            "name": "Define included features",
-            "start_on": "2022-09-05",
-            "end_on": "2022-09-07",
-            "type": "phase",
-            "release_id": "7142047392704264269",
-            "created_at": "2022-09-11T09:11:33.213Z",
-            "updated_at": "2022-09-20T13:55:47.016Z",
-            "progress": 0,
-            "progress_source": "progress_from_todos",
-            "duration_source": "duration_manual",
-            "description": {
-                "id": "7142047392942881656",
-                "body": "",
-                "created_at": "2022-09-11T09:11:33.215Z",
-                "attachments": []
-            }
-        },
-        "assigned_to_user": null,
-        "requirements": [],
-        "initiative": {
-            "id": "7142047389806640688",
-            "reference_num": "DEMO-S-3",
-            "name": "Mobile Fredwin Cycling Tracker App upgrades",
-            "url": "https://example.com.aha.io/initiatives/DEMO-S-3",
-            "resource": "https://example.com.aha.io/api/v1/initiatives/DEMO-S-3",
-            "created_at": "2022-09-11T09:11:33.031Z",
-            "description": {
-                "id": "7142047389835002618",
-                "body": "<p></p>",
-                "created_at": "2022-09-11T09:11:33.033Z",
-                "attachments": []
-            },
-            "integration_fields": []
-        },
-        "goals": [
-            {
-                "id": "7142047387627910934",
-                "name": "Most used mobile apps",
-                "url": "https://example.com.aha.io/strategic_imperatives/7142047387627910934",
-                "resource": "https://example.com.aha.io/api/v1/goals/7142047387627910934",
-                "created_at": "2022-09-11T09:11:30.399Z",
-                "description": {
-                    "id": "7142047387664021169",
-                    "body": "<p>Increase mobile app downloads to 100,000 total.</p>",
-                    "created_at": "2022-09-11T09:11:30.401Z",
-                    "attachments": []
-                }
-            }
-        ],
-        "comments_count": 0,
-        "score_facts": [
-            {
-                "id": "7142047393179266454",
-                "value": 10,
-                "name": "PR/Marketing"
-            },
-            {
-                "id": "7142047393169519956",
-                "value": 9,
-                "name": "Retention of customers"
-            },
-            {
-                "id": "7142047393173908761",
-                "value": 0,
-                "name": "Operational efficiencies"
-            },
-            {
-                "id": "7142047393173803796",
-                "value": 6,
-                "name": "Effort to develop (subtracted)"
-            },
-            {
-                "id": "7142047393162383661",
-                "value": 6,
-                "name": "Sales increase"
-            }
-        ],
-        "tags": [],
-        "full_tags": [],
-        "custom_fields": [],
-        "feature_links": [],
-        "feature_only_original_estimate": null,
-        "feature_only_remaining_estimate": null,
-        "feature_only_work_done": null
-    }
-}]
-  isfetch: false
-  runonce: false
-  script: "-"
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
-  feed: false
+    commands:
+        - name: aha-get-features
+          description: Will list all features from service, unless a specific feature is specified
+          deprecated: false
+          arguments:
+              - name: from_date
+                description: Show features created after that date
+                required: false
+                isArray: false
+                defaultValue: "2020-01-01"
+                predefined:
+              - name: feature_name
+                description: get a specific feature
+                required: false
+                isArray: false
+                defaultValue: ""
+                predefined:
+                    - ""
+          outputs:
+              - contextPath: features.feature.id
+                -: The feature ID.
+                type: UUID
+              - contextPath: features.feature.name
+                name: The feature name.
+                type: String
+              - contextPath: features.feature.reference_num
+                name: A feature reference number.
+                type: String
+              - contextPath: features.feature.created_by_user.id
+                name: Created by user identifier.
+                type: UUID
+              - contextPath: features.feature.created_by_user.name
+                name: Feature creator name.
+                type: String
+              - contextPath: features.feature.created_by_user.email
+                name: Feature creator email.
+                type: String
+              - contextPath: features.feature.workflow_status.id
+                name: Workflow_status identifier.
+                type: UUID
+              - contextPath: features.feature.workflow_status.name
+                name: Status name.
+                type: String
+              - contextPath: features.feature.workflow_status.position
+                name:
+                type: String
+              - contextPath: features.feature.workflow_status.complete
+                name: Feature Status.
+                type: String
+              - contextPath: features.feature.workflow_status.color
+                name: Feature Status.
+                type: String
+              - contextPath: features.feature.workflow_status.description
+                name: description of the status
+                type: String
+              - contextPath: features.feature.description.id
+                name: Description identifier
+                type: UUID
+              - contextPath: features.feature.description.body
+                name: Description of the feature.
+                type: String
+        - name: aha-edit-feature
+          description: Edit of the following fields in a feature Name, Status and Description
+          deprecated: false
+          arguments:
+              - name: feature_name
+                description: Select features to edit
+                required: true
+                isArray: false
+                defaultValue: ""
+                predefined:
+                    - ""
+              - name: fields
+                description: Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status
+                required: true
+                isArray: false
+                defaultValue: '{"name": "name", "description": "desc", "status" : "Closed"}'
+                predefined:
+                    - ""
+          outputs:
+              - contextPath: feature.id
+                name: The feature ID.
+                type: UUID
+              - contextPath: feature.name
+                name: The feature name.
+                type: String
+              - contextPath: feature.reference_num
+                name: A feature reference number.
+                type: String
+              - contextPath: feature.created_by_user.id
+                name: Created by user identifier.
+                type: UUID
+              - contextPath: feature.created_by_user.name
+                name: Feature creator name.
+                type: String
+              - contextPath: feature.created_by_user.email
+                name: Feature creator email.
+                type: String
+              - contextPath: feature.workflow_status.id
+                name: Workflow_status identifier.
+                type: UUID
+              - contextPath: feature.workflow_status.name
+                name: Status name.
+                type: String
+              - contextPath: feature.workflow_status.position
+                name:
+                type: String
+              - contextPath: feature.workflow_status.complete
+                name: 
+                type: String
+              - contextPath: feature.workflow_status.color
+                name: 
+                type: String
+              - contextPath: feature.workflow_status.description
+                name: description of the status
+                type: String
+              - contextPath: feature.description.id
+                name: Description identifier
+                type: UUID
+              - contextPath: feature.description.body
+                name: Description of the feature.
+                type: String
+    isfetch: false
+    runonce: false
+    script: "-"
+    type: python
+    subtype: python3
+    dockerimage: demisto/python3:3.10.7.33922
+    feed: false
 fromversion: 6.5.0
 tests:
-  - No tests (auto formatted)
+    - No tests (auto formatted)

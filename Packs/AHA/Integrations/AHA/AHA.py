@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX = '/products/DEMO/features/'
-FIELDS = 'reference_num, name, description, workflow_status'
+RESPONSE_FIELDS = 'reference_num,name,description,workflow_status'
 ''' CLIENT CLASS '''
 
 
@@ -26,11 +26,13 @@ class Client(BaseClient):
         """
         Retrieves a list of features from AHA
         Args:
+            feature_name: str if given it will fetch the feature specified. if not will fetch all features.
             from_date: str format: YYYY-MM-DD
         """
         headers = self._headers
-        response = self._http_request(method='GET', url_suffix=f'{URL_SUFFIX}{feature_name}?\
-                                      updated_since={from_date}&fields={FIELDS}', headers=headers, resp_type='json')
+        response = self._http_request(method='GET',
+                                      url_suffix=f'{URL_SUFFIX}{feature_name}?updated_since={from_date}&fields={RESPONSE_FIELDS}',
+                                      headers=headers, resp_type='json')
         return response
 
     def edit_feature(self, feature_name: str, fields: Dict) -> Dict:
@@ -48,8 +50,8 @@ class Client(BaseClient):
         demisto.debug(f"payload: {payload}")
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}?fields={FIELDS}", headers=headers,
-                                      resp_type='json', data=json.dumps(payload))
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}?fields={RESPONSE_FIELDS}",
+                                      headers=headers, resp_type='json', data=json.dumps(payload))
 
         return response
 

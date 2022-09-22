@@ -6,7 +6,5 @@
  https://secure.aha.io/settings/api_keys
  
  The integration supports the following workflows:
- - Aha! Get features (since date)
- - Aha! Get feature (all fields / specific fields)
- - Aha! Update feature
- - Aha! Close feature
+ - Aha! Get features (Lists all features unless a specific feature is requested.)
+ - Aha! Edit feature (Can Edit a feature name, description and status.)
