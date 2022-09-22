@@ -7,7 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
@@ -29,7 +29,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple)
+                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -538,7 +538,7 @@ class BranchTestCollector(TestCollector):
         except FileNotFoundError:
             raise FileNotFoundError(f'could not find yml matching {PACK_MANAGER.relative_to_packs(content_item_path)}')
 
-        actual_content_type = find_yml_content_type(yml_path)
+        actual_content_type = find_yml_content_type(yml_path) or hotfix_detect_old_script_yml(yml_path)
         self._validate_content_item_compatibility(yml, is_integration=actual_content_type == FileType.INTEGRATION)
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
@@ -627,6 +627,11 @@ class BranchTestCollector(TestCollector):
 
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
+
+        if file_type is None and path.parent.name not in CONTENT_ENTITIES_DIRS:
+            raise NothingToCollectException(
+                path,
+                f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
         try:
             content_item = ContentItem(path)
