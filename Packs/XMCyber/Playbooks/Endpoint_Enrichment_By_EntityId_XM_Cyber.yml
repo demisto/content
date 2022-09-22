@@ -1,16 +1,17 @@
 id: Endpoint Enrichment By EntityId - XM Cyber
-version: -1
-fromversion: 6.0.0
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: Endpoint Enrichment By EntityId - XM Cyber
-description: Enrich an endpoint by entityId using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
+description: Enrich an endpoint by entityId using XM Cyber integration. Outputs include
+  affected assets, affected entities, complexity of compromise, and more
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c3f54b8-eaf3-47cb-9fa0-5c5c22514fd0
+    taskid: 58b90b77-70fd-466c-8953-6e90da525300
     type: start
     task:
-      id: 9c3f54b8-eaf3-47cb-9fa0-5c5c22514fd0
+      id: 58b90b77-70fd-466c-8953-6e90da525300
       version: -1
       name: ""
       description: Start
@@ -20,6 +21,7 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,12 +34,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0e2116eb-9151-4063-9d18-c69051113331
+    taskid: 1dd7be88-cb65-4f1e-8c37-9aad6fc1339b
     type: title
     task:
-      id: 0e2116eb-9151-4063-9d18-c69051113331
+      id: 1dd7be88-cb65-4f1e-8c37-9aad6fc1339b
       version: -1
       name: XM Cyber Available
       description: XM Cyber Available
@@ -48,6 +52,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -60,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 687e0ff2-38ce-4632-810c-35489b99a6a4
+    taskid: 7d9ec595-73aa-4b56-8eb5-547d4d40f551
     type: condition
     task:
-      id: 687e0ff2-38ce-4632-810c-35489b99a6a4
+      id: 7d9ec595-73aa-4b56-8eb5-547d4d40f551
       version: -1
       name: Is there an endpoint to enrich?
       description: Checks whether there is at least one endpoint to enrich (by entityId).
@@ -87,8 +94,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: incident.labels.entityId
+              complex:
+                root: inputs.EntityId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -101,12 +110,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 23f94e06-7812-422c-9318-bed961d50db0
+    taskid: 7ae31b6f-572d-4545-8aba-258262284a21
     type: title
     task:
-      id: 23f94e06-7812-422c-9318-bed961d50db0
+      id: 7ae31b6f-572d-4545-8aba-258262284a21
       version: -1
       name: Done
       description: Done
@@ -114,6 +125,7 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -126,15 +138,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2fb636de-458e-4f8f-9b58-1e16661a868d
+    taskid: c07df85d-fb6e-4b0a-81ac-e08eb600545e
     type: condition
     task:
-      id: 2fb636de-458e-4f8f-9b58-1e16661a868d
+      id: c07df85d-fb6e-4b0a-81ac-e08eb600545e
       version: -1
       name: Is XM Cyber Available
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -150,6 +165,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -162,12 +178,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b1041642-9370-413e-9cc5-66905ab2a2f4
+    taskid: 5c10dbfc-ff19-4a2d-851e-88fc6750f59e
     type: regular
     task:
-      id: b1041642-9370-413e-9cc5-66905ab2a2f4
+      id: 5c10dbfc-ff19-4a2d-851e-88fc6750f59e
       version: -1
       name: Enrich from entityId
       description: Return data on Entity by entityId from XM Cyber
@@ -180,8 +198,9 @@ tasks:
       - "9"
     scriptarguments:
       entityId:
-        simple: ${incident.labels.entityId}
+        simple: ${inputs.EntityId}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -225,15 +244,18 @@ tasks:
         simple: ${XMCyber.Entity.compromisingTechniques}
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7b1bbf43-0de6-4e85-b0ce-1061394c7afd
+    taskid: eaee32d9-0027-44e8-877a-47d7b0935378
     type: regular
     task:
-      id: 7b1bbf43-0de6-4e85-b0ce-1061394c7afd
+      id: eaee32d9-0027-44e8-877a-47d7b0935378
       version: -1
       name: Get Critical Assets At Risk
-      description: List critical assets at risk from an entity and the complexity of the attack
+      description: List critical assets at risk from an entity and the complexity
+        of the attack
       script: '|||xmcyber-affected-critical-assets-list'
       type: regular
       iscommand: true
@@ -244,8 +266,8 @@ tasks:
     scriptarguments:
       entityId:
         simple: ${XMCyber.Entity.id}
-      timeId: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -262,27 +284,30 @@ tasks:
         simple: ${XMCyber.Entity.criticalAssetsAtRiskList}
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 447cf206-cc15-447c-bdac-f1dbb0ac3726
+    taskid: aaff82a1-9a8e-4dda-88a3-4fac5979699b
     type: regular
     task:
-      id: 447cf206-cc15-447c-bdac-f1dbb0ac3726
+      id: aaff82a1-9a8e-4dda-88a3-4fac5979699b
       version: -1
       name: Get Entities At Risk
-      description: List all entities at risk from an entity and the complexity of the attack
+      description: List all entities at risk from an entity and the complexity of
+        the attack
       script: '|||xmcyber-affected-entities-list'
       type: regular
       iscommand: true
-      brand: XMCyber
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
       entityId:
         simple: ${XMCyber.Entity.id}
-      timeId: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -299,18 +324,20 @@ tasks:
         simple: ${XMCyber.Entity.entitiesAtRiskList}
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f4877cce-8cea-4696-b319-7fcc79097533
+    taskid: 4589b6d0-27ce-4208-87c9-351a628ef7f7
     type: condition
     task:
-      id: f4877cce-8cea-4696-b319-7fcc79097533
+      id: 4589b6d0-27ce-4208-87c9-351a628ef7f7
       version: -1
       name: Found Entity?
+      description: Does the endpoint match an XM Cyber entity?
       type: condition
       iscommand: false
       brand: ""
-      description: Does the endpoint match an XM Cyber entity?
     nexttasks:
       '#default#':
       - "4"
@@ -325,6 +352,7 @@ tasks:
             value:
               simple: ${XMCyber.Entity.id}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -337,6 +365,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -344,24 +374,22 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 605,
+        "height": 1405,
+        "width": 840,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
-- key: Hostname
+- key: EntityId
   value:
     complex:
-      root: Endpoint
-      accessor: Hostname
-      transformers:
-      - operator: uniq
+      root: incident
+      accessor: entityid
   required: false
-  description: The hostname of the endpoint to enrich.
-  playbookInputQuery:
+  description: ""
+  playbookInputQuery: null
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -399,5 +427,3 @@ outputs:
 - contextPath: XMCyber.Entity.entitiesAtRiskList
   description: Entities at risk from this entity
   type: unknown
-tests:
-- No tests
