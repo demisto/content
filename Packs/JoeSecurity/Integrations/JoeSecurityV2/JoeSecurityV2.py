@@ -35,30 +35,30 @@ class Client(jbxapi.JoeSandbox):
 ''' HELPER FUNCTIONS '''
 
 
-def update_metrics(res: Exception, exe_metrics: ExecutionMetrics):
+def update_metrics(exception: Exception, exe_metrics: ExecutionMetrics):
     """
         Helper function that supports the update of the execution metrics.
 
         Args:
-            res: 
+            exception: Exception: The exception.
             exe_metrics: ExecutionMetrics: Execution metrics object.
 
         Returns:
             None
     """
-    # if isinstance(res, jbxapi.ApiError):
-    #     match API_ERRORS.get(res.code):
-    #         case 'Quota':
-    #             exe_metrics.quota_error += 1
-    #         case 'InvalidApiKeyError' | 'PermissionError':
-    #             exe_metrics.auth_error += 1
-    #         case 'ServerOfflineError' | 'InternalServerError':
-    #             exe_metrics.connection_error += 1
-    #         case _:
-    #             exe_metrics.general_error += 1
-    # else:
-    #     exe_metrics.general_error += 1
-    pass
+    if isinstance(exception, jbxapi.ApiError):
+        match API_ERRORS.get(exception.code):
+            case 'Quota':
+                exe_metrics.quota_error += 1
+            case 'InvalidApiKeyError' | 'PermissionError':
+                exe_metrics.auth_error += 1
+            case 'ServerOfflineError' | 'InternalServerError':
+                exe_metrics.connection_error += 1
+            case _:
+                exe_metrics.general_error += 1
+    else:
+        exe_metrics.general_error += 1
+
 
 def paginate(args: Dict[str, Any], results: Generator) -> List:
     """
@@ -89,7 +89,7 @@ def paginate(args: Dict[str, Any], results: Generator) -> List:
     if page and page_size:
         try:
             all_pages = [next(results) for _ in range(0, number_of_entries)]
-            return all_pages[-page_size:]   # pylint: disable=E1130
+            return all_pages[-page_size:]  # pylint: disable=E1130
         except StopIteration:
             return []
     return list(results)[:limit]
@@ -227,8 +227,8 @@ def build_relationships(threat_name: str, entity: str, entity_type: str) -> Enti
                               reverse_name=EntityRelationship.Relationships.INDICATED_BY)
 
 
-def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool = False) \
-        -> CommandResults:
+def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]],
+                           is_reputation: bool = False) -> CommandResults:
     """
          Helper function that creates the Indicator object.
 
@@ -245,7 +245,8 @@ def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: L
     return build_url_object(client, analysis, analyses, is_reputation)
 
 
-def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool)-> CommandResults:
+def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]],
+                      is_reputation: bool) -> CommandResults:
     """
          Helper function that creates the File object.
 
@@ -284,8 +285,8 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
                           readable_output=tableToMarkdown('File Result:', hr, headers))
 
 
-def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]], is_reputation: bool)\
-        -> CommandResults:
+def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Dict[str, Any]],
+                     is_reputation: bool) -> CommandResults:
     """
          Helper function that creates the URL object.
 
@@ -312,7 +313,7 @@ def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Di
         relationships.append(build_relationships(threat_name, url, FeedIndicatorType.URL))
     indicator = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
     if is_reputation:
-        return CommandResults(outputs=url, indicator=indicator, relationships=relationships,outputs_prefix='Joe.URL',
+        return CommandResults(outputs=url, indicator=indicator, relationships=relationships, outputs_prefix='Joe.URL',
                               readable_output=tableToMarkdown('Url Result:', {'Url': url}))
     return CommandResults(indicator=indicator, relationships=relationships,
                           readable_output=tableToMarkdown('Url Result:', {'Url': url}))
@@ -372,7 +373,6 @@ def build_analysis_command_result(client: Client, analyses: List[Dict[str, Any]]
                   'Comments']
     command_res_ls = []
     hr_analysis_ls = []
-    relationships = []
     for analysis in analyses:
         hr_analysis_ls.append(build_analysis_hr(analysis))
         if full_display:
@@ -404,7 +404,7 @@ def build_reputiation_command_result(client: Client, analyses: List[Dict[str, An
 
 
 def build_submission_command_result(client: Client, res: Dict[str, Any], args: Dict[str, Any],
-                                    exe_metrics: ExecutionMetrics, download_report: bool) \
+                                    exe_metrics: ExecutionMetrics, download_report: bool)\
         -> List[Union[CommandResults, Dict[str, Any]]]:
     """
         Helper function that parses the submission result object.
@@ -419,7 +419,7 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
          Returns:
             result: (List[Union[CommandResults, Dict[str, Any]]]): A list of CommandResults objects or fileResult data.
     """
-    command_results = []
+    command_results: List[Union[CommandResults, Dict[str, Any]]] = []
     report_type = args.get('report_type')
     full_display = argToBoolean(args.get('full_display', True))
     analyses = res.get('analyses', [])
