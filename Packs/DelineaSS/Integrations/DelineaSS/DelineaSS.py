@@ -476,7 +476,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')

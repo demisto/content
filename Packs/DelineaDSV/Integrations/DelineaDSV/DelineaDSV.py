@@ -59,7 +59,7 @@ def test_module(client) -> str:
     return 'ok'
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     client_id = params.get('client_id')
     client_secret = params.get('client_secret')
