@@ -8441,7 +8441,7 @@ script:
       name: limit
       required: false
     - defaultValue: '50'
-      description: The size of nat-rules to return.
+      description: The size of virtual-routers to return.
       isArray: false
       name: page_size
       required: false
@@ -8491,7 +8491,7 @@ script:
       isArray: false
       name: virtual_router
       required: true
-    - description: The template in which the redistribution profiles are part of. Use only for panorama instances.
+    - description: The template in which the redistribution profiles and virtual-router are part of. Use only for panorama instances.
       isArray: false
       name: template
       required: false
@@ -8531,7 +8531,7 @@ script:
       description: The OSPF of the profile.
       type: Unknown
   - arguments:
-    - description: The name of the of the redistribution profile to create.
+    - description: The name of the redistribution profile to create.
       isArray: false
       name: name
       required: true
@@ -8760,7 +8760,7 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - description: The tags that the rule will be created with.
+    - description: A comma-separated list of tags.
       isArray: true
       name: tags
       required: false
@@ -8778,7 +8778,7 @@ script:
       name: source_user
       required: false
       defaultValue: 'any'
-    - description: The service in which the rule will be created with.
+    - description: A comma-separated list of services.
       isArray: true
       name: service
       required: false
@@ -8812,7 +8812,7 @@ script:
       - ip-address
       - fqdn
       - none
-      description: The next-hop type when action = forward.
+      description: The next-hop, relevant only when action = forward.
       isArray: false
       name: nexthop
       required: false
