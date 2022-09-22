@@ -8,8 +8,10 @@ RUN apt-get update && apt-get install dos2unix -y \
     && update-ca-certificates \
     && apt-get install python2 -y
 
+ENV USERNAME demisto
+ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
-ENV PATH $PATH:/root/.local/bin
+ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 
@@ -19,7 +21,7 @@ ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/powershell/install.sh /install-powershell.sh
 
-RUN USERNAME="root" bash install-common.sh 
+RUN UID="4000" bash install-common.sh 
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
 RUN VERSION="latest" bash install-node.sh
@@ -30,10 +32,10 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
     && python -m pip install --user pipx \
     && python -m pipx ensurepath \
     && git config --global http.sslCAInfo /usr/local/share/ca-certificates/certs.crt \
-    && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting \
-    && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc \
-    && git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
-    && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
+    && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
+    && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
+    && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/zsh-autosuggestions \
+    && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> $HOME/.zshrc
 
 VOLUME [ "/var/lib/docker" ]
 
