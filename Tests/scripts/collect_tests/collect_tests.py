@@ -73,7 +73,6 @@ class CollectionResult:
             reason_description: str,
             conf: Optional[TestConf],
             id_set: Optional[IdSet],
-            is_sanity: bool = False,
             is_nightly: bool = False,
     ):
         """
@@ -90,7 +89,6 @@ class CollectionResult:
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
         :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
-        :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
         """
         self.tests: set[str] = set()
@@ -99,7 +97,7 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_collection(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
+            self._validate_collection(pack, test, reason, conf, id_set, is_nightly)  # raises if invalid
 
         except NonXsoarSupportedPackException:
             if test:
@@ -135,7 +133,6 @@ class CollectionResult:
             reason: CollectionReason,
             conf: Optional[TestConf],
             id_set: Optional[IdSet],
-            is_sanity: bool,
             is_nightly: bool,
     ):
         """
@@ -154,24 +151,23 @@ class CollectionResult:
             raise ValueError('neither pack nor test were provided')
 
         if test:
-            if not is_sanity:  # sanity tests do not show in the id_set
-                if test not in id_set.id_to_test_playbook:  # type:ignore[union-attr]
-                    raise TestMissingFromIdSetException(test)
+            if test not in id_set.id_to_test_playbook:  # type:ignore[union-attr]
+                raise TestMissingFromIdSetException(test)
 
-                test_playbook = id_set.id_to_test_playbook[test]  # type:ignore[union-attr]
-                if not (pack_id := test_playbook.pack_id):
-                    raise ValueError(f'{test} has no pack_id')
-                if not (playbook_path := test_playbook.path):
-                    raise ValueError(f'{test} has no path')
-                if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
-                    raise SkippedTestException(test, skip_place='.pack_ignore')
-                for integration in test_playbook.implementing_integrations:
-                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
-                        raise SkippedTestException(
-                            test_name=test,
-                            skip_place='conf.json (integrations)',
-                            skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
-                        )
+            test_playbook = id_set.id_to_test_playbook[test]  # type:ignore[union-attr]
+            if not (pack_id := test_playbook.pack_id):
+                raise ValueError(f'{test} has no pack_id')
+            if not (playbook_path := test_playbook.path):
+                raise ValueError(f'{test} has no path')
+            if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
+                raise SkippedTestException(test, skip_place='.pack_ignore')
+            for integration in test_playbook.implementing_integrations:
+                if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
+                    raise SkippedTestException(
+                        test_name=test,
+                        skip_place='conf.json (integrations)',
+                        skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
+                    )
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
@@ -180,13 +176,7 @@ class CollectionResult:
                 raise PrivateTestException(test)
 
         if pack:
-            try:
-                PACK_MANAGER.validate_pack(pack)
-
-            except NonXsoarSupportedPackException:
-                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    return
-                raise
+            PACK_MANAGER.validate_pack(pack)
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type:ignore[union-attr]
@@ -242,8 +232,7 @@ class TestCollector(ABC):
                 version_range=None,
                 reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
-                id_set=self.id_set,
-                is_sanity=True
+                id_set=self.id_set
             )
             for test in self._sanity_test_names
         ))
@@ -252,7 +241,7 @@ class TestCollector(ABC):
     def _always_installed_packs(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
-                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
+                             version_range=None, reason_description=pack, conf=None, id_set=None)
             for pack in ALWAYS_INSTALLED_PACKS)
         )
 
@@ -894,7 +883,6 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             version_range=None,
             conf=self.conf,
             id_set=self.id_set,
-            is_sanity=True,
         )
 
     def _collect(self) -> Optional[CollectionResult]:
