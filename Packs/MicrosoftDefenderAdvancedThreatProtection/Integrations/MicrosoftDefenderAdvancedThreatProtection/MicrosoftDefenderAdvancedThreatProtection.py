@@ -1126,7 +1126,8 @@ class MsClient:
             app_name=app_name,
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            retry_on_rate_limit=True
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -1282,9 +1283,9 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts_by_params(self, filter_req=None, params=None):
+    def list_alerts_by_params(self, filter_req=None, params=None, overwrite_rate_limit_retry=False):
         """Retrieves a collection of Alerts.
-
+            overwrite_rate_limit_retry - Skip retry mechanism, True for fetch incidents
         Returns:
             dict. Alerts info
         """
@@ -1292,7 +1293,8 @@ class MsClient:
         if not params:
             params = {'$filter': filter_req} if filter_req else None
 
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
@@ -3427,7 +3429,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     incidents = []
     # get_alerts:
     try:
-        alerts = client.list_alerts_by_params(params=params)['value']
+        alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
