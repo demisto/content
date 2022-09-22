@@ -14,6 +14,7 @@ from contextlib import redirect_stdout
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
     """Compare two zip files content"""
     # extract zip files
+    output_path.mkdir(parents=True, exist_ok=True)
     zip1_files = tempfile.mktemp()
     zip2_files = tempfile.mktemp()
     with ZipFile(zip1, "r") as zip1_content, ZipFile(zip2, "r") as zip2_content:
