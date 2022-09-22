@@ -190,7 +190,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}{issue_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def issue_update_request(self, repo: str, body: dict, issue_id: int) -> Dict:
+    def issue_update_request(self, repo: str, body: dict, issue_id: str) -> Dict:
         """ Makes a PUT request to Bitbucket, in order to update an issue.
         Args:
             repo: str - The repository the user entered if he did.
@@ -371,7 +371,7 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
     """
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
-    pagelen = response.get('pagelen', None)
+    pagelen = response.get('pagelen')
     if is_next and pagelen and limit > int(pagelen):
         return get_paged_results(client, response, limit)
     else:
@@ -406,7 +406,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     return results
 
 
-def check_args(limit: int = None, page: int = None):
+def check_args(limit: int, page: int):
     """ Test the connection to bitbucket.
     Args:
         limit: the parameter limit that is given to a command that returns a list.
@@ -490,7 +490,7 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
     """
     limit = int(args.get('limit', 50))
     project_key = args.get('project_key')
-    page = arg_to_number(args.get('page', 1))
+    page = int(args.get('page', 1))
     check_args(limit, page)
     page_size = min(100, limit)
     params = {
@@ -645,7 +645,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     if response.status_code == 204:
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
     else:
-        return CommandResults(readable_output=f'There was a problem in deleting branch "{branch_name}".')
+        raise Exception('The command branch-delete failed.')
 
 
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
@@ -687,7 +687,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     if response.status_code == 201:
         return CommandResults(readable_output='The commit was created successfully.')
     else:
-        return CommandResults(readable_output='There was a problem in creating the commit.')
+        raise Exception('The command commit-create failed.')
 
 
 def commit_list_command(client: Client, args: Dict) -> CommandResults:
@@ -771,7 +771,7 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     if response.status_code == 201:
         return CommandResults(readable_output='The file was deleted successfully.')
     else:
-        return CommandResults(outputs=response)
+        raise Exception('The command file-delete failed.')
 
 
 def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -918,7 +918,7 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with a dictionary contains the updated issue.
     """
     repo = args.get('repo')
-    issue_id = int(args.get('issue_id', None))
+    issue_id = args.get('issue_id', '')
     title = args.get('title', '')
     state = args.get('state')
     issue_type = args.get('type')
@@ -1089,7 +1089,7 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
     if not repo:
         repo = client.repository
     response = client.issue_comment_create_request(repo, issue_id, body)
-    return CommandResults(readable_output=f'The comment created successfully',
+    return CommandResults(readable_output='The comment created successfully',
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
                           raw_response=response)
@@ -1110,7 +1110,7 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
         repo = client.repository
     client.issue_comment_delete_request(repo, issue_id, comment_id)
     return CommandResults(
-        readable_output=f'The comment was deleted successfully',
+        readable_output='The comment was deleted successfully',
         outputs_prefix='Bitbucket.IssueComment',
         outputs={},
         raw_response={})
@@ -1136,7 +1136,7 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
     if not repo:
         repo = client.repository
     response = client.issue_comment_update_request(repo, issue_id, comment_id, body)
-    return CommandResults(readable_output=f'The comment was updated successfully',
+    return CommandResults(readable_output='The comment was updated successfully',
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
                           raw_response=response)
@@ -1215,7 +1215,7 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
     if not repo:
         repo = client.repository
     response = client.pull_request_comment_create_request(repo, pr_id, body)
-    return CommandResults(readable_output=f'The comment was created successfully',
+    return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.PullRequestComment',
                           outputs=[response],
                           raw_response=[response])
@@ -1303,7 +1303,7 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
     }
     response = client.pull_request_comment_update_request(repo, pr_id, body, comment_id)
     return CommandResults(
-        readable_output=f'The comment was updated successfully',
+        readable_output='The comment was updated successfully',
         outputs_prefix='Bitbucket.PullRequestComment',
         outputs=[response],
         raw_response=[response])
@@ -1324,9 +1324,9 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
         repo = client.repository
     response = client.pull_request_comment_delete_request(repo, pr_id, comment_id)
     if response.status_code == 204:
-        return CommandResults(readable_output=f'The comment was deleted successfully.')
+        return CommandResults(readable_output='The comment was deleted successfully.')
     else:
-        return CommandResults(readable_output=response.text)
+        raise Exception('The command pull-request-comment-delete failed.')
 
 
 def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1370,11 +1370,11 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:  # pragma: no cover
-    workspace = demisto.params().get('Workspace', "")
-    server_url = demisto.params().get('server_url', "")
-    user_name = demisto.params().get('UserName', {}).get('identifier', "")
-    app_password = demisto.params().get('UserName', {}).get('password', "")
+def main() -> None:
+    workspace = demisto.params().get('workspace')
+    server_url = demisto.params().get('server_url')
+    user_name = demisto.params().get('credentials', {}).get('identifier', "")
+    app_password = demisto.params().get('credentials', {}).get('password', "")
     repository = demisto.params().get('repository', "")
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)

@@ -7,7 +7,7 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Pack for handling Bitbucket operations
 configuration:
-  - name: Workspace
+  - name: workspace
     display: Workspace
     required: true
     defaultvalue: null
@@ -19,10 +19,9 @@ configuration:
     defaultvalue: https://api.bitbucket.org/2.0
     type: 0
     additionalinfo: null
-  - name: UserName
-    display: User Name
+  - display: User Name
+    name: credentials
     required: true
-    defaultvalue: null
     type: 9
     displaypassword: App Password
   - name: repository
