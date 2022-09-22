@@ -33,7 +33,6 @@ def test_get_audit_logs_command(requests_mock):
 
     results, audit_logs = get_audit_logs_command(client, limit=2)
 
-    assert results.outputs_prefix == "Tenable.AuditLogs"
     assert len(audit_logs) == 3
 
 
