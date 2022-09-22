@@ -4,11 +4,7 @@
       "type": "int",
       "is_array": false
     },
-    "created_at": {
-      "type": "string",
-      "is_array": false
-    },
-    "incident_field_values": {
+    "updated_at": {
       "type": "string",
       "is_array": false
     },
@@ -16,7 +12,7 @@
       "type": "string",
       "is_array": false
     },
-    "events": {
+    "event": {
       "type": "string",
       "is_array": false
     }
