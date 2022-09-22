@@ -11,9 +11,10 @@ Resolves the original URL from the given shortened URL and places it in both, as
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| url | The URL to resolve. |
+| **Argument Name** | **Description**                                         |
+| --- |---------------------------------------------------------|
+| url | The URL to resolve.                                     |
+| insecure | Trust any certificate (not secure) |
 
 ## Outputs
 ---
