@@ -69,7 +69,7 @@ def test_ip_command(mocker):
     assert response[0].indicator
 
 
-def test_cymru_bulk_whois_command_with_list(mocker):
+def test_ip_command_with_list(mocker):
     """
     Given:
         - List of IP addresses
@@ -122,7 +122,7 @@ def test_cymru_bulk_whois_command_with_file(mocker):
     for i, res in enumerate(response):
         assert mock_outputs[i] == res.outputs
         assert res.indicator
-        assert mock_readable_outputs[i] == res.readable_output  #
+        assert mock_readable_outputs[i] == res.readable_output
 
 
 @pytest.mark.parametrize('args, expected_error',
