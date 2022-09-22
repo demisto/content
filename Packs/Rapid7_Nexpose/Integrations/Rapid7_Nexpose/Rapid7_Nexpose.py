@@ -871,6 +871,31 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def get_vulnerability_exceptions(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                                     sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+        """
+        | Retrieve exceptions defined on vulnerabilities.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerabilityExceptions
+
+        Args:
+            page_size (int | None, optional): Number of scans to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
+                Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+        """
+        return self._paged_http_request(
+            url_suffix="/vulnerability_exceptions",
+            method="GET",
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+        )
+
     def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
         """
         | Retrieve information about solutions that can be used to remediate a vulnerability on an asset.
@@ -2671,6 +2696,79 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
+def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: Optional[are] = None,
+                                          page_size: Optional[int] = None, page: Optional[int] = None,
+                                          sort: Optional[str] = None, limit: Optional[int] = None) -> CommandResults:
+    """
+    Retrieve information about all or a specific vulnerability exception.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_exception_id (str | None, optional): ID of a specific vulnerability exception to retrieve.
+            Defaults to None (Results in getting all vulnerability exceptions).
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if not vulnerability_exception_id:
+        vulnerability_exceptions = client.get_vulnerability_exceptions(
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+        )
+
+    else:
+        vulnerability_exceptions = client.get_vulnerability_exception(
+            vulnerability_exception_id=vulnerability_exception_id,
+        )
+
+        vulnerability_exceptions = [vulnerability_exceptions]
+
+    if not vulnerability_exceptions:
+        return CommandResults(readable_output="No vulnerability exceptions were found.")
+
+    headers = [
+        "Id",
+        "Vulnerability",
+        "ExceptionScope",
+        "Reason",
+        "ReportedBy",
+        "ReportedOn",
+        "ReviewStatus",
+        "ReviewedOn",
+        "ExpiresOn",
+    ]
+
+    replace_key_names(
+        data=vulnerability_exceptions,
+        name_mapping={
+            "id": "Id",
+            "scope.vulnerability": "Vulnerability",
+            "scope.type": "ExceptionScope",
+            "submit.reason": "Reason",
+            "submit.name": "ReportedBy",
+            "state": "ReviewStatus",
+            "review.date": "ReviewedOn",
+            "expires": "ExpiresOn",
+        },
+        recursive=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.VulnerabilityException",
+        outputs_key_field="Id",
+        outputs=vulnerability_exceptions,
+        readable_output=tableToMarkdown(
+            "Nexpose Vulnerability Exceptions", vulnerability_exceptions, headers, removeNull=True),
+        raw_response=vulnerability_exceptions,
+    )
+
+
 def search_assets_command(client: Client, filter_query: Optional[str] = None, ip_addresses: Optional[str] = None,
                           hostnames: Optional[str] = None, risk_score: Optional[str] = None,
                           vulnerability_title: Optional[str] = None, sites: Union[Site, list[Site], None] = None,
@@ -3169,6 +3267,14 @@ def main():
                 page_size=arg_to_number(args.get("page_size")),
                 page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-list-vulnerability-exceptions":
+            results = list_vulnerability_exceptions_command(
+                client=client,
+                vulnerability_exception_id=args.get("id"),
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-list-scan-schedule":

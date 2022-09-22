@@ -1064,6 +1064,78 @@ script:
         description: A list of the dates of the 10 future scan schedules to launch.
         type: Array
   - arguments:
+      - default: false
+        description: ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions
+        isArray: false
+        name: id
+        required: false
+        secret: false
+      - default: false
+        description: The number of records to retrieve in each API call when pagination is used.
+        isArray: false
+        name: page_size
+        required: false
+        secret: false
+      - default: false
+        description: An option to retrieve a specific page when pagination is used.
+        isArray: false
+        name: page
+        required: false
+        secret: false
+      - default: false
+        description: The number of records retrieve.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+    deprecated: false
+    description: Retrieve information about scan schedules for a specific site or a specific scan schedule
+    execution: false
+    name: nexpose-list-vulnerability-exceptions
+    outputs:
+      - contextPath: Nexpose.VulnerabilityException.expires
+        description: The date and time the vulnerability exception is set to expire.
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.id
+        description: The The identifier of the vulnerability exception.
+        type: int
+      - contextPath: Nexpose.VulnerabilityException.scope.id
+        description: The identifier of the vulnerability to which the exception applies.
+        type: int
+      - contextPath: Nexpose.VulnerabilityException.scope.key
+        description: 'If the scope type is "Instance", an optional key to discriminate the instance the exception applies to.'
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.scope.port
+        description: 'If the scope type is "Instance" and the vulnerability is detected on a service, 
+        the port on which the exception applies.'
+        type: int
+      - contextPath: Nexpose.VulnerabilityException.scope.type
+        description: 'The type of the exception scope. One of: "Global", "Site", "Asset", "Asset Group", "Instance"'
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.scope.vulnerability
+        description: The identifier of the vulnerability to which the exception applies.
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.state
+        description: 'The state of the vulnerability exception. One of: "Deleted", "Expired",
+         "Approved", "Rejected", `"Under Review".'
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.submit.comment
+        description: A comment from the submitter as to why the exception was submitted.
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.submit.date
+        description: The date and time the vulnerability exception was submitted.
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.submit.name
+        description: The login name of the user that submitted the vulnerability exception.
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.submit.reason
+        description: 'The reason the vulnerability exception was submitted. One of: 
+        "False Positive", "Compensating Control", "Acceptable Use", "Acceptable Risk", "Other"'
+        type: string
+      - contextPath: Nexpose.VulnerabilityException.submit.user
+        description: The identifier of the user that submitted the vulnerability exception.
+        type: int
+  - arguments:
     - default: false
       description: ID of the site.
       isArray: false
