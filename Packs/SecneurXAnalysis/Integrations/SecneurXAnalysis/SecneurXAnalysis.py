@@ -1,12 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from collections import OrderedDict # noqa
+import json  # noqa
+import traceback  # noqa
+from collections import OrderedDict  # noqa
+from typing import Any, Dict  # noqa
 
-import json ## noqa
-import requests ## noqa
-import traceback ## noqa
-from typing import Dict, Any  ## noqa
-
+import demistomock as demisto  # noqa: F401
+import requests  # noqa
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -31,10 +30,12 @@ SNX_VERDICT_TO_DBOTSCORE = {
     'Malware': Common.DBotScore.BAD,
     'Ransomware': Common.DBotScore.BAD
 }
+# first comment existing pack
 
 
 class Client(BaseClient):
     """Implement class for SecneurX Analysis sandbox"""
+
     def get_response(self, urlSuffix: str, paramsDict: Dict[str, str]):
         try:
             if urlSuffix == '/get_report':
