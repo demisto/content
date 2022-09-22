@@ -1002,7 +1002,7 @@ script:
     outputs:
       - contextPath: Nexpose.ScanSchedule.Id
         description: Id of the newly created scan schedule.
-        type: string
+        type: int
   - arguments:
       - default: false
         description: ID of the site.
@@ -1045,24 +1045,55 @@ script:
     execution: false
     name: nexpose-list-scan-schedule
     outputs:
-      - contextPath: Nexpose.ScanSchedule.Enable
-        description: A flag indicating whether the scheduled scan is enabled or not.
-        type: boolean
-      - contextPath: Nexpose.ScanSchedule.StartDate
-        description: The scheduled start date and time represented in an ISO 8601 format.
+      - contextPath: Nexpose.ScanSchedule.assets.excludedAssetGroups.assetGroupIDs
+        description: List of asset group identifiers that will be excluded from scans.
+        type: array
+      - contextPath: Nexpose.ScanSchedule.assets.excludedTargets.addresses
+        description: List of addresses that will be excluded from scans.
+        type: array
+      - contextPath: Nexpose.ScanSchedule.assets.includedAssetGroups.assetGroupIDs
+        description: List of asset group identifiers that will be included in scans.
+        type: array
+      - contextPath: Nexpose.ScanSchedule.assets.includedTargets.addresses
+        description: List of addresses that will be included in scans.
+        type: array
+      - contextPath: Nexpose.ScanSchedule.duration
+        description: Specifies the maximum duration the scheduled scan is allowed to run in an ISO 8601 duration format.
         type: string
-      - contextPath: Nexpose.ScanSchedule.Name
+      - contextPath: Nexpose.ScanSchedule.enabled
+        description: Flag indicating whether the scan schedule is enabled.
+        type: string
+      - contextPath: Nexpose.ScanSchedule.id
+        description: The identifier of the scan schedule.
+        type: int
+      - contextPath: Nexpose.ScanSchedule.nextRuntimes
+        description: List the next 10 dates in the future the schedule will launch.
+        type: array
+      - contextPath: Nexpose.ScanSchedule.onScanRepeat
+        description: Specifies the desired behavior of a repeating scheduled scan when the previous scan 
+          was paused due to reaching is maximum duration.
+        type: string
+      - contextPath: Nexpose.ScanSchedule.repeat.dayOfWeek
+        description: Specifies the desired behavior of a repeating scheduled scan when the previous scan 
+          was paused due to reaching is maximum duration.
+      - contextPath: Nexpose.ScanSchedule.repeat.every
+        description: The frequency schedule repeats.
+          Each value represents a different unit of time and is used in conjunction with the property interval.
+      - contextPath: Nexpose.ScanSchedule.repeat.interval
+        description: The interval time the schedule should repeat. The is depends on the value set in every.
+      - contextPath: Nexpose.ScanSchedule.repeat.weekOfMonth
+          For This property only applies to schedules with a every value of "day-of-month".
+        description: The week of the month the scheduled task should repeat.
+      - contextPath: Nexpose.ScanSchedule.repeat.scanEngineId
         description: A user-defined name for the scan launched by the schedule.
-        type: string
-      - contextPath: Nexpose.ScanSchedule.MaxDuration
-        description: The number of assets found in the scan
-        type: number
-      - contextPath: Nexpose.ScanSchedule.Repeat
-        description: How often the scheduled scan repeats.
-        type: string
-      - contextPath: Nexpose.ScanSchedule.NextStart
-        description: A list of the dates of the 10 future scan schedules to launch.
-        type: Array
+      - contextPath: Nexpose.ScanSchedule.repeat.scanName
+        description: A user-defined name for the scan launched by the schedule.
+      - contextPath: Nexpose.ScanSchedule.repeat.scanTemplateId
+        description: The identifier of the scan template to be used for this scan schedule.
+          If not set, the site's assigned scan template will be used.
+      - contextPath: Nexpose.ScanSchedule.repeat.start
+        description: The scheduled start date and time.
+          Repeating schedules will determine the next schedule to begin based on this date and time.
   - arguments:
       - default: false
         description: ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions
@@ -1547,7 +1578,7 @@ script:
     deprecated: false
     description: Update an existing site scan schedule.
     execution: false
-    name: nexpose-create-scan-schedule
+    name: nexpose-update-scan-schedule
   isfetch: false
   runonce: false
   script: '-'
