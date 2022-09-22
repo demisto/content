@@ -15,6 +15,10 @@
     "event": {
       "type": "string",
       "is_array": false
+    },
+    "incident_field_values": {
+      "type": "string",
+      "is_array": false
     }
   }
 }

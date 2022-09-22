@@ -10,4 +10,6 @@ alter _time = updated_at
 | alter xdm.email.subject = json_extract_scalar(emails, "$.subject")
 | alter xdm.email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), ""))
 | alter millis_timestamp = json_extract_scalar(emails, "$.messageDeliveryTime.millis")
-| alter xdm.email.delivery_timestamp = parse_timestamp("%s",arrayindex( regextract(to_string(millis_timestamp),"(\d+)\d{3}"),0));
+| alter xdm.email.delivery_timestamp = parse_timestamp("%s",arrayindex( regextract(to_string(millis_timestamp),"(\d+)\d{3}"),0))
+| alter incident_field_values = incident_field_values -> []
+| alter xdm.alert.original_threat_name = json_extract_scalar(arrayindex(incident_field_values, 1), "$.value");
