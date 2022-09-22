@@ -12,7 +12,9 @@ import difflib
 from contextlib import redirect_stdout
 import dictdiffer
 
-import yaml
+from ruamel.yaml import YAML
+
+yaml = YAML()
 
 
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
@@ -38,13 +40,29 @@ def compare_zips(zip1: Path, zip2: Path, output_path: Path):
 
 def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path):
     for file in dir_compare.common_files:
-        if file not in dir_compare.same_files:
+        if file not in dir_compare.same_files and file != 'signatures.sf':
             file_diff(output_path, zip1_files, zip2_files, file)
     for subdir in dir_compare.subdirs.values():
         compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name)
 
 
+def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
+    output_path_file.unlink(missing_ok=True)
+
+    with output_path_file.open('w') as f:
+        with open(file1_path) as f1, open(file2_path) as f2:
+            f1lines = f1.readlines()
+            f2lines = f2.readlines()
+            d = difflib.Differ()
+            diffs = [x for x in d.compare(f1lines, f2lines) if x[0] in ('+', '-')]
+            if diffs:
+                f.writelines(diffs)
+            # all rows with changes
+
+
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
+    output_path.mkdir(exist_ok=True, parents=True)
+    output_path_file = output_path / file
     try:
         file1_path = (Path(zip1_files) / file)
         file2_path = (Path(zip2_files) / file)
@@ -53,13 +71,13 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
         elif file1_path.suffix == '.json':
             load_func = json.load
         else:
-            print('not comparing json or yaml')
+            print(f'not yaml or json: {output_path_file}. continue')
             return
+        output_path_file.unlink(missing_ok=True)
         with open(output_path / file, 'w') as f:
-            with file1_path.open() as f1, file2_path.open() as f2:
-                dct1 = load_func(f1)
-                dct2 = load_func(f2)
-                f.write(str(dictdiffer.diff(dct1, dct2)))
+            with open(file1_path) as f1, open(file2_path) as f2:
+                diff_found = list(dictdiffer.diff(load_func(f1), load_func(f2)))
+                json.dump(diff_found, f, indent=4)
     except Exception as e:
         print(f'could not diff files {file}: {e}')
 
