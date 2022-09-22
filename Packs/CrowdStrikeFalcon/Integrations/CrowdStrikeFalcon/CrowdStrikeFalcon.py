@@ -683,7 +683,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
     batch_id = init_rtr_batch_session(host_ids)
 
-    body = assign_params(batch_id=batch_id, file_path=file_path, optional_hosts=optional_hosts)
+    body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
     response = http_request('POST', endpoint_url, data=json.dumps(body), params=params)
     return response
