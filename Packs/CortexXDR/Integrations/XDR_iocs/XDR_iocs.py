@@ -262,6 +262,8 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
+    if not datetime.utcnow().hour in range(1, 3):
+        raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     try:
         create_file_iocs_to_keep(temp_file_path)  # can't be empty
@@ -407,10 +409,8 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
-        demisto.debug('running sync')
         sync(client)
     else:
-        demisto.debug('running iocs_to_keep')
         iocs_to_keep(client)
 
 
