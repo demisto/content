@@ -509,6 +509,8 @@ class FeedIndicatorType(object):
     URL = "URL"
     AS = "ASN"
     MUTEX = "Mutex"
+    Malware = "Malware"
+
 
     @staticmethod
     def is_valid_type(_type):
@@ -528,7 +530,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.SSDeep,
             FeedIndicatorType.URL,
             FeedIndicatorType.AS,
-            FeedIndicatorType.MUTEX
+            FeedIndicatorType.MUTEX,
+            FeedIndicatorType.Malware
         )
 
     @staticmethod
@@ -4570,7 +4573,8 @@ class Common(object):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
-        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+        # Compare by both ID and Vendor if both exist, otherwise just by ID.
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
