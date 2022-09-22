@@ -1,26 +1,25 @@
-id: playbook0
+id: Default
 version: -1
-fromversion: 5.0.0
-toversion: 7.9.9
+contentitemexportablefields:
+  contentitemfields: {}
 name: Default
-description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or
-  more integrations.
-starttaskid: '0'
+description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 08854949-08a5-4873-8f01-b3935c78675f
     type: start
     task:
       id: 08854949-08a5-4873-8f01-b3935c78675f
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -32,8 +31,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
     taskid: a61fc142-58cb-4ac1-825b-7a58d85e9a11
     type: condition
     task:
@@ -43,18 +46,15 @@ tasks:
       description: Checks whether the Enrich playbook input is set to True.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '2'
-      'yes':
-      - '3'
-    scriptarguments:
-      left: {}
-      right: {}
+      - "7"
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -64,7 +64,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
     view: |-
       {
@@ -76,44 +76,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: b80a86c0-5c2d-4128-8154-0f31028a19db
-    type: regular
-    task:
-      id: b80a86c0-5c2d-4128-8154-0f31028a19db
-      version: -1
-      name: Assign analyst to incident
-      description: Assigns a random analyst to this incident.
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      assignBy:
-        simple: random
-      email: {}
-      onCall:
-        complex:
-          root: inputs.OnCall
-      roles: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
     taskid: 09e4583d-597f-4955-897c-5bb5f24f4f57
     type: title
     task:
@@ -122,11 +90,11 @@ tasks:
       name: Enrich indicators
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -138,8 +106,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
     taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
     type: condition
     task:
@@ -149,25 +121,29 @@ tasks:
       description: Manually review and investigate this incident.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      'No':
-      - '12'
-      'Yes':
-      - '8'
+      "No":
+      - "12"
+      "Yes":
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1055
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
     taskid: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
     type: regular
     task:
@@ -181,49 +157,43 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Default Enrichment Playbook
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 310,
-          "y": 1410
+          "y": 1250
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '9':
-    id: '9'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
     taskid: 354e53b0-0132-44d6-895e-0f6e0a248cd9
     type: regular
     task:
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       version: -1
       name: Extract indicators from incident
-      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using
-           the reputation command defined for the indicator type. 
-        
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
       text:
         complex:
           root: incident
@@ -239,8 +209,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '10':
-    id: '10'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
     taskid: e6df7983-dd60-487d-8fce-70f7f5766175
     type: playbook
     task:
@@ -250,11 +224,11 @@ tasks:
       playbookName: Entity Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     separatecontext: true
     view: |-
       {
@@ -266,8 +240,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '11':
-    id: '11'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
     taskid: dfb3f612-e38a-43c1-8214-310a8e18524e
     type: playbook
     task:
@@ -277,11 +255,11 @@ tasks:
       playbookName: Calculate Severity - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "7"
     separatecontext: true
     view: |-
       {
@@ -293,8 +271,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '12':
-    id: '12'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
     taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
     type: title
     task:
@@ -303,29 +285,33 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1590
+          "y": 1430
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_#default#": 0.17,
+      "1_7_#default#": 0.18,
       "7_12_No": 0.65,
       "7_8_Yes": 0.71
     },
     "paper": {
       "dimensions": {
-        "height": 1605,
+        "height": 1445,
         "width": 732.5,
         "x": 50,
         "y": 50
@@ -335,14 +321,11 @@ view: |-
 inputs:
 - key: Enrich
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: Determines whether to enrich all indicators in the incident.
-- key: OnCall
-  value:
-    simple: false
-  required: false
-  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
 outputs: []
 tests:
   - Default - Test
+fromversion: 8.0.0

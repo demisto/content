@@ -1,0 +1,66 @@
+{
+  "result_count": 3,
+  "total_count": 102,
+  "detections": [
+    {
+      "uuid": "4b6a9e8b-1664-4c17-84c8-f8e0d1a5d579",
+      "rule_uuid": "bfcb4b76-96ef-4b33-9812-58158c871f99",
+      "device_ip": "156.112.68.177",
+      "account_uuid": "dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8",
+      "first_seen": "2022-05-29T08:53:21.600608Z",
+      "updated": "2022-05-31T08:53:21.600608Z"
+    },
+    {
+      "uuid": "60a7205d-4d63-4522-b0c6-15a468afff5f",
+      "rule_uuid": "22c9ee01-2cbd-418d-bebf-c0cb3a175602",
+      "device_ip": "156.112.68.177",
+      "account_uuid": "dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8",
+      "first_seen": "2022-05-30T09:17:50.500557Z",
+      "updated": "2022-05-31T09:17:50.500557Z"
+    },
+    {
+      "uuid": "60a7205d-4d63-4522-b0c6-15a468afff5g",
+      "rule_uuid": "22c9ee01-2cbd-418d-bebf-c0cb3a175601",
+      "device_ip": "156.112.68.177",
+      "account_uuid": "dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8",
+      "first_seen": "2022-05-31T00:00:00.000000Z",
+      "updated": "2022-05-31T09:17:50.500557Z"
+    }
+  ],
+  "sort_by": "first_seen",
+  "sort_order": "desc",
+  "offset": 0,
+  "limit": 3,
+  "rules": [
+    {
+      "uuid": "bfcb4b76-96ef-4b33-9812-58158c871f99",
+      "name": "Detection 1",
+      "category": "Test 1",
+      "query_signature": "Signature 1",
+      "description": "Detection 1 description",
+      "severity": "moderate",
+      "confidence": "low",
+      "enabled": true
+    },
+    {
+      "uuid": "22c9ee01-2cbd-418d-bebf-c0cb3a175602",
+      "name": "Detection 2",
+      "category": "Test 2",
+      "query_signature": "signature 2",
+      "description": "Detection 2 description",
+      "severity": "moderate",
+      "confidence": "moderate",
+      "enabled": true
+    },
+    {
+      "uuid": "22c9ee01-2cbd-418d-bebf-c0cb3a175601",
+      "name": "Detection 3",
+      "category": "Test 3",
+      "query_signature": "signature 3",
+      "description": "Detection 3 description",
+      "severity": "moderate",
+      "confidence": "moderate",
+      "enabled": true
+    }
+  ]
+}
