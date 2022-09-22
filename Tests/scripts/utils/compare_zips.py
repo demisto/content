@@ -17,6 +17,21 @@ from ruamel.yaml import YAML
 yaml = YAML()
 
 
+def order_dict(obj):
+    if isinstance(obj, dict):
+        obj = dict(sorted(obj.items()))
+        for k, v in obj.items():
+            if isinstance(v, dict) or isinstance(v, list):
+                obj[k] = order_dict(v)
+
+    if isinstance(obj, list):
+        for i, v in enumerate(obj):
+            if isinstance(v, dict) or isinstance(v, list):
+                obj[i] = order_dict(v)
+        obj = sorted(obj, key=lambda x: json.dumps(x))
+
+    return obj
+
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
     """Compare two zip files content"""
     # extract zip files
@@ -61,21 +76,22 @@ def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
 
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
     output_path.mkdir(exist_ok=True, parents=True)
-    output_path_file = output_path / file
     try:
         file1_path = (Path(zip1_files) / file)
         file2_path = (Path(zip2_files) / file)
+        file_diff_text(output_path / f'{file}-textdiff.log', file1_path, file2_path)
         if file1_path.suffix == '.yml':
             load_func = yaml.load
         elif file1_path.suffix == '.json':
             load_func = json.load
         else:
-            print(f'not yaml or json: {output_path_file}. continue')
+            print(f'not yaml or json: {output_path / file}. continue')
             return
-        output_path_file.unlink(missing_ok=True)
-        with open(output_path / file, 'w') as f:
+        output_dict_diff = output_path / f'{file}-dictdiff.json'
+        output_dict_diff.unlink(missing_ok=True)
+        with open(output_dict_diff, 'w') as f:
             with open(file1_path) as f1, open(file2_path) as f2:
-                diff_found = list(dictdiffer.diff(load_func(f1), load_func(f2)))
+                diff_found = list(dictdiffer.diff(order_dict(load_func(f1)), order_dict(load_func(f2))))
                 json.dump(diff_found, f, indent=4)
     except Exception as e:
         print(f'could not diff files {file}: {e}')
@@ -97,3 +113,4 @@ if __name__ == '__main__':
     for file in dir_cmp.common_files:
         pack = file.strip('.zip')
         compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
+
