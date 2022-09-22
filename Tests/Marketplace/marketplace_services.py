@@ -3322,6 +3322,7 @@ class Pack(object):
         try:
             preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
             if os.path.exists(preview_image_path):
+                self._current_version
                 return urllib.parse.quote(
                 os.path.join(GCPConfig.PREVIEW_IMAGES_BASE_PATH, self._pack_name, folder_name, preview_image_name))
             return None
@@ -3371,12 +3372,13 @@ class Pack(object):
         Returns:
             bool: True if the file is an integration image or False otherwise
         """
-        # return all([
-        #     file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
-        #     file_path.endswith('.png'),
-        #     '_image' in os.path.basename(file_path.lower()),
-        #     (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
-        # ])
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+            file_path.endswith('.png'),
+            '_image' in os.path.basename(file_path.lower()),
+            (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+        ])
+        # ontent/builds/previrew_images/3702025/marketplacev2/content/packs/content/previews/Intezer/MyDashboard2_image.png
         return all([
             file_path.startswith(os.path.join(PACKS_FOLDER, "HelloAhikam")),
             file_path.endswith('.png'),
