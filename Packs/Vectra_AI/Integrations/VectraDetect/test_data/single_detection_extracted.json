@@ -9,7 +9,7 @@
         "ThreatScore": 80,
 
         "Category": "COMMAND & CONTROL",
-        "Description": null,
+        "Description": "A successful but suspicious sign-on to this account was detected.",
         "FirstTimestamp": "2022-07-09T13:42:22.000Z",
         "IsTargetingKeyAsset": false,
         "LastTimestamp": "2022-07-09T13:45:53.000Z",
@@ -18,9 +18,7 @@
         "SensorLUID": "t3gtos4d",
         "SensorName": "Sensor_A",
         "SourceAccountID": 9,
-        "SourceHostID": null,
         "SourceIP": "101.162.72.123",
-        "TriageRuleID": null,
         "Type": "Azure AD Suspicious Sign-On",
         "URL": "https://vectra.test/detections/14"
     },
