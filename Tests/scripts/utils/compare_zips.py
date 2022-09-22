@@ -3,12 +3,16 @@
 
 import argparse
 import filecmp
+import json
 from pathlib import Path
 import tempfile
 from zipfile import ZipFile
 
 import difflib
 from contextlib import redirect_stdout
+import dictdiffer
+
+import yaml
 
 
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
@@ -29,23 +33,33 @@ def compare_zips(zip1: Path, zip2: Path, output_path: Path):
         with redirect_stdout(f):
             dir_compare.report_full_closure()
 
-    compare_files(dir_compare, zip1_files, zip2_files)
+    compare_files(dir_compare, zip1_files, zip2_files, output_path)
 
 
-def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str):
+def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path):
     for file in dir_compare.common_files:
-        file_diff(output_path, zip1_files, zip2_files, file)
+        if file not in dir_compare.same_files:
+            file_diff(output_path, zip1_files, zip2_files, file)
     for subdir in dir_compare.subdirs.values():
-        compare_files(subdir, zip1_files, zip1_files)
+        compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name)
 
 
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
     try:
-        file1_content = (Path(zip1_files) / file).read_text()
-        file2_content = (Path(zip2_files) / file).read_text()
-        d = difflib.Differ()
-        with open(output_path / file) as f:
-            f.write(d.compare(file1_content, file2_content))
+        file1_path = (Path(zip1_files) / file)
+        file2_path = (Path(zip2_files) / file)
+        if file1_path.suffix == '.yml':
+            load_func = yaml.load
+        elif file1_path.suffix == '.json':
+            load_func = json.load
+        else:
+            print('not comparing json or yaml')
+            return
+        with open(output_path / file, 'w') as f:
+            with file1_path.open() as f1, file2_path.open() as f2:
+                dct1 = load_func(f1)
+                dct2 = load_func(f2)
+                f.write(str(dictdiffer.diff(dct1, dct2)))
     except Exception as e:
         print(f'could not diff files {file}: {e}')
 
