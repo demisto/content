@@ -111,7 +111,129 @@ script:
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
       type: String
-    # - contextPath: McAfee.TIE.Reputations.GTI.Create_Date
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Hash
+      description: The value of the hash.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Provider_ID
+      description: The identifier of the particular provider that provided the reputation.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Trust_Level
+      description: The trust level for the reputation subject.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Create_Date
+      description: The time this reputation was created.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Provider
+      description: The name of the particular provider that provided the reputation.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Original_Response
+      description: The raw response as returned by the Global Threat Intelligence (GTI) reputation provider.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact
+      description: The time the file was first seen.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.PREVALENCE
+      description: The number of times the file has been requested.
+      type: String
+    
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Provider_ID
+      description: The identifier of the particular provider that provided the reputation.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Trust_Level
+      description: The trust level for the reputation subject.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date
+      description: The time this reputation was created.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Provider
+      description: The name of the particular provider that provided the reputation.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.GAM_Score
+      description: The trust score reported by the Gateway Anti-Malware (GAM).
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.AV_Engine_Score
+      description: The trust score reported by the Anti-Virus engine.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Sandbox_Score
+      description: The trust score as a result of the sandbox evaluation.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Verdict
+      description: The overall verdict (taking into consideration all available information).
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Behaviors
+      description: An encoded structure that contains observed behaviors of the file.
+      type: String
+
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider_ID
+      description: The identifier of the particular provider that provided the reputation.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Trust_Level
+      description: The trust level for the reputation subject.
+      type: Number
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Create_Date
+      description: The time this reputation was created.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider
+      description: The name of the particular provider that provided the reputation.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Server_Version
+      description: The version of the TIE server that returned the reputations (encoded version string).
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.First_Contact
+      description: The time the file was first seen.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Prevalence
+      description: The count of unique systems that have executed the file.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Enterprise_Size
+      description: The count of systems within the local enterprise.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Min_Local_Rep
+      description: The lowest reputation found locally on a system.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Max_Local_Rep
+      description: The highest reputation found locally on a system.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Avg_Local_Rep
+      description: The average reputation found locally on systems.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Min_Local_Rep
+      description: The lowest reputation for the parent found locally on a system.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Max_Local_Rep
+      description: The highest reputation for the parent found locally on a system.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Avg_Local_Rep
+      description: The average reputation for the parent found locally on systems.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.File_Name_Count
+      description: The count of unique file names for the file.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Detection_Count
+      description: The count of detections for the file or certificate.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time
+      description: The last time a detection occurred.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Is_Prevalent
+      description: Whether the file is considered to be prevalent within the enterprise.
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps
+      description: "The child file reputations (aggregate string) according to the following format:
+        - The count of files
+        - The maximum trust level found across the files
+        - The minimum trust level found across the files
+        - The trust level for the last file
+        - The average trust level across the files"
+      type: String
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps
+      description: "The parent file reputations (aggregate string) according to the following format:
+        - The count of files
+        - The maximum trust level found across the files
+        - The minimum trust level found across the files
+        - The trust level for the last file
+        - The average trust level across the files"
+      type: String
   - arguments:
     - default: true
       description: Hashes of the files for which to set the reputation. Can be "MD5",
@@ -193,13 +315,13 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: McAfee.TIE.References.AgentGuid
+    - contextPath: McAfee.TIE.FilesReferences.References.AgentGuid
       description: The GUID of the system that referenced the file.
       type: String
-    - contextPath: McAfee.TIE.References.Date
+    - contextPath: McAfee.TIE.FilesReferences.References.Date
       description: The time the system first referenced the file.
       type: String
-    - contextPath: McAfee.TIE.Hash
+    - contextPath: McAfee.TIE.FilesReferences.Hash
       description: The value of the hash.
       type: String
   dockerimage: devdemisto/dxl:1.0.0.33137

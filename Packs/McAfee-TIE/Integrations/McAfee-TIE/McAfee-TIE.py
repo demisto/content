@@ -72,7 +72,9 @@ class GeneralFileReputationParser(abc.ABC):
         elif(provider == FileProvider.ATD):
             return AtdFileReputationParser()
 
-        raise DemistoException('Unexpected provider ID returned', res=provider)
+        else:
+            demisto.debug(f'Unexpected provider ID returned - {provider}')
+            return UnknownReputationHandler()
 
     @abstractmethod
     def parse_attributes(self, attributes: Dict[str, Any]):
@@ -89,7 +91,7 @@ class GeneralFileReputationParser(abc.ABC):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: val}
 
         else:
-            raise DemistoException('Unexpected reputation key returned', res=reputation_key)
+            return {reputation_key: val}
 
     def parse_data(self, reputation_data: Dict[str, Any]):
         parsed_res: Dict[str, Any] = {}
@@ -119,10 +121,8 @@ class GtiFileReputationParser(GeneralFileReputationParser):
             elif(key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
-            # else:
-            # TODO Send message to support team
-            #     continue
-            #     raise DemistoException('Unexpected attribute key returned', res=key)
+            else:
+                parsed_res[key] = val
 
         return parsed_res
 
@@ -157,15 +157,13 @@ class EnterpriseFileReputationParser(GeneralFileReputationParser):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = EnterpriseAttrib.to_version_string(val)
 
             elif(key == FileEnterpriseAttrib.CHILD_FILE_REPS or key == FileEnterpriseAttrib.PARENT_FILE_REPS):
-                # parsed_res[self.ATTRIBUTES_KEYS[key]] = FileEnterpriseAttrib.to_aggregate_tuple(val)
+
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
             elif(key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
-            # else:
-                # TODO Send message to support team
-                # continue
-                # raise DemistoException('Unexpected attribute key returned', res=key)
+            else:
+                parsed_res[key] = val
 
         return parsed_res
 
@@ -195,12 +193,16 @@ class AtdFileReputationParser(GeneralFileReputationParser):
             if(key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
-            # else:
-                # TODO Send message to support team
-                # continue
-                # raise DemistoException('Unexpected attribute key returned', res=key)
+            else:
+                parsed_res[key] = val
 
         return parsed_res
+
+
+class UnknownReputationHandler(GeneralFileReputationParser):
+
+    def parse_attributes(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        return attributes
 
 
 def validate_certificates_format():
@@ -239,12 +241,22 @@ def get_client_config(dxl_config_files: DXLConfigFiles) -> DxlClientConfig:
     return config
 
 
-def get_provider_name(provider_id: Union[int, str]):
-    return PROVIDER_INFO[int(provider_id)].name
+def get_provider_name(provider_id: Union[int, str]) -> str:
+    provider_id_int = arg_to_number(provider_id)
+    provider_info = PROVIDER_INFO.get(provider_id_int, None)
+    if provider_info:
+        return provider_info.name
+    else:
+        return str(provider_id)
 
 
-def get_provider_abbr(provider_id: Union[int, str]):
-    return PROVIDER_INFO[int(provider_id)].abbreviation
+def get_provider_abbr(provider_id: Union[int, str]) -> str:
+    provider_id_int = arg_to_number(provider_id)
+    provider_info = PROVIDER_INFO.get(provider_id_int, None)
+    if provider_info:
+        return provider_info.abbreviation
+    else:
+        return str(provider_id)
 
 
 def epoch_to_localtime(epoch_time: int) -> str:
@@ -257,18 +269,15 @@ def epoch_to_localtime(epoch_time: int) -> str:
 
 
 def parse_reputation_human_readable(reputation):
-    # get trust level
     trust_level = reputation.get(FileReputationProp.TRUST_LEVEL)
     verbose_trust_level = TRUST_LEVELS.get(trust_level, trust_level)
 
-    # get provider
     provider_id = reputation.get(FileReputationProp.PROVIDER_ID)
     provider = get_provider_name(provider_id)
 
-    # get date
     create_date = reputation.get(FileReputationProp.CREATE_DATE)
     create_date_str = epoch_to_localtime(int(create_date))
-    # TODO Ask TPM about create date
+
     res = {
         'Trust level': trust_level,
         'Trust level (verbose)': verbose_trust_level,
@@ -335,7 +344,7 @@ def get_hash_type_key(file_hash: str):
     hash_type = get_hash_type(file_hash)
     hash_type_key = HASH_TYPE_KEYS.get(hash_type, None)
     if not hash_type_key:
-        raise Exception(f'Invalid value, {file_hash} is not a valid SHA1, SHA256 or MD5 value.')
+        raise DemistoException(f'Invalid value, {file_hash} is not a valid SHA1, SHA256 or MD5 value.')
     return hash_type_key
 
 
@@ -356,8 +365,13 @@ def parse_reputation(provider_id: int, reputation: Dict):
 def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_type_key: str):
     context_data = {}
     parsed_reputation_data = {}
-    max_trust_level = TrustLevel.KNOWN_TRUSTED_INSTALLER + 1  # More than the maximum possible trust level
-    lowest_trust_level = max_trust_level
+
+    # Since the range of trust levels is [0,1,...,100], we want to get the minimum trust level
+    # that is not 0, therefore we define a variable that is larger than the maximum in the predefined range
+    # and iterate in order to retrieve the minimum, if our minimum was not changed, that means all the trust levels
+    # are zero.
+    max_num = TrustLevel.KNOWN_TRUSTED_INSTALLER + 1  # More than the maximum possible trust level
+    lowest_trust_level = max_num
     reputations = raw_result.values()
     for reputation in reputations:
         # Parse the raw result of each reputation result
@@ -365,10 +379,11 @@ def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_ty
         parsed_reputation_data[get_provider_abbr(provider_id=provider_id)] = parse_reputation(provider_id=provider_id,
                                                                                               reputation=reputation)
         # Get the vendor's data with the lowest score
-        rep_trust_level = reputation.get(FileReputationProp.TRUST_LEVEL, 0)
-        if rep_trust_level != 0 and rep_trust_level < lowest_trust_level:
+        rep_trust_level = reputation.get(FileReputationProp.TRUST_LEVEL, TrustLevel.NOT_SET)
+        if rep_trust_level != TrustLevel.NOT_SET and rep_trust_level < lowest_trust_level:
             lowest_trust_level = rep_trust_level
-    if lowest_trust_level == max_trust_level:
+
+    if lowest_trust_level == max_num:
         lowest_tl_score = {
             LOWEST_TRUST_LEVEL_KEY: TrustLevel.NOT_SET,
             LOWEST_SCORE_KEY: Common.DBotScore.NONE
@@ -395,7 +410,7 @@ def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_ty
     table = reputations_to_human_readable(reputations)
     return CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputations For {file_hash}:', table),
                           raw_response=raw_result,
-                          outputs_prefix=OUTPUT_PREFIX,
+                          outputs_prefix=f'{OUTPUT_PREFIX}.FilesReputations',
                           outputs=context_data,
                           indicator=file_instance,
                           )
@@ -407,6 +422,7 @@ def files_reputations(hashes: List[str], tie_client: TieClient, reliability: str
         hash_type_key = get_hash_type_key(file_hash=file_hash)
         api_input = {hash_type_key: file_hash}
         raw_result = safe_get_file_reputation(tie_client, api_input)
+
         if not raw_result:
             dbot_score = Common.DBotScore(indicator=file_hash,
                                           indicator_type=DBotScoreType.FILE,
@@ -418,9 +434,7 @@ def files_reputations(hashes: List[str], tie_client: TieClient, reliability: str
                                               file_hash=file_hash,
                                               hash_type_key=hash_type_key)
 
-            command_result = CommandResults(readable_output=tableToMarkdown(f'McAfee TIE Hash Reputation For {file_hash}:', None),
-                                            raw_response=raw_result,
-                                            outputs_prefix=OUTPUT_PREFIX,
+            command_result = CommandResults(readable_output=f'McAfee TIE Hash Reputation For {file_hash} was not found',
                                             indicator=file_instance,
                                             )
         else:
@@ -429,16 +443,16 @@ def files_reputations(hashes: List[str], tie_client: TieClient, reliability: str
                                               reliability=reliability,
                                               hash_type_key=hash_type_key,
                                               )
-            # TODO Check key 2098277
+
         command_results.append(command_result)
     return command_results
 
 
 def files_references(hashes: List[str], tie_client: TieClient, query_limit: int) -> List[CommandResults]:
     if(query_limit > MAX_QUERY_LIMIT):
-        raise Exception(f'Query limit must not exceed {MAX_QUERY_LIMIT}')
+        raise DemistoException(f'Query limit must not exceed {MAX_QUERY_LIMIT}')
     elif(query_limit <= 0):
-        raise Exception('Query limit must not be zero or negative')
+        raise DemistoException('Query limit must not be zero or negative')
 
     command_results: List[CommandResults] = []
     for file_hash in hashes:
@@ -453,28 +467,29 @@ def files_references(hashes: List[str], tie_client: TieClient, query_limit: int)
         file_instance = get_file_instance(dbot_score=None,
                                           file_hash=file_hash,
                                           hash_type_key=hash_type_key)
+        if not raw_result:
+            command_result = CommandResults(readable_output=f'McAfee TIE Hash Reference For {file_hash} was not found',
+                                            indicator=file_instance,)
+        else:
+            context_data = {'Hash': file_hash}
+            context_data['References'] = table
+            command_result = CommandResults(readable_output=tableToMarkdown(f'References For Hash {file_hash}:', table),
+                                            raw_response=raw_result,
+                                            outputs_prefix=f'{OUTPUT_PREFIX}.FilesReferences',
+                                            indicator=file_instance,
+                                            outputs=context_data,
+                                            )
 
-        context_data = {'Hash': file_hash}
-        context_data['References'] = table
-        command_results.append(CommandResults(readable_output=tableToMarkdown(f'References for hash {file_hash}:', table),
-                                              raw_response=raw_result,
-                                              outputs_prefix=OUTPUT_PREFIX,
-                                              indicator=file_instance,
-                                              outputs=context_data,
-                                              ))
+        command_results.append(command_result)
     return command_results
 
 
 def get_trust_level_key(trust_level: str):
-    trust_level_key = None
-    for k, v in TRUST_LEVELS.items():
-        if v == trust_level:
-            trust_level_key = k
-            break
+    trust_level_key = [key for (key, val) in TRUST_LEVELS.items() if val == trust_level]
     if not trust_level_key:
-        raise Exception(f'Illegal argument trust_level {trust_level}. Choose value from predefined values')
-
-    return trust_level_key
+        raise DemistoException(f'Illegal argument trust_level {trust_level}. Choose value from predefined values')
+    else:
+        return trust_level_key[0]
 
 
 def set_files_reputation(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
@@ -483,14 +498,13 @@ def set_files_reputation(hashes: List[str], tie_client: TieClient, trust_level: 
 
     for file_hash in hashes:
         hash_type_key = get_hash_type_key(file_hash=file_hash)
-        api_input = {}
-        api_input[hash_type_key] = file_hash
+        api_input = {hash_type_key: file_hash}
 
         tie_client.set_file_reputation(trust_level=trust_level_key,
                                        hashes=api_input,
                                        filename=filename,
                                        comment=comment)
-    return 'Successfully set files reputation'
+    return CommandResults(readable_output='Successfully set files reputation')
 
 
 def create_temp_credentials(temp_file: tempfile._TemporaryFileWrapper, parameter_name: str):
@@ -503,6 +517,7 @@ def create_dxl_config() -> DxlClientConfig:
     with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file,\
             tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file,\
             tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.key') as private_key_file:
+        broker_certs_file.delete
         create_temp_credentials(broker_certs_file, 'broker_ca_bundle')
         create_temp_credentials(client_cert_file, 'cert_file')
         create_temp_credentials(private_key_file, 'private_key')
@@ -516,12 +531,14 @@ def create_dxl_config() -> DxlClientConfig:
 @contextlib.contextmanager
 def create_dxl_client():
     with create_dxl_config() as dxl_client_config:
-        with DxlClient(dxl_client_config) as dxl_client:
-            yield dxl_client
+        dxl_client_cm = DxlClient(dxl_client_config)
+
+    with dxl_client_cm as dxl_client:
+        yield dxl_client
 
 
 def get_tie_client(dxl_client: DxlClient):
-    dxl_client.connect()
+    dxl_client.connect()  # We need to connect to the DXL fabric in order to create a TIE Client instance
     return TieClient(dxl_client)
 
 
@@ -532,12 +549,14 @@ def main():
                                                                                                 'C - Fairly reliable'))
     try:
         with create_dxl_client() as dxl_client:
-            # try:
+            # We must configure the DxlClient before trying to connect, which is why
+            # we wrapped the following code with a "with" statement according to the DxlClient Docs.
+            # Only after successfully configuring, can we try to connect using dxl_client.connect
+            # If a configuration error is returned from the configuration phase, it will be caught before trying to connect.
             if command == 'test-module':
                 # This is the call made when clicking the integration Test button.
                 return_results(test_module(dxl_client=dxl_client))
 
-                # We need to connect to the Dxl fabric in order to create a TIE Client instance
             elif command == 'file':
                 tie_client = get_tie_client(dxl_client)
                 return_results(files_reputations(hashes=argToList(args.get('file')),
@@ -547,9 +566,11 @@ def main():
 
             elif command == 'tie-file-references':
                 tie_client = get_tie_client(dxl_client)
+                args_query_limit = arg_to_number(args.get('query_limit', None))
+                query_limit = args_query_limit if args_query_limit else MAX_QUERY_LIMIT
                 return_results(files_references(hashes=argToList(args.get('file')),
                                                 tie_client=tie_client,
-                                                query_limit=int(args.get('query_limit', MAX_QUERY_LIMIT))
+                                                query_limit=query_limit
                                                 ))
 
             elif command == 'tie-set-file-reputation':
@@ -564,11 +585,6 @@ def main():
             else:
                 raise NotImplementedError(f'Command {command} is not supported.')
 
-    except NotImplementedError as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.'
-                     f'\nError:\n{str(e)}')
-
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         exception_des = str(e)
@@ -580,7 +596,7 @@ def main():
             return_error('Invalid value - Client private key')
         else:
             return_error(f'Failed to execute {command} command.'
-                         f'\nError:\n{exception_des}')
+                         f'\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -5,6 +5,22 @@ import importlib
 import pytest
 from dxltieclient import TieClient
 
+
+class MockTieClient(TieClient):
+
+    def __init__(self, dxl_client):
+        super().__init__(dxl_client)
+
+    def get_file_reputation(self):
+        pass
+
+    def set_file_reputation(self):
+        pass
+
+    def get_file_first_references(self):
+        pass
+
+
 valid_private_key = """-----BEGIN PRIVATE KEY-----
 This is a vaild Private Key
 -----END PRIVATE KEY-----"""
@@ -68,14 +84,14 @@ def test_validate_certificate_format(mocker):
 def test_safe_get_file_reputation_returned_exception(mocker):
     """
     Given:
-        - Tie client and hash parameter
+        - TIE client and hash parameter
     When:
-        - The tie client returns some exception when running get_file_reputation
+        - The TIE client returns some exception when running get_file_reputation
     Then:
-        - Print to log and return None object
+        - Validate that we print to log and return None object
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
+    tie_client = MockTieClient(None)
     hash_param = {'test': 'test'}
 
     mocker.patch.object(tie_client, "get_file_reputation", side_effect=Exception())
@@ -85,14 +101,14 @@ def test_safe_get_file_reputation_returned_exception(mocker):
 def test_safe_get_file_reputation_returned_rep(mocker):
     """
     Given:
-        - Tie client and hash parameter
+        - TIE client and hash parameter
     When:
-        - The tie client returns reputation
+        - The TIE client returns reputation
     Then:
-        - Return the reputation and not None
+        - Validate that we return the reputation and not None object
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
+    tie_client = MockTieClient(None)
     hash_param = {'test': 'test'}
 
     mocker.patch.object(tie_client, "get_file_reputation", return_value='test_value')
@@ -102,14 +118,14 @@ def test_safe_get_file_reputation_returned_rep(mocker):
 def test_set_files_reputation_invalid():
     """
     Given:
-        - Tie client and an invalid trust_level argument
+        - TIE client and an invalid trust_level argument
     When:
         - The function set_file_reputation is called to set a new Enterprise reputation for the specified file
     Then:
-        - Throw an exception in response to the invalid trust_level argument
+        - Validate that an exception is thrown in response to the invalid trust_level argument
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
+    tie_client = MockTieClient(None)
     with pytest.raises(Exception) as e:
         mcafee_tie.set_files_reputation(hashes=['hash1', 'hash2'],
                                         tie_client=tie_client,
@@ -122,14 +138,14 @@ def test_set_files_reputation_invalid():
 def test_set_files_reputation_valid(mocker):
     """
     Given:
-        - Tie client and a valid trust_level argument
+        - TIE client and a valid trust_level argument
     When:
         - The function set_file_reputation is called to set a new reputation for the specified file
     Then:
-        - Return a string that indicates the success of the command
+        - Validate the contect of the Command Result that is returned from the function
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
+    tie_client = MockTieClient(None)
     mocker.patch.object(mcafee_tie, 'get_trust_level_key', return_value='trust_level_key')
     mocker.patch.object(mcafee_tie, 'get_hash_type_key', return_value='hash_type_key')
     mocker.patch.object(tie_client, 'set_file_reputation', return_value='test_value')
@@ -138,7 +154,7 @@ def test_set_files_reputation_valid(mocker):
                                              trust_level='valid_trust_level',
                                              filename='',
                                              comment='')
-    assert 'Successfully set files reputation' in result
+    assert 'Successfully set files reputation' in result.readable_output
 
 
 QUERY_LIMIT_CASES = [
@@ -158,14 +174,14 @@ QUERY_LIMIT_CASES = [
 def test_files_references_invalid_query_limit(params):
     """
     Given:
-        - Tie client and a list of hashes representing files
+        - TIE client and a list of hashes representing files
     When:
         - The function file_references is called to retrieve the references of the given files
     Then:
-        - Throw an exception in response to the invalid query_limit value
+        - Validate that an exception is thrown in response to the invalid query_limit value
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
+    tie_client = MockTieClient(None)
     with pytest.raises(Exception) as e:
         mcafee_tie.files_references(hashes=['hash1', 'hash2'],
                                     tie_client=tie_client,
@@ -173,110 +189,34 @@ def test_files_references_invalid_query_limit(params):
     assert 'Query limit must not exceed' in str(e) or 'Query limit must not be zero or negative' in str(e)
 
 
-def test_files_references(mocker):
-    """
-    Given:
-        - Tie client and a list of hashes representing files
-    When:
-        - The function file_references is called to retrieve the references of the given files
-    Then:
-        - Assert that the parsed raw result is of the correct form
-    """
-    from CommonServerPython import Common
-    mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
-    file_hash1 = 'hash1'
-    file_hash2 = 'hash2'
-    query_limit = mcafee_tie.MAX_QUERY_LIMIT
-    raw_response = util_load_json('test_data/files_references/raw_result.json')
-    parsed_results = util_load_json('test_data/files_references/parsed_results.json')
-
-    file_hash1_parsed_res = parsed_results[file_hash1]
-    file_hash2_parsed_res = parsed_results[file_hash2]
-
-    context_data1 = {'Hash': file_hash1, 'References': file_hash1_parsed_res}
-    context_data2 = {'Hash': file_hash2, 'References': file_hash2_parsed_res}
-
-    mocker.patch.object(mcafee_tie, 'get_hash_type_key', return_value='hash_type_key')
-    mocker.patch.object(mcafee_tie, 'references_to_human_readable', side_effect=[file_hash1_parsed_res,
-                                                                                 file_hash2_parsed_res])
-    mocker.patch.object(mcafee_tie, 'get_file_instance', return_value=Common.File(dbot_score=None))
-    mocker.patch.object(tie_client, 'get_file_first_references', side_effect=[raw_response[file_hash1],
-                                                                              raw_response[file_hash2]])
-    result = mcafee_tie.files_references(hashes=[file_hash1, file_hash2],
-                                         tie_client=tie_client,
-                                         query_limit=query_limit)
-    assert context_data1 == result[0].outputs and context_data2 == result[1].outputs
-
-
-def test_files_reputations(mocker):
-    """
-    Given:
-        - Tie client and a list of hashes representing files
-    When:
-        - The function files_reputations is called to retrieve the reputations of the given files
-    Then:
-        - Assert that the parsed raw result is of the correct form
-    """
-    mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
-    raw_response = util_load_json('test_data/files_reputations/raw_result.json')
-    parsed_results = util_load_json('test_data/files_reputations/parsed_results.json')
-
-    file_hash1_raw_response = raw_response['hash1']
-    file_hash2_raw_response = raw_response['hash2']
-    file_hash3_raw_response = raw_response['hash3']
-    mocker.patch.object(mcafee_tie, 'safe_get_file_reputation', side_effect=[file_hash1_raw_response['reputations'],
-                                                                             file_hash2_raw_response['reputations'],
-                                                                             file_hash3_raw_response['reputations']])
-    expected_command_results = [parsed_results['hash1'], parsed_results['hash2'], parsed_results['hash3']]
-    results = mcafee_tie.files_reputations(hashes=[file_hash1_raw_response['hash'],
-                                                   file_hash2_raw_response['hash'],
-                                                   file_hash3_raw_response['hash']],
-                                           tie_client=tie_client,
-                                           reliability='C - Fairly reliable')
-    for (exp_command_res, result) in zip(expected_command_results, results):
-        to_context = result.to_context()
-        assert exp_command_res.get('HumanReadable') == to_context.get('HumanReadable')
-        assert exp_command_res.get('EntryContext') == to_context.get('EntryContext')
-
-
-def test_files_reputations_empty(mocker):
-    """
-    Given:
-        - Tie client and a list of hashes representing files
-    When:
-        - The function files_reputations is called to retrieve the reputations of the given files
-    Then:
-        - Assert that the parsed empty raw result is of the correct form
-    """
-    mcafee_tie = importlib.import_module("McAfee-TIE")
-    tie_client = TieClient(None)
-    raw_response = util_load_json('test_data/files_reputations/raw_result_empty.json')
-    parsed_results = util_load_json('test_data/files_reputations/parsed_results_empty.json')
-    file_hash_raw_response = raw_response['hash1']
-    mocker.patch.object(mcafee_tie, 'safe_get_file_reputation', return_value=None)
-    results = mcafee_tie.files_reputations(hashes=[file_hash_raw_response['hash']],
-                                           tie_client=tie_client,
-                                           reliability='C - Fairly reliable')
-    to_context = results[0].to_context()
-    expected_command_results = parsed_results['hash1']
-    assert expected_command_results.get('HumanReadable') == to_context.get('HumanReadable')
-    assert expected_command_results.get('EntryContext') == to_context.get('EntryContext')
-
-
-HASHES = [
+REFERENCES_HUMAN_READABLE_CASES = [
     (
-        {'hash': 'hash1'}
-    ),
-    (
-        {'hash': 'hash2'}
+        [
+            {
+                "agentGuid": "0c906be0-224c-45d4-8e6f-bc89da69d268",
+                "date": 1508081600445
+            },
+            {
+                "agentGuid": "{3a6f574a-3e6f-436d-acd4-bcde336b054d}",
+                "date": 1475873692
+            },
+        ],
+        [
+            {
+                "Date": "2017-10-15 18:33:20",
+                "AgentGuid": "0c906be0-224c-45d4-8e6f-bc89da69d268"
+            },
+            {
+                "Date": "2016-10-07 23:54:52",
+                "AgentGuid": "3a6f574a-3e6f-436d-acd4-bcde336b054d"
+            },
+        ]
     ),
 ]
 
 
-@pytest.mark.parametrize('params', HASHES)
-def test_references_to_human_readable(params):
+@pytest.mark.parametrize('raw_result, expected_parsed_res', REFERENCES_HUMAN_READABLE_CASES)
+def test_references_to_human_readable(raw_result, expected_parsed_res):
     """
     Given:
         - Raw result from the API that represents the references of a hash
@@ -286,8 +226,132 @@ def test_references_to_human_readable(params):
         - Assert that the parsed raw result is of the correct form
     """
     mcafee_tie = importlib.import_module("McAfee-TIE")
-    raw_response = util_load_json('test_data/files_references/raw_result.json')
-    file_hash = params['hash']
-    result = mcafee_tie.references_to_human_readable(raw_response[file_hash])
-    parsed_results = util_load_json('test_data/files_references/parsed_results.json')
-    assert parsed_results[file_hash] == result
+    result = mcafee_tie.references_to_human_readable(raw_result)
+    assert expected_parsed_res == result
+
+
+FILE_REFERENCES_CASES = [
+    (
+        {'hashes': ['hash1', 'hash2']},
+        [
+            [
+                {
+                    'agentGuid': '0c906be0-224c-45d4-8e6f-bc89da69d268',
+                    'date': 1508081600445
+                },
+                {
+                    'agentGuid': '{68125cd6-a5d8-11e6-348e-000c29663178}',
+                    'date': 1478626172
+                },
+            ],
+            [
+                {
+                    'agentGuid': '{3a6f574a-3e6f-436d-acd4-bcde336b054d}',
+                    'date': 1475873692
+                },
+                {
+                    'agentGuid': '70be2ee9-7166-413b-b03e-64a48f6ab6c8',
+                    'date': 1508081651295
+                },
+            ]
+
+        ],
+        [
+            {
+                'Hash': 'hash1',
+                'References': [{'Date': '2017-10-15 18:33:20',
+                               'AgentGuid': '0c906be0-224c-45d4-8e6f-bc89da69d268'},
+                               {'Date': '2016-11-08 19:29:32',
+                               'AgentGuid': '68125cd6-a5d8-11e6-348e-000c29663178'},
+                               ]
+
+            },
+            {
+                'Hash': 'hash2',
+                'References': [{'Date': '2016-10-07 23:54:52',
+                               'AgentGuid': '3a6f574a-3e6f-436d-acd4-bcde336b054d'},
+                               {'Date': '2017-10-15 18:34:11',
+                                'AgentGuid': '70be2ee9-7166-413b-b03e-64a48f6ab6c8'},
+                               ]
+
+            },
+        ],
+    ),
+    (
+        {'hashes': ['hash1']},
+        [[]],
+        [None]
+    )
+]
+
+
+@pytest.mark.parametrize('params, raw_result, expected_parsed_results', FILE_REFERENCES_CASES)
+def test_files_references(mocker, params, raw_result, expected_parsed_results):
+    """
+    Given:
+        - TIE client and a list of hashes representing files
+    When:
+        - The function file_references is called to retrieve the references of the given files
+    Then:
+        - Assert that the parsed raw result is of the correct form
+    """
+    from CommonServerPython import Common
+    mcafee_tie = importlib.import_module("McAfee-TIE")
+    tie_client = MockTieClient(None)
+    query_limit = mcafee_tie.MAX_QUERY_LIMIT
+
+    mocker.patch.object(mcafee_tie, 'get_hash_type_key', return_value='hash_type_key')
+    mocker.patch.object(mcafee_tie, 'get_file_instance', return_value=Common.File(dbot_score=None))
+    mocker.patch.object(tie_client, 'get_file_first_references', side_effect=raw_result)
+    results = mcafee_tie.files_references(hashes=params['hashes'],
+                                          tie_client=tie_client,
+                                          query_limit=query_limit)
+    for (exp_parsed_res, result) in zip(expected_parsed_results, results):
+        assert exp_parsed_res == result.outputs
+
+
+def test_files_reputations(mocker):
+    """
+    Given:
+        - TIE client and a list of hashes representing files
+    When:
+        - The function files_reputations is called to retrieve the reputations of the given files
+    Then:
+        - Assert that the parsed raw result is of the correct form
+    """
+    raw_responses = util_load_json('test_data/files_reputations/raw_result.json')
+    parsed_results = util_load_json('test_data/files_reputations/parsed_results.json')
+    validate_parsed_files_reputations(mocker=mocker, raw_responses=raw_responses, parsed_results=parsed_results)
+
+
+def test_files_reputations_empty(mocker):
+    """
+    Given:
+        - TIE client and a list of hashes representing files
+    When:
+        - The function files_reputations is called to retrieve the reputations of the given files
+    Then:
+        - Assert that the parsed empty raw result is of the correct form
+    """
+    raw_responses = util_load_json('test_data/files_reputations/raw_result_empty.json')
+    parsed_results = util_load_json('test_data/files_reputations/parsed_results_empty.json')
+    validate_parsed_files_reputations(mocker=mocker, raw_responses=raw_responses, parsed_results=parsed_results)
+
+
+def validate_parsed_files_reputations(mocker, raw_responses, parsed_results):
+    """
+        This functions recieves the raw responses that mock the output of the API call get_file_reputation,
+        and also the expected parsed results that mock the output of the function files_reputations, then
+        validates if the returned values from the function is what we expect.
+    """
+    mcafee_tie = importlib.import_module("McAfee-TIE")
+    tie_client = MockTieClient(None)
+    mocker.patch.object(mcafee_tie, 'safe_get_file_reputation', side_effect=raw_responses['raw_results'])
+    expected_command_results = parsed_results['parsed_results']
+    results = mcafee_tie.files_reputations(hashes=raw_responses['hashes'],
+                                           tie_client=tie_client,
+                                           reliability='C - Fairly reliable')
+    for (exp_command_res, result) in zip(expected_command_results, results):
+        to_context = result.to_context()
+        assert exp_command_res.get('HumanReadable') == to_context.get('HumanReadable')
+        assert exp_command_res.get('EntryContext') == to_context.get('EntryContext')
