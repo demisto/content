@@ -308,6 +308,9 @@ tasks:
       type: regular
       iscommand: true
       brand: AWS - S3
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
     separatecontext: false
     continueonerrortype: ""
     view: |-
