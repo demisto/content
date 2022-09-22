@@ -8,7 +8,7 @@ Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 4.X API version
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL |  | True |
-    | API Key (leave empty. Fill in the API key in the password field.) |  | False |
+    | API Key |  | False |
     | Indicator types to fetch | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR. | True |
     | Max indicators per fetch |  | False |
     | Fetch indicators |  | False |
