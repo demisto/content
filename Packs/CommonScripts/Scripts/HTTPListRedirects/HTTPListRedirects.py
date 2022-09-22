@@ -41,17 +41,17 @@ def delete_environment_variables(use_system_proxy: str):
 def main():
     url = demisto.args().get('url')
     try:
-        delete_environment_variables(use_system_proxy=demisto.args().get('use_system_proxy'))
+        delete_environment_variables(use_system_proxy=demisto.args().get('use_system_proxy').lower())
         url = f'http://{url}' if not url.lower().startswith('http') else url
 
         response = get_response(url=url,
                                 use_head=demisto.args()['useHead'],
-                                verify_ssl=demisto.args().get('trust_any_certificate') != 'true')
+                                verify_ssl=demisto.args().get('trust_any_certificate', 'true').lower() != 'true')
         history_urls = get_response_history(response=response)
         demisto.results(create_command_result(history_urls=history_urls))
 
     except Exception as e:
-        return_error(f'Failed to execute script.\nError:\n{str(e)}')
+        return_error(f'Failed to execute script. Error:\n{str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
