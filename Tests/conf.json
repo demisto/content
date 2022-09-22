@@ -782,7 +782,14 @@
         {
             "integrations": "Server Message Block (SMB) v2",
             "playbookID": "SMB_v2-Test",
-            "has_api": false
+            "has_api": false,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB test",
+            "has_api": false,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -4336,14 +4343,6 @@
             "integrations": [
                 "RSA Archer",
                 "RSA Archer v2"
-            ]
-        },
-        {
-            "playbookID": "SMB test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Server Message Block (SMB) v2",
-                "Server Message Block (SMB)"
             ]
         },
         {
