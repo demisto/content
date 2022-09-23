@@ -434,7 +434,7 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
 
 
 def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
-    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_alerts_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
         last_run={'lastRun': None},
@@ -568,21 +568,9 @@ def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
 def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = {
         "status": "success",
-        "data": {
-            "user_id": "77777634-7777-7777-7777-f49f77777777",
-            "email": "system_testing@orca.security",
-            "first": "System",
-            "last": "Testing",
-            "full_name": "System Testing",
-            "profile_picture": "",
-            "organization_id": "e3dab69a-5555-5555-5555-c5b8881cd2fe",
-            "organization_name": "Orca Security",
-            "feature_flags": {},
-            "has_cloud_accounts": True,
-            "has_scanned_cloud_accounts": True
-        }
+        "data": []
     }
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "ok"
 
@@ -608,7 +596,7 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
 def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = mock_alerts_response.copy()  # deepcopy not needed
     mock_response["next_page_token"] = "NEXT_PAGE"
-    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
 
     # Get first page
     last_run, fetched_incidents = fetch_incidents(
@@ -621,7 +609,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     assert last_run['next_page_token'] == 'NEXT_PAGE'
     assert last_run['step'] == STEP_INIT
     mock_response["next_page_token"] = None  # type: ignore
-    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
 
     # Get next page
     last_run, fetched_incidents = fetch_incidents(
@@ -634,7 +622,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     assert last_run['step'] == STEP_FETCH
     assert 'next_page_token' not in last_run
 
-    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query", json={"status": "success", "data": []})
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json={"status": "success", "data": []})
     # No pages and no updates
     last_run, fetched_incidents = fetch_incidents(
         orca_client, last_run,
