@@ -208,7 +208,7 @@ class MicrosoftClient(BaseClient):
                     error_message = response.json()
                 except Exception:
                     error_message = 'Rate limit reached on retry - 429 Response'
-                demisto.log(f'Error in retry for MS rate limit - {error_message}')
+                demisto.info(f'Error in retry for MS rate limit - {error_message}')
                 raise DemistoException(error_message)
 
             else:
