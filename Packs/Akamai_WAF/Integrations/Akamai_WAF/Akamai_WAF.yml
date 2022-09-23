@@ -1005,6 +1005,12 @@ script:
       required: true
     description: get papi edgehostname creation status command until it is created
     name: akamai-get-papi-edgehostname-creation-status-command
+  - name: akamai-acknowledge-warning-command
+    arguments:
+    - name: change_path
+      required: true
+      type: textArea
+    description: Acknowledge the warning message for uploading the certs and trust chains of enrollments      
   dockerimage: demisto/akamai:1.0.0.33348
   runonce: false
   script: ''
