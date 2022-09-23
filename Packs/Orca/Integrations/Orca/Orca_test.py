@@ -21,7 +21,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "recommendation": "Remediate the host and attend additional "
+                              "alerts on the host to close the infection path.",
             "alert_labels": [
                 "malware_found"
             ],
@@ -149,7 +150,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "recommendation": "Remediate the host and attend additional "
+                              "alerts on the host to close the infection path.",
             "alert_labels": [
                 "malware_found"
             ],
@@ -291,7 +293,8 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                 "category": "Malware",
                 "description": "Malware EICAR-Test-File found on asset",
                 "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "recommendation": "Remediate the host and attend additional "
+                                  "alerts on the host to close the infection path.",
                 "alert_labels": [
                     "malware_found"
                 ],
