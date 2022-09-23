@@ -220,8 +220,7 @@ class Client(BaseClient):
 
     def acknowledge_warning(self, change_path: str) -> dict:
         """
-            Update a change
-            Please refer to https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
+            Acknowledge the warning message after updating a enrollment change
 
         Args:
             change_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
