@@ -556,5 +556,6 @@ function incidentFromEvent(event){
     var name = 'ArcSight Logger Incident';
     name = event.rowId ? name + ' ' + event.rowId : name;
     incident.name = name;
+    incident.dbotMirrorId = event.rowId;
     return incident;
 }

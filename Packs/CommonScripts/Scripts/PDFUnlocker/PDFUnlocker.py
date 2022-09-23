@@ -14,9 +14,8 @@ def unlock_pdf(entry_id):
     output = PdfFileWriter()
     for pageNum in range(0, input1.getNumPages()):
         output.addPage(input1.getPage(pageNum))
-    output_stream = file(output_name, "wb")
-    output.write(output_stream)
-    output_stream.close()
+    with open(output_name, "wb") as pf:
+        output.write(pf)
 
     demisto.results(file_result_existing_file(output_name))
 

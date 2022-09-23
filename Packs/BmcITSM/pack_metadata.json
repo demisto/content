@@ -1,6 +1,6 @@
 {
-    "name": "BmcITSM",
-    "description": "BmcITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.",
+    "name": "BMC Helix ITSM",
+    "description": "BMC Helix ITSM allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

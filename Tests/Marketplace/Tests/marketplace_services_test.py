@@ -1083,7 +1083,7 @@ This is visible
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data)
 
-        assert not version_changelog['releaseNotes']
+        assert version_changelog['releaseNotes'] == "Changes are not relevant for XSOAR marketplace."
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
         ('''

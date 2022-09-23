@@ -1,0 +1,27 @@
+commonfields:
+  id: IncapListSites
+  version: -1
+name: IncapListSites
+script: ''
+type: python
+subtype: python3
+tags:
+- Incapsula
+comment: List sites for an account
+system: true
+args:
+- name: account_id
+  description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters
+- name: page_size
+  description: The number of objects to return in the response. Defaults to 50
+- name: page_num
+  description: The page to return starting from 0. Default to 0
+scripttarget: 0
+dependson:
+  must:
+  - incap-list-sites
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)

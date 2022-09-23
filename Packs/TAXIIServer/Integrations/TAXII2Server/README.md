@@ -153,8 +153,8 @@ TIM fields (system generated and custom). An example of these two related object
 
 #### Find the information required for the Sentinel TAXII connector
 
-  1. API root - Your XSOAR TAXII2 API root can be found at - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
-  2. Collection ID - Use `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
+  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their ids. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
  
  Response Example:
   ```JSON

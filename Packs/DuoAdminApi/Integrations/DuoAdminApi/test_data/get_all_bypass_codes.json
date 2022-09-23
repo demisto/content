@@ -1,0 +1,30 @@
+{
+  "admin_email": "test.1@demisto.com",
+  "bypass_code_id": "1",
+  "created": 1545840620,
+  "expiration": null,
+  "reuse_count": null,
+  "user": {
+    "alias1": "test.1",
+    "alias2": "test.2",
+    "alias3": "",
+    "alias4": null,
+    "aliases": {
+      "alias1": "test.1",
+      "alias2": "test.2",
+      "alias3": ""
+    },
+    "created": 1545605961,
+    "email": "test.1@demisto.com",
+    "firstname": null,
+    "is_enrolled": true,
+    "last_directory_sync": null,
+    "last_login": 1582620826,
+    "lastname": null,
+    "notes": "",
+    "realname": "DO NOT CHANGE - Used for testing",
+    "status": "active",
+    "user_id": "1",
+    "username": "test.1@demisto.com"
+  }
+}

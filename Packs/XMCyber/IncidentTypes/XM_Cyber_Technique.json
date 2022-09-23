@@ -19,6 +19,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "XM_Cyber_Technique",
+    "layout": "XM_Cyber_Technique_Layout",
     "fromVersion": "6.0.0"
-   }
+}

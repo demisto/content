@@ -7,19 +7,12 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 
 **Note:** The `gcb-list-rules` command would filter rules depending upon the argument `live_rule`.In this case, the total number of rules fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the rules.
 #### Troubleshoot
+**Note:** If you are expecting a high volume of alerts from Chronicle, you can reduce the time required to fetch them by increasing the "How many incidents to fetch each time" parameter while decreasing the "Incidents Fetch Interval" parameter in the integration configuration.
 
 ##### Problem #1
-Cortex XSOAR invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
-
-Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Cortex XSOAR queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Cortex XSOAR.
-
-##### Solution #1
-In order to fetch the missed events, the ingestion should query the historical time range. i.e. the time window to query needs to be increased from the current last minute to a larger window (15 mins, 30 mins, etc). The time window parameter in the integration configuration is provided to achieve the same. Select the time window to query Chronicle with a historical time range. While selecting the time window consider the time delay for an event to appear in Chronicle after generation.
-
-##### Problem #2
 Duplication of rule detection incidents when fetched from Chronicle.
 
-##### Solution #2
+##### Solution #1
 - The incidents are re-fetched starting from first fetch time window when user resets the last run time stamp. 
 - To avoid duplication of incidents with duplicate detection ids and to drop them, XSOAR provides inbuilt features of Pre-process rules. 
 - This setting XSOAR platform end users have to set on their own as it's not part of the integration pack.
@@ -71,11 +64,11 @@ What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
     * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
     * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
     * __Fetches incidents__
-    * __First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g., 1 day, 7 days, 3 months, 1 year).__
+    * __First fetch time__
     * __How many incidents to fetch each time__
     * __Chronicle Alert Type (Select the type of data to consider for fetch incidents)__
     * __Time window (in minutes)__
-    * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
+    * __Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).__
     * __Detections to fetch by Rule ID or Version ID__
     * __Fetch all rules detections__
     * __Filter detections by alert state__
@@ -89,9 +82,9 @@ What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
 Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Cortex XSOAR calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
 #### Configuration Parameters for Fetch-incidents
- - First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
- - How many incidents to fetch each time: **Default** 10
- - Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). **Only applicable for asset alerts**.
+ - First fetch time interval: **Default** 3 days
+ - How many incidents to fetch each time: **Default** 100
+ - Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). **Only applicable for asset alerts**.
  - Chronicle Alert Type (Select the type of data to consider for fetch incidents):
    - IOC Domain matches **Default**
    - Assets with alerts
@@ -110,9 +103,9 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
  
 | **Name** | **Initial Value** |
 | --- | --- |
-| First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year). | 3 days |
-| How many incidents to fetch each time. | 10 |
-| Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). *Only applicable for asset alerts.* | Default No Selection |
+| First fetch time interval. The UTC date or relative timestamp from where to start fetching incidents. <br/><br/>Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/> For example: 10 minutes, 5 hours, 8 days, 2 weeks, 8 months, 2021-12-31, 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | 3 days |
+| How many incidents to fetch each time. | 100 |
+| Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). *Only applicable for asset alerts.* | Not selected |
 | Chronicle Alert Type (Select the type of data to consider for fetch incidents). | IOC Domain matches (Default), Assets with alerts, Detection alerts and User alerts | 
 | Time window (in minutes) | 15 |
 | Detections to fetch by Rule ID or Version ID | empty |
@@ -161,6 +154,21 @@ After you successfully execute a command, a DBot message appears in the War Room
 7. gcb-list-events
 8. gcb-list-detections
 9. gcb-list-rules
+10. gcb-create-rule
+11. gcb-get-rule
+12. gcb-delete-rule
+13. gcb-create-rule-version
+14. gcb-change-rule-alerting-status
+15. gcb-change-live-rule-status
+16. gcb-start-retrohunt
+17. gcb-get-retrohunt
+18. gcb-list-retrohunts
+19. gcb-cancel-retrohunt
+20. gcb-list-reference-list
+21. gcb-get-reference-list
+22. gcb-create-reference-list
+23. gcb-update-reference-list
+
 ### 1. gcb-list-iocs
 ---
 Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
@@ -173,8 +181,8 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. Default is 10000. | Optional | 
 
 
 ##### Context Output
@@ -225,10 +233,11 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ```
 
 ##### Human Readable Output
-### IOC Domain Matches
-|Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
-|---|---|---|---|---|---|---|---|
-| [anx.tb.ask.com]() | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+
+>### IOC Domain Matches
+>|Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
+>|---|---|---|---|---|---|---|---|
+>| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
 
 
 ### 2. gcb-assets
@@ -244,9 +253,9 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 | --- | --- | --- |
 | artifact_value |  The artifact indicator associated with assets. The artifact type can be one of the following: IP, Domain, MD5, SHA1, or SHA256.  | Required | 
 | preset_time_range | Fetches assets that accessed the artifact during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. Default is 10000. | Optional | 
 
 
 ##### Context Output
@@ -302,6 +311,7 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 ```
 
 ##### Human Readable Output
+
 >### Assets related to artifact - bing.com
 >|Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|
@@ -339,7 +349,7 @@ Checks the reputation of an IP address.
 | GoogleChronicleBackstory.IP.IoCQueried | String | The artifact that was queried. | 
 | GoogleChronicleBackstory.IP.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.Address.Domain | String | The domain name of the artifact. | 
-| GoogleChronicleBackstory.IP.Sources.Address.Port | Number | The port number of the artifact. | 
+| GoogleChronicleBackstory.IP.Sources.Address.Port | Unknown | The port numbers of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.Category | String | The behavior of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
 | GoogleChronicleBackstory.IP.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
@@ -403,14 +413,15 @@ Checks the reputation of an IP address.
 ```
 
 ##### Human Readable Output
-IP: 23.20.239.12 found with Reputation: Unknown
-### Reputation Parameters
-|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
-|---|---|---|---|---|---|---|
-| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
-| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
 
-[View IoC details in Chronicle]()
+>IP: 23.20.239.12 found with Reputation: Unknown
+>### Reputation Parameters
+>|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
+>|---|---|---|---|---|---|---|
+>| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
+>| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
+>
+>View IoC details in Chronicle
 
 
 ### 4. domain
@@ -441,7 +452,7 @@ Checks the reputation of a domain.
 | GoogleChronicleBackstory.Domain.IoCQueried | String | The domain that queried. | 
 | GoogleChronicleBackstory.Domain.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.Address.Domain | String | The domain name of the artifact. | 
-| GoogleChronicleBackstory.Domain.Sources.Address.Port | Number | The port number of the artifact. | 
+| GoogleChronicleBackstory.Domain.Sources.Address.Port | Unknown | The port numbers of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.Category | String | The behavior of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
 | GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
@@ -488,13 +499,14 @@ Checks the reputation of a domain.
 ```
 
 ##### Human Readable Output
-Domain: bing.com found with Reputation: Unknown
-### Reputation Parameters
-|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
-|---|---|---|---|---|---|---|
-| bing.com | - | Observed serving executables | 67 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
 
-[View IoC details in Chronicle]()
+>Domain: bing.com found with Reputation: Unknown
+>### Reputation Parameters
+>|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
+>|---|---|---|---|---|---|---|
+>| bing.com | - | Observed serving executables | 67 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
+>
+>View IoC details in Chronicle
 
 
 ### 5. gcb-ioc-details
@@ -520,7 +532,7 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 | GoogleChronicleBackstory.IocDetails.IoCQueried | String | The artifact entered by the user. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.Domain | String | The domain name of the artifact. | 
-| GoogleChronicleBackstory.IocDetails.Sources.Address.Port | Number | The port number of the artifact. | 
+| GoogleChronicleBackstory.IocDetails.Sources.Address.Port | Unknown | The port numbers of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Category | String | The behavior of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
 | GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
@@ -577,13 +589,14 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 ```
 
 ##### Human Readable Output
-### IoC Details
-|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
-|---|---|---|---|---|---|---|
-| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
-| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
 
-[View IoC details in Chronicle]()
+>### IoC Details
+>|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
+>|---|---|---|---|---|---|---|
+>| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
+>| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
+>
+>View IoC details in Chronicle
 
 
 ### 6. gcb-list-alerts
@@ -598,9 +611,9 @@ List all the alerts tracked within your enterprise for the specified time range.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | preset_time_range | Fetch alerts for the specified time range. If preset_time_range is configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 100000. Default is 10000. | Optional | 
 | severity | The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. This is applicable for asset alerts only. The possible values are "High", "Medium", "Low", or "Unspecified". | Optional | 
 | alert_type | Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts". | Optional | 
 
@@ -647,10 +660,11 @@ List all the alerts tracked within your enterprise for the specified time range.
 ```
 
 ##### Human Readable Output
-### Security Alert(s)
-|Alerts|Asset|Alert Names|First Seen|Last Seen|Severities|Sources|
-|---|---|---|---|---|---|---|
-| 1 | [rosie-hayes-pc]() | Authentication failure [32038] | 6 hours ago | 6 hours ago | Medium | Internal Alert |
+
+>### Security Alert(s)
+>|Alerts|Asset|Alert Names|First Seen|Last Seen|Severities|Sources|
+>|---|---|---|---|---|---|---|
+>| 1 | rosie-hayes-pc | Authentication failure [32038] | 6 hours ago | 6 hours ago | Medium | Internal Alert |
 
 
 ### 7. gcb-list-events
@@ -667,10 +681,10 @@ List all of the events discovered within your enterprise on a particular device 
 | asset_identifier_type | Specify the identifier type of the asset you are investigating. The possible values are Host Name, IP Address, MAC Address or Product ID. | Required | 
 | asset_identifier | Value of the asset identifier. | Required | 
 | preset_time_range | Get events that are discovered during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| page_size | Specify the maximum number of events to fetch. You can specify between 1 and 1000. The default is 100. | Optional | 
-| reference_time | Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional |
+| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| page_size | Specify the maximum number of events to fetch. You can specify between 1 and 10000. Default is 10000. | Optional | 
+| reference_time | Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional |
 
 ##### Context Output
 
@@ -1093,6 +1107,7 @@ List all of the events discovered within your enterprise on a particular device 
 ```
 
 ##### Human Readable Output
+
 >### Event(s) Details
 >|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
 >|---|---|---|---|---|
@@ -1100,11 +1115,11 @@ List all of the events discovered within your enterprise on a particular device 
 >
 >View events in Chronicle
 >
->Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. >To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z
+>Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z
 
 
 ### 8. gcb-list-detections
-***
+---
 Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
 
 
@@ -1116,14 +1131,14 @@ Return the detections for the specified version of a rule, the latest version of
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier. Use the following format to specify the id: ru_{UUID} or {ruleId}@v_{int64}_{int64}. If not specified then detections for all versions of all rules are returned. | Optional | 
-| detection_start_time | (Deprecated)Time to begin returning detections, filtering on a detection's detectionTime. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| detection_end_time | (Deprecated)Time to stop returning detections, filtering on a detection's detectionTime. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| start_time | Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| end_time | Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| detection_start_time | (Deprecated)Time to begin returning detections, filtering on a detection's detectionTime. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| detection_end_time | (Deprecated)Time to stop returning detections, filtering on a detection's detectionTime. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| start_time | Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
+| end_time | Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional | 
 | detection_for_all_versions | Whether the user wants to retrieve detections for all versions of a rule with a given rule identifier.<br/><br/>Note: If this option is set to true, rule id is required. | Optional | 
 | list_basis | Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.<br/><br/>Note: Requires either "start_time" or "end_time" argument. | Optional | 
 | alert_state | Filter detections on if they are ALERTING or NOT_ALERTING.<br/>Avoid specifying to return all detections. | Optional | 
-| page_size | Specify the limit on the number of detections to display. You can specify between 1 and 1,000. | Optional | 
+| page_size | Specify the limit on the number of detections to display. You can specify between 1 and 1000. | Optional | 
 | page_token | A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments. | Optional | 
 
 
@@ -1777,7 +1792,7 @@ Return the detections for the specified version of a rule, the latest version of
 
 
 ### 9. gcb-list-rules
-***
+---
 List the latest versions of all Rules.
 
 
@@ -1789,7 +1804,7 @@ List the latest versions of all Rules.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | live_rule | To filter live rules. | Optional |
-| page_size | Specify the maximum number of Rules to return. You can specify between 1 and 1,000. The default is 100. | Optional |
+| page_size | Specify the maximum number of Rules to return. You can specify between 1 and 1000. Default is 100. | Optional |
 | page_token | A page token, received from a previous call.  Provide this to retrieve the subsequent page. | Optional |
 
 
@@ -1873,3 +1888,829 @@ List the latest versions of all Rules.
 >| ru_f13faad1-0041-476c-a05a-40e01c942796 | rule_1616480950177 | SUCCEEDED |
 >
 > Maximum number of rules specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as foobar_page_token.
+
+
+### 10. gcb-create-rule
+---
+Creates a new rule. By default the live rule status will be set to disabled.
+
+
+#### Base Command
+
+`gcb-create-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_text | Rule text in YARA-L 2.0 format for the rule to be created. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Rules.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.Rules.versionId | String | Unique identifier for a specific version of a rule. | 
+| GoogleChronicleBackstory.Rules.ruleName | String | Name of the rule, as parsed from ruleText. | 
+| GoogleChronicleBackstory.Rules.ruleText | String | Source code for the rule, as defined by the user. | 
+| GoogleChronicleBackstory.Rules.liveRuleEnabled | Boolean | Whether the rule is enabled to run as a Live Rule. | 
+| GoogleChronicleBackstory.Rules.alertingEnabled | Boolean | Whether the rule is enabled to generate Alerts. | 
+| GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. | 
+| GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. | 
+| GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. | 
+| GoogleChronicleBackstory.Rules.ruleType | String | Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT. | 
+| GoogleChronicleBackstory.Rules.metadata.severity | String | Severity for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.author | String | Name of author for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.description | String | Description of the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.reference | String | Reference link for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.created | String | Time at which the rule is created. | 
+| GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
+
+#### Command Example
+```!gcb-create-rule rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "Rules": {
+            "compilationState": "SUCCEEDED",
+            "metadata": {
+                "author": "securityuser",
+                "description": "single event rule that should generate detections"
+            },
+            "ruleId": "ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6",
+            "ruleName": "demoRuleCreatedFromAPI",
+            "ruleText": "rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}\n",
+            "ruleType": "SINGLE_EVENT",
+            "versionCreateTime": "2022-06-23T06:21:36.217135Z",
+            "versionId": "ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6@v_1655965296_217135000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rule Detail
+>|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
+>|---|---|---|---|---|---|---|---|
+>| ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6 | ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6@v_1655965296_217135000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:21:36.217135Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
+
+
+### 11. gcb-get-rule
+---
+Retrieves the rule details of specified Rule ID or Version ID.
+
+
+#### Base Command
+
+`gcb-get-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Rule ID or Version ID of the rule to be retrieved. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Rules.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.Rules.versionId | String | Unique identifier for a specific version of a rule. | 
+| GoogleChronicleBackstory.Rules.ruleName | String | Name of the rule, as parsed from ruleText. | 
+| GoogleChronicleBackstory.Rules.ruleText | String | Source code for the rule, as defined by the user. | 
+| GoogleChronicleBackstory.Rules.liveRuleEnabled | Boolean | Whether the rule is enabled to run as a Live Rule. | 
+| GoogleChronicleBackstory.Rules.alertingEnabled | Boolean | Whether the rule is enabled to generate Alerts. | 
+| GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. | 
+| GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. | 
+| GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. | 
+| GoogleChronicleBackstory.Rules.ruleType | String | Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT. | 
+| GoogleChronicleBackstory.Rules.metadata.severity | String | Severity for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.author | String | Name of author for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.description | String | Description of the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.reference | String | Reference link for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.created | String | Time at which the rule is created. | 
+| GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
+
+#### Command Example
+```!gcb-get-rule id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "Rules": {
+            "compilationState": "SUCCEEDED",
+            "metadata": {
+                "author": "securityuser",
+                "description": "single event rule that should generate detections"
+            },
+            "ruleId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7",
+            "ruleName": "demoRuleCreatedFromAPI",
+            "ruleText": "rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}\n",
+            "ruleType": "SINGLE_EVENT",
+            "versionCreateTime": "2022-06-22T13:28:20.905647Z",
+            "versionId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655904500_905647000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rule Details
+>|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
+>|---|---|---|---|---|---|---|---|
+>| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655904500_905647000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-22T13:28:20.905647Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
+
+
+### 12. gcb-delete-rule
+---
+Deletes the rule specified by Rule ID.
+
+
+#### Base Command
+
+`gcb-delete-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | ID of the rule to be deleted. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.DeleteRule.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.DeleteRule.actionStatus | String | Whether the rule is successfully deleted or not. | 
+
+#### Command Example
+```!gcb-delete-rule rule_id=ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "DeleteRule": {
+            "actionStatus": "SUCCESS",
+            "ruleId": "ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rule with ID ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b deleted successfully.
+>|Rule ID|Action Status|
+>|---|---|
+>| ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b | SUCCESS |
+
+
+### 13. gcb-create-rule-version
+---
+Creates a new version of an existing rule.
+
+
+#### Base Command
+
+`gcb-create-rule-version`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Rule ID for a Rule for which to create a new version. | Required | 
+| rule_text | Rule text in YARA-L 2.0 format for the new version of the rule to be created. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Rules.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.Rules.versionId | String | Unique identifier for a specific version of a rule. | 
+| GoogleChronicleBackstory.Rules.ruleName | String | Name of the rule, as parsed from ruleText. | 
+| GoogleChronicleBackstory.Rules.ruleText | String | Source code for the rule, as defined by the user. | 
+| GoogleChronicleBackstory.Rules.liveRuleEnabled | Boolean | Whether the rule is enabled to run as a Live Rule. | 
+| GoogleChronicleBackstory.Rules.alertingEnabled | Boolean | Whether the rule is enabled to generate Alerts. | 
+| GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. | 
+| GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. | 
+| GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. | 
+| GoogleChronicleBackstory.Rules.ruleType | String | Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT. | 
+| GoogleChronicleBackstory.Rules.metadata.severity | String | Severity for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.author | String | Name of author for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.description | String | Description of the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.reference | String | Reference link for the rule. | 
+| GoogleChronicleBackstory.Rules.metadata.created | String | Time at which the rule is created. | 
+| GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
+
+#### Command Example
+```!gcb-create-rule-version rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "Rules": {
+            "compilationState": "SUCCEEDED",
+            "metadata": {
+                "author": "securityuser",
+                "description": "single event rule that should generate detections"
+            },
+            "ruleId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7",
+            "ruleName": "demoRuleCreatedFromAPI",
+            "ruleText": "rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}\n",
+            "ruleType": "SINGLE_EVENT",
+            "versionCreateTime": "2022-06-23T06:22:15.343423Z",
+            "versionId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655965335_343423000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### New Rule Version Details
+>|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
+>|---|---|---|---|---|---|---|---|
+>| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655965335_343423000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:22:15.343423Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
+
+
+### 14. gcb-change-rule-alerting-status
+---
+Updates the alerting status for a rule specified by Rule ID.
+
+
+#### Base Command
+
+`gcb-change-rule-alerting-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | ID of the rule. | Required | 
+| alerting_status | New alerting status for the Rule. Possible values are 'enable' or 'disable'. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.RuleAlertingChange.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.RuleAlertingChange.actionStatus | String | Whether the alerting status for the rule is successfully updated or not. | 
+| GoogleChronicleBackstory.RuleAlertingChange.alertingStatus | String | New alerting status for the rule. | 
+
+#### Command Example
+```!gcb-change-rule-alerting-status alerting_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "RuleAlertingChange": {
+            "actionStatus": "SUCCESS",
+            "alertingStatus": "enable",
+            "ruleId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerting Status
+>Alerting status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
+> 
+>|Rule ID|Action Status|
+>|---|---|
+>| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | SUCCESS |
+
+
+### 15. gcb-change-live-rule-status
+---
+Updates the live rule status for a rule specified by Rule ID.
+
+
+#### Base Command
+
+`gcb-change-live-rule-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | ID of the rule. | Required | 
+| live_rule_status | New live rule status for the Rule. Possible values are 'enable' or 'disable'. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.LiveRuleStatusChange.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.LiveRuleStatusChange.actionStatus | String | Whether the live rule status for the rule is successfully updated or not. | 
+| GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus | String | New live rule status for the rule. | 
+
+#### Command Example
+```!gcb-change-live-rule-status live_rule_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "LiveRuleStatusChange": {
+            "actionStatus": "SUCCESS",
+            "liveRuleStatus": "enable",
+            "ruleId": "ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Live Rule Status
+>Live rule status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
+> 
+>|Rule ID|Action Status|
+>|---|---|
+>| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | SUCCESS |
+
+
+### 16. gcb-start-retrohunt
+---
+Initiate a retrohunt for the specified rule.
+
+
+#### Base Command
+
+`gcb-start-retrohunt`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Rule ID or Version ID of the rule whose retrohunt is to be started. | Required | 
+| start_time | Start time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 1 week earlier than current time.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. Default is 1 week. | Optional | 
+| end_time | End time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 10 minutes earlier than current time.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. Default is 10 min. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.RetroHunt.retrohuntId | String | Unique identifier for a retrohunt, defined and returned by the server. | 
+| GoogleChronicleBackstory.RetroHunt.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.RetroHunt.versionId | String | Unique identifier for a specific version of a rule. | 
+| GoogleChronicleBackstory.RetroHunt.eventStartTime | Date | Start time for the time range of logs being processed. | 
+| GoogleChronicleBackstory.RetroHunt.eventEndTime | Date | End time for the time range of logs being processed. | 
+| GoogleChronicleBackstory.RetroHunt.retrohuntStartTime | Date | Start time for the retrohunt. | 
+| GoogleChronicleBackstory.RetroHunt.state | String | Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE, or CANCELLED. | 
+
+#### Command Example
+```!gcb-start-retrohunt rule_id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 start_time="52 weeks"```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "RetroHunt": {
+            "eventEndTime": "2022-06-16T06:58:19.994598Z",
+            "eventStartTime": "2021-06-17T07:08:19.991404Z",
+            "retrohuntId": "oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723",
+            "retrohuntStartTime": "2022-06-16T07:08:21.958022Z",
+            "ruleId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49",
+            "state": "RUNNING",
+            "versionId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrohunt Details
+>|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|State|
+>|---|---|---|---|---|---|---|
+>| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z | RUNNING |
+
+
+### 17. gcb-get-retrohunt
+---
+Get retrohunt for a specific version of rule.
+
+
+#### Base Command
+
+`gcb-get-retrohunt`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Rule ID or Version ID of the rule whose retrohunt is to be retrieved. | Required |
+| retrohunt_id | Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.RetroHunt.retrohuntId | String | Unique identifier for a retrohunt, defined and returned by the server. |
+| GoogleChronicleBackstory.RetroHunt.ruleId | String | Unique identifier for a Rule. |
+| GoogleChronicleBackstory.RetroHunt.versionId | String | Unique identifier for a specific version of a rule. |
+| GoogleChronicleBackstory.RetroHunt.eventStartTime | Date | Start time for the time range of logs being processed. |
+| GoogleChronicleBackstory.RetroHunt.eventEndTime | Date | End time for the time range of logs being processed. |
+| GoogleChronicleBackstory.RetroHunt.retrohuntStartTime | Date | Start time for the retrohunt. |
+| GoogleChronicleBackstory.RetroHunt.retrohuntEndTime | Date | End time for the retrohunt. |
+| GoogleChronicleBackstory.RetroHunt.state | String | Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE or CANCELLED. |
+| GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). |
+
+#### Command Example
+```!gcb-get-retrohunt id=ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 retrohunt_id=oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "RetroHunt": {
+            "eventEndTime": "2022-06-15T13:03:06.834384Z",
+            "eventStartTime": "2022-06-08T13:03:04.793333Z",
+            "progressPercentage": 100,
+            "retrohuntEndTime": "2022-06-15T13:05:46.894926Z",
+            "retrohuntId": "oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad",
+            "retrohuntStartTime": "2022-06-15T13:05:12.774180Z",
+            "ruleId": "ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818",
+            "state": "DONE",
+            "versionId": "ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818@v_1655291303_302767000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrohunt Details
+>|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
+>|---|---|---|---|---|---|---|---|---|
+>| oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818@v_1655291303_302767000 | 2022-06-08T13:03:04.793333Z | 2022-06-15T13:03:06.834384Z | 2022-06-15T13:05:12.774180Z | 2022-06-15T13:05:46.894926Z | DONE | 100 |
+
+
+### 18. gcb-list-retrohunts
+---
+List retrohunts for a rule.
+
+
+#### Base Command
+
+`gcb-list-retrohunts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Rule ID or Version ID of the rule whose retrohunts are to be listed. If not supplied, retohunts for all versions of all rules will be listed. | Optional | 
+| retrohunts_for_all_versions | Whether to retrieve retrohunts for all versions of a rule with a given rule identifier.<br/>Note: If this option is set to true, rule id is required. Possible values are: true, false. Default is false. | Optional | 
+| state | Filter retrohunts based on their status. The possible values are "RUNNING", "DONE", or "CANCELLED". | Optional | 
+| page_size | Specify the maximum number of retohunts to return. You can specify between 1 and 1000. Default is 100. | Optional | 
+| page_token | A page token, received from a previous call. Provide this to retrieve the subsequent page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.RetroHunt.retrohuntId | String | Unique identifier for a retrohunt, defined and returned by the server. | 
+| GoogleChronicleBackstory.RetroHunt.ruleId | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.RetroHunt.versionId | String | Unique identifier for a specific version of a rule. | 
+| GoogleChronicleBackstory.RetroHunt.eventStartTime | Date | Start time for the time range of logs being processed. | 
+| GoogleChronicleBackstory.RetroHunt.eventEndTime | Date | End time for the time range of logs being processed. | 
+| GoogleChronicleBackstory.RetroHunt.retrohuntStartTime | Date | Start time for the retrohunt. | 
+| GoogleChronicleBackstory.RetroHunt.retrohuntEndTime | Date | End time for the retrohunt. | 
+| GoogleChronicleBackstory.RetroHunt.state | String | Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE or CANCELLED. | 
+| GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). | 
+
+#### Command Example
+```!gcb-list-retrohunts page_size=3```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "RetroHunt": [
+            {
+                "eventEndTime": "2022-06-16T06:58:19.994598Z",
+                "eventStartTime": "2021-06-17T07:08:19.991404Z",
+                "progressPercentage": 6.59,
+                "retrohuntId": "oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723",
+                "retrohuntStartTime": "2022-06-16T07:08:21.958022Z",
+                "ruleId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49",
+                "state": "RUNNING",
+                "versionId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000"
+            },
+            {
+                "eventEndTime": "2022-06-01T11:00:00Z",
+                "eventStartTime": "2020-11-25T11:00:00Z",
+                "progressPercentage": 6.69,
+                "retrohuntEndTime": "2022-06-16T07:08:35.116493Z",
+                "retrohuntId": "oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020",
+                "retrohuntStartTime": "2022-06-16T07:06:57.738997Z",
+                "ruleId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49",
+                "state": "CANCELLED",
+                "versionId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000"
+            },
+            {
+                "eventEndTime": "2022-06-16T06:47:45.116641Z",
+                "eventStartTime": "2021-06-17T06:57:45.113155Z",
+                "progressPercentage": 85.44,
+                "retrohuntId": "oh_93cedd70-a6b6-480a-8d78-a894aff43e05",
+                "retrohuntStartTime": "2022-06-16T06:57:47.233306Z",
+                "ruleId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49",
+                "state": "RUNNING",
+                "versionId": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000"
+            }
+        ],
+        "nextPageToken": "dummy-token"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrohunt Details
+>|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
+>|---|---|---|---|---|---|---|---|---|
+>| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z |  | RUNNING | 6.59 |
+>| oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2020-11-25T11:00:00Z | 2022-06-01T11:00:00Z | 2022-06-16T07:06:57.738997Z | 2022-06-16T07:08:35.116493Z | CANCELLED | 6.69 |
+>| oh_93cedd70-a6b6-480a-8d78-a894aff43e05 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T06:57:45.113155Z | 2022-06-16T06:47:45.116641Z | 2022-06-16T06:57:47.233306Z |  | RUNNING | 85.44 |
+>
+>Maximum number of retrohunts specified in page_size has been returned. To fetch the next set of retrohunts, execute the command with the page token as dummy-token
+
+
+### 19. gcb-cancel-retrohunt
+---
+Cancel a retrohunt for a specified rule.
+
+
+#### Base Command
+
+`gcb-cancel-retrohunt`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Rule ID or Version ID of the rule whose retrohunt is to be cancelled. | Required | 
+| retrohunt_id | Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.RetroHunt.id | String | Unique identifier for a Rule. | 
+| GoogleChronicleBackstory.RetroHunt.retrohuntId | String | Unique identifier for a retrohunt, defined and returned by the server. | 
+| GoogleChronicleBackstory.RetroHunt.cancelled | Boolean | Whether the retrohunt is cancelled or not. | 
+
+#### Command Example
+```!gcb-cancel-retrohunt id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 retrohunt_id=oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "RetroHunt": {
+            "cancelled": true,
+            "id": "ru_4bec682c-305a-40a9-bbc6-81fa5487cb49",
+            "retrohuntId": "oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cancelled Retrohunt
+>Retrohunt for the rule with ID ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 has been successfully cancelled.
+>
+>|ID|Retrohunt ID|Action Status|
+>|---|---|---|
+>| ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020 | SUCCESS |
+
+
+### 20. gcb-list-reference-list
+---
+Retrieve all the reference lists.
+
+
+#### Base Command
+
+`gcb-list-reference-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Number of results to retrieve in the response. Maximum size allowed is 1000. Default is 100. | Optional | 
+| page_token | The next page token to retrieve the next set of results. | Optional | 
+| view | Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything. Possible values are: BASIC, FULL. Default is BASIC. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceLists.name | String | Unique name of the list. | 
+| GoogleChronicleBackstory.ReferenceLists.description | String | Description of the list. | 
+| GoogleChronicleBackstory.ReferenceLists.createTime | Date | Time when the list was created. | 
+| GoogleChronicleBackstory.ReferenceLists.lines | String | List of line items. | 
+
+#### Command Example
+```!gcb-list-reference-list page_size=3```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceLists": [
+            {
+                "createTime": "2022-06-14T06:06:35.787791Z",
+                "description": "sample list",
+                "name": "test_1"
+            },
+            {
+                "createTime": "2022-06-15T06:43:45.685951Z",
+                "description": "sample list",
+                "name": "Builtin"
+            },
+            {
+                "createTime": "2022-06-14T10:01:23.994415Z",
+                "description": "sample",
+                "name": "Certificate_Asset"
+            }
+        ],
+        "nextPageToken": "dummy-token"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Reference List Details
+>|Name|Creation Time|Description|
+>|---|---|---|
+>| test_1 | 2022-06-14T06:06:35.787791Z | sample list |
+>| Builtin | 2022-06-15T06:43:45.685951Z | sample list |
+>| Certificate_Asset | 2022-06-14T10:01:23.994415Z | sample |
+>
+>Maximum number of reference lists specified in page_size has been returned. To fetch the next set of lists, execute the command with the page token as dummy-token
+
+
+### 21. gcb-get-reference-list
+---
+Returns the specified list.
+
+
+#### Base Command
+
+`gcb-get-reference-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Provide a unique name of the list to retrieve the result. | Required | 
+| view | Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything. Possible values are: FULL, BASIC. Default is FULL. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceList.name | String | Unique name of the list. | 
+| GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
+| GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
+
+#### Command Example
+```!gcb-get-reference-list name=test1```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceList": {
+            "createTime": "2022-06-10T08:59:34.885679Z",
+            "description": "update",
+            "lines": [
+                "line_item_1",
+                "// comment",
+                "line_item_2"
+            ],
+            "name": "test1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Reference List Details
+>|Name|Description|Creation Time|Content|
+>|---|---|---|---|
+>| test1 | update | 2022-06-10T08:59:34.885679Z | line_item_1,<br/>// comment,<br/>line_item_2 |
+
+
+### 22. gcb-create-reference-list
+---
+Create a new reference list.
+
+
+#### Base Command
+
+`gcb-create-reference-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Provide a unique name of the list to create a reference list. | Required | 
+| description | Description of the list. | Required | 
+| lines | Enter the content to be added into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3". | Required | 
+| delimiter | Delimiter by which the content of the list is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceList.name | String | Unique name of the list. | 
+| GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
+| GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
+
+#### Command Example
+```!gcb-create-reference-list description="List created for readme" lines=L1,L2,L3 name=XSOAR_GoogleChronicle_Backstory_README_List_```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceList": {
+            "createTime": "2022-06-16T07:45:37.285791Z",
+            "description": "List created for readme",
+            "lines": [
+                "L1",
+                "L2",
+                "L3"
+            ],
+            "name": "XSOAR_GoogleChronicle_Backstory_README_List_"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Reference List Details
+>|Name|Description|Creation Time|Content|
+>|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List_ | List created for readme | 2022-06-16T07:45:37.285791Z | L1,<br/>L2,<br/>L3 |
+
+
+### 23. gcb-update-reference-list
+---
+Updates an existing reference list.
+
+
+#### Base Command
+
+`gcb-update-reference-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Provide a unique name of the list to update. | Required | 
+| lines | Enter the content to be updated into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use gcb-get-reference-list to retrieve the content and description of the list. | Required | 
+| description | Description to be updated of the list. | Optional | 
+| delimiter | Delimiter by which the content of the list is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceList.name | String | Unique name of the list. | 
+| GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
+| GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
+
+#### Command Example
+```!gcb-update-reference-list lines=Line1,Line2,Line3 name=XSOAR_GoogleChronicle_Backstory_README_List```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceList": {
+            "createTime": "2022-06-16T07:11:11.380991Z",
+            "description": "list created for readme",
+            "lines": [
+                "Line1",
+                "Line2",
+                "Line3"
+            ],
+            "name": "XSOAR_GoogleChronicle_Backstory_README_List"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Reference List Details
+>|Name|Description|Creation Time|Content|
+>|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List | list created for readme | 2022-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 |

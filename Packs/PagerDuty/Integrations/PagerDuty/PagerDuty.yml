@@ -28,8 +28,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: '1'
-  display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset
-    last run)
+  display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
   name: FetchInterval
   required: false
   type: 0
@@ -50,8 +49,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The limit for the amount of schedules to receive(Default is 25,
-        max value is 100)
+      description: The limit for the amount of schedules to receive(Default is 25, max value is 100)
       isArray: false
       name: limit
       required: false
@@ -75,8 +73,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of the date range Using ISO 8601 Representation. E.g.
-        !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z
+      description: The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z
       isArray: false
       name: since
       required: false
@@ -88,8 +85,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the names and details of on call users at a certain time
-      or by specific schedule
+    description: Returns the names and details of on call users at a certain time or by specific schedule
     execution: false
     name: PagerDuty-get-users-on-call
     outputs:
@@ -113,23 +109,19 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The limit for the amount of users to receive(Default is 25, max
-        value is 100)
+      description: The limit for the amount of users to receive(Default is 25, max value is 100)
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified
-        escalation policy IDs.
+      description: Filters the results, showing only on-call users for the specified escalation policy IDs.
       isArray: true
       name: escalation_policy_ids
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified
-        schedule IDs. If the value is null, permanent on-call user are included due
-        to direct user escalation policy targets.
+      description: Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets.
       isArray: true
       name: schedule_ids
       required: false
@@ -160,9 +152,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Returns only the incidents currently in the passed status(es).
-        Valid status options are triggered,acknowledged, and resolved. (Default values
-        are triggered,acknowledged)
+      description: Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged)
       isArray: false
       name: status
       predefined:
@@ -172,22 +162,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents
-        since=2011-05-06T17:00Z (must be used with until argument)
+      description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument)
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: Used to specify both the field you wish to sort the results on,
-        as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
+      description: Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
       isArray: false
       name: sortBy
       required: false
       secret: false
     - default: false
-      description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents
-        until=2016-05-06T13:00Z
+      description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z
       isArray: false
       name: until
       required: false
@@ -277,15 +264,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specific human-readable unique identifier, such as a hostname,
-        for the system having the problem.
+      description: Specific human-readable unique identifier, such as a hostname, for the system having the problem.
       isArray: false
       name: source
       required: true
       secret: false
     - default: false
-      description: "\t A high-level, text summary message of the event. Will be used\
-        \ to construct an alert's description."
+      description: "\t A high-level, text summary message of the event. Will be used to construct an alert's description."
       isArray: false
       name: summary
       required: true
@@ -320,9 +305,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02”
-        and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe"
-        "www"'
+      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www"'
       isArray: false
       name: group
       required: false
@@ -334,8 +317,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The part or component of the affected system that is broken. Example:
-        "keepalive" "webping"'
+      description: 'The part or component of the affected system that is broken. Example: "keepalive" "webping"'
       isArray: false
       name: component
       required: false
@@ -353,8 +335,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new event/incident in PagerDuty(In order to use this command
-      you have to enter the Service Key in the integration settings)
+    description: Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
     execution: false
     name: PagerDuty-submit-event
     outputs:
@@ -542,8 +523,7 @@ script:
       description: The incident's de-duplication key
       type: String
   - deprecated: false
-    description: Get Service keys for each of the services configured in the PagerDuty
-      instance
+    description: Get Service keys for each of the services configured in the PagerDuty instance
     execution: false
     name: PagerDuty-get-service-keys
     outputs:
@@ -563,9 +543,7 @@ script:
       description: The name of the integration used with the service
       type: string
     - contextPath: PagerDuty.Service.Integration.Vendor
-      description: The name of the vendor for the integration used with the service.(A
-        value of 'Missing Vendor information' will appear once no information could
-        be found)
+      description: The name of the vendor for the integration used with the service.(A value of 'Missing Vendor information' will appear once no information could be found)
       type: string
     - contextPath: PagerDuty.Service.Integration.Key
       description: The key used to control events with the integration
@@ -590,8 +568,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated list of Escalation Policy IDs to request response
-        from
+      description: Comma separated list of Escalation Policy IDs to request response from
       isArray: false
       name: escalation_policy_requests
       required: false
@@ -642,9 +619,9 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

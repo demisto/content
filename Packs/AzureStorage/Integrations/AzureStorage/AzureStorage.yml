@@ -27,6 +27,43 @@ configuration:
   name: proxy
   required: false
   type: 8
+- name: auth_type
+  display: Authentication Type
+  required: true
+  defaultvalue: Device Code
+  type: 15
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  options:
+  - Authorization Code
+  - Device Code
+- name: tenant_id
+  display: Tenant ID (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: credentials
+  display: Client Secret (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: ""
+  displaypassword: Client Secret (for user-auth mode)
+  hiddenusername: true
+- name: redirect_uri
+  display: Application redirect URI (for user-auth mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: auth_code
+  display: Authorization code
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
+  displaypassword: Authorization code
+  hiddenusername: true
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
 name: Azure Storage
