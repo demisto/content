@@ -72,6 +72,14 @@ class OrcaClient:
             next_page_token: Optional[str] = None,
             limit: int = 1000
     ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """
+        Fetch alerts
+        :param time_from: datetime
+        :param fetch_informational: bool
+        :param next_page_token: str
+        :param limit: int
+        :return: dict
+        """
         demisto.info("Get alerts, enter")
         alerts: List[Dict[str, Any]] = []
         params: Dict[str, Any] = {"limit": limit}
