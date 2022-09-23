@@ -1,0 +1,21 @@
+{
+    "name": "DEV Costco - Gmail",
+    "description": "This update includes the command \"gmail-list-delegates\" that utilizes the Gmail API method users.settings.delegates.list.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "apakkala",
+    "url": "",
+    "email": "",
+    "created": "2022-09-23T20:25:14Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "apakkala"
+    ]
+}
