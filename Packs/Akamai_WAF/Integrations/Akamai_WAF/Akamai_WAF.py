@@ -216,6 +216,31 @@ class Client(BaseClient):
                                   data=payload
                                   )
 
+     #Created by C.L.
+
+    def acknowledge_warning(self, change_path: str) -> dict:
+        """
+            Update a change
+            Please refer to https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+        "Accept": "application/vnd.akamai.cps.change-id.v1+json",
+        "Content-Type":"application/vnd.akamai.cps.acknowledgement.v1+json"
+            }
+        payload = '{"acknowledgement": "acknowledge"}'
+        return self._http_request(method='POST',
+                          url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+                          headers=headers,
+                          data=payload
+                          )
+
+
     # Created by C.L.
 
     def list_groups(self) -> dict:
@@ -2164,13 +2189,10 @@ def check_group_command(client: Client, checking_group_name: str = '') -> Tuple[
         if checking_group_name != '':
             path = checking_group_name.split(">")
             group_list = raw_response
-            print(group_list)
             for path_groupname in path:
                 found = False
-                print("check {path_groupname}")
                 for group in group_list:
                     if path_groupname == group['groupName']:
-                        print(group['groupName'], group.get('parentGroupId', 0), group.get('groupId', 0))
                         group_list = group['subGroups']
                         found = True
                         break
@@ -2353,7 +2375,6 @@ def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: st
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - List Enrollments'
         context = {}
-        print(len(raw_response.keys()))
         for enrollment in raw_response["enrollments"]:
             if 'csr' in enrollment.keys():
                 if 'cn' in enrollment["csr"].keys():
@@ -2418,6 +2439,19 @@ def update_change_command(client: Client, change_path: str,
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
+# Created by C.L.
+@logger
+def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.acknowledge_warning(change_path)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
+
+        return human_readable, {"Akamai.Acknowledge":raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
 
 # Created by C.L.
 @logger
@@ -2442,7 +2476,6 @@ def create_group_command(client: Client, group_path: str = '') -> Tuple[object, 
                 for group in group_list:
                     if path_groupname == group['groupName']:
                         group_list = group['subGroups']
-                        print("true", group_list)
                         found = True
                         found_groupId = group.get('groupId', 0)
                         break
@@ -2450,7 +2483,6 @@ def create_group_command(client: Client, group_path: str = '') -> Tuple[object, 
                     create_folder = client.create_group(found_groupId, path_groupname)
                     found_groupId = create_folder.get('groupId')
                     group_list = [client.get_group(found_groupId)]
-                    print("false", group_list)
         human_readable = f'{INTEGRATION_NAME} - Group {group_path} is created successfully'
 
         return human_readable, {"Akamai.CreateGroup": found_groupId}, {}
@@ -4008,7 +4040,8 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version': clone_appsec_config_version_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods': patch_papi_property_rule_httpmethods_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command': get_papi_property_activation_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command': get_papi_edgehostname_creation_status_command
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command': get_papi_edgehostname_creation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command': acknowledge_warning_command
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
