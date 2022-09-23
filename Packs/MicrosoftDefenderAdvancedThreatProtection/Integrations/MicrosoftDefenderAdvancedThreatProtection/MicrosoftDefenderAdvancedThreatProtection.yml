@@ -5318,6 +5318,11 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ofri_test
+      required: false
     deprecated: false
     description: 'Collects file from a device. Note: Backslashes in the path must
       be escaped.'

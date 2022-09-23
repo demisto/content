@@ -4643,6 +4643,17 @@ def get_live_response_result_command(client, args):
 
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
+    test = args.get('ofri_test')
+    print(f'status function where stats is {test}')
+    if not args.get('ofri_test'):
+        args['ofri_test'] = '1'
+        command_is = demisto.command()
+        print(f'simulating 429 - command {command_is}, args - {args}')
+        return_results(CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
+                              scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
+                                                                 args=args)))
+        sys.exit(1)
+
     res = client.get_machine_action_by_id(id)
 
     return CommandResults(
