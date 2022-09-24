@@ -812,6 +812,8 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
     response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator_id,
                                          summary=summary)  # type: ignore
     ec, indicators = create_context(response, include_dbot_score=True)
+    if not indicators:
+        return_error(f'Could not find indicator: {indicator}')
     include_attributes = response[0].get('attributes')
     include_observations = response[0].get('observations')
     include_tags = response[0].get('tags')
