@@ -903,16 +903,16 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
             })
 
 
-    def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
-        indicator_id = args.get('indicator')
-        url = f'/api/v3/indicators/{indicator_id}'
-        client.make_request(Method.DELETE, url)
+def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
+    indicator_id = args.get('indicator')
+    url = f'/api/v3/indicators/{indicator_id}'
+    client.make_request(Method.DELETE, url)
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'Indicator {} removed Successfully'.format(indicator_id)
-        })
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Indicator {} removed Successfully'.format(indicator_id)
+    })
 
 
 def create_document_group(client: Client, args: dict) -> None:  # pragma: no cover
