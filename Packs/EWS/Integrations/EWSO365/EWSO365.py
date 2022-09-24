@@ -1,61 +1,40 @@
+import email
+import hashlib
+import json
+import logging
+import os
 import random
 import string
-from typing import Dict
-
-import dateparser
-import chardet
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import sys
 import traceback
-import json
-import os
-import hashlib
-from io import StringIO
-import logging
 import warnings
-import email
-from requests.exceptions import ConnectionError
-
+from io import StringIO
 from multiprocessing import Process
+from typing import Dict
+
+import chardet
+import dateparser
+import demistomock as demisto  # noqa: F401
 import exchangelib
-from exchangelib.errors import (
-    ErrorItemNotFound,
-    ResponseMessageError,
-    RateLimitError,
-    ErrorInvalidIdMalformed,
-    ErrorFolderNotFound,
-    ErrorMailboxStoreUnavailable,
-    ErrorMailboxMoveInProgress,
-    ErrorNameResolutionNoResults,
-    MalformedResponseError,
-)
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child, MNS, TNS
-from exchangelib import (
-    IMPERSONATION,
-    Account,
-    EWSDateTime,
-    EWSTimeZone,
-    Configuration,
-    FileAttachment,
-    Version,
-    Folder,
-    HTMLBody,
-    Body,
-    ItemAttachment,
-    OAUTH2,
-    OAuth2AuthorizationCodeCredentials,
-    Identity,
-    ExtendedProperty
-)
-from oauthlib.oauth2 import OAuth2Token
-from exchangelib.version import EXCHANGE_O365
+from CommonServerPython import *  # noqa: F401
+from exchangelib import (IMPERSONATION, OAUTH2, Account, Body, Configuration,
+                         EWSDateTime, EWSTimeZone, ExtendedProperty,
+                         FileAttachment, Folder, HTMLBody, Identity,
+                         ItemAttachment, OAuth2AuthorizationCodeCredentials,
+                         Version)
+from exchangelib.errors import (ErrorFolderNotFound, ErrorInvalidIdMalformed,
+                                ErrorItemNotFound, ErrorMailboxMoveInProgress,
+                                ErrorMailboxStoreUnavailable,
+                                ErrorNameResolutionNoResults,
+                                MalformedResponseError, RateLimitError,
+                                ResponseMessageError)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
+from exchangelib.version import EXCHANGE_O365
+from oauthlib.oauth2 import OAuth2Token
+from requests.exceptions import ConnectionError
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -2200,7 +2179,7 @@ def parse_incident_from_item(item):
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2215,26 +2194,38 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
             excluded_ids,
+            incidentFilter,
         )
 
         incidents = []
         incident: Dict[str, str] = {}
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
+
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
+
+        last_incident_run_time = last_fetch_time
+        if isinstance(last_incident_run_time, EWSDateTime):
+            last_incident_run_time = last_incident_run_time.ewsformat()
         for item in last_emails:
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+                if incidentFilter == 'modified-time':
+                    item_modified_time = item.last_modified_time.ewsformat()
+                    if last_incident_run_time is None or last_incident_run_time < item_modified_time:
+                        last_incident_run_time = item_modified_time
 
                 if len(incidents) >= client.max_fetch:
                     break
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
-        last_fetch_time = last_run.get(LAST_RUN_TIME)
-
-        last_incident_run_time = incident.get("occurred", last_fetch_time)
+        if incidentFilter == 'modified-time':
+            pass  # Just want to make sure you know this isn't doing anything
+        else:  # default case - using 'received' time
+            last_incident_run_time = incident.get("occurred", last_fetch_time)
 
         # making sure both last fetch time and the time of most recent incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
@@ -2277,7 +2268,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
 
 def fetch_last_emails(
-        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None
+        client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None, incidentFilter='received-time'
 ):
     """
     Fetches last emails
@@ -2289,7 +2280,10 @@ def fetch_last_emails(
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     if since_datetime:
-        qs = qs.filter(datetime_received__gte=since_datetime)
+        if incidentFilter == 'modified-time':
+            qs = qs.filter(last_modified_time__gte=since_datetime)
+        else:  # default to "received" time
+            qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
@@ -2400,7 +2394,8 @@ def sub_main():
             demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
-            incidents = fetch_emails_as_incidents(client, last_run)
+            incidentFilter = params.get('incidentFilter', 'received-time')
+            incidents = fetch_emails_as_incidents(client, last_run, incidentFilter)
             demisto.incidents(incidents)
 
         # special outputs commands
