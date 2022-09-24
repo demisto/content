@@ -825,5 +825,27 @@
         "result": "xxx"
       }
     ]
+  },
+  {
+    "algorithm": "wildcard",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "x\\.y": {
+        "zzz": "z"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "x.y": "zzz"
+        },
+        "result": "z"
+      }
+    ]
   }
 ]
