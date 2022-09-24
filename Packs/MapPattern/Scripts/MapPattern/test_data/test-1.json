@@ -804,5 +804,26 @@
         "result": "Jun 32, 2021"
       }
     ]
+  },
+  {
+    "algorithm": "literal",
+    "caseless": "false",
+    "priority": "first_match",
+    "context": {
+      "name1": "xxx",
+      "name2": 1
+    },
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "zzz": "${name${name2}}"
+    },
+    "patterns": [
+      {
+        "value": "zzz",
+        "result": "xxx"
+      }
+    ]
   }
 ]
