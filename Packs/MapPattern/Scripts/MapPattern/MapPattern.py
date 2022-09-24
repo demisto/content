@@ -289,7 +289,7 @@ def extract_value(source: Any,
         except Exception as err:
             demisto.debug(f'failed to extract dt from "{dtstr=}". Error: {err}')
             return None
- 
+
     return Formatter('${', '}', False).build(source, __extract_dt, dx, node)
 
 
