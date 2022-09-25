@@ -8183,5 +8183,20 @@
                 "result": ["xxx"]
             }
         ]
+    }, {
+        "path": "",
+        "operation": "is replaced with",
+        "filter": "{${name}}",
+        "ctx_demisto": {
+            "name": "xxx"
+        },
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["zzz"],
+                "result": ["{xxx}"]
+            }
+        ]
     }
 ]

@@ -206,30 +206,30 @@ class Formatter:
                     if (xval := extractor(key, dx, node)) is None and self.__keep_symbol_to_null:
                         xval = self.__start_marker + key + self.__end_marker
                 return xval, ci + len(end_marker)
+            elif extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
+                xval, ei = self.__extract(source, extractor, dx, node,
+                                          ci + len(self.__start_marker), self.__end_marker)
+                if si != ci:
+                    out = source[si:ci] if out is None else str(out) + source[si:ci]
+
+                if ei is None:
+                    xval = self.__start_marker
+                    ei = ci + len(self.__start_marker)
+
+                if out is None:
+                    out = xval
+                elif xval is not None:
+                    out = str(out) + str(xval)
+                si = ci = ei
+            elif end_marker is None:
+                ci += 1
+            elif nextec := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
+                _, ei = self.__extract(source, None, dx, node, ci + 1, nextec)
+                ci = ci + 1 if ei is None else ei
+            elif source[ci] == '\\':
+                ci += 2
             else:
-                if extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
-                    xval, ei = self.__extract(source, extractor, dx, node,
-                                              ci + len(self.__start_marker), self.__end_marker)
-                    if si != ci:
-                        out = source[si:ci] if out is None else str(out) + source[si:ci]
-
-                    if ei is None:
-                        xval = self.__start_marker
-                        ei = ci + len(self.__start_marker)
-
-                    if out is None:
-                        out = xval
-                    elif xval is not None:
-                        out = str(out) + str(xval)
-                    si = ci = ei
-                else:
-                    if nextec := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
-                        _, ei = self.__extract(source, None, dx, node, ci + 1, nextec)
-                        ci = ci + 1 if ei is None else ei
-                    elif source[ci] == '\\':
-                        ci += 2
-                    else:
-                        ci += 1
+                ci += 1
 
         if end_marker is not None:
             # unbalanced braces, brackets, quotes, etc.

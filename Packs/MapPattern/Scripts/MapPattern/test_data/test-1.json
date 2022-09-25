@@ -831,6 +831,26 @@
     "caseless": "false",
     "priority": "first_match",
     "context": {
+      "name": "xxx"
+    },
+    "flags": "",
+    "compare_fields": "",
+    "wildcards": "",
+    "mappings": {
+      "zzz": "{${name}}"
+    },
+    "patterns": [
+      {
+        "value": "zzz",
+        "result": "{xxx}"
+      }
+    ]
+  },
+  {
+    "algorithm": "literal",
+    "caseless": "false",
+    "priority": "first_match",
+    "context": {
     },
     "flags": "",
     "compare_fields": "",
