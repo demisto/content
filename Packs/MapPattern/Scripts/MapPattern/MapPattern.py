@@ -183,7 +183,7 @@ class Formatter:
                   dx: Optional[ContextData],
                   node: Optional[Dict[str, Any]],
                   si: int,
-                  end_marker: Optional[str]) -> Tuple[Any, Optional[int]]:
+                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
         """ Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
@@ -191,24 +191,26 @@ class Formatter:
         :param dx: The context data
         :param node: The current node
         :param si: The index of `source` to start extracting
-        :param end_marker: The end marker to find an end position for parsing an enclosed value.
-                           It must be None when the template text is given to `source`.
+        :param markers: The start and end marker to find an end position for parsing an enclosed value.
+                        It must be None when the template text is given to `source`.
         :return: The extracted value and index of `source` when parsing ended.
                  The index is the next after the end marker when extracting the enclosed value.
         """
         out = None
         ci = si
         while ci < len(source):
-            if end_marker is not None and Formatter.__is_end_mark(source, ci, end_marker):
+            if markers is not None and Formatter.__is_end_mark(source, ci, markers[1]):
                 key = source[si:ci] if out is None else str(out) + source[si:ci]
-                xval = ''
                 if extractor:
                     if (xval := extractor(key, dx, node)) is None and self.__keep_symbol_to_null:
-                        xval = self.__start_marker + key + self.__end_marker
-                return xval, ci + len(end_marker)
+                        xval = markers[0] + key + markers[1]
+                else:
+                    xval = key
+                return xval, ci + len(markers[1])
             elif extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
                 xval, ei = self.__extract(source, extractor, dx, node,
-                                          ci + len(self.__start_marker), self.__end_marker)
+                                          ci + len(self.__start_marker),
+                                          (self.__start_marker, self.__end_marker))
                 if si != ci:
                     out = source[si:ci] if out is None else str(out) + source[si:ci]
 
@@ -221,17 +223,17 @@ class Formatter:
                 elif xval is not None:
                     out = str(out) + str(xval)
                 si = ci = ei
-            elif end_marker is None:
+            elif markers is None:
                 ci += 1
-            elif nextec := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
-                _, ei = self.__extract(source, None, dx, node, ci + 1, nextec)
+            elif endc := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
+                _, ei = self.__extract(source, None, dx, node, ci + 1, (source[ci], endc))
                 ci = ci + 1 if ei is None else ei
             elif source[ci] == '\\':
                 ci += 2
             else:
                 ci += 1
 
-        if end_marker is not None:
+        if markers is not None:
             # unbalanced braces, brackets, quotes, etc.
             return None, None
         elif not extractor:
