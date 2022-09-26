@@ -17,10 +17,12 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
-IS_VERSION_2_1: bool
+IS_VERSION_2_1 = api_version == '2.1'
 GLOBAL_BLOCK: bool
 BLOCK_SITEIDS: str
 OS_COUNT = 4
+
+
 
 ''' HELPER FUNCTIONS '''
 
