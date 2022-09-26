@@ -65,8 +65,7 @@ class Formatter:
     def __extract(self,
                   source: str,
                   extractor: Optional[Callable[[str,
-                                                Optional[ContextData],
-                                                Optional[Dict[str, Any]]],
+                                                Optional[ContextData]],
                                                Any]],
                   dx: Optional[ContextData],
                   si: int,
@@ -133,9 +132,9 @@ class Formatter:
 
     def build(self,
               template: Any,
-              extractor: Callable[[str,
-                                   Optional[ContextData]],
-                                  Optional[Dict[str, Any]]],
+              extractor: Optional[Callable[[str,
+                                            Optional[ContextData]],
+                                           Any]],
               dx: Optional[ContextData]) -> Any:
         """ Format a text from a template including DT expressions
 
