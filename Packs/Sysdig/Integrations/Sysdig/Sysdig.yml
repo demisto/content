@@ -34,6 +34,28 @@ script:
   - arguments: []
     description: Lists sysdig users
     name: sysdig-get-users
+    outputs:
+    - contextPath: Sysdig.UserInfo.TeamRoles.admin
+      description: Admin (true/false)
+      type: boolean
+    - contextPath: Sysdig.UserInfo.TeamRoles.role
+      description: User role
+      type: string
+    - contextPath: Sysdig.UserInfo.TeamRoles.teamId
+      description: Team Id
+      type: string
+    - contextPath: Sysdig.UserInfo.TeamRoles.teamName
+      description: Team name
+      type: string
+    - contextPath: Sysdig.UserInfo.TeamRoles.teamTheme
+      description: Team theme
+      type: string
+    - contextPath: Sysdig.UserInfo.TeamRoles.userId
+      description: User id
+      type: string
+    - contextPath: Sysdig.UserInfo.TeamRoles.userName
+      description: User name
+      type: string
   - arguments:
     - defaultValue: "86400"
       description: Duration in seconds
@@ -51,13 +73,13 @@ script:
     description: Lists container hosts
     name: sysdig-list-hosts
     outputs:
-    - contextPath: HostCount.Count
+    - contextPath: Sysdig.HostCount.Count
       description: Count of hosts
       type: number
-    - contextPath: HostCount.DateAdded
+    - contextPath: Sysdig.HostCount.DateAdded
       description: Date added
       type: date
-    - contextPath: HostCount.Host
+    - contextPath: Sysdig.HostCount.Host
       description: Hostname
       type: string
   - arguments:
@@ -96,44 +118,44 @@ script:
     description: List container events
     name: sysdig-get-events
     outputs:
-    - contextPath: Events.EventDescription
+    - contextPath: Sysdig.Events.EventDescription
       description: Event description
       type: string
-    - contextPath: Events.EventName
+    - contextPath: Sysdig.Events.EventName
       description: Event name
       type: string
-    - contextPath: Events.CreatedOn
+    - contextPath: Sysdig.Events.CreatedOn
       description: Date created
       type: date
-    - contextPath: Events.EventType
+    - contextPath: Sysdig.Events.EventType
       description: Event type
       type: string
-    - contextPath: Events.EventId
+    - contextPath: Sysdig.Events.EventId
       description: Event Id
       type: string
-    - contextPath: Events.EventSource
+    - contextPath: Sysdig.Events.EventSource
       description: Event source
       type: string
-    - contextPath: Events.Timestamp
+    - contextPath: Sysdig.Events.Timestamp
       description: Timestamp
       type: date
-    - contextPath: Events.EventSeverity
+    - contextPath: Sysdig.Events.EventSeverity
       description: Event severity
       type: string
-    - contextPath: Events.EventScope
+    - contextPath: Sysdig.Events.EventScope
       description: Event scope
       type: string
-    - contextPath: Events.EventVersion
+    - contextPath: Sysdig.Events.EventVersion
       description: Event version
       type: string
   - arguments: []
     description: List sysdig policies
     name: sysdig-list-policies
     outputs:
-    - contextPath: Policies.Description
+    - contextPath: Sysdig.Policies.Description
       description: Description
       type: string
-    - contextPath: Policies.Name
+    - contextPath: Sysdig.Policies.Name
       description: Name of policy
       type: string
   - arguments:
@@ -161,23 +183,23 @@ script:
     description: List container vulnerabilities
     name: sysdig-list-vulnerabilities
     outputs:
-    - contextPath: ContainerVulns.policyEvaluationsResult
+    - contextPath: Sysdig.ContainerVulns.policyEvaluationsResult
       description: Policy Evaluations Result
-    - contextPath: ContainerVulns.exploitCount
+    - contextPath: Sysdig.ContainerVulns.exploitCount
       description: Count of exploits
       type: unknown
-    - contextPath: ContainerVulns.storedAt
+    - contextPath: Sysdig.ContainerVulns.storedAt
       description: Time stored
       type: string
-    - contextPath: ContainerVulns.imageId
+    - contextPath: Sysdig.ContainerVulns.imageId
       description: Image Id
       type: string
-    - contextPath: ContainerVulns.resultId
+    - contextPath: Sysdig.ContainerVulns.resultId
       description: Result Id
       type: string
-    - contextPath: ContainerVulns.runningVulnsBySev
+    - contextPath: Sysdig.ContainerVulns.runningVulnsBySev
       description: Running vulnerabilities by severity
-    - contextPath: ContainerVulns.vulnsBySev
+    - contextPath: Sysdig.ContainerVulns.vulnsBySev
       description: Vulnerabilities by severity
   - arguments:
     - description: ID of container image to query (results from sysdig-list-policies)
@@ -189,37 +211,37 @@ script:
     description: List individual vulnerabilities by container or pod
     name: sysdig-list-vulns-by-container
     outputs:
-    - contextPath: ContainerVulns.vuln_cvssScore
+    - contextPath: Sysdig.ContainerVulns.vuln_cvssScore
       description: CVSS score
       type: string
-    - contextPath: ContainerVulns.package_name
+    - contextPath: Sysdig.ContainerVulns.package_name
       description: Name of vulnerable package
       type: string
-    - contextPath: ContainerVulns.vuln_cvssVersion
+    - contextPath: Sysdig.ContainerVulns.vuln_cvssVersion
       description: CVSS version
       type: string
-    - contextPath: ContainerVulns.vuln_exploitable
+    - contextPath: Sysdig.ContainerVulns.vuln_exploitable
       description: Is the vulnerability exploitable?
       type: boolean
-    - contextPath: ContainerVulns.vuln_name
+    - contextPath: Sysdig.ContainerVulns.vuln_name
       description: Name of vulnerability
       type: string
-    - contextPath: ContainerVulns.package_type
+    - contextPath: Sysdig.ContainerVulns.package_type
       description: Package type
       type: string
-    - contextPath: ContainerVulns.package_id
+    - contextPath: Sysdig.ContainerVulns.package_id
       description: Package Id
       type: string
-    - contextPath: ContainerVulns.vuln_disclosureDate
+    - contextPath: Sysdig.ContainerVulns.vuln_disclosureDate
       description: Vulnerability disclosure date
       type: date
-    - contextPath: ContainerVulns.id
+    - contextPath: Sysdig.ContainerVulns.id
       description: Id
       type: string
-    - contextPath: ContainerVulns.package_version
+    - contextPath: Sysdig.ContainerVulns.package_version
       description: Package version
       type: string
-    - contextPath: ContainerVulns.fixedInVersion
+    - contextPath: Sysdig.ContainerVulns.fixedInVersion
       description: Fixed version
       type: string
   dockerimage: demisto/sysdig:1.0

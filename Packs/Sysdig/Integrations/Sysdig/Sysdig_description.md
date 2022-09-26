@@ -1,0 +1,1 @@
+To generate API keys, in the Sysdig application navigate to Profile --> Secrets Management --> Sysdig API Tokens. Separate keys need to be generated for Sysdig Monitor and Sysdig Secure.

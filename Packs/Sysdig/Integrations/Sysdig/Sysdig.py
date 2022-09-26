@@ -51,14 +51,13 @@ def get_alerts(monitor, url):
     results = []
     for alert in res['alerts']:
         results.append(alert)
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Sysdig Alerts', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'Alerts': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Sysdig Alerts', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.Alerts',
+        outputs_key_field='Alerts',
+        outputs=results,
+        raw_response=res)
 
 
 def get_metrics(monitor, url):
@@ -69,14 +68,13 @@ def get_metrics(monitor, url):
     results = []
     for metric_id, metric in res.items():
         results.append(metric)
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Sysdig Metrics', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'Metrics': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Sysdig Metrics', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.Metrics',
+        outputs_key_field='Metrics',
+        outputs=results,
+        raw_response=res)
 
 
 def get_events(args, monitor, url):
@@ -113,14 +111,13 @@ def get_events(args, monitor, url):
                         'EventType': eventType,
                         'EventVersion': eventVersion
                         })
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Container Events', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'Events': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Container Events', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.Events',
+        outputs_key_field='Events',
+        outputs=results,
+        raw_response=res)
 
 
 def get_users(monitor, url):
@@ -149,14 +146,13 @@ def get_users(monitor, url):
             'TeamRoles': user['teamRoles'],
             'Timezone': user['timezone']
         })
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('User Information', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'UserInfo': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('User Information', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.UserInfo',
+        outputs_key_field='UserInfo',
+        outputs=results,
+        raw_response=res)
 
 
 def list_hosts(args, monitor, url):
@@ -197,14 +193,13 @@ def list_hosts(args, monitor, url):
             hostName = item['d'][0]
             count = item['d'][1]
             results.append({'DateAdded': time, 'Host': hostName, 'Count': count})
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Host count', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'HostCount': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Host Count', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.HostCount',
+        outputs_key_field='HostCount',
+        outputs=results,
+        raw_response=res)
 
 
 def list_policies(secure, url):
@@ -221,14 +216,13 @@ def list_policies(secure, url):
         modifiedOn = time_convert(entry['modifiedOn'])
         results.append({'Description': description, 'Enabled': enabled, 'Name': name,
                        'CreatedOn': createdOn, 'ModifiedOn': modifiedOn})
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Sysdig Policies', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'Policies': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Sysdig Policies', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.Policies',
+        outputs_key_field='Policies',
+        outputs=results,
+        raw_response=res)
 
 
 def list_vulns(client: Client, args, url):
@@ -237,7 +231,6 @@ def list_vulns(client: Client, args, url):
     limit = args['limit']
     results = []
     url_suffix = f'api/scanning/runtime/v2/workflows/kubernetes/results?cursor&filter&limit={str(limit)}&order=desc&sort=vulnsBySev'
-    #url = URL + 'api/scanning/runtime/v2/workflows/kubernetes/results?cursor&filter&limit=' + str(limit) + '&order=desc&sort=vulnsBySev'
     response = client.query_sysdig(url_suffix)
     data = response['data']
     for entry in data:
@@ -247,13 +240,7 @@ def list_vulns(client: Client, args, url):
         if workloadType != 'all' and workloadType != row['scope_kubernetes.workload.type']:
             continue
         results.append(row)
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Vulnerabilities Found', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'ContainerVulns': results}
-             }
+
     if csvOut == 'yes':
         # Convert to csv
         header = ''
@@ -277,7 +264,13 @@ def list_vulns(client: Client, args, url):
         file_content = outputContents
         return_results(fileResult(filename, file_content))
     else:
-        return entry
+        readable_output = tableToMarkdown('Vulnerabilities Found', results, removeNull=True)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Sysdig.ContainerVulns',
+            outputs_key_field='ContainerVulns',
+            outputs=results,
+            raw_response=response)
 
 
 def query_vulns_by_container(client: Client, args, url):
@@ -289,14 +282,13 @@ def query_vulns_by_container(client: Client, args, url):
     for item in response['data']:
         row = flatten_data(item)
         results.append(row)
-    entry = {'Type': entryTypes['note'],
-             'Contents': results,
-             'ContentsFormat': formats['json'],
-             'HumanReadable': tableToMarkdown('Vulnerabilities Found', results, removeNull=True),
-             'ReadableContentsFormat': formats['markdown'],
-             'EntryContext': {'ContainerVulns': results}
-             }
-    return entry
+    readable_output = tableToMarkdown('Vulnerabilities Found', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Sysdig.ContainerVulns',
+        outputs_key_field='ContainerVulns',
+        outputs=results,
+        raw_response=response)
 
 
 def main():

@@ -66,7 +66,16 @@ Lists sysdig users
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sysdig.UserInfo.TeamRoles.admin | boolean | Admin \(true/false\) | 
+| Sysdig.UserInfo.TeamRoles.role | string | User role | 
+| Sysdig.UserInfo.TeamRoles.teamId | string | Team Id | 
+| Sysdig.UserInfo.TeamRoles.teamName | string | Team name | 
+| Sysdig.UserInfo.TeamRoles.teamTheme | string | Team theme | 
+| Sysdig.UserInfo.TeamRoles.userId | string | User id | 
+| Sysdig.UserInfo.TeamRoles.userName | string | User name | 
+
 ### sysdig-list-hosts
 ***
 Lists container hosts
@@ -88,9 +97,9 @@ Lists container hosts
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HostCount.Count | number | Count of hosts | 
-| HostCount.DateAdded | date | Date added | 
-| HostCount.Host | string | Hostname | 
+| Sysdig.HostCount.Count | number | Count of hosts | 
+| Sysdig.HostCount.DateAdded | date | Date added | 
+| Sysdig.HostCount.Host | string | Hostname | 
 
 ### sysdig-get-events
 ***
@@ -112,16 +121,16 @@ List container events
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Events.EventDescription | string | Event description | 
-| Events.EventName | string | Event name | 
-| Events.CreatedOn | date | Date created | 
-| Events.EventType | string | Event type | 
-| Events.EventId | string | Event Id | 
-| Events.EventSource | string | Event source | 
-| Events.Timestamp | date | Timestamp | 
-| Events.EventSeverity | string | Event severity | 
-| Events.EventScope | string | Event scope | 
-| Events.EventVersion | string | Event version | 
+| Sysdig.Events.EventDescription | string | Event description | 
+| Sysdig.Events.EventName | string | Event name | 
+| Sysdig.Events.CreatedOn | date | Date created | 
+| Sysdig.Events.EventType | string | Event type | 
+| Sysdig.Events.EventId | string | Event Id | 
+| Sysdig.Events.EventSource | string | Event source | 
+| Sysdig.Events.Timestamp | date | Timestamp | 
+| Sysdig.Events.EventSeverity | string | Event severity | 
+| Sysdig.Events.EventScope | string | Event scope | 
+| Sysdig.Events.EventVersion | string | Event version | 
 
 ### sysdig-list-policies
 ***
@@ -141,8 +150,8 @@ List sysdig policies
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Policies.Description | string | Description | 
-| Policies.Name | string | Name of policy | 
+| Sysdig.Policies.Description | string | Description | 
+| Sysdig.Policies.Name | string | Name of policy | 
 
 ### sysdig-list-vulnerabilities
 ***
@@ -165,13 +174,13 @@ List container vulnerabilities
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ContainerVulns.policyEvaluationsResult | unknown | Policy Evaluations Result | 
-| ContainerVulns.exploitCount | unknown | Count of exploits | 
-| ContainerVulns.storedAt | string | Time stored | 
-| ContainerVulns.imageId | string | Image Id | 
-| ContainerVulns.resultId | string | Result Id | 
-| ContainerVulns.runningVulnsBySev | unknown | Running vulnerabilities by severity | 
-| ContainerVulns.vulnsBySev | unknown | Vulnerabilities by severity | 
+| Sysdig.ContainerVulns.policyEvaluationsResult | unknown | Policy Evaluations Result | 
+| Sysdig.ContainerVulns.exploitCount | unknown | Count of exploits | 
+| Sysdig.ContainerVulns.storedAt | string | Time stored | 
+| Sysdig.ContainerVulns.imageId | string | Image Id | 
+| Sysdig.ContainerVulns.resultId | string | Result Id | 
+| Sysdig.ContainerVulns.runningVulnsBySev | unknown | Running vulnerabilities by severity | 
+| Sysdig.ContainerVulns.vulnsBySev | unknown | Vulnerabilities by severity | 
 
 ### sysdig-list-vulns-by-container
 ***
@@ -193,14 +202,14 @@ List individual vulnerabilities by container or pod
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ContainerVulns.vuln_cvssScore | string | CVSS score | 
-| ContainerVulns.package_name | string | Name of vulnerable package | 
-| ContainerVulns.vuln_cvssVersion | string | CVSS version | 
-| ContainerVulns.vuln_exploitable | boolean | Is the vulnerability exploitable? | 
-| ContainerVulns.vuln_name | string | Name of vulnerability | 
-| ContainerVulns.package_type | string | Package type | 
-| ContainerVulns.package_id | string | Package Id | 
-| ContainerVulns.vuln_disclosureDate | date | Vulnerability disclosure date | 
-| ContainerVulns.id | string | Id | 
-| ContainerVulns.package_version | string | Package version | 
-| ContainerVulns.fixedInVersion | string | Fixed version | 
+| Sysdig.ContainerVulns.vuln_cvssScore | string | CVSS score | 
+| Sysdig.ContainerVulns.package_name | string | Name of vulnerable package | 
+| Sysdig.ContainerVulns.vuln_cvssVersion | string | CVSS version | 
+| Sysdig.ContainerVulns.vuln_exploitable | boolean | Is the vulnerability exploitable? | 
+| Sysdig.ContainerVulns.vuln_name | string | Name of vulnerability | 
+| Sysdig.ContainerVulns.package_type | string | Package type | 
+| Sysdig.ContainerVulns.package_id | string | Package Id | 
+| Sysdig.ContainerVulns.vuln_disclosureDate | date | Vulnerability disclosure date | 
+| Sysdig.ContainerVulns.id | string | Id | 
+| Sysdig.ContainerVulns.package_version | string | Package version | 
+| Sysdig.ContainerVulns.fixedInVersion | string | Fixed version | 
