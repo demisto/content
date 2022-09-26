@@ -1,4 +1,5 @@
 import os
+import pytest
 import demistomock as demisto  # noqa: F401
 
 os.environ["HTTP_PROXY"] = "test"
@@ -90,3 +91,23 @@ def test_get_with_limit_fail(mocker):
 
     res = get_with_limit('mock_obj', 'mock_path', 1)
     assert res == 'Some string'
+
+
+@pytest.mark.parametrize('test_dict, expected_result', [
+    (
+        {'Sample': {'File': [],
+                    'Domain': {},
+                    'Regitry Keys Created': ['test'],
+                    'Sample': {'test': 'test'}},
+         'File': 'test',
+         'Artifact': 'test'},
+        {'Sample': {'File': []}, 'File': 'test', 'Artifact': 'test'}
+    )
+])
+def test_create_analysis_json_human_readable(mocker, test_dict, expected_result):
+
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    from ThreatGrid import create_analysis_json_human_readable
+    mocker.patch('ThreatGrid.tableToMarkdown', return_value='test')
+    create_analysis_json_human_readable(test_dict)
+    assert test_dict == expected_result
