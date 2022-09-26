@@ -1,0 +1,43 @@
+commonfields:
+  id: ConcatFormat
+  version: -1
+name: ConcatFormat
+script: ''
+type: python
+tags:
+- transformer
+- general
+- string
+comment: Returns a string concatenated with given prefix & suffix which supports DT expressions.
+enabled: true
+args:
+- name: value
+  description: 'The text to be concatenated with prefix & suffix '
+- name: prefix
+  description: A prefix to concat to the start of the argument
+- name: suffix
+  description: A prefix to concat to the end of the argument
+- name: ctx_demisto
+  description: '`demisto` context: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
+- name: ctx_inputs
+  description: '`inputs` context: Input ''inputs'' (no quotation) on `From previous tasks` to enable ${inputs.} expression in DT.'
+- name: ctx_inc
+  description: '`demisto` context: Input ''incident'' (no quotation) on `From previous tasks` to enable ${incident.} expression in DT.'
+- name: variable_markers
+  description: The pair of start and end markers to bracket a variable name
+  defaultValue: ${,}
+- name: keep_symbol_to_null
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true not to replace a value if the variable is null, otherwise false.
+  defaultValue: "false"
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.7.33922
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
