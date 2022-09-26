@@ -67,6 +67,62 @@ My name is John Doe.
 
 ---
 
+### Replace variables in a text based on the value.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | *See the value* | |
+| template | My name is ${.first_name} ${.last_name}. | |
+| ctx_demisto | | |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### value (structured)
+```
+{
+  "first_name": "John",
+  "last_name": "Doe"
+}
+```
+
+#### Output
+```
+My name is John Doe.
+```
+
+---
+
+### Format the template given to the value.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | My name is ${first_name} ${last_name}. | |
+| template | | |
+| ctx_demisto | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
+{
+  "first_name": "John",
+  "last_name": "Doe"
+}
+```
+
+#### Output
+```
+My name is John Doe.
+```
+
+---
+
 ### Change the variable start and end marker to the windows command shell style such as %name%.
 
 #### Parameters
@@ -223,30 +279,3 @@ My name is JOHN DOE.
 }
 ```
 
----
-
-### Replace variables in a text based on the value.
-
-#### Parameters
-| **Argument Name** | **Value** | **Note** |
-| --- | --- | --- |
-| value | *See the value* | |
-| template | My name is ${.first_name} ${.last_name}. | |
-| ctx_demisto | | |
-| ctx_inputs | | |
-| ctx_inc | | |
-| variable_markers | | |
-| keep_symbol_to_null | | |
-
-#### value (structured)
-```
-{
-  "first_name": "John",
-  "last_name": "Doe"
-}
-```
-
-#### Output
-```
-My name is John Doe.
-```
