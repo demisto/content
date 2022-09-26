@@ -8,14 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Sysdig Monitor API Key
+- displaypassword: Sysdig Monitor API Key
   name: monitorkey
   required: true
-  type: 4
-- display: Sysdig Secure API Key
+  hiddenusername: true
+  type: 9
+- displaypassword: Sysdig Secure API Key
   name: securekey
   required: true
-  type: 4
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
