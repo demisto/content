@@ -2,6 +2,7 @@
   {
     "args": {
       "value": null,
+      "template": null,
       "ctx_demisto": null,
       "ctx_inputs": null,
       "ctx_inc": null,
@@ -12,7 +13,38 @@
   },
   {
     "args": {
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
       "value": "aaa ${name1} bbb ${name2} ccc",
+      "template": null,
+      "ctx_demisto": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": "aaa ${name1} bbb ${name2} ccc",
+      "template": "",
       "ctx_demisto": {
         "name1": "value1",
         "name2": "value2"
@@ -27,6 +59,25 @@
   {
     "args": {
       "value": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "template": "aaa ${.name1} bbb ${.name2} ccc ${name3} ddd ${name4}",
+      "ctx_demisto": {
+        "name3": "value3",
+        "name4": "value4"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc value3 ddd value4"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": {
         "1": "aaa ${name1} bbb",
         "2": "aaa ${name2} ccc"
       },
@@ -46,7 +97,8 @@
   },
   {
     "args": {
-      "value": "aaa ${inputs.name1} bbb ${inputs.name2} ccc",
+      "value": null,
+      "template": "aaa ${inputs.name1} bbb ${inputs.name2} ccc",
       "ctx_demisto": null,
       "ctx_inputs": {
         "name1": "value1",
@@ -60,7 +112,8 @@
   },
   {
     "args": {
-      "value": "aaa ${incident.name1} bbb ${incident.name2} ccc",
+      "value": null,
+      "template": "aaa ${incident.name1} bbb ${incident.name2} ccc",
       "ctx_demisto": null,
       "ctx_inputs": null,
       "ctx_inc": {
@@ -74,7 +127,8 @@
   },
   {
     "args": {
-      "value": "${name1}",
+      "value": null,
+      "template": "${name1}",
       "ctx_demisto": {
         "name1": {
           "a": "b"
@@ -91,7 +145,8 @@
   },
   {
     "args": {
-      "value": "aaa {name1} bbb {name2} ccc",
+      "value": null,
+      "template": "aaa {name1} bbb {name2} ccc",
       "ctx_demisto": {
         "name1": "value1",
         "name2": "value2"
@@ -105,7 +160,8 @@
   },
   {
     "args": {
-      "value": "aaa %%name1%% bbb %%name2%% ccc",
+      "value": null,
+      "template": "aaa %%name1%% bbb %%name2%% ccc",
       "ctx_demisto": {
         "name1": "value1",
         "name2": "value2"
@@ -119,7 +175,8 @@
   },
   {
     "args": {
-      "value": "aaa $name1 bbb $name2 ccc",
+      "value": null,
+      "template": "aaa $name1 bbb $name2 ccc",
       "ctx_demisto": {
         "name1": "value1",
         "name2": "value2"
@@ -133,7 +190,8 @@
   },
   {
     "args": {
-      "value": "aaa ${name${name1}} ccc",
+      "value": null,
+      "template": "aaa ${name${name1}} ccc",
       "ctx_demisto": {
         "name1": "2",
         "name2": "value2"
@@ -147,7 +205,8 @@
   },
   {
     "args": {
-      "value": "aaa ${name1} bbb ${name2} ccc",
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
       "ctx_demisto": {
         "name1": "value1"
       },
@@ -160,7 +219,8 @@
   },
   {
     "args": {
-      "value": "aaa ${name1} bbb ${name2} ccc",
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
       "ctx_demisto": {
         "name1": "value1",
         "name2": null
@@ -174,7 +234,8 @@
   },
   {
     "args": {
-      "value": "aaa ${name1} bbb ${name2} ccc",
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
       "ctx_demisto": {
         "name1": "value1"
       },
@@ -187,7 +248,8 @@
   },
   {
     "args": {
-      "value": "{${name}}",
+      "value": null,
+      "template": "{${name}}",
       "ctx_demisto": {
         "name": "value"
       },
