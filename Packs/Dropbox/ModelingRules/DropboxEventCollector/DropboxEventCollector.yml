@@ -1,41 +1,8 @@
-name: DropboxEventCollector
-id: DropboxEventCollector
+from_xdr_version: 3.4.0
 fromversion: 3.3.0
+id: DropboxEventCollector
+name: DropboxEventCollector
 rules: ''
-schema: |-
-  {
-    "dropbox_dropbox_raw": {
-      "actor": {
-        "type": "string",
-        "is_array": false
-      },
-      "assets": {
-        "type": "string",
-        "is_array": false
-      },
-      "context": {
-        "type": "string",
-        "is_array": false
-      },
-      "details": {
-        "type": "string",
-        "is_array": false
-      },
-      "event_category": {
-        "type": "string",
-        "is_array": false
-      },
-      "event_type": {
-        "type": "string",
-        "is_array": false
-      },
-      "origin": {
-        "type": "string",
-        "is_array": false
-      },
-      "timestamp": {
-        "type": "datetime",
-        "is_array": false
-      }
-    }
-  }
+schema: ''
+to_xdr_version: 3.4.9
+toversion: 6.9.9

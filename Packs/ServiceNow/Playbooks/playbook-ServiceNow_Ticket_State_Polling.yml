@@ -59,7 +59,7 @@ tasks:
         complex:
           root: inputs.InstanceName
       dt:
-        simple: ServiceNow.Ticket(val.State != '6' && val.State != '7').Number
+        simple: ServiceNow.Ticket(State != '6' || State != '7').Number
       ids:
         complex:
           root: inputs.TicketNumber

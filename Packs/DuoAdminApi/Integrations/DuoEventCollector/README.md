@@ -1,21 +1,40 @@
-Log collecting for AUDIT events using the Duo API https://duo.com/docs/adminapi#logs.
+Collects Auth and Audit events for Duo using the API.
 
-## Configure Duo Event Collector on Cortex XSIAM
+## Configure Duo Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Duo Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-|----|--------|----------|
-| Server Host    | Duo API host (api-XXXXXXXX.duosecurity.com).   | True         |
-| First fetch from API time   | The time to fetch from for the first run.     | True   |
-| Integration key   | API integration key.   | True    |
-| Secret key  | API secret key.  | True    |
-| XSIAM request limit  | The maximum number of results to get from the API and to add to XSIAM. | True |
-| Request retries  | The number of retries to perform in the API. (This is necessary because if there are too many retries, the API will return a "too many requests 429" error). | False        |
-| The vendor corresponding to the integration that originated the events  | Product name of the product to name the dataset after.   | False   |
-| The product corresponding to the integration that originated the events | Vendor name of the product to name the dataset after.   | False  |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server Host | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | True |
+    | Integration key | True |
+    | Secret key | True |
+    | XSIAM request limit | True |
+    | Request retries | False |
+    | Use system proxy settings | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### duo-get-events
+***
+Manual command to fetch events and display them.
 
 
-4. Click **Test** to validate the URLs, tokens, and connection.
+#### Base Command
+
+`duo-get-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

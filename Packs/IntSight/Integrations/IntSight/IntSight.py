@@ -209,20 +209,10 @@ def hash_identifier(hash_val):
 
 def extract_tags(tags):
     pretty_tags = []
-    string_format = u"ID: {0} - Name: {1}"
+    string_format = "ID: {0} - Name: {1}"
     for tag in tags:
         pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
     return pretty_tags
-
-
-def unicode_to_str_recur(obj):
-    if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
-    elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
-    return obj
 
 
 def get_alerts():
@@ -237,7 +227,7 @@ def get_alerts():
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_context},
         'Contents': alerts_context,
-        'HumanReadable': tableToMarkdown('IntSights Alerts', unicode_to_str_recur(alerts_human_readable),
+        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_human_readable,
                                          headers=headers, removeNull=False),
         'ContentsFormat': formats['json']
     })
@@ -1110,56 +1100,61 @@ def test_module():
     demisto.results('ok')
 
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'intsights-mssp-get-sub-accounts':
-        get_mssp_sub_accounts()
-    elif demisto.command() == 'intsights-get-alerts':
-        get_alerts()
-    elif demisto.command() == 'intsights-get-alert-image':
-        get_alert_image()
-    elif demisto.command() == 'intsights-get-alert-activities':
-        get_alert_activity()
-    elif demisto.command() == 'intsights-assign-alert':
-        assign_alert()
-    elif demisto.command() == 'intsights-unassign-alert':
-        unassign_alert()
-    elif demisto.command() == 'intsights-send-mail':
-        send_mail()
-    elif demisto.command() == 'intsights-ask-the-analyst':
-        ask_analyst()
-    elif demisto.command() == 'intsights-add-tag-to-alert':
-        add_tag()
-    elif demisto.command() == 'intsights-remove-tag-from-alert':
-        remove_tag()
-    elif demisto.command() == 'intsights-add-comment-to-alert':
-        add_comment()
-    elif demisto.command() == 'intsights-update-alert-severity':
-        change_severity()
-    elif demisto.command() == 'intsights-get-alert-by-id':
-        get_alert_by_id()
-    elif demisto.command() == 'intsights-get-ioc-by-value':
-        search_for_ioc()
-    elif demisto.command() == 'intsights-request-ioc-enrichment':
-        request_for_ioc_enrichment()
-    elif demisto.command() == 'intsights-get-iocs':
-        get_iocs()
-    elif demisto.command() == 'intsights-alert-takedown-request':
-        takedown_request()
-    elif demisto.command() == 'intsights-get-alert-takedown-status':
-        get_alert_takedown_status()
-    elif demisto.command() == 'intsights-get-ioc-blocklist-status':
-        get_ioc_blocklist_status()
-    elif demisto.command() == 'intsights-update-ioc-blocklist-status':
-        update_ioc_blocklist_status()
-    elif demisto.command() == 'intsights-close-alert':
-        close_alert()
-    elif demisto.command() == 'intsights-test-action':
-        pass
-    else:
-        raise Exception('Unrecognized command: ' + demisto.command())
-except Exception as err:
-    return_error(str(err))
+def main():     # pragma: no cover
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'intsights-mssp-get-sub-accounts':
+            get_mssp_sub_accounts()
+        elif demisto.command() == 'intsights-get-alerts':
+            get_alerts()
+        elif demisto.command() == 'intsights-get-alert-image':
+            get_alert_image()
+        elif demisto.command() == 'intsights-get-alert-activities':
+            get_alert_activity()
+        elif demisto.command() == 'intsights-assign-alert':
+            assign_alert()
+        elif demisto.command() == 'intsights-unassign-alert':
+            unassign_alert()
+        elif demisto.command() == 'intsights-send-mail':
+            send_mail()
+        elif demisto.command() == 'intsights-ask-the-analyst':
+            ask_analyst()
+        elif demisto.command() == 'intsights-add-tag-to-alert':
+            add_tag()
+        elif demisto.command() == 'intsights-remove-tag-from-alert':
+            remove_tag()
+        elif demisto.command() == 'intsights-add-comment-to-alert':
+            add_comment()
+        elif demisto.command() == 'intsights-update-alert-severity':
+            change_severity()
+        elif demisto.command() == 'intsights-get-alert-by-id':
+            get_alert_by_id()
+        elif demisto.command() == 'intsights-get-ioc-by-value':
+            search_for_ioc()
+        elif demisto.command() == 'intsights-request-ioc-enrichment':
+            request_for_ioc_enrichment()
+        elif demisto.command() == 'intsights-get-iocs':
+            get_iocs()
+        elif demisto.command() == 'intsights-alert-takedown-request':
+            takedown_request()
+        elif demisto.command() == 'intsights-get-alert-takedown-status':
+            get_alert_takedown_status()
+        elif demisto.command() == 'intsights-get-ioc-blocklist-status':
+            get_ioc_blocklist_status()
+        elif demisto.command() == 'intsights-update-ioc-blocklist-status':
+            update_ioc_blocklist_status()
+        elif demisto.command() == 'intsights-close-alert':
+            close_alert()
+        elif demisto.command() == 'intsights-test-action':
+            pass
+        else:
+            raise Exception('Unrecognized command: ' + demisto.command())
+    except Exception as err:
+        return_error(str(err))
+
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

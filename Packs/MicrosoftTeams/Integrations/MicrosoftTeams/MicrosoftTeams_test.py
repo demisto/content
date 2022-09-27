@@ -2,8 +2,11 @@ import demistomock as demisto
 import json
 import pytest
 from CommonServerPython import entryTypes
+from MicrosoftTeams import send_message
 
 entryTypes['warning'] = 11
+
+BASE_URL = "https://graph.microsoft.com/beta/groups"
 
 bot_id: str = '9bi5353b-md6a-4458-8321-e924af433amb'
 
@@ -54,8 +57,8 @@ team_members: list = [
         'name': 'Denzel Washington',
         'givenName': 'Denzel',
         'surname': 'Washington',
-        'email': 'dwashinton@email.com',
-        'userPrincipalName': 'dwashinton@email.com',
+        'email': 'DwashintoN@email.com',
+        'userPrincipalName': 'DwashintoN@email.com',
         'tenantId': tenant_id
     }
 ]
@@ -357,21 +360,11 @@ def test_mirror_investigation(mocker, requests_mock):
     assert results[0] == 'Investigation mirrored successfully in channel booya.'
 
 
-def test_send_message(mocker, requests_mock):
-    from MicrosoftTeams import send_message
-    mocker.patch.object(demisto, 'results')
-
+@pytest.mark.parametrize('args', [
+    ({'messageType': 'mirrorEntry', 'originalMessage': 'a mirrored message\n**From Microsoft Teams**'}),
+    ({'messageType': 'incidentOpened', 'severity': 1})])
+def test_send_message_with_mirrored_message_or_low_severity(mocker, args):
     # verify that a mirrored message is skipped
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'messageType': 'mirrorEntry',
-            'originalMessage': 'a mirrored message\n**From Microsoft Teams**'
-        }
-    )
-    assert send_message() is None
-
     # verify notification from server with severity below threshold is not sent
     mocker.patch.object(
         demisto,
@@ -381,40 +374,58 @@ def test_send_message(mocker, requests_mock):
             'team': 'The-A-Team'
         }
     )
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'messageType': 'incidentOpened',
-            'severity': 1
-        }
-    )
+    mocker.patch.object(demisto, 'args', return_value=args)
     assert send_message() is None
 
-    # verify error is raised if no user/channel were provided
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={}
-    )
+
+# def test_send_message_with_low_severity(mocker):
+#     # verify notification from server with severity below threshold is not sent
+#     mocker.patch.object(
+#         demisto,
+#         'params',
+#         return_value={
+#             'min_incident_severity': 'Medium',
+#             'team': 'The-A-Team'
+#         }
+#     )
+#     mocker.patch.object(
+#         demisto,
+#         'args',
+#         return_value={
+#             'messageType': 'incidentOpened',
+#             'severity': 1
+#         }
+#     )
+#     assert send_message() is None
+
+
+@pytest.mark.parametrize('args, result', [({}, 'No channel or team member to send message were provided.'),
+                                          ({'channel': 'somechannel', 'team_member': 'someuser'},
+                                           'Provide either channel or team member to send message to, not both.'),
+                                          ({'channel': 'channel', 'adaptive_card': 'THISisSTRINGnotJSON'},
+                                           'Given adaptive card is not in valid JSON format.'),
+                                          ({'channel': 'channel', 'message': 'message', 'adaptive_card': '{"a":"b"}'},
+                                           'Provide either message or adaptive to send, not both.'),
+                                          ({'channel': 'channel'},
+                                           'No message or adaptive card to send were provided.')])
+def test_send_message_raising_errors(mocker, args, result):
+    # verify error is raised if no user/channel were provided.
+    # verify error is raised if user and channel provided.
+    # verify proper error is raised if invalid JSON provided as adaptive card.
+    # verify proper error is raised if both message and adaptive card were provided.
+    # verify proper error is raised if neither message or adaptive card were provided.
+
+    mocker.patch.object(demisto, 'args', return_value=args)
     with pytest.raises(ValueError) as e:
         send_message()
-    assert str(e.value) == 'No channel or team member to send message were provided.'
+    assert str(e.value) == result
 
-    # verify error is raised if both user and channel were provided
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'channel': 'somechannel',
-            'team_member': 'someuser'
-        }
-    )
-    with pytest.raises(ValueError) as e:
-        send_message()
-    assert str(e.value) == 'Provide either channel or team member to send message to, not both.'
 
+def test_send_message_with_user(mocker, requests_mock):
     # verify message is sent properly given user to send to
+
+    mocker.patch.object(demisto, 'results')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -460,7 +471,12 @@ def test_send_message(mocker, requests_mock):
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
 
+
+def test_send_message_with_channel(mocker, requests_mock):
     # verify message is sent properly given channel
+
+    mocker.patch.object(demisto, 'results')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -485,7 +501,12 @@ def test_send_message(mocker, requests_mock):
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
 
+
+def test_send_message_with_entitlement(mocker, requests_mock):
     # verify message is sent properly given entitlement
+
+    mocker.patch.object(demisto, 'results')
+
     message: dict = {
         'message_text': 'is this really working?',
         'options': ['yes', 'no', 'maybe'],
@@ -500,6 +521,13 @@ def test_send_message(mocker, requests_mock):
             'team_member': 'dwashinton@email.com',
             'message': json.dumps(message)
         }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={'id': 'conversation-id'})
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
     )
     expected_ask_user_message: dict = {
         'attachments': [{
@@ -553,51 +581,17 @@ def test_send_message(mocker, requests_mock):
     }
 
     send_message()
-    assert requests_mock.request_history[4].json() == expected_ask_user_message
+
+    assert requests_mock.request_history[1].json() == expected_ask_user_message
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
 
-    # verify proper error is raised if invalid JSON provided as adaptive card
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'channel': 'channel',
-            'adaptive_card': 'THISisSTRINGnotJSON'
-        }
-    )
-    with pytest.raises(ValueError) as e:
-        send_message()
-    assert str(e.value) == 'Given adaptive card is not in valid JSON format.'
 
-    # verify proper error is raised if both message and adaptive card were provided
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'channel': 'channel',
-            'message': 'message',
-            'adaptive_card': '{"a":"b"}'
-        }
-    )
-    with pytest.raises(ValueError) as e:
-        send_message()
-    assert str(e.value) == 'Provide either message or adaptive to send, not both.'
-
-    # verify proper error is raised if neither message or adaptive card were provided
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'channel': 'channel'
-        }
-    )
-    with pytest.raises(ValueError) as e:
-        send_message()
-    assert str(e.value) == 'No message or adaptive card to send were provided.'
-
+def test_send_message_with_adaptive_card(mocker, requests_mock):
     # verify adaptive card sent successfully
+
+    mocker.patch.object(demisto, 'results')
 
     adaptive_card: dict = {
         "contentType": "application/vnd.microsoft.card.adaptive",
@@ -628,8 +622,64 @@ def test_send_message(mocker, requests_mock):
         'type': 'message',
         'attachments': [adaptive_card]
     }
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={'id': 'conversation-id'})
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
+    )
     send_message()
-    assert requests_mock.request_history[6].json() == expected_conversation
+    assert requests_mock.request_history[1].json() == expected_conversation
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Message was sent successfully.'
+
+
+def test_sending_message_using_email_address(mocker, requests_mock):
+    mocker.patch.object(demisto, 'results')
+    # verify message is sent properly given email with uppercase letters to send to
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'bot_id': bot_id
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_member': 'DwashinTon@email.com',
+            'message': 'MESSAGE'
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations',
+        json={
+            'id': 'conversation-id'
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations/conversation-id/activities',
+        json={}
+    )
+    expected_create_personal_conversation_data: dict = {
+        'bot': {
+            'id': f'28:{bot_id}',
+            'name': 'DemistoBot'
+        },
+        'members': [{
+            'id': '29:1pBMMC85IyjM3tr_MCZi7KW4pw4EULxLN4C7R_xoi3Wva_lOn3VTf7xJlCLK-r-pMumrmoz9agZxsSrCf7__u9R'
+        }],
+        'channelData': {
+            'tenant': {
+                'id': tenant_id
+            }
+        }
+    }
+    send_message()
+    assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
@@ -912,47 +962,49 @@ def test_get_team_aad_id(mocker, requests_mock):
     )
     assert get_team_aad_id('The-A-Team') == '7d8efdf8-0c5a-42e3-a489-5ef5c3fc7a2b'
 
+    json_response = {
+        '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+        'value': [
+            {
+                'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
+                'displayName': 'MyGreatTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            },
+            {
+                'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
+                'displayName': 'WooahTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'mailNickname': 'X1050LaunchTeam',
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            }
+        ]
+    }
     # verify non existing team raises value error
-    requests_mock.get(
-        "https://graph.microsoft.com/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')",
-        json={
-            '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
-            'value': [
-                {
-                    'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
-                    'displayName': 'MyGreatTeam',
-                    'groupTypes': [
-                        'Unified'
-                    ],
-                    'mailEnabled': True,
-                    'resourceBehaviorOptions': [],
-                    'resourceProvisioningOptions': [
-                        'Team'
-                    ],
-                    'securityEnabled': False,
-                    'visibility': 'Private'
-                },
-                {
-                    'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
-                    'displayName': 'WooahTeam',
-                    'groupTypes': [
-                        'Unified'
-                    ],
-                    'mailEnabled': True,
-                    'mailNickname': 'X1050LaunchTeam',
-                    'resourceBehaviorOptions': [],
-                    'resourceProvisioningOptions': [
-                        'Team'
-                    ],
-                    'securityEnabled': False,
-                    'visibility': 'Private'
-                }
-            ]
-        }
-    )
+    url_a = f"{BASE_URL}?$filter=displayName eq 'The-B-Team' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    requests_mock.get(url_a, json=json_response)
     with pytest.raises(ValueError) as e:
         get_team_aad_id('The-B-Team')
     assert str(e.value) == 'Could not find requested team.'
+
+    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreatTeam' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    requests_mock.get(url_b, json=json_response)
 
     # verify team ID for team which is not in integration context
     assert get_team_aad_id('MyGreatTeam') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'

@@ -1,13 +1,9 @@
-name: VMware vCenter
-id: VMware_vCenter
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: VMware vCenter
+id: VMware_vCenter
+name: VMware vCenter
 rules: ''
-schema: |-
-  {
-    "VMwareVCenter": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-  }
+schema: ''
+tags: VMware vCenter
+to_xdr_version: 3.4.9
+toversion: 6.9.9

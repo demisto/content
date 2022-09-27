@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to Partner starting August 26, 2022.
+
 Armis is an agentless, enterprise-class security platform to address the threat landscape of unmanaged and IoT devices. We discover every managed, unmanaged, and IoT device on and off of your network, analyze device behavior to identify risks or attacks, and protect your critical business information and systems. This Pack contains Armis incident fields and provides the ability to interface with the Armis system
 
 ##### What does this pack do?

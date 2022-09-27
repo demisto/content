@@ -244,3 +244,42 @@ def test_edit_case(mocker):
     client.edit_case()
     result = client._McAfeeESMClient__request.call_args.kwargs['data']['caseDetail']
     assert len(result['eventList']) > 0
+
+
+class TestTestModule:
+    @staticmethod
+    def test_sanity(mocker):
+        params = {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {
+                "identifier": "Shahaf",
+                "password": "TEST"
+            },
+            "version": "11.3"
+        }
+        mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
+        mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
+        client = McAfeeESMClient(params)
+        _, _, raw = client.test_module()
+        assert raw == 'ok'
+
+    @staticmethod
+    def test_invalid_starting_id(mocker):
+        params = {
+            'url': 'https://example.com',
+            'insecure': True,
+            'credentials': {
+                'identifier': 'Shahaf',
+                'password': 'TEST',
+            },
+            'version': '11.3',
+            'startingFetchID': '',
+            'isFetch': True,
+        }
+        mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
+        mocker.patch.object(McAfeeESMClient, '_http_request')
+        mocker.patch.object(demisto, 'params', return_value=params)
+        client = McAfeeESMClient(params)
+        with pytest.raises(DemistoException):
+            client.test_module()

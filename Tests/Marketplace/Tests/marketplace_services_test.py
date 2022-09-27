@@ -1007,8 +1007,7 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data,
-                                                                  new_version=False)
+                                                                  modified_files_data=modified_data)
 
         assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
@@ -1045,8 +1044,7 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data,
-                                                                  new_version=False)
+                                                                  modified_files_data=modified_data)
 
         assert version_changelog['releaseNotes'] == \
                "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
@@ -1073,7 +1071,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Other Integration Display Name"
+                            "display_name": "Other Integration Display Name",
+                            "marketplaces": []
                         }
                 }
             ]
@@ -1082,10 +1081,9 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data,
-                                                                  new_version=False)
+                                                                  modified_files_data=modified_data)
 
-        assert not version_changelog
+        assert version_changelog['releaseNotes'] == "Changes are not relevant for XSOAR marketplace."
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
         ('''
@@ -1136,18 +1134,18 @@ This is visible
 </~XSOAR>
 - **Field Name 3**
 ''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n\n#### Scripts\n##### Script Name\n- Fixed script"),
-        ('''
-#### Integrations
-##### Integration Display Name
-<~XSIAM>
-- Fixed an issue
-</~XSIAM>
+        #         ('''
+        # #### Integrations
+        # ##### Integration Display Name
+        # <~XSIAM>
+        # - Fixed an issue
+        # </~XSIAM>
 
-#### Scripts
-##### Script Name
-<~XSIAM>
-- Fixed script
-</~XSIAM>''', 'xsoar', ''),
+        # #### Scripts
+        # ##### Script Name
+        # <~XSIAM>
+        # - Fixed script
+        # </~XSIAM>''', 'xsoar', ''),
         ('''
 #### Integrations
 ##### Integration Display Name
@@ -1226,7 +1224,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Integration Display Name"
+                            "display_name": "Integration Display Name",
+                            "marketplaces": []
                         }
                 }
             ],
@@ -1235,7 +1234,8 @@ This is visible
                     'id':
                         {
                             "file_path": "some/path",
-                            "display_name": "Script Name"
+                            "display_name": "Script Name",
+                            "marketplaces": []
                         }
                 }
             ],
@@ -1243,7 +1243,8 @@ This is visible
                 {
                     'id':
                         {
-                            "display_name": "Field Name 1"
+                            "display_name": "Field Name 1",
+                            "marketplaces": []
                         }
                 }
             ]
@@ -1254,7 +1255,7 @@ This is visible
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data,
-                                                                  new_version=False, marketplace=upload_marketplace)
+                                                                  marketplace=upload_marketplace)
 
         if not expected_result:
             assert not version_changelog
@@ -1463,7 +1464,7 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == \
+        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data, {}) == \
                expected_result
 
 
@@ -2993,7 +2994,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
@@ -3015,7 +3016,7 @@ class TestCheckChangesRelevanceForMarketplace:
             ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is False
         assert modified_files_data == {}
@@ -3057,7 +3058,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 ]
         }
 
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy, [])
 
         assert status is True
         assert modified_files_data == expected_modified_files_data

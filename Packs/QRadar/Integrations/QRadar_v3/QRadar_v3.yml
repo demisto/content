@@ -25,6 +25,11 @@ configuration:
   name: incident_type
   required: false
   type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
@@ -789,8 +794,8 @@ script:
     - name: fetch_mode
       type: PREDEFINED
       predefined:
-        - Fetch With All Events
-        - Fetch Correlation Events Only
+      - Fetch With All Events
+      - Fetch Correlation Events Only
       required: false
       description: The mode to use when fetching events. Mutually exclusive with query_expression and saved_search_id.
     - name: start_time
@@ -2707,8 +2712,8 @@ script:
     - name: fetch_mode
       type: PREDEFINED
       predefined:
-        - Fetch With All Events
-        - Fetch Correlation Events Only
+      - Fetch With All Events
+      - Fetch Correlation Events Only
       required: false
       description: The mode to use when fetching events. Mutually exclusive with query_expression.
     - name: start_time
@@ -2742,7 +2747,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.5.33323
   feed: false
   isfetch: false
   isremotesyncin: true

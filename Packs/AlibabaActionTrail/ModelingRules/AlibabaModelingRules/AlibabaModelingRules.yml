@@ -1,54 +1,9 @@
-name: Alibaba Modeling Rule
-id: alibaba_modeling_rule
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: alibaba
+id: alibaba_modeling_rule
+name: Alibaba Modeling Rule
 rules: ''
-schema: |-
-  {
-      "alibaba_action_trail_raw": {
-          "__time__": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_acsregion": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_eventid": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_eventname": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_eventtype": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_resourcename": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_resourcetype": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_sourceipaddress": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_useridentity_type": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_useridentity_principalid": {
-              "type": "string",
-              "is_array": false
-          },
-          "event_useridentity_username": {
-              "type": "string",
-              "is_array": false
-          }
-      }
-  }
+schema: ''
+tags: alibaba
+to_xdr_version: 3.4.9
+toversion: 6.9.9

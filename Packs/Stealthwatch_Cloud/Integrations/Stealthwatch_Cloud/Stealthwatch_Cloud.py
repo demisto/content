@@ -39,7 +39,7 @@ def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, 
 
     url = SERVER_URL + url_suffix
 
-    LOG('running {} request with url={}\tparams={}'.format(method, url, json.dumps(req_params)))
+    LOG(f'running {method} request with url={url}\tparams={json.dumps(req_params)}')
 
     try:
         res = requests.request(method,
@@ -92,7 +92,7 @@ def show_alert(alert_id):
     Returns alert by specific id
     """
 
-    api_endpoint = "/alerts/alert/{}/".format(alert_id)
+    api_endpoint = f"/alerts/alert/{alert_id}/"
     return http_request('GET', api_endpoint, {}, DEFAULT_HEADERS)
 
 
@@ -112,7 +112,7 @@ def show_alert_command():
 
     list_for_md = ['resolved', 'id', 'last_modified', 'obj_created', 'assigned_to']
 
-    dict_for_md = {underscore_to_camelcase(k): v for k, v in alert_data.iteritems() if k in list_for_md}
+    dict_for_md = {underscore_to_camelcase(k): v for k, v in alert_data.items() if k in list_for_md}
     md = tableToMarkdown(alert_data.get('text', ''), dict_for_md)
 
     return {
@@ -132,7 +132,7 @@ def update_alert(alert_id, data):
     Updates alert by specific id
     """
 
-    api_endpoint = "/alerts/alert/{}/".format(alert_id)
+    api_endpoint = f"/alerts/alert/{alert_id}/"
     return http_request('PUT', api_endpoint, data=json.dumps(data))
 
 
@@ -163,7 +163,7 @@ def update_alert_command():
 
     list_for_md = ['resolved', 'id', 'last_modified', 'obj_created', 'assigned_to']
 
-    dict_for_md = {k: v for k, v in alert_data.iteritems() if k in list_for_md}
+    dict_for_md = {k: v for k, v in alert_data.items() if k in list_for_md}
     md = tableToMarkdown(alert_data.get('text', ''), dict_for_md)
 
     return {
@@ -302,7 +302,7 @@ def domain_unblock(domain_id):
     Removes domain from the blacklist
     """
 
-    api_endpoint = "/blacklist/domains/{}/".format(domain_id)
+    api_endpoint = f"/blacklist/domains/{domain_id}/"
     return http_request('DELETE', api_endpoint, None, DEFAULT_HEADERS, None)
 
 
@@ -355,7 +355,7 @@ def list_blocked_domains_command():
 
     data_output = []
     for obs in domains_result:
-        data_output.append({underscore_to_camelcase(k): v for k, v in obs.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(obs.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -397,7 +397,7 @@ def list_observations_command():
 
     data_output = []
     for obs in observations_data:
-        data_output.append({underscore_to_camelcase(k): v for k, v in obs.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(obs.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -472,7 +472,7 @@ def list_sessions_command():
 
     data_output = []
     for sess in final_sessions_data:
-        data_output.append({underscore_to_camelcase(k): v for k, v in sess.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(sess.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -559,6 +559,6 @@ try:
     elif demisto.command() == 'fetch-incidents':
         demisto.results(fetch_incidents())
 except Exception as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
     raise

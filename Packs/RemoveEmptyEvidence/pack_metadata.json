@@ -1,0 +1,17 @@
+{
+    "name": "Remove Empty Evidence",
+    "description": "The automation removes evidence based on a query performed on the evidence content,\nif the provided string is found within the evidence- it will be removed.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Gavriel Filippov",
+    "url": "",
+    "email": "",
+    "created": "2022-07-27T19:16:41Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "GavrielFilippov"
+    ]
+}

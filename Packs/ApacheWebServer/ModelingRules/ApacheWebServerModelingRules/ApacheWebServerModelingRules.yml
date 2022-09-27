@@ -1,18 +1,9 @@
-name: Apache Web Server
-id: Apache_Web_Server
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: Apache Web Server
+id: Apache_Web_Server
+name: Apache Web Server
 rules: ''
-schema: |-
-  {
-    "Apache_httpd_error": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-      "httpd_access": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-  }
+schema: ''
+tags: Apache Web Server
+to_xdr_version: 3.4.9
+toversion: 6.9.9

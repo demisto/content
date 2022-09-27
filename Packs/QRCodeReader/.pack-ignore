@@ -4,3 +4,6 @@ ignore=PA129
 
 [file:QRCodeReaderGoqrMe_image.png]
 ignore=IM111
+
+[known_words]
+QR

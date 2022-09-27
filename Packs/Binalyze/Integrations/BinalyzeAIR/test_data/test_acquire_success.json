@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "result": [
+        {
+            "_id": "3c801542-d58e-4237-84b9-37651b455a38",
+            "name": "Example Case Acquisition 003",
+            "organizationId": 0
+        }
+    ],
+    "statusCode": 200,
+    "errors": []
+}

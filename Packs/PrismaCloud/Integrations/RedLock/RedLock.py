@@ -164,6 +164,7 @@ def handle_filters(payload):
         'policy-label': 'policy.label',
         'policy-compliance-standard': 'policy.complianceStandard',
         'cloud-account': 'cloud.account',
+        'cloud-account-id': 'cloud.accountId',
         'cloud-region': 'cloud.region',
         'alert-rule-name': 'alertRule.name',
         'resource-id': 'resource.id',
@@ -173,13 +174,11 @@ def handle_filters(payload):
         'cloud-type': 'cloud.type',
         'risk-grade': 'risk.grade',
         'policy-type': 'policy.type',
-        'policy-severity': 'policy.severity'
+        'policy-severity': 'policy.severity',
     }
     payload['filters'] = []
     for filter_ in demisto.args():
-        if filter_ in ('policy-name', 'policy-label', 'policy-compliance-standard', 'cloud-account', 'cloud-region',
-                       'alert-rule-name', 'resource-id', 'resource-name', 'resource-type', 'alert-status', 'alert-id',
-                       'cloud-type', 'risk-grade', 'policy-type', 'policy-severity') and demisto.getArg(filter_):
+        if filter_ in args_conversion and demisto.getArg(filter_):
             payload['filters'].append(
                 {'name': args_conversion[filter_], 'operator': '=', 'value': demisto.getArg(filter_)})
 
@@ -245,16 +244,23 @@ def search_alerts():
     """
     Retrieves alerts by filter
     """
+    args = demisto.args()
     payload = {}  # type: dict
+
     handle_time_filter(payload, {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}})
     handle_filters(payload)
+    if 'limit' in args:
+        payload['limit'] = arg_to_number(args.get('limit'))
+
     response = req('POST', 'alert', payload, {'detailed': 'true'})
+
     alerts = []
     context_path = 'Redlock.Alert(val.ID === obj.ID)'
     context = {context_path: []}  # type: dict
     for alert in response:
         alerts.append(alert_to_readable(alert))
         context[context_path].append(alert_to_context(alert))
+
     context['Redlock.Metadata.CountOfAlerts'] = len(response)
     demisto.results({
         'Type': entryTypes['note'],

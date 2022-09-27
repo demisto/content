@@ -1,14 +1,9 @@
-name: Infoblox Modeling Rules
-id: infoblox_modeling_rules
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: Infoblox
+id: infoblox_modeling_rules
+name: Infoblox Modeling Rules
 rules: ''
-schema: |-
-  {
-    "infoblox_infoblox_raw": {
-      "_raw_log": {
-          "type": "string", 
-          "is_array": false
-      }
-    }
-  }
+schema: ''
+tags: Infoblox
+to_xdr_version: 3.4.9
+toversion: 6.9.9

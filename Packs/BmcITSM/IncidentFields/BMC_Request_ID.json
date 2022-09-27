@@ -1,0 +1,39 @@
+{
+    "id": "incident_bmcrequestid",
+    "version": -1,
+    "modified": "2022-06-23T10:31:07.854659201+03:00",
+    "propagationLabels": [
+        "all"
+    ],
+    "name": "BmcITSM Request ID",
+    "ownerOnly": false,
+    "cliName": "bmcrequestid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "BMC Change-Request",
+        "BMC Incident",
+        "BMC Problem Investigation incident",
+        "BMC Problem – Known Error",
+        "BMC Service Request",
+        "BMC Task"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

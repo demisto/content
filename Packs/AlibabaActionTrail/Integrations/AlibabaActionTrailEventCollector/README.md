@@ -17,7 +17,6 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
     | Query | True |
     | Number of incidents to fetch per fetch. | False |
     | First fetch time interval | False |
-    | The product corresponding to the integration that originated the events. | True |
     | Use system proxy settings | False |
     | Use Secured Connection | False |
 

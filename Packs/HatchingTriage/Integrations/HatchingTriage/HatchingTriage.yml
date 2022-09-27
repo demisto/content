@@ -14,9 +14,15 @@ configuration:
   name: API Key
   required: true
   type: 4
+  additionalinfo: The API Key to use for the connection.
 - display: Verify SSL
   defaultvalue: 'true'
   name: Verify SSL
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: 'false'
   required: false
   type: 8
 description: Submit a high volume of samples to run in a sandbox and view reports
@@ -39,40 +45,39 @@ script:
     execution: false
     name: triage-query-samples
     outputs:
-      - contextPath: Triage.submissions.completed
-        description: Date the sample analysis was completed
-        type: Date
-      - contextPath: Triage.submissions.filename
-        description: Name of the file submitted
-        type: String
-      - contextPath: Triage.submissions.id
-        description: Unique identifier of the submission
-        type: String
-      - contextPath: Triage.submissions.kind
-        description: Type of analysis
-        type: String
-      - contextPath: Triage.submissions.private
-        description: If the submissions is private or publically viewable
-        type: Boolean
-      - contextPath: Triage.submissions.status
-        description: Status of the submitted file
-        type: String
-      - contextPath: Triage.submissions.submitted
-        description: Date the sample was submitted
-        type: Date
-      - contextPath: Triage.submissions.tasks.id
-        description: Array of tasks that have been applied to the sample (static, behavioral,
-          etc)
-        type: String
-      - contextPath: Triage.submissions.tasks.status
-        description: Status of the task
-        type: String
-      - contextPath: Triage.submissions.tasks.target
-        description: Sample the task is being run on
-        type: String
-      - contextPath: Triage.submissions.url
-        description: URL that was submitted
-        type: String
+    - contextPath: Triage.submissions.completed
+      description: Date the sample analysis was completed
+      type: Date
+    - contextPath: Triage.submissions.filename
+      description: Name of the file submitted
+      type: String
+    - contextPath: Triage.submissions.id
+      description: Unique identifier of the submission
+      type: String
+    - contextPath: Triage.submissions.kind
+      description: Type of analysis
+      type: String
+    - contextPath: Triage.submissions.private
+      description: If the submissions is private or publically viewable
+      type: Boolean
+    - contextPath: Triage.submissions.status
+      description: Status of the submitted file
+      type: String
+    - contextPath: Triage.submissions.submitted
+      description: Date the sample was submitted
+      type: Date
+    - contextPath: Triage.submissions.tasks.id
+      description: Array of tasks that have been applied to the sample (static, behavioral, etc)
+      type: String
+    - contextPath: Triage.submissions.tasks.status
+      description: Status of the task
+      type: String
+    - contextPath: Triage.submissions.tasks.target
+      description: Sample the task is being run on
+      type: String
+    - contextPath: Triage.submissions.url
+      description: URL that was submitted
+      type: String
     description: Get a list of all samples either private or public
   - arguments:
     - auto: PREDEFINED
@@ -98,15 +103,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Select what profile to run the sample with. Requires the user to
-        be registered with a company
+      description: Select what profile to run the sample with. Requires the user to be registered with a company
       isArray: false
       name: profiles
       required: false
       secret: false
     - default: false
-      description: Data to submit for analysis. For URLs give the URL. For files,
-        give the entry-id of the file
+      description: Data to submit for analysis. For URLs give the URL. For files, give the entry-id of the file
       isArray: false
       name: data
       required: true
@@ -116,24 +119,24 @@ script:
     execution: false
     name: triage-submit-sample
     outputs:
-      - contextPath: Triage.submissions.filename
-        description: Name of the submitted file
-        type: String
-      - contextPath: Triage.submissions.id
-        description: Unique identifier of the submission
-        type: String
-      - contextPath: Triage.submissions.kind
-        description: Type of sample to analyze
-        type: String
-      - contextPath: Triage.submissions.private
-        description: If the file is private or publicly viewable
-        type: Boolean
-      - contextPath: Triage.submissions.status
-        description: Status of the analysis of the submission
-        type: String
-      - contextPath: Triage.submissions.submitted
-        description: Date that the sample was submitted on
-        type: Date
+    - contextPath: Triage.submissions.filename
+      description: Name of the submitted file
+      type: String
+    - contextPath: Triage.submissions.id
+      description: Unique identifier of the submission
+      type: String
+    - contextPath: Triage.submissions.kind
+      description: Type of sample to analyze
+      type: String
+    - contextPath: Triage.submissions.private
+      description: If the file is private or publicly viewable
+      type: Boolean
+    - contextPath: Triage.submissions.status
+      description: Status of the analysis of the submission
+      type: String
+    - contextPath: Triage.submissions.submitted
+      description: Date that the sample was submitted on
+      type: Date
   - arguments:
     - default: false
       description: Sample's unique identifier, can be found using the query samples command
@@ -146,36 +149,36 @@ script:
     execution: false
     name: triage-get-sample
     outputs:
-      - contextPath: Triage.samples.completed
-        description: Date the sample analysis was completed
-        type: Date
-      - contextPath: Triage.samples.filename
-        description: Name of the submitted sample
-        type: String
-      - contextPath: Triage.samples.id
-        description: Unique identifier of the sample
-        type: String
-      - contextPath: Triage.samples.kind
-        description: Type of sample submitted
-        type: String
-      - contextPath: Triage.samples.private
-        description: State of the visibility of the sample
-        type: Boolean
-      - contextPath: Triage.samples.status
-        description: Current status of the sample analysis
-        type: String
-      - contextPath: Triage.samples.submitted
-        description: Date the sample was submitted
-        type: Date
-      - contextPath: Triage.samples.tasks.id
-        description: Task name that was applied to the sample
-        type: String
-      - contextPath: Triage.samples.tasks.status
-        description: Status of the task
-        type: String
-      - contextPath: Triage.samples.tasks.target
-        description: Target of the task, e.g. filename for file submissions
-        type: String
+    - contextPath: Triage.samples.completed
+      description: Date the sample analysis was completed
+      type: Date
+    - contextPath: Triage.samples.filename
+      description: Name of the submitted sample
+      type: String
+    - contextPath: Triage.samples.id
+      description: Unique identifier of the sample
+      type: String
+    - contextPath: Triage.samples.kind
+      description: Type of sample submitted
+      type: String
+    - contextPath: Triage.samples.private
+      description: State of the visibility of the sample
+      type: Boolean
+    - contextPath: Triage.samples.status
+      description: Current status of the sample analysis
+      type: String
+    - contextPath: Triage.samples.submitted
+      description: Date the sample was submitted
+      type: Date
+    - contextPath: Triage.samples.tasks.id
+      description: Task name that was applied to the sample
+      type: String
+    - contextPath: Triage.samples.tasks.status
+      description: Status of the task
+      type: String
+    - contextPath: Triage.samples.tasks.target
+      description: Target of the task, e.g. filename for file submissions
+      type: String
   - arguments:
     - default: false
       description: Sample's unique identifier, can be found using the query samples command
@@ -188,36 +191,36 @@ script:
     execution: false
     name: triage-get-sample-summary
     outputs:
-      - contextPath: Triage.sample-summaries.completed
-        description: Date the sample analysis was completed
-        type: Date
-      - contextPath: Triage.sample-summaries.created
-        description: Date the analysis report was created
-        type: Date
-      - contextPath: Triage.sample-summaries.custom
-        description: ''
-        type: String
-      - contextPath: Triage.sample-summaries.owner
-        description: ''
-        type: String
-      - contextPath: Triage.sample-summaries.sample
-        description: Unique identifier of the sample
-        type: String
-      - contextPath: Triage.sample-summaries.score
-        description: Score of the sample on a scale of 0 to 10
-        type: Number
-      - contextPath: Triage.sample-summaries.sha256
-        description: SHA256 of the sample
-        type: String
-      - contextPath: Triage.sample-summaries.status
-        description: Status of the analysis
-        type: String
-      - contextPath: Triage.sample-summaries.target
-        description: Target for analysis
-        type: String
-      - contextPath: Triage.sample-summaries.tasks
-        description: Tasks performed in the analysis
-        type: String
+    - contextPath: Triage.sample-summaries.completed
+      description: Date the sample analysis was completed
+      type: Date
+    - contextPath: Triage.sample-summaries.created
+      description: Date the analysis report was created
+      type: Date
+    - contextPath: Triage.sample-summaries.custom
+      description: ''
+      type: String
+    - contextPath: Triage.sample-summaries.owner
+      description: ''
+      type: String
+    - contextPath: Triage.sample-summaries.sample
+      description: Unique identifier of the sample
+      type: String
+    - contextPath: Triage.sample-summaries.score
+      description: Score of the sample on a scale of 0 to 10
+      type: Number
+    - contextPath: Triage.sample-summaries.sha256
+      description: SHA256 of the sample
+      type: String
+    - contextPath: Triage.sample-summaries.status
+      description: Status of the analysis
+      type: String
+    - contextPath: Triage.sample-summaries.target
+      description: Target for analysis
+      type: String
+    - contextPath: Triage.sample-summaries.tasks
+      description: Tasks performed in the analysis
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -247,8 +250,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: If submitting an archive file, select which files to analyze. Multiple
-        files can be specified with a comma seperator.Format is archive_file_name/sample_file.exe,archive_file_name/sample_file2.exe
+      description: If submitting an archive file, select which files to analyze. Multiple files can be specified with a comma seperator.Format is archive_file_name/sample_file.exe,archive_file_name/sample_file2.exe
       isArray: false
       name: pick
       required: false
@@ -260,8 +262,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: When a sample is in the static_analysis status, a profile should
-      be selected in order to continue.
+    description: When a sample is in the static_analysis status, a profile should be selected in order to continue.
     execution: false
     name: triage-set-sample-profile
   - arguments:
@@ -276,36 +277,36 @@ script:
     description: Get the static analysis of a sample
     name: triage-get-static-report
     outputs:
-      - contextPath: Triage.sample.reports.static.analysis.reported
-        description: Date the sample was submitted
-        type: Unknown
-      - contextPath: DBotScore.Indicator
-        description: Triage analysis target
-        type: String
-      - contextPath: DBotScore.Type
-        description: The indicator type - File or URL
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The integration used to generate the indicator
-        type: String
-      - contextPath: DBotScore.Score
-        description: Analysis verdict as score from 1 to 10
-        type: Number
-      - contextPath: File.Name
-        description: The full file name (including file extension).
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL
-        type: String
+    - contextPath: Triage.sample.reports.static.analysis.reported
+      description: Date the sample was submitted
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: Triage analysis target
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type - File or URL
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The integration used to generate the indicator
+      type: String
+    - contextPath: DBotScore.Score
+      description: Analysis verdict as score from 1 to 10
+      type: Number
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -316,44 +317,44 @@ script:
     - default: false
       isArray: false
       name: task_id
-      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      description: Name of a behavioral task part of the sample analysis (e.g. behavioral1, behavioral2)
       required: true
       secret: false
     deprecated: false
     execution: false
-    description: Retrieves the generated Triage Report for a single task
+    description: Retrieves the generated Triage behavioral report for a single task
     name: triage-get-report-triage
     outputs:
-      - contextPath: Triage.sample.reports.triage
-        description: Triage report of the submitted sample
-        type: Unknown
-      - contextPath: DBotScore.Indicator
-        description: Triage analysis target
-        type: String
-      - contextPath: DBotScore.Type
-        description: The indicator type - File or URL
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The integration used to generate the indicator
-        type: String
-      - contextPath: DBotScore.Score
-        description: Analysis verdict as score from 1 to 10
-        type: Number
-      - contextPath: File.Name
-        description: The full file name (including file extension).
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: URL.Data
-        description: The URL
-        type: String
+    - contextPath: Triage.sample.reports.triage
+      description: Triage report of the submitted sample
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: Triage analysis target
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type - File or URL
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The integration used to generate the indicator
+      type: String
+    - contextPath: DBotScore.Score
+      description: Analysis verdict as score from 1 to 10
+      type: Number
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -364,7 +365,7 @@ script:
     - default: false
       isArray: false
       name: task_id
-      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      description: Name of a behavioral task part of the sample analysis (e.g. behavioral1, behavioral2)
       required: true
       secret: false
     deprecated: false
@@ -381,7 +382,7 @@ script:
     - default: false
       isArray: false
       name: task_id
-      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      description: Name of a behavioral task part of the sample analysis (e.g. behavioral1, behavioral2)
       required: true
       secret: false
     deprecated: false
@@ -419,30 +420,30 @@ script:
       required: false
       secret: false
     outputs:
-      - contextPath: Triage.users.company_id
-        description: Company unique identifier
-        type: String
-      - contextPath: Triage.users.created_at
-        description: Date users account was created
-        type: Date
-      - contextPath: Triage.users.email
-        description: Users email
-        type: String
-      - contextPath: Triage.users.email_confirmed_at
-        description: Date user confirmed their email/account
-        type: Date
-      - contextPath: Triage.users.first_name
-        description: Users first name
-        type: String
-      - contextPath: Triage.users.id
-        description: Users unique identifier
-        type: String
-      - contextPath: Triage.users.last_name
-        description: Users last name
-        type: String
-      - contextPath: Triage.users.permissions
-        description: Users permissions
-        type: String
+    - contextPath: Triage.users.company_id
+      description: Company unique identifier
+      type: String
+    - contextPath: Triage.users.created_at
+      description: Date users account was created
+      type: Date
+    - contextPath: Triage.users.email
+      description: Users email
+      type: String
+    - contextPath: Triage.users.email_confirmed_at
+      description: Date user confirmed their email/account
+      type: Date
+    - contextPath: Triage.users.first_name
+      description: Users first name
+      type: String
+    - contextPath: Triage.users.id
+      description: Users unique identifier
+      type: String
+    - contextPath: Triage.users.last_name
+      description: Users last name
+      type: String
+    - contextPath: Triage.users.permissions
+      description: Users permissions
+      type: String
     deprecated: false
     execution: false
     name: triage-get-users
@@ -491,30 +492,30 @@ script:
     execution: false
     name: triage-create-user
     outputs:
-      - contextPath: Triage.users.company_id
-        description: Company unique identifier
-        type: String
-      - contextPath: Triage.users.created_at
-        description: Date users account was created
-        type: Date
-      - contextPath: Triage.users.email
-        description: Users email
-        type: String
-      - contextPath: Triage.users.email_confirmed_at
-        description: Date user confirmed their email/account
-        type: Date
-      - contextPath: Triage.users.first_name
-        description: Users first name
-        type: String
-      - contextPath: Triage.users.id
-        description: Users unique identifier
-        type: String
-      - contextPath: Triage.users.last_name
-        description: Users last name
-        type: String
-      - contextPath: Triage.users.permissions
-        description: Users permissions
-        type: String
+    - contextPath: Triage.users.company_id
+      description: Company unique identifier
+      type: String
+    - contextPath: Triage.users.created_at
+      description: Date users account was created
+      type: Date
+    - contextPath: Triage.users.email
+      description: Users email
+      type: String
+    - contextPath: Triage.users.email_confirmed_at
+      description: Date user confirmed their email/account
+      type: Date
+    - contextPath: Triage.users.first_name
+      description: Users first name
+      type: String
+    - contextPath: Triage.users.id
+      description: Users unique identifier
+      type: String
+    - contextPath: Triage.users.last_name
+      description: Users last name
+      type: String
+    - contextPath: Triage.users.permissions
+      description: Users permissions
+      type: String
     description: Creates a new user and returns it. The user will become a member of the company the requesting user is a member of
   - arguments:
     - default: false
@@ -545,12 +546,12 @@ script:
     execution: false
     name: triage-create-api-key
     outputs:
-      - contextPath: Triage.apikey.key
-        description: API Key
-        type: String
-      - contextPath: Triage.apikey.name
-        description: Name of the API Key
-        type: String
+    - contextPath: Triage.apikey.key
+      description: API Key
+      type: String
+    - contextPath: Triage.apikey.name
+      description: Name of the API Key
+      type: String
     description: Creates a new key can be used to make API calls on behalf of the specified user. The user should have been granted the access_api permission beforehand
   - arguments:
     - default: false
@@ -563,12 +564,12 @@ script:
     execution: false
     name: triage-get-api-key
     outputs:
-      - contextPath: Triage.apikey.key
-        description: API Key
-        type: String
-      - contextPath: Triage.apikey.name
-        description: Name of the API Key
-        type: String
+    - contextPath: Triage.apikey.key
+      description: API Key
+      type: String
+    - contextPath: Triage.apikey.name
+      description: Name of the API Key
+      type: String
     description: Lists all API keys that the user has.
   - arguments:
     - default: false
@@ -598,24 +599,24 @@ script:
     execution: false
     name: triage-get-profiles
     outputs:
-      - contextPath: Triage.profiles..id
-        description: Unique identifier of the profile
-        type: String
-      - contextPath: Triage.profiles..name
-        description: Name of the profile
-        type: String
-      - contextPath: Triage.profiles..network
-        description: Network configuration
-        type: String
-      - contextPath: Triage.profiles..options.browser
-        description: Browser options
-        type: String
-      - contextPath: Triage.profiles..tags
-        description: Applied tags
-        type: String
-      - contextPath: Triage.profiles..timeout
-        description: Max run time of the profile
-        type: Number
+    - contextPath: Triage.profiles..id
+      description: Unique identifier of the profile
+      type: String
+    - contextPath: Triage.profiles..name
+      description: Name of the profile
+      type: String
+    - contextPath: Triage.profiles..network
+      description: Network configuration
+      type: String
+    - contextPath: Triage.profiles..options.browser
+      description: Browser options
+      type: String
+    - contextPath: Triage.profiles..tags
+      description: Applied tags
+      type: String
+    - contextPath: Triage.profiles..timeout
+      description: Max run time of the profile
+      type: Number
     description: List all profiles that your company has
   - arguments:
     - default: false
@@ -642,33 +643,33 @@ script:
       name: network
       description: Network configuration the profile should use
       predefined:
-        - drop
-        - internet
-        - proxy
+      - drop
+      - internet
+      - proxy
       required: false
       secret: false
     deprecated: false
     execution: false
     name: triage-create-profile
     outputs:
-      - contextPath: Triage.profiles.id
-        description: Profile unique identifier
-        type: String
-      - contextPath: Triage.profiles.name
-        description: Profile name
-        type: String
-      - contextPath: Triage.profiles.network
-        description: Profile network configuration
-        type: String
-      - contextPath: Triage.profiles.options
-        description: Profile options
-        type: Unknown
-      - contextPath: Triage.profiles.tags
-        description: Profile tags
-        type: String
-      - contextPath: Triage.profiles.timeout
-        description: Profile max run time
-        type: Number
+    - contextPath: Triage.profiles.id
+      description: Profile unique identifier
+      type: String
+    - contextPath: Triage.profiles.name
+      description: Profile name
+      type: String
+    - contextPath: Triage.profiles.network
+      description: Profile network configuration
+      type: String
+    - contextPath: Triage.profiles.options
+      description: Profile options
+      type: Unknown
+    - contextPath: Triage.profiles.tags
+      description: Profile tags
+      type: String
+    - contextPath: Triage.profiles.timeout
+      description: Profile max run time
+      type: Number
     description: Create a new profile
   - arguments:
     - default: false
@@ -700,6 +701,46 @@ script:
     name: triage-update-profile
     description: Update an existing profile
   - arguments:
+    - name: query
+      description: The search query for Triage
+      required: true
+    name: triage-query-search
+    description: Get a list of private and public samples matching the search query
+    outputs:
+    - contextPath: Triage.samples.completed
+      description: Date the sample analysis was completed
+      type: date
+    - contextPath: Triage.samples.filename
+      description: Name of the file submitted
+      type: string
+    - contextPath: Triage.samples.id
+      description: Unique identifier of the submission
+      type: string
+    - contextPath: Triage.samples.kind
+      description: Type of analysis
+      type: string
+    - contextPath: Triage.samples.private
+      description: If the submissions is private or publically viewable
+      type: boolean
+    - contextPath: Triage.samples.status
+      description: Status of the submitted file
+      type: string
+    - contextPath: Triage.samples.submitted
+      description: Date the sample was submitted
+      type: date
+    - contextPath: Triage.samples.tasks.id
+      description: Array of tasks that have been applied to the sample (static, behavioral, etc)
+      type: string
+    - contextPath: Triage.samples.tasks.status
+      description: Status of the task
+      type: string
+    - contextPath: Triage.samples.tasks.target
+      description: Sample the task is being run on
+      type: string
+    - contextPath: Triage.samples.url
+      description: URL that was submitted
+      type: string
+  - arguments:
     - default: false
       isArray: false
       name: profileID
@@ -710,7 +751,7 @@ script:
     execution: false
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false
@@ -719,3 +760,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

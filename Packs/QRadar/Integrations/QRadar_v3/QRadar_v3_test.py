@@ -37,7 +37,7 @@ from CommonServerPython import DemistoException, set_integration_context, Comman
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
 
 QRadar_v3.FAILURE_SLEEP = 0
-QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
+QRadar_v3.SLEEP_FETCH_EVENT_RETRIES = 0
 
 client = Client(
     server='https://192.168.0.1',
@@ -279,8 +279,10 @@ def test_build_headers(first_headers, all_headers):
                           (32, 'as4ll a4as ll5ajs 352lk aklj id     >           35 zjfzlkfj selkj', 35),
                           (32, 'as4ll a4as ll5ajs 352lk aklj id     >=           35 zjfzlkfj selkj', 34),
                           (32, 'a id     >=           35001 ', 35000),
-                          (1523, 'closing_reason_id > 5000', 1523)])
-def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
+                          (1523, 'closing_reason_id > 5000', 1523),
+                          (0, 'id > 4', 4),
+                          (0, 'id > 2', 3)])
+def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mocker):
     """
     Given:
      - The highest fetched offense ID from last run.
@@ -292,7 +294,8 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
     Then:
      - Ensure that returned value is the lowest ID to fetch from.
     """
-    assert get_minimum_id_to_fetch(last_run_offense_id, user_query) == expected
+    mocker.patch.object(client, 'offenses_list', return_value=[{'id': '3'}])
+    assert get_minimum_id_to_fetch(last_run_offense_id, user_query, '3 days', client) == expected
 
 
 @pytest.mark.parametrize('outputs, key_replace_dict, expected',
@@ -347,7 +350,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            None,
                            None,
-                           ([], QueryStatus.WAIT.value))
+                           ([], QueryStatus.ERROR.value))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -1270,7 +1273,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         ip_enrich=False,
         asset_enrich=False,
         incident_type=None,
-        mirror_direction=mirror_direction
+        mirror_direction=mirror_direction,
+        first_fetch='3 days',
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
@@ -1303,7 +1307,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         ip_enrich=False,
         asset_enrich=False,
         incident_type=None,
-        mirror_direction=mirror_direction
+        mirror_direction=mirror_direction,
+        first_fetch='3 days',
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():

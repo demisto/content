@@ -1,0 +1,62 @@
+[MODEL: dataset=netskope_netskope_raw, model=Network]
+alter XDM.Network.original_event_type=action,
+      XDM.Network.Destination.host.os_family=device,
+      XDM.Network.Destination.host.hostname=coalesce(dsthost, hostname),
+      XDM.Network.Destination.ipv4=dstip,
+      XDM.Network.Destination.port=dstport,
+      XDM.Network.ip_protocol=ip_protocol,
+      XDM.Network.Source.host.os=os,
+      XDM.Network.protocol_layers=arraycreate(protocol),
+      XDM.Network.duration=session_duration,
+      XDM.Network.Source.ipv4=srcip,
+      XDM.Network.Source.port=srcport,
+      XDM.Network.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
+      XDM.Network.Source.packets=total_packets,
+      XDM.Network.Destination.user.username=user,
+      XDM.Network.Destination.user.identifier=userkey,
+      XDM.Network.http.user_agent = useragent;
+
+[MODEL: dataset=netskope_netskope_raw, model=Audit]
+alter XDM.Audit.threat.severity=severity_level,
+      XDM.Audit.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
+      XDM.Audit.TriggeredBy.identity.name=user,
+      XDM.Audit.original_event_description=audit_log_event,
+      XDM.Audit.original_event_type=type
+| filter activity not in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
+| alter XDM.Audit.original_event_type=activity,
+        XDM.Audit.reason=alert,
+        XDM.Audit.threat.original_alert_id=to_string(incident_id),
+        XDM.Audit.TriggeredBy.location.country=src_country,
+        XDM.Audit.TriggeredBy.location.city=src_location,
+        XDM.Audit.TriggeredBy.location.region=src_region,
+        XDM.Audit.TriggeredBy.ipv4=coalesce(srcip, userip),
+        XDM.Audit.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
+        XDM.Audit.TriggeredBy.identity.name=user,
+        XDM.Audit.threat.severity=severity,
+        XDM.Audit.original_event_description=if(json_extract_scalar(supporting_data, "$.data_type") = "reason", json_extract_scalar(supporting_data, "$.data_values[0]"), ""),
+        //XDM.Audit.TriggeredBy.identity.name=if(json_extract_scalar(supporting_data, "$.data_type") = "user", if(array_length(json_extract_array(supporting_data, "$.data_values"))=1, json_extract_scalar(supporting_data, "$.data_values[0]"), json_extract_scalar(supporting_data, "$.data_values[1]"))),
+        XDM.Audit.TriggeredBy.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
+        XDM.Audit.TriggeredBy.user_agent = useragent;
+
+[MODEL: dataset=netskope_netskope_raw, model=Auth]
+filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
+| alter XDM.Auth.auth_method=access_method,
+        XDM.Auth.original_event_type=activity,
+        XDM.Auth.Target.application.name=coalesce(app, managed_app),
+        XDM.Auth.Client.host.hostname=device,
+        XDM.Auth.Client.location.country=dst_country,
+        XDM.Auth.Client.location.region=dst_region,
+        XDM.Auth.Client.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
+        XDM.Auth.Client.process.executable.file_type=file_type,
+        XDM.Auth.Server.host.hostname=hostname,
+        XDM.Auth.Client.process.executable.md5=md5,
+        XDM.Auth.Client.host.os=os,
+        XDM.Auth.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
+        XDM.Auth.Target.url=url,
+        XDM.Auth.Target.user.username=user,
+        XDM.Auth.Client.host.ipv4_addresses=arraycreate(userip),
+        XDM.Auth.reason=action,
+        XDM.Auth.threat.severity=severity,
+        XDM.Auth.Client.process.executable.sha256=coalesce(_sha256, sha256),
+        XDM.Auth.kerberos.padata_type=data_type,
+        XDM.Auth.Client.user_agent = useragent;

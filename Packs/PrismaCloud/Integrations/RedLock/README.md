@@ -40,42 +40,43 @@ If no time-range arguments are given, the search will filter only alerts from th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
-| time-range-value | The amount of units to go back in time | Optional | 
-| time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional | 
-| policy-name | The policy name | Optional | 
-| policy-label | The policy label | Optional | 
-| policy-compliance-standard | The policy compliance standard | Optional | 
-| cloud-account | The cloud account | Optional | 
-| cloud-region | The cloud region | Optional | 
-| alert-rule-name | The alert rule name | Optional | 
-| resource-id | The resource ID | Optional | 
-| resource-name | The resource name | Optional | 
-| resource-type | The resource type | Optional | 
-| alert-status | The alert status | Optional | 
-| alert-id | The alert ID | Optional | 
-| cloud-type | The cloud type | Optional | 
-| risk-grade | The risk grade | Optional | 
-| policy-type | The policy type | Optional | 
-| policy-severity | The policy severity | Optional | 
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional |
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional |
+| time-range-value | The amount of units to go back in time | Optional |
+| time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional |
+| policy-name | The policy name | Optional |
+| policy-label | The policy label | Optional |
+| policy-compliance-standard | The policy compliance standard | Optional |
+| cloud-account | The cloud account name | Optional |
+| cloud-account-id | The cloud account ID | Optional |
+| cloud-region | The cloud region name | Optional |
+| alert-rule-name | The alert rule name | Optional |
+| resource-id | The resource ID | Optional |
+| resource-name | The resource name | Optional |
+| resource-type | The resource type | Optional |
+| alert-status | The alert status | Optional |
+| alert-id | The alert ID | Optional |
+| cloud-type | The cloud type | Optional |
+| risk-grade | The risk grade | Optional |
+| policy-type | The policy type | Optional |
+| policy-severity | The policy severity | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Alert.ID | string | ID of returned alert | 
-| Redlock.Alert.Status | string | Status of returned alert | 
-| Redlock.Alert.AlertTime | string | Time of alert | 
-| Redlock.Alert.Policy.ID | string | The policy ID | 
-| Redlock.Alert.Policy.Name | string | The policy name | 
-| Redlock.Alert.Policy.Type | string | The policy type | 
-| Redlock.Alert.Policy.Severity | string | The policy severity | 
-| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable | 
-| Redlock.Alert.RiskDetail.Rating | string | The risk rating | 
-| Redlock.Alert.RiskDetail.Score | string | The risk score | 
-| Redlock.Metadata.CountOfAlerts | number | The number of alerts found | 
+| Redlock.Alert.ID | string | ID of returned alert |
+| Redlock.Alert.Status | string | Status of returned alert |
+| Redlock.Alert.AlertTime | string | Time of alert |
+| Redlock.Alert.Policy.ID | string | The policy ID |
+| Redlock.Alert.Policy.Name | string | The policy name |
+| Redlock.Alert.Policy.Type | string | The policy type |
+| Redlock.Alert.Policy.Severity | string | The policy severity |
+| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable |
+| Redlock.Alert.RiskDetail.Rating | string | The risk rating |
+| Redlock.Alert.RiskDetail.Score | string | The risk score |
+| Redlock.Metadata.CountOfAlerts | number | The number of alerts found |
 
 
 #### Command Example
@@ -134,24 +135,24 @@ Gets the details of an alert based on alert ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The alert ID | Required | 
-| detailed | Allows for retrieving entire / trimmed alert model | Optional | 
+| alert-id | The alert ID | Required |
+| detailed | Allows for retrieving entire / trimmed alert model | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Alert.ID | string | The alert ID | 
-| Redlock.Alert.Status | string | The alert status | 
-| Redlock.Alert.AlertTime | date | The time of the alert | 
-| Redlock.Alert.Policy.ID | string | The policy ID | 
-| Redlock.Alert.Policy.Name | string | The policy name | 
-| Redlock.Alert.Policy.Type | string | The type of policy | 
-| Redlock.Alert.Policy.Severity | string | The policy severity | 
-| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable | 
-| Redlock.Alert.RiskDetail.Rating | string | The risk rating | 
-| Redlock.Alert.RiskDetail.Score | string | The risk score | 
+| Redlock.Alert.ID | string | The alert ID |
+| Redlock.Alert.Status | string | The alert status |
+| Redlock.Alert.AlertTime | date | The time of the alert |
+| Redlock.Alert.Policy.ID | string | The policy ID |
+| Redlock.Alert.Policy.Name | string | The policy name |
+| Redlock.Alert.Policy.Type | string | The type of policy |
+| Redlock.Alert.Policy.Severity | string | The policy severity |
+| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable |
+| Redlock.Alert.RiskDetail.Rating | string | The risk rating |
+| Redlock.Alert.RiskDetail.Score | string | The risk score |
 
 
 #### Command Example
@@ -207,36 +208,36 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | Comma-separated list of string IDs to be dismissed | Optional | 
-| dismissal-note | Reason for dismissal. | Required | 
-| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified. | Optional | 
-| snooze-unit | The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing. | Optional | 
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
-| time-range-value | The amount of units to go back in time | Optional | 
-| time-range-unit | The search unit | Optional | 
-| policy-name | The policy name | Optional | 
-| policy-label | The policy label | Optional | 
-| policy-compliance-standard | The policy compliance standard | Optional | 
-| cloud-account | The cloud account | Optional | 
-| cloud-region | The cloud region | Optional | 
-| alert-rule-name | The alert rule name | Optional | 
-| resource-id | The resource ID | Optional | 
-| resource-name | The resource name | Optional | 
-| resource-type | The resource type | Optional | 
-| alert-status | The alert status | Optional | 
-| cloud-type | The cloud type | Optional | 
-| risk-grade | The risk grade | Optional | 
-| policy-type | The policy type | Optional | 
-| policy-severity | The policy severity | Optional | 
-| policy-id | Comma-separated string of policy IDs | Optional | 
+| alert-id | Comma-separated list of string IDs to be dismissed | Optional |
+| dismissal-note | Reason for dismissal. | Required |
+| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified. | Optional |
+| snooze-unit | The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing. | Optional |
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional |
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional |
+| time-range-value | The amount of units to go back in time | Optional |
+| time-range-unit | The search unit | Optional |
+| policy-name | The policy name | Optional |
+| policy-label | The policy label | Optional |
+| policy-compliance-standard | The policy compliance standard | Optional |
+| cloud-account | The cloud account | Optional |
+| cloud-region | The cloud region | Optional |
+| alert-rule-name | The alert rule name | Optional |
+| resource-id | The resource ID | Optional |
+| resource-name | The resource name | Optional |
+| resource-type | The resource type | Optional |
+| alert-status | The alert status | Optional |
+| cloud-type | The cloud type | Optional |
+| risk-grade | The risk grade | Optional |
+| policy-type | The policy type | Optional |
+| policy-severity | The policy severity | Optional |
+| policy-id | Comma-separated string of policy IDs | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.DismissedAlert.ID | string | The IDs of the dismissed alerts | 
+| Redlock.DismissedAlert.ID | string | The IDs of the dismissed alerts |
 
 
 #### Command Example
@@ -271,32 +272,32 @@ Re-open the alerts matching the given filter.  Must provide either policy IDs or
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The IDs of alerts to reopen | Optional | 
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
-| time-range-value | The amount of units to go back in time | Optional | 
-| time-range-unit | The search unit | Optional | 
-| policy-name | The policy name | Optional | 
-| policy-label | The policy label | Optional | 
-| policy-compliance-standard | The policy compliance standard | Optional | 
-| cloud-account | The cloud account | Optional | 
-| cloud-region | The cloud region | Optional | 
-| alert-rule-name | The alert rule name | Optional | 
-| resource-id | The resource ID | Optional | 
-| resource-name | The resource name | Optional | 
-| resource-type | The resource type | Optional | 
-| alert-status | The alert status | Optional | 
-| cloud-type | The cloud type | Optional | 
-| risk-grade | The risk grade | Optional | 
-| policy-type | The policy type | Optional | 
-| policy-severity | The policy severity | Optional | 
+| alert-id | The IDs of alerts to reopen | Optional |
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional |
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional |
+| time-range-value | The amount of units to go back in time | Optional |
+| time-range-unit | The search unit | Optional |
+| policy-name | The policy name | Optional |
+| policy-label | The policy label | Optional |
+| policy-compliance-standard | The policy compliance standard | Optional |
+| cloud-account | The cloud account | Optional |
+| cloud-region | The cloud region | Optional |
+| alert-rule-name | The alert rule name | Optional |
+| resource-id | The resource ID | Optional |
+| resource-name | The resource name | Optional |
+| resource-type | The resource type | Optional |
+| alert-status | The alert status | Optional |
+| cloud-type | The cloud type | Optional |
+| risk-grade | The risk grade | Optional |
+| policy-type | The policy type | Optional |
+| policy-severity | The policy severity | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.ReopenedAlert.ID | string | IDs of the re\-opened alerts | 
+| Redlock.ReopenedAlert.ID | string | IDs of the re\-opened alerts |
 
 
 #### Command Example
@@ -387,16 +388,16 @@ Get remediation details for a given alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The alert id to get remediation details for | Optional | 
+| alert-id | The alert id to get remediation details for | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Alert.Remediation.Description | string | Description of CLI remediation instructions | 
-| Redlock.Alert.ID | string | The ID of the alert for which the remediation details applies | 
-| Redlock.Alert.Remediation.CLI | string | Exact CLI command string | 
+| Redlock.Alert.Remediation.Description | string | Description of CLI remediation instructions |
+| Redlock.Alert.ID | string | The ID of the alert for which the remediation details applies |
+| Redlock.Alert.Remediation.CLI | string | Exact CLI command string |
 
 
 #### Command Example
@@ -437,35 +438,35 @@ Run RQL query on Prisma Cloud
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | determines the limit on the results. '; limit search records to {}' is appended to every query where {} is the value of limit or 1 if not passed | Optional | 
-| rql | the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1. | Required | 
+| limit | determines the limit on the results. '; limit search records to {}' is appended to every query where {} is the value of limit or 1 if not passed | Optional |
+| rql | the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.RQL.Query | String | The | 
-| Redlock.RQL.Response.AccountId | Date | The cloud account ID. | 
-| Redlock.RQL.Response.AccountName | String | The cloud account name. | 
-| Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. | 
-| Redlock.RQL.Response.CloudType | String | The cloud type. | 
-| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/api/cloud/cspm/search/ | 
-| Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. | 
-| Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. | 
-| Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. | 
-| Redlock.RQL.Response.HasExternalFinding | Boolean | Flag for external findings. | 
-| Redlock.RQL.Response.HasExternalIntegration | Boolean | Flag for external integration. | 
-| Redlock.RQL.Response.HasNetwork | Boolean | Flag for determining if network exists. | 
-| Redlock.RQL.Response.Id | String | The RQL response ID. | 
-| Redlock.RQL.Response.InsertTs | Date | The response time. | 
-| Redlock.RQL.Response.Name | String | The RQL response name. | 
-| Redlock.RQL.Response.RegionId | String | The cloud region ID. | 
-| Redlock.RQL.Response.RegionName | String | The cloud region name. | 
-| Redlock.RQL.Response.ResourceType | String | The resource type. | 
-| Redlock.RQL.Response.Rrn | String | The account RRN. | 
-| Redlock.RQL.Response.Service | String | The RQL response service. | 
-| Redlock.RQL.Response.StateId | String | The response state ID. | 
+| Redlock.RQL.Query | String | The |
+| Redlock.RQL.Response.AccountId | Date | The cloud account ID. |
+| Redlock.RQL.Response.AccountName | String | The cloud account name. |
+| Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. |
+| Redlock.RQL.Response.CloudType | String | The cloud type. |
+| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/api/cloud/cspm/search/ |
+| Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. |
+| Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. |
+| Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. |
+| Redlock.RQL.Response.HasExternalFinding | Boolean | Flag for external findings. |
+| Redlock.RQL.Response.HasExternalIntegration | Boolean | Flag for external integration. |
+| Redlock.RQL.Response.HasNetwork | Boolean | Flag for determining if network exists. |
+| Redlock.RQL.Response.Id | String | The RQL response ID. |
+| Redlock.RQL.Response.InsertTs | Date | The response time. |
+| Redlock.RQL.Response.Name | String | The RQL response name. |
+| Redlock.RQL.Response.RegionId | String | The cloud region ID. |
+| Redlock.RQL.Response.RegionName | String | The cloud region name. |
+| Redlock.RQL.Response.ResourceType | String | The resource type. |
+| Redlock.RQL.Response.Rrn | String | The account RRN. |
+| Redlock.RQL.Response.Service | String | The RQL response service. |
+| Redlock.RQL.Response.StateId | String | The response state ID. |
 
 
 #### Command Example
@@ -814,11 +815,11 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY. | Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY. | Optional | 
-| time-range-value | The number of units to go back in time for the search. | Optional | 
-| time-range-unit | The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided. | Optional | 
-| query | Query to run in Prisma Cloud config API (use RQL). | Required | 
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY. | Optional |
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY. | Optional |
+| time-range-value | The number of units to go back in time for the search. | Optional |
+| time-range-unit | The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided. | Optional |
+| query | Query to run in Prisma Cloud config API (use RQL). | Required |
 |limit |The maximum number of entries to return. Default is 100. | Optional |
 
 
@@ -826,26 +827,26 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Asset.accountId | Date | Cloud Account ID. | 
-| Redlock.Asset.accountName | String | Cloud account Name | 
-| Redlock.Asset.allowDrillDown | Boolean |  | 
-| Redlock.Asset.cloudType | String | Cloud type. | 
-| Redlock.Asset.deleted | Boolean | Whether the asset was delete. | 
-| Redlock.Asset.hasAlert | Boolean | Whether the asset has a Prisma Cloud alert. | 
-| Redlock.Asset.hasExtFindingRiskFactors | Boolean | Whether the asset has external finding risk factors. | 
-| Redlock.Asset.hasExternalFinding | Boolean | Whether the asset has an external finding. | 
-| Redlock.Asset.hasExternalIntegration | Boolean | Whether the asset has an external integration. | 
-| Redlock.Asset.hasNetwork | Boolean |Whether the asset has a network. | 
-| Redlock.Asset.id | String | The Redlock asset ID. | 
+| Redlock.Asset.accountId | Date | Cloud Account ID. |
+| Redlock.Asset.accountName | String | Cloud account Name |
+| Redlock.Asset.allowDrillDown | Boolean |  |
+| Redlock.Asset.cloudType | String | Cloud type. |
+| Redlock.Asset.deleted | Boolean | Whether the asset was delete. |
+| Redlock.Asset.hasAlert | Boolean | Whether the asset has a Prisma Cloud alert. |
+| Redlock.Asset.hasExtFindingRiskFactors | Boolean | Whether the asset has external finding risk factors. |
+| Redlock.Asset.hasExternalFinding | Boolean | Whether the asset has an external finding. |
+| Redlock.Asset.hasExternalIntegration | Boolean | Whether the asset has an external integration. |
+| Redlock.Asset.hasNetwork | Boolean |Whether the asset has a network. |
+| Redlock.Asset.id | String | The Redlock asset ID. |
 | Redlock.Asset.data | Unknown | The Redlock asset specific data. |
-| Redlock.Asset.insertTs | Date | The asset insert TS. | 
-| Redlock.Asset.name | String | The asset name. | 
-| Redlock.Asset.regionId | String | The cloud region ID of the asset. | 
-| Redlock.Asset.regionName | String | The cloud region name of the asset. | 
-| Redlock.Asset.resourceType | String | The cloud resource type of the asset. | 
-| Redlock.Asset.rrn | String | The cloud RRN of the asset. | 
-| Redlock.Asset.service | String | The state ID of the asset. | 
-| Redlock.Asset.stateId | String | State ID | 
+| Redlock.Asset.insertTs | Date | The asset insert TS. |
+| Redlock.Asset.name | String | The asset name. |
+| Redlock.Asset.regionId | String | The cloud region ID of the asset. |
+| Redlock.Asset.regionName | String | The cloud region name of the asset. |
+| Redlock.Asset.resourceType | String | The cloud resource type of the asset. |
+| Redlock.Asset.rrn | String | The cloud RRN of the asset. |
+| Redlock.Asset.service | String | The state ID of the asset. |
+| Redlock.Asset.stateId | String | State ID |
 
 
 #### Command Example
@@ -1026,19 +1027,19 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
-| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
-| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
-| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
-| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
-| limit | Maximum number of entries to return. Default is 100. | Optional | 
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional |
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional |
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional |
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional |
+| query | Query to run in Prisma Cloud search API using RQL language. | Required |
+| limit | Maximum number of entries to return. Default is 100. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Event | Unknown | Cloud audit events. | 
+| Redlock.Event | Unknown | Cloud audit events. |
 
 
 #### Command Example
@@ -1099,20 +1100,20 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
-| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
-| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
-| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
-| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
-| cloud-type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional | 
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional |
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional |
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional |
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional |
+| query | Query to run in Prisma Cloud search API using RQL language. | Required |
+| cloud-type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Network.Node | Unknown | Cloud network node. | 
-| Redlock.Network.Connection | Unknown | Cloud network connection. | 
+| Redlock.Network.Node | Unknown | Cloud network node. |
+| Redlock.Network.Connection | Unknown | Cloud network connection. |
 
 
 #### Command Example
@@ -1256,53 +1257,53 @@ List DevOps Scans
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_by | Group by which to aggregate scan results. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
-| page_size | Pagination size. Default is 25. | Optional | 
-| page_number | Pagination number. Default is 1. | Optional | 
-| sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
-| filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
-| filter_time_amount | Number of time units. Default is 1. | Optional | 
-| to_now_time_unit | The time unit for retrieving the list of IaC scans. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
-| filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
-| filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
-| filter_asset_type | Asset type to search with. | Optional | 
-| filter_asset_name | Asset name to search with. | Optional | 
-| filter_user | User to filter with, example: ayman@example.domain. | Optional | 
-| filter_status | Status to filter with, example: passed. Possible values are: . | Optional | 
-| relative_time_unit | Relative Time unit. Possible values are: epoch, login, year. Default is login. | Optional | 
+| group_by | Group by which to aggregate scan results. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional |
+| page_size | Pagination size. Default is 25. | Optional |
+| page_number | Pagination number. Default is 1. | Optional |
+| sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional |
+| filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional |
+| filter_time_amount | Number of time units. Default is 1. | Optional |
+| to_now_time_unit | The time unit for retrieving the list of IaC scans. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional |
+| filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional |
+| filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional |
+| filter_asset_type | Asset type to search with. | Optional |
+| filter_asset_name | Asset name to search with. | Optional |
+| filter_user | User to filter with, example: ayman@example.domain. | Optional |
+| filter_status | Status to filter with, example: passed. Possible values are: . | Optional |
+| relative_time_unit | Relative Time unit. Possible values are: epoch, login, year. Default is login. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Scans.deployed | Boolean | Scan deployed attribute. | 
-| Redlock.Scans.fail | Number | Scan fail attribute. | 
-| Redlock.Scans.failureCriteria | String | Scan failure criteria attribute. | 
-| Redlock.Scans.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. | 
-| Redlock.Scans.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. | 
-| Redlock.Scans.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. | 
-| Redlock.Scans.merged | Boolean | Scan merged attribute. | 
-| Redlock.Scans.name | String | Scan name attribute. | 
-| Redlock.Scans.pass | Number | Scan pass attribute. | 
-| Redlock.Scans.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. | 
-| Redlock.Scans.scanAttributes.branch | String | Scan Scan branch attribute. | 
-| Redlock.Scans.scanAttributes.org | String | Scan org attribute. | 
-| Redlock.Scans.scanAttributes.pullRequestId | String | Scan PR ID attribute. | 
-| Redlock.Scans.scanAttributes.repository | String | Scan repository attribute. | 
-| Redlock.Scans.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. | 
-| Redlock.Scans.scanAttributes.templateType | String | Scan template type attribute. | 
-| Redlock.Scans.scanAttributes.triggeredOn | String | Scan triggered on attribute. | 
-| Redlock.Scans.scanAttributes.userId | String | Scan user id attribute. | 
-| Redlock.Scans.scanTime | Date | Scan scan time attribute. | 
-| Redlock.Scans.status | String | Scan status attribute. | 
-| Redlock.Scans.tags.name | String | Scan tags name attribute. | 
-| Redlock.Scans.tags.value | String | Scan tags value attribute. | 
-| Redlock.Scans.type | String | Scan type attribute. | 
-| Redlock.Scans.user | String | Scan user attribute. | 
-| Redlock.Scans.id | String | Scan id. | 
-| Redlock.Scans.links.self | String | Scan links. | 
-| Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . | 
+| Redlock.Scans.deployed | Boolean | Scan deployed attribute. |
+| Redlock.Scans.fail | Number | Scan fail attribute. |
+| Redlock.Scans.failureCriteria | String | Scan failure criteria attribute. |
+| Redlock.Scans.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. |
+| Redlock.Scans.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. |
+| Redlock.Scans.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. |
+| Redlock.Scans.merged | Boolean | Scan merged attribute. |
+| Redlock.Scans.name | String | Scan name attribute. |
+| Redlock.Scans.pass | Number | Scan pass attribute. |
+| Redlock.Scans.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. |
+| Redlock.Scans.scanAttributes.branch | String | Scan Scan branch attribute. |
+| Redlock.Scans.scanAttributes.org | String | Scan org attribute. |
+| Redlock.Scans.scanAttributes.pullRequestId | String | Scan PR ID attribute. |
+| Redlock.Scans.scanAttributes.repository | String | Scan repository attribute. |
+| Redlock.Scans.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. |
+| Redlock.Scans.scanAttributes.templateType | String | Scan template type attribute. |
+| Redlock.Scans.scanAttributes.triggeredOn | String | Scan triggered on attribute. |
+| Redlock.Scans.scanAttributes.userId | String | Scan user id attribute. |
+| Redlock.Scans.scanTime | Date | Scan scan time attribute. |
+| Redlock.Scans.status | String | Scan status attribute. |
+| Redlock.Scans.tags.name | String | Scan tags name attribute. |
+| Redlock.Scans.tags.value | String | Scan tags value attribute. |
+| Redlock.Scans.type | String | Scan type attribute. |
+| Redlock.Scans.user | String | Scan user attribute. |
+| Redlock.Scans.id | String | Scan id. |
+| Redlock.Scans.links.self | String | Scan links. |
+| Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . |
 
 
 #### Command Example
@@ -1378,7 +1379,7 @@ List DevOps Scans
                         }
                     }
                 }
-            }    
+            }
         ]
     }
 }
@@ -1404,15 +1405,15 @@ Get scan status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID. | Required | 
+| scan_id | The scan ID. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Scans.id | String | Scan ID | 
-| Redlock.Scans.status | String | Scan status | 
+| Redlock.Scans.id | String | Scan ID |
+| Redlock.Scans.status | String | Scan status |
 
 
 #### Command Example
@@ -1452,26 +1453,26 @@ Get scan results
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID. | Required | 
+| scan_id | The scan ID. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Scans.id | String | Scan ID | 
-| Redlock.Scans.results.attributes.blameList.file | String | Scan results blame list file | 
-| Redlock.Scans.results.attributes.blameList.locations.line | Number | Scan results blame list locations line | 
-| Redlock.Scans.results.attributes.blameList.locations.path | String | Scan results blame list locations path | 
-| Redlock.Scans.results.attributes.desc | String | Scan results description | 
-| Redlock.Scans.results.attributes.docUrl | String | Scan results doc URL | 
-| Redlock.Scans.results.attributes.files | String | Scan results files | 
-| Redlock.Scans.results.attributes.name | String | Scan results name | 
-| Redlock.Scans.results.attributes.policyId | String | Scan results policy ID | 
-| Redlock.Scans.results.attributes.rule | String | Scan results rule | 
-| Redlock.Scans.results.attributes.severity | String | Scan results severity | 
-| Redlock.Scans.results.attributes.systemDefault | Boolean | Scan results system default | 
-| Redlock.Scans.results.id | String | Scan results ID | 
+| Redlock.Scans.id | String | Scan ID |
+| Redlock.Scans.results.attributes.blameList.file | String | Scan results blame list file |
+| Redlock.Scans.results.attributes.blameList.locations.line | Number | Scan results blame list locations line |
+| Redlock.Scans.results.attributes.blameList.locations.path | String | Scan results blame list locations path |
+| Redlock.Scans.results.attributes.desc | String | Scan results description |
+| Redlock.Scans.results.attributes.docUrl | String | Scan results doc URL |
+| Redlock.Scans.results.attributes.files | String | Scan results files |
+| Redlock.Scans.results.attributes.name | String | Scan results name |
+| Redlock.Scans.results.attributes.policyId | String | Scan results policy ID |
+| Redlock.Scans.results.attributes.rule | String | Scan results rule |
+| Redlock.Scans.results.attributes.severity | String | Scan results severity |
+| Redlock.Scans.results.attributes.systemDefault | Boolean | Scan results system default |
+| Redlock.Scans.results.id | String | Scan results ID |
 
 
 #### Command Example
