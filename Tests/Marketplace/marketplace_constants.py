@@ -21,7 +21,7 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'AgentConfig']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XSIAM_START_TAG = "<~XSIAM>"
@@ -206,7 +206,7 @@ class PackFolders(enum.Enum):
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
-    AGENT_CONFIG = 'AgentConfig'
+    AGENT_CONFIGS = 'AgentConfigs'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -219,7 +219,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIG.value
+            PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIGS.value,
         }
 
     @classmethod
@@ -237,7 +237,8 @@ class PackFolders(enum.Enum):
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
-            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIG.value
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
+            PackFolders.AGENT_CONFIGS.value,
         }
 
 
@@ -288,7 +289,8 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
     PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
     PackFolders.TRIGGERS.value: "Triggers",
-    PackFolders.WIZARDS.value: "Wizards"
+    PackFolders.WIZARDS.value: "Wizards",
+    PackFolders.AGENT_CONFIGS.value: "AgentConfigs",
 }
 
 
@@ -370,6 +372,7 @@ RN_HEADER_BY_PACK_FOLDER = {
     PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
     PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
     PackFolders.WIZARDS.value: 'Wizards',
+    PackFolders.AGENT_CONFIGS.value: "Agent Configs",
 }
 
 # the format is defined in issue #19786, may change in the future
@@ -400,6 +403,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.XSIAM_REPORTS.value: "xsiamreport",
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
+    PackFolders.AGENT_CONFIGS.value: "AgentConfigs",
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -429,4 +433,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.AGENT_CONFIGS.value]: "Agent Config",
 }
