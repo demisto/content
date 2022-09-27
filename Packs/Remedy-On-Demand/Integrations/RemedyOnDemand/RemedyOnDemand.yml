@@ -153,26 +153,38 @@ script:
     - description: integer value to limit the amount of results returned (default no limit)
       name: limit
     outputs:
-    - contextPath: Ticket.RequestID
-      description: Ticket request ID
-    - contextPath: Ticket.Submitter
-      description: Ticket submitter
-    - contextPath: Ticket.Status
-      description: Ticket status
+    - contextPath: Ticket.Assignee
+      description: Ticket assignee
     - contextPath: Ticket.Description
       description: Ticket description
-    - contextPath: Ticket.Source
-      description: Ticket reported source
-    - contextPath: Ticket.Impact
-      description: Ticket impact
-    - contextPath: Ticket.Urgency
-      description: Ticket urgency
-    - contextPath: Ticket.Type
-      description: Ticket service type
+    - contextPath: Ticket.Email
+      description: Ticket email
     - contextPath: Ticket.EntryID
       description: Ticket entry ID
+    - contextPath: Ticket.ID
+      description: Ticket request ID
+    - contextPath: Ticket.Impact
+      description: Ticket impact
     - contextPath: Ticket.IncidentNumber
       description: Ticket number
+    - contextPath: Ticket.ModifiedDate
+      description: Ticket modified date
+    - contextPath: Ticket.Priority
+      description: Ticket priority
+    - contextPath: Ticket.RequestID
+      description: Ticket request ID
+    - contextPath: Ticket.ServiceType
+      description: Ticket service type
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Type
+      description: Ticket service type
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
     description: Fetch all incidents
   - name: remedy-incident-update
     arguments:
