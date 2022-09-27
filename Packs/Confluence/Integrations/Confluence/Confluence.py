@@ -29,7 +29,7 @@ Helper Functions
 """
 
 
-def http_request(method, full_url, data=None, params=None, is_test=False):
+def http_request(method, full_url, data=None, params=None, is_test=False):  # pragma: no cover
     try:
         res = requests.request(
             method,
@@ -440,7 +440,7 @@ def delete_content_command():
     })
 
 
-def test():
+def test():  # pragma: no cover
     full_url = BASE_URL + '/user/current'
     res = http_request('GET', full_url, is_test=True)
 

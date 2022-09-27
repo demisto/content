@@ -12,6 +12,7 @@ ignore=BA101
 
 [known_words]
 CrowdStrike
+rtr
 
 [file:classifier-CrowdStrike_Falcon_Incident_Classifier.json]
 ignore=BA101

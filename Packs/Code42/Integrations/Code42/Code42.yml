@@ -304,7 +304,7 @@ script:
       name: note
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Adds a user to the Departing Employee List.
     execution: false
     name: code42-departingemployee-add
@@ -331,7 +331,7 @@ script:
       name: username
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Removes a user from the Departing Employee List.
     execution: false
     name: code42-departingemployee-remove
@@ -365,7 +365,7 @@ script:
       - LEAVING_TODAY
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Get all employees on the Departing Employee List.
     execution: false
     name: code42-departingemployee-get-all
@@ -395,7 +395,7 @@ script:
       name: note
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Adds a user to the High Risk Employee List.
     execution: false
     name: code42-highriskemployee-add
@@ -416,7 +416,7 @@ script:
       name: username
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Removes a user from the High Risk Employee List.
     execution: false
     name: code42-highriskemployee-remove
@@ -461,7 +461,7 @@ script:
       - OPEN
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Get all employees on the High Risk Employee List.
     execution: false
     name: code42-highriskemployee-get-all
@@ -497,7 +497,7 @@ script:
       - CONTRACT_EMPLOYEE
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Associates risk tags with the employee with the given username.
     execution: false
     name: code42-highriskemployee-add-risk-tags
@@ -533,7 +533,7 @@ script:
       - CONTRACT_EMPLOYEE
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Disassociates risk tags from the user with the given username.
     execution: false
     name: code42-highriskemployee-remove-risk-tags
@@ -756,7 +756,7 @@ script:
       name: username
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Retrieve high risk employee details.
     execution: false
     name: code42-highriskemployee-get
@@ -777,7 +777,7 @@ script:
       name: username
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Retrieve departing employee details.
     execution: false
     name: code42-departingemployee-get
@@ -918,7 +918,7 @@ script:
     - contextPath: Code42.UpdatedUserRiskProfiles.Success
       description: If the risk profile update was successful.
       type: boolean
-  dockerimage: demisto/py42:1.0.0.32511
+  dockerimage: demisto/py42:1.0.0.33857
   feed: false
   isfetch: true
   longRunning: false
