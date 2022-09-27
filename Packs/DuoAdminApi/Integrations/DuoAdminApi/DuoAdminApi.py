@@ -1,11 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 # imports
 import calendar
-import duo_client
 
+import demistomock as demisto  # noqa: F401
+import duo_client
+from CommonServerPython import *  # noqa: F401
 # Setup
 
 HOST = demisto.getParam('hostname')
@@ -37,7 +35,7 @@ OPTIONS_TO_TIME = {
 }
 
 
-def override_make_request(self, method, uri, body, headers):
+def override_make_request(self, method, uri, body, headers):    # pragma: no cover
     """
 
     This function is an override function to the original
@@ -48,18 +46,6 @@ def override_make_request(self, method, uri, body, headers):
     """
 
     conn = self._connect()
-
-    # Ignored original code #
-    # --------------------- #
-    # if self.proxy_type == 'CONNECT':
-    #     # Ensure the request uses the correct protocol and Host.
-    #     if self.ca_certs == 'HTTP':
-    #         api_proto = 'http'
-    #     else:
-    #         api_proto = 'https'
-    #     uri = ''.join((api_proto, '://', self.host, uri))
-    # ------------------- #
-    # End of ignored code #
 
     conn.request(method, uri, body, headers)
     response = conn.getresponse()
@@ -85,16 +71,17 @@ def create_api_call():
             ca_certs='DISABLE'
         )
     try:
-        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
+        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
+                                                                                        headers)
 
     except Exception as e:
-        demisto.error("Error making request - failed to create client: {}".format(e))
+        demisto.error(f"Error making request - failed to create client: {e}")
         raise Exception
 
     return client
 
 
-def set_proxy():
+def set_proxy(admin_api):   # pragma: no cover
     try:
         proxy_settings = os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')
         if proxy_settings:
@@ -108,11 +95,11 @@ def set_proxy():
         admin_api.set_proxy(host=None, port=None, proxy_type=None)
 
     except Exception as e:
-        demisto.error('Error setting proxy: {}'.format(e))
+        demisto.error(f'Error setting proxy: {e}')
         raise Exception
 
 
-def get_host_port_from_proxy_settings(proxy_settings):
+def get_host_port_from_proxy_settings(proxy_settings):  # pragma: no cover
     proxy_settings_str = str(proxy_settings)
 
     port = proxy_settings_str.split(':')[-1]
@@ -132,7 +119,7 @@ def get_host_port_from_proxy_settings(proxy_settings):
     return host, port
 
 
-def time_to_timestamp_milliseconds(time):
+def time_to_timestamp_milliseconds(time):   # pragma: no cover
     return str(calendar.timegm(time.utctimetuple()) * 1000)
 
 
@@ -148,7 +135,7 @@ def get_entry_for_object(title, obj, contents, context, headers=None):
         }
 
     if headers:
-        if isinstance(headers, (str, unicode)):
+        if isinstance(headers, str):
             headers = headers.split(',')
 
         if isinstance(obj, dict):
@@ -171,7 +158,7 @@ def get_entry_for_object(title, obj, contents, context, headers=None):
     }
 
 
-def get_user_id(username):
+def get_user_id(admin_api, username):
     res = admin_api.get_users_by_name(username)
 
     if len(res) == 0:
@@ -183,7 +170,7 @@ def get_user_id(username):
 # Methods
 
 # Duo client return 2 different known structures of error messages
-def test_instance():
+def test_instance(admin_api):
     try:
         admin_api.get_users()
         demisto.results('ok')
@@ -204,7 +191,7 @@ def test_instance():
             raise Exception('Unknown error: ' + str(e))
 
 
-def get_all_users():
+def get_all_users(admin_api):
     res = admin_api.get_users()
 
     entry = get_entry_for_object(
@@ -214,19 +201,27 @@ def get_all_users():
         },
         headers=[
             'username',
-            'user_id'
+            'user_id',
+            'is_enrolled',
+            'last_login',
+            'realname',
+            'email',
+            'phones',
+            'status'
         ]
     )
 
     demisto.results(entry)
 
 
-def get_authentication_logs_by_user(username, mintime):
+def get_authentication_logs_by_user(admin_api, args):
+    user_name = args.get('username')
+    min_time = args.get('from')
     limit = demisto.args().get('limit', '50')
     res = admin_api.get_authentication_log(
         2,
-        users=get_user_id(username),
-        mintime=time_to_timestamp_milliseconds(OPTIONS_TO_TIME[mintime]),
+        users=get_user_id(admin_api, user_name),
+        mintime=time_to_timestamp_milliseconds(OPTIONS_TO_TIME[min_time]),
         maxtime=time_to_timestamp_milliseconds(datetime.now()),
         limit=limit
     )
@@ -237,11 +232,11 @@ def get_authentication_logs_by_user(username, mintime):
         log['timestamp'] = formatEpochDate(log['timestamp'])
 
     entry = get_entry_for_object(
-        'Authentication logs for ' + username, raw_logs, raw_logs,
+        'Authentication logs for ' + user_name, raw_logs, raw_logs,
         {
             'DuoAdmin.UserDetails(val.username && val.username == obj.username)':
                 {
-                    'username': username,
+                    'username': user_name,
                     'auth_logs': raw_logs
                 }
         },
@@ -259,16 +254,17 @@ def get_authentication_logs_by_user(username, mintime):
     demisto.results(entry)
 
 
-def get_devices_by_user(username):
-    user_id = get_user_id(username)
+def get_devices_by_user(admin_api, args):
+    user_name = args.get('username')
+    user_id = get_user_id(admin_api, user_name)
     res = admin_api.get_user_phones(user_id)
 
     entry = get_entry_for_object(
-        'Devices for ' + username, res, res,
+        f'Devices for {user_name}', res, res,
         {
             'DuoAdmin.UserDetails(val.username && val.username == obj.username)':
                 {
-                    'username': username,
+                    'username': user_name,
                     'phones': res
                 }
         }
@@ -277,7 +273,7 @@ def get_devices_by_user(username):
     demisto.results(entry)
 
 
-def get_all_devices():
+def get_all_devices(admin_api):
     res = admin_api.get_phones()
 
     entry = get_entry_for_object(
@@ -290,33 +286,38 @@ def get_all_devices():
     demisto.results(entry)
 
 
-def dissociate_device_by_user(username, device_id):
-    user_id = get_user_id(username)
+def dissociate_device_by_user(admin_api, args):
+    user_name = args.get('username')
+    device_id = args.get('device_id')
+
+    user_id = get_user_id(admin_api, user_name)
     admin_api.delete_user_phone(user_id, device_id)
+    demisto.results(f'Phone with ID {device_id} was dissociated to user {user_name}')
 
-    demisto.results('Phone with ID ' + device_id + 'was dissociated from user ' + username)
 
+def associate_device_to_user(admin_api, args):
+    user_name = args.get('username')
+    device_id = args.get('device_id')
 
-def associate_device_to_user(username, device_id):
-    user_id = get_user_id(username)
+    user_id = get_user_id(admin_api, user_name)
     admin_api.add_user_phone(user_id, device_id)
+    demisto.results(f'Phone with ID {device_id} was associated to user {user_name}')
 
-    demisto.results('Phone with ID ' + device_id + 'was associated to user ' + username)
 
-
-def get_u2f_tokens_by_user(username):
-    user_id = get_user_id(username)
+def get_u2f_tokens_by_user(admin_api, args):
+    user_name = args.get('username')
+    user_id = get_user_id(admin_api, user_name)
     res = admin_api.get_user_u2ftokens(user_id)
 
     for token in res:
         token['date_added'] = formatEpochDate(token['date_added'])
 
     entry = get_entry_for_object(
-        'U2F Tokens for ' + username, res, res,
+        'U2F Tokens for ' + user_name, res, res,
         {
             'DuoAdmin.UserDetails(val.username && val.username == obj.username)':
                 {
-                    'username': username,
+                    'username': user_name,
                     'u2ftokens': res
                 }
         }
@@ -325,44 +326,123 @@ def get_u2f_tokens_by_user(username):
     demisto.results(entry)
 
 
-def delete_u2f_token(token_id):
+def delete_u2f_token(admin_api, args):
+    token_id = args.get('token_id')
     admin_api.delete_u2ftoken(token_id)
-    demisto.results('Token with ID ' + token_id + ' deleted successfully')
+    demisto.results(f'Token with ID {token_id} deleted successfully')
 
 
-# Execution
-try:
-    admin_api = create_api_call()
-    set_proxy()
+def get_all_bypass_codes(admin_api):
+    res = admin_api.get_bypass_codes()
+    entry = get_entry_for_object(
+        'Bypass', res, res,
+        {
+            'DuoAdmin.UserDetails(val.bypass_code_id==obj.bypasscodeid)': res
+        },
+        headers=[
+            'bypass_code_id',
+            'admin_email',
+            'expiration',
+            'reuse_count',
+            'user.created',
+            'user.email',
+            'user.last_login',
+            'user.status',
+            'user.user_id',
+            'user.username'
+        ]
+    )
+    demisto.results(entry)
 
-    if demisto.command() == 'test-module':
-        test_instance()
 
-    if demisto.command() == 'duoadmin-get-users':
-        get_all_users()
+def get_all_admins(admin_api):
+    res = admin_api.get_admins()
 
-    if demisto.command() == 'duoadmin-get-authentication-logs-by-user':
-        get_authentication_logs_by_user(demisto.getArg('username'), demisto.getArg('from'))
+    entry = get_entry_for_object(
+        'Admins', res, res,
+        {
+            'DuoAdmin.AdminDetails(val.name==obj.name)': res
+        },
+        headers=[
+            'admin_id',
+            'admin_units',
+            'created',
+            'email',
+            'last_login',
+            'name',
+            'phone',
+            'role',
+            'status'
+        ]
+    )
+    demisto.results(entry)
 
-    if demisto.command() == 'duoadmin-get-devices':
-        get_all_devices()
 
-    if demisto.command() == 'duoadmin-get-devices-by-user':
-        get_devices_by_user(demisto.getArg('username'))
+def modify_admin_user(admin_api, admin_id=None, name=None, phone=None, password=None,
+                      password_change_required=None):
+    admin_api.update_admin(admin_id, name, phone, password, password_change_required)
+    return CommandResults(readable_output=f'The admin id {admin_id} successfully updated')
 
-    if demisto.command() == 'duoadmin-associate-device-to-user':
-        associate_device_to_user(demisto.getArg('username'), demisto.getArg('device_id'))
 
-    if demisto.command() == 'duoadmin-dissociate-device-from-user':
-        dissociate_device_by_user(demisto.getArg('username'), demisto.getArg('device_id'))
+def modify_user(admin_api, user_id=None, user_name=None, real_name=None, status=None,
+                notes=None, email=None, first_name=None, last_name=None, alias1=None,
+                alias2=None, alias3=None,
+                alias4=None, aliases=None):
+    admin_api.update_user(user_id, user_name, real_name, status, notes, email, first_name,
+                          last_name, alias1, alias2, alias3, alias4, argToList(aliases))
+    return CommandResults(readable_output=f'The user id {user_id} successfully updated')
 
-    if demisto.command() == 'duoadmin-get-u2f-tokens-by-user':
-        get_u2f_tokens_by_user(demisto.getArg('username'))
 
-    if demisto.command() == 'duoadmin-delete-u2f-token':
-        delete_u2f_token(demisto.getArg('token_id'))
+def main() -> None:  # pragma: no cover
+    args = demisto.args()
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+    try:
+        admin_api = create_api_call()
+        set_proxy(admin_api)
+        if command == 'test-module':
+            test_instance(admin_api)
 
-except Exception as e:
-    demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))
-    return_error(e.message)
-sys.exit(0)
+        elif command == 'duoadmin-get-users':
+            get_all_users(admin_api)
+
+        elif command == 'duoadmin-get-admins':
+            get_all_admins(admin_api)
+
+        elif command == 'duoadmin-get-bypass-codes':
+            get_all_bypass_codes(admin_api)
+
+        elif command == 'duoadmin-get-authentication-logs-by-user':
+            get_authentication_logs_by_user(admin_api, args)
+
+        elif command == 'duoadmin-get-devices':
+            get_all_devices(admin_api)
+
+        elif command == 'duoadmin-get-devices-by-user':
+            get_devices_by_user(admin_api, args)
+
+        elif command == 'duoadmin-associate-device-to-user':
+            associate_device_to_user(admin_api, args)
+
+        elif command == 'duoadmin-dissociate-device-from-user':
+            dissociate_device_by_user(admin_api, args)
+
+        elif command == 'duoadmin-get-u2f-tokens-by-user':
+            get_u2f_tokens_by_user(admin_api, args)
+
+        elif command == 'duoadmin-delete-u2f-token':
+            delete_u2f_token(admin_api, args)
+
+        elif command == 'duoadmin-modify-user':
+            return_results(modify_user(admin_api, **demisto.args()))
+
+        elif command == 'duoadmin-modify-admin':
+            return_results(modify_admin_user(admin_api, **demisto.args()))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

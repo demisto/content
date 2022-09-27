@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoLogsBundle
+  id_x2: LogsBundle
   version: -1
 name: DemistoLogsBundle
+name_x2: LogsBundle
 script: ''
 type: javascript
 tags:
