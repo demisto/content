@@ -355,12 +355,16 @@ slack-notify-nightly-build:
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
         echo "Not running XSIAM instance flow, no tests to run were found."
-        exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
 
+    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
+    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
+    - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+
     - section_start "Lock XSIAM Machine" --collapsed
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
@@ -407,7 +411,7 @@ slack-notify-nightly-build:
     - exit $EXIT_CODE
 
 
-xsiam_server_master:
+xsiam_prod_1:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -416,5 +420,34 @@ xsiam_server_master:
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-master"
-    TEST_MACHINES_LIST: "test-machines-master"
+    GCS_QUEUE_FILE: "queue-prod"
+    TEST_MACHINES_LIST: "test-machines-prod"
+    LOCK_MACHINE_NAME: "qa2-test-9994671965229"
+
+
+xsiam_prod_2:
+  extends:
+    - .test_content_on_xsiam_server_instances_base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM Master"
+    GCS_QUEUE_FILE: "queue-prod"
+    TEST_MACHINES_LIST: "test-machines-prod"
+    LOCK_MACHINE_NAME: "qa2-test-9991850898712"
+
+
+xsiam_prod_3:
+  extends:
+    - .test_content_on_xsiam_server_instances_base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM Master"
+    GCS_QUEUE_FILE: "queue-prod"
+    TEST_MACHINES_LIST: "test-machines-prod"
+    LOCK_MACHINE_NAME: "qa2-test-9993230017659"
