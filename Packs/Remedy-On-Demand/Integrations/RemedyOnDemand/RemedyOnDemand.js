@@ -102,23 +102,28 @@ var logout = function(token) {
 };
 
 var convertIncidentToTicket = function(incident) {
-    return {
-        Assignee: incident['Assigned To'],
-        Description: incident.Description,
-        Email: incident['Internet E-mail'],
-        EntryID: incident['Entry ID'],
-        Impact: incident.Impact,
-        IncidentNumber: incident['Incident Number'],
-        ModifiedDate: incident['Modified Date'],
-        Priority: incident.Priority,
-        RequestID: incident['Request ID'],
-        ServiceType: incident.Service_Type,
-        Source: incident['Reported Source'],
-        Status: incident.Status,
-        Submitter: incident.Submitter,
-        Type: incident.Service_Type,
-        Urgency: incident.Urgency
-    };
+    var incident_filtered = {};
+    if (incident['Assigned To']) { incident_filtered.Assignee = incident['Assigned To']; }
+    if (incident.Description) { incident_filtered.Description = incident.Description; }
+    if (incident['Internet E-mail']) { incident_filtered.Email = incident['Internet E-mail']; }
+    if (incident['Entry ID']) { incident_filtered.EntryID = incident['Entry ID']; }
+    if (incident.Impact) { incident_filtered.Impact = incident.Impact; }
+    if (incident['Incident Number']) { incident_filtered.IncidentNumber = incident['Incident Number']; }
+    if (incident['Modified Date']) { incident_filtered.ModifiedDate = incident['Modified Date']; }
+    if (incident.Priority) { incident_filtered.Priority = incident.Priority; }
+    if (incident['Request ID']) {
+        incident_filtered.ID = incident['Request ID'];
+        incident_filtered.RequestID = incident['Request ID'];
+    }
+    if (incident.Service_Type) {
+        incident_filtered.ServiceType = incident.Service_Type;
+        incident_filtered.Type = incident.Service_Type;
+    }
+    if (incident['Reported Source']) { incident_filtered.Source = incident['Reported Source']; }
+    if (incident.Status) { incident_filtered.Status = incident.Status; }
+    if (incident.Submitter) { incident_filtered.Submitter = incident.Submitter; }
+    if (incident.Urgency) { incident_filtered.Urgency = incident.Urgency; }
+    return incident_filtered;
 };
 
 var updateBodyWithCustomFields = function(body, customFields) {
