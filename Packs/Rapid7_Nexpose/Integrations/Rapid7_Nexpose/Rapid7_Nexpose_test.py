@@ -39,8 +39,8 @@ def test_get_datetime_from_asset_history_item(mocker):
     init_integration(mocker)
     from Rapid7_Nexpose import get_datetime_from_asset_history_item
 
-    assert(get_datetime_from_asset_history_item(ITEM_WITH_MS))
-    assert(get_datetime_from_asset_history_item(ITEM_WITHOUT_MS))
+    assert (get_datetime_from_asset_history_item(ITEM_WITH_MS))
+    assert (get_datetime_from_asset_history_item(ITEM_WITHOUT_MS))
 
 
 def test_sort_with_and_without_ms(mocker):
@@ -49,8 +49,8 @@ def test_sort_with_and_without_ms(mocker):
 
     dt_arr = [ITEM_WITH_MS, ITEM_WITHOUT_MS]
     sorted_dt_arr = sorted(dt_arr, key=get_datetime_from_asset_history_item)
-    assert(sorted_dt_arr[0] == ITEM_WITHOUT_MS)
-    assert(sorted_dt_arr[1] == ITEM_WITH_MS)
+    assert (sorted_dt_arr[0] == ITEM_WITHOUT_MS)
+    assert (sorted_dt_arr[1] == ITEM_WITH_MS)
 
 
 def test_get_last_scan(mocker):
@@ -59,7 +59,7 @@ def test_get_last_scan(mocker):
 
     # test empty history
     expected = '-'
-    assert(get_last_scan({'history': None}) == expected)
+    assert (get_last_scan({'history': None}) == expected)
 
     # test history with assorted items
     asset = {
@@ -85,4 +85,34 @@ def test_get_last_scan(mocker):
         'date': '2019-05-03T03:03:54.123Z',
         'id': '1'
     }
-    assert(get_last_scan(asset) == expected)
+    assert (get_last_scan(asset) == expected)
+
+
+def test_get_list_response(requests_mock, mocker):
+    init_integration(mocker)
+    import Rapid7_Nexpose
+
+    class ResponseMaker:
+        def __init__(self):
+            self.counter = 0
+
+        def generate_response(self, path, method, body, params):
+            if self.counter == 0:
+                self.counter += 1
+                return {'resources': ['test1', 'test2', 'test3'],
+                        'page': {
+                            'totalPages': 10,
+                            'number': 1
+                        }}
+            else:
+                return {'resources': ['test4', 'test5', 'test6'],
+                        'page': {
+                            'totalPages': 10,
+                            'number': 1
+                        }}
+    res_maker = ResponseMaker()
+
+    mocker.patch.object(Rapid7_Nexpose, 'send_request', side_effect=res_maker.generate_response)
+    res = Rapid7_Nexpose.get_list_response('test.com', 'post', limit=5)
+
+    assert len(res) == 5
