@@ -4637,34 +4637,6 @@
             "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
-            "playbookID": "Splunk-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPySearch_Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy KV commands",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy-Test-V2",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
             "playbookID": "FireEye-Detection-on-Demand-Test",
             "fromversion": "6.0.0",
             "integrations": [
