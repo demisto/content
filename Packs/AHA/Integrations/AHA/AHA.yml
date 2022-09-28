@@ -1,166 +1,140 @@
 category: Utilities
 commonfields:
-    id: Aha
-    version: -1
+  id: Aha
+  version: -1
 configuration:
-    - name: url
-      display: Your server URL
-      required: true
-      defaultvalue: https://example.com/
-      type: 0
-      additionalinfo: null
-    - name: insecure
-      display: Trust any certificate (not secure)
-      required: false
-      defaultvalue: true
-      type: 8
-      additionalinfo: null
-    - name: proxy
-      display: Use system proxy settings
-      required: false
-      defaultvalue: ""
-      type: 8
-      additionalinfo: null
-    - name: api_key
-      display: Api Key
-      required: true
-      defaultvalue: null
-      type: 0
-      additionalinfo: "API Key to access service REST API "
+  - name: url
+    display: Server URL
+    required: true
+    defaultvalue: https://example.com/
+    type: 0
+    additionalinfo: null
+  - name: api_key
+    displaypassword: Api Key
+    required: true
+    defaultvalue: null
+    type: 9
+    hiddenusername: true
+    additionalinfo: "API Key to access service REST API "
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: true
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: ""
+    type: 8
+    additionalinfo: null
 description: Use the Aha! integration to list and manage Cortex XSOAR features
-    from Aha. The integration also mirrors Jira tickets to Aha! features when closing Jira tickets.
+  from Aha.
 display: Aha
 name: Aha
 script:
-    commands:
-        - name: aha-get-features
-          description: Will list all features from service, unless a specific feature is specified
-          deprecated: false
-          arguments:
-              - name: from_date
-                description: Show features created after that date
-                required: false
-                isArray: false
-                defaultValue: "2020-01-01"
-                predefined:
-              - name: feature_name
-                description: get a specific feature
-                required: false
-                isArray: false
-                defaultValue: ""
-                predefined:
-                    - ""
-          outputs:
-              - contextPath: features.feature.id
-                -: The feature ID.
-                type: UUID
-              - contextPath: features.feature.name
-                name: The feature name.
-                type: String
-              - contextPath: features.feature.reference_num
-                name: A feature reference number.
-                type: String
-              - contextPath: features.feature.created_by_user.id
-                name: Created by user identifier.
-                type: UUID
-              - contextPath: features.feature.created_by_user.name
-                name: Feature creator name.
-                type: String
-              - contextPath: features.feature.created_by_user.email
-                name: Feature creator email.
-                type: String
-              - contextPath: features.feature.workflow_status.id
-                name: Workflow_status identifier.
-                type: UUID
-              - contextPath: features.feature.workflow_status.name
-                name: Status name.
-                type: String
-              - contextPath: features.feature.workflow_status.position
-                name:
-                type: String
-              - contextPath: features.feature.workflow_status.complete
-                name: Feature Status.
-                type: String
-              - contextPath: features.feature.workflow_status.color
-                name: Feature Status.
-                type: String
-              - contextPath: features.feature.workflow_status.description
-                name: description of the status
-                type: String
-              - contextPath: features.feature.description.id
-                name: Description identifier
-                type: UUID
-              - contextPath: features.feature.description.body
-                name: Description of the feature.
-                type: String
-        - name: aha-edit-feature
-          description: Edit of the following fields in a feature Name, Status and Description
-          deprecated: false
-          arguments:
-              - name: feature_name
-                description: Select features to edit
-                required: true
-                isArray: false
-                defaultValue: ""
-                predefined:
-                    - ""
-              - name: fields
-                description: Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status
-                required: true
-                isArray: false
-                defaultValue: '{"name": "name", "description": "desc", "status" : "Closed"}'
-                predefined:
-                    - ""
-          outputs:
-              - contextPath: feature.id
-                name: The feature ID.
-                type: UUID
-              - contextPath: feature.name
-                name: The feature name.
-                type: String
-              - contextPath: feature.reference_num
-                name: A feature reference number.
-                type: String
-              - contextPath: feature.created_by_user.id
-                name: Created by user identifier.
-                type: UUID
-              - contextPath: feature.created_by_user.name
-                name: Feature creator name.
-                type: String
-              - contextPath: feature.created_by_user.email
-                name: Feature creator email.
-                type: String
-              - contextPath: feature.workflow_status.id
-                name: Workflow_status identifier.
-                type: UUID
-              - contextPath: feature.workflow_status.name
-                name: Status name.
-                type: String
-              - contextPath: feature.workflow_status.position
-                name:
-                type: String
-              - contextPath: feature.workflow_status.complete
-                name: 
-                type: String
-              - contextPath: feature.workflow_status.color
-                name: 
-                type: String
-              - contextPath: feature.workflow_status.description
-                name: description of the status
-                type: String
-              - contextPath: feature.description.id
-                name: Description identifier
-                type: UUID
-              - contextPath: feature.description.body
-                name: Description of the feature.
-                type: String
-    isfetch: false
-    runonce: false
-    script: "-"
-    type: python
-    subtype: python3
-    dockerimage: demisto/python3:3.10.7.33922
-    feed: false
+  commands:
+    - name: aha-get-features
+      description: Will list all features from service, unless a specific feature is specified
+      deprecated: false
+      arguments:
+        - name: from_date
+          description: Show features created after that date
+          required: false
+          isArray: false
+          defaultValue: "2020-01-01"
+          predefined:
+        - name: feature_name
+          description: get a specific feature
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: fields
+          description: Specify fields in comma sepereated manner to include in Aha! service response
+          required: false
+          isArray: false
+          defaultValue: "name,reference_num,id,created_at"
+          predefined:
+            - ""
+        - name: page
+          description: "result set pagination: get a specific result page"
+          required: false
+          isArray: false
+          defaultValue: "1"
+          predefined:
+            - ""
+        - name: per_page
+          description: "result set pagination: set max items per page"
+          required: false
+          isArray: false
+          defaultValue: "30"
+          predefined:
+            - ""
+      outputs:
+        - contextPath: feature.id
+          description: The feature ID.
+          type: UUID
+        - contextPath: feature.name
+          description: The feature name.
+          type: String
+        - contextPath: feature.reference_num
+          description: A feature reference num unique.
+          type: String
+        - contextPath: feature.workflow_status
+          description: Feature status description.
+          type: String
+        - contextPath: feature.description
+          description: Description of the feature.
+          type: String
+        - contextPath: feature.created_at
+          description: Feature creation date.
+          type: Date
+    - name: aha-edit-feature
+      description: "Edit of the following fields in a feature: Name, Status and Description"
+      deprecated: false
+      arguments:
+        - name: feature_name
+          description: Select features to edit
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: fields
+          description: Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status
+          required: true
+          isArray: false
+          defaultValue: '{"name": "name", "description": "desc", "status" : "Closed"}'
+          predefined:
+            - ""
+      outputs:
+        - contextPath: Aha.feature.id
+          description: The feature ID.
+          type: UUID
+        - contextPath: feature.name
+          description: The feature name.
+          type: String
+        - contextPath: feature.reference_num
+          description: A feature reference number.
+          type: String
+        - contextPath: feature.workflow_status
+          description: Status name.
+          type: String
+        - contextPath: feature.description
+          description: Description of the feature.
+          type: String
+        - contextPath: feature.created_at
+          description: Feature creation date.
+          type: Date
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.7.33922
+  feed: false
 fromversion: 6.5.0
 tests:
-    - No tests (auto formatted)
+  - No tests (auto formatted)

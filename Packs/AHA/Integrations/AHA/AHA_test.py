@@ -2,9 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AHA import Client, get_features, edit_feature
 import io
+import re
 
 
 apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
+# test = demisto.params().get('api_key', {}).get('password')
 
 headers = {
     'Authorization': f"Bearer {apikey}",
@@ -64,7 +66,8 @@ def test_getSpecificFeature(mocker):
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
     result = get_features(client=client, from_date="2020-01-01", feature_name="DEMO-10")
-    assert result.outputs['Reference Number'] == "DEMO-10"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]['reference_num'] == "DEMO-10"
 
 
 def test_editFeatureField(mocker):
@@ -77,6 +80,8 @@ def test_editFeatureField(mocker):
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
     result = edit_feature(client=client, feature_name="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
                           "status": "Closed"})
-    assert result.outputs['Feature Name'] == "Demo-10"
-    assert result.outputs['Description']['body'] == "test desc"
-    assert result.outputs['Status'] == "Closed"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]['name'] == "Demo-10"
+    assert result.outputs[0]['description'] == "test desc"
+    assert result.outputs[0]['workflow_status'] == "Closed"
+

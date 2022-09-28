@@ -8,12 +8,12 @@ from typing import Dict
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX = '/products/DEMO/features/'
-RESPONSE_FIELDS = 'reference_num,name,description,workflow_status'
+EDIT_FIELDS = 'id,reference_num,name,description,workflow_status,created_at'
+DEFAULT_FIELDS = {'reference_num', 'name', 'id', 'created_at'}
 ''' CLIENT CLASS '''
 
 
@@ -22,16 +22,20 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self._headers = headers
 
-    def get_features(self, feature_name: str, from_date: str) -> Dict:
+    def get_features(self, feature_name: str, fields: str, from_date: str, page: str, per_page: str) -> Dict:
         """
         Retrieves a list of features from AHA
         Args:
             feature_name: str if given it will fetch the feature specified. if not will fetch all features.
-            from_date: str format: YYYY-MM-DD
+            fields: str optional feature fields to retrive from service
+            from_date: str format: YYYY-MM-DD get feature created after from_date
+            page: str pagination specify the number of the page
+            per_page: str pagination specify the number of maximum features per page.
         """
         headers = self._headers
+        url_suffix = f'{URL_SUFFIX}{feature_name}?updated_since={from_date}&fields={fields}&page={page}&per_page={per_page}'
         response = self._http_request(method='GET',
-                                      url_suffix=f'{URL_SUFFIX}{feature_name}?updated_since={from_date}&fields={RESPONSE_FIELDS}',
+                                      url_suffix=url_suffix,
                                       headers=headers, resp_type='json')
         return response
 
@@ -50,7 +54,7 @@ class Client(BaseClient):
         demisto.debug(f"payload: {payload}")
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}?fields={RESPONSE_FIELDS}",
+        response = self._http_request(method='PUT', url_suffix=f"{URL_SUFFIX}{feature_name}?fields={EDIT_FIELDS}",
                                       headers=headers, resp_type='json', data=json.dumps(payload))
 
         return response
@@ -58,20 +62,34 @@ class Client(BaseClient):
     ''' HELPER FUNCTIONS'''
 
 
-def parse_features_response(response) -> dict:
-    output: dict = {}
-    if type(response) is list:
-        for res in response:
-            output.update(parse_feature_response(res))
-    else:
-        output = parse_feature_response(response=response)
-    return output
+def parse_features(response: dict, fields: set) -> List:
+    res_list: List = []
+    for res in response:
+        curr = parse_feature(res, fields=fields)
+        res_list.extend(curr)
+    return res_list
 
 
-def parse_feature_response(response: dict) -> dict:
-    return {'Feature Name': response.get('name'), 'Id': response.get('id'),
-            'Reference Number': response.get('reference_num'), 'Description': response.get('description'),
-            'Status': response.get('workflow_status').get('name')}
+def parse_feature(response: dict, fields: set = DEFAULT_FIELDS) -> List:
+    ret_dict: Dict = {}
+    for curr in fields:
+        demisto.info(f"curr: {curr}")
+        if curr == 'description':
+            ret_dict[curr] = response.get(curr, {}).get('body')
+        elif curr == 'workflow_status':
+            ret_dict[curr] = response.get(curr, {}).get('name')
+        else:
+            ret_dict[curr] = response.get(curr, '')
+    return [ret_dict]
+
+
+def string_to_set(fields_as_string: str) -> Set[str]:
+    fields_lst = fields_as_string.split(',')
+    out_set: Set[str] = set()
+    for curr in fields_lst:
+        curr = curr.strip()
+        out_set.add(curr)
+    return out_set
 
 
 ''' COMMAND FUNCTIONS '''
@@ -82,7 +100,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        result = client.get_features('', '2020-01-01')
+        result = client.get_features('', set(), '2020-01-01', page='1', per_page='1')
         if result:
             message = 'ok'
     except DemistoException as e:
@@ -92,39 +110,27 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
-# TODO remove all paloalto mail from yml file
 
-
-def parse_features(response: dict) -> dict:
-    res_dict: dict = {}
-    for res in response:
-        curr = parse_feature(res)
-        res_dict[curr['Reference Number']] = curr
-    return res_dict
-
-
-def parse_feature(response: dict) -> dict:
-    return {'Feature Name': response.get('name'), 'Id': response.get('id'),
-            'Reference Number': response.get('reference_num'), 'Description': response.get('description').get('body'),
-            'Status': response.get('workflow_status').get('name')}
-
-
-def get_features(client: Client, from_date: str, feature_name: str = '') -> CommandResults:
-    message: Dict = {}
+def get_features(client: Client, from_date: str, feature_name: str = '',
+                 fields: set = set(), page: str = '1', per_page: str = '30') -> CommandResults:
+    message: List = []
+    req_fields = ','.join(DEFAULT_FIELDS.union(fields))
     try:
-        response = client.get_features(feature_name=feature_name, from_date=from_date)
+        response = client.get_features(feature_name=feature_name, fields=req_fields,
+                                       from_date=from_date, page=page, per_page=per_page)
         if response:
-            message = parse_features(response['features']) if 'features' in response else parse_feature(response['feature'])
+            message = parse_features(response['features'], DEFAULT_FIELDS.union(
+                fields)) if 'features' in response else parse_feature(response['feature'], DEFAULT_FIELDS.union(fields))
             human_readable = tableToMarkdown('Aha! get features',
                                              message,
                                              removeNull=True)
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message.append('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
     command_results = CommandResults(
-        outputs_prefix='AHA.Features',
+        outputs_prefix='AHA.Feature',
         outputs_key_field='id',
         outputs=message,
         raw_response=response,
@@ -134,21 +140,21 @@ def get_features(client: Client, from_date: str, feature_name: str = '') -> Comm
 
 
 def edit_feature(client: Client, feature_name: str, fields: Dict) -> CommandResults:
-    message: str = ''
+    message: List = []
     try:
         response = client.edit_feature(feature_name=feature_name, fields=fields)
         if response:
-            message = parse_feature_response(response['feature'])
+            message = parse_feature(response['feature'], fields=string_to_set(EDIT_FIELDS))
             human_readable = tableToMarkdown('Aha! edit feature',
                                              message,
                                              removeNull=True)
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message = ['Authorization Error: make sure API Key is correctly set']
         else:
             raise e
     command_results = CommandResults(
-        outputs_prefix='AHA.Edit',
+        outputs_prefix='AHA.Feature',
         outputs_key_field='id',
         outputs=message,
         readable_output=human_readable,
@@ -161,15 +167,8 @@ def edit_feature(client: Client, feature_name: str, fields: Dict) -> CommandResu
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
-
-    api_key = demisto.params().get('api_key')
-
-    # get the service API url
+    api_key = demisto.params().get('api_key', {}).get('password', {})
     base_url = urljoin(demisto.params()['url'], '/api/v1')
     proxy = demisto.params().get('proxy', False)
     verify = not demisto.params().get('insecure', False)
@@ -190,12 +189,17 @@ def main() -> None:
         elif command == 'aha-get-features':
             from_date = args.get('from_date', '2020-01-01')
             feature_name = args.get('feature_name', '')
-            command_result = get_features(client, from_date=from_date, feature_name=feature_name)
+            fields_as_string = args.get('fields', '')
+            fields = string_to_set(fields_as_string)
+            page = args.get('page', '1')
+            per_page = args.get('per_page', '30')
+            command_result = get_features(client, from_date=from_date, feature_name=feature_name, fields=fields, page=page,
+                                          per_page=per_page)
             return_results(command_result)
         elif command == 'aha-edit-feature':
             feature_name = args.get('feature_name', '')
-            fields = json.loads(args.get('fields', {}))
-            command_result = edit_feature(client, feature_name=feature_name, fields=fields)
+            edit_fields = json.loads(args.get('fields', {}))
+            command_result = edit_feature(client, feature_name=feature_name, fields=edit_fields)
             return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
