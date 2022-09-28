@@ -3,10 +3,10 @@ from CommonServerPython import *
 from AWSApiModule import *
 import demistomock as demisto
 
-import importlib
 import pytest
 
 import AwsSecretsManager as AWS_SECRETSMANAGER
+
 
 def create_client():
     aws_client_args = {
@@ -26,6 +26,7 @@ def create_client():
     client = AWSClient(**aws_client_args)
     return client
 
+
 class Boto3Client:
     def list_secrets(self, **kwargs):
         pass
@@ -42,11 +43,18 @@ class Boto3Client:
     def get_resource_policy(self, **kwargs):
         pass
 
+
 def test_aws_secrets_manager_secret_list_command(mocker):
     aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
-    mocker.patch.object(Boto3Client, 'list_secrets', return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:654338056632:secret:test_for_moishy-fVYXb6', 'Name': 'test_for_moishy', 'Description': 'new description', 'LastChangedDate': None, 'Tags': [],
-                                                                                   'SecretVersionsToStages': {'01cba660-28be-45d7-8597-d1ab295b0f35': ['AWSCURRENT'], 'ac32e535-79e7-4188-a732-7f02dbe399f0': ['AWSPREVIOUS']}, 'CreatedDate': None}]})
+    mocker.patch.object(Boto3Client, 'list_secrets',
+                        return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:654338056632:secret:'
+                                                             'test_for_moishy-fVYXb6', 'Name': 'test_for_moishy',
+                                                      'Description': 'new description', 'LastChangedDate': None,
+                                                      'Tags': [], 'SecretVersionsToStages':
+                                                          {'01cba660-28be-45d7-8597-d1ab295b0f35': ['AWSCURRENT'],
+                                                           'ac32e535-79e7-4188-a732-7f02dbe399f0': ['AWSPREVIOUS']},
+                                                      'CreatedDate': None}]})
     mocker.patch.object(demisto, 'results')
 
     AWS_SECRETSMANAGER.aws_secrets_manager_secret_list_command(aws_client, dict())
@@ -55,6 +63,7 @@ def test_aws_secrets_manager_secret_list_command(mocker):
 
     assert list(results.keys()).sort() == ['Name', 'ARN', 'Description', 'LastAccessedDate'].sort()
 
+
 @pytest.mark.parametrize('args, expected_results', [
     ({"secret_id": "123"}, {'ResponseMetadata': {'HTTPStatusCode': 200}, 'Return': "some_return_value"}),
     ({"secret_id": None}, 'Get command cannot be executed without "secret_id" param')
@@ -62,7 +71,8 @@ def test_aws_secrets_manager_secret_list_command(mocker):
 def test_aws_secrets_manager_secret_value_get_command(mocker, args, expected_results):
     aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
-    mocker.patch.object(Boto3Client, 'get_secret_value', return_value={'ResponseMetadata': {'HTTPStatusCode': 200}, 'Return': "some_return_value"})
+    mocker.patch.object(Boto3Client, 'get_secret_value', return_value={'ResponseMetadata': {'HTTPStatusCode': 200},
+                                                                       'Return': "some_return_value"})
     mocker.patch.object(demisto, 'results')
     return_error_method = mocker.patch.object(AWS_SECRETSMANAGER, 'return_error', return_value=expected_results)
 
@@ -74,9 +84,12 @@ def test_aws_secrets_manager_secret_value_get_command(mocker, args, expected_res
     else:
         return_error_method.assert_called_with(expected_results)
 
+
 @pytest.mark.parametrize('args, expected_results', [
     ({"secret_id": "123", "days_of_recovery": 121}, 'The Secret was Deleted'),
-    ({"secret_id": "123", "days_of_recovery": 121, "delete_immediately": False}, "Delete command cannot be executed with both args: delete_immediately and days_of_recovery")
+    ({"secret_id": "123", "days_of_recovery": 121, "delete_immediately": False}, "Delete command cannot be executed "
+                                                                                 "with both args: delete_immediately "
+                                                                                 "and days_of_recovery")
 ])
 def test_aws_secrets_manager_secret_delete_command(mocker, args, expected_results):
     aws_client = create_client()
@@ -95,6 +108,7 @@ def test_aws_secrets_manager_secret_delete_command(mocker, args, expected_result
             AWS_SECRETSMANAGER.aws_secrets_manager_secret_delete_command(aws_client, args)
         except Exception as e:
             assert expected_results == e.args[0]
+
 
 @pytest.mark.parametrize('args, expected_results', [
     ({"secret_id": "123"}, 'the secret was restored successfully'),
@@ -117,6 +131,7 @@ def test_aws_secrets_manager_secret_restore_command(mocker, args, expected_resul
         except Exception as e:
             assert expected_results == e.args[0]
 
+
 @pytest.mark.parametrize('args, expected_results', [
     ({"secret_id": "123"}, {'ARN': 'arn', 'Name': 'd', 'ResourcePolicy': 'dw', 'ResponseMetadata': {'HTTPStatusCode': 200}}),
     ({"secret_id": None}, 'secret_id is mandatory inorder to run this command!')
@@ -136,5 +151,4 @@ def test_aws_secrets_manager_secret_policy_get_command(mocker, args, expected_re
         assert results == expected_results
     else:
         return_error_method.assert_called_with(expected_results)
-
 
