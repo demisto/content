@@ -90,19 +90,19 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
-    last_run.update({'last_id': '1234', 'next_fetch': '2022-09-20'})
+    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'next_fetch': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
-    assert new_last_run.get('last_id') == '12345'
+    assert new_last_run.get('index_audit_logs') == 2
 
-    last_run.update({'last_id': '12345', 'next_fetch': '2022-09-20'})
+    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'next_fetch': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '123456'
-    assert new_last_run.get('last_id') == '123456'
+    assert new_last_run.get('index_audit_logs') == 3
 
 
 @pytest.mark.parametrize('response_to_use_status, expected_result', [
