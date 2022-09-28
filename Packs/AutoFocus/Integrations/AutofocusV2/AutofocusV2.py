@@ -321,6 +321,11 @@ def parse_response(resp, err_operation):
             raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
+
+        if 'x-trace-id' in resp.headers:
+            # this debug log was request by autofocus team for debugging on their end purposes
+            demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
+
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
