@@ -3,35 +3,13 @@
 Pytest Unit Tests: all funcion names must start with "test_"
 
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
 """
 import io
 import json
 import requests
 import pytest
 from GitLab import Client
-'''
-group_project_list_command
-create_issue_command
-branch_create_command
-branch_delete_command
-merged_branch_delete_command
-get_raw_file_command
-get_project_list_command
-version_get_command
 
-#~~~~~~~~~ not written yet ~~~~~~~
-file_get_command,file_create_command, file_update_command,file_delete_command, \
-issue_list_command, issue_update_command,commit_list_command, merge_request_list_command,merge_request_create_command, \
-merge_request_update_command,issue_note_create_command,issue_note_delete_command,issue_note_update_command, \
-issue_note_list_command, merge_request_note_list_command, merge_request_note_create_command, \
-merge_request_note_update_command, merge_request_note_delete_command, branch_list, \
-group_list, group_member_list
-'''
 
 BASE_URL = 'https://gitlab.com/api/v4'
 mock_client = Client(37904895, BASE_URL, verify=False, proxy=False, headers=dict())
@@ -241,15 +219,3 @@ def test_get_project_list_command(request_mock):
     pass   # need to complete
 
 
-'''
- response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
-    res = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')
-    response2 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response1')
-    results10 = check_pagination(client, response, 10, {})
-    results1 = check_pagination(client, response, 1, {})
-    results2 = check_pagination(client, response2, 1, {})
-    assert results10 == res
-    assert results1 == res
-    assert results2 == res
-
-'''
