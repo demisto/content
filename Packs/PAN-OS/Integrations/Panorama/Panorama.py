@@ -3433,10 +3433,12 @@ def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_r
     if is_commit_required:
         if '@dirtyId' in result or '@dirtyId' in current_object:
             LOG(f'Found uncommitted item:\n{result}')
-            raise DemistoException('Please commit the instance prior to editing the Security rule.')
+            raise DemistoException('Please commit the instance prior to editing the rule.')
     else:
         # remove un-relevant committed data
         parse_pan_os_un_committed_data(result, ['@admin', '@dirtyId', '@time'])
+
+    current_objects_items = []
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
@@ -11518,7 +11520,8 @@ def pan_os_edit_nat_rule(
                 element_value=element_value,
                 is_listable=is_listable,
                 xpath=xpath,
-                should_contain_entries=True
+                should_contain_entries=True,
+                is_commit_required=False
             )
         ),
         'action': 'edit',
@@ -11980,7 +11983,8 @@ def build_body_request_to_edit_pan_os_object(
     xpath='',
     should_contain_entries=True,
     is_entry=False,
-    is_empty_tag=False
+    is_empty_tag=False,
+    is_commit_required=True
 ):
     """
     This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
@@ -11996,6 +12000,7 @@ def build_body_request_to_edit_pan_os_object(
         is_entry (bool): whether the element should be of the following form:
             <entry name="{entry_name}"/>
         is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
+        is_commit_required (bool): whether a commit is required when trying to add pan-os-object.
 
     Returns:
         dict: a body request for the new object to update it.
@@ -12009,7 +12014,9 @@ def build_body_request_to_edit_pan_os_object(
             object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
         )
     else:  # add or remove is only for listable objects.
-        current_objects_items = panorama_get_current_element(element_to_change=object_name, xpath=xpath)
+        current_objects_items = panorama_get_current_element(
+            element_to_change=object_name, xpath=xpath, is_commit_required=is_commit_required
+        )
         if behavior == 'add':
             updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
         else:  # remove

@@ -8242,8 +8242,8 @@ script:
       name: source_zone
       required: false
       defaultValue: 'any'
-    - description: A comma-separated list of destination zones.
-      isArray: true
+    - description: The destination zone.
+      isArray: false
       name: destination_zone
       required: false
     - description: The destination interface for the rule.
