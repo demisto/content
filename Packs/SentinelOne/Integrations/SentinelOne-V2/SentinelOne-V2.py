@@ -1,6 +1,7 @@
 import io
 import json
 import traceback
+from datetime import datetime
 import zipfile
 from typing import Callable, List, Optional, Tuple
 
@@ -2702,7 +2703,10 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
+        last_fetch = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+        if not last_fetch:
+            raise DemistoException('Please provide an initial First fetch timestamp')
+        last_fetch = int(last_fetch.timestamp() * 1000)
 
     current_fetch = last_fetch
     incidents = []
@@ -2719,7 +2723,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
         if IS_VERSION_2_1 or rank >= fetch_threat_rank:
             incident = threat_to_incident(threat)
             date_occurred_dt = parse(incident['occurred'])
-            incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
+            incident_date = int(date_occurred_dt.timestamp() * 1000)
             if incident_date > last_fetch:
                 incidents.append(incident)
 
@@ -2749,7 +2753,7 @@ def main():
     if not token:
         raise ValueError('The API Token parameter is required.')
     api_version = params.get('api_version', '2.1')
-    server = params.get('url').rstrip('/')
+    server = params.get('url', '').rstrip('/')
     base_url = urljoin(server, f'/web/api/v{api_version}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
