@@ -36,6 +36,7 @@ Test Collection Unit-Test cases
 - `M1` has a pack with support level == xsoar, and tests missing from conf.json -- should raise an error.
 - `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 - `M3` has a pack with support level != xsoar -- should collect pack but not tests.
+- `P` has a Test Playbook which uses a skipped integration - should not be collected.
 """
 
 
@@ -91,6 +92,7 @@ class MockerCases:
     M1 = CollectTestsMocker(TEST_DATA / 'M1')
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
+    P = CollectTestsMocker(TEST_DATA / 'P')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -305,6 +307,14 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # (21) see M3 definition at the top of this file - test playbook is changed
      (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',)),
+
+     # (22) Test Playbook using skipped integration - should not be collected.
+     (MockerCases.P, None, ('myPack',), None, XSOAR_BRANCH_ARGS, ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',)),
+
+     # (23) Old-formatted script changes, expecting its test playbook to be collected
+     (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Scripts/script-myScript.yml',)),
+
      ))
 def test_branch(
         monkeypatch,
@@ -405,6 +415,20 @@ def test_file_types_with_specific_collection_logic_are_not_ignored():
         FileType.MAPPER,
         FileType.CLASSIFIER
     }.isdisjoint(IGNORED_FILE_TYPES | ONLY_INSTALL_PACK_FILE_TYPES)
+
+
+def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch):
+    """
+    give    a non content item and unknown file type which no tests should be collected
+    when    collecting with a BranchTestCollector
+    then    make sure no tests are collected
+    """
+    mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=None)
+    mocker.patch.object(BranchTestCollector, '_get_changed_files',
+                        return_value=('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',))
+
+    _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
+          expected_packs=(), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
