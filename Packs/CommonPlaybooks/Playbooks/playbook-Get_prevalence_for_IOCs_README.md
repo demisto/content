@@ -1,6 +1,6 @@
 The playbook queries the analytics module to receive the prevalence of an IOC.
 
-Supported IOC:
+Supported IOCs:
 - Process by SHA256
 - Process by file name
 - IP
