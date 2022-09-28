@@ -21,7 +21,7 @@ ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/powershell/install.sh /install-powershell.sh
 
-RUN UID="4000" bash install-common.sh 
+RUN UID="4000" GID="4000" bash install-common.sh 
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
 RUN VERSION="latest" bash install-node.sh
