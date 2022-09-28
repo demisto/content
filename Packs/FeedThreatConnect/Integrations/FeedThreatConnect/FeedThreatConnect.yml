@@ -74,11 +74,10 @@ configuration:
   required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
-- additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
-  defaultvalue: All
-  display: Indicator types
-  hidden: false
+- display: Indicator types
   name: indicator_type
+  required: false
+  type: 16
   options:
   - All
   - EmailAddress
@@ -93,13 +92,16 @@ configuration:
   - Registry Key
   - User Agent
   - Address
+  additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
+  defaultvalue: All
+  hidden: false
+- display: Group types
+  name: group_type
   required: false
   type: 16
-- additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
+  additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
   defaultvalue: All
-  display: Group types
   hidden: false
-  name: group_type
   options:
   - All
   - Attack Pattern
@@ -109,34 +111,32 @@ configuration:
   - Malware Report
   - Tool
   - Vulnerability
-  required: false
-  type: 16
-- additionalinfo: Fetch active only indicators when true. Default is "True".
-  defaultvalue: 'true'
-  display: Active Indicators Only
-  hidden: false
+- display: Active Indicators Only
   name: indicator_active
   required: false
   type: 8
-- additionalinfo: Fetch related indicators. Default is "False".
-  defaultvalue: 'false'
-  display: Create Relationships
+  defaultvalue: 'true'
+  additionalinfo: Fetch active only indicators when true. Default is "True".
   hidden: false
+- display: Create Relationships
   name: createRelationships
   required: false
   type: 8
+  additionalinfo: Fetch related indicators. Default is "False".
+  defaultvalue: 'false'
+  hidden: false
 - additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
   display: Indicator Query
-  hidden: false
   name: indicator_query
   required: false
   type: 12
-- additionalinfo: Minimal confidence value to fetch indicators by (an integer between 0 to 100).
-  display: Confidence Threshold
   hidden: false
-  name: confidence
+- display: Confidence Threshold
   required: false
   type: 0
+  additionalinfo: Minimal confidence value to fetch indicators by (an integer between 0 to 100).
+  name: confidence
+  hidden: false
   defaultvalue: 0
 - additionalinfo: Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000).
   display: Threat Assess Score Threshold
@@ -216,7 +216,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated list that will allow filtering of the retrieved indicators. 
+      description: Comma-separated list that will allow filtering of the retrieved indicators.
       isArray: false
       name: indicator_type
       predefined:

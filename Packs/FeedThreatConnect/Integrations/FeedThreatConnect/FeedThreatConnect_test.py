@@ -36,10 +36,11 @@ def test_create_or_query():
 
 
 @pytest.mark.parametrize("params, expected_result",
-                        [({'indicatorActive': False, "group_type": ['All'], "indicator_type": ['All'],
-                           'retrieveRelationships': False}, ''),
-                         ({'indicatorActive': True, "group_type": ['File'], "indicator_type": [],
-                           'retrieveRelationships': False}, 'indicatorActive EQ True AND typeName IN ("File")')])
+                        [({'indicator_active': False, "group_type": ['All'], "indicator_type": ['All'],
+                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0}, ''),
+                         ({'indicator_active': True, "group_type": ['File'], "indicator_type": [],
+                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
+                           'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
     """
     Given:
