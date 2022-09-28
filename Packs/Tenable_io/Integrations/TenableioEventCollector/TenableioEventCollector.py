@@ -140,7 +140,7 @@ def try_get_chunks(client: Client, export_uuid: str):
     """
     vulnerabilities = []
     status, chunks_available = client.get_export_status(export_uuid=export_uuid)
-    demisto.info(f'{status=}, {chunks_available=}')
+    demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
         for chunk_id in chunks_available:
             vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
@@ -160,13 +160,13 @@ def generate_export_uuid(client: Client, first_fetch: Optional[datetime], last_r
 
     """
     demisto.info("Getting export uuid for report.")
-    last_fetch = last_run.get('next_fetch_vunl')
+    last_fetch = last_run.get('last_fetch_vuln')
     last_found: float = time.mktime(
         first_fetch.timetuple()) if not last_fetch and first_fetch else last_fetch  # type: ignore
-    demisto.info(f'{last_found=}')
     export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found, severity=severity)
 
     next_run_vuln = time.mktime(datetime.now(tz=timezone.utc).timetuple())
+    demisto.info(f'export uuid is {export_uuid}')
     last_run.update({'last_found_use': last_found, 'last_fetch_vuln': next_run_vuln, 'export_uuid': export_uuid})
 
 
@@ -181,10 +181,10 @@ def run_vulnerabilities_fetch(last_run: dict, first_fetch: Optional[datetime], v
     Returns: True if fetch vulnerabilities can be run.
 
     """
-    if not last_run.get('next_fetch_vunl'):
+    if not last_run.get('last_fetch_vuln'):
         time_to_check = time.mktime(first_fetch.timetuple())  # type: ignore
     else:
-        time_to_check = last_run.get('next_fetch_vunl')  # type: ignore
+        time_to_check = last_run.get('last_fetch_vuln')  # type: ignore
     if time.time() - time_to_check > vuln_fetch_interval and not last_run.get('export_uuid'):
         return True
     return False
@@ -295,10 +295,9 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
     """
     vulnerabilities = []
     export_uuid = last_run.get('export_uuid')
-    demisto.info("checking export uuid")
     last_found_use = last_run.get('last_found_use')  # last run fetch time
     if export_uuid:
-        demisto.info(f'{export_uuid=}')
+        demisto.info(f'Got export uuid from API {export_uuid}')
         vulnerabilities, status = try_get_chunks(client=client, export_uuid=export_uuid)
         # set params for next run
         if status == 'FINISHED':
@@ -307,7 +306,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
             export_uuid = client.get_export_uuid(num_assets=5000, last_found=last_found_use, severity=severity)
             last_run.update({'export_uuid': export_uuid})
 
-    demisto.info(f'{len(vulnerabilities)=}')
+    demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, Setting {last_run=}.')
     return vulnerabilities
 
 
@@ -325,9 +324,8 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
     """
 
     last_fetch = last_run.get('next_fetch')
-    last_id_fetched = last_run.get('last_id')
-    index = 0
-    demisto.info(f'here here here {last_run=}')
+    last_index_fetched = last_run.get('index_audit_logs')
+    index = int(last_index_fetched) if last_index_fetched is not None else 0
     if not last_fetch and first_fetch:
         start_date = first_fetch.strftime(DATE_FORMAT)
     else:
@@ -335,24 +333,17 @@ def fetch_events_command(client: Client, first_fetch: Optional[datetime], last_r
 
     audit_logs: List[Dict] = []
     audit_logs_from_api = client.get_audit_logs_request(from_date=start_date)
-    if last_id_fetched:
-        for index, log in enumerate(audit_logs_from_api, 1):
-            if log.get('id') == last_id_fetched:
-                break
-    demisto.info(f'{len(audit_logs_from_api)}')
+
     audit_logs_from_api_len = len(audit_logs_from_api)
     last_log_to_fetch = min(audit_logs_from_api_len, index + limit)
-    demisto.info(f'{index=}, {last_log_to_fetch=}')
-    if index < audit_logs_from_api_len and last_log_to_fetch <= audit_logs_from_api_len:
-        demisto.info('here again')
+
+    if index < audit_logs_from_api_len:
         audit_logs.extend(audit_logs_from_api[index:last_log_to_fetch])
 
     next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    last_run.update({'last_id': audit_logs[-1].get('id') if audit_logs else last_id_fetched,
+    last_run.update({'index_audit_logs': len(audit_logs) + index if audit_logs else last_index_fetched,
                      'next_fetch': next_run})
-
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {last_run=}.')
-    demisto.info(f'{len(audit_logs)=}')
     return audit_logs, last_run
 
 
@@ -436,7 +427,7 @@ def main() -> None:  # pragma: no cover
                 vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
                 events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
 
-                demisto.info(new_last_run)
+                demisto.info(f'Setting new last_runto {new_last_run}')
                 demisto.setLastRun(new_last_run)
 
             insert_type_to_logs(audit_logs=events, vulnerabilities=vulnerabilities)
