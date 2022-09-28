@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install dos2unix -y \
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
-ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin
+ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 
@@ -24,7 +24,7 @@ ADD https://raw.githubusercontent.com/devcontainers/features/main/src/powershell
 RUN UID="4000" GID="4000" bash install-common.sh 
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
-RUN VERSION="latest" bash install-node.sh
+RUN VERSION="lts" bash install-node.sh
 RUN VERSION="latest" bash install-powershell.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
@@ -35,8 +35,8 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
     && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/zsh-autosuggestions \
-    && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> $HOME/.zshrc
-
+    && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> $HOME/.zshrc 
+    
 VOLUME [ "/var/lib/docker" ]
 
 # Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
