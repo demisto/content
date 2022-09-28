@@ -68,13 +68,12 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | Number | A description of why this file was found malicious. | 
+| File.Malicious.Description | String | A description of why this file was found malicious. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | How reliable the score is \(for example, "C - fairly reliable"\). | 
-| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
 | McAfee.TIE.FilesReputations.Reputations.Hash | String | The value of the hash. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Provider_ID | Number | The identifier of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Trust_Level | Number | The trust level for the reputation subject. | 
@@ -82,7 +81,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.GTI.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Original_Response | String | The raw response as returned by the Global Threat Intelligence \(GTI\) reputation provider. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact | String | The time the file was first seen. | 
-| McAfee.TIE.FilesReputations.Reputations.GTI.PREVALENCE | String | The number of times the file has been requested. | 
+| McAfee.TIE.FilesReputations.Reputations.GTI.Prevalence | String | The number of times the file has been requested. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Provider_ID | Number | The identifier of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Trust_Level | Number | The trust level for the reputation subject. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date | String | The time this reputation was created. | 
