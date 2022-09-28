@@ -1,5 +1,5 @@
 Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
-This integration was integrated and tested with version xx of Aha
+This integration was integrated and tested with API version 1.0 of Aha
 
 ## Configure Aha on Cortex XSOAR
 

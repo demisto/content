@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AHA import Client, get_features, edit_feature
 import io
-import re
 
 
 apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
@@ -84,4 +83,3 @@ def test_editFeatureField(mocker):
     assert result.outputs[0]['name'] == "Demo-10"
     assert result.outputs[0]['description'] == "test desc"
     assert result.outputs[0]['workflow_status'] == "Closed"
-

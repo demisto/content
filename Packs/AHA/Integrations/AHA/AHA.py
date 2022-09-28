@@ -100,7 +100,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        result = client.get_features('', set(), '2020-01-01', page='1', per_page='1')
+        result = client.get_features('', '', '2020-01-01', page='1', per_page='1')
         if result:
             message = 'ok'
     except DemistoException as e:
