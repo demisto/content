@@ -7203,12 +7203,7 @@ def append_metrics(execution_metrics, results):
     return results
 
 
-@staticmethod
-def get_branded_result(res, brand, instance):
-    if res.result.get('HumanReadable'):
-        res.result['HumanReadable'] = f"***{brand} ({instance})***\n{res.result.get('HumanReadable')}"
 
-    return res.result
 
 
 class CommandRunner:
@@ -7348,7 +7343,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [get_branded_result(res, res.brand, res.instance) for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
