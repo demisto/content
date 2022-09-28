@@ -1,6 +1,5 @@
 [MODEL: dataset=fireeye_mps_raw]
-alter _time = parse_timestamp("%s",arrayindex( regextract(to_string(rt),"(\d+)\d{3}"),0) ),
-    xdm.target.port = to_number(dpt),
+alter xdm.target.port = to_number(dpt),
     xdm.source.port = to_number(spt),
     xdm.event.outcome = act,
     xdm.target.ipv4 = dst,
