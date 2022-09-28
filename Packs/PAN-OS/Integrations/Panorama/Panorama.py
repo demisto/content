@@ -11964,7 +11964,8 @@ def pan_os_edit_redistribution_profile(
                 element_value=element_value,
                 is_listable=is_listable,
                 xpath=xpath,
-                should_contain_entries=False
+                should_contain_entries=False,
+                is_commit_required=False
             )
         ),
         'action': 'edit',
@@ -12507,7 +12508,8 @@ def pan_os_edit_application_group(name, applications, action):
         'xpath': xpath,
         'element': dict_to_xml(
             build_body_request_to_edit_pan_os_object(
-                behavior=action, object_name='members', element_value=applications, is_listable=True, xpath=xpath
+                behavior=action, object_name='members',
+                element_value=applications, is_listable=True, xpath=xpath, is_commit_required=False
             )
         ),
         'action': 'edit',

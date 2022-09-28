@@ -8686,6 +8686,10 @@ script:
       defaultValue: 'false'
       description: Whether to show the un-committed rules or not. can be true or false.
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
       name: show_uncommitted
       required: false
     - defaultValue: '50'
