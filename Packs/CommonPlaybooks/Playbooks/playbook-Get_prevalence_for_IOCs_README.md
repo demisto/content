@@ -1,4 +1,4 @@
-The playbook query the analytics module to receive the prevalence of an IOC.
+The playbook queries the analytics module to receive the prevalence of an IOC.
 
 Supported IOC:
 - Process by SHA256
@@ -35,13 +35,13 @@ This playbook does not use any scripts.
 
 | **Name** | **Description**                                                                            | **Default Value** | **Required** |
 | --- |--------------------------------------------------------------------------------------------| --- | --- |
-| IP | IP to run prevalence check                                                                 |  | Optional |
-| Hash | Hash to run prevalence check                                                               |  | Optional |
-| Commandline | The CMD to run prevalence check                                                            |  | Optional |                                                                                           |  | Optional |
-| Process | The process name to run prevalence check                                                   |  | Optional |
-| RegistryKey | The registry key to run prevalence check. The input registy value must be provided as well. |  | Optional |
-| RegistryValue | The registry value to run prevalence check. The input registy key must be provided as well. |  | Optional |
-| Domain | The domain to run prevalence check                                                         |  | Optional |
+| IP | IP address to run the prevalence check.                                                                 |  | Optional |
+| Hash | Hash to run the prevalence check.                                                               |  | Optional |
+| Commandline | The CMD to run the prevalence check.                                                           |  | Optional |                                                                                           |  | Optional |
+| Process | The process name to run the prevalence check.                                                   |  | Optional |
+| RegistryKey | The registry key to run the prevalence check. The input registry value must be provided as well. |  | Optional |
+| RegistryValue | The registry value to run the prevalence check. The input registry key must be provided as well. |  | Optional |
+| Domain | The domain to run the prevalence check.                                                         |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -50,19 +50,19 @@ This playbook does not use any scripts.
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Ip | Whether the IP address is prevalent or not. | unknown |
 | Core.AnalyticsPrevalence.Ip.value | Whether the IP address is prevalent or not. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.global_prevalence | The global prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | The global prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.local_prevalence | The local prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | The local prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.prevalence | The prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Ip.data.prevalence.value | The prevalence of the IP. | unknown |
-| Core.AnalyticsPrevalence.Hash | The prevalence of the Hash. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence | The global prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | The global prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence | The local prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | The local prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.prevalence | The prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.prevalence.value | The prevalence of the IP address. | unknown |
+| Core.AnalyticsPrevalence.Hash | The prevalence of the hash. | unknown |
 | Core.AnalyticsPrevalence.Hash.value | Whether the hash is prevalent or not. | unknown |
-| Core.AnalyticsPrevalence.Hash.data.global_prevalence | The prevalence of the Hash. | unknown |
+| Core.AnalyticsPrevalence.Hash.data.global_prevalence | The prevalence of the hash. | unknown |
 | Core.AnalyticsPrevalence.Hash.data.global_prevalence.value | The global prevalence of the hash. | unknown |
-| Core.AnalyticsPrevalence.Hash.data.local_prevalence | The local prevalence of the Hash. | unknown |
+| Core.AnalyticsPrevalence.Hash.data.local_prevalence | The local prevalence of the hash. | unknown |
 | Core.AnalyticsPrevalence.Hash.data.local_prevalence.value | The local prevalence of the hash. | unknown |
-| Core.AnalyticsPrevalence.Hash.data.prevalence | The prevalence of the Hash. | unknown |
+| Core.AnalyticsPrevalence.Hash.data.prevalence | The prevalence of the hash. | unknown |
 | Core.AnalyticsPrevalence.Hash.data.prevalence.value | The prevalence of the hash. | unknown |
 | Core.AnalyticsPrevalence.Domain | The prevalence of the domain. | unknown |
 | Core.AnalyticsPrevalence.Domain.value | Whether the domain is prevalent or not. | unknown |
