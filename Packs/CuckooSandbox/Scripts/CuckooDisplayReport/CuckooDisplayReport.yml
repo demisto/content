@@ -4,7 +4,7 @@ commonfields:
 name: CuckooDisplayReport
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - cuckoo
 comment: Display the contents of a Cuckoo report file from a war room entry.
@@ -22,6 +22,6 @@ args:
 scripttarget: 0
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)

@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 import base64
 import email
@@ -7,11 +10,8 @@ from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -548,7 +548,7 @@ def init_rtr_single_session(host_id: str) -> str:
     raise ValueError('No session id found in the response')
 
 
-def init_rtr_batch_session(host_ids: list) -> str:
+def init_rtr_batch_session(host_ids: list, offline=False) -> str:
     """
         Start a session with one or more hosts
         :param host_ids: List of host agent ID’s to initialize a RTR session on.
@@ -556,7 +556,8 @@ def init_rtr_batch_session(host_ids: list) -> str:
     """
     endpoint_url = '/real-time-response/combined/batch-init-session/v1'
     body = json.dumps({
-        'host_ids': host_ids
+        'host_ids': host_ids,
+        'queue_offline': offline
     })
     response = http_request('POST', endpoint_url, data=body)
     return response.get('batch_id')
@@ -2420,15 +2421,15 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
 
@@ -2461,35 +2462,38 @@ def search_device_by_ip(raw_res, ip_address):
     return raw_res
 
 
-def generate_status_fields(endpoint_status):
-    status = ''
+def get_status(device_id):
+    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
+    state = raw_res.get('resources')[0].get('state', '')
+    return 'Online' if state in ['online', 'Online'] else ''
+
+
+def get_isolation_status(endpoint_status):
     is_isolated = ''
 
-    if endpoint_status.lower() == 'normal':
-        status = 'Online'
-    elif endpoint_status == 'containment_pending':
+    if endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
     elif endpoint_status == 'contained':
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-    else:
+    elif endpoint_status.lower() != 'normal':
         raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
-    return status, is_isolated
+    return is_isolated
 
 
 def generate_endpoint_by_contex_standard(devices):
     standard_endpoints = []
     for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
+        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
             ip_address=single_device.get('local_ip'),
             os=single_device.get('platform_name'),
             os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
+            status=get_status(single_device.get("device_id")),
+            is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
         standard_endpoints.append(endpoint)
@@ -2647,10 +2651,12 @@ def run_command():
     scope = args.get('scope', 'read')
     target = args.get('target', 'batch')
 
+    offline = argToBoolean(args.get('queue_offline', False))
+
     output = []
 
     if target == 'batch':
-        batch_id = init_rtr_batch_session(host_ids)
+        batch_id = init_rtr_batch_session(host_ids, offline)
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
         try:

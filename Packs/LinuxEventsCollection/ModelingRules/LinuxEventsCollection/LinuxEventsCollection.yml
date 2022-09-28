@@ -1,6 +1,9 @@
-name: Linux Events Collection
-id: linux_events_collection
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: Linux Logs Collection Redhat Ubuntu
-rules: ""
+id: linux_events_collection
+name: Linux Events Collection
+rules: ''
 schema: ''
+tags: Linux Logs Collection Redhat Ubuntu
+to_xdr_version: 3.4.9
+toversion: 6.9.9
