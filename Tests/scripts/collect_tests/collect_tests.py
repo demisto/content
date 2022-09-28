@@ -57,7 +57,7 @@ class CollectionReason(str, Enum):
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
-    # these may be used without an id_set or conf.json object, see _validate_args.
+    # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
     CollectionReason.ALWAYS_INSTALLED_PACKS
 }
@@ -77,9 +77,9 @@ class CollectionResult:
             is_nightly: bool = False,
     ):
         """
-        Collected test playbook, and/or pack to install.
+        Collected test playbook, and/or a pack to install.
 
-        NOTE:   the constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
+        NOTE:   The constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
                 This is done to require a reason for every collection, which is logged.
                 Use the + operator or CollectedTests.union() to join two or more objects and hold multiple tests.
 
@@ -99,7 +99,7 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_args(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
+            self._validate_collection(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
 
         except NonXsoarSupportedPackException:
             if test:
@@ -129,10 +129,19 @@ class CollectionResult:
             logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
-    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
-                       id_set: Optional[IdSet], is_sanity: bool, is_nightly: bool = False):
+    def _validate_collection(
+            pack: Optional[str],
+            test: Optional[str],
+            reason: CollectionReason,
+            conf: Optional[TestConf],
+            id_set: Optional[IdSet],
+            is_sanity: bool,
+            is_nightly: bool,
+    ):
         """
         Validates the arguments of the constructor.
+        NOTE: Here, we only validate information regarding the test and pack directly.
+                For validations regarding contentItem or IdSetItem objects, see __validate_compatibility.
         """
         if reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF:
             for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
@@ -156,9 +165,16 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
+                for integration in test_playbook.implementing_integrations:
+                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
+                        raise SkippedTestException(
+                            test_name=test,
+                            skip_place='conf.json (integrations)',
+                            skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
+                        )
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
@@ -347,7 +363,16 @@ class TestCollector(ABC):
             version_range: Optional[VersionRange],
             is_integration: bool,
     ):
-        # exception order matters: important tests come first
+        # exception order matters: important tests come first.
+        """
+        NOTE:
+            Here, we validate information that indirectly affects the collection
+            (information regarding IdSet or ContentItem objects, based on which we collect tests or packs)
+            e.g. skipped integrations, marketplace compatibility, support level.
+
+            For validating the pack/test directly, see _validate_collection.
+        """
+
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
