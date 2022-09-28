@@ -507,6 +507,7 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
         readable_name = f'List of projects in {client.workspace}'
 
     human_readable = []
+    key_list = []
 
     for value in results:
         d = {'Key': value.get('key'),
@@ -514,6 +515,7 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
              'Description': value.get('description'),
              'IsPrivate': value.get('is_private')}
         human_readable.append(d)
+        key_list.append(value.get('key'))
 
     headers = ['Key', 'Name', 'Description', 'IsPrivate']
 
@@ -527,7 +529,8 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Project',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -552,12 +555,14 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     results = check_pagination(client, response, limit)
 
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Name': value.get('name'),
              'LastCommitHash': value.get('target').get('hash'),
              'LastCommitCreatedBy': value.get('target').get('author').get('user').get('display_name'),
              'LastCommitCreatedAt': value.get('target').get('date')}
         human_readable.append(d)
+        key_list.append(value.get('name'))
 
     headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
     readable_output = tableToMarkdown(
@@ -570,7 +575,8 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Branch',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -603,7 +609,8 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Branch',
         outputs=response,
-        raw_response=response
+        raw_response=response,
+        outputs_key_field=response.get('name')
     )
 
 
@@ -625,7 +632,8 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
         readable_output=f'The branch "{name}" was created successfully.',
         outputs_prefix='Bitbucket.Branch',
         outputs=response,
-        raw_response=response
+        raw_response=response,
+        outputs_key_field=response.get('name')
     )
 
 
@@ -641,11 +649,13 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
     branch_name = args.get('branch_name', '')
     if not repo:
         repo = client.repository
-    response = client.branch_delete_request(branch_name, repo)
-    if response.status_code == 204:
+    try:
+        client.branch_delete_request(branch_name, repo)
         return CommandResults(readable_output=f'The branch {branch_name} was deleted successfully.')
-    else:
-        raise Exception('The command branch-delete failed.')
+    except Exception as e:
+        message_arr = e.message.split('\n')
+        m_json = json.loads(message_arr[1])
+        raise Exception(f'{message_arr[0]} , branch "{m_json.get("error").get("message")}"')
 
 
 def commit_create_command(client: Client, args: Dict) -> CommandResults:
@@ -683,11 +693,8 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
         body["author"] = f'{author_name} <{author_email}>'
     if not repo:
         repo = client.repository
-    response = client.commit_create_request(body, repo)
-    if response.status_code == 201:
-        return CommandResults(readable_output='The commit was created successfully.')
-    else:
-        raise Exception('The command commit-create failed.')
+    client.commit_create_request(body, repo)
+    return CommandResults(readable_output='The commit was created successfully.')
 
 
 def commit_list_command(client: Client, args: Dict) -> CommandResults:
@@ -722,12 +729,14 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     response = client.commit_list_request(repo, params, excluded_list, included_list)
     results = check_pagination(client, response, limit)
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Author': value.get('author').get('raw'),
              'Commit': value.get('hash'),
              'Message': value.get('message'),
              'CreatedAt': value.get('date')}
         human_readable.append(d)
+        key_list.append(value.get('hash'))
 
     headers = ['Author', 'Commit', 'Message', 'CreatedAt']
     readable_output = tableToMarkdown(
@@ -740,7 +749,8 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Commit',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -767,11 +777,8 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
         body['author'] = f'{author_name} <{author_email}>'
     if not repo:
         repo = client.repository
-    response = client.file_delete_request(body, repo)
-    if response.status_code == 201:
-        return CommandResults(readable_output='The file was deleted successfully.')
-    else:
-        raise Exception('The command file-delete failed.')
+    client.file_delete_request(body, repo)
+    return CommandResults(readable_output='The file was deleted successfully.')
 
 
 def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -794,10 +801,15 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
         including_list = [branch]
     else:
         including_list = []
-    commit_list = client.commit_list_request(repo=repo, params=params, excluded_list=[], included_list=including_list)
+    try:
+        commit_list = client.commit_list_request(repo=repo, params=params, excluded_list=[], included_list=including_list)
+    except Exception as e:
+        message_arr = e.message.split('\n')
+        m_json = json.loads(message_arr[1])
+        raise Exception(f'{message_arr[0]} , branch {m_json.get("data").get("shas")}')
     values: List = commit_list.get('values', [])
     if len(values) == 0:
-        return [CommandResults(readable_output=f'The file {file_path} does not exist')]
+        raise Exception(f'The file {file_path} does not exist')
 
     commit_hash = values[0].get('hash')
     response = client.raw_file_get_request(repo, file_path, commit_hash)
@@ -805,13 +817,10 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
         'file_path': file_path,
         'file_content': response.text
     }
-    if response.status_code == 200:
-        file = fileResult(filename=file_path, data=response.text)
-        return [CommandResults(readable_output=f'The content of the file "{file_path}" is: {response.text}',
-                               outputs_prefix='Bitbucket.RawFile',
-                               outputs=output), file]
-    else:
-        raise Exception('The command raw-file-get failed.')
+    file = fileResult(filename=file_path, data=response.text)
+    return [CommandResults(readable_output=f'The content of the file "{file_path}" is: {response.text}',
+                           outputs_prefix='Bitbucket.RawFile',
+                           outputs=output), file]
 
 
 def issue_create_command(client: Client, args: Dict) -> CommandResults:
@@ -851,7 +860,8 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=f'The issue "{title}" was created successfully',
                           outputs_prefix='Bitbucket.Issue',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def issue_list_command(client: Client, args: Dict) -> CommandResults:
@@ -882,6 +892,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         results = check_pagination(client, response, limit)
         hr_title = 'List of the issues'
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Id': value.get('id'),
              'Title': value.get('title'),
@@ -897,6 +908,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         else:
             d["assignee"] = None
         human_readable.append(d)
+        key_list.append(value.get('id'))
 
     headers = ['Id', 'Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']
     readable_output = tableToMarkdown(
@@ -909,7 +921,8 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Issue',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -954,7 +967,8 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=f'The issue with id "{issue_id}" was updated successfully',
                           outputs_prefix='Bitbucket.Issue',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
@@ -980,7 +994,8 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
@@ -1007,7 +1022,8 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=f'The pull request {pull_request_id} was updated successfully',
                           outputs_prefix='Bitbucket.PullRequest',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1043,6 +1059,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         results = check_pagination(client, response, limit)
         hr_title = 'List of the pull requests'
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Id': value.get('id'),
              'Title': value.get('title'),
@@ -1055,6 +1072,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
              'UpdatedAt': value.get('updated_on')
              }
         human_readable.append(d)
+        key_list.append(value.get('id'))
 
     headers = ['Id', 'Title', 'Description', 'SourceBranch', 'DestinationBranch', 'State', 'CreatedBy', 'CreatedAt',
                'UpdatedAt']
@@ -1068,7 +1086,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.PullRequest',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -1096,7 +1115,8 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The comment created successfully',
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -1143,7 +1163,8 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The comment was updated successfully',
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field=response.get('id'))
 
 
 def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1175,6 +1196,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         results = check_pagination(client, response, limit)
         hr_title = f'List of the comments on issue "{issue_id}"'
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Id': value.get('id'),
              'Content': value.get('content', {}).get('raw'),
@@ -1184,6 +1206,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
              'IssueId': value.get('issue', {}).get('id'),
              'IssueTitle': value.get('issue', {}).get('title')}
         human_readable.append(d)
+        key_list.append(value.get('id'))
 
     headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
     readable_output = tableToMarkdown(
@@ -1196,7 +1219,8 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.IssueComment',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -1222,7 +1246,8 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
     return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.PullRequestComment',
                           outputs=[response],
-                          raw_response=[response])
+                          raw_response=[response],
+                          outputs_key_field=response.get('id'))
 
 
 def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1255,6 +1280,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         hr_title = f'List of the comments on pull request number "{pr_id}"'
     human_readable = []
     records_to_delete = []
+    key_list = []
     for value in results:
         if not value.get('content', {}).get('raw') == "":
             d = {'Id': value.get('id'),
@@ -1265,6 +1291,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
                  'PullRequestIdIssueId': value.get('pullrequest', {}).get('id'),
                  'PullRequestTitle': value.get('pullrequest', {}).get('title')}
             human_readable.append(d)
+            key_list.append(value.get('id'))
         else:
             records_to_delete.append(value)
     if len(records_to_delete) > 0:
@@ -1282,7 +1309,8 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         readable_output=readable_output,
         outputs_prefix='Bitbucket.PullRequestComment',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
@@ -1310,7 +1338,8 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
         readable_output='The comment was updated successfully',
         outputs_prefix='Bitbucket.PullRequestComment',
         outputs=[response],
-        raw_response=[response])
+        raw_response=[response],
+        outputs_key_field=response.get('id'))
 
 
 def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -1326,11 +1355,11 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
     comment_id = args.get('comment_id', '')
     if not repo:
         repo = client.repository
-    response = client.pull_request_comment_delete_request(repo, pr_id, comment_id)
-    if response.status_code == 204:
+    try:
+        client.pull_request_comment_delete_request(repo, pr_id, comment_id)
         return CommandResults(readable_output='The comment was deleted successfully.')
-    else:
-        raise Exception('The command pull-request-comment-delete failed.')
+    except Exception as e:
+        raise Exception(f'The command pull-request-comment-delete failed. {e.message}')
 
 
 def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1352,10 +1381,12 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
     response = client.workspace_member_list_request(params)
     results = check_pagination(client, response, limit)
     human_readable = []
+    key_list = []
     for value in results:
         d = {'Name': value.get('user').get('display_name'),
              'AccountId': value.get('user').get('account_id')}
         human_readable.append(d)
+        key_list.append(value.get('user').get('account_id'))
     headers = ['Name', 'AccountId']
     readable_output = tableToMarkdown(
         name='The list of all the workspace members',
@@ -1367,7 +1398,8 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Bitbucket.WorkspaceMember',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        outputs_key_field=key_list
     )
 
 
