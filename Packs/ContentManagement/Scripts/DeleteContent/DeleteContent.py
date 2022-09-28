@@ -8,9 +8,11 @@ from urllib.parse import quote
 import json
 
 SCRIPT_NAME = 'DeleteContent'
-ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
+ALWAYS_EXCLUDED_PACKS = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
                    'CommonPlaybooks', 'CommonTypes', 'CommonWidgets', 'DemistoRESTAPI', 'FiltersAndTransformers',
-                   'DefaultPlaybook', 'DemistoLocking']
+                   'DefaultPlaybook', 'DemistoLocking']  # TODO: get dynamically
+
+ALWAYS_EXCLUDED_SCRIPTS = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer']
 
 
 def verify_search_response_in_list(response: Union[dict, str, list], name: str):
@@ -508,17 +510,23 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     succesfully_deleted = []
     not_deleted = []
 
-    if not included_ids and not excluded_ids or \
-            (entity_api.name == 'pack' and excluded_ids == ALWAYS_EXCLUDED and not included_ids):
-        return [], excluded_ids
+    if not included_ids and not excluded_ids:
+        return [], []
 
-    if included_ids and excluded_ids:
-        included_ids = [item for item in included_ids if item not in excluded_ids]
+    if entity_api.name == InstalledPackAPI.name:
+        excluded_ids += ALWAYS_EXCLUDED_PACKS
+    if entity_api.name == ScriptAPI.name:
+        excluded_ids += ALWAYS_EXCLUDED_SCRIPTS
+
+    new_included_ids = [item for item in included_ids if item not in excluded_ids]
 
     if included_ids:
         for included_id in included_ids:
-            if search_and_delete_existing_entity(included_id, entity_api=entity_api, dry_run=dry_run):
-                succesfully_deleted.append(included_id)
+            if included_id in new_included_ids:
+                if search_and_delete_existing_entity(included_id, entity_api=entity_api, dry_run=dry_run):
+                    succesfully_deleted.append(included_id)
+                else:
+                    not_deleted.append(included_id)
             else:
                 not_deleted.append(included_id)
 
@@ -565,8 +573,6 @@ def handle_content_enitity(entity_api: EntityAPI,
 
     excluded_ids = excluded_ids_dict.get(entity_api.name, []) if excluded_ids_dict else []
     included_ids = included_ids_dict.get(entity_api.name, []) if included_ids_dict else []
-    if entity_api.name == InstalledPackAPI.name:
-        excluded_ids += ALWAYS_EXCLUDED
 
     deleted_ids, undeleted_ids = get_and_delete_entities(entity_api=entity_api,
                                                          excluded_ids=excluded_ids,
