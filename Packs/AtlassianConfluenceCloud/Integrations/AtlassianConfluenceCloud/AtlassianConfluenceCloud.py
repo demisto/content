@@ -1,12 +1,10 @@
 import json
 import urllib.parse
-from typing import Callable, Dict, Tuple, List
+from typing import Callable, Dict, List, Tuple
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
+import demistomock as demisto  # noqa: F401
 import requests
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -804,6 +802,23 @@ def validate_create_space_args(args: Dict[str, str]):
             raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
 
 
+def validate_page_view_args(args: Dict[str, str]):
+    """
+    Validate arguments for confluence-cloud-page-view command, raise ValueError on invaid arguments.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+
+    page_id = args.get('page_id')
+    if not page_id:
+        raise ValueError(MESSAGE["REQUIRED_ARGUMENT"].format("page_id"))
+    if isinstance(page_id, int) or not page_id.isnumeric():
+        raise ValueError(MESSAGES["INVALID_PAGE_ID"])
+
+
 def prepare_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, str]]:
     """
     Prepare json object for confluence-cloud-space-create command.
@@ -1332,6 +1347,40 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
         raw_response=response_json)
 
 
+def confluence_cloud_page_view_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+       Gets the HTML for a page in confluence cloud.
+
+       :type client: ``Client``
+       :param client: Client object to be used.
+
+       :type args: ``Dict[str, str]``
+       :param args: The command arguments provided by the user.
+
+       :return: Standard command result or no records found message.
+       :rtype: ``CommandResults``
+    """
+
+    validate_page_view_args(args)
+
+    url_suffix = URL_SUFFIX["CONTENT"]
+    response = client.http_request(method="GET", url_suffix=url_suffix + "/"
+                                   + args['page_id'] + "?expand=body.view", json_data="{}")
+
+    response_json = response.json()
+
+    # Creating the Human Readable
+    readable_hr = response_json['body']['view']['value']
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX['CONTENT'],
+        outputs_key_field='id',
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json
+
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1378,7 +1427,8 @@ def main() -> None:
             'confluence-cloud-space-list': confluence_cloud_space_list_command,
             'confluence-cloud-comment-create': confluence_cloud_comment_create_command,
             'confluence-cloud-content-create': confluence_cloud_content_create_command,
-            'confluence-cloud-space-create': confluence_cloud_space_create_command
+            'confluence-cloud-space-create': confluence_cloud_space_create_command,
+            'confluence-cloud-page-view': confluence_cloud_page_view_command,
         }
         command = demisto.command()
         args = demisto.args()
