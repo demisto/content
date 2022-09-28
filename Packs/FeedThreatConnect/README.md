@@ -1,4 +1,4 @@
-The Threat Connect feed provides access to published IOCs that contain known indicators. You can configure the number of indicators to be returned. The default is 50.
+The Threat Connect feed provides access to published IOCs that contain known indicators.
 
 What does this pack do?
 -  Gets indicators from ThreatConnect.
