@@ -6,6 +6,7 @@ import urllib3
 import traceback
 from typing import Any, Dict
 from stix2patterns.pattern import Pattern as PatternParser  # noqa: E402
+import ipaddress
 
 
 # Disable insecure warnings
@@ -110,6 +111,13 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def ip_version(ip: str | None) -> str | None:
+    if ip:
+        ip_version = ipaddress.ip_address(ip).version
+        return f"ipv{ip_version}-addr"
+    return None
 
 
 def get_reputation_score(indicator_types: list[str]) -> int:
@@ -547,7 +555,7 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResult
     else:
         markdown = (
             f'### Indicator {result["items"][0].get("name")}'
-            f'is categorized as {result["items"][0].get("indicator_types")}\n\n'
+            f' is categorized as {result["items"][0].get("indicator_types")}\n\n'
         )
         markdown += result["items"][0].get("description", "")
         table_headers = ["kill_chain_name", "phase_name"]
@@ -571,7 +579,7 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def get_indicator_context_command(
     client: Client, args: Dict[str, Any]
-) -> List[CommandResults]:
+) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -588,12 +596,11 @@ def get_indicator_context_command(
 
     :rtype: ``CommandResults``
     """
-
     indicator = {"value": args.get("value"), "type": args.get("type")}
     if not indicator["value"] or not indicator["type"]:
         raise ValueError(f"incomplete command for {indicator}")
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     indicator_context = client.get_indicator_context(
         value=indicator["value"], indicator_type=indicator["type"]
@@ -618,6 +625,17 @@ def get_indicator_context_command(
         )
     )
     return command_results_list
+
+
+def ip_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+    """ip command: Returns IP reputation for a list of IPs
+
+    This command is a wrapper around the `get_indicator_context_command`
+    """
+    ip = args.get("ip")
+    version = ip_version(args.get("ip"))
+    indicator = {"value": ip, "type": version}
+    return get_indicator_context_command(client=client, args=indicator)
 
 
 """ MAIN FUNCTION """
@@ -661,6 +679,9 @@ def main() -> None:
 
         elif demisto.command() == "GetIndicatorContext":
             return_results(get_indicator_context_command(client, demisto.args()))
+
+        elif demisto.command() == "ip":
+            return_results(ip_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

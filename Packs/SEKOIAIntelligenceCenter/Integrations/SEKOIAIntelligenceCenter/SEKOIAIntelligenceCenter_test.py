@@ -28,7 +28,10 @@ def client():
     "input, output",
     [
         ("[network-traffic:dst_ref.value = 'buike.duckdns.org']", "buike.duckdns.org"),
-        ("[ipv4-addr:value = '198.51.100.1/32' OR ipv4-addr:value = '203.0.113.33/32']", "198.51.100.1/32"),
+        (
+            "[ipv4-addr:value = '198.51.100.1/32' OR ipv4-addr:value = '203.0.113.33/32']",
+            "198.51.100.1/32",
+        ),
         (
             "[network-traffic:dst_ref.value = 'buike.duckdns.org' AND network-traffic:dst_port = 30303]",
             "buike.duckdns.org",
@@ -204,7 +207,9 @@ def test_get_indicator_context(
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(
+        client=client, args=args
+    )
     for result in command_results:
         assert result.outputs != []
         assert result.to_context != []
@@ -228,7 +233,9 @@ def test_get_indicator_context_with_credentials(
     client, indicator_value, indicator_type
 ):
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(
+        client=client, args=args
+    )
 
     for result in command_results:
         assert result.outputs != []
@@ -304,3 +311,28 @@ def test_get_tlp_not_found():
 )
 def test_get_reputation_score(input: list, output: int):
     assert SEKOIAIntelligenceCenter.get_reputation_score([input]) == output
+
+
+@pytest.mark.parametrize(
+    "indicator_type, indicator_value, json_test_file",
+    [
+        ("ipv4-addr", "206.189.85.18", "test_data/indicator_context_ip.json"),
+        ("ipv4-addr", "1.1.1.1", "test_data/indicator_context_unknown.json"),
+    ],
+)
+def test_ip_command(
+    client, requests_mock, indicator_type, indicator_value, json_test_file
+):
+    mock_response = util_load_json(json_test_file)
+    requests_mock.get(
+        MOCK_URL
+        + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
+        json=mock_response,
+    )
+
+    args = {"ip": indicator_value}
+    command_results = SEKOIAIntelligenceCenter.ip_command(client=client, args=args)
+
+    for result in command_results:
+        assert result.outputs != []
+        assert result.to_context != []

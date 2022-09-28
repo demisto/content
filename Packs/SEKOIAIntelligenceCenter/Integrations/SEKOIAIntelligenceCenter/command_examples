@@ -1,3 +1,5 @@
 !GetObservable value="eicar@sekoia.io" type="email-addr"
 !GetIndicator value="eicar@sekoia.io" type="email-addr"
 !GetIndicatorContext value="eicar@sekoia.io" type="email-addr"
+!ip ip="1.1.1.1"
+!ip ip="2606:4700:4700"
