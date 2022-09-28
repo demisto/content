@@ -14,8 +14,6 @@ UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
 INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
-INTEGRATION_NAME = 'Microsoft Graph User'
-INSTANCE_NAME = demisto.callingContext.get('context', {}).get('IntegrationInstance')
 
 
 def camel_case_to_readable(text):
@@ -218,10 +216,10 @@ def suppress_errors_with_404_code(func):
         except NotFoundError as e:
             if client.handle_error:
                 if (user := args.get("user", '___')) in str(e):
-                    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \n#### User -> {user} does not exist'
+                    human_readable = f'#### User -> {user} does not exist'
                     return human_readable, None, None
                 elif (manager := args.get('manager', '___')) in str(e):
-                    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \n#### Manager -> {manager} does not exist'
+                    human_readable = f'#### Manager -> {manager} does not exist'
                     return human_readable, None, None
             raise
     return wrapper
@@ -249,8 +247,7 @@ def test_function(client, _):
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.disable_user_account_session(user)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \nuser: "{user}" account has been disabled ' \
-                     f'successfully.'
+    human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
@@ -258,8 +255,8 @@ def disable_user_account_command(client: MsGraphClient, args: Dict):
 def unblock_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.unblock_user(user)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \n"{user}" unblocked. It might take several minutes ' \
-                     f'for the changes to take affect across all applications. '
+    human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
+                     f'applications. '
     return human_readable, None, None
 
 
@@ -267,7 +264,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \nuser: "{user}" was deleted successfully.'
+    human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
 
@@ -298,8 +295,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
     user_data = client.get_user(user, '*')
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} was created successfully:",
-                                     t=user_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
 
@@ -321,7 +317,7 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
 
     client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser {user} password was changed successfully.'
+    human_readable = f'User {user} password was changed successfully.'
     return human_readable, {}, {}
 
 
@@ -331,8 +327,7 @@ def get_delta_command(client: MsGraphClient, args: Dict):
     headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID', 'User Principal Name']))
 
     users_readable, users_outputs = parse_outputs(users_data)
-    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', headers=headers,
-                                     t=users_readable, removeNull=True)
+    human_readable = tableToMarkdown(name='All Graph Users', headers=headers, t=users_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
     return human_readable, outputs, users_data
 
@@ -353,13 +348,11 @@ def get_user_command(client: MsGraphClient, args: Dict):
     # In case the request returned a 404 error display a proper message to the war room
     if user_data.get('NotFound', ''):
         error_message = user_data.get('NotFound')
-        human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\n### User {user} was not found.\n' \
-                         f'Microsoft Graph Response: {error_message}'
+        human_readable = f'### User {user} was not found.\nMicrosoft Graph Response: {error_message}'
         return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} data", t=user_readable,
-                                     removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
 
@@ -378,8 +371,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
         # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
         outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
 
-    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} - {INSTANCE_NAME}: All Graph Users', t=users_readable,
-                                     removeNull=True, metadata=metadata)
+    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
     return human_readable, outputs, users_data
 
@@ -391,8 +383,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     raw_reports = client.get_direct_reports(user)
 
     reports_readable, reports = parse_outputs(raw_reports)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - direct reports",
-                                     t=reports_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
     outputs = {
         'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
             'Manager': user,
@@ -408,8 +399,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
-    human_readable = tableToMarkdown(name=f"{INTEGRATION_NAME} - {INSTANCE_NAME}: {user} - manager",
-                                     t=manager_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
     outputs = {
         'MSGraphUserManager(val.User == obj.User)': {
             'User': user,
@@ -424,8 +414,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
     client.assign_manager(user, manager)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nA manager was assigned to user "{user}". ' \
-                     f'It might take several minutes for the changes ' \
+    human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
                      'to take affect across all applications.'
     return human_readable, None, None
 
@@ -434,12 +423,11 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
-    human_readable = f'### {INTEGRATION_NAME} - {INSTANCE_NAME}\nUser: "{user}" sessions have been revoked ' \
-                     f'successfully.'
+    human_readable = f'User: "{user}" sessions have been revoked successfully.'
     return human_readable, None, None
 
 
-def main():  # pragma: no cover
+def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('tenant_id')
@@ -499,5 +487,5 @@ def main():  # pragma: no cover
 
 from MicrosoftApiModule import *  # noqa: E402
 
-if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

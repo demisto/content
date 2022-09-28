@@ -47,9 +47,6 @@ GROUP_PROFILE_ARGS = [
     'description'
 ]
 
-INTEGRATION_NAME = 'Okta v2'
-INSTANCE_NAME = demisto.callingContext.get('context', {}).get('IntegrationInstance')
-
 
 class Client(BaseClient):
     """
@@ -264,8 +261,7 @@ class Client(BaseClient):
 
     def verify_push_factor(self, user_id, factor_id):
         """
-        Creates a new transaction and sends an asynchronous push notification to the device for the user to
-        approve or reject.
+        Creates a new transaction and sends an asynchronous push notification to the device for the user to approve or reject.
         You must poll the transaction to determine when it completes or expires.
         """
         uri = f'users/{user_id}/factors/{factor_id}/verify'
@@ -383,8 +379,7 @@ class Client(BaseClient):
                 if user.get('group'):
                     additionalData['Group'] = user.get('group')
                 users_verbose += f"### User:{profile.get('Login')}\n" \
-                                 f"{tableToMarkdown('Profile', profile)}\n " \
-                                 f"{tableToMarkdown('Additional Data', additionalData)}"
+                                 f"{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
             return users_verbose
 
         else:
@@ -695,7 +690,7 @@ def deactivate_user_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     raw_response = client.deactivate_user(user_id)
 
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### User {args.get('username')} deactivated"
+    readable_output = f"### User {args.get('username')} deactivated"
 
     return (
         readable_output,
@@ -708,7 +703,7 @@ def suspend_user_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     raw_response = client.suspend_user(user_id)
 
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### {args.get('username')} status is Suspended"
+    readable_output = f"### {args.get('username')} status is Suspended"
     return (
         readable_output,
         {},
@@ -720,7 +715,7 @@ def unsuspend_user_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     raw_response = client.unsuspend_user(user_id)
 
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### {args.get('username')} is no longer SUSPENDED"
+    readable_output = f"### {args.get('username')} is no longer SUSPENDED"
     return (
         readable_output,
         {},
@@ -749,8 +744,7 @@ def get_user_factors_command(client, args):
             'ID': user_id
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nFactors for user: {user_id}\n " \
-                      f"{tableToMarkdown('Factors', factors)}"
+    readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
     return (
         readable_output,
         outputs,
@@ -770,7 +764,7 @@ def reset_factor_command(client, args):
 
     raw_response = client.reset_factor(user_id, factor_id)
 
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nFactor: {factor_id} deleted"
+    readable_output = f"Factor: {factor_id} deleted"
     return (
         readable_output,
         {},
@@ -783,8 +777,7 @@ def set_password_command(client, args):
     password = args.get('password')
 
     raw_response = client.set_password(user_id, password)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n{args.get('username')} password was last changed " \
-                      f"on {raw_response.get('passwordChanged')}"
+    readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
     return (
         readable_output,
         {},
@@ -803,8 +796,7 @@ def add_user_to_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} added to group: " \
-                      f"{args.get('groupName')} successfully"
+    readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
     return (
         readable_output,
         {},
@@ -823,8 +815,7 @@ def remove_from_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.remove_user_from_group(user_id, group_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_id} was removed from group: " \
-                      f"{args.get('groupName')} successfully"
+    readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
     return (
         readable_output,
         {},
@@ -844,8 +835,7 @@ def get_groups_for_user_command(client, args):
             'Type': 'Okta'
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nOkta groups for user: {args.get('username')}\n " \
-                      f"{tableToMarkdown('Groups', groups)}"
+    readable_output = f"Okta groups for user: {args.get('username')}\n {tableToMarkdown('Groups', groups)}"
 
     return (
         readable_output,
@@ -870,8 +860,7 @@ def verify_push_factor_command(client, args):
             "VerifyPushResult": poll_response.get('factorResult')
         }
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nVerify push factor result for user {user_id}: " \
-                      f"{poll_response.get('factorResult')}"
+    readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"
     return (
         readable_output,
         outputs,
@@ -893,10 +882,9 @@ def search_command(client, args):
             'Account(val.ID && val.ID === obj.ID)': context
         }
         if verbose == 'true':
-            readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n {users_readable}"
+            readable_output = f"### Okta users found:\n {users_readable}"
         else:
-            readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n " \
-                              f"{tableToMarkdown('Users:', users_readable)} "
+            readable_output = f"### Okta users found:\n {tableToMarkdown('Users:', users_readable)} "
         return (
             readable_output,
             outputs,
@@ -917,8 +905,7 @@ def get_user_command(client, args):
     outputs = {
         'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
     }
-    title = f'{INTEGRATION_NAME} - {INSTANCE_NAME}: User:{user_term}'
-    readable_output = user_readable if verbose == 'true' else f"{tableToMarkdown(title, user_readable)} "
+    readable_output = user_readable if verbose == 'true' else f"{tableToMarkdown(f'User:{user_term}', user_readable)} "
     return (
         readable_output,
         outputs,
@@ -938,7 +925,7 @@ def create_user_command(client, args):
     outputs = {
         'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
     }
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta User Created: {args.get('login')}:",
+    readable_output = tableToMarkdown(f"Okta User Created: {args.get('login')}:",
                                       client.get_readable_users(raw_response))
     return (
         readable_output,
@@ -953,8 +940,7 @@ def update_user_command(client, args):
     profile = client.build_profile(args)
     profile['login'] = args.get('username')
     raw_response = client.update_user(user_id, profile, cred)
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta user: {args.get('username')} "
-                                      f"Updated:", raw_response.get('profile'))
+    readable_output = tableToMarkdown(f"Okta user: {args.get('username')} Updated:", raw_response.get('profile'))
     return (
         readable_output,
         {},
@@ -976,14 +962,12 @@ def get_group_members_command(client, args):
     }
     if args.get('verbose') == 'true':
         return (
-            f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Users for group: {args.get('groupName') or group_id}:\n "
-            f"{users_readable}",
+            f"### Users for group: {args.get('groupName') or group_id}:\n {users_readable}",
             outputs,
             raw_members
         )
     return (
-        tableToMarkdown(f"{INTEGRATION_NAME} - {INSTANCE_NAME}: Users for group: {args.get('groupName') or group_id}",
-                        users_readable),
+        tableToMarkdown(f"Users for group: {args.get('groupName') or group_id}", users_readable),
         outputs,
         raw_members
     )
@@ -996,9 +980,9 @@ def list_users_command(client, args):
     user_context = client.get_users_context(raw_response)
     context = createContext(user_context, removeNull=True)
     if verbose == 'true':
-        readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n {users}"
+        readable_output = f"### Okta users found:\n {users}"
     else:
-        readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### Okta users found:\n {tableToMarkdown('Users', users)} "
+        readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
     if after_tag:
         readable_output += f"\n### tag: {after_tag}"
     outputs = {
@@ -1019,7 +1003,7 @@ def list_groups_command(client, args):
     outputs = {
         'Okta.Group(val.ID && val.ID === obj.ID)': context
     }
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Groups', groups)
+    readable_output = tableToMarkdown('Groups', groups)
 
     return (
         readable_output,
@@ -1034,7 +1018,7 @@ def get_logs_command(client, args):
         return 'No logs found', {}, raw_response
 
     logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta Events', logs)
+    readable_output = tableToMarkdown('Okta Events', logs)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
@@ -1051,7 +1035,7 @@ def get_failed_login_command(client, args):
     if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Failed Login Events', logs)
+    readable_output = tableToMarkdown('Failed Login Events', logs)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
@@ -1068,7 +1052,7 @@ def get_group_assignments_command(client, args):
     if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Group Assignment Events', logs)
+    readable_output = tableToMarkdown('Group Assignment Events', logs)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
@@ -1085,7 +1069,7 @@ def get_application_assignments_command(client, args):
     if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Application Assignment Events', logs)
+    readable_output = tableToMarkdown('Application Assignment Events', logs)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
@@ -1102,7 +1086,7 @@ def get_application_authentication_command(client, args):
     if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Application Authentication Events', logs)
+    readable_output = tableToMarkdown('Application Authentication Events', logs)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
@@ -1124,7 +1108,7 @@ def delete_user_command(client, args):
     if user.get('status') != 'DEPROVISIONED':
         client.deactivate_user(args.get('userId') or client.get_user_id(args.get('username')))
     raw_response = client.delete_user(user_term)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nUser: {user_term} was Deleted successfully"
+    readable_output = f"User: {user_term} was Deleted successfully"
     return (
         readable_output,
         {},
@@ -1134,7 +1118,7 @@ def delete_user_command(client, args):
 def clear_user_sessions_command(client, args):
     user_id = args.get('userId')
     raw_response = client.clear_user_sessions(user_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \n### User session was cleared for: {user_id}"
+    readable_output = f"### User session was cleared for: {user_id}"
 
     return readable_output, {}, raw_response
 
@@ -1143,7 +1127,7 @@ def get_zone_command(client, args):
     raw_response = client.get_zone(args.get('zoneID', ''))
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta Zones', raw_response, headers=[
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
     outputs = {
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
@@ -1159,7 +1143,7 @@ def list_zones_command(client, args):
     raw_response = client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta Zones', raw_response, headers=[
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
     outputs = {
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
@@ -1207,7 +1191,7 @@ def create_zone_command(client, args):
     raw_response = client.create_zone(zoneObject)
     if not raw_response:
         return 'Zone not created.', {}, raw_response
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta Zones', raw_response, headers=[
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
         'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
     outputs = {
         'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
@@ -1239,7 +1223,7 @@ def update_zone_command(client, args):
         if not raw_response:
             return 'Got empty response.', {}, raw_response
 
-        readable_output = tableToMarkdown(f'{INTEGRATION_NAME} - {INSTANCE_NAME}: Okta Zones', raw_response, headers=[
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
                                           'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
         outputs = {
             'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
@@ -1262,7 +1246,7 @@ def assign_group_to_app_command(client, args):
             raise ValueError('Either group name not found or multiple groups include this name.')
     app_id = client.get_app_id(args.get('appName'))
     raw_response = client.assign_group_to_app(group_id, app_id)
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nGroup: {args.get('groupName')} added to PA App successfully"
+    readable_output = f"Group: {args.get('groupName')} added to PA App successfully"
     return (
         readable_output,
         {},
@@ -1278,8 +1262,7 @@ def create_group_command(client, args):
     outputs = {
         'OktaGroup(val.ID && val.ID === obj.ID)': createContext(group_context)
     }
-    readable_output = f"### {INTEGRATION_NAME} - {INSTANCE_NAME} \nGroup Created: [GroupID:{raw_response['id']}, " \
-                      f"GroupName: {raw_response['profile']['name']}]"
+    readable_output = f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
     return (
         readable_output,
         outputs,
