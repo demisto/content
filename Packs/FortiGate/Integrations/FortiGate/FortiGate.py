@@ -72,7 +72,7 @@ def http_request(method, url_suffix, params={}, data=None):
         data=data
     )
     if res.status_code not in {200}:
-        return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
+        return_error(f'Error in API call to FortiGate [{res.status_code}] - {res.reason}')
     if method.upper() != 'GET':
         return res.status_code
 
@@ -97,9 +97,9 @@ def create_addr_string(list_of_addr_data_dicts):
         cur_addr_data = list_of_addr_data_dicts[addr_index]
         cur_addr_name = cur_addr_data.get("name")
         if addr_index == len(list_of_addr_data_dicts) - 1:
-            addr_string += "{}".format(cur_addr_name)
+            addr_string += f"{cur_addr_name}"
         else:
-            addr_string += "{}\n".format(cur_addr_name)
+            addr_string += f"{cur_addr_name}\n"
     return addr_string
 
 
@@ -108,7 +108,7 @@ def convert_arg_to_int(arg_str, arg_name_str):
     try:
         arg_int = int(arg_str)
     except ValueError:
-        return_error("Error: {0} must have an integer value.".format(arg_name_str))
+        return_error(f"Error: {arg_name_str} must have an integer value.")
     return arg_int
 
 
@@ -534,7 +534,7 @@ def ban_ip_command():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'IPs {0} banned successfully'.format(ip_addresses_string)
+        'HumanReadable': f'IPs {ip_addresses_string} banned successfully'
     })
 
 
@@ -563,7 +563,7 @@ def unban_ip_command():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'IPs {0} un-banned successfully'.format(ip_addresses_string)
+        'HumanReadable': f'IPs {ip_addresses_string} un-banned successfully'
     })
 
 
@@ -1254,7 +1254,7 @@ def delete_address_request(name):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG(f'command is {demisto.command()}')
 
 try:
     if demisto.command() == 'test-module':
@@ -1303,7 +1303,7 @@ try:
         delete_address_command()
 
 except Exception as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
     raise
 

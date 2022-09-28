@@ -125,6 +125,7 @@ FINDINGS = [{
     'Description': 'Test',
     'SchemaVersion': '2021-05-27',
     'CreatedAt': '2020-03-22T13:22:13.933Z',
+    'Id': 'Id',
     'Severity': {
         'Normalized': 0,
     },
