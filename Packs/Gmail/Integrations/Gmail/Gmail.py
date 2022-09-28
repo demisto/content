@@ -344,7 +344,7 @@ def create_incident_labels(parsed_msg, headers):
 
 
 def mailboxes_to_entry(mailboxes):
-    query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
+    query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
 
     return {
@@ -653,7 +653,7 @@ def role_to_entry(title, role):
 
     privileges = context.get('Privilege', [])
     privileges_headers = ['ServiceID', 'Name']
-    privileges_title = 'Role {} privileges:'.format(context.get('ID'))
+    privileges_title = f"Role {context.get('ID')} privileges:"
     privileges_hr = tableToMarkdown(privileges_title, privileges, privileges_headers, removeNull=True)
 
     return {
@@ -691,7 +691,7 @@ def get_millis_from_date(date, arg_name):
         try:
             return int(date)
         except ValueError:
-            raise ValueError('{} argument is not in expected format.'.format(arg_name))
+            raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
 ''' FUNCTIONS '''
@@ -721,7 +721,7 @@ def list_labels_command():
     user_key = args.get('user-id')
     # user_key = "gcp-demisto@demistodev.com"
     labels = list_labels(user_key)
-    return labels_to_entry('Labels for UserID {}:'.format(user_key), labels, user_key)
+    return labels_to_entry(f'Labels for UserID {user_key}:', labels, user_key)
 
 
 def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
@@ -754,7 +754,7 @@ def get_user_command():
     customer_field_mask = args.get('customer-field-mask')
 
     result = get_user(user_key, view_type, projection, customer_field_mask)
-    return users_to_entry('User {}:'.format(user_key), [result])
+    return users_to_entry(f'User {user_key}:', [result])
 
 
 def get_user(user_key, view_type, projection, customer_field_mask=None):
@@ -778,7 +778,7 @@ def hide_user_command():
     hide_value = args.get('visible-globally')
     result = hide_user(user_key, hide_value)
 
-    return users_to_entry('User {}:'.format(user_key, ), [result])
+    return users_to_entry(f'User {user_key}:', [result])
 
 
 def hide_user(user_key, hide_value):
@@ -814,7 +814,7 @@ def set_user_password(user_key, password):
                           additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().update(**command_args).execute()
 
-    return 'User {} password has been set.'.format(command_args['userKey'])
+    return f'User {command_args["userKey"]} password has been set.'
 
 
 def get_autoreply_command():
@@ -823,7 +823,7 @@ def get_autoreply_command():
 
     autoreply_message = get_autoreply(user_id)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+    return autoreply_to_entry(f'User {user_id}:', [autoreply_message], user_id)
 
 
 def get_autoreply(user_id):
@@ -863,7 +863,7 @@ def set_autoreply_command():
     autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text,
                                       domain_only, contacts_only, start_time, end_time, response_body_type)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+    return autoreply_to_entry(f'User {user_id}:', [autoreply_message], user_id)
 
 
 def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text, domain_only, contacts_only,
@@ -914,7 +914,7 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         }
 
         service.users().settings().delegates().create(**command_args).execute()
-        return 'Email {} has been delegated'.format(delegate_email)
+        return f'Email {delegate_email} has been delegated'
 
     else:
         command_args = {
@@ -923,7 +923,7 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         }
 
         service.users().settings().delegates().delete(**command_args).execute()
-        return 'Email {} has been removed from delegation'.format(delegate_email)
+        return f'Email {delegate_email} has been removed from delegation'
 
 
 def create_user_command():
@@ -978,7 +978,7 @@ def delete_user(user_key):
         ['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().delete(**command_args).execute()
 
-    return 'User {} have been deleted.'.format(command_args['userKey'])
+    return f'User {command_args["userKey"]} have been deleted.'
 
 
 def list_labels(user_key):
@@ -1045,7 +1045,7 @@ def get_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     role = get_role(role_id, customer)
-    return role_to_entry('Role {} details:'.format(role_id), role)
+    return role_to_entry(f'Role {role_id} details:', role)
 
 
 def revoke_user_roles_command():
@@ -1126,11 +1126,9 @@ def search_all_mailboxes(receive_only_accounts):
                 entries.append(future.result())
                 if accounts_counter % 100 == 0:
                     demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((accounts_counter / users_count) * 100),
-                            accounts_counter,
-                            users_count,
-                            len(entries)),
+                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
+                        of total accounts ({accounts_counter} / {users_count}), \
+                        and found {len(entries)} results so far',
                     )
 
         if receive_only_accounts:
@@ -1142,10 +1140,10 @@ def search_all_mailboxes(receive_only_accounts):
                 entries.append("Search completed")
             else:
                 entries.append("No entries.")
-            return entries
+                return entries
 
         # return midway results
-        demisto.results(entries)
+        return entries
 
 
 def search_command(mailbox=None):
@@ -1191,7 +1189,7 @@ def search_command(mailbox=None):
             return {'Mailbox': mailbox, 'q': q}
         return {'Mailbox': None, 'q': q}
     if mails:
-        res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
+        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
         return res
     return
 
@@ -1618,7 +1616,7 @@ def template_params(paramsStr):
             params = json.loads(paramsStr)
 
         except ValueError as e:
-            return_error('Unable to parse templateParams: {}'.format(str(e)))
+            return_error(f'Unable to parse templateParams: {str(e)}')
         # Build a simple key/value
 
         for p in params:
@@ -2015,9 +2013,8 @@ def forwarding_address_add_command():
         ['https://www.googleapis.com/auth/gmail.settings.sharing'],
         delegated_user=user_id)
     result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
-    readable_output = "Added forwarding address {0} for {1} with status {2}.".format(forwarding_email, user_id,
-                                                                                     result.get('verificationStatus',
-                                                                                                ''))
+    readable_output = f"Added forwarding address {forwarding_email} for {user_id} \
+                        with status {result.get('verificationStatus', '')}."
     context = dict(result)
     context['userId'] = user_id
     return {
@@ -2074,7 +2071,7 @@ def send_as_add_command():
     hr_fields = ['sendAsEmail', 'displayName', 'replyToAddress', 'isPrimary', 'treatAsAlias']
 
     readable_output = tableToMarkdown(
-        'A custom "{}" send-as alias created for "{}".'.format(result.get('sendAsEmail', ''), user_id),
+        f'A custom "{result.get("sendAsEmail", "")}" send-as alias created for "{user_id}".',
         context, headerTransform=pascalToSpace, removeNull=True,
         headers=hr_fields)
 
@@ -2138,7 +2135,7 @@ def fetch_incidents():
         if temp_date > current_fetch:
             incidents.append(incident)
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
     return incidents
 
@@ -2197,7 +2194,7 @@ def main():
         cmd_func = COMMANDS.get(command)
         if cmd_func is None:
             raise NotImplementedError(
-                'Command "{}" is not implemented.'.format(command))
+                f'Command "{command}" is not implemented.')
 
         else:
             if command == 'gmail-search-all-mailboxes':
@@ -2214,7 +2211,7 @@ def main():
             raise
 
         else:
-            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
+            return_error(f'GMAIL: {str(e)}', traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
