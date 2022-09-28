@@ -715,7 +715,7 @@ class MsGraphClient:
             html_email_id = email_as_html.get('id')
             text_email_data = text_emails_ids.get(html_email_id) or {}
             if not text_email_data:
-                demisto.debug(f'There is no matching text email to html email-ID {html_email_id}')
+                demisto.info(f'There is no matching text email to html email-ID {html_email_id}')
 
             body_as_text = text_email_data.get('body')
             if body_as_html := email_as_html.get('body'):
@@ -778,7 +778,7 @@ class MsGraphClient:
         try:
             email_content_as_html, email_content_as_text = email_body or email_unique_body
         except ValueError:
-            demisto.debug(f'email body content is missing from email {email}')
+            demisto.info(f'email body content is missing from email {email}')
             return '', ''
 
         return email_content_as_html.get('content'), email_content_as_text.get('content')
@@ -913,8 +913,7 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.display_full_email_body:
-            _, email_content_as_text = self.get_email_content_as_text_and_html(email)
-            body = email_content_as_text
+            _, body = self.get_email_content_as_text_and_html(email)
 
         incident = {
             'name': parsed_email.get('Subject'),
