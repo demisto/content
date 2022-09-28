@@ -1,12 +1,12 @@
 Use this integration to detect and manage threats to your AWS system. We recommend that you use roles that have the following
-bulit-in AWS policies:
+built-in AWS policies:
 
 * _AmazonGuardDutyFullAccess_
 * _AmazonGuardDutyReadOnlyAccess_
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Prerequisies
+## Prerequisites
 
 It is important that you familiarize yourself with and complete all steps detailed in
 the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication)
