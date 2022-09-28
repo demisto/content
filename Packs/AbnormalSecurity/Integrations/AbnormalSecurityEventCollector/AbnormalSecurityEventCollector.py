@@ -25,7 +25,7 @@ def get_events(client: Client, after: str):
       str: the last run to be set for the next run.
 
     """
-    before = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")
+    before = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     threats_ids = get_list_threats(client, after, before)
     messages = []
     if threats_ids:
@@ -92,7 +92,8 @@ def main():
     token = params['token']['password']
     verify = params['verify']
     proxy = params['proxy']
-    after = arg_to_datetime(arg=params.get('after'), arg_name='after', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")
+    after = arg_to_datetime(
+        arg=params.get('after'), arg_name='after', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     client = Client(base_url='https://api.abnormalplatform.com/v1',
                     verify=verify,
                     proxy=proxy,

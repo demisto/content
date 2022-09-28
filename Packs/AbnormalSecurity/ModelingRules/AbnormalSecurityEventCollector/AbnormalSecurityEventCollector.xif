@@ -1,4 +1,4 @@
-[MODEL: dataset=abnormal_security_email_protection_raw, model=Email]
+[MODEL: model="Email", dataset="abnormal_security_email_protection_raw"]
 alter XDM.Email.event_timestamp = sentTime,
     XDM.Email.attachment.filename = attachmentNames,
     XDM.Email.cc = arraycreate(ccEmails),

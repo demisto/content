@@ -1,6 +1,6 @@
 from_xdr_version: 3.4.0
 fromversion: 3.3.0
-name: ModelingRuleAbnormalSecurityEventCollector
+name: Abnormal Security Event Collector
 id: ModelingAbnormalSecurityEventCollector
 tags:
 rules: ''

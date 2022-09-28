@@ -41,7 +41,7 @@ script:
           - 'True'
           - 'False'
         required: true
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: false
   longRunning: false

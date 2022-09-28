@@ -1,17 +1,7 @@
-import pytest
-import demistomock as demisto
 import io
 from AbnormalSecurityEventCollector import get_events
 from CommonServerPython import *
-from Packs.AbnormalSecurity.Integrations.AbnormalSecurityEventCollector.AbnormalSecurityEventCollector import Client
 from freezegun import freeze_time
-
-
-class MockResponse:
-    def __init__(self, data, status_code):
-        self.data = data
-        self.text = str(data)
-        self.status_code = status_code
 
 
 def util_load_json(path):
@@ -25,6 +15,7 @@ class Client(BaseClient):
 
     def get_threat(self, threat):
         return util_load_json('test_data/test_get_threat.json').get(threat)
+
 
 """
     Command Unit Tests
