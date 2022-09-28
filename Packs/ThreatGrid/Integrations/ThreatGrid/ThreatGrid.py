@@ -244,9 +244,10 @@ def upload_sample():
             args[k] = demisto.getArg(k)
     args['api_key'] = API_KEY
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
+    filename = demisto.getArg('filename', '').replace('"', '').replace('\n', '')
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
-                             files={'sample': (demisto.getArg('filename', '').replace('"', '').replace('\n', ''), f)},
+                             files={'sample': (filename, f)},
                              data=args, verify=VALIDATE_CERT)
         if r.status_code != requests.codes.ok:
             if r.status_code == 503:
