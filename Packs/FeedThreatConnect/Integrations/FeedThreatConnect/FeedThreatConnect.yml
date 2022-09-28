@@ -157,7 +157,7 @@ configuration:
   name: createRelationships
   required: false
   type: 8
-- additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, visit ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+- additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
   display: Indicator Query
   hidden: false
   name: indicatorQuery
@@ -169,7 +169,7 @@ configuration:
   name: confidence
   required: false
   type: 0
-- additionalinfo: Minimal threat Assess Score value to fetch indicators by (an integer between 0 to 1000).
+- additionalinfo: Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000).
   display: Threat Assess Score Threshold
   hidden: false
   name: threatAssessScore
@@ -206,14 +206,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter results using ThreatConnect Query Language (TQL), will override all other arguments. For more information, visit ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+      description: Filter results using ThreatConnect Query Language (TQL), will override all other arguments. For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
       isArray: false
       name: tql_query
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Multi-select list that will allow filtering of the retrieved indicators. Comma-seperated list.
+      description: Comma-separated list that will allow filtering of the retrieved indicators. 
       isArray: false
       name: indicator_type
       predefined:
@@ -241,13 +241,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Require an input of an integer, this will fetch indicators with confidence of “greater than” the input
+      description: This will fetch indicators with confidence of “greater than” the (integer) input.
       isArray: false
       name: confidence
       required: false
       secret: false
     - default: false
-      description: Require an an integer that will determine the threshold
+      description: An integer that will determine the threshold.
       isArray: false
       name: threat_assess_score
       required: false
@@ -257,7 +257,7 @@ script:
     execution: false
     name: tc-get-indicators
   - deprecated: false
-    description: Get available indicators owners.
+    description: Gets available indicators owners.
     execution: false
     name: tc-get-owners
   dockerimage: demisto/python3:3.10.6.33415
