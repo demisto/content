@@ -1,8 +1,9 @@
+from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
 from operator import itemgetter
-from CommonServerPython import *  # noqa: F401
+
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -130,7 +131,7 @@ ALERT_EVENT_AZURE_FIELDS = {
 }
 
 MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
-
+print("IN API MODULE")
 
 class CoreClient(BaseClient):
 

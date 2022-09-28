@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -64,6 +65,7 @@ def convert_epoch_to_milli(timestamp):
         return None
     if 9 < len(str(timestamp)) < 13:
         timestamp = int(timestamp) * 1000
+        print("NOT IN API MODULE")
     return int(timestamp)
 
 
