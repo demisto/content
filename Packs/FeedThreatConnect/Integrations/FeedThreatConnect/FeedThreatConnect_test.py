@@ -23,7 +23,7 @@ def test_calculate_dbot_score(threatconnect_score, dbot_score):
 
 
 def test_parse_indicator(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'retrieveRelationships': True, 'tlpcolor': None})
+    mocker.patch.object(demisto, 'params', return_value={'createRelationships': True, 'tlpcolor': None})
     data_dir = {
         'parsed_indicator.json': './FeedThreatConnect_test/parsed_indicator.json',  # type: ignore # noqa
         'indicators.json': './FeedThreatConnect_test/indicators.json'}  # type: ignore # noqa
@@ -44,6 +44,8 @@ def test_set_tql_query(mocker, params, expected_result):
     """
     Given:
         - an empty from_date value and demisto params
+        Case 1: expecting no tql query
+        Case 2: expecting a specific group type, and only active indicators
 
     When:
         - running set_tql_query command

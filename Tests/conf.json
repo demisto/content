@@ -298,7 +298,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "ThreatConnect Feed",
+            "integrations": ["ThreatConnect Feed", "Demisto REST API"],
             "playbookID": "FeedThreatConnect-Test",
             "fromversion": "5.5.0"
         },

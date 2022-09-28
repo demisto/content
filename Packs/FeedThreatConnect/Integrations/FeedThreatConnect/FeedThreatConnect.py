@@ -421,7 +421,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         from_date = f'AND (dateAdded > "{last_run}") '
 
     fields = set_fields_query()
-    tql = demisto.getParam('indicatorQuery')
+    tql = demisto.getParam('indicator_query')
     if not tql:
         tql = set_tql_query(from_date)
 
@@ -456,9 +456,10 @@ def set_tql_query(from_date):
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicatorActive")) else ''
-    confidence = f'AND confidence GT {params.get("confidence")} ' if params.get("confidence") else ''
-    threat_score = f'AND threatAssessScore GT {params.get("threatAssessScore")} ' if params.get("threatAssessScore") else ''
+    active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
+    confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
+    threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
+                   if int(params.get("threat_assess_score")) != 0 else ''
 
     type_name_query = create_types_query()
     type_names = f'AND {type_name_query}' if type_name_query else ''
@@ -485,12 +486,11 @@ def get_indicators_command(client: Client):  # pragma: no cover
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
 
-
-
     tql = args.get('tql_query', '')
     if not tql:
         owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
-        active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' if argToBoolean(args.get("active_indicators")) else ''
+        active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' \
+                      if argToBoolean(args.get("active_indicators")) else ''
         confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
         threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
 
@@ -515,7 +515,7 @@ def get_indicators_command(client: Client):  # pragma: no cover
     if status == 'Success':
         t = [parse_indicator(indicator) for indicator in response]
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                               t=t)  # type: ignore # noqa
+                                               t=t, removeNull=True)  # type: ignore # noqa
 
         return readable_output, {}, list(response)
 

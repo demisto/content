@@ -1,15 +1,14 @@
 id: FeedThreatConnect-Test
 version: -1
 name: FeedThreatConnect-Test
-description: ""
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 606d58a6-07e6-4437-8cdc-a11f6b52712d
+    taskid: d44fbaec-a4ec-4a07-8426-2fba11f0a653
     type: start
     task:
-      id: 606d58a6-07e6-4437-8cdc-a11f6b52712d
+      id: d44fbaec-a4ec-4a07-8426-2fba11f0a653
       version: -1
       name: ""
       iscommand: false
@@ -31,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9c669778-ad58-4a7c-8c25-8b4c300b1084
+    taskid: 77ad7377-c238-4334-88f2-1142c613fc22
     type: regular
     task:
-      id: 9c669778-ad58-4a7c-8c25-8b4c300b1084
+      id: 77ad7377-c238-4334-88f2-1142c613fc22
       version: -1
       name: Get indicators
       description: Get indicators from Threatconnect.
@@ -67,12 +68,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6bb436c1-a426-4775-843c-fd54bf0e0022
+    taskid: 7ba9576e-901f-4a43-86af-d13b635a1e7e
     type: regular
     task:
-      id: 6bb436c1-a426-4775-843c-fd54bf0e0022
+      id: 7ba9576e-901f-4a43-86af-d13b635a1e7e
       version: -1
       name: Get feeds owners
       description: Get availble indicators owners.
@@ -82,7 +85,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -96,12 +99,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b3a4ae34-74c2-49b8-8b83-c91b264031dd
+    taskid: f182f123-a973-46fb-87eb-025be870044f
     type: title
     task:
-      id: b3a4ae34-74c2-49b8-8b83-c91b264031dd
+      id: f182f123-a973-46fb-87eb-025be870044f
       version: -1
       name: Done
       type: title
@@ -113,7 +118,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 590
+          "y": 760
         }
       }
     note: false
@@ -121,12 +126,55 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fa77a778-0eea-4f4b-8233-645172772be9
+    type: playbook
+    task:
+      id: fa77a778-0eea-4f4b-8233-645172772be9
+      version: -1
+      name: Fetch Indicators Test
+      playbookName: Fetch Indicators Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      searchfield:
+        simple: value,type,score
+      sourcebrand:
+        simple: ThreatConnect Feed
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 605,
+        "height": 775,
         "width": 380,
         "x": 450,
         "y": 50
@@ -136,3 +184,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

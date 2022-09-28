@@ -50,6 +50,7 @@ configuration:
   - Bad
   required: false
   type: 18
+  hidden: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
@@ -73,6 +74,77 @@ configuration:
   required: false
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
+  defaultvalue: All
+  display: Indicator types
+  hidden: false
+  name: indicator_type
+  options:
+  - All
+  - EmailAddress
+  - File
+  - Host
+  - URL
+  - ASN
+  - CIDR
+  - EmailSubject
+  - Hashtag
+  - Mutex
+  - Registry Key
+  - User Agent
+  - Address
+  required: false
+  type: 16
+- additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
+  defaultvalue: All
+  display: Group types
+  hidden: false
+  name: group_type
+  options:
+  - All
+  - Attack Pattern
+  - Campaign
+  - Course of Action
+  - Intrusion Set
+  - Malware Report
+  - Tool
+  - Vulnerability
+  required: false
+  type: 16
+- additionalinfo: Fetch active only indicators when true. Default is "True".
+  defaultvalue: 'true'
+  display: Active Indicators Only
+  hidden: false
+  name: indicator_active
+  required: false
+  type: 8
+- additionalinfo: Fetch related indicators. Default is "False".
+  defaultvalue: 'false'
+  display: Create Relationships
+  hidden: false
+  name: createRelationships
+  required: false
+  type: 8
+- additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+  display: Indicator Query
+  hidden: false
+  name: indicator_query
+  required: false
+  type: 12
+- additionalinfo: Minimal confidence value to fetch indicators by (an integer between 0 to 100).
+  display: Confidence Threshold
+  hidden: false
+  name: confidence
+  required: false
+  type: 0
+  defaultvalue: 0
+- additionalinfo: Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000).
+  display: Threat Assess Score Threshold
+  hidden: false
+  name: threat_assess_score
+  required: false
+  type: 0
+  defaultvalue: 0
 - display: ''
   name: feedExpirationPolicy
   required: false
@@ -106,75 +178,6 @@ configuration:
   additionalinfo: Supports CSV values.
   name: feedTags
   hidden: true
-- additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
-  defaultvalue: All
-  display: Indicator types
-  hidden: false
-  name: indicator_type
-  options:
-  - All
-  - EmailAddress
-  - File
-  - Host
-  - URL
-  - ASN
-  - CIDR
-  - EmailSubject
-  - Hashtag
-  - Mutex
-  - Registry Key
-  - User Agent
-  - Address
-  required: false
-  type: 16
-- additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
-  defaultvalue: All
-  display: Group type
-  hidden: false
-  name: group_type
-  options:
-  - All
-  - Attack Pattern
-  - Campaign
-  - Course of Action
-  - Intrusion Set
-  - Malware Report
-  - Tool
-  - Vulnerability
-  required: false
-  type: 16
-- additionalinfo: Fetch active only indicators when true. Default is "True".
-  defaultvalue: 'true'
-  display: Active Indicators Only
-  hidden: false
-  name: indicatorActive
-  required: false
-  type: 8
-- additionalinfo: Fetch related indicators. Default is "False".
-  defaultvalue: 'false'
-  display: Create Relationships
-  hidden: false
-  name: createRelationships
-  required: false
-  type: 8
-- additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
-  display: Indicator Query
-  hidden: false
-  name: indicatorQuery
-  required: false
-  type: 12
-- additionalinfo: Minimal confidence value to fetch indicators by (an integer between 0 to 100).
-  display: Confidence Threshold
-  hidden: false
-  name: confidence
-  required: false
-  type: 0
-- additionalinfo: Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000).
-  display: Threat Assess Score Threshold
-  hidden: false
-  name: threatAssessScore
-  required: false
-  type: 0
 description: This integration fetches indicators from ThreatConnect.
 display: ThreatConnect Feed
 name: ThreatConnect Feed
@@ -247,7 +250,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An integer that will determine the threshold.
+      description: An integer that will determine the threshold (an integer between 0 to 1000).
       isArray: false
       name: threat_assess_score
       required: false
@@ -260,7 +263,7 @@ script:
     description: Gets available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
   feed: true
   isfetch: false
   longRunning: false
