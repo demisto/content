@@ -1120,6 +1120,9 @@ def search_all_mailboxes(receive_only_accounts):
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
+                result = future.result()
+                if result is None:
+                    continue
                 entries.append(future.result())
                 if accounts_counter % 100 == 0:
                     demisto.info(
@@ -1135,7 +1138,10 @@ def search_all_mailboxes(receive_only_accounts):
 
         # if these are the final result push - return them
         if users_next_page_token is None:
-            entries.append("Search completed")
+            if entries:
+                entries.append("Search completed")
+            else:
+                entries.append("No entries.")
             return entries
 
         # return midway results
@@ -1184,9 +1190,10 @@ def search_command(mailbox=None):
         if mails:
             return {'Mailbox': mailbox, 'q': q}
         return {'Mailbox': None, 'q': q}
-
-    res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
-    return res
+    if mails:
+        res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
+        return res
+    return
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
