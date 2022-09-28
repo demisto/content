@@ -23,9 +23,9 @@ For more information - click [here](https://training.threatconnect.com/learn/art
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Base URL |  | True |
+    | Base URL | The API URL. | True |
     | Access ID | The API ID key | True |
-    | Secret key |  | True |
+    | Secret key | The secret key for the API. | True |
     | Access ID | API - Access ID | True |
     | Secret key | API - Secret key | True |
     | Tags to filter results by | A comma-separated list of tags to filter by. | False |
@@ -34,8 +34,8 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Feed Fetch Interval |  | False |
-    | Trust any certificate (not secure) |  | False |
+    | Feed Fetch Interval | The time interval we send request to fetch indicators. | False |
+    | Trust any certificate (not secure) | Whether to trust any certificate. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Tags | Supports CSV values. | False |
     | Indicator types | Fetch specific ThreatConnect indicator types. Default value is "All". | False |
@@ -84,6 +84,13 @@ There is no context output for this command.
 >|---|---|---|---|---|---|
 >| firstseenbysource: 2022-09-27T17:20:19Z<br/>updateddate: 2022-09-27T17:20:19Z<br/>description: This indicator appears in a post from VirIT.<br/>name: name<br/>address: address<br/>reportedby: Technical Blogs and Reports | id: 98590287<br/>ownerName: Technical Blogs and Reports<br/>dateAdded: 2022-09-27T17:20:19Z<br/>webLink: link<br/>type: URL<br/>lastModified: 2022-09-27T17:20:19Z<br/>rating: 3.0<br/>confidence: 70<br/>source: source<br/>description: This indicator appears in a post from VirIT.<br/>summary: address/<br/>privateFlag: false<br/>active: true<br/>activeLocked: false<br/>text: address |  | 0 | URL | address |
 
+#### Command Example
+```!tc-get-indicators limit=2 offset=0```
+#### Human Readable Output
+>|rawJSON|score|type|value|
+>|---|---|---|---|
+>| id: Indicator01 | 2 | IP | 8.8.8.8 |
+>| id: Indicator02 | 3 | IP | 8.8.4.4 |
 
 ### tc-get-owners
 ***
@@ -100,3 +107,10 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+>### ThreatConnect Feed - Owners
+>|id|name|type|
+>|---|---|---|
+>| 10303 | NAME-01 | Organization |
+>| 10666 | NAME-02 | Source |

@@ -36,9 +36,9 @@ def test_create_or_query():
 
 
 @pytest.mark.parametrize("params, expected_result",
-                        [({'indicator_active': False, "group_type": ['All'], "indicator_type": ['All'],
+                         [({'indicator_active': False, "group_type": ['All'], "indicator_type": ['All'],
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0}, ''),
-                         ({'indicator_active': True, "group_type": ['File'], "indicator_type": [],
+                          ({'indicator_active': True, "group_type": ['File'], "indicator_type": [],
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
                            'indicatorActive EQ True AND typeName IN ("File")')])
 def test_set_tql_query(mocker, params, expected_result):
@@ -60,10 +60,11 @@ def test_set_tql_query(mocker, params, expected_result):
 
     assert output == expected_result
 
+
 @pytest.mark.parametrize("params, expected_result",
-                        [({"group_type": ['All'], "indicator_type": []}, 'typeName IN ("Attack Pattern","Campaign",'
+                         [({"group_type": ['All'], "indicator_type": []}, 'typeName IN ("Attack Pattern","Campaign",'
                           '"Course of Action","Intrusion Set","Malware","Report","Tool","Vulnerability")'),
-                         ({"group_type": ['File'], "indicator_type": []}, 'typeName IN ("File")')])
+                          ({"group_type": ['File'], "indicator_type": []}, 'typeName IN ("File")')])
 def test_create_types_query(mocker, params, expected_result):
     """
     Given:

@@ -320,7 +320,7 @@ def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entit
         demisto.debug(f'Created relationsip between {entity_a} and {entity_b}')
     else:
         demisto.debug(
-            f"WARNING: Relationships will not be created to entity A {entity_a}" \
+            f"WARNING: Relationships will not be created to entity A {entity_a}"
             f" with relationship name {EntityRelationship.Relationships.RELATED_TO}")
     return relationships_list
 
@@ -432,7 +432,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
         tql = ''
     url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url 
+        # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     indicators = []
@@ -508,7 +508,7 @@ def get_indicators_command(client: Client):  # pragma: no cover
 
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url 
+        # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     response, status = client.make_request(Method.GET, url)
