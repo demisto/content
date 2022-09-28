@@ -889,9 +889,13 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
              'Priority': value.get('priority'),
              'Status': value.get('state'),
              'Votes': value.get('votes'),
-             'Assignee': value.get('assignee', {}).get('display_name'),
              'CreatedAt': value.get('created_on'),
              'UpdatedAt': value.get('updated_on')}
+        assignee = value.get('assignee', {})
+        if assignee:
+            d["assignee"] = assignee.get('display_name')
+        else:
+            d["assignee"] = None
         human_readable.append(d)
 
     headers = ['Id', 'Title', 'Type', 'Priority', 'Status', 'Votes', 'Assignee', 'CreatedAt', 'UpdatedAt']

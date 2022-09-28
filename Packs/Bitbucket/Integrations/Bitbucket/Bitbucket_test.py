@@ -317,3 +317,136 @@ def test_commit_list_command(mocker, bitbucket_client):
     result = commit_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
     assert result.raw_response == response.get('values')
+
+
+def test_issue_create_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-issue-create command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_create_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'title': 'NewIssue',
+        'state': 'new',
+        'type': 'enhancement',
+        'priority': 'minor',
+        'content': 'An enhancement to an integration'
+    }
+    expected_body = {
+        'title': 'NewIssue',
+        'state': 'new',
+        'kind': 'enhancement',
+        'priority': 'minor',
+        'content': {
+            'raw': 'An enhancement to an integration'
+        }
+    }
+    issue_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/issues',
+                                    json_data=expected_body)
+
+
+def test_issue_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-issue-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_list_command
+    args = {'limit': '3'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_issue_list_command')
+    mocker.patch.object(bitbucket_client, 'issue_list_request', return_value=response)
+    expected_human_readable = '### List of the issues\n' \
+                              '|Id|Title|Type|Priority|Status|Votes|CreatedAt|UpdatedAt|\n' \
+                              '|---|---|---|---|---|---|---|---|\n' \
+                              '| 3 | hi | bug | minor | new | 0 | 2022-09-06T00:00:00.000000+00:00 ' \
+                              '| 2022-09-28T00:00:00.000000+00:00 |\n' \
+                              '| 93 | new bug | bug | major | new | 0 | 2022-09-28T00:00:00.000000+00:00 ' \
+                              '| 2022-09-28T00:00:00.000000+00:00 |\n' \
+                              '| 10 | title | bug | major | new | 0 | 2022-09-07T00:00:00.000000+00:00 ' \
+                              '| 2022-09-22T00:00:00.000000+00:00 |\n'
+    result = issue_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')
+
+
+def test_issue_update_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-issue-update command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_update_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'issue_id': '1',
+        'title': 'No.1',
+        'state': 'resolved',
+        'type': 'enhancement',
+        'priority': 'minor',
+        'content': 'An enhancement to an integration'
+    }
+    expected_body = {
+        'title': 'No.1',
+        'state': 'resolved',
+        'kind': 'enhancement',
+        'priority': 'minor',
+        'content': {
+            'raw': 'An enhancement to an integration'
+        }
+    }
+    issue_update_command(bitbucket_client, args)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/repositories/workspace/repository/issues/1/',
+                                    json_data=expected_body)
+
+
+def test_pull_request_create_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitcucket-pull-request-create command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import pull_request_create_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'title': 'PR from test to master',
+        'source_branch': 'test',
+        'destination_branch': 'master',
+        'description': 'A new pull request',
+        'close_source_branch': 'yes'
+    }
+    expected_body = {
+        'title': 'PR from test to master',
+        'source': {
+            'branch': {
+                'name': 'test'
+            }
+        },
+        'destination': {
+            'branch': {
+                'name': 'master'
+            }
+        },
+        'description': 'A new pull request',
+        'close_source_branch': True
+    }
+    pull_request_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/pullrequests',
+                                    json_data=expected_body)
