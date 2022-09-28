@@ -108,8 +108,6 @@ script:
       type: String
     - contextPath: DBotScore.Reliability
       description: How reliable the score is (for example, "C - fairly reliable").
-    - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious.
       type: String
     - contextPath: McAfee.TIE.FilesReputations.Reputations.Hash
       description: The value of the hash.
@@ -132,7 +130,7 @@ script:
     - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact
       description: The time the file was first seen.
       type: String
-    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.PREVALENCE
+    - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Prevalence
       description: The number of times the file has been requested.
       type: String
     

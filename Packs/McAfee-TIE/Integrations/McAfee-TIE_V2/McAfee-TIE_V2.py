@@ -295,7 +295,7 @@ def parse_reference_human_readable(reference):
 
     return {
         'Date': epoch_to_localtime(date),
-        'AgentGuid': agent_guid.replace('{', '').replace('}', '')  # remove brackets if exist
+        'AgentGuid': agent_guid.replace('{', '').replace('}', '')  # Remove brackets if exist
     }
 
 
