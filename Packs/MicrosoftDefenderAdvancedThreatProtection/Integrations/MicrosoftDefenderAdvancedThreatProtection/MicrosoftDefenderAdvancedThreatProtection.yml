@@ -866,7 +866,7 @@ script:
       required: false
       secret: false
     - name: time_range
-      description: Time range to look back. The expected syntax is a human-readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
+      description: Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
       required: false
       isArray: false
       defaultValue: ''
@@ -887,7 +887,7 @@ script:
           "timeout": "timeout #2",
           "time_range": "6 days ago"
           }]
-        The query and name fields are mendatory, if timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
+        The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
       isArray: false
       name: query_batch
       required: false
