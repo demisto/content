@@ -14,7 +14,8 @@
         "OpsGenie Incident",
         "OpsGenie Alert",
         "Skyhigh Security Alert",
-        "Skyhigh Security Threat"
+        "Skyhigh Security Threat",
+        "ThreatConnect"
     ],
     "breachScript": "",
     "caseInsensitive": true,
