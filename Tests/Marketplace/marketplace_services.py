@@ -3349,13 +3349,10 @@ class Pack(object):
 
             for image_path in pack_preview_images:
                 logging.info(f"yuval: image_path {image_path}")
+                image_folder = os.path.dirname(image_path).split('/')[-1] or ''
+                logging.info(f"yuval {image_folder}")
                 image_name = os.path.basename(image_path)
-                folder_name = ''
-                if 'XSIAMDashboards' in file.a_path:
-                    folder_name = 'XSIAMDashboards'
-                elif 'XSIAMReports' in file.a_path:
-                    folder_name = 'XSIAMReports'
-                image_storage_path = os.path.join(pack_storage_root_path,folder_name ,image_name)
+                image_storage_path = os.path.join(pack_storage_root_path,image_folder ,image_name)
                 logging.info(f"yuval {image_storage_path}")
                 pack_image_blob = storage_bucket.blob(image_storage_path)
                 with open(image_path, "rb") as image_file:

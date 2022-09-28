@@ -66,7 +66,6 @@ class GCPConfig(object):
     CONTENT_PACKS_PATH = "content/packs"
     PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
-    PREVIEW_IMAGES_BASE_PATH = "content/previews"
     BUILD_PATH_PREFIX = "content/builds"
     BUILD_BASE_PATH = ""
     PRIVATE_BASE_PATH = "content/packs"
