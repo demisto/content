@@ -1,0 +1,7 @@
+from_xdr_version: 3.5.0
+fromversion: 6.10.0
+id: aws_guard_duty_modeling_rule
+name: AWSGuardDuty Modeling Rule
+rules: ''
+schema: ''
+tags: AWSGuardDuty
