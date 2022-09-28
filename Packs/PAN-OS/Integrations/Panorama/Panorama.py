@@ -11682,7 +11682,7 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
                     '@name'
                 ),
                 'Redistribution Profile': extract_objects_info_by_key(
-                    entry.get('protocol', {}).get('redist-profile', {}).get('entry', {}), '@name'
+                    ((entry.get('protocol') or {}).get('redist-profile') or {}).get('entry', {}), '@name'
                 )
             }
         )
