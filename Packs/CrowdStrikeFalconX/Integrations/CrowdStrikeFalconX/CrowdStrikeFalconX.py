@@ -170,7 +170,23 @@ class Client:
                 return res
 
             try:
-                return res.json()
+                if res.headers.get('Content-Type') == 'image/png':
+                    filename_from_headers = res.headers.get('Content-Disposition')
+                    if filename_from_headers:
+                        filename = filename_from_headers.split('=')[-1]
+                    else:
+                        filename = 'filename'  # todo: what name should be given if no name was detected?
+                    stored_file = fileResult(filename, res.content)
+                    file_entry = {
+                        'Type': entryTypes['image'],  # todo: if we change to be generic and not just for images, change this to 'file'
+                        'ContentsFormat': formats['text'],
+                        'File': stored_file['File'],
+                        'FileID': stored_file['FileID'],
+                        'Contents': ''
+                    }
+                    return file_entry
+                else:  # handle the response as json
+                    return res.json()
             except ValueError as exception:
                 raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
         except requests.exceptions.ConnectTimeout as exception:
@@ -1071,6 +1087,8 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
+        if response.get('File'):  # In case the returned response is a file, output the file to the war room.
+            demisto.results(response)
         return CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='ioc',
