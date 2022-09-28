@@ -403,7 +403,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.XSIAM_REPORTS.value: "xsiamreport",
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
-    PackFolders.AGENT_CONFIGS.value: "AgentConfigs",
+    PackFolders.AGENT_CONFIGS.value: "agentconfig",
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {

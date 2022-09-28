@@ -2246,7 +2246,6 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'os_type': content_item.get('os_type', ''),
                             'profile_type': content_item.get('profile_type', ''),
-                            'yaml_template': content_item.get('yaml_template', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 

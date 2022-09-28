@@ -501,8 +501,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "114f42bf16d91e30df5ebcceda3def3a78367b77"
-resolved_reference = "114f42bf16d91e30df5ebcceda3def3a78367b77"
+reference = "23a004f95e0558f8e3a881dc9680eab0d0e86bec"
+resolved_reference = "23a004f95e0558f8e3a881dc9680eab0d0e86bec"
 
 [[package]]
 name = "Deprecated"
@@ -689,7 +689,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.11.1"
+version = "2.12.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
@@ -1605,7 +1605,7 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "python-gitlab"
-version = "3.9.0"
+version = "3.10.0"
 description = "Interact with GitLab API"
 category = "main"
 optional = false
@@ -2255,7 +2255,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4477c326af23be698288dfe4048ce419da0e1649708eaf674b9ef4cffca9f463"
+content-hash = "fc3d1af3949d8ee042659e8f756c151d50bb271c8075a9815d1ccfa2e3040c9d"
 
 [metadata.files]
 aiohttp = [
@@ -2739,8 +2739,8 @@ google-api-core = [
     {file = "google_api_core-2.10.1-py3-none-any.whl", hash = "sha256:92d17123cfe399b5ef7e026c63babf978d8475e1ac877919eb7933e25dea2273"},
 ]
 google-auth = [
-    {file = "google-auth-2.11.1.tar.gz", hash = "sha256:516e6623038b81430dd062a1a25ecd24f173d7c15cdf4e48a9e78bc87e97aeec"},
-    {file = "google_auth-2.11.1-py2.py3-none-any.whl", hash = "sha256:53bdc0c2b4e25895575779caef4cfb3a6bdff1b7b32dc38a654d71aba35bb5f8"},
+    {file = "google-auth-2.12.0.tar.gz", hash = "sha256:f12d86502ce0f2c0174e2e70ecc8d36c69593817e67e1d9c5e34489120422e4b"},
+    {file = "google_auth-2.12.0-py2.py3-none-any.whl", hash = "sha256:98f601773978c969e1769f97265e732a81a8e598da3263895023958d456ee625"},
 ]
 google-cloud-bigquery = [
     {file = "google-cloud-bigquery-3.3.2.tar.gz", hash = "sha256:bf96407911c6fcbbe598be1b9c44e00a2600bff9eabad2a97f4332efc1165497"},
@@ -3460,8 +3460,8 @@ python-dotenv = [
     {file = "python_dotenv-0.20.0-py3-none-any.whl", hash = "sha256:d92a187be61fe482e4fd675b6d52200e7be63a12b724abbf931a40ce4fa92938"},
 ]
 python-gitlab = [
-    {file = "python-gitlab-3.9.0.tar.gz", hash = "sha256:5fc5e88f81f366e11851cb8b4b9a5b827491ce20ba7585446b74c9b097726ba3"},
-    {file = "python_gitlab-3.9.0-py3-none-any.whl", hash = "sha256:ce941f99bf88b6918eea82500ca6206806117f4afe26d4705f4ded2284b35c69"},
+    {file = "python-gitlab-3.10.0.tar.gz", hash = "sha256:14930a16fdd7f36f67b9373e7d4d4720e8e374800028380289db3306e9f74614"},
+    {file = "python_gitlab-3.10.0-py3-none-any.whl", hash = "sha256:6b5a24d0f479c43c1759cb174cf42116ed27cced31284bedc82d584d860fa238"},
 ]
 python-http-client = [
     {file = "python_http_client-3.3.7-py3-none-any.whl", hash = "sha256:ad371d2bbedc6ea15c26179c6222a78bc9308d272435ddf1d5c84f068f249a36"},
