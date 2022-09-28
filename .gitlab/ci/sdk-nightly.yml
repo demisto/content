@@ -175,7 +175,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
     - !reference [.open-ssh-tunnel]
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b run_node_docker --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
