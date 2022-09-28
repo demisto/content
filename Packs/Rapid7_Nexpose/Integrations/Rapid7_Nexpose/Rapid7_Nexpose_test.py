@@ -1,3 +1,5 @@
+import pytest as pytest
+
 import demistomock as demisto
 import requests
 
@@ -88,7 +90,20 @@ def test_get_last_scan(mocker):
     assert (get_last_scan(asset) == expected)
 
 
-def test_get_list_response(requests_mock, mocker):
+@pytest.mark.parametrize('limit,expected', [
+    (5, 5),
+    (6, 6),
+    (7, 6)])
+def test_get_list_response(limit, expected, mocker):
+    """
+
+    Given: limit of results expected to receive.
+
+    When: running command that make use in the get_list_response method.
+
+    Then: the expected number of results is returned.
+
+    """
     init_integration(mocker)
     import Rapid7_Nexpose
 
@@ -101,18 +116,19 @@ def test_get_list_response(requests_mock, mocker):
                 self.counter += 1
                 return {'resources': ['test1', 'test2', 'test3'],
                         'page': {
-                            'totalPages': 10,
+                            'totalPages': 2,
                             'number': 1
                         }}
             else:
                 return {'resources': ['test4', 'test5', 'test6'],
                         'page': {
-                            'totalPages': 10,
-                            'number': 1
+                            'totalPages': 2,
+                            'number': 2
                         }}
+
     res_maker = ResponseMaker()
 
     mocker.patch.object(Rapid7_Nexpose, 'send_request', side_effect=res_maker.generate_response)
-    res = Rapid7_Nexpose.get_list_response('test.com', 'post', limit=5)
 
-    assert len(res) == 5
+    assert len(Rapid7_Nexpose.get_list_response('test.com', 'post', limit=limit)) == expected
+

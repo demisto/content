@@ -193,7 +193,7 @@ def get_list_response(path, method='get', limit=None, body={}, params={}):
     final_result = []  # type: ignore
     page_diff = 0
     page_number = 0
-
+    demisto.debug('limit is {}'.format(limit))
     while True:
         page = page_number
         page_number += 1
@@ -204,12 +204,18 @@ def get_list_response(path, method='get', limit=None, body={}, params={}):
         if not response:
             break
         if response['resources'] is not None:
+            len_of_response = len(response["resources"])
+            demisto.debug('number if fetched resources is {}'.format(len_of_response))
             final_result = final_result + response['resources']
         if response['page'] is not None:
             page_diff = response['page']['totalPages'] - response['page']['number']
-        if page_diff < 1 or limit is not None:
+        if page_diff < 1:
             break
-
+        if len(final_result) >= limit:
+            break
+    if len(final_result) > limit:
+        final_result = final_result[:limit]
+    demisto.debug('len of final results is {}'.format(len(final_result)))
     return final_result
 
 
