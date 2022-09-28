@@ -8435,6 +8435,10 @@ script:
       isArray: false
       name: show_uncommitted
       required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - defaultValue: '50'
       description: The maximum number of virtual routers to retrieve, will be used by default if page argument was not provided.
       isArray: false
