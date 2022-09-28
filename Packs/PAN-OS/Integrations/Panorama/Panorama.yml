@@ -3987,6 +3987,9 @@ script:
     - description: The tag of the address group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the address group belongs to.
+      name: device-group
+      required: false
     description: Edits a static or dynamic address group.
     name: pan-os-edit-address-group
     outputs:
@@ -4230,6 +4233,9 @@ script:
     - description: The tag of the service group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the service group belongs to.
+      name: device-group
+      required: false
     description: Edits a service group.
     name: pan-os-edit-service-group
     outputs:
@@ -4345,6 +4351,9 @@ script:
     - description: A comma-separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
+    - description: The device group in which the URL category belongs to.
+      name: device-group
+      required: false
     description: Adds or removes sites to and from a custom URL category.
     name: pan-os-edit-custom-url-category
     outputs:
@@ -4563,6 +4572,9 @@ script:
       predefined:
       - add
       - remove
+    - description: The device group in which the URL-filter belongs to.
+      name: device-group
+      required: false
     description: Edits a URL filtering rule.
     name: pan-os-edit-url-filter
     outputs:
@@ -4727,6 +4739,9 @@ script:
     - description: The element value.
       name: element_value
       required: true
+    - description: The device group in which the EDL belongs to.
+      name: device-group
+      required: false
     description: Modifies an element of an external dynamic list.
     name: pan-os-edit-edl
     outputs:
@@ -5076,6 +5091,9 @@ script:
       - replace
       - add
       - remove
+    - description: The device group in which the rule belongs to.
+      name: device-group
+      required: false
     description: Edits a policy rule.
     name: pan-os-edit-rule
     outputs:
@@ -5149,6 +5167,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: The device group for which to return applications.
+      name: device-group
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
@@ -6248,6 +6269,9 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
+    - description: The device group for which to return security profiles.
+      name: device-group
+      required: false
     description: Gets information for the specified security profile.
     name: pan-os-get-security-profiles
     outputs:
@@ -6405,6 +6429,9 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device-group
+      required: false
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
@@ -8073,7 +8100,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false
   longRunning: false

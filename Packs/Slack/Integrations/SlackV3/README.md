@@ -575,6 +575,8 @@ Because of this, you may have some users in Slack who are not users in Cortex XS
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
 - In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
 - Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of Notifications* to send parameter is populated.
+- ***mirror-investigation*** will only mirror chat messages between XSOAR and Slack. Images, threads, and files are not supported at this tme.
+
 ### slack-get-integration-context
 ***
 Returns the integration context as a file. Use this command for debug purposes only.
