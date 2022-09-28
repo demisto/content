@@ -7203,9 +7203,6 @@ def append_metrics(execution_metrics, results):
     return results
 
 
-
-
-
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.

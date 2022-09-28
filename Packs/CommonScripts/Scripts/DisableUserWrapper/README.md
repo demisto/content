@@ -1,4 +1,4 @@
-This script allows disabling specified user using SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser and IAM.
+This script allows disabling a specified user using one or more of the following integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser, and IAM.
 
 ## Script Data
 ---

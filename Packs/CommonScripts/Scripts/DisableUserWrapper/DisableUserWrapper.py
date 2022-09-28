@@ -39,7 +39,7 @@ def disable_user(args: dict):
 
     Will not return errors on un-supported commands unless there is no supported ones.
 
-    Args:
+    args (dict):
         args[approve_action]: Must be yes in order for the command to work.
         args[username]: The username to disable.
 
