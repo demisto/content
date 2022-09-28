@@ -16,7 +16,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: 'true'
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
