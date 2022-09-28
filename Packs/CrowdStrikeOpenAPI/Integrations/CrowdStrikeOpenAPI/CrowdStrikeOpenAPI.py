@@ -8560,7 +8560,7 @@ def rtr_execute_active_responder_command_command(client, args):
     domain_commandexecuterequest_base_command = str(args.get('domain_commandexecuterequest_base_command', ''))
     domain_commandexecuterequest_command_string = str(args.get('domain_commandexecuterequest_command_string', ''))
     domain_commandexecuterequest_device_id = str(args.get('domain_commandexecuterequest_device_id', ''))
-    domain_commandexecuterequest_id = args.get('domain_commandexecuterequest_id', None)
+    domain_commandexecuterequest_id = int(args.get('domain_commandexecuterequest_id', None))
     domain_commandexecuterequest_persist = argToBoolean(args.get('domain_commandexecuterequest_persist', False))
     domain_commandexecuterequest_session_id = str(args.get('domain_commandexecuterequest_session_id', ''))
 

@@ -15,26 +15,33 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Authentication
 ---
+There are two different authentication methods for self-deployed configuration: 
+- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
+- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
+
+**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+
 ### Required Permissions
-* AdvancedQuery.Read.All - Application
-* Alert.ReadWrite.All - Application
-* File.Read.All - Application
-* Ip.Read.All - Application
-* Machine.CollectForensics - Application
-* Machine.Isolate - Application
-* Machine.ReadWrite.All - Application
-* Machine.RestrictExecution - Application
-* Machine.Scan - Application
-* Machine.StopAndQuarantine - Application
-* ThreatIndicators.ReadWrite.OwnedBy - Application. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application
-* User.Read.All - Application
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
-* Vulnerability.Read.All - Application
+Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
+* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* File.Read.All - Application / Delegated
+* Ip.Read.All - Application / Delegated
+* Machine.CollectForensics - Application / Delegated
+* Machine.Isolate - Application / Delegated
+* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* Machine.RestrictExecution - Application / Delegated
+* Machine.Scan - Application / Delegated
+* Machine.StopAndQuarantine - Application / Delegated
+* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* Url.Read.All - Application / Delegated
+* User.Read.All - Application / Delegated
+* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -59,6 +66,11 @@ For more details about the authentication used in this integration, see [Microso
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
+    | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -340,6 +352,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
 | health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
+| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional | 
+| page_num | The page number to retrieve. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -6011,3 +6025,18 @@ Collect and download an investigation package as a gz file.
 >| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
+### microsoft-atp-test
+***
+Tests connectivity to Microsoft Defender for Endpoint.
+
+
+#### Base Command
+
+`microsoft-atp-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

@@ -1,7 +1,42 @@
-### This Pack includes XSIAM content.
+# Microsoft EXCHANGE SERVER
 
-In order to use the collector to collect events from Microsoft Exchange server, you would need to use XDRC (XDR Collector) - Please use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
-<br/>Copy and paste the bellow yaml in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles"). This configuration will collect the data into a dataset named `msft_exchange_raw`.
+This pack includes XSIAM content 
+
+## Configuration on Server Side
+
+1. Open the EAC and navigate to Servers > Servers > select the Mailbox server that you want to configure > and click Edit 
+
+2. On the server properties page, click Transport Logs. In the Message tracking log section, change any of the following settings:
+
+   `Enable message tracking log`: To disable message tracking on the server, clear the check box. To enable message tracking on the server, select the check box.
+
+   `Message tracking log path`: The value you specify must be on the local Exchange server. If the folder doesn't exist, it's created for you when you click Save.
+
+#### Example log path:
+`C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\MessageTracking\`
+
+*Ensure that the tracking log path here matches the one in the YAML configuration.*
+
+3. When you're finished, click Save.
+## Filebeat Collection
+In order to use the collector, you need to use the following option to collect events from the vendor:
+
+- [XDRC (XDR Collector)](#xdrc-xdr-collector)
+
+You will need to configure the vendor and product for this specific collector.
+
+### XDRC (XDR Collector)
+
+You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+
+You can configure the vendor and product by replacing [vendor]\_[product]\_raw with msft_exchange_raw
+
+When configuring the instance, you should use a YAML that configures the vendor and product, just as seen in the below configuration for the Microsoft Exchange product.
+
+Copy and paste the below YAML in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles").
+
+#### Filebeat Configuration file:
+
 ```commandline
 filebeat.inputs:
   - type: filestream
@@ -53,4 +88,7 @@ filebeat.inputs:
             dissect.log_id: 28
             dissect.schema_version: 29
 ```
+
+This configuration will collect the data into a dataset named `msft_exchange_raw`.
+
 **Please note**: The above configuration uses the default location of the Message Tracking logs. In case your Exchange server saves the Message Tracking logs under a different location, you would need to change it in the yaml (under the `paths` field).

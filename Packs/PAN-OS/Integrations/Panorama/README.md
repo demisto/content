@@ -448,7 +448,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 ### pan-os-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
 
 #### Base Command
@@ -458,31 +458,92 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional |
-| validate-only | Pre policy validation. | Optional. |
-| include-template | Whether to include template changes. | Optional. |
-| description | Push description. | Optional |
-| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
+| device-group | The device group to which to push (Panorama instances). | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| include-template | Whether to include template changes. Possible values are: true, false. Default is true. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
-| Panorama.Push.Status | String | Push status. | 
+| Panorama.Push.DeviceGroup | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+| Panorama.Push.Details | String | The job ID details. | 
 
+#### Command example with polling=true
+```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
-#### Command Example
-```!pan-os-push-to-device-group ```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
+#### Command example with polling=false
+```!pan-os-push-to-device-group description=test polling=false```
+
+#### Human Readable Output
+
+>### Push to Device Group status:
+>|JobID|Status|Description|
+>|---|---|---|
+>| 113198 | Pending | test |
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+          "JobID": "113198",
+          "Status": "Pending",
+          "Description": "test",
+          "DeviceGroup": "device group name"
+        }
+    }
+}
+```
 
 ### pan-os-list-addresses
 ***
@@ -942,15 +1003,15 @@ Edits a static or dynamic address group.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the address group to edit. | Required | 
-| type | Address group type. | Required | 
-| match | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
-| element_to_add | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
+|-------------------| --- | --- |
+| name              | Name of the address group to edit. | Required | 
+| type              | Address group type. | Required | 
+| match             | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
+| element_to_add    | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
 | element_to_remove | Element to remove from the list of the static address group. Only existing Address objects can be removed. | Optional | 
-| description | Address group new description. | Optional | 
-| tags | The tag of the Address group to edit. | Optional | 
-
+| description       | Address group new description. | Optional | 
+| tags              | The tag of the Address group to edit. | Optional | 
+| device-group      | The device group in which the address group belongs to. | Optional |
 
 #### Context Output
 
@@ -1348,13 +1409,13 @@ Edit a service group.
 `pan-os-edit-service-group`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the service group to edit. | Required | 
-| services_to_add | Services to add to the service group. Only existing Services objects can be added. | Optional | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the service group to edit. | Required | 
+| services_to_add    | Services to add to the service group. Only existing Services objects can be added. | Optional | 
 | services_to_remove | Services to remove from the service group. Only existing Services objects can be removed. | Optional | 
-| tags | Tag of the Service group to edit. | Optional | 
-
+| tags               | Tag of the Service group to edit. | Optional | 
+| device-group       | The device group in which the service group belongs to. | Optional |
 
 #### Context Output
 
@@ -1524,12 +1585,12 @@ Adds or removes sites to and from a custom URL category.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the custom URL category to add or remove sites. | Required | 
-| sites | A comma separated list of sites to add to the custom URL category. | Optional | 
-| action | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
-| categories | A comma separated list of categories to add to the custom URL category. | Optional | 
-
+|-------------------| --- | --- |
+| name              | Name of the custom URL category to add or remove sites. | Required | 
+| sites             | A comma separated list of sites to add to the custom URL category. | Optional | 
+| action            | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
+| categories        | A comma separated list of categories to add to the custom URL category. | Optional | 
+| device-group      | The device group in which the URL category belongs to. | Optional |
 
 #### Context Output
 
@@ -1810,12 +1871,13 @@ Edit a URL filtering rule.
 `pan-os-edit-url-filter`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. | Required | 
-| element_value | Element value. Limited to one value. | Required | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the URL filter to edit. | Required | 
+| element_to_change  | Element to change. | Required | 
+| element_value      | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
+| device-group       | The device group in which the URL-filter belongs to. | Optional |
 
 
 #### Context Output
@@ -2067,10 +2129,11 @@ Modifies an element of an external dynamic list.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the external dynamic list to edit. | Required | 
+|-------------------| --- | --- |
+| name              | Name of the external dynamic list to edit. | Required | 
 | element_to_change | The element to change (“url”, “recurring”, “certificate_profile”, “description”). | Required | 
-| element_value | The element value. | Required | 
+| element_value     | The element value. | Required | 
+| device-group      | The device group in which the EDL belongs to. | Optional |
 
 
 #### Context Output
@@ -2360,13 +2423,13 @@ Edits a policy rule.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| rulename | Name of the rule to edit. | Required | 
+|-------------------| --- | --- |
+| rulename          | Name of the rule to edit. | Required | 
 | element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
-| element_value | The new value for the parameter. | Required | 
-| pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
-| behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
-
+| element_value     | The new value for the parameter. | Required | 
+| pre_post          | Pre-rule or post-rule (Panorama instances). | Optional | 
+| behaviour         | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
+| device-group      | The device group in which the rule belongs to. | Optional |
 
 #### Context Output
 
@@ -2450,9 +2513,9 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| predefined | Whether to list predefined applications or not. | Optional | 
-
+|-------------------| --- | --- |
+| predefined        | Whether to list predefined applications or not. | Optional | 
+| device-group      | The device group for which to return applications. | Optional |
 
 #### Context Output
 
@@ -2543,29 +2606,59 @@ Returns the push status for a configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| job_id | The job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | string | Device group to which the policies were pushed. | 
-| Panorama.Push.JobID | number | Job ID of the configuration to be pushed. | 
-| Panorama.Push.Status | string | Push status. | 
-| Panorama.Push.Details | string | Job ID details. | 
-| Panorama.Push.Warnings | String | Job ID warnings | 
+| Panorama.Push.DeviceGroup | string | The device group to which the policies were pushed. | 
+| Panorama.Push.JobID | number | The job ID of the configuration to be pushed. | 
+| Panorama.Push.Status | string | The push status. | 
+| Panorama.Push.Details | string | The job ID details. | 
+| Panorama.Push.Warnings | String | The job ID warnings | 
 
-
-#### Command Example
-```!pan-os-push-status job_id=951 ```
+#### Command example
+```!pan-os-push-status job_id=31377```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": [],
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|Details|
->|---|---|---|
->| 951 | Completed | commit succeeded with warnings |
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
 
 ### pan-os-get-pcap
 ***
@@ -3941,9 +4034,9 @@ Gets information for the specified security profile.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| security_profile | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
-
+|-------------------| --- | --- |
+| security_profile  | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
+| device-group      | The device group for which to return security profiles. | Optional |
 
 #### Context Output
 
@@ -4014,12 +4107,12 @@ Apply a security profile to specific rules or rules with a specific tag.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| profile_type | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
-| rule_name | The rule name to apply. | Required | 
-| profile_name | The profile name to apply to the rule. | Required | 
-| pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
-
+|-------------------| --- | --- |
+| profile_type      | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
+| rule_name         | The rule name to apply. | Required | 
+| profile_name      | The profile name to apply to the rule. | Required | 
+| pre_post          | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| device-group      | The device group for which to apply security profiles. | Optional |
 
 #### Context Output
 

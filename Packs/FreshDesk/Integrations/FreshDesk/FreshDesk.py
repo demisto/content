@@ -395,7 +395,7 @@ def ticket_to_incident(ticket):
     """
     incident = {}
     # Incident Title
-    subject = ticket.get('subject', '').encode('ascii', 'replace')
+    subject = ticket.get('subject', '').encode('ascii', 'replace').decode("utf-8")
     incident['name'] = 'Freshdesk Ticket: "{}"'.format(subject)
     # Incident update time - the ticket's update time - The API does not support filtering tickets by creation time
     # but only by update time. The update time will be the creation time of the incidents and the incident id check will
@@ -1550,7 +1550,7 @@ def list_contacts_command():
         # Parse individual contact response in context
         context = format_contact_context(contact)
         contexts.append(context)
-    filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
+    filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.items()])
     title = 'Contacts Filtered by {}'.format(filters_as_strings) if filters else 'All Contacts'
     human_readable = tableToMarkdown(title, contexts, removeNull=False)
     demisto.results({
@@ -1585,7 +1585,7 @@ def get_contact(args):
                       ' email address.'
             return_error(err_msg)
         except Exception as e:
-            return_error(e.message)
+            return_error(e)
     else:
         try:
             filters = {'mobile': args.get('mobile')}
@@ -1598,7 +1598,7 @@ def get_contact(args):
                       'you have a FreshDesk contact with that exact mobile number.'
             return_error(err_msg)
         except Exception as e:
-            return_error(e.message)
+            return_error(e)
 
     endpoint_url = 'contacts/{}'.format(contact_id)
     response = http_request('GET', endpoint_url)

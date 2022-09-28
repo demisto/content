@@ -95,33 +95,41 @@ script:
     description: Search for endpoint information from a hostname
     name: harfanglab-endpoint-search
     outputs:
+    - contextPath: Harfanglab.Agent
+      description: Agent information
+      type: unknown
     - contextPath: Harfanglab.Agent.id
-      description: agent id
+      description: agent id (DEPRECATED)
       type: string
     - contextPath: Harfanglab.status
-      description: Status
+      description: Status (DEPRECATED)
       type: string
   - arguments:
     - name: hash
       description: filehash to search (md5, sha1, sha256)
     - name: hostname
       description: Endpoint hostname
-      required: true
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
       name: to_date
-    description: Search processes on a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    description: Search processes
     name: harfanglab-telemetry-processes
     outputs:
+    - contextPath: Harfanglab.Telemetryprocesses.processes
+      description: Provides a list of processes
     - contextPath: agent.agentid
-      description: An agent's identifier
+      description: An agent's identifier (DEPRECATED)
       type: string
     - contextPath: current_directory
-      description: ''
+      description: 'DEPRECATED'
       type: string
     - contextPath: hashes.sha256
-      description: ''
+      description: 'DEPRECATED'
       type: string
   - arguments:
     - name: agent_id
@@ -133,7 +141,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -148,7 +156,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -160,7 +168,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -172,7 +180,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -184,7 +192,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -196,7 +204,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -208,7 +216,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -220,7 +228,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -232,7 +240,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -244,7 +252,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -256,7 +264,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -268,7 +276,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -282,8 +290,10 @@ script:
       name: hash
     - description: restrict searchs for filename or filepath or filepath_regex to a given path
       name: search_in_path
-    - description: size of the file associated to the 'hash' parameters. If known, it will speed up the search process.
+    - description: size of the file associated to the 'hash' parameters (DEPRECATED, rather use the 'filesize' parameter). If known, it will speed up the search process.
       name: hash_filesize
+    - description: size of the file to search in bytes (can be used when searching a file from a hash or from a filename). If known, it will speed up the search process.
+      name: filesize
     - description: regex to search in registry (key or value)
       name: registry
     - description: 'search a regex on a filepath '
@@ -294,7 +304,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -306,7 +316,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -318,7 +328,7 @@ script:
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
-    - contextPath: action
+    - contextPath: Harfanglab.Job.Action
       description: HarfangLab job action
   - arguments:
     - name: agent_id
@@ -327,12 +337,11 @@ script:
     description: Start a job to download the MFT from a host (Windows)
     name: harfanglab-job-artifact-mft
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -340,12 +349,11 @@ script:
     description: Start a job to download the hives from a host (Windows)
     name: harfanglab-job-artifact-hives
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -353,12 +361,11 @@ script:
     description: Start a job to download the event logs from a host (Windows)
     name: harfanglab-job-artifact-evtx
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -366,12 +373,11 @@ script:
     description: Start a job to download Linux log files from a host (Linux)
     name: harfanglab-job-artifact-logs
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -379,12 +385,11 @@ script:
     description: Start a job to download Linux filesystem entries from a host (Linux)
     name: harfanglab-job-artifact-filesystem
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -392,12 +397,11 @@ script:
     description: Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
     name: harfanglab-job-artifact-all
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -405,16 +409,14 @@ script:
     description: Start a job to get the entine RAM from a host (Windows / Linux)
     name: harfanglab-job-artifact-ramdump
     outputs:
-    - contextPath: Harfanglab.artifact.download_link
-      description: URL to download the artifact
-      type: string
     - contextPath: Harfanglab.Job.ID
       description: id
       type: string
+    - contextPath: Harfanglab.Job.Action
+      description: HarfangLab job action
   - arguments:
     - name: hostname
       description: Endpoint hostname
-      required: true
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
@@ -427,17 +429,32 @@ script:
       description: Destination IP address
     - name: destination_port
       description: Destination port
-    description: Search network connections from a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    outputs:
+    - contextPath: Harfanglab.Telemetrynetwork.network
+      description: Provides a list of network connections
+    description: Search network connections
     name: harfanglab-telemetry-network
   - arguments:
     - name: hostname
       description: Endpoint hostname
-      required: true
+    - name: event_id
+      description: Event id
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
       name: from_date
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
       name: to_date
-    description: Search event logs from a specific hostname
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    outputs:
+    - contextPath: Harfanglab.Telemetryeventlog.eventlog
+      description: Provides a list of event logs
+    description: Search event logs
     name: harfanglab-telemetry-eventlog
   - arguments:
     - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
@@ -446,6 +463,13 @@ script:
       name: to_date
     - name: hash
       description: filehash to search (md5, sha1, sha256)
+    - name: limit
+      description: Maximum number of elements to fetch
+      default: true
+      defaultValue: 100
+    outputs:
+    - contextPath: Harfanglab.Telemetrybinary.binary
+      description: Provides a list of binaries with associated download links. 
     description: Search for binaries
     name: harfanglab-telemetry-binary
   - arguments:
@@ -456,9 +480,9 @@ script:
     description: Get job status information
     name: harfanglab-job-info
     outputs:
-    - contextPath: Harfanglab.Job.Status
+    - contextPath: Harfanglab.Job.Info
       description: Job Status
-      type: string
+      type: unknown
   - arguments:
     - name: job_id
       description: Job id as returned by the job submission commands
@@ -553,7 +577,7 @@ script:
     description: Get a hostname's persistence items from job results
     name: harfanglab-result-persistencelist
     outputs:
-    - contextPath: Harfanglab.PersistenceList.data
+    - contextPath: Harfanglab.Persistence.data
       description: Provides a list of persistence means
   - arguments:
     - name: job_id
@@ -589,7 +613,7 @@ script:
     description: Get a hostname's MFT from job results
     name: harfanglab-result-artifact-mft
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.MFT
       description: Provides a link to download the raw MFT
   - arguments:
     - name: job_id
@@ -598,7 +622,7 @@ script:
     description: Get a hostname's hives from job results
     name: harfanglab-result-artifact-hives
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.HIVES
       description: Provides a link to download the raw hives
   - arguments:
     - name: job_id
@@ -606,7 +630,7 @@ script:
     description: Get a hostname's log files from job results
     name: harfanglab-result-artifact-evtx
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.EVTX
       description: Provides a link to download the evt/evtx files
   - arguments:
     - name: job_id
@@ -614,7 +638,7 @@ script:
     description: Get a hostname's log files from job results
     name: harfanglab-result-artifact-logs
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.LOGS
       description: Provides a link to download the log files
   - arguments:
     - name: job_id
@@ -622,7 +646,7 @@ script:
     description: Get a hostname's filesystem entries from job results
     name: harfanglab-result-artifact-filesystem
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.FS
       description: Provides a link to download the CSV file with filesystem entries
   - arguments:
     - name: job_id
@@ -630,7 +654,7 @@ script:
     description: Get all artifacts from a hostname from job results
     name: harfanglab-result-artifact-all
     outputs:
-    - contextPath: Harfanglab.Artifact.data
+    - contextPath: Harfanglab.Artifact.ALL
       description: Provides a link to download an archive with all raw artifacts
   - arguments:
     - name: job_id
@@ -734,7 +758,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   longRunning: true
   runonce: false

@@ -1,7 +1,3 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Cortex XDR - True Positive Incident Handling
 inputs:
 - description: Add comment to close this incident.
@@ -45,7 +41,11 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.filesha256}
+    complex:
+      root: incident
+      accessor: filesha256
+      transformers:
+      - operator: uniq
 - description: The ID of the host for running an isolation process.
   key: HostID
   playbookInputQuery:
@@ -57,7 +57,11 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.processpath}
+    complex:
+      root: incident
+      accessor: processpaths
+      transformers:
+      - operator: uniq
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
 starttaskid: '0'
@@ -77,12 +81,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      id: 11349e70-efd4-44e1-8f86-8e119082bd38
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    taskid: 11349e70-efd4-44e1-8f86-8e119082bd38
     timertriggers: []
     type: start
     view: |-
@@ -103,13 +107,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3c963ac6-062d-43ad-82d3-e32d2345e793
+      id: 981b2cb5-803f-4fd5-81f7-2cc7e572174c
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 3c963ac6-062d-43ad-82d3-e32d2345e793
+    taskid: 981b2cb5-803f-4fd5-81f7-2cc7e572174c
     timertriggers: []
     type: title
     view: |-
@@ -141,18 +145,22 @@ tasks:
                 value:
                   simple: incident.id
             operator: append
+      closeNotes:
+        simple: ${inputs.Comment}
+      closeReason:
+        simple: ${inputs.Classification}
     separatecontext: false
     skipunavailable: false
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 709eed41-4804-498a-8005-d3f058deaf78
+      id: 9a9db41f-1f81-4939-89f9-4ce77e44781a
       iscommand: true
       name: Close  XSOAR incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 709eed41-4804-498a-8005-d3f058deaf78
+    taskid: 9a9db41f-1f81-4939-89f9-4ce77e44781a
     timertriggers: []
     type: regular
     view: |-
@@ -196,13 +204,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: f60737a4-881f-4178-8eda-f8c5fbfb42a7
+      id: c26e3e04-894f-4d26-80d3-2f0df6074981
       iscommand: false
       name: Approve isolation
       description: Approve isolation
       type: condition
       version: -1
-    taskid: f60737a4-881f-4178-8eda-f8c5fbfb42a7
+    taskid: c26e3e04-894f-4d26-80d3-2f0df6074981
     timertriggers: []
     type: condition
     view: |-
@@ -240,13 +248,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 551a0f82-fae8-44ae-859e-f0a1d406f602
+      id: f745236a-b4e2-491f-8670-2ed157810803
       iscommand: false
       name: Is auto isolation allowed?
       description: Is auto isolation allowed?
       type: condition
       version: -1
-    taskid: 551a0f82-fae8-44ae-859e-f0a1d406f602
+    taskid: f745236a-b4e2-491f-8670-2ed157810803
     timertriggers: []
     type: condition
     view: |-
@@ -270,13 +278,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 70787c2e-d729-41ff-89bd-3bf64cf21071
+      id: 637d780b-eed7-458a-804f-fb5bd51d6320
       iscommand: false
       name: Incident Auditing
       type: title
       version: -1
       description: ''
-    taskid: 70787c2e-d729-41ff-89bd-3bf64cf21071
+    taskid: 637d780b-eed7-458a-804f-fb5bd51d6320
     timertriggers: []
     type: title
     view: |-
@@ -293,17 +301,27 @@ tasks:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: SNOW
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
       label: SNOW
     - condition:
       - - left:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: JIRA
@@ -325,13 +343,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: f627100b-ceac-476d-8873-5e98d1a40e52
+      id: 4998e2bc-c881-419d-8248-97e0744f8bff
       iscommand: false
       name: Is a ticketing system defined?
       description: Is a ticketing system defined?
       type: condition
       version: -1
-    taskid: f627100b-ceac-476d-8873-5e98d1a40e52
+    taskid: 4998e2bc-c881-419d-8248-97e0744f8bff
     timertriggers: []
     type: condition
     view: |-
@@ -355,13 +373,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 31e524b7-6bc7-4fc4-86d8-cd3c526e5cd6
+      id: c5403268-5531-455d-8224-2c7bacde048f
       iscommand: false
       name: Done auditing step
       type: title
       version: -1
       description: ''
-    taskid: 31e524b7-6bc7-4fc4-86d8-cd3c526e5cd6
+    taskid: c5403268-5531-455d-8224-2c7bacde048f
     timertriggers: []
     type: title
     view: |-
@@ -385,13 +403,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 022b1f1e-2c09-4ea5-8eb5-0cfa04fb0d9f
+      id: dffa5a0f-848c-4c2c-8345-c1a330cdf68e
       iscommand: false
       name: Block Indicators
       type: title
       version: -1
       description: ''
-    taskid: 022b1f1e-2c09-4ea5-8eb5-0cfa04fb0d9f
+    taskid: dffa5a0f-848c-4c2c-8345-c1a330cdf68e
     timertriggers: []
     type: title
     view: |-
@@ -415,7 +433,10 @@ tasks:
           simple: Mark the indicators to block
         options: []
         optionsarg:
-        - simple: ${inputs.FileSha256}
+        - complex:
+            root: inputs.FileSha256
+            transformers:
+            - operator: uniq
         placeholder: ''
         readonly: false
         required: false
@@ -451,13 +472,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3dfc8c02-1927-41d1-8cdc-522a9820c85c
+      id: dc20ccc0-debb-429b-8acd-44950a7ad521
       iscommand: false
       name: Confirm Indicators to block
       description: Confirm Indicators to block
       type: collection
       version: -1
-    taskid: 3dfc8c02-1927-41d1-8cdc-522a9820c85c
+    taskid: dc20ccc0-debb-429b-8acd-44950a7ad521
     timertriggers: []
     type: collection
     view: |-
@@ -487,13 +508,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.indicators
-      id: a7aa5880-f50f-4381-8bc1-cdbe9ca97c5c
+      id: a75770e3-3c63-4198-8193-7f57e39f2234
       iscommand: true
       name: Tag Indicators
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: a7aa5880-f50f-4381-8bc1-cdbe9ca97c5c
+    taskid: a75770e3-3c63-4198-8193-7f57e39f2234
     timertriggers: []
     type: regular
     view: |-
@@ -517,13 +538,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 9f476ea3-8689-4ae4-8ec9-b74d83d3ff6b
+      id: d0fccaee-9158-44ad-867d-3da0cb14a62d
       iscommand: false
       name: Done block indicators
       type: title
       version: -1
       description: ''
-    taskid: 9f476ea3-8689-4ae4-8ec9-b74d83d3ff6b
+    taskid: d0fccaee-9158-44ad-867d-3da0cb14a62d
     timertriggers: []
     type: title
     view: |-
@@ -547,13 +568,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 68b11324-2383-4ef8-8ee5-2253dca9e9e7
+      id: 9db48d58-13dc-4d2b-8fc8-f934b8a8e61d
       iscommand: false
       name: Isolate system/s
       type: title
       version: -1
       description: ''
-    taskid: 68b11324-2383-4ef8-8ee5-2253dca9e9e7
+    taskid: 9db48d58-13dc-4d2b-8fc8-f934b8a8e61d
     timertriggers: []
     type: title
     view: |-
@@ -577,13 +598,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c3c6e299-3277-47f9-8e14-a6909bebdbe1
+      id: 0fc69008-4879-44e6-8efa-f52a037d6402
       iscommand: false
       name: Done with isolating the infected device
       type: title
       version: -1
       description: ''
-    taskid: c3c6e299-3277-47f9-8e14-a6909bebdbe1
+    taskid: 0fc69008-4879-44e6-8efa-f52a037d6402
     timertriggers: []
     type: title
     view: |-
@@ -607,13 +628,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: e575ee22-5b49-4061-8640-1f01964e73a0
+      id: aef83a49-1bea-422e-8403-cadf27802149
       iscommand: false
       name: Final Closure
       type: title
       version: -1
       description: ''
-    taskid: e575ee22-5b49-4061-8640-1f01964e73a0
+    taskid: aef83a49-1bea-422e-8403-cadf27802149
     timertriggers: []
     type: title
     view: |-
@@ -644,13 +665,13 @@ tasks:
         This script is used to wrap the generic create-record command in ServiceNow.
         You can add fields that you want to create the record with as script arguments or in the
         code and work with the records easily.
-      id: 4cb4c297-3421-43fe-8a41-320b3744f30f
+      id: e7d1c80a-7f2d-4545-8ff7-c65ea67ca265
       iscommand: false
       name: Open Snow ticket
-      scriptName: ServiceNowCreateIncident
       type: regular
       version: -1
-    taskid: 4cb4c297-3421-43fe-8a41-320b3744f30f
+      script: ServiceNowCreateIncident
+    taskid: e7d1c80a-7f2d-4545-8ff7-c65ea67ca265
     timertriggers: []
     type: regular
     view: |-
@@ -680,13 +701,13 @@ tasks:
     task:
       brand: ''
       description: Creates a new issue in Jira.
-      id: cf21a798-7061-4ea9-8b55-f251e87fc5dd
+      id: 05db7622-4b76-443d-8c1b-969f7ab4837b
       iscommand: true
       name: Open Jira ticket
       script: '|||jira-create-issue'
       type: regular
       version: -1
-    taskid: cf21a798-7061-4ea9-8b55-f251e87fc5dd
+    taskid: 05db7622-4b76-443d-8c1b-969f7ab4837b
     timertriggers: []
     type: regular
     view: |-
@@ -718,13 +739,13 @@ tasks:
     task:
       brand: ''
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      id: 2394b4c9-48a8-4f34-8f74-16d6f6cae38b
+      id: 741f883d-a6f0-408a-89fe-f326e39cc9da
       iscommand: false
       name: Is ServiceNow Available?
       scriptName: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 2394b4c9-48a8-4f34-8f74-16d6f6cae38b
+    taskid: 741f883d-a6f0-408a-89fe-f326e39cc9da
     timertriggers: []
     type: condition
     view: |-
@@ -756,13 +777,13 @@ tasks:
     task:
       brand: ''
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      id: 7bae04fd-831d-43a4-85d2-490036807ee6
+      id: b6bda6ab-a83f-4e7d-804a-7c7c255db9d7
       iscommand: false
       name: Is Jira Available?
       scriptName: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 7bae04fd-831d-43a4-85d2-490036807ee6
+    taskid: b6bda6ab-a83f-4e7d-804a-7c7c255db9d7
     timertriggers: []
     type: condition
     view: |-
@@ -786,13 +807,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3f271aea-d790-4519-82bd-38e0985b3683
+      id: 48698586-b1d5-4a9a-8ed3-ee37b7e2a1ee
       iscommand: false
       name: Done with isolating the infected device
       type: title
       version: -1
       description: ''
-    taskid: 3f271aea-d790-4519-82bd-38e0985b3683
+    taskid: 48698586-b1d5-4a9a-8ed3-ee37b7e2a1ee
     timertriggers: []
     type: title
     view: |-
@@ -816,13 +837,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: e17d0f3a-673b-4c6d-8610-169bbf78c73e
+      id: 084ee8e5-5651-4bf6-88ae-3360ecc1ea22
       iscommand: false
       name: Clean Malicious Files
       type: title
       version: -1
       description: ''
-    taskid: e17d0f3a-673b-4c6d-8610-169bbf78c73e
+    taskid: 084ee8e5-5651-4bf6-88ae-3360ecc1ea22
     timertriggers: []
     type: title
     view: |-
@@ -856,13 +877,13 @@ tasks:
     task:
       brand: ''
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
-      id: f5147d47-a7ce-4434-804d-3e31ae018797
+      id: 9343c6d4-5097-47e0-89df-f462cef8aa8a
       iscommand: false
       name: Cortex XDR - Isolate Endpoint
-      playbookId: Cortex XDR - Isolate Endpoint
       type: playbook
       version: -1
-    taskid: f5147d47-a7ce-4434-804d-3e31ae018797
+      playbookName: Cortex XDR - Isolate Endpoint
+    taskid: 9343c6d4-5097-47e0-89df-f462cef8aa8a
     timertriggers: []
     type: playbook
     view: |-
@@ -899,13 +920,13 @@ tasks:
     task:
       brand: ''
       description: Initiates a new endpoint script execution to delete the specified file and retrieve the results.
-      id: 068f10b0-dba5-4ddc-8720-57bc57b79fdb
+      id: 480bc329-81ff-4f7e-8f55-977b58dda775
       iscommand: false
       name: Cortex XDR - delete file
-      playbookId: Cortex XDR - delete file
       type: playbook
       version: -1
-    taskid: 068f10b0-dba5-4ddc-8720-57bc57b79fdb
+      playbookName: Cortex XDR - delete file
+    taskid: 480bc329-81ff-4f7e-8f55-977b58dda775
     timertriggers: []
     type: playbook
     view: |-
@@ -928,18 +949,20 @@ tasks:
     scriptarguments:
       hash_list:
         simple: ${Indicators to block.Answers.0}
+      incident_id:
+        simple: ${incident.externalsystemid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Block lists requested files which have not already been block listed or added to allow lists.
-      id: c75d027f-fe8e-4c47-82f8-7d9299935e0d
+      id: f46a2197-9bb8-40c4-8916-e99ca9f5e572
       iscommand: true
       name: Create IOCs in Cortex XDR - Banned Hashes
       script: '|||xdr-blocklist-files'
       type: regular
       version: -1
-    taskid: c75d027f-fe8e-4c47-82f8-7d9299935e0d
+    taskid: f46a2197-9bb8-40c4-8916-e99ca9f5e572
     timertriggers: []
     type: regular
     view: |-
@@ -963,7 +986,7 @@ tasks:
           simple: Confirm which File Path will be deleted
         options: []
         optionsarg:
-        - simple: ${incident.processpaths}
+        - simple: ${inputs.FilePaths}
         placeholder: ''
         readonly: false
         required: false
@@ -999,13 +1022,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1c398210-5829-4044-8751-5bd3ace1d4a8
+      id: a796d2a1-aa24-474b-86f8-a924de9a6921
       iscommand: false
       name: Confirm which File Path will be deleted
       description: Confirm which File Path will be deleted
       type: collection
       version: -1
-    taskid: 1c398210-5829-4044-8751-5bd3ace1d4a8
+    taskid: a796d2a1-aa24-474b-86f8-a924de9a6921
     timertriggers: []
     type: collection
     view: |-
@@ -1040,13 +1063,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 87596909-dda7-468f-87a4-3d071faed4d4
+      id: feaee1c2-e038-485d-87d7-0f00dde68c1b
       iscommand: false
       name: Was there any hash selected?
       description: Was there any hash selected?
       type: condition
       version: -1
-    taskid: 87596909-dda7-468f-87a4-3d071faed4d4
+    taskid: feaee1c2-e038-485d-87d7-0f00dde68c1b
     timertriggers: []
     type: condition
     view: |-
@@ -1082,13 +1105,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 8fa1dc23-1b7d-4ec4-8f21-84632228f063
+      id: 910e051c-6606-49c7-85a3-9abb353c0a7c
       iscommand: false
       name: Was there any hash selected?
       description: Was there any hash selected?
       type: condition
       version: -1
-    taskid: 8fa1dc23-1b7d-4ec4-8f21-84632228f063
+    taskid: 910e051c-6606-49c7-85a3-9abb353c0a7c
     timertriggers: []
     type: condition
     view: |-
@@ -1114,13 +1137,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 960c5dd8-6e8d-4ed3-87d9-a3b1f7da17ec
+      id: b3f53ec5-9365-4717-81a7-73db4ef09539
       iscommand: false
       name: Remediation
       type: title
       version: -1
       description: ''
-    taskid: 960c5dd8-6e8d-4ed3-87d9-a3b1f7da17ec
+    taskid: b3f53ec5-9365-4717-81a7-73db4ef09539
     timertriggers: []
     type: title
     view: |-
@@ -1144,7 +1167,7 @@ view: |-
     }
   }
 tests:
-- Test XDR Playbook
+- No tests (auto formatted)
 fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.

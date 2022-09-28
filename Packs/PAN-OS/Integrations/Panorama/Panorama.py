@@ -46,6 +46,8 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
+DEVICE_GROUP_PARAM_NAME = 'device_group'
+DEVICE_GROUP_ARG_NAME = 'device-group'
 
 XPATH_OBJECTS = ''
 
@@ -121,6 +123,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'educational-institutions',
     'entertainment-and-arts',
     'extremism',
+    'financial-services',
     'gambling',
     'games',
     'government',
@@ -174,7 +177,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-based-email',
     'high-risk',
     'medium-risk',
-    'low-risk'
+    'low-risk',
+    'real-time-detection',
+    'ransomware'
 }
 
 class PAN_OS_Not_Found(Exception):
@@ -295,6 +300,37 @@ def http_request(uri: str, method: str, headers: dict = {},
             raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
+
+
+def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
+    """
+    When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
+    This function takes any api response of pan-os with data that was not committed and removes the un-relevant data
+    from the response recursively so the response would be just like an object that was already committed.
+    This must be done to keep the context aligned with both committed and un-committed objects.
+
+    Args:
+        dictionary (dict): The entry that the pan-os objects is in.
+        keys_to_remove (list): keys which should be removed from the pan-os api response
+    """
+    for key in keys_to_remove:
+        if key in dictionary:
+            del dictionary[key]
+
+    for key in dictionary:
+        if isinstance(dictionary[key], dict) and '#text' in dictionary[key]:
+            dictionary[key] = dictionary[key]['#text']
+        elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
+                and dictionary[key][0].get('#text'):
+            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+
+    for value in dictionary.values():
+        if isinstance(value, dict):
+            parse_pan_os_un_committed_data(value, keys_to_remove)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    parse_pan_os_un_committed_data(item, keys_to_remove)
 
 
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
@@ -885,36 +921,78 @@ def panorama_push_to_template_stack(args: dict):
     return result
 
 
+@polling_function(
+    name='pan-os-push-to-device-group',
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 120))
+)
 def panorama_push_to_device_group_command(args: dict):
     """
-    Push Panorama configuration and show message in warroom
+    Push Panorama configuration and show message in war-room
     """
-
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group(args)
-    if 'result' in result['response']:
-        # commit has been given a jobid
-        push_output = {
-            'DeviceGroup': DEVICE_GROUP,
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
-                                             removeNull=True),
-            'EntryContext': {
-                "Panorama.Push(val.JobID == obj.JobID)": push_output
-            }
-        })
+    description = args.get('description')
+
+    if push_job_id := args.get('push_job_id'):
+        result = panorama_push_status(job_id=push_job_id)
+
+        push_status = result.get('response', {}).get('result', {})
+
+        push_output = parse_push_status_response(result)
+        push_output['DeviceGroup'] = DEVICE_GROUP
+        if description:
+            push_output['Description'] = description
+
+        return PollResult(
+            response=CommandResults(
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=push_output,
+                readable_output=tableToMarkdown('Push to Device Group:', push_output, removeNull=True)
+            ),
+            continue_to_poll=push_status.get('job', {}).get('status') != 'FIN'  # continue polling if job isn't done
+        )
     else:
-        # no changes to commit
-        return_results(result['response']['msg']['line'])
+        result = panorama_push_to_device_group(args)
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'DeviceGroup': DEVICE_GROUP,
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            if description:
+                context_output['Description'] = description
+            continue_to_poll = True
+            push_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.Push',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+            )
+        else:
+            push_output = CommandResults(
+                readable_output=result.get('response', {}).get('msg') or 'There are no changes to push.'
+            )
+            continue_to_poll = False
+
+        args_for_next_run = {
+                'push_job_id': job_id,
+                'polling': argToBoolean(args.get('polling', False)),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'description': description
+            }
+
+        return PollResult(
+            response=push_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run=args_for_next_run,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {DEVICE_GROUP}...'
+            )
+        )
 
 
 def panorama_push_to_template_command(args: dict):
@@ -977,6 +1055,7 @@ def panorama_push_to_template_stack_command(args: dict):
         # no changes to commit
         return_results(result['response']['msg']['line'])
 
+
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
     params = {
@@ -1009,13 +1088,7 @@ def safeget(dct: dict, keys: List[str]):
     return dct
 
 
-def panorama_push_status_command(args: dict):
-    """
-    Check jobID of push status
-    """
-    job_id = args.get('job_id')
-    target = args.get('target')
-    result = panorama_push_status(job_id, target)
+def parse_push_status_response(result: dict):
     job = result.get('response', {}).get('result', {}).get('job', {})
     if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
         raise Exception('JobID given is not of a Push neither of a validate.')
@@ -1047,9 +1120,25 @@ def panorama_push_status_command(args: dict):
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
             device_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not device_errors else device_errors)
+            if isinstance(device_errors, str) and device_errors:
+                status_errors.append(device_errors)
+            else:
+                status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
+
+    return push_status_output
+
+
+def panorama_push_status_command(args: dict):
+    """
+    Check jobID of push status
+    """
+    job_id = args.get('job_id')
+    target = args.get('target')
+    result = panorama_push_status(job_id, target)
+
+    push_status_output = parse_push_status_response(result)
 
     return_results({
         'Type': entryTypes['note'],
@@ -1673,7 +1762,7 @@ def panorama_edit_address_group_command(args: dict):
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Address Group was edited successfully.',
+        'HumanReadable': f'Address Group {address_group_name} was edited successfully.',
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
         }
@@ -2595,8 +2684,14 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
-                                      additional_malicious: list, target: Optional[str] = None):
+def panorama_get_url_category_command(
+    url_cmd: str,
+    url: str,
+    additional_suspicious: list,
+    additional_malicious: list,
+    reliability: str,
+    target: Optional[str] = None
+):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2632,7 +2727,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=max_url_dbot_score
+                score=max_url_dbot_score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -2652,7 +2748,8 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
                 indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name='PAN-OS',
-                score=score
+                score=score,
+                reliability=reliability
             )
             url_obj = Common.URL(
                 url=url,
@@ -3158,26 +3255,8 @@ def panorama_move_rule_command(args: dict):
     """
     Move a security rule
     """
+    result = panorama_move_rule(args)
     rulename = args['rulename']
-    params = {
-        'type': 'config',
-        'action': 'move',
-        'key': API_KEY,
-        'where': args['where'],
-    }
-
-    if DEVICE_GROUP:
-        if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
-        else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
-    else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-
-    if 'dst' in args:
-        params['dst'] = args['dst']
-
-    result = http_request(URL, 'POST', body=params)
     rule_output = {'Name': rulename}
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -3194,6 +3273,27 @@ def panorama_move_rule_command(args: dict):
     })
 
 
+def panorama_move_rule(args):
+    rulename = args['rulename']
+    params = {
+        'type': 'config',
+        'action': 'move',
+        'key': API_KEY,
+        'where': args['where'],
+    }
+    if DEVICE_GROUP:
+        if not PRE_POST:
+            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+    else:
+        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+    if 'dst' in args:
+        params['dst'] = args['dst']
+    result = http_request(URL, 'POST', body=params)
+    return result
+
+
 ''' Security Rule Configuration '''
 
 
@@ -3202,7 +3302,7 @@ def panorama_create_rule_command(args: dict):
     """
     Create a security rule
     """
-    rulename = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
+    rulename = args['rulename'] = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(args.get('source'))
     destination = argToList(args.get('destination'))
     source_zone = argToList(args.get('source_zone'))
@@ -3249,6 +3349,12 @@ def panorama_create_rule_command(args: dict):
     rule_output['Name'] = rulename
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
+
+    if where:
+        try:
+            panorama_move_rule(args)
+        except Exception as e:
+            demisto.error(f'Unable to move rule. {e}')
 
     return_results({
         'Type': entryTypes['note'],
@@ -3714,12 +3820,13 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
         'action': 'get',
         'key': API_KEY
     }
-    if predefined:
+    if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
             params['xpath'] = '/config/predefined/application'
     else:
+        # if device-group was provided it will be set in initialize_instance function.
         params['xpath'] = XPATH_OBJECTS + "application/entry"
 
     result = http_request(
@@ -3763,6 +3870,9 @@ def panorama_list_applications_command(predefined: Optional[str] = None):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+    for edl in edls_arr:
+        parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
+
     pretty_edls_arr = []
     if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
         return prettify_edl(edls_arr)
@@ -6321,7 +6431,12 @@ def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     return result
 
 
-def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
+def apply_security_profile_command(args):
+    profile_name = args.get('profile_name')
+    profile_type = args.get('profile_type')
+    rule_name = args.get('rule_name')
+    pre_post = args.get('rule_name')
+
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
@@ -7510,10 +7625,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
 
-    if args and args.get('device-group'):
-        DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
-    else:
-        DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
+    DEVICE_GROUP = args.get(DEVICE_GROUP_ARG_NAME) or params.get(DEVICE_GROUP_PARAM_NAME)  # type: ignore[assignment]
 
     if args and args.get('template'):
         TEMPLATE = args.get('template')  # type: ignore[assignment]
@@ -11064,6 +11176,7 @@ def main():
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
         additional_suspicious = argToList(params.get('additional_suspicious'))
+        reliability = params.get('integrationReliability')
         initialize_instance(args=args, params=params)
         command = demisto.command()
         LOG(f'Command being called is: {command}')
@@ -11084,7 +11197,7 @@ def main():
             panorama_commit_status_command(args)
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
-            panorama_push_to_device_group_command(args)
+            return_results(panorama_push_to_device_group_command(args))
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
         elif command == 'pan-os-push-to-template-stack':
@@ -11166,27 +11279,42 @@ def main():
         # URL Filtering capabilities
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
-                panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                                  additional_suspicious=additional_suspicious,
-                                                  additional_malicious=additional_malicious)
+                panorama_get_url_category_command(
+                    url_cmd='url',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
+                )
             # do not error out
 
         elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
-            panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious,
-                                              target=args.get('target'),
-                                              )
+            panorama_get_url_category_command(
+                url_cmd='url',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                target=args.get('target'),
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
-            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-cloud',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
-            panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
-                                              additional_suspicious=additional_suspicious,
-                                              additional_malicious=additional_malicious)
+            panorama_get_url_category_command(
+                url_cmd='url-info-host',
+                url=args.get('url'),
+                additional_suspicious=additional_suspicious,
+                additional_malicious=additional_malicious,
+                reliability=reliability
+            )
 
         # URL Filter
         elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
@@ -11365,7 +11493,7 @@ def main():
             get_security_profiles_command(args.get('security_profile'))
 
         elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
-            apply_security_profile_command(**args)
+            apply_security_profile_command(args)
 
         elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)

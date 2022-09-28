@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer, Build, get_packs_with_higher_min_version
+    XSOARBuild, XSOARServer, XSIAMBuild, XSIAMServer, Build, get_packs_with_higher_min_version
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
@@ -30,6 +30,7 @@ def options_handler():
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         type=str2bool, default=False, required=True)
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -153,9 +154,10 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
     xsiam_machine = options.xsiam_machine
-    xsiam_servers = get_json_file(options.xsiam_servers_path)
-    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(xsiam_machine,
-                                                                                                xsiam_servers)
+    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(
+        xsiam_machine,
+        options.xsiam_servers_path,
+        options.xsiam_servers_api_keys)
     # Configure the Server
     server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)

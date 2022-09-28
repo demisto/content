@@ -13,33 +13,46 @@ configuration:
   required: true
   type: 0
 - display: User Email Address (Use for auto token refresh)
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Password
+- display: User Email Address (Use for auto token refresh)
   name: email
   required: false
   type: 0
+  hidden: true
 - display: Password
   name: password
   required: false
   type: 4
+  hidden: true
+- display: App Key
+  name: appKey_creds
+  required: false
+  type: 9
+  displaypassword: App Key
+  hiddenusername: true
 - display: App key
   name: appKey
   required: false
   type: 4
+  hidden: true
 - display: AccessKey
   name: accessKey
   required: false
   type: 0
+- display: Secret Key
+  name: secretKey_creds
+  required: false
+  type: 9
+  displaypassword: Secret Key
+  hiddenusername: true
 - display: SecretKey
   name: secretKey
   required: false
   type: 4
-- display: Trust any certificate (not secure)
-  name: new_insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+  hidden: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -48,14 +61,30 @@ configuration:
   name: fetchURL
   required: false
   type: 8
+  hidden: true
 - display: Fetch attachment incidents
   name: fetchAttachments
   required: false
   type: 8
+  hidden: true
 - display: Fetch impersonation incidents
   name: fetchImpersonations
   required: false
   type: 8
+  hidden: true
+- additionalinfo: Fetch specific incident types. Default value is "All".
+  defaultvalue: All
+  display: Fetch incident types
+  hidden: false
+  name: incidentsToFetch
+  options:
+  - All
+  - Impersonation
+  - Attachments
+  - Url
+  - Held Messages
+  required: false
+  type: 16
 - display: Incident type
   name: incidentType
   required: false
@@ -65,6 +94,14 @@ configuration:
   name: fetchDelta
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: new_insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
@@ -96,7 +133,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Search in specific dates only (default is all mails fomr)
+      description: Search in specific dates only.
       isArray: false
       name: date
       predefined:
@@ -165,10 +202,7 @@ script:
       description: Search email by text in body, will override the text and subject arguments
       isArray: false
       name: body
-      required: false
-      secret: false
-    - default: false
-      description: Sets the number of results to return per page (default 25)
+    - description: Number of results per page to display.
       isArray: false
       name: pageSize
       required: false
@@ -188,11 +222,22 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: limit
+      description: The maximum number of results to return.
       required: false
-      secret: false
+      isArray: false
+      defaultValue: "20"
+      predefined:
+      - ""
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
-    description: Query mimecast emails
-    execution: false
+    description: Query Mimecast emails. This is an archive search command.
     name: mimecast-query
     outputs:
     - contextPath: Mimecast.Message.ID
@@ -220,7 +265,7 @@ script:
       description: Message status
       type: string
   - deprecated: false
-    description: List all existing mimecast blocked sender policies
+    description: List all existing Mimecast blocked sender policies
     execution: false
     name: mimecast-list-blocked-sender-policies
     outputs:
@@ -237,16 +282,16 @@ script:
       description: Block Sender by group
       type: string
     - contextPath: Mimecast.Policy.Bidirectional
-      description: Blocked policy is Bidirectional or not
+      description: Blocked policy is bidirectional or not
       type: boolean
     - contextPath: Mimecast.Policy.Receiver.Address
-      description: Block emails to Receiver type address
+      description: Block emails to receiver type address
       type: string
     - contextPath: Mimecast.Policy.Receiver.Domain
-      description: Block emails to Receiver type domain
+      description: Block emails to receiver type domain
       type: string
     - contextPath: Mimecast.Policy.Receiver.Group
-      description: Block emails to Receiver type group
+      description: Block emails to receiver type group
       type: string
     - contextPath: Mimecast.Policy.FromDate
       description: Policy validation start date
@@ -255,10 +300,10 @@ script:
       description: Policy expiration date
       type: date
     - contextPath: Mimecast.Policy.Sender.Type
-      description: Block emails to Sender type
+      description: Block emails to sender type
       type: string
     - contextPath: Mimecast.Policy.Receiver.Type
-      description: Block emails to Receiver type
+      description: Block emails to receiver type
       type: string
   - arguments:
     - default: false
@@ -285,16 +330,16 @@ script:
       description: Block Sender by group
       type: string
     - contextPath: Mimecast.Policy.Bidirectional
-      description: Blocked policy is Bidirectional or not
+      description: Blocked policy is bidirectional or not
       type: boolean
     - contextPath: Mimecast.Policy.Receiver.Address
-      description: Block emails to Receiver type address
+      description: Block emails to receiver type address
       type: string
     - contextPath: Mimecast.Policy.Receiver.Domain
-      description: Block emails to Receiver type domain
+      description: Block emails to receiver type domain
       type: string
     - contextPath: Mimecast.Policy.Receiver.Group
-      description: Block emails to Receiver type group
+      description: Block emails to receiver type group
       type: string
     - contextPath: Mimecast.Policy.Fromdate
       description: Policy validation start date
@@ -392,16 +437,16 @@ script:
       description: Block Sender by group
       type: string
     - contextPath: Mimecast.Policy.Bidirectional
-      description: Blocked policy is Bidirectional or not
+      description: Blocked policy is bidirectional or not
       type: boolean
     - contextPath: Mimecast.Policy.Receiver.Address
-      description: Block emails to Receiver type address
+      description: Block emails to receiver type address
       type: string
     - contextPath: Mimecast.Policy.Receiver.Domain
-      description: Block emails to Receiver type domain
+      description: Block emails to receiver type domain
       type: string
     - contextPath: Mimecast.Policy.Receiver.Group
-      description: Block emails to Receiver type group
+      description: Block emails to receiver type group
       type: string
     - contextPath: Mimecast.Policy.Fromdate
       description: Policy validation start date
@@ -453,6 +498,27 @@ script:
       - block
       required: true
       secret: false
+    - name: limit
+      description: The maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: "20"
+      predefined:
+      - ""
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Permit or block a specific sender
     execution: false
@@ -629,9 +695,29 @@ script:
       name: subject
       required: false
       secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
-    description: Get a list of messages for a given user
-    execution: false
+    description: Get a list of messages for a given user. This is an archive search command.
     name: mimecast-list-messages
     outputs:
     - contextPath: Mimecast.Message.Subject
@@ -693,14 +779,27 @@ script:
       name: limit
       required: false
       secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns Attachment Protect logs for a Mimecast customer account
     execution: false
     name: mimecast-get-attachment-logs
     outputs:
     - contextPath: Mimecast.AttachmentLog.Result
-      description: 'The result of the attachment analysis: clean, malicious, unknown,
-        or timeout'
+      description: 'The result of the attachment analysis: clean, malicious, unknown, or timeout'
       type: string
     - contextPath: Mimecast.AttachmentLog.Date
       description: The time at which the attachment was released from the sandbox
@@ -745,7 +844,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: malicious
-      description: Filters logs by scan result, default is all
+      description: Filters logs by scan result
       isArray: false
       name: resultType
       predefined:
@@ -761,9 +860,22 @@ script:
       name: limit
       required: false
       secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
-    description: Returns URL protect logs for a Mimecast customer account
-    execution: false
+    description: Returns URL protect logs for a Mimecast customer account. Default value of scanResult as malicious
     name: mimecast-get-url-logs
     outputs:
     - contextPath: Mimecast.UrlLog.Category
@@ -791,8 +903,7 @@ script:
       description: The action that was taken for the click
       type: string
     - contextPath: Mimecast.UrlLog.Route
-      description: 'The route of the original email containing the attachment, either:
-        inbound, outbound, internal, or external'
+      description: 'The route of the original email containing the attachment, either: inbound, outbound, internal, or external'
       type: string
     - contextPath: Mimecast.UrlLog. userOverride
       description: The action requested by the user.
@@ -807,8 +918,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: ' Filters for messages tagged malicious (true) or not tagged malicious
-        (false). Omit for no tag filtering. default is true'
+      description: ' Filters for messages tagged malicious (true) or not tagged malicious (false). Omit for no tag filtering. Default is true'
       isArray: false
       name: taggedMalicious
       predefined:
@@ -818,7 +928,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field to search,Defaults to all (meaning all of the preceding fields)
+      description: The field to search. Default is all (meaning all of the preceding fields)
       isArray: false
       name: searchField
       predefined:
@@ -830,8 +940,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Required if searchField exists. A character string to search for
-        in the logs.
+      description: Required if searchField exists. A character string to search for in the logs.
       isArray: false
       name: query
       required: false
@@ -876,7 +985,7 @@ script:
       - stationery
       - gcc
       - secure_delivery
-      - derivery_route
+      - delivery_route
       - document_policy
       - disable_document_policy
       - attach_set_policy
@@ -890,6 +999,20 @@ script:
       name: limit
       required: false
       secret: false
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns Impersonation Protect logs for a Mimecast customer account
     execution: false
@@ -920,7 +1043,7 @@ script:
       description: The time at which the log was recorded
       type: date
     - contextPath: Mimecast.Impersonation.Action
-      description: ' The action triggered by the email'
+      description: 'The action triggered by the email'
       type: string
     - contextPath: Mimecast.Impersonation.Policy
       description: The name of the policy definition that triggered the log
@@ -983,7 +1106,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Defines which copy of the message part to return, must be one of: "delievered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all)'
+      description: 'Defines which copy of the message part to return, must be one of: "delivered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all)'
       isArray: false
       name: context
       predefined:
@@ -1017,8 +1140,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the contents or metadata of a given message
-    execution: false
+    description: Get the contents or metadata of a given message. This is an archive search command.
     name: mimecast-get-message
     outputs:
     - contextPath: Mimecast.Message.ID
@@ -1094,7 +1216,7 @@ script:
       description: Basic information of the file
       type: string
     - contextPath: File.Type
-      description: File type e.g. "PE"
+      description: File type e.g., "PE"
       type: string
     - contextPath: File.MD5
       description: MD5 hash of the file
@@ -1107,12 +1229,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download attachments from a specified message
-    execution: false
+    description: Download attachments from a specified message. This is an archive search command.
     name: mimecast-download-attachments
     outputs:
     - contextPath: File.Size
-      description: File Size
+      description: File size
       type: number
     - contextPath: File.SHA1
       description: SHA1 hash of the file
@@ -1133,7 +1254,7 @@ script:
       description: Basic information of the file
       type: string
     - contextPath: File.Type
-      description: File type e.g. "PE"
+      description: File type e.g., "PE"
       type: string
     - contextPath: File.MD5
       description: MD5 hash of the file
@@ -1147,7 +1268,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group source by which to filter. Can be "cloud" or "ldap".
+      description: The group source by which to filter. 
       isArray: false
       name: query_source
       predefined:
@@ -1240,7 +1361,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Adds a user to a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
     execution: false
     name: mimecast-add-group-member
     outputs:
@@ -1270,7 +1391,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Removes a user from a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
     execution: false
     name: mimecast-remove-group-member
     outputs:
@@ -1288,8 +1409,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Mimecast ID of the new group's parent. Default will be root
-        level.
+      description: The Mimecast ID of the new group's parent. Default will be root level.
       isArray: false
       name: parent_id
       required: false
@@ -1365,7 +1485,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The message component by which to search. Can be "hash" or "messagId". Default is "hash".
+      description: The message component by which to search. Default is "hash".
       isArray: false
       name: search_by
       predefined:
@@ -1374,14 +1494,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The startt date of messages to remediate. Default value is the
-        previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'The start date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: 'Theend date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'The end date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: end_date
       required: false
@@ -1526,9 +1645,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The sender type by which to block senders in the policy. This argument
-        must match the fromValue argument. For example, if you specify email_domain,
-        the fromValue must be an email domain.
+      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
       isArray: false
       name: fromType
       predefined:
@@ -1559,7 +1676,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The block action. Can be "no_action" or "block_sender".
+      description: The block action. 
       isArray: false
       name: option
       predefined:
@@ -1581,7 +1698,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
+      description: The part from where addresses are pulled. 
       isArray: false
       name: fromPart
       predefined:
@@ -1599,7 +1716,7 @@ script:
       description: Policy ID.
       type: string
     - contextPath: Mimecast.Policy.Sender.Address
-      description: Block Sender by email address value.
+      description: Block sender by email address value.
       type: string
     - contextPath: Mimecast.Policy.Sender.Domain
       description: Block sender by domain value.
@@ -1631,15 +1748,805 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type.
       type: String
+  - name: mimecast-search-message
+    description: Searches a message.
+    deprecated: false
+    arguments:
+    - name: search_reason
+      description: Reason for tracking the email
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: from_date
+      description: API start parameter. Datetime format is ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: API end parameter  Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: message_id
+      description: The internet message ID of the message to track.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: from
+      description: "Part of advancedTrackAndTraceOptions object: The sending email address or domain of the messages to track."
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to
+      description: "Part of advancedTrackAndTraceOptions object: The recipient email address or domain of the messages to track."
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: subject
+      description: "Part of advancedTrackAndTraceOptions object: The subject of the messages to track."
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: sender_ip
+      description: "Part of advancedTrackAndTraceOptions object: The source IP address of the messages to track."
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: route
+      description: A comma-separated list of routes to filter by.
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - internal
+      - outbound
+      - inbound
+    outputs:
+    - contextPath: Mimecast.SearchMessage.info
+      description: Info regarding the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.id
+      description: The Mimecast ID of the message. Used to load more information about the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.status
+      description: The status of the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.fromEnv.emailAddress
+      description: The email address of the sender.
+      type: String
+    - contextPath: Mimecast.SearchMessage.fromHdr.displayableName
+      description: The display name of the recipient.
+      type: String
+    - contextPath: Mimecast.SearchMessage.fromHdr.emailAddress
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Mimecast.SearchMessage.to.displayableName
+      description: The display name of the recipient.
+      type: String
+    - contextPath: Mimecast.SearchMessage.to.emailAddress
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Mimecast.SearchMessage.received
+      description: The date and time the message was received by Mimecast.
+      type: Date
+    - contextPath: Mimecast.SearchMessage.subject
+      description: The subject of the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.senderIP
+      description: The source IP address of the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.attachments
+      description: If the message has attachments.
+      type: Boolean
+    - contextPath: Mimecast.SearchMessage.route
+      description: The route of the message.
+      type: String
+    - contextPath: Mimecast.SearchMessage.sent
+      description: The date and time that the message was sent / processed by Mimecast.
+      type: Date
+    - contextPath: Mimecast.SearchMessage.spamScore
+      description: Spam score of the email.
+      type: Number
+    - contextPath: Mimecast.SearchMessage.detectionLevel
+      description: Detection level of the email.
+      type: String
+  - name: mimecast-get-message-info
+    description: Retrieves detailed information about a specific message.
+    deprecated: false
+    arguments:
+    - name: ids
+      description: A comma-separated list of the Mimecast IDs of the messages to load. This is returned by the /api/message-finder/search endpoint. (mimecast-search-message command)
+      required: true
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: show_recipient_info
+      description: When argument is true all data from recipientInfo object is presented at command response.
+      required: false
+      isArray: false
+      defaultValue: "true"
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      name: show_delivered_message
+      description: When argument is true all data from deliveredMessage object is presented at command response.
+      required: false
+      isArray: false
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      name: show_retention_info
+      description: When argument is true all data from retentionInfo object is presented at command response.
+      required: false
+      isArray: false
+      defaultValue: "true"
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      name: show_spam_info
+      description: When argument is true all spamInfo block is presented at command response.
+      required: false
+      isArray: false
+      defaultValue: "true"
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.extension
+      description: Component extension type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.hash
+      description: Component hash.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.mimeType
+      description: Component MIME type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.name
+      description: Component name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.size
+      description: Component size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.components.type
+      description: Component type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.deliveryEvent
+      description: Description of delivery event.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.emailAddress
+      description: Email address of recipient.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.encryptionInfo
+      description: Encryption type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.messageExpiresIn
+      description: Expiration time of message.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.processingServer
+      description: Processing server address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.receiptAcknowledgement
+      description: Recipient acknowledgement.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteHost
+      description: Remote host address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteIp
+      description: Remote IP address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.remoteServerGreeting
+      description: Remote server greeting.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionEnd
+      description: Transmission end date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionSize
+      description: Transmission size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.deliveryMetaInfo.transmissionStart
+      description: Transmission start date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.fromEnvelope
+      description: Sender mail. (From envelope)
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.fromHeader
+      description: Sender mail. (From header)
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.processed
+      description: Processed time and date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.route
+      description: Message route.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.sent
+      description: Message sent time and date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.subject
+      description: Message subject.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.to
+      description: Recipients info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.messageInfo.transmissionInfo
+      description: Transmission info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.inherited
+      description: Whether policy is inherited.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.policyName
+      description: Policy name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.deliveredMessage.policyInfo.policyType
+      description: Policy type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.id
+      description: Message ID.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.binaryEmailSize
+      description: Email size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.extension
+      description: Component extension type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.hash
+      description: Component hash.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.mimeType
+      description: Component MIME type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.name
+      description: Component name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.size
+      description: Component size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.components.type
+      description: Component type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.encryptionInfo
+      description: Encryption information.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.fromEnvelope
+      description: The routable email address (From envelope).
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.fromHeader
+      description: The routable email address (From header).
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.messageExpiresIn
+      description: Expiry time of message.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.processed
+      description: Message processed time.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.processingServer
+      description: Message processing server.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.receiptAcknowledgement
+      description: Recipient acknowledgement.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.receiptEvent
+      description: Receipt event name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteHost
+      description: Remote host address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteIp
+      description: Remote IP address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.remoteServerGreeting
+      description: Remote server greeting.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.sent
+      description: Message send time and date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.spamEvent
+      description: Spam event name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.subject
+      description: Message subject.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.to
+      description: Recipient info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionEnd
+      description: Transmission end date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionInfo
+      description: Transmission info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionSize
+      description: Transmission size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.messageInfo.transmissionStart
+      description: Transmission start date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.binaryEmailSize
+      description: Email size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.extension
+      description: Component extension type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.hash
+      description: Component hash type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.mimeType
+      description: Component MIME type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.name
+      description: Component name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.size
+      description: Component size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.components.type
+      description: Component type.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.encryptionInfo
+      description: Encryption information.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.messageExpiresIn
+      description: Expiration time of message.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.processingServer
+      description: Processing server address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptAcknowledgement
+      description: Recipient acknowledgement.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.receiptEvent
+      description: Receipt event name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteHost
+      description: Remote host address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteIp
+      description: Remote IP address.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.remoteServerGreeting
+      description: Remote server greeting.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.spamEvent
+      description: Spam event name.
+      type: String
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionEnd
+      description: Transmission end date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionSize
+      description: Transmission size.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.recipientInfo.recipientMetaInfo.transmissionStart
+      description: Transmission start date.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.retentionInfo.currentPurgeDate
+      description: Current purge date and time.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.retentionInfo.originalPurgeDate
+      description: Original purge date and time.
+      type: Date
+    - contextPath: Mimecast.MessageInfo.retentionInfo.purgeBasedOn
+      description: Value that purge is based on.
+      type: String
+    - contextPath: Mimecast.MessageInfo.retentionInfo.retentionAdjustmentDays
+      description: Retention adjustment days.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.spamInfo.detectionLevel
+      description: Spam detection level.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.dkim.allow
+      description: Is DomainKeys Identified Mail (DKIM) allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.dkim.info
+      description: DKIM info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.dmarc.allow
+      description: Is Domain-based Message Authentication, Reporting & Conformance (DMARC) allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.dmarc.info
+      description: DMARC info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.greyEmail
+      description: Is grey email allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.managedSender.allow
+      description: Is Managed Sender allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.managedSender.info
+      description: Managed Sender info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.permittedSender.allow
+      description: Is Permitted Sender allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.permittedSender.info
+      description: Permitted Sender info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.rbl.allow
+      description: Is Real-time blackhole list (RBL) allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.rbl.info
+      description: RBL info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.spamInfo.spamScore
+      description: Spam score.
+      type: Number
+    - contextPath: Mimecast.MessageInfo.spamInfo.spf.allow
+      description: Is Sender Policy Framework (SPF) allowed.
+      type: Boolean
+    - contextPath: Mimecast.MessageInfo.spamInfo.spf.info
+      description: SPF info.
+      type: String
+    - contextPath: Mimecast.MessageInfo.status
+      description: Message status.
+      type: String
+  - name: mimecast-list-held-message
+    description: Get information about held messages, including the reason, hold level, sender and recipients
+    deprecated: false
+    arguments:
+    - auto: PREDEFINED
+      name: admin
+      description: Whether only results for the currently authenticated user will be returned.
+      required: false
+      isArray: false
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
+    - name: from_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: value
+      description: Free text to filter results by.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: field_name
+      description: Message fields to filter based on.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - all
+      - subject
+      - sender
+      - recipient
+      - reason_code
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: limit
+      description: The maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: Mimecast.HeldMessage.dateReceived
+      description: The timestamp of the message transmission.
+      type: Date
+    - contextPath: Mimecast.HeldMessage.from.displayableName
+      description: The sender name.
+      type: String
+    - contextPath: Mimecast.HeldMessage.from.emailAddress
+      description: The sender email.
+      type: String
+    - contextPath: Mimecast.HeldMessage.fromHeader.displayableName
+      description: The display name of the sender (From header).
+      type: String
+    - contextPath: Mimecast.HeldMessage.fromHeader.emailAddress
+      description: The email address of the sender (From header).
+      type: String
+    - contextPath: Mimecast.HeldMessage.hasAttachments
+      description: Returns true if the message contains attachments. False indicates no attachments.
+      type: Boolean
+    - contextPath: Mimecast.HeldMessage.id
+      description: The Mimecast secure ID for a message.
+      type: String
+    - contextPath: Mimecast.HeldMessage.policyInfo
+      description: Information or definition name triggering the message hold action.
+      type: String
+    - contextPath: Mimecast.HeldMessage.reason
+      description: The summary reason for holding the message.
+      type: String
+    - contextPath: Mimecast.HeldMessage.reasonCode
+      description: Reason code for holding the message.
+      type: String
+    - contextPath: Mimecast.HeldMessage.reasonId
+      description: Mirrors the reason field, formatted without spaces. However, reasonCode should be used instead.
+      type: String
+    - contextPath: Mimecast.HeldMessage.route
+      description: "Direction of message being held. Possible values are: INBOUND, OUTBOUND, INTERNAL, EXTERNAL."
+      type: String
+    - contextPath: Mimecast.HeldMessage.size
+      description: The size of the message in bytes.
+      type: Number
+    - contextPath: Mimecast.HeldMessage.subject
+      description: The message subject.
+      type: String
+    - contextPath: Mimecast.HeldMessage.to.displayableName
+      description: The display name of the recipient.
+      type: String
+    - contextPath: Mimecast.HeldMessage.to.emailAddress
+      description: The email address of the recipient.
+      type: String
+  - name: mimecast-held-message-summary
+    description: Get counts of currently held messages for each hold reason.
+    deprecated: false
+    arguments: []
+    outputs:
+    - contextPath: Mimecast.HeldMessageSummary.numberOfItems
+      description: The number of messages currently held for this reason.
+      type: Number
+    - contextPath: Mimecast.HeldMessageSummary.policyInfo
+      description: The name of the policy or definition that held a message.
+      type: String
+  - name: mimecast-reject-held-message
+    description: Reject a currently held message.
+    deprecated: false
+    arguments:
+    - name: ids
+      description: A comma-separated list of Mimecast secure IDs IDs are extracted from the mimecast-list-held-message command.
+      required: true
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: message
+      description: Rejection message to be returned to the sender.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: reason_type
+      description: User can choose reason.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - MESSAGE CONTAINS UNDESIRABLE CONTENT,MESSAGE CONTAINS CONFIDENTIAL INFORMATION,REVIEWER DISAPPROVES OF CONTENT.
+      - INAPPROPRIATE COMMUNICATIONMESSAGE GOES AGAINST EMAIL POLICIES
+      - ""
+    - auto: PREDEFINED
+      name: notify
+      description: Whether to deliver rejection notificationd.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - "true"
+      - "false"
+    outputs: []
+  - name: mimecast-release-held-message
+    description: Release a currently held message.
+    deprecated: false
+    arguments:
+    - name: id
+      description: Mimecast secure ID. ID can be extracted from the mimecast-list-held-message command.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs: []
+  - name: mimecast-search-processing-message
+    description: Return messages currently being processed by Mimecast. Note that most of the time, no results are returned.
+    deprecated: false
+    arguments:
+    - auto: PREDEFINED
+      name: sort_order
+      description: The method used to sort the messages.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - asc
+      - desc
+    - name: from_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: value
+      description: The search value to be used.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: field_name
+      description: The field to be searched.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ALL
+      - fromAddress
+      - toAddress
+      - subject
+      - info
+      - remoteIp
+    - name: attachments
+      description: The presence of an attachment in the message.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      name: route
+      description: The message route.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - all
+      - internal
+      - outbound
+      - inbound
+      - external
+    - name: page_size
+      description: Number of results per page to display.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: limit
+      description: The maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: Mimecast.ProcessingMessage.messages.id
+      description: The Mimecast secure ID of the message.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.fromEnv.emailAddress
+      description: The routable email address (From evelope).
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.fromHeader.emailAddress
+      description: The routable email address (From header).
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.to.emailAddress
+      description: The routable email address.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.subject
+      description: The message subject.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.attachment
+      description: Whether there is an attachment in the message.
+      type: Boolean
+    - contextPath: Mimecast.ProcessingMessage.messages.routing
+      description: The directional route of the message. Possible values are internal, outbound, inbound or external.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.size
+      description: The size of the message in bytes.
+      type: Number
+    - contextPath: Mimecast.ProcessingMessage.messages.remoteIp
+      description: The connecting IP address.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.attempts
+      description: The number of processing attempts of the message.
+      type: Number
+    - contextPath: Mimecast.ProcessingMessage.messages.nextAttempt
+      description: The date of the next process attempt for the message.
+      type: Date
+    - contextPath: Mimecast.ProcessingMessage.messages.created
+      description: The date of the processing request creation.
+      type: Date
+    - contextPath: Mimecast.ProcessingMessage.messages.info
+      description: Current processing status of the message.
+      type: String
+    - contextPath: Mimecast.ProcessingMessage.messages.priority
+      description: Message priority.
+      type: String
+  - name: mimecast-list-email-queues
+    description: Get the count of the inbound and outbound email queues at specified times.
+    deprecated: false
+    arguments:
+    - name: from_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: Datetime format ISO 8601. e.g., 2022-07-11T14:49:18+0000.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: Mimecast.EmailQueue.inboundEmailQueue.count
+      description: The number of inbound messages currently queued.
+      type: Number
+    - contextPath: Mimecast.EmailQueue.inboundEmailQueue.date
+      description: The date for the displayed number of messages.
+      type: Date
+    - contextPath: Mimecast.EmailQueue.outboundEmailQueue.count
+      description: The number of outbound messages currently queued.
+      type: Number
+    - contextPath: Mimecast.EmailQueue.outboundEmailQueue.date
+      description: The date for the displayed number of messages.
+      type: Date
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - Mimecast test
 fromversion: 5.0.0

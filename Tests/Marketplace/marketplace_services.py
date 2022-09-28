@@ -26,7 +26,8 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP
+    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    ITEMS_NAMES_TO_DISPLAY_MAPPING
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -102,9 +103,11 @@ class Pack(object):
         self._partner_name = None  # initialized in enhance_pack_attributes function
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
+        self._disable_monthly = None  # initialized in enhance_pack_attributes
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
+        self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
@@ -645,11 +648,13 @@ class Pack(object):
             Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.MARKETPLACES: self._marketplaces,
             Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
@@ -660,7 +665,8 @@ class Pack(object):
                 Metadata.PARTNER_ID: self._partner_id,
                 Metadata.PARTNER_NAME: self._partner_name,
                 Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
-                Metadata.PREVIEW_ONLY: self._preview_only
+                Metadata.PREVIEW_ONLY: self._preview_only,
+                Metadata.DISABLE_MONTHLY: self._disable_monthly,
             })
 
         return pack_metadata
@@ -740,7 +746,7 @@ class Pack(object):
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data=None,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
-                                marketplace='xsoar'):
+                                marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -756,6 +762,7 @@ class Pack(object):
 
         """
         modified_files_data = modified_files_data if modified_files_data else {}
+        id_set = id_set if id_set else {}
         entry_result = {}
 
         if new_version:
@@ -782,7 +789,7 @@ class Pack(object):
                 entry_result,
                 version_display_name,
                 modified_files_data,
-                marketplace
+                marketplace, id_set
             )
 
         return entry_result, False
@@ -1494,7 +1501,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              modified_files_data=None, marketplace='xsoar'):
+                              modified_files_data=None, marketplace='xsoar', id_set=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1515,6 +1522,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         modified_files_data = modified_files_data if modified_files_data else {}
+        id_set = id_set if id_set else {}
 
         try:
             version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
@@ -1559,6 +1567,7 @@ class Pack(object):
                                 new_version=False,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
+                                id_set=id_set,
                             )
 
                         else:
@@ -1571,6 +1580,7 @@ class Pack(object):
                                 new_version=True,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
+                                id_set=id_set,
                             )
 
                         if version_changelog:
@@ -1607,7 +1617,8 @@ class Pack(object):
                             modified_files_data=modified_files_data,
                             initial_release=True,
                             new_version=False,
-                            marketplace=marketplace)
+                            marketplace=marketplace,
+                            id_set=id_set)
 
                         if version_changelog:
                             changelog[first_key_in_changelog] = version_changelog
@@ -1632,7 +1643,8 @@ class Pack(object):
                     modified_files_data=modified_files_data,
                     new_version=True,
                     initial_release=True,
-                    marketplace=marketplace
+                    marketplace=marketplace,
+                    id_set=id_set
                 )
 
                 if version_changelog:
@@ -1659,7 +1671,7 @@ class Pack(object):
             return task_status, not_updated_build
 
     def filter_changelog_entries(self, changelog_entry: dict, version: str, modified_files_data: dict,
-                                 marketplace: str):
+                                 marketplace: str, id_set: dict):
         """
         Filters the changelog entries by the entities that are given from id-set.
         This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
@@ -1697,17 +1709,22 @@ class Pack(object):
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
-                                                                                    modified_files_data)
+                                                                                    modified_files_data, id_set)
 
-        if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
-            # In case all release notes were filtered out, verify that it also makes sense - by checking that the
-            # modified files are actually relevant for the other marketplace.
-            logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
-                          f"marketplace")
-            return {}, True
+        # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
+        #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
+        #     # modified files are actually relevant for the other marketplace.
+        #     logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
+        #                   f"marketplace")
+        #     return {}, True
 
         # Convert the RN dict to string
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+
+        final_release_notes = construct_entities_block(filtered_release_notes).strip()
+        if not final_release_notes:
+            final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
+
+        changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
@@ -1734,7 +1751,7 @@ class Pack(object):
 
         return True
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
+    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
         """
         Filters the RN entries by the modified files display names given from id-set.
 
@@ -1756,7 +1773,8 @@ class Pack(object):
 
             # Filters the RN entries by the entity display name
             display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
+                                                                                 pack_folder, id_set)
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
@@ -1764,7 +1782,7 @@ class Pack(object):
         return filtered_release_notes
 
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str):
+    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str, id_set: dict):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -1780,7 +1798,10 @@ class Pack(object):
         for display_name, rn_entry in release_notes[rn_header].items():
 
             logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
-            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names:
+            # TODO: The third condition should be removed after the refactoring. (Also the function)
+            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
+                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
+                                                              pack_folder, id_set):
                 continue
 
             if display_name == '[special_msg]':
@@ -1928,35 +1949,6 @@ class Pack(object):
         content_items_result: dict = {}
 
         try:
-            # the format is defined in issue #19786, may change in the future
-            content_item_name_mapping = {
-                PackFolders.SCRIPTS.value: "automation",
-                PackFolders.PLAYBOOKS.value: "playbook",
-                PackFolders.INTEGRATIONS.value: "integration",
-                PackFolders.INCIDENT_FIELDS.value: "incidentfield",
-                PackFolders.INCIDENT_TYPES.value: "incidenttype",
-                PackFolders.DASHBOARDS.value: "dashboard",
-                PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layoutscontainer",
-                PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget",
-                PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
-                PackFolders.GENERIC_FIELDS.value: "genericfield",
-                PackFolders.GENERIC_MODULES.value: "genericmodule",
-                PackFolders.GENERIC_TYPES.value: "generictype",
-                PackFolders.LISTS.value: "list",
-                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
-                PackFolders.JOBS.value: "job",
-                PackFolders.PARSING_RULES.value: "parsingrule",
-                PackFolders.MODELING_RULES.value: "modelingrule",
-                PackFolders.CORRELATION_RULES.value: "correlationrule",
-                PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
-                PackFolders.XSIAM_REPORTS.value: "xsiamreport",
-                PackFolders.TRIGGERS.value: "trigger",
-                PackFolders.WIZARDS.value: "wizard",
-            }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
@@ -2016,6 +2008,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('comment', ''),
                             'tags': content_item_tags,
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
@@ -2030,6 +2023,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INTEGRATIONS.value:
@@ -2043,6 +2037,7 @@ class Pack(object):
                             'commands': [
                                 {'name': c.get('name', ''), 'description': c.get('description', '')}
                                 for c in integration_commands],
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
@@ -2051,6 +2046,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
@@ -2062,12 +2058,14 @@ class Pack(object):
                             'hours': int(content_item.get('hours', 0)),
                             'days': int(content_item.get('days', 0)),
                             'weeks': int(content_item.get('weeks', 0)),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
@@ -2076,6 +2074,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.REPORTS.value:
@@ -2083,6 +2082,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
@@ -2091,12 +2091,14 @@ class Pack(object):
                             'details': content_item.get('details', ''),
                             'reputationScriptName': content_item.get('reputationScriptName', ''),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.LAYOUTS.value:
                         layout_metadata = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
@@ -2108,6 +2110,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name') or content_item.get('id', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.WIDGETS.value:
@@ -2116,12 +2119,14 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'dataType': content_item.get('dataType', ''),
                             'widgetType': content_item.get('widgetType', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.LISTS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
-                            'name': content_item.get('name', '')
+                            'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
@@ -2129,6 +2134,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
@@ -2137,6 +2143,7 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'type': content_item.get('type', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
@@ -2144,6 +2151,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
@@ -2151,6 +2159,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
@@ -2158,6 +2167,7 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.JOBS.value:
@@ -2166,6 +2176,7 @@ class Pack(object):
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.PARSING_RULES.value:
@@ -2173,6 +2184,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
@@ -2180,6 +2192,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
@@ -2188,6 +2201,7 @@ class Pack(object):
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
@@ -2195,6 +2209,7 @@ class Pack(object):
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
@@ -2202,6 +2217,7 @@ class Pack(object):
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.TRIGGERS.value:
@@ -2209,6 +2225,7 @@ class Pack(object):
                             'id': content_item.get('trigger_id', ''),
                             'name': content_item.get('trigger_name', ''),
                             'description': content_item.get('description', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.WIZARDS.value:
@@ -2219,13 +2236,14 @@ class Pack(object):
                             'dependency_packs': content_item.get('dependency_packs', {}),
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
+                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
 
                 if current_directory in PackFolders.pack_displayed_items():
-                    content_item_key = content_item_name_mapping[current_directory]
+                    content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
 
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
@@ -2236,6 +2254,15 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
+
+            def display_getter(items, display):
+                return f'{display}s' if items and len(items) > 1 else display
+
+            self._content_displays_map = {
+                name: display_getter(content_items_result.get(name), display)
+                for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
+                if content_items_result.get(name)
+            }
 
             return task_status
 
@@ -2352,6 +2379,7 @@ class Pack(object):
                 self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
                 self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
                 self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
+                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
                 # Currently all content packs are legacy.
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
@@ -3311,6 +3339,8 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
         return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
+
+    logging.debug(f'{packs_results_file_path} does not exist in artifacts')
     return {}, {}, {}, {}
 
 
@@ -3765,3 +3795,33 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
             if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
                 return id_set_entity
     return {}
+
+
+def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_set: dict):
+    """
+    Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
+    return None.
+
+    Args:
+        display_name: The display name of the entity (content item)
+        pack_folder: containing folder of that item
+        id_set: id set dict
+
+    Returns:
+        id set dict entity if exists, otherwise None
+    """
+    logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
+
+    if not id_set:
+        return None
+
+    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
+
+        if list(id_set_entity.values())[0]['display_name'] == display_name:
+            return id_set_entity
+
+    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
+        for id_set_entity in id_set['Mappers']:
+            if list(id_set_entity.values())[0]['display_name'] == display_name:
+                return id_set_entity
+    return None

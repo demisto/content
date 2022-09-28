@@ -50,6 +50,7 @@ class TestGetUserCommand:
         mocker.patch.object(demisto, 'command', return_value='iam-get-user')
         mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
         mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
+        mocker.patch('SAPIAM.Client.test', return_value=None)
         demisto_results_mock = mocker.patch('demistomock.results')
 
         main()
@@ -77,6 +78,7 @@ class TestDisableUserCommand:
         mocker.patch.object(demisto, 'command', return_value='iam-disable-user')
         mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
         mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
+        mocker.patch('SAPIAM.Client.test', return_value=None)
         demisto_results_mock = mocker.patch.object(demisto, 'results')
 
         with requests_mock.Mocker() as m:

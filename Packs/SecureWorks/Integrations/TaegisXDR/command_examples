@@ -1,5 +1,7 @@
 !taegis-create-investigation priority=1 description="XSOAR Created Investigation"
 !taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
+!taegis-fetch-alerts
+!taegis-fetch-alerts offset=5 limit=5 cql_query="from alert status='OPEN' and severity >= 0.6"
 !taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
 !taegis-fetch-investigation
 !taegis-fetch-investigation id="936c1cc1-db8f-430c-837c-1c914fcca35a"

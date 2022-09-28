@@ -1083,7 +1083,7 @@ This is visible
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data)
 
-        assert not version_changelog
+        assert version_changelog['releaseNotes'] == "Changes are not relevant for XSOAR marketplace."
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
         ('''
@@ -1134,18 +1134,18 @@ This is visible
 </~XSOAR>
 - **Field Name 3**
 ''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n\n#### Scripts\n##### Script Name\n- Fixed script"),
-        ('''
-#### Integrations
-##### Integration Display Name
-<~XSIAM>
-- Fixed an issue
-</~XSIAM>
+        #         ('''
+        # #### Integrations
+        # ##### Integration Display Name
+        # <~XSIAM>
+        # - Fixed an issue
+        # </~XSIAM>
 
-#### Scripts
-##### Script Name
-<~XSIAM>
-- Fixed script
-</~XSIAM>''', 'xsoar', ''),
+        # #### Scripts
+        # ##### Script Name
+        # <~XSIAM>
+        # - Fixed script
+        # </~XSIAM>''', 'xsoar', ''),
         ('''
 #### Integrations
 ##### Integration Display Name
@@ -1464,7 +1464,7 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == \
+        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data, {}) == \
                expected_result
 
 
