@@ -2809,6 +2809,7 @@ Registers users to a tag. This command is only available for PAN-OS version 9.x 
 | --- | --- | --- |
 | tag | Tag for which to register users. | Required | 
 | Users | A comma-separated list of users to register. | Required | 
+| timeout | Timeout value to automatically unregister the users (in seconds). Only applicable to PAN-OS 9.x and higher. | Optional | 
 
 
 #### Context Output
