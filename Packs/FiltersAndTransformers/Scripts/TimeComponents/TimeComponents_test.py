@@ -26,8 +26,8 @@ class TestTimeComponents:
             if isinstance(results, dict):
                 for k, v in results.items():
                     if isinstance(results[k], float):
-                        assert int(results[k]) == int(test_case['results'][k])
+                        assert json.dumps({k: int(results[k])}) == json.dumps({k :int(test_case['results'][k])})
                     else:
-                        assert results[k] == test_case['results'][k]
+                        assert json.dumps({k: results[k]}) == json.dumps({k :test_case['results'][k]})
             else:
                 assert json.dumps(results) == json.dumps(test_case['results'])
