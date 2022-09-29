@@ -138,15 +138,6 @@
     }
   },
   {
-    "comments": "Parse now",
-    "args": {
-      "value": "now",
-      "time_zone": null,
-      "key": "iso_8601"
-    },
-    "results": "2022-01-23T12:34:56+00:00"
-  },
-  {
     "comments": "Parse epoch time",
     "args": {
       "value": 1642868625,

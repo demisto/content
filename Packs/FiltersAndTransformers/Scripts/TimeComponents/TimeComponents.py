@@ -1,7 +1,6 @@
 import locale
 import re
 from datetime import timezone, tzinfo
-
 import dateparser
 import demistomock as demisto  # noqa: F401
 import pytz
@@ -48,7 +47,7 @@ def parse_date_time_value(value: Any) -> datetime:
 
     try:
         date_time = dateparser.parse(value)
-        assert isinstance(date_time, datetime), f'could not parse {value}'
+        assert date_time is not None, f'could not parse {value}'
         return date_time
     except Exception as err:
         raise DemistoException(f'Error with input date / time - {err}')

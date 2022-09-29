@@ -4,15 +4,18 @@ import json
 import datetime
 import pytest
 from freezegun import freeze_time
+from datetime import timezone
+from unittest.mock import MagicMock
 
 
 class TestTimeComponents:
-    @freeze_time('2022-01-23 12:34:56')
     def test_main(self, mocker, monkeypatch):
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
 
-        assert datetime.datetime.utcnow() == datetime.datetime(2022, 1, 23, 12, 34, 56)
+        datetime_mock = MagicMock(spec=datetime.datetime, wraps=datetime.datetime)
+        datetime_mock.utcnow.return_value = datetime.datetime(2022, 1, 23, 12, 34, 56)
+        monkeypatch.setattr("TimeComponents.datetime", datetime_mock)
 
         for test_case in test_list:
             mocker.patch.object(demisto, 'args', return_value=test_case['args'])
