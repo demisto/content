@@ -1028,7 +1028,6 @@ Kill a processes for the malicious file. (User will get inputs by executing the 
 | machine | Machine name to kill the process. | Required | 
 | targetId | Target ID to kill the process. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1036,7 +1035,7 @@ Kill a processes for the malicious file. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process" timeout=60```
+```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process"```
 #### Human Readable Output
 
 >Kill process remediation action status is: SUCCESS
@@ -1058,7 +1057,6 @@ Quarantine the detected malicious file in a secure location. (User will get inpu
 | machine | Machine name to quarantine a file. | Required | 
 | targetId | Target ID to quarantine a file. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1066,7 +1064,7 @@ Quarantine the detected malicious file in a secure location. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File" timeout=60```
+```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File"```
 #### Human Readable Output
 
 >Quarantine file remediation action status is: SUCCESS
@@ -1088,7 +1086,6 @@ Unquarantine the detected malicious file in a secure location. (User will get in
 | machine | Machine name to unquarantine a file. | Required | 
 | targetId | Target ID to unquarantine a file. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1096,7 +1093,7 @@ Unquarantine the detected malicious file in a secure location. (User will get in
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File" timeout=60```
+```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File"```
 #### Human Readable Output
 
 >Unquarantine file remediation action status is: SUCCESS
@@ -1118,7 +1115,6 @@ Block a file only in particular machine. (User will get inputs by executing the 
 | machine | Machine name whose files needs to be blocked. | Required | 
 | targetId | Target ID of file to be blocked. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1126,7 +1122,7 @@ Block a file only in particular machine. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File" timeout=60```
+```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File"```
 #### Human Readable Output
 
 >Block file remediation action status is: SUCCESS
@@ -1148,7 +1144,6 @@ Delete a registry entry associated with a malicious process. (User will get inpu
 | machine | Machine name to delete the registry key. | Required | 
 | targetId | Target ID to delete the registry key. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1156,7 +1151,7 @@ Delete a registry entry associated with a malicious process. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key" timeout=30```
+```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key"```
 #### Human Readable Output
 
 >Delete registry key remediation action status is: SUCCESS
@@ -1178,7 +1173,6 @@ Prevent detected ransomware from running on the machine. (User will get inputs b
 | machine | Machine name to prevent detected ransomware from running on the machine. | Required | 
 | targetId | Target ID to prevent detected ransomware from running on the machine. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1186,7 +1180,7 @@ Prevent detected ransomware from running on the machine. (User will get inputs b
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent" timeout=30```
+```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent"```
 #### Human Readable Output
 
 >Kill prevent unsuspend remediation action status is: SUCCESS
@@ -1208,7 +1202,6 @@ Prevent a file associated with ransomware. (User will get inputs by executing th
 | machine | Machine name to prevent a file associated with ransomware. | Required | 
 | targetId | Target ID to prevent a file associated with ransomware. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1216,7 +1209,7 @@ Prevent a file associated with ransomware. (User will get inputs by executing th
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process" timeout=60```
+```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process"```
 #### Human Readable Output
 
 >Unsuspend process remediation action status is: SUCCESS
