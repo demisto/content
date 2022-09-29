@@ -161,7 +161,7 @@ def get_tlp_from_indicator(sources):
         try:
             tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
         except Exception as e:
-            demisto.debug(str(e))
+            demisto.debug(f"Failed getting TLP from {source.get('Name')} source:\n{str(e)}")
             continue
 
     return TABLE_TLP.get(tlp)
