@@ -244,7 +244,7 @@ def upload_sample():
             args[k] = demisto.getArg(k)
     args['api_key'] = API_KEY
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
-    filename = demisto.getArg('filename', '').replace('"', '').replace('\n', '')
+    filename = demisto.getArg('filename').replace('"', '').replace('\n', '')
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
                              files={'sample': (filename, f)},
