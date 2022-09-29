@@ -26,3 +26,24 @@ This script uses the following commands and scripts.
 ## Outputs
 ---
 There are no outputs for this script.
+
+## Examples:
+```
+!OSQueryBasicQuery system=test_system query="select liu.*, p.name, p.cmdline, p.cwd, p.root from logged_in_users liu, processes p where liu.pid = p.pid;"
+```
+Returns logged in users details from a remote system using OSQuery.
+
+```
+!OSQueryBasicQuery system=test_system query="select distinct pid, family, protocol, local_address, local_port, remote_address, remote_port, path from process_open_sockets where path <> '' or remote_address <> '';"
+```
+Returns open sockets details from a remote system using OSQuery.
+
+```
+!OSQueryBasicQuery system=test_system query="select * from processes;"
+```
+Returns processes details from a remote system using OSQuery.
+
+```
+!OSQueryBasicQuery system=test_system query="select * from users;"
+```
+Returns Users Table from a remote system using OSQuery.

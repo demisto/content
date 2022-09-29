@@ -7,7 +7,7 @@ def email_reputation():
 
     for item in results:
         if isError(item):
-            item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+            item['Contents'] = item['Brand'] + ' returned an error.\n' + str(item['Contents'])
 
     demisto.results(results)
 
