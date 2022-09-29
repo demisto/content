@@ -1044,7 +1044,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
                         job_results = job.results()
                         if not job_results:
-                            demisto.debug('No items were found for notable'.format(notable.id))
+                            demisto.debug('No items were found for notable {}'.format(notable.id))
                         else:
                             for item in results.ResultsReader(job_results):
                                 enrichment.data.append(item)
