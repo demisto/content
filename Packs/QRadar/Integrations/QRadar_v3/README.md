@@ -115,7 +115,7 @@ If you're uncertain which API version to use, it is recommended to use the lates
 ## Troubleshooting
 
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
-It is possible, however, that some events may be missed during incident creation. If **Retry events fetch** enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. The default value for retries is 3, and the wait time between retries is 100 seconds.
+Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
 In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
 ```
 EVENTS_SEARCH_RETRIES=<amount of retries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between retries> (default 100),
