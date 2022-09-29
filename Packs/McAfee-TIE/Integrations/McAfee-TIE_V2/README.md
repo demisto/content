@@ -7,8 +7,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 ## <a name="breaking-changes"></a>Changes compared to V1
 # Changes in commands
 1. You can now pass more than one file to the commands `tie-set-file-reputation`, and `tie-file-references`.
-2. The code is now python 3 compatible.
-3. Added additional context outputs to all three commands.
+2. Added additional context outputs to the commands `file`, and `tie-file-references`.
 
 ## Detailed Instructions
 This section includes information required for configuring an integration instance.
