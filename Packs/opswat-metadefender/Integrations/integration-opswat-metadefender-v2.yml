@@ -90,17 +90,17 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def http_req(method='GET', url_suffix='', file=None, parse_json=True):
+    def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
         data = None
         url = BASE_URL + url_suffix
         headers = DEFAULT_HEADERS
         if USE_CLOUD:
             headers['apikey'] = API_KEY
-        if file:
-            headers['filename'] = file['file_name']
-            headers['content-type'] = 'application/json'
-            data=file['data']
-        if method.upper() == 'GET':
+        if file_name:
+            headers['filename'] = file_name
+            with open(file_name, 'rb') as file_:
+              res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
+        elif method.upper() == 'GET':
             res = requests.get(url, verify=USE_SSL, headers=headers)
         elif method.upper() == 'POST':
             res = requests.post(url, verify=USE_SSL, data=data, headers=headers)
@@ -126,9 +126,7 @@ script:
         file_name = file_entry['name']
         shutil.copy(file_entry['path'], file_name)
         try:
-            with open(file_name, 'rb') as f:
-                fileContent = f.read()
-                res = http_req(method='POST', url_suffix='file', file={'file_name': file_name, 'data':fileContent})
+            res = http_req(method='POST', url_suffix='file', file_name=file_name)
         finally:
             shutil.rmtree(file_name, ignore_errors=True)
         return res, file_name
