@@ -20,5 +20,5 @@
 !bitbucket-pull-request-create source_branch=test title="pull_request"
 !bitbucket-pull-request-list
 !bitbucket-pull-request-update pull_request_id=8 description="updating description"
-!bitbucket-raw-file-get file_path=README.md branch=master
+!bitbucket-raw-file-get file_path=new.txt branch=branch
 !bitbucket-workspace-member-list

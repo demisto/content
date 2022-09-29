@@ -1,5 +1,5 @@
 Pack for handling Bitbucket operations
-This integration was integrated and tested with version 7.21.0 of Bitbucket
+This integration was integrated and tested with version xx of Bitbucket
 
 ## Configure Bitbucket on Cortex XSOAR
 
@@ -7,15 +7,15 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket
 2. Search for Bitbucket.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Workspace |  | True |
-    | Server Url |  | True |
-    | User Name | &amp;lt;a href="https://developer.atlassian.com/cloud/bitbucket/rest/intro/\#app-passwords" target="_blank"&amp;gt;click to open a link to create the app password&amp;lt;/a&amp;gt; | True |
-    | App Password |  | True |
-    | Repository |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Workspace | True |
+    | Server Url | True |
+    | User Name | True |
+    | App Password | True |
+    | Repository | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -23,7 +23,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bitbucket-project-list
 ***
- 
+If a project_key is given, returns the requested project. Else, returns a list of the project in the workspace.
 
 
 #### Base Command
@@ -33,8 +33,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_key | Must be uppercase. | Optional | 
-| limit | The maximum number of projects. | Optional | 
+| project_key | The "id" of the project. Must be uppercase. | Optional | 
+| limit | The maximum number of projects. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -205,7 +205,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
->### List of the projects in workspace
+>### List of projects in workspace
 >|Key|Name|Description|IsPrivate|
 >|---|---|---|---|
 >| AP | Another Project | description | true |
@@ -214,7 +214,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### bitbucket-open-branch-list
 ***
- 
+Returns a list of the open branches.
 
 
 #### Base Command
@@ -225,7 +225,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | the repository name or slug. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -486,16 +486,16 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
->### The list of open branches
+>### Open Branches
 >|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|
->|--|---|---|---|
+>|---|---|---|---|
 >| master | Some User | 2022-09-18T08:00:00+00:00 | 1111111111111111111111111111111111111111 |
 >| branch | Some User | 2022-09-08T14:00:00+00:00 | 1111111111111111111111111111111111111111 |
 
 
 ### bitbucket-branch-get
 ***
- 
+Returns the information of the requested branch.
 
 
 #### Base Command
@@ -655,15 +655,15 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
->### Information about the branch master
->|Name| LastCommitCreatedBy | LastCommitCreatedAt       |LastCommitHash|
->|---------------------|---------------------------|---|---|
+>### Information about the branch: master
+>|Name|LastCommitCreatedAt|LastCommitHash|
+>|---|---|---|
 >| master | Some User | 2022-09-18T08:07:00+00:00 | 1111111111111111111111111111111111111111 |
 
 
 ### bitbucket-branch-create
 ***
- 
+Creates a new branch in Bitbucket.
 
 
 #### Base Command
@@ -824,11 +824,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
->The branch testing was created successfully.
+>The branch "testing" was created successfully.
 
 ### bitbucket-branch-delete
 ***
- 
+Deletes the given branch from Bitbucket.
 
 
 #### Base Command
@@ -853,7 +853,7 @@ There is no context output for this command.
 
 ### bitbucket-commit-create
 ***
- 
+Creates a new commit in Bitbucket.
 
 
 #### Base Command
@@ -868,7 +868,7 @@ There is no context output for this command.
 | branch | This branch will be associated with the commited file. | Required | 
 | file_name | The name of the file to commit. | Optional | 
 | file_content | The content of the file to commit. | Optional | 
-| entry_id | The entry_id of the file to commit. | Optional | 
+| entry_id | The entry_id of the file to commit. This is the EntryId from uploading a file to the War Room. | Optional | 
 | author_name | The name of the author of the file. | Optional | 
 | author_email | The email of the author of the file. | Optional | 
 
@@ -884,7 +884,7 @@ There is no context output for this command.
 
 ### bitbucket-commit-list
 ***
- 
+Returns a list of the commit in accordance to the included and excluded branches.
 
 
 #### Base Command
@@ -897,8 +897,8 @@ There is no context output for this command.
 | repo | The repository name or slug. | Optional | 
 | file_path | Will limit the results to commits that affect that path. | Optional | 
 | excluded_branches | Should be comma separated. Will return only commits that are not in the excluded branches list. | Optional | 
-| included_branches | Should be comma separated. Will return only commits that are related to the included branches list. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| included_branches | Should be comma separated. Will return only commits that are in the included branches list. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -1144,9 +1144,10 @@ There is no context output for this command.
 >| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 | checking master | 2022-09-18T08:56:51+00:00 |
 >| Some User <someuser@gmail.com> | 1111111111111111111111111111111111111111 | delete the new file | 2022-09-18T08:07:38+00:00 |
 
+
 ### bitbucket-file-delete
 ***
- 
+Deletes the given file from Bitbucket.
 
 
 #### Base Command
@@ -1158,8 +1159,8 @@ There is no context output for this command.
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | message | Commit a message with the file. | Required | 
-| branch | This branch will be associated with the commited file. | Required | 
-| file_name | The name of the file to commit. | Required | 
+| branch | The branch of the file to delete. | Required | 
+| file_name | The name of the file to delete. | Required | 
 | author_name | The name of the author of the file. | Optional | 
 | author_email | The email of the author of the file. | Optional | 
 
@@ -1175,7 +1176,7 @@ There is no context output for this command.
 
 ### bitbucket-raw-file-get
 ***
- 
+Returns the content of the given file, along with the option to download it.
 
 
 #### Base Command
@@ -1196,9 +1197,19 @@ There is no context output for this command.
 | --- | --- | --- |
 | Bitbucket.RawFile.file_path | String | The path of the file. | 
 | Bitbucket.RawFile.file_content | String | The content of the file. | 
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
 
 #### Command example
-```!bitbucket-raw-file-get file_path=new.txt branch=branch```
+```!bitbucket-raw-file-get file_path=README.md branch=master```
 #### Context Example
 ```json
 {
@@ -1230,7 +1241,7 @@ There is no context output for this command.
 
 ### bitbucket-issue-create
 ***
-Creates an issue in Bitbucket. 
+Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
@@ -1248,7 +1259,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 | type | The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. The default is 'Bug'. Possible values are: bug, enhancement, proposal, task. Default is bug. | Optional | 
 | priority | The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. The default is 'Major'. Possible values are: trivial, minor, major, critical, blocker. Default is major. | Optional | 
 | content | The content of the issue to create. | Optional | 
-| assignee_id | The id of the assignee of the issue to create. | Optional | 
+| assignee_id | The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
 | assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
 
 
@@ -1372,7 +1383,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 
 ### bitbucket-issue-list
 ***
- 
+If an issue_id is given, returns the information about it. Else, returns a list of all the issues, according to the limit parameter.
 
 
 #### Base Command
@@ -1383,8 +1394,8 @@ In order to perform this command, please create an issue tracker by clicking on 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the wanted issue. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| issue_id | The id of the wanted issue. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Optional | 
+| limit | The maximum number of items in the list. the default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -1608,7 +1619,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 
 ### bitbucket-issue-update
 ***
-Updates an issue in Bitbucket. 
+Updates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
@@ -1622,12 +1633,12 @@ In order to perform this command, please create an issue tracker by clicking on 
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | title | The title of the new issue. | Required | 
-| issue_id | The id of the issue to update. To get the issue id, use the command bitbucket-issue-list. | Required | 
+| issue_id | The id of the issue to update. To get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
 | state | The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'. Possible values are: new, open, resolved, on hold, invalid, duplicate, wontfix, closed. | Optional | 
 | type | The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. Possible values are: bug, enhancement, proposal, task. | Optional | 
 | priority | The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. Possible values are: trivial, minor, major, critical, blocker. | Optional | 
 | content | The content of the issue to create. | Optional | 
-| assignee_id | The id of the assignee of the issue to create. | Optional | 
+| assignee_id | The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
 | assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
 
 
@@ -1766,7 +1777,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 
 ### bitbucket-pull-request-create
 ***
- 
+Creates a pull request in Bitbucket.
 
 
 #### Base Command
@@ -1780,7 +1791,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 | title | The title of the new pull request. | Required | 
 | source_branch | The branch to merge. | Required | 
 | destination_branch | The branch to merge to. | Optional | 
-| reviewer_id | The id of the account of the person to review the pull request. | Optional | 
+| reviewer_id | The account_id of the person to review the pull request. Cn be a comma separated list of account_id. In order to get the reviewer_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
 | close_source_branch | Should the source branch be closed after the pull request. Possible values are: yes, no. | Optional | 
 
@@ -2043,7 +2054,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 
 ### bitbucket-pull-request-update
 ***
- 
+Updates a pull request in Bitbucket.
 
 
 #### Base Command
@@ -2054,11 +2065,11 @@ In order to perform this command, please create an issue tracker by clicking on 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to update. In order to get the pull_request_id, use the command bitbucket-pull-request-list. | Required | 
+| pull_request_id | The id of the pull request to update. In order to get the pull_request_id, use the command '!bitbucket-pull-request-list'. | Required | 
 | title | The title of the new pull request. | Optional | 
 | source_branch | The branch to merge. | Optional | 
 | destination_branch | The branch to merge to. | Optional | 
-| reviewer_id | The id of the account of the person to review the pull request. | Optional | 
+| reviewer_id | The id of the account of the person to review the pull request. In order to get the reviewer_id, use the command 'bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
 | close_source_branch | Should the source branch be closed after the pull request. | Optional | 
 
@@ -2332,9 +2343,9 @@ Returns a list of the pull requests. If a state is provided than the list will c
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to update. | Optional | 
+| pull_request_id | The id of the pull request to update. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Optional | 
 | state | The state of the pull requests to see. Possible values are: OPEN, MERGED, DECLINED, SUPERSEDED, ALL. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -2716,7 +2727,7 @@ Creates a comment on an issue in Bitbucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. | Required | 
+| issue_id | The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
 | content | The content of the comment. | Required | 
 
 
@@ -2826,7 +2837,7 @@ Creates a comment on an issue in Bitbucket.
 
 #### Human Readable Output
 
->The comment on the issue 1 was created successfully
+>The comment was created successfully
 
 ### bitbucket-issue-comment-delete
 ***
@@ -2841,13 +2852,18 @@ Deletes a comment on an issue in Bitbucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. | Required | 
-| comment_id | The id of the comment to delete. In order to get the comment id, use the command "bitbucket-issue-comment-list". | Required | 
+| issue_id | The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
+| comment_id | The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list'. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+>The comment was deleted created successfully
+
 ### bitbucket-issue-comment-list
 ***
 Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
@@ -2862,8 +2878,8 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | issue_id | The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list. | Required | 
-| comment_id | The id of the comment to delete. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| comment_id | The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list' without any parameters. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -3046,6 +3062,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 >| 11111111 | new bug | Some User | 2022-09-06T14:23:03.776275+00:00 |  | 1 | new issue |
 >| 11111111 | just a comment | Some User | 2022-09-11T10:54:14.356238+00:00 |  | 1 | new issue |
 
+
 ### bitbucket-issue-comment-update
 ***
 Updates a specific comment on a given issue.
@@ -3059,8 +3076,8 @@ Updates a specific comment on a given issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list. | Required | 
-| comment_id | The id of the comment to delete. In order to get the issue_id please use the command bitbucket-issue-comment-list. | Required | 
+| issue_id | The id of the issue to comment on. In order to get the issue_id please use the command '!bitbucket-issue-list.'. | Required | 
+| comment_id | The id of the comment to delete. In order to get the issue_id please use the command !'bitbucket-issue-comment-list'. | Required | 
 | content | The new content of the comment. | Required | 
 
 
@@ -3185,7 +3202,7 @@ Creates a new comment on a pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to comment on. | Required | 
+| pull_request_id | The id of the pull request to comment on. In order to get the pull request id use the command '!bitbucket-pull-request-list'. | Required | 
 | content | The content of the comment. | Required | 
 
 
@@ -3280,7 +3297,7 @@ Creates a new comment on a pull request.
 
 #### Human Readable Output
 
->The comment on the pull request "1" was created successfully
+>The comment was created successfully
 
 ### bitbucket-pull-request-comment-list
 ***
@@ -3295,9 +3312,9 @@ returns a list of comments of a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. | Required | 
-| comment_id | The id of the comment. | Optional | 
-| limit | The maximum number of items in the list. | Optional | 
+| pull_request_id | The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Required | 
+| comment_id | The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -3400,7 +3417,7 @@ returns a list of comments of a specific pull request.
 
 ### bitbucket-pull-request-comment-update
 ***
-updates a comment in a specific pull request.
+updates a specific comment in a specific pull request.
 
 
 #### Base Command
@@ -3411,8 +3428,8 @@ updates a comment in a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. | Required | 
-| comment_id | The id of the comment. | Required | 
+| pull_request_id | The id of the pull request. In order to get the pull request_id use the command '!bitbucket-pull-request-list'. | Required | 
+| comment_id | The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'. | Required | 
 | content | The id of the comment. | Required | 
 
 
@@ -3507,11 +3524,11 @@ updates a comment in a specific pull request.
 
 #### Human Readable Output
 
->### The comment "{comment_id}" on issue "{issue_id}" was updated successfully
+>### The comment was updated successfully
 
 ### bitbucket-pull-request-comment-delete
 ***
-deletes a comment in a specific pull request.
+deletes a specific comment in a specific pull request.
 
 
 #### Base Command
@@ -3522,8 +3539,8 @@ deletes a comment in a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. In order to get the pull request id use the command "!bitbucket-pull-request-list". | Required | 
-| comment_id | The id of the comment. In order to get the comment id use the command "bitbucket-pull-request-comment-list". | Required | 
+| pull_request_id | The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Required | 
+| comment_id | The id of the comment. In order to get the comment_id use the command '!bitbucket-pull-request-comment-list'. | Required | 
 
 
 #### Context Output
@@ -3533,7 +3550,7 @@ There is no context output for this command.
 ```!bitbucket-pull-request-comment-delete comment_id=331372169 pull_request_id=1```
 #### Human Readable Output
 
->The comment on pull request number 1 was deleted successfully.
+>The comment was deleted successfully.
 
 ### bitbucket-workspace-member-list
 ***
@@ -3547,7 +3564,7 @@ returns a list of all the members in the workspace.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items in the list. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 

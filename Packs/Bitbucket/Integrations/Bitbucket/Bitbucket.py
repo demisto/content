@@ -1135,7 +1135,7 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
     if not repo:
         repo = client.repository
     response = client.issue_comment_create_request(repo, issue_id, body)
-    return CommandResults(readable_output='The comment created successfully',
+    return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.IssueComment',
                           outputs=response,
                           raw_response=response,
