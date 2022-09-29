@@ -1,14 +1,14 @@
-id: 'gitlab'
+id: gitlab
 version: -1
-name: 'gitlab'
+name: gitlab
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 46994e01-67b8-4ff3-84f4-d4e498c637a5
+    taskid: 772c4a2c-9b99-43da-830c-e40f6b8f0a56
     type: start
     task:
-      id: 46994e01-67b8-4ff3-84f4-d4e498c637a5
+      id: 772c4a2c-9b99-43da-830c-e40f6b8f0a56
       version: -1
       name: ""
       iscommand: false
@@ -21,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": -3150
+          "x": 840,
+          "y": -3630
         }
       }
     note: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3f642ecc-018f-4a46-85bc-fbeae041351e
+    taskid: 7089f6bb-e284-4111-87e5-0910c826996c
     type: regular
     task:
-      id: 3f642ecc-018f-4a46-85bc-fbeae041351e
+      id: 7089f6bb-e284-4111-87e5-0910c826996c
       version: -1
       name: gitlab-issue-list
       description: Get a list of a project's issues.
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": -170
+          "x": 840,
+          "y": -640
         }
       }
     note: false
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 41c80db5-ec4f-40c3-85ce-74f1c5e4ef83
+    taskid: ebc1362f-b8c1-4d82-8585-bf38b2c4e8f5
     type: regular
     task:
-      id: 41c80db5-ec4f-40c3-85ce-74f1c5e4ef83
+      id: ebc1362f-b8c1-4d82-8585-bf38b2c4e8f5
       version: -1
       name: issue-update
       description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 510
+          "x": 850,
+          "y": 200
         }
       }
     note: false
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5f9d4aa2-90d7-4238-87ee-6a1439d872ac
+    taskid: b3c55133-1e21-4f96-80e0-932f374c70ef
     type: condition
     task:
-      id: 5f9d4aa2-90d7-4238-87ee-6a1439d872ac
+      id: b3c55133-1e21-4f96-80e0-932f374c70ef
       version: -1
       name: VERIFY list
       type: condition
@@ -132,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 0
+          "x": 850,
+          "y": -430
         }
       }
     note: false
@@ -145,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5d2660cd-98b3-4386-82b8-19e8ade14a20
+    taskid: d2f257d7-bc7d-4939-8239-4c3d1c2ca392
     type: condition
     task:
-      id: 5d2660cd-98b3-4386-82b8-19e8ade14a20
+      id: d2f257d7-bc7d-4939-8239-4c3d1c2ca392
       version: -1
       name: VERIFY issue update
       type: condition
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 680
+          "x": 850,
+          "y": 380
         }
       }
     note: false
@@ -182,10 +182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 2b953f9e-9b43-48ef-89c8-f46e2f7c98ed
+    taskid: 9e421e3c-d5f8-4829-8db9-9569d2d2c0b0
     type: title
     task:
-      id: 2b953f9e-9b43-48ef-89c8-f46e2f7c98ed
+      id: 9e421e3c-d5f8-4829-8db9-9569d2d2c0b0
       version: -1
       name: FIN
       type: title
@@ -197,7 +197,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 6900
+          "y": 7900
         }
       }
     note: false
@@ -209,10 +209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0d0f3b80-ca55-41f4-8f6b-e497cdd686c5
+    taskid: 9eedb138-8f83-4377-8427-ca99e0983cc4
     type: regular
     task:
-      id: 0d0f3b80-ca55-41f4-8f6b-e497cdd686c5
+      id: 9eedb138-8f83-4377-8427-ca99e0983cc4
       version: -1
       name: issue-note-create
       description: Creates a new note to a single project issue.
@@ -232,8 +232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 870
+          "x": 840,
+          "y": 630
         }
       }
     note: false
@@ -245,10 +245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1d213d82-cb1f-4221-83de-1655b71633fc
+    taskid: 15976dcc-e8ce-4502-80d6-086327c71439
     type: condition
     task:
-      id: 1d213d82-cb1f-4221-83de-1655b71633fc
+      id: 15976dcc-e8ce-4502-80d6-086327c71439
       version: -1
       name: VERIFY issue note create
       type: condition
@@ -256,7 +256,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "79"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -269,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1075
+          "x": 840,
+          "y": 825
         }
       }
     note: false
@@ -282,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ffb005e5-64a2-46a0-81b4-4b890aae647e
+    taskid: 034f7ec6-c693-47c3-8bd9-19e95225b1c1
     type: condition
     task:
-      id: ffb005e5-64a2-46a0-81b4-4b890aae647e
+      id: 034f7ec6-c693-47c3-8bd9-19e95225b1c1
       version: -1
       name: VERIFY note update
       type: condition
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1595
+          "x": 1350,
+          "y": 1670
         }
       }
     note: false
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: eed1a16a-d710-44fe-8ec7-c77789ad7e74
+    taskid: 9517cbe6-5748-406f-8236-72603bd978d0
     type: regular
     task:
-      id: eed1a16a-d710-44fe-8ec7-c77789ad7e74
+      id: 9517cbe6-5748-406f-8236-72603bd978d0
       version: -1
       name: issue-note-list
       description: Gets a list of all notes for a single issue.
@@ -342,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1260
+          "x": 830,
+          "y": 1280
         }
       }
     note: false
@@ -355,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7013495f-c5df-4bbc-87e8-0f4446d04519
+    taskid: 56ec0c41-72c5-4783-8673-a8a921264a5b
     type: condition
     task:
-      id: 7013495f-c5df-4bbc-87e8-0f4446d04519
+      id: 56ec0c41-72c5-4783-8673-a8a921264a5b
       version: -1
       name: VERIFY issue note list
       type: condition
@@ -366,7 +366,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "81"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -379,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1400
+          "x": 830,
+          "y": 1430
         }
       }
     note: false
@@ -392,10 +392,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 45f73ad4-b890-4cf3-866d-bb7c08164aa1
+    taskid: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
     type: regular
     task:
-      id: 45f73ad4-b890-4cf3-866d-bb7c08164aa1
+      id: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
       version: -1
       name: Get Version
       description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
@@ -410,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": -580
+          "x": 840,
+          "y": -1000
         }
       }
     note: false
@@ -423,10 +423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 146db361-70b1-44d5-854e-bdec1965ec92
+    taskid: a4089c96-1978-4bc3-87ca-173e084ef4e5
     type: condition
     task:
-      id: 146db361-70b1-44d5-854e-bdec1965ec92
+      id: a4089c96-1978-4bc3-87ca-173e084ef4e5
       version: -1
       name: VERIFY version
       type: condition
@@ -452,8 +452,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": -390
+          "x": 840,
+          "y": -830
         }
       }
     note: false
@@ -465,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5db8c894-3388-4457-853c-89a1c8df9883
+    taskid: e01bf462-811e-4d96-8ec7-fdc5628553f1
     type: regular
     task:
-      id: 5db8c894-3388-4457-853c-89a1c8df9883
+      id: e01bf462-811e-4d96-8ec7-fdc5628553f1
       version: -1
       name: list commit
       description: Get a list of repository commits in a project.
@@ -486,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -1370
+          "x": 840,
+          "y": -1810
         }
       }
     note: false
@@ -499,10 +499,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: d27b8468-4a4a-4af4-8f91-188d809be571
+    taskid: cfd34c30-1b3e-4a17-822d-c787c721dd30
     type: condition
     task:
-      id: d27b8468-4a4a-4af4-8f91-188d809be571
+      id: cfd34c30-1b3e-4a17-822d-c787c721dd30
       version: -1
       name: VERIFY commit list
       type: condition
@@ -523,8 +523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -1200
+          "x": 840,
+          "y": -1620
         }
       }
     note: false
@@ -536,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c16545fb-ba04-425e-80c1-c69561aaddeb
+    taskid: 4d3d2363-0c78-479b-808d-ef43001d96a3
     type: regular
     task:
-      id: c16545fb-ba04-425e-80c1-c69561aaddeb
+      id: 4d3d2363-0c78-479b-808d-ef43001d96a3
       version: -1
       name: 'get commit '
       description: Get a list of repository commits in a project.
@@ -557,8 +557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": -990
+          "x": 840,
+          "y": -1430
         }
       }
     note: false
@@ -570,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d6ec9e37-9f5f-4526-8b3b-bdbb62d2fc10
+    taskid: f9514aa1-941c-4f06-8dbb-366f45bc0235
     type: condition
     task:
-      id: d6ec9e37-9f5f-4526-8b3b-bdbb62d2fc10
+      id: f9514aa1-941c-4f06-8dbb-366f45bc0235
       version: -1
       name: VERIFY get commit
       type: condition
@@ -594,8 +594,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": -790
+          "x": 850,
+          "y": -1230
         }
       }
     note: false
@@ -607,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9edfc703-0130-4756-8d6b-48336df5b853
+    taskid: 2896cec4-ccd9-4c34-816d-fc3cf8d75988
     type: regular
     task:
-      id: 9edfc703-0130-4756-8d6b-48336df5b853
+      id: 2896cec4-ccd9-4c34-816d-fc3cf8d75988
       version: -1
       name: delete issue-note
       description: Deletes an existing note of an issue.
@@ -623,9 +623,9 @@ tasks:
       - "25"
     scriptarguments:
       issue_iid:
-        simple: ${GitLab.Issue.iid}
+        simple: ${issue_iid}
       note_id:
-        simple: ${GitLab.IssueNote.id}
+        simple: ${issue_note_id}
     separatecontext: false
     view: |-
       {
@@ -643,10 +643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6700c34f-199a-4838-84b6-ca555386c0fb
+    taskid: 3263dfdd-0089-4e21-8189-d1512666eca7
     type: regular
     task:
-      id: 6700c34f-199a-4838-84b6-ca555386c0fb
+      id: 3263dfdd-0089-4e21-8189-d1512666eca7
       version: -1
       name: branch create
       description: Creates a new branch in the repository.
@@ -679,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 057ef3b0-7c59-4cae-8171-dbf563d09ced
+    taskid: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
     type: regular
     task:
-      id: 057ef3b0-7c59-4cae-8171-dbf563d09ced
+      id: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
       version: -1
       name: ' get branch'
       description: Get a list of repository branches from a project, sorted by name alphabetically.
@@ -713,10 +713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 959d2033-7e5a-4ab9-83fc-49a0135a57a6
+    taskid: c1748bb6-e1ee-47b5-8542-3b1db5b25826
     type: condition
     task:
-      id: 959d2033-7e5a-4ab9-83fc-49a0135a57a6
+      id: c1748bb6-e1ee-47b5-8542-3b1db5b25826
       version: -1
       name: VERIFY create-branch
       type: condition
@@ -750,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 1782d90f-8b10-43aa-88e0-57230cbbe422
+    taskid: 3dd1992a-68cd-4d1c-8930-94229485b739
     type: condition
     task:
-      id: 1782d90f-8b10-43aa-88e0-57230cbbe422
+      id: 3dd1992a-68cd-4d1c-8930-94229485b739
       version: -1
       name: VERIFY get branch
       type: condition
@@ -787,10 +787,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 156af516-7bd4-4436-802b-df4e67c3d1b2
+    taskid: 40c06018-eabd-48bd-8c28-f333d804a81d
     type: regular
     task:
-      id: 156af516-7bd4-4436-802b-df4e67c3d1b2
+      id: 40c06018-eabd-48bd-8c28-f333d804a81d
       version: -1
       name: branch delete
       description: Deletes a branch from the repository.
@@ -821,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: cf623673-0327-4e22-8be0-87354db50046
+    taskid: 470bf3c0-dfe6-4f24-8406-2aa6dc266e94
     type: regular
     task:
-      id: cf623673-0327-4e22-8be0-87354db50046
+      id: 470bf3c0-dfe6-4f24-8406-2aa6dc266e94
       version: -1
       name: merge request create
       description: Creates a new merge request.
@@ -861,10 +861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 58961a93-2dff-4fbf-8229-8cce9e0db017
+    taskid: 93eb3662-862f-40c2-8d62-6a087eaaaa32
     type: condition
     task:
-      id: 58961a93-2dff-4fbf-8229-8cce9e0db017
+      id: 93eb3662-862f-40c2-8d62-6a087eaaaa32
       version: -1
       name: Verify Create
       type: condition
@@ -872,7 +872,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "32"
+      - "82"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -885,8 +885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 3480
+          "x": 820,
+          "y": 3450
         }
       }
     note: false
@@ -898,10 +898,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 63bf3709-b8e1-46de-8520-3054124c0233
+    taskid: b626b060-e5a6-413f-8c2a-7c30b58f950b
     type: regular
     task:
-      id: 63bf3709-b8e1-46de-8520-3054124c0233
+      id: b626b060-e5a6-413f-8c2a-7c30b58f950b
       version: -1
       name: merge update
       description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
@@ -918,17 +918,17 @@ tasks:
       description:
         simple: descc
       merge_request_id:
-        simple: ${GitLab.MergeRequest.iid}
+        simple: ${merge_request_iid}
       target_branch:
-        simple: ${GitLab.MergeRequest.target_branch}
+        simple: main
       title:
         simple: title update
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 3690
+          "x": 820,
+          "y": 3720
         }
       }
     note: false
@@ -940,10 +940,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3764d83a-d76d-4fbc-84b0-616f38169a7d
+    taskid: 413e20da-8251-4eb4-8017-b612bbe1c69a
     type: condition
     task:
-      id: 3764d83a-d76d-4fbc-84b0-616f38169a7d
+      id: 413e20da-8251-4eb4-8017-b612bbe1c69a
       version: -1
       name: VERIFY merge update
       type: condition
@@ -984,10 +984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4d3e8785-7488-42fd-8a77-9f6cac5c904b
+    taskid: bd3651d9-9d4f-45b8-894b-e7c5bb35efa9
     type: regular
     task:
-      id: 4d3e8785-7488-42fd-8a77-9f6cac5c904b
+      id: bd3651d9-9d4f-45b8-894b-e7c5bb35efa9
       version: -1
       name: issue-create
       description: Create an issue.
@@ -1007,8 +1007,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 170
+          "x": 850,
+          "y": -210
         }
       }
     note: false
@@ -1020,10 +1020,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: d344c7e7-ee82-46ac-8f40-c829763ff91e
+    taskid: 7c66f113-1440-4f70-833c-caba6f7c3ada
     type: condition
     task:
-      id: d344c7e7-ee82-46ac-8f40-c829763ff91e
+      id: 7c66f113-1440-4f70-833c-caba6f7c3ada
       version: -1
       name: verify issue
       type: condition
@@ -1044,8 +1044,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 330
+          "x": 850,
+          "y": 10
         }
       }
     note: false
@@ -1057,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: f57b1553-9c20-4332-8821-5b479c455dc9
+    taskid: 5241325c-bc7d-4488-89d4-17a93a8a8684
     type: regular
     task:
-      id: f57b1553-9c20-4332-8821-5b479c455dc9
+      id: 5241325c-bc7d-4488-89d4-17a93a8a8684
       version: -1
       name: group list
       description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
@@ -1078,8 +1078,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -2480
+          "x": 840,
+          "y": -2970
         }
       }
     note: false
@@ -1091,10 +1091,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f451dbfb-77b7-4dbc-8b59-03c93072c474
+    taskid: 8b5e9562-5ea2-4f39-87a5-7d2165e37529
     type: condition
     task:
-      id: f451dbfb-77b7-4dbc-8b59-03c93072c474
+      id: 8b5e9562-5ea2-4f39-87a5-7d2165e37529
       version: -1
       name: VERIFY group list
       type: condition
@@ -1115,8 +1115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -2280
+          "x": 850,
+          "y": -2790
         }
       }
     note: false
@@ -1128,10 +1128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 413c7616-0080-47c2-845f-3d3fc362d377
+    taskid: 6ad7fff7-f726-4e3a-8107-303ed213d71d
     type: regular
     task:
-      id: 413c7616-0080-47c2-845f-3d3fc362d377
+      id: 6ad7fff7-f726-4e3a-8107-303ed213d71d
       version: -1
       name: group member
       description: Gets a list of group or project members viewable by the authenticated user.
@@ -1149,8 +1149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -2090
+          "x": 840,
+          "y": -2580
         }
       }
     note: false
@@ -1162,10 +1162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 83d2975c-70a4-4381-8aaa-e4b340e4a5e3
+    taskid: f4a60cfa-2983-48c8-8619-95080172d6ee
     type: condition
     task:
-      id: 83d2975c-70a4-4381-8aaa-e4b340e4a5e3
+      id: f4a60cfa-2983-48c8-8619-95080172d6ee
       version: -1
       name: VERIFY group member list
       type: condition
@@ -1186,8 +1186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -1950
+          "x": 840,
+          "y": -2400
         }
       }
     note: false
@@ -1199,10 +1199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 9c443796-1f92-42d2-82a1-6c44d95a8718
+    taskid: e2300d70-3fda-436d-8d65-3dd265805ef7
     type: regular
     task:
-      id: 9c443796-1f92-42d2-82a1-6c44d95a8718
+      id: e2300d70-3fda-436d-8d65-3dd265805ef7
       version: -1
       name: project list
       description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
@@ -1220,8 +1220,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -1740
+          "x": 830,
+          "y": -2210
         }
       }
     note: false
@@ -1233,10 +1233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 1495dd9b-0446-4584-8ff1-1b4ea0738d77
+    taskid: 086ae812-9299-4166-8e8c-c336265a0959
     type: condition
     task:
-      id: 1495dd9b-0446-4584-8ff1-1b4ea0738d77
+      id: 086ae812-9299-4166-8e8c-c336265a0959
       version: -1
       name: VERIFY project list
       type: condition
@@ -1257,8 +1257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -1580
+          "x": 840,
+          "y": -2010
         }
       }
     note: false
@@ -1270,10 +1270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: c86acfe4-272f-4c01-8386-072fc27b82d9
+    taskid: 3c372308-28b0-4137-8311-795d9e17e60a
     type: regular
     task:
-      id: c86acfe4-272f-4c01-8386-072fc27b82d9
+      id: 3c372308-28b0-4137-8311-795d9e17e60a
       version: -1
       name: group project list
       description: Get the list of projects of a given group.
@@ -1293,8 +1293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -2870
+          "x": 840,
+          "y": -3390
         }
       }
     note: false
@@ -1306,10 +1306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 7246b0a1-9caf-4278-807e-9d31cb662108
+    taskid: 800c3420-e2ff-4b5d-862f-41d3bfaf2bf5
     type: regular
     task:
-      id: 7246b0a1-9caf-4278-807e-9d31cb662108
+      id: 800c3420-e2ff-4b5d-862f-41d3bfaf2bf5
       version: -1
       name: generate string
       description: Generates random string
@@ -1348,10 +1348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: d784b3db-aeb1-4a3a-8a4c-424c58dcdf6e
+    taskid: 941b1d97-dc9b-4474-8d4d-a305886342c9
     type: condition
     task:
-      id: d784b3db-aeb1-4a3a-8a4c-424c58dcdf6e
+      id: 941b1d97-dc9b-4474-8d4d-a305886342c9
       version: -1
       name: VERIFY group project
       type: condition
@@ -1372,8 +1372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -2690
+          "x": 840,
+          "y": -3170
         }
       }
     note: false
@@ -1385,10 +1385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b6db4ef6-1d43-4126-8fc7-9c92c0fd26ad
+    taskid: fde87384-ec87-4e4e-8e3f-9b6fa9014f7e
     type: regular
     task:
-      id: b6db4ef6-1d43-4126-8fc7-9c92c0fd26ad
+      id: fde87384-ec87-4e4e-8e3f-9b6fa9014f7e
       version: -1
       name: File get
       description: Allows to receive information about file in repository like name, size, content.
@@ -1409,7 +1409,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 5440
+          "y": 5910
         }
       }
     note: false
@@ -1421,10 +1421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 0449b85d-46ed-4e21-8d9b-28a96a2349c8
+    taskid: 04522af3-e4be-4fa6-8f6c-2c53d8bd9b13
     type: regular
     task:
-      id: 0449b85d-46ed-4e21-8d9b-28a96a2349c8
+      id: 04522af3-e4be-4fa6-8f6c-2c53d8bd9b13
       version: -1
       name: Get raw file
       description: Get raw file.
@@ -1445,7 +1445,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 5245
+          "y": 5695
         }
       }
     note: false
@@ -1457,10 +1457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 797598a1-8a75-4b3d-891a-94cd5cea128e
+    taskid: 17fffa78-f292-455f-8e30-b63b75591f0a
     type: regular
     task:
-      id: 797598a1-8a75-4b3d-891a-94cd5cea128e
+      id: 17fffa78-f292-455f-8e30-b63b75591f0a
       version: -1
       name: Delete context
       description: |-
@@ -1496,10 +1496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: e210f7e3-4f92-4b81-8357-a32c5def1c5c
+    taskid: d5b949a7-2e73-4622-8b3f-d87f61440667
     type: regular
     task:
-      id: e210f7e3-4f92-4b81-8357-a32c5def1c5c
+      id: d5b949a7-2e73-4622-8b3f-d87f61440667
       version: -1
       name: merge request note create
       description: Creates a new note for a single merge request.
@@ -1514,7 +1514,7 @@ tasks:
       body:
         simple: ${RandomString}
       merge_request_iid:
-        simple: ${GitLab.MergeRequest.iid}
+        simple: ${merge_request_iid}
     separatecontext: false
     view: |-
       {
@@ -1532,10 +1532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: e4f2370c-d68d-45dc-8ce5-d71b39d3051b
+    taskid: 4d53bfa3-0b3a-451d-895c-d520e9a72960
     type: condition
     task:
-      id: e4f2370c-d68d-45dc-8ce5-d71b39d3051b
+      id: 4d53bfa3-0b3a-451d-895c-d520e9a72960
       version: -1
       name: 'VERIFY merge request note create '
       type: condition
@@ -1543,7 +1543,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "68"
+      - "83"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1553,6 +1553,8 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1569,10 +1571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: a8f1fd4b-51ea-40bd-8fe7-6eac4b59c0b1
+    taskid: 08c6f546-1117-4d6e-88cb-140dd9e0ca8b
     type: regular
     task:
-      id: a8f1fd4b-51ea-40bd-8fe7-6eac4b59c0b1
+      id: 08c6f546-1117-4d6e-88cb-140dd9e0ca8b
       version: -1
       name: 'merge request note update '
       description: Modify existing note of a merge request.
@@ -1587,15 +1589,15 @@ tasks:
       body:
         simple: update from playbook
       merge_request_iid:
-        simple: "74"
+        simple: ${merge_request_iid}
       note_id:
-        simple: "1103379746"
+        simple: ${merge_request_note_id}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 4430
+          "x": 820,
+          "y": 4620
         }
       }
     note: false
@@ -1607,10 +1609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: a972d9a4-a64e-4975-803b-5ce541305bef
+    taskid: 041fb813-0b71-4f65-81de-7a70fa6b2703
     type: regular
     task:
-      id: a972d9a4-a64e-4975-803b-5ce541305bef
+      id: 041fb813-0b71-4f65-81de-7a70fa6b2703
       version: -1
       name: 'merge request note delete '
       description: Deletes an existing note of a merge request.
@@ -1620,18 +1622,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "64"
     scriptarguments:
       merge_request_iid:
-        simple: ${GitLab.MergeRequestNote.noteable_iid}
+        simple: ${merge_request_iid}
       note_id:
-        simple: ${GitLab.MergeRequestNote.id}
+        simple: ${merge_request_note_id}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 810,
-          "y": 4720
+          "y": 5510
         }
       }
     note: false
@@ -1643,10 +1645,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 85413f35-ff0e-4450-8da7-9a6e84a925fb
+    taskid: 74ba7ec5-55fa-45d8-8e34-7b4a74f35c3c
     type: regular
     task:
-      id: 85413f35-ff0e-4450-8da7-9a6e84a925fb
+      id: 74ba7ec5-55fa-45d8-8e34-7b4a74f35c3c
       version: -1
       name: merge request note list
       description: Gets a list of all notes for a single merge request.
@@ -1661,13 +1663,13 @@ tasks:
       limit:
         simple: "1"
       merge_request_iid:
-        simple: "2"
+        simple: ${merge_request_iid}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 4910
+          "x": 820,
+          "y": 5030
         }
       }
     note: false
@@ -1679,10 +1681,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 49a33ff1-2c2e-4d8b-80b3-08c4cc003a15
+    taskid: 78e6a2cf-c9b4-4f60-8c5c-78847523bbd8
     type: condition
     task:
-      id: 49a33ff1-2c2e-4d8b-80b3-08c4cc003a15
+      id: 78e6a2cf-c9b4-4f60-8c5c-78847523bbd8
       version: -1
       name: VERIFY merge request note list
       type: condition
@@ -1690,7 +1692,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "64"
+      - "69"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1704,7 +1706,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 5050
+          "y": 5290
         }
       }
     note: false
@@ -1716,10 +1718,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 7c7ecd77-2520-4502-8f9d-73ef1d02cdd0
+    taskid: 38d12081-e21e-43bc-83ef-a2c5223b29bb
     type: regular
     task:
-      id: 7c7ecd77-2520-4502-8f9d-73ef1d02cdd0
+      id: 38d12081-e21e-43bc-83ef-a2c5223b29bb
       version: -1
       name: file update
       description: Editing existing file in repository.
@@ -1745,8 +1747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 6240
+          "x": 800,
+          "y": 6830
         }
       }
     note: false
@@ -1758,10 +1760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 6357d4fb-8ed4-4427-88ab-510578e87bd0
+    taskid: 2cfbec52-9caa-4f6b-829f-58b29e9eec79
     type: condition
     task:
-      id: 6357d4fb-8ed4-4427-88ab-510578e87bd0
+      id: 2cfbec52-9caa-4f6b-829f-58b29e9eec79
       version: -1
       name: VERIFY update file
       type: condition
@@ -1782,8 +1784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 6460
+          "x": 800,
+          "y": 7050
         }
       }
     note: false
@@ -1795,10 +1797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 80e2714d-04ae-45d6-810d-429068d25550
+    taskid: 517f97b5-0408-46c4-8dbf-37b153fa235f
     type: condition
     task:
-      id: 80e2714d-04ae-45d6-810d-429068d25550
+      id: 517f97b5-0408-46c4-8dbf-37b153fa235f
       version: -1
       name: VERIFY file get
       type: condition
@@ -1820,7 +1822,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 5615
+          "y": 6135
         }
       }
     note: false
@@ -1832,10 +1834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: caa351f8-3f62-48b2-88b6-f8232a85bc5e
+    taskid: c3bec487-7217-4270-8a62-cb9cff0e7ddb
     type: regular
     task:
-      id: caa351f8-3f62-48b2-88b6-f8232a85bc5e
+      id: c3bec487-7217-4270-8a62-cb9cff0e7ddb
       version: -1
       name: file-create
       description: This allows you to create a single file. File path or entry_id must be specified.
@@ -1862,7 +1864,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 5810
+          "y": 6430
         }
       }
     note: false
@@ -1874,10 +1876,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 98ce0881-571d-4c2e-8c7f-58d825bce077
+    taskid: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
     type: condition
     task:
-      id: 98ce0881-571d-4c2e-8c7f-58d825bce077
+      id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
       version: -1
       name: VERIFY  file create
       description: This allows you to create a single file. File path or entry_id must be specified.
@@ -1907,7 +1909,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 6000
+          "y": 6610
         }
       }
     note: false
@@ -1919,10 +1921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: de07634c-7796-4205-84d2-912cee014946
+    taskid: a4c688ac-e7d9-4a25-8a16-d240e1974f1a
     type: regular
     task:
-      id: de07634c-7796-4205-84d2-912cee014946
+      id: a4c688ac-e7d9-4a25-8a16-d240e1974f1a
       version: -1
       name: file delete
       description: Editing existing file in repository.
@@ -1932,7 +1934,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "84"
     scriptarguments:
       branch:
         simple: TestFileCommandsForPlaybook
@@ -1945,7 +1947,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 6670
+          "y": 7290
         }
       }
     note: false
@@ -1957,10 +1959,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 5b325add-4749-4996-80c5-9a605128d9f1
+    taskid: 809c5460-58f9-418e-827f-489f53ef2cae
     type: condition
     task:
-      id: 5b325add-4749-4996-80c5-9a605128d9f1
+      id: 809c5460-58f9-418e-827f-489f53ef2cae
       version: -1
       name: VERIFY merge note update
       type: condition
@@ -1968,7 +1970,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "69"
+      - "70"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1981,8 +1983,261 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 830,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 63c40424-3f2e-4df2-8d2b-51a0188df937
+    type: regular
+    task:
+      id: 63c40424-3f2e-4df2-8d2b-51a0188df937
+      version: -1
+      name: issue-note_id save
+      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      key:
+        simple: issue_note_id
+      value:
+        simple: ${GitLab.IssueNote.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: b14f9c49-9a3f-467e-841e-e44faeb4fe93
+    type: regular
+    task:
+      id: b14f9c49-9a3f-467e-841e-e44faeb4fe93
+      version: -1
+      name: issue id save
+      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: issue_iid
+      value:
+        simple: ${GitLab.IssueNote.noteable_iid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 9c85a0cd-7a99-470c-8279-be7bd34878c7
+    type: regular
+    task:
+      id: 9c85a0cd-7a99-470c-8279-be7bd34878c7
+      version: -1
+      name: issue note update
+      description: Modify existing note of an issue.
+      script: '|||gitlab-issue-note-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body:
+        simple: changeed
+      issue_iid:
+        simple: ${issue_iid}
+      note_id:
+        simple: ${issue_note_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 45533628-d57e-4f6c-8e10-4e71aefbe580
+    type: regular
+    task:
+      id: 45533628-d57e-4f6c-8e10-4e71aefbe580
+      version: -1
+      name: merge request iid save
+      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: 'merge_request_iid '
+      value:
+        simple: ${GitLab.MergeRequest.iid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: c1e99ede-c2ac-40fd-8e2d-7e3f0309ad1b
+    type: regular
+    task:
+      id: c1e99ede-c2ac-40fd-8e2d-7e3f0309ad1b
+      version: -1
+      name: merge request note id save
+      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      key:
+        simple: merge_request_note_id
+      value:
+        simple: ${GitLab.MergeRequestNote.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 020a8eb3-f702-4dc4-87f8-d1b5f5f0221e
+    type: regular
+    task:
+      id: 020a8eb3-f702-4dc4-87f8-d1b5f5f0221e
+      version: -1
+      name: Code search
+      description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
+      script: '|||gitlab-code-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      search:
+        simple: moishy changed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 810,
-          "y": 4580
+          "y": 7480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 6c55f7b0-c23e-4a0d-8b33-eee8f7d8f65d
+    type: condition
+    task:
+      id: 6c55f7b0-c23e-4a0d-8b33-eee8f7d8f65d
+      version: -1
+      name: VERIFY code search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Code.ref
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 7670
         }
       }
     note: false
@@ -1999,14 +2254,14 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 10115,
-        "width": 450,
-        "x": 810,
-        "y": -3150
+        "height": 11595,
+        "width": 930,
+        "x": 800,
+        "y": -3630
       }
     }
   }
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: ''
+description: gitlab playbook

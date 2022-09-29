@@ -5,12 +5,14 @@ commonfields:
 configuration:
 - display: Server URL (e.g. https://gitlab.com/api/v4)
   name: url
-  required: true
+  required: false
   type: 0
-- display: API Key
-  name: api_key
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  hiddenusername: true
   required: true
-  type: 4
+  type: 9
 - display: Project ID
   name: project_id
   required: true
@@ -29,7 +31,7 @@ name: GitLab
 script:
   commands:
   - name: gitlab-version-get
-    description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
+    description: Retrieve version information for this GitLab instance.
     outputs:
     - type: String
       contextPath: GitLab.Version.version
@@ -109,18 +111,18 @@ script:
       description: The commit author's name.
       required: false
       isArray: false
-    - name: file_content
-      description: The file's content.
-      required: false
-      isArray: false
     - name: commit_message
       description: The commit message.
       required: true
       isArray: false
-    - name: execute_filemode
+    - auto: PREDEFINED
+      name: execute_filemode
       description: Enables or disables the execute flag on the file. Can be true or false.
       required: false
       isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.File.file_path
       description: URL-encoded full path of the new file.
@@ -178,11 +180,14 @@ script:
       description: Last known file commit ID.
       required: false
       isArray: false
-    - name: execute_filemode
+    - auto: PREDEFINED
+      name: execute_filemode
       description: Enables or disables the execute flag on the file. Can be true or false.
       required: false
       isArray: false
-      type: Boolean
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: GitLab.File.file_path
@@ -258,10 +263,15 @@ script:
       description: Return issues associated with the given epic ID. None returns issues that are not associated with an epic.
       required: false
       isArray: false
-    - name: issue_type
+    - auto: PREDEFINED
+      name: issue_type
       description: Filter to a given type of issue. One of issue, incident, or test_case.
       required: false
       isArray: false
+      predefined:
+      - issue
+      - incident
+      - test_case
     - name: labels
       description: Comma-separated list of label names, issues must have all labels to be returned. None lists all issues with no labels
       required: false
@@ -324,11 +334,13 @@ script:
       description: Return issues updated on or before the given time.
       required: false
       isArray: false
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Maximum number of results to return.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: The number of page to retrieve results from.
       required: false
       isArray: false
@@ -399,10 +411,15 @@ script:
       description: IID of the epic to add the issue to. Valid values are greater than or equal to 0.
       required: false
       isArray: false
-    - name: issue_type
+    - auto: PREDEFINED
+      name: issue_type
       description: Updates the type of issue. One of issue, incident, or test_case.
       required: false
       isArray: false
+      predefined:
+      - issue
+      - incident
+      - test_case
     - name: milestone_id
       description: The global ID of a milestone to assign the issue to. Set to 0 or provide an empty value to unassign a milestone.
       required: false
@@ -590,11 +607,13 @@ script:
       predefined:
       - default
       - topo
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Total commits to show.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: Present commits from page.
       required: false
       isArray: false
@@ -733,11 +752,13 @@ script:
       description: Search merge requests against their title and description.
       required: false
       isArray: false
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Total merge requests to show.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: Present merge requests from page.
       required: false
       isArray: false
@@ -1628,7 +1649,7 @@ script:
       isArray: false
       name: limit
       required: false
-    - defaultValue: 0
+    - defaultValue: 1
       description: The page number of the results to retrieve. Minimum value is 0.
       isArray: false
       name: page
@@ -1717,11 +1738,13 @@ script:
       predefined:
       - created_at
       - updated_at
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Total merge requests to show.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: Present merge requests from page.
       required: false
       isArray: false
@@ -2139,7 +2162,7 @@ script:
       description: The page number.
       required: false
       isArray: false
-    - defaultValue: '50'
+    - defaultValue: 50
       description: Maximum number of results to return.
       isArray: false
       name: limit
@@ -2484,12 +2507,14 @@ script:
       name: group_id
       required: true
       secret: false
-    - description: Total number of projects for display.
+    - defaultValue: 50
+      description: Total number of projects for display.
       isArray: false
       name: limit
       required: false
       secret: false
-    - description: Dispaly projects from this page number.
+    - defaultValue: 1
+      description: Dispaly projects from this page number.
       isArray: false
       name: page
       required: false
@@ -2814,7 +2839,7 @@ script:
       contextPath: GitLab.GroupProject.security_and_compliance_enabled
       description: If the security and compliance is enabled.
   - name: gitlab-raw-file-get
-    description: Get raw file.
+    description: Get file the file in a raw format.
     arguments:
     - description: The file path.
       isArray: false
@@ -2923,11 +2948,13 @@ script:
       description: Return list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively.
       required: false
       isArray: false
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Maximum number of results to return.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: The number of results on the page.
       required: false
       isArray: false
@@ -3036,11 +3063,13 @@ script:
       description: Limit to top level groups, excluding all subgroups
       required: false
       isArray: false
-    - name: limit
+    - defaultValue: 50
+      name: limit
       description: Maximum number of results to return.
       required: false
       isArray: false
-    - name: page
+    - defaultValue: 1
+      name: page
       description: The number of results on the page.
       required: false
       isArray: false
@@ -3219,4 +3248,4 @@ script:
   dockerimage: demisto/python3:3.10.7.33922
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- gitlabTestPlaybook.yml

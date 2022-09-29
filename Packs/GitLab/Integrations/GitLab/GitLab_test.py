@@ -1,9 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-"""
 import io
 import json
 import requests
@@ -36,14 +30,15 @@ branch_delete = {'branch_name': 'new_branch_name',
 pagination_dict = {'page': '1', 'per_page': '1', 'limit': '2'}
 
 ARGS_CASES = [
-    (-1, None, None, 'The limit value must be equal to 1 or bigger.'),
-    (1, 0, None, 'The page value must be equal to 1 or bigger.'),
-    (None, 2, -1, 'The page_size value must be equal to 1 or bigger.')
+    (1, 0, 'The page value must be equal to 1 or bigger.'),
+    (2, -1, 'The page_size value must be equal to 1 or bigger.'),
+    (1, 1, 'valid values')
+
 ]
 
 
 @pytest.mark.parametrize('page, page_size, limit, expected_results', ARGS_CASES)
-def test_check_args(limit, page, page_size, expected_results):
+def test_check_args(page, page_size, expected_results):
     """
         Given:
             - A command's arguments
@@ -58,7 +53,7 @@ def test_check_args(limit, page, page_size, expected_results):
     from GitLab import validate_pagination_values
 
     with pytest.raises(Exception) as e:
-        validate_pagination_values(page, page_size, limit)
+        validate_pagination_values(page, page_size)
     assert e.value.args[0] == expected_results
 
 
@@ -108,18 +103,14 @@ def test_group_project_list_command_limit(requests_mock):
         'group_id': '37904896',
         'limit': '1'
     }
-    # limit is 2
     response_json = util_load_json('test_data/baseintegration_GitLab.json').get('get_paged_results').get('results')
     response_project1 = util_load_json('test_data/baseintegration_GitLab.json').get('get_paged_results').get('project1')
-    # response_project2 = util_load_json('test_data/baseintegration_GitLab.json').get('get_paged_results').get('project2')
     requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_json)
     res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
     requests_mock.patch.object(Client, 'get_full_url', return_value=response_json)
     results = group_project_list_command(client, args_limit_2)
     assert len(results) == 2
     assert results == res
-
-    # limit is 1
     requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_project1)
     res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
     requests_mock.patch.object(Client, 'get_full_url', return_value=response_project1)
@@ -152,7 +143,6 @@ def test_group_project_list_command_page(requests_mock):
         'per_page': '1',
         'page': '1'
     }
-    # checking that the result returning from the first page is the first project and only it
     response_project1 = util_load_json('test_data/baseintegration_GitLab.json').get('get_paged_results').get('project1')
     response_project2 = util_load_json('test_data/baseintegration_GitLab.json').get('get_paged_results').get('project2')
     requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_project1)
@@ -162,7 +152,6 @@ def test_group_project_list_command_page(requests_mock):
     assert len(results) == 1
     assert results == res
 
-    # checking that the result returning from the second page is the second project and only it
     requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_project2)
     res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
     requests_mock.patch.object(Client, 'get_full_url', return_value=response_project2)
@@ -170,8 +159,6 @@ def test_group_project_list_command_page(requests_mock):
     assert len(results) == 1
     assert results == res
 
-
-#  REMOVE the following dummy unit test function
 
 def test_get_version_command(requests_mock):
     """
@@ -217,5 +204,3 @@ def test_get_raw_file_command(request_mock):
 
 def test_get_project_list_command(request_mock):
     pass   # need to complete
-
-

@@ -1,5 +1,5 @@
 Integration to GitLab API
-This integration was integrated and tested with version xx of GitLab
+This integration was integrated and tested with version 15.4 of GitLab
 
 ## Configure GitLab on Cortex XSOAR
 
