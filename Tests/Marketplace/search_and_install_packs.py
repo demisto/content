@@ -5,6 +5,8 @@ import ast
 import json
 import glob
 import re
+from pathlib import Path
+
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
@@ -19,13 +21,27 @@ from typing import List
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, Metadata
-from Tests.scripts.utils.content_packs_util import is_pack_deprecated
 from Tests.scripts.utils import logging_wrapper as logging
+from demisto_sdk.commands.common import tools
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
+
+
+def is_pack_deprecated(pack_path: str) -> bool:
+    """Checks whether the pack is deprecated.
+    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
+    Args:
+        pack_path (str): The pack path
+    Returns:
+        True if the pack is deprecated, False otherwise
+    """
+    pack_metadata_path = Path(pack_path) / PACK_METADATA_FILE
+    if not pack_metadata_path.is_file():
+        return True
+    return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
