@@ -2,6 +2,8 @@ from inspect import isclass
 import pytest
 from unittest.mock import MagicMock
 from CyberTriage import CyberTriageClient, IS_2XX
+
+
 SERVER_URL = 'https://test_url.com'
 
 
@@ -48,7 +50,6 @@ def test_triage_endpoint_command(client: CyberTriageClient):
         'malware_hash_upload': 'yes',
         'malware_file_upload': 'no',
         'endpoint': 'made-up-endpoint',
-        'scan_options': '',
         'incident_name': 'MADEUP'
     }
     mock2 = MagicMock()

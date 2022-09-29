@@ -18,7 +18,9 @@ class CyberTriageClient(BaseClient):
 
     def __init__(self, server: str, rest_port: str, api_key: str, user: str,
                  password: str, verify_server_cert: bool, ok_codes: Tuple[int, ...]):
-        base_url = f'https://{server}:{rest_port}/api/'
+        base_url = f'https://{server}:{rest_port}/api/' if not (
+            server.startswith('https://') or server.startswith('http://')
+        ) else f'{server}:{rest_port}/api/'
         req_headers = {'restApiKey': api_key}
         self._user = user
         self._password = password
@@ -31,7 +33,9 @@ class CyberTriageClient(BaseClient):
     def triage_endpoint(self, is_hash_upload_on: bool, is_file_upload_on: bool,
                         endpoint: str, scan_options: str, incident_name: str):
         # Validate scan options
-        invalid_options = [opt for opt in scan_options.split(',') if opt not in self.SCAN_OPTIONS]
+        invalid_options = []
+        if scan_options:
+            invalid_options = [opt for opt in scan_options.split(',') if opt not in self.SCAN_OPTIONS]
         if invalid_options:
             raise DemistoException('The following are not valid scan options: {}'.format(','.join(invalid_options)))
 
@@ -87,7 +91,7 @@ def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> 
     )
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """Main function, parses params and runs command functions."""
     params = demisto.params()
     command = demisto.command()
@@ -123,5 +127,5 @@ def main() -> None:
         )
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
