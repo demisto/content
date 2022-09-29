@@ -908,11 +908,15 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest=" not in searchable_query:
-                    searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest=" not in searchable_query:
-                    searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                if latest_offset:
+                    kwargs['latest_time'] = latest_offset
+                    if "latest=" not in searchable_query:
+                        searchable_query = "latest={} ".format(latest_offset) + searchable_query
+                if earliest_offset:
+                    kwargs['earliest_time'] = earliest_offset
+                    if "earliest=" not in searchable_query:
+                        searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
