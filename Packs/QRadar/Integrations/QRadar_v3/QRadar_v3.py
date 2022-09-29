@@ -1687,7 +1687,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: FetchM
     return offense, is_success
 
 
-def get_num_events(events) -> int:
+def get_num_events(events: list[dict]) -> int:
     return sum(int(event.get('eventcount', 1)) for event in events)
 
 

@@ -544,14 +544,15 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     mocker.patch.object(QRadar_v3, "create_search_with_retry", return_value=expected_id)
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
-
+    is_all_events_fetched = mock_search_response and ((num_events >= min(offense['event_count'], events_limit))
+                                                      or (fetch_mode == FetchMode.correlations_events_only.value))
+    mocker.patch.object(QRadar_v3, 'is_all_events_fetched', return_value=is_all_events_fetched)
     enriched_offense, is_success = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
                                                               events_limit=events_limit)
     assert 'mirroring_events_message' in enriched_offense
     del enriched_offense['mirroring_events_message']
     if mock_search_response:
-        assert is_success == (num_events >= min(offense['event_count'], events_limit)) or \
-                             (fetch_mode == FetchMode.correlations_events_only.value)
+        assert is_success == is_all_events_fetched
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     else:
         assert not is_success
