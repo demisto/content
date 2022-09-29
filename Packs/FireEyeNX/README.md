@@ -1,5 +1,17 @@
 This pack includes XSIAM content.
 
+## How configure Rsyslog on FireEye
+
+1. Log into the FireEye appliance with an administrator account
+2. Click Settings
+3. Click Notifications
+4. Click rsyslog
+5. Check the Event type check box
+6. Make sure Rsyslog settings are:
+   Default format: CEF
+   Default delivery: Per event 
+   Default send as: Alert
+
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options to collect events from the vendor:
