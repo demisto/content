@@ -10,7 +10,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def IS_2XX(x: int) -> bool:
-    return (x / 100) == 2  # Returns true if status code (int) is 2xx
+    return int(x / 100) == 2  # Returns true if status code (int) is 2xx
 
 
 class CyberTriageClient(BaseClient):
