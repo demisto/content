@@ -73,22 +73,22 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: feature.id
+        - contextPath: AHA.Feature.id
           description: The feature ID.
           type: UUID
-        - contextPath: feature.name
+        - contextPath: AHA.Feature.name
           description: The feature name.
           type: String
-        - contextPath: feature.reference_num
+        - contextPath: AHA.Feature.reference_num
           description: A feature reference num unique.
           type: String
-        - contextPath: feature.workflow_status
+        - contextPath: AHA.Feature.workflow_status
           description: Feature status description.
           type: String
-        - contextPath: feature.description
+        - contextPath: AHA.Feature.description
           description: Description of the feature.
           type: String
-        - contextPath: feature.created_at
+        - contextPath: AHA.Feature.created_at
           description: Feature creation date.
           type: Date
     - name: aha-edit-feature
@@ -110,22 +110,22 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: Aha.feature.id
+        - contextPath: AHA.Feature.id
           description: The feature ID.
           type: UUID
-        - contextPath: feature.name
+        - contextPath: AHA.Feature.name
           description: The feature name.
           type: String
-        - contextPath: feature.reference_num
+        - contextPath: AHA.Feature.reference_num
           description: A feature reference number.
           type: String
-        - contextPath: feature.workflow_status
+        - contextPath: AHA.Feature.workflow_status
           description: Status name.
           type: String
-        - contextPath: feature.description
+        - contextPath: AHA.Feature.description
           description: Description of the feature.
           type: String
-        - contextPath: feature.created_at
+        - contextPath: AHA.Feature.created_at
           description: Feature creation date.
           type: Date
   isfetch: false
