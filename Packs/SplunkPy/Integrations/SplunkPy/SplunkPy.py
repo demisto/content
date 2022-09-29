@@ -910,12 +910,8 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 if latest_offset:
                     kwargs['latest_time'] = latest_offset
-                    if "latest=" not in searchable_query:
-                        searchable_query = "latest={} ".format(latest_offset) + searchable_query
                 if earliest_offset:
                     kwargs['earliest_time'] = earliest_offset
-                    if "earliest=" not in searchable_query:
-                        searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
@@ -925,7 +921,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
             else:
                 demisto.debug('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
-            demisto.debug("Coldn't build search query for notable {} with the following drilldown "
+            demisto.debug("Couldn't build search query for notable {} with the following drilldown "
                           "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
@@ -1052,7 +1048,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
                             is_item_fnd = True
                             enrichment.data.append(item)
                         if not is_item_fnd:
-                            demisto.debug('job.results={}'.format(job_results))
+                            demisto.debug('No items were found for notable'.format(notable.id))
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
                     demisto.error("Caught an exception while retrieving {} enrichment results for notable {}: "
