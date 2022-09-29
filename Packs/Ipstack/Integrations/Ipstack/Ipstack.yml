@@ -6,11 +6,17 @@ display: ipstack
 category: Data Enrichment & Threat Intelligence
 description: "One of the leading IP to geolocation \nAPIs and global IP database services."
 configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+  hidden: true
 - display: ""
   displaypassword: API Key
-  name: apikey
+  name: credentials
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.

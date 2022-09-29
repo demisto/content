@@ -198,7 +198,7 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 def main() -> None:
     """main function, parses params and runs command functions"""
 
-    api_key = demisto.params().get('apikey').get('password')
+    api_key = demisto.params().get('apikey') or demisto.params().get('credentials').get('password')
 
     # get the service API url
     base_url = demisto.params()['url']
