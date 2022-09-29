@@ -1764,7 +1764,7 @@ def malware_query_command(client: Client, args: dict):
     malware_type = str(args.get('type'))
     malware_status = str(args.get('status'))
     time_stamp = str(args.get('timestamp'))
-    limit_range = int(arg_to_number(args.get('limit')))
+    limit_range = arg_to_number(args.get('limit'))
     if limit_range > 0:
         filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
         return CommandResults(raw_response=filter_response)
@@ -1773,7 +1773,7 @@ def malware_query_command(client: Client, args: dict):
 
 
 def malware_query_filter(
-        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str, limit_range: int) -> dict:
+        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str, limit_range: Optional[int]) -> dict:
     query = []
     if needs_attention:
         query.append({"fieldName": "needsAttention", "operator": "Is", "values": [bool(needs_attention)]})
@@ -1789,7 +1789,7 @@ def malware_query_filter(
     return response
 
 
-def malware_query(client: Client, action_values: list, limit: int) -> dict:
+def malware_query(client: Client, action_values: list, limit: Optional[int]) -> dict:
     json_body = {"filters": action_values, "sortingFieldName": "timestamp", "sortDirection": "DESC", "limit": limit, "offset": 0}
 
     return client.cybereason_api_call('POST', '/rest/malware/query', json_body=json_body)
