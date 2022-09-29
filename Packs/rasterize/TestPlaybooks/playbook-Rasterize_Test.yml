@@ -364,8 +364,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3695
+          "x": 250,
+          "y": 4400
         }
       }
     note: false
@@ -455,6 +455,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -620,7 +621,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: image/jpeg
+                  simple: image/png
               ignorecase: true
             - operator: isEqualString
               left:
@@ -634,6 +635,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -873,6 +875,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -900,8 +903,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '27'
       Yes:
-      - '11'
+      - '26'
     separatecontext: false
     conditions:
     - label: Yes
@@ -932,12 +937,219 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: f863cc12-6e98-461e-8945-c95b1b414d07
+    type: regular
+    task:
+      id: f863cc12-6e98-461e-8945-c95b1b414d07
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 145b506f-4614-4897-8ab4-8dbc39202ce0
+    type: regular
+    task:
+      id: 145b506f-4614-4897-8ab4-8dbc39202ce0
+      version: -1
+      name: Error Text Validation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Full-screen image not verified
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: 1bec3484-9a58-4271-8416-0b33c81ddf7c
+    type: regular
+    task:
+      id: 1bec3484-9a58-4271-8416-0b33c81ddf7c
+      version: -1
+      name: Rasterize URL - Include URL bar
+      description: Rasterize a URL into image or PDF
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      include_url:
+        simple: 'True'
+      type:
+        simple: png
+      url:
+        simple: https://google.com
+      wait_time:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: 6e5ac41f-9bf8-40ad-809c-5ae0ffe815af
+    type: regular
+    task:
+      id: 6e5ac41f-9bf8-40ad-809c-5ae0ffe815af
+      version: -1
+      name: Test Image (ImageOCR)
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      entryid:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/png
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: url.png
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 4040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 105beb6d-61a6-449f-8a2a-61206e3345b5
+    type: condition
+    task:
+      id: 105beb6d-61a6-449f-8a2a-61206e3345b5
+      version: -1
+      name: Check Text
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      Yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: Yes
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3710,
+        "height": 4415,
         "width": 1025,
         "x": 50,
         "y": 50

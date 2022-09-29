@@ -126,6 +126,110 @@
 					"simple": "xdrstatusv2"
 				}
 			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"assigned_user_mail": {
+					"simple": "xdrassigneduseremail"
+				},
+				"assigned_user_pretty_name": {
+					"simple": "owner"
+				},
+				"manual_severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "low"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "medium"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "high"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {
+										"value": {
+											"simple": "high"
+										}
+									},
+									"toReplace": {
+										"value": {
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"resolve_comment": {
+					"simple": "closeNotes"
+				},
+				"status": {
+					"complex": {
+						"filters": [],
+						"root": ".",
+						"transformers": [
+							{
+								"args": {
+									"dt": {
+										"value": {
+											"simple": ".=val \u0026\u0026 val.status == 1 ? \"under_investigation\" :(val.closeReason.indexOf(\"False Positive\") \u003e -1 ? \"resolved_false_positive\" :  (val.closeReason.indexOf(\"Duplicate\") \u003e -1 ? \"resolved_duplicate\" :  (val.closeReason.indexOf(\"True Positive\") \u003e -1 ? \"resolved_true_positive\" :  \"resolved_other\")))"
+										}
+									}
+								},
+								"operator": "DT"
+							}
+						]
+					}
+				}
+			}
 		}
 	},
 	"name": "Cortex XDR - Outgoing Mapper",

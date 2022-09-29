@@ -237,7 +237,7 @@ def get_ip_context_data(responses: list) -> list:
                 tmp_response[PRETTY_KEY.get(key, key)] = value
 
         ip = tmp_response["IP"]
-        tmp_response["IP"] = f"[{ip}](https://www.greynoise.io/viz/ip/{ip})"
+        tmp_response["IP"] = f"[{ip}](https://viz.greynoise.io/ip/{ip})"
 
         ip_context_responses.append(tmp_response)
 
@@ -356,7 +356,7 @@ def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResul
             "Code Description": record.get("code_message"),
         }
         ip = hr_record["IP"]
-        hr_record["IP"] = f"[{ip}](https://www.greynoise.io/viz/ip/{ip})"
+        hr_record["IP"] = f"[{ip}](https://viz.greynoise.io/ip/{ip})"
         hr_list.append(hr_record)
 
     hr = tableToMarkdown(name="IP Quick Check Details", t=hr_list, headers=IP_QUICK_CHECK_HEADERS, removeNull=True)
@@ -378,7 +378,7 @@ def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 @exception_handler
 @logger
-def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[CommandResults]:
     """Get information about a given IP address. Returns classification (benign, malicious or unknown),
         IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags,
         and raw port scan and web request information.
@@ -392,6 +392,9 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
     :return: A list of ``CommandResults`` object that is then passed to ``return_results``,
         that contains the IP information.
     :rtype: ``List[CommandResults]``
+
+    :type reliability: ``String``
+    :param reliability: string
     """
     ips = argToList(args.get("ip"), ",")
     command_results = []
@@ -455,6 +458,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
+                reliability=reliability
             )
 
             city = response.get("metadata", {}).get("city", "")
@@ -487,7 +491,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
 
         if riot_response["riot"] and not response["seen"]:
             riot_tmp_response = {
-                "IP": f"[{riot_response.get('address')}](https://www.greynoise.io/viz/riot/{riot_response.get('address')})",
+                "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
                 "Name": riot_response.get("name"),
                 "Category": riot_response.get("category"),
                 "Trust Level": riot_response.get("trust_level"),
@@ -517,6 +521,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
+                reliability=reliability
             )
 
             ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
@@ -548,6 +553,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
+                reliability=reliability
             )
 
             city = response.get("metadata", {}).get("city", "")
@@ -568,7 +574,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
             )
 
             riot_tmp_response = {
-                "IP": f"[{riot_response.get('address')}](https://www.greynoise.io/viz/riot/{riot_response.get('address')})",
+                "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
                 "Name": riot_response.get("name"),
                 "Category": riot_response.get("category"),
                 "Trust Level": riot_response.get("trust_level"),
@@ -610,6 +616,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
+                reliability=reliability
             )
 
             ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
@@ -681,7 +688,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
             human_readable += f'\n### Next Page Token: \n{query_response.get("scroll")}'
 
         query = query_response.get("query", "").replace(" ", "+")
-        query_link = f"https://www.greynoise.io/viz/query/?gnql={query}"
+        query_link = f"https://viz.greynoise.io/query/?gnql={query}"
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
         human_readable += f"\n*To view the detailed query result please click [here]({query_link}).*"
@@ -700,7 +707,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
         outputs = {}
         human_readable = "### GreyNoise Query returned No Results."
         query = query_response.get("query", "").replace(" ", "+")
-        query_link = f"https://www.greynoise.io/viz/query/?gnql={query}"
+        query_link = f"https://viz.greynoise.io/query/?gnql={query}"
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
         human_readable += f"\n*To view the detailed query result please click [here]({query_link}).*"
@@ -762,7 +769,7 @@ def stats_command(client: Client, args: dict) -> Any:
 
 @exception_handler
 @logger
-def riot_command(client: Client, args: Dict) -> CommandResults:
+def riot_command(client: Client, args: Dict, reliability: str) -> CommandResults:
     """
     Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
     the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
@@ -776,6 +783,9 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
     :return: A ``CommandResults`` object that is then passed to ``return_results``,
            that contains the IP information.
     :rtype: ``CommandResults``
+
+    :type reliability: ``String``
+    :param reliability: string
     """
     ip = args.get("ip", "")
     response = client.riot(ip)
@@ -783,22 +793,32 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
     response = remove_empty_elements(response)
     name = ""
     if response.get("riot") is False or response.get("riot") == "false":
-        name = "GreyNoise: IP Not Found in RIOT"
+        name = "GreyNoise RIOT IP Lookup"
         hr = {
             "IP": response.get("ip"),
             "RIOT": response.get("riot"),
         }
-        headers = ["IP", "RIOT"]
+        human_readable = f"### IP: {ip} Not Associated with Common Business Service\n"
+        human_readable += tableToMarkdown(
+            name=name, t=hr, headers=["IP", "RIOT"],
+            removeNull=False
+        )
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(
+            response.get("classification"))
     elif response.get("riot") is True or response.get("riot") == "true":
         if response.get("logo_url", "") != "":
             del response["logo_url"]
         if response.get("trust_level") == "1":
             response["trust_level"] = "1 - Reasonably Ignore"
+            response["classification"] = "benign"
         elif response.get("trust_level") == "2":
             response["trust_level"] = "2 - Commonly Seen"
-        name = "GreyNoise: IP Belongs to Common Business Service"
+            response["classification"] = "unknown"
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(
+            response.get("classification"))
+        name = "GreyNoise RIOT IP Lookup"
         hr = {
-            "IP": f"[{response.get('ip')}](https://www.greynoise.io/viz/riot/{response.get('ip')})",
+            "IP": f"[{response.get('ip')}](https://viz.greynoise.io/ip/{response.get('ip')})",
             "Name": response.get("name"),
             "Category": response.get("category"),
             "Trust Level": response.get("trust_level"),
@@ -807,19 +827,43 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
         }
         headers = RIOT_HEADERS
 
-    human_readable = tableToMarkdown(name=name, t=hr, headers=headers, removeNull=True)
+        human_readable = f"### IP: {ip} found with RIOT Reputation: {dbot_score_string}\n"
+        human_readable += f'Belongs to Common Business Service: {response["name"]}\n'
+        human_readable += tableToMarkdown(
+            name=name, t=hr, headers=headers,
+            removeNull=False
+        )
+
+    try:
+        response_quick: Any = ip_quick_check_command(client, {"ip": ip})
+        malicious_description = response_quick.outputs[0].get("code_value")
+    except Exception:
+        malicious_description = ""
+
+    dbot_score = Common.DBotScore(
+        indicator=response.get("address"),
+        indicator_type=DBotScoreType.IP,
+        score=dbot_score_int,
+        integration_name="GreyNoise",
+        malicious_description=malicious_description,
+        reliability=reliability
+    )
+
+    ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
+
     return CommandResults(
         outputs_prefix="GreyNoise.Riot",
-        outputs_key_field="ip",
+        outputs_key_field="address",
         outputs=response,
         readable_output=human_readable,
+        indicator=ip_standard_context,
         raw_response=original_response,
     )
 
 
 @exception_handler
 @logger
-def context_command(client: Client, args: Dict) -> CommandResults:
+def context_command(client: Client, args: Dict, reliability: str) -> CommandResults:
     """
     Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
     the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
@@ -833,6 +877,9 @@ def context_command(client: Client, args: Dict) -> CommandResults:
     :return: A ``CommandResults`` object that is then passed to ``return_results``,
            that contains the IP information.
     :rtype: ``CommandResults``
+
+    :type reliability: ``String``
+    :param reliability: string
     """
 
     ip = args.get("ip", "")
@@ -872,6 +919,7 @@ def context_command(client: Client, args: Dict) -> CommandResults:
         score=dbot_score_int,
         integration_name="GreyNoise",
         malicious_description=malicious_description,
+        reliability=reliability
     )
 
     city = response.get("metadata", {}).get("city", "")
@@ -915,13 +963,19 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.1.2"
+    pack_version = "1.2.0"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]
 
     api_key = demisto.params().get("apikey")
     proxy = demisto.params().get("proxy", False)
+    reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
+    reliability = reliability if reliability else DBotScoreReliability.B
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Integration Reliability parameter.")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -945,7 +999,7 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == "ip":
-            result = ip_reputation_command(client, demisto.args())
+            result = ip_reputation_command(client, demisto.args(), reliability)
             return_results(result)
 
         elif demisto.command() == "greynoise-stats":
@@ -957,11 +1011,11 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == "greynoise-riot":
-            result = riot_command(client, demisto.args())
+            result = riot_command(client, demisto.args(), reliability)
             return_results(result)
 
         elif demisto.command() == "greynoise-context":
-            result = context_command(client, demisto.args())
+            result = context_command(client, demisto.args(), reliability)
             return_results(result)
     # Log exceptions and return errors
     except DemistoException as err:

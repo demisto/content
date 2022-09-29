@@ -2,6 +2,7 @@
     "name": "Recorded Future (Deprecated)",
     "description": "Deprecated. Use RecordedFuture instead.",
     "support": "xsoar",
+    "hidden": true,
     "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",

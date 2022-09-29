@@ -30,6 +30,35 @@ configuration:
   name: insecure
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: |
   This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
 
@@ -49,86 +78,102 @@ script:
     outputs:
     - contextPath: IP-API.continentCode
       description: continentCode
-      type: string
+      type: String
     - contextPath: IP-API.zip
       description: zip
-      type: string
+      type: String
     - contextPath: IP-API.mobile
       description: mobile
-      type: boolean
+      type: Boolean
     - contextPath: IP-API.reverse
       description: reverse
-      type: string
+      type: String
     - contextPath: IP-API.countryCode
       description: countryCode
-      type: string
+      type: String
     - contextPath: IP-API.org
       description: org
-      type: string
+      type: String
     - contextPath: IP-API.isp
       description: isp
-      type: string
+      type: String
     - contextPath: IP-API.currentTime
       description: currentTime
-      type: string
+      type: String
     - contextPath: IP-API.query
       description: query
-      type: string
+      type: String
     - contextPath: IP-API.city
       description: city
-      type: string
+      type: String
     - contextPath: IP-API.lon
       description: lon
-      type: number
+      type: Number
     - contextPath: IP-API.proxy
       description: proxy
-      type: boolean
+      type: Boolean
     - contextPath: IP-API.district
       description: district
-      type: string
+      type: String
     - contextPath: IP-API.countryCode3
       description: countryCode3
-      type: string
+      type: String
     - contextPath: IP-API.currency
       description: currency
-      type: string
+      type: String
     - contextPath: IP-API.callingCode
       description: callingCode
-      type: number
+      type: Number
     - contextPath: IP-API.as
       description: as
-      type: string
+      type: String
     - contextPath: IP-API.status
       description: status
-      type: string
+      type: String
     - contextPath: IP-API.offset
       description: offset
-      type: string
+      type: String
     - contextPath: IP-API.continent
       description: continent
-      type: string
+      type: String
     - contextPath: IP-API.region
       description: region
-      type: string
+      type: String
     - contextPath: IP-API.country
       description: country
-      type: string
+      type: String
     - contextPath: IP-API.timezone
       description: timezone
-      type: string
+      type: String
     - contextPath: IP-API.hosting
       description: hosting
-      type: boolean
+      type: Boolean
     - contextPath: IP-API.asname
       description: asname
-      type: string
+      type: String
     - contextPath: IP-API.lat
       description: lat
-      type: number
+      type: Number
     - contextPath: IP-API.regionName
       description: regionName
-      type: string
-  dockerimage: demisto/python3:3.9.8.24399
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
   subtype: python3

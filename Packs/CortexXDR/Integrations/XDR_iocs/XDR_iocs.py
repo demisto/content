@@ -30,6 +30,18 @@ demisto_score_to_xdr: Dict[int, str] = {
 }
 
 
+def batch_iocs(generator, batch_size=200):
+    current_batch = []
+    for indicator in generator:
+        current_batch.append(indicator)
+        if len(current_batch) >= batch_size:
+            yield current_batch
+            current_batch = []
+
+    if current_batch:
+        yield current_batch
+
+
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
@@ -60,8 +72,12 @@ class Client:
                             headers=self._headers,
                             **requests_kwargs)
 
-        if res.status_code in self.error_codes:
-            raise DemistoException(self.error_codes[res.status_code], res=res)
+        if not res.ok:
+            status_code = res.status_code
+            if status_code in self.error_codes:
+                raise DemistoException(self.error_codes[res.status_code], res=res)
+            raise DemistoException(f'{status_code}: {res.text}')
+
         try:
             return res.json()
         except json.decoder.JSONDecodeError as e:
@@ -122,13 +138,19 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        for ios in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
-            _file.write(ios + '\n')
+        has_iocs = False
+        for ioc in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+            has_iocs = True
+            _file.write(ioc + '\n')
+
+        if not has_iocs:
+            demisto.debug('All indicators that follow the "Sync Query" are expired, adding a space to the iocs_to_keep file.')
+            _file.write(' ')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
+        for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
 
@@ -227,7 +249,7 @@ def get_temp_file() -> str:
 def sync(client: Client):
     temp_file_path: str = get_temp_file()
     try:
-        create_file_sync(temp_file_path)
+        create_file_sync(temp_file_path)  # can be empty
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
         client.http_request(path, requests_kwargs)
@@ -244,7 +266,7 @@ def iocs_to_keep(client: Client):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     try:
-        create_file_iocs_to_keep(temp_file_path)
+        create_file_iocs_to_keep(temp_file_path)  # can't be empty
         requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
         path = 'iocs_to_keep'
         client.http_request(path, requests_kwargs)
@@ -293,8 +315,11 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
-        client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+        for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
+            demisto.debug(f'push batch: {i}')
+            requests_kwargs: Dict = get_requests_kwargs(_json=list(
+                map(demisto_ioc_to_xdr, single_batch_iocs)))
+            client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs('push done.')
 
 
@@ -469,6 +494,8 @@ def main():   # pragma: no cover
         'xdr-iocs-push': tim_insert_jsons,
     }
     command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+
     try:
         if command == 'fetch-indicators':
             fetch_indicators(client, params.get('autoSync', False))

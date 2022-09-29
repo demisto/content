@@ -25,20 +25,10 @@ configuration:
   name: page_size
   required: false
   type: 0
-- defaultvalue: box
-  display: Vendor Name
-  name: vendor_name
-  required: false
-  type: 0
-- defaultvalue: box
-  display: Product Name
-  name: product_name
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -74,7 +64,7 @@ script:
     description: Get events.
     execution: false
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.29883
+  dockerimage: demisto/pydantic-jwt3:1.0.0.32858
   feed: false
   isfetch: false
   longRunning: false

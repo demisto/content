@@ -1,0 +1,20 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "policyInfo": "Default Test",
+            "numberOfItems": 8
+        },
+        {
+            "policyInfo": "Relaxed Test",
+            "numberOfItems": 1473
+        },
+        {
+            "policyInfo": "Default Test",
+            "numberOfItems": 79
+        }
+    ],
+    "fail": []
+}

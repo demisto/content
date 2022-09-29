@@ -10,7 +10,12 @@ configuration:
   name: api_endpoint
   type: 0
   required: true
-  additionalinfo: https://api.<deployment>.sumologic.com/api/
+  additionalinfo: https://api.<deployment>.sumologic.com/api
+- display: Sumo Logic Instance Endpoint
+  name: instance_endpoint
+  type: 0
+  required: false 
+  additionalinfo: https://<yoursubdomain>.<deployment>.sumologic.com
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -811,7 +816,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   subtype: python3

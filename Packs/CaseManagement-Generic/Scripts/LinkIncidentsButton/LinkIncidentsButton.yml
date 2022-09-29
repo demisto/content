@@ -1,8 +1,7 @@
 args:
 - name: linkedIncidentIDs
   required: true
-  description: Incident ID to link to, or a comma separated list of related Incident
-    IDs.
+  description: Incident ID to link to, or a comma separated list of related Incident IDs.
 - name: action
   required: true
   auto: PREDEFINED
@@ -15,7 +14,7 @@ comment: |
 commonfields:
   id: LinkIncidentsButton
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: LinkIncidentsButton
 runas: DBotWeakRole

@@ -9,20 +9,16 @@ tags:
 enabled: true
 args:
 - name: from
-  description: 'The start date by which to filter incidents. Date format will be the
-      same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
-      +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00 +0200").'
 - name: to
-  description: 'The end date by which to filter incidents. Date format will be the
-      same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
-      +0200").'
+  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00 +0200").'
 - name: limit
   description: The maximum number of incidents to fetch. The default value is 100.
-  defaultValue: "100"
+  defaultValue: '100'
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 comment: The widget returns the number of the disconnected endpoints using xdr-get-endpoints command.
 fromversion: 6.0.0

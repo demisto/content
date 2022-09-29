@@ -1,3 +1,5 @@
+Deprecated. No available replacement.
+
 Runs a quick-scan command with `Generic-Polling`.
 
 ## Dependencies
@@ -20,7 +22,7 @@ This playbook does not use any scripts.
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- | 
+| --- | --- | --- | --- |
 | url | The website URL, or the URL that contains the file to submit. | - | Optional |
 | scan_type | The type of scan. Run the `hybrid-analysis-list-scanners` command to view available scanners. | all | Optional |
 | min_malicious_scanners | The number of scanners that report the file as malicious to determine whether the file is malicious. The default is "2". | 2 | Optional |

@@ -1,67 +1,9 @@
-name: Microsoft 365 Defender Event Collector
-id: microsoft_365_defender_event_collector
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: Microsoft 365 Defender
+id: microsoft_365_defender_event_collector
+name: Microsoft 365 Defender Event Collector
 rules: ''
-schema: |-
-  {
-    "microsoft_365_defender_raw": {
-
-      "id": {
-        "type": "string",
-        "is_array": false
-      },
-      "incidentId": {
-        "type": "string",
-        "is_array": false
-      },
-      "title": {
-        "type": "string",
-        "is_array": false
-      },
-      "severity": {
-        "type": "string",
-        "is_array": false
-      },
-      "detectionSource": {
-        "type": "string",
-        "is_array": false
-      },
-      "category": {
-        "type": "string",
-        "is_array": false
-      },
-      "threatFamilyName": {
-        "type": "string",
-        "is_array": false
-      },
-      "threatName": {
-        "type": "string",
-        "is_array": false
-      },
-      "description": {
-        "type": "string",
-        "is_array": false
-      },
-      "alertCreationTime": {
-        "type": "string",
-        "is_array": false
-      },
-      "machineId": {
-        "type": "string",
-        "is_array": false
-      },
-      "computerDnsName": {
-        "type": "string",
-        "is_array": false
-      },
-      "mitreTechniques": {
-        "type": "string",
-        "is_array": true
-      },
-      "evidence": {
-        "type": "string",
-        "is_array": true
-      },
-    }
-  }
+schema: ''
+tags: Microsoft 365 Defender
+to_xdr_version: 3.4.9
+toversion: 6.9.9

@@ -1,13 +1,9 @@
-name: VMware ESXi
-id: VMwareESXi
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: VMwareESXi
+id: VMwareESXi
+name: VMware ESXi
 rules: ''
-schema: |-
-  {
-    "VMware_ESXi_raw": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-  }
+schema: ''
+tags: VMwareESXi
+to_xdr_version: 3.4.9
+toversion: 6.9.9

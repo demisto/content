@@ -1,7 +1,7 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -35,7 +35,6 @@ TO_DEMISTO_STATUS = {
 }
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -136,16 +135,17 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         if not isinstance(aggregate_alert_id, int):
             aggregate_alert_id = None
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
-                                                                     aggregate_alert_id=aggregate_alert_id)
+                                                                     aggregate_alert_id=aggregate_alert_id,
+                                                                     fetch_only_current_item=True)
         # get item full content
         content = content.get('items', None)
         if content:
             if content[0].get('_id'):
-                es_items = [item['_source'] for item in content if item['_id'] == item_info['es_id']]
+                es_items = content[0].get('_source')
                 if es_items:
-                    content_item['title'] = es_items[0].get('title')
-                    content_item['content'] = es_items[0].get('content')
-                    content_item['creator'] = es_items[0].get('creator')
+                    content_item['title'] = es_items.get('title')
+                    content_item['content'] = es_items.get('content')
+                    content_item['creator'] = es_items.get('creator')
             else:
                 # github alert
                 content_item['content'] = '\n\n-----------\n\n'.join(

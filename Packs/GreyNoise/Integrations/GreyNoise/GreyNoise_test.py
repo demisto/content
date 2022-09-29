@@ -75,15 +75,16 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
     Tests various combinations of vald and invalid responses for IPReputation command.
     """
     client = GreyNoise.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    reliability = "B - Usually reliable"
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     if test_scenario == "positive":
         mocker.patch("requests.Session.get", return_value=dummy_response)
-        response = GreyNoise.ip_reputation_command(client, args)
+        response = GreyNoise.ip_reputation_command(client, args, reliability)
         assert response[0].outputs == expected_output
     else:
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
-            _ = GreyNoise.ip_reputation_command(client, args)
+            _ = GreyNoise.ip_reputation_command(client, args, reliability)
         assert str(err.value) == expected_output
 
 
@@ -184,14 +185,16 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
         use_cache=False,
         integration_name="dummy_integration",
     )
-    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected["raw_data"]), status_code)
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected["output"]), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
+    reliability = "B - Usually reliable"
     if test_scenario == "positive":
-        response = GreyNoise.riot_command(client, input_data)
-        assert response.outputs == expected["raw_data"]
+        response = GreyNoise.riot_command(client, input_data, reliability)
+        assert response.outputs == expected["output"]
+        assert response.readable_output == expected["readable"]
     else:
         with pytest.raises(Exception) as err:
-            _ = GreyNoise.riot_command(client, input_data)
+            _ = GreyNoise.riot_command(client, input_data, reliability)
         assert str(err.value) == expected["error_message"].format(input_data["ip"])
 
 
@@ -212,12 +215,13 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
     )
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected_output), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
+    reliability = "B - Usually reliable"
     if test_scenario == "positive":
-        response = GreyNoise.context_command(client, args)
+        response = GreyNoise.context_command(client, args, reliability)
         assert response.outputs == expected_output
     else:
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
-            _ = GreyNoise.ip_reputation_command(client, args)
+            _ = GreyNoise.ip_reputation_command(client, args, reliability)
             print("this is err: " + str(err))
         assert str(err.value) == expected_output

@@ -1,6 +1,8 @@
 Extracts email addresses from the given value.
 
-## Script Data
+**Note:** email addresses are case-insensitive. Results of this script are always lower case, to prevent creation of duplicate indicators.
+
+Script Data
 ---
 
 | **Name** | **Description** |
@@ -9,7 +11,7 @@ Extracts email addresses from the given value.
 | Tags | transformer |
 | Cortex XSOAR Version | 6.1.0 |
 
-## Inputs
+Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,4 @@ Extracts email addresses from the given value.
 | value | the input value. |
 
 ## Outputs
----
 There are no outputs for this script.

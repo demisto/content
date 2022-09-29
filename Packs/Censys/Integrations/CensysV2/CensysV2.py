@@ -3,12 +3,10 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
 
 ''' CLIENT CLASS '''
 
@@ -67,12 +65,35 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'Last Updated': result.get('last_updated_at')
         }
 
+        city = demisto.get(result, 'location.city')
+        province = demisto.get(result, 'location.province')
+        postal = demisto.get(result, 'location.postal_code')
+        country_code = demisto.get(result, 'location.country_code')
+        country = demisto.get(result, 'location.country')
+
+        description = ', '.join(filter(None, [city, province, postal, country_code]))
+        lat = demisto.get(result, 'location.coordinates.latitude')
+        lon = demisto.get(result, 'location.coordinates.longitude')
+
+        indicator = Common.IP(
+            ip=query,
+            dbot_score=Common.DBotScore(indicator=query,
+                                        indicator_type=DBotScoreType.IP,
+                                        score=Common.DBotScore.NONE),
+            asn=demisto.get(result, 'autonomous_system.asn'),
+            geo_latitude=str(lat) if lat else None,
+            geo_longitude=str(lon) if lon else None,
+            geo_description=description or None,
+            geo_country=country,
+            as_owner=demisto.get(result, 'autonomous_system.name'))
+
         human_readable = tableToMarkdown(f'Information for IP {query}', content)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='Censys.View',
             outputs_key_field='ip',
             outputs=result,
+            indicator=indicator,
             raw_response=res
         )
     else:
@@ -202,12 +223,10 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

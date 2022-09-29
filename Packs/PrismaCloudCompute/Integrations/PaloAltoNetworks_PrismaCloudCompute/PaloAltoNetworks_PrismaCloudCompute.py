@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -275,18 +277,24 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
-    def get_impacted_resources(self, cve: str) -> dict:
+    def get_impacted_resources(self, cve: str, resource_type: str) -> dict:
         """
         Get the impacted resources that are based on a specific CVE.
 
         Args:
             cve (str): The CVE from which impacted resources will be retrieved.
+            resource_type (str): ResourceType is the single resource type to return vulnerability data for.
 
         Returns:
             dict: the impacted resources from the CVE.
         """
+        params = {"cve": cve}
+        # When there is no specific resource then images and hosts will be returned if they exist
+        if resource_type:
+            params["resourceType"] = resource_type
         return self._http_request(
-            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources", params={"cve": cve}
+            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
+            params=params
         )
 
 
@@ -949,7 +957,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
-    current_ip_feeds = client.get_custom_ip_feeds().get("feed", [])
+    current_ip_feeds = (client.get_custom_ip_feeds() or {}).get("feed") or []
     new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
@@ -973,7 +981,7 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
-    feeds_info = client.get_custom_md5_malware()
+    feeds_info = client.get_custom_md5_malware() or {}
 
     if "_id" in feeds_info:
         feeds_info.pop("_id")  # not needed, it will be removed from the api in the future.
@@ -1020,7 +1028,8 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
-    feeds = client.get_custom_md5_malware().get("feed", [])
+    feeds = (client.get_custom_md5_malware() or {}).get('feed') or []
+
     name = args.get("name")
     md5s = argToList(arg=args.get("md5", []))
 
@@ -1500,58 +1509,57 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     """
     limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
     cves = argToList(arg=args.get("cve", []))
+    resource_type = args.get("resourceType", "")
 
-    impacted_images, impacted_hosts, context_output = [], [], []
+    context_output, raw_response = [], {}
+    final_impacted_resources: defaultdict[str, list] = defaultdict(list)
+    resources_list = ["images", "registryImages", "hosts", "functions", "codeRepos"]
     for cve in cves:
         # api does not support offset/limit
-        if cve_impacted_resources := client.get_impacted_resources(cve=cve):
-            if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
-                cve_impacted_resources["riskTree"] = dict(
-                    filter_api_response(
-                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore[arg-type]
+        if cve_impacted_resources := client.get_impacted_resources(cve=cve, resource_type=resource_type):
+            raw_response[cve] = cve_impacted_resources
+            for resources in resources_list:
+                if resources in cve_impacted_resources and cve_impacted_resources.get(resources) is not None:
+                    cve_impacted_resources[resources] = filter_api_response(
+                        api_response=cve_impacted_resources[resources],  # type: ignore[arg-type]
                         limit=limit,
                         offset=offset
                     )
-                )
 
-                for image_details in cve_impacted_resources.get("riskTree", {}).values():
-                    for image in image_details:
-                        image_table_details = {
-                            "Cve": cve,
-                            "Image": image.get("image"),
-                            "Container": image.get("container"),
-                            "Host": image.get("host"),
-                            "Namespace": image.get("namespace")
+                    for resource in (cve_impacted_resources.get(resources) or []):
+                        resource_id_table_details = {
+                            "resourceID": resource.get("resourceID"),
                         }
-                        if image_table_details not in impacted_images:
-                            impacted_images.append(image_table_details)
+                        if containers := (resource.get('containers') or []):
+                            for container in containers:
+                                resource_id_table_details['Cve'] = cve
+                                resource_id_table_details['Image'] = container.get('image')
+                                resource_id_table_details['Container'] = container.get('container')
+                                resource_id_table_details['Host'] = container.get("host")
+                                resource_id_table_details['Namespace'] = container.get("namespace")
 
-            if "hosts" in cve_impacted_resources:
-                cve_impacted_resources["hosts"] = filter_api_response(
-                    api_response=cve_impacted_resources.get("hosts"), limit=limit, offset=offset
-                )
-
-                for host in cve_impacted_resources.get("hosts", []):
-                    host_table_details = {"Cve": cve, "Hostname": host}
-                    if host_table_details not in impacted_hosts:
-                        impacted_hosts.append(host_table_details)
+                        if resource_id_table_details not in final_impacted_resources[resources]:
+                            final_impacted_resources[resources].append(resource_id_table_details)
 
             context_output.append(cve_impacted_resources)
 
     if context_output:
-        impacted_images_table = tableToMarkdown(
-            name="Impacted Images",
-            t=impacted_images,
-            headers=["Cve", "Image", "Container", "Host", "Namespace"],
-            removeNull=True
-        )
-        impacted_hosts_table = tableToMarkdown(
-            name="Impacted Hosts",
-            t=impacted_hosts,
-            headers=["Cve", "Hostname"],
-            removeNull=True
-        )
-        table = impacted_images_table + impacted_hosts_table
+        impacted_resources_tables = []
+        mapping_resources_to_names = {"images": "Impacted Images",
+                                      "registryImages": "Impacted Registry Images",
+                                      "hosts": "Impacted Hosts",
+                                      "functions": "Impacted Functions",
+                                      "codeRepos": "Impacted CodeRepos"
+                                      }
+        for resources in resources_list:
+            if final_impacted_resources.get(resources):
+                impacted_resources_tables.append(tableToMarkdown(
+                    name=mapping_resources_to_names.get(resources),
+                    t=final_impacted_resources.get(resources),
+                    headers=["resourceID", "Cve", "Image", "Container", "Host", "Namespace"],
+                    removeNull=True)
+                )
+        table = ''.join(impacted_resources_tables)
     else:
         context_output, table = [], "No results found."
 
@@ -1560,6 +1568,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         outputs_key_field="_id",
         outputs=context_output if context_output else None,
         readable_output=table,
+        raw_response=raw_response
     )
 
 

@@ -18,6 +18,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 from PyPDF2 import PdfReader
 from selenium import webdriver
+from pyvirtualdisplay import Display
 from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
                                         TimeoutException)
@@ -26,6 +27,8 @@ from selenium.common.exceptions import (InvalidArgumentException,
 handle_proxy()
 # Make sure our python code doesn't go through a proxy when communicating with chrome webdriver
 os.environ['no_proxy'] = 'localhost,127.0.0.1'
+# Needed for cases that rasterize is running with non-root user (docker hardening)
+os.environ['HOME'] = tempfile.gettempdir()
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
@@ -43,7 +46,6 @@ MAX_FULLSCREEN_H = 8000
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
-    '--headless',
     '--disable-gpu',
     '--hide-scrollbars',
     '--disable_infobars',
@@ -133,22 +135,57 @@ def check_response(driver):
         return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)
 
 
-def init_driver(offline_mode=False):
+def init_display(width: int, height: int):
+    """
+    Creates virtual display if include_url is set to True
+
+    Args:
+        width: desired snapshot width in pixels
+        height: desired snapshot height in pixels
+
+    Returns:
+        The  display session
+    """
+    try:
+        demisto.debug(f"Starting display with width: {width}, and height: {height}.")
+        os.environ['DISPLAY'] = ':0'
+        display = Display(visible=0, size=(width, height), backend='xvnc')
+        display.start()
+
+    except Exception as ex:
+        raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+
+    demisto.debug('Creating display - COMPLETED')
+    return display
+
+
+def init_driver(offline_mode=False, include_url=False):
     """
     Creates headless Google Chrome Web Driver
+
+    Args:
+        offline_mode: when set to True, will block any outgoing communication
+        include_url: when set to True, will include the URL bar in the image result
+
+    Returns:
+        The driver session
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
         chrome_options = webdriver.ChromeOptions()
         for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
             chrome_options.add_argument(opt)
+
+        if not include_url:
+            chrome_options.add_argument('--headless')
+
         driver = webdriver.Chrome(options=chrome_options, service_args=[
             f'--log-path={DRIVER_LOG}',
         ])
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
-        return_error(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+        raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
     return driver
@@ -172,15 +209,32 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def quit_driver_and_reap_children(driver):
+def quit_driver_and_display_and_reap_children(driver, display):
     """
-    Quits the driver's session and reaps all of zombie child processes
-    :param driver: The driver
+    Quits the driver's and display's sessions and reaps all of zombie child processes
+
+    :param driver: The driver session.
+    :param display: The display session.
+
     :return: None
     """
-    demisto.debug(f'Quitting driver session: {driver.session_id}')
-    driver.quit()
+
     try:
+
+        try:
+            if driver:
+                demisto.debug(f'Quitting driver session: {driver.session_id}')
+                driver.quit()
+        except Exception as edr:
+            demisto.error(f"Failed to quit driver. Error: {edr}. Trace: {traceback.format_exc()}")
+
+        try:
+            if display:
+                demisto.debug("Stopping display")
+                display.stop()
+        except Exception as edr:
+            demisto.error(f"Failed to stop display. Error: {edr}. Trace: {traceback.format_exc()}")
+
         zombies, ps_out = find_zombie_processes()
         if zombies:
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
@@ -195,7 +249,7 @@ def quit_driver_and_reap_children(driver):
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
-              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED):
+              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED, include_url: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -226,7 +280,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
             try:
                 return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
-                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen)
+                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
+                              include_url=include_url)
             except Exception as ex:
                 if i < (len(rasterize_funcs) - 1):
                     demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
@@ -248,22 +303,34 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
 
 
 def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                        offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False):
+                        offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
+                        include_url: bool = False):
     """
-    Capturing a snapshot of a path (url/file), using Chrome Driver
+    Capturing a snapshot of a path (url/file), using Chrome Driver if include_url is set to False,
+    otherwise, it uses a virtual Display to display the screen of the linux machine.
+
     :param offline_mode: when set to True, will block any outgoing communication
     :param path: file path, or website url
     :param width: desired snapshot width in pixels
     :param height: desired snapshot height in pixels
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
+    :param include_url: when set to True, will include the URL bar in the image result
     """
-    driver = init_driver(offline_mode)
+    driver, display = None, None
     try:
+
+        if include_url:
+            display = init_display(width, height)
+
+        driver = init_driver(offline_mode, include_url)
+
         demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}.'
                       f' page load: {max_page_load_time}')
         driver.set_page_load_timeout(max_page_load_time)
         driver.get(path)
+
+        driver.maximize_window()
         driver.implicitly_wait(5)
         if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
             time.sleep(wait_time or DEFAULT_WAIT_TIME)
@@ -275,17 +342,21 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
         elif r_type == RasterizeType.JSON:
             html = driver.page_source
             url = driver.current_url
-            output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen)).decode('utf8'),
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen, include_url)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
-            output = get_image(driver, width, height, full_screen)
+            output = get_image(driver, width, height, full_screen, include_url)
         return output
     finally:
-        quit_driver_and_reap_children(driver)
+        quit_driver_and_display_and_reap_children(driver, display)
 
 
 def rasterize_headless_cmd(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                           offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False):
+                           offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
+                           include_url: bool = False):
+    if include_url:
+        demisto.info('include_url options is ignored in headless cmd mode. Image will not include the url bar.')
+
     demisto.debug(f'rasterizing headless cmd mode for path: [{path}]')
     if offline_mode:
         raise NotImplementedError(f'offile_mode: {offline_mode} is not supported in Headless CLI mode')
@@ -294,6 +365,7 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
                      f' Will use width: : {width} and height: {height}.')
     cmd_options = merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS)
     cmd_options.insert(0, CHROME_EXE)
+    cmd_options.append('--headless')
     if width > 0 and height > 0:
         cmd_options.append(f'--window-size={width},{height}')
     # not using --timeout as it would return a screenshot even though it is not complete in some cases
@@ -333,13 +405,14 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
         output_file.unlink(missing_ok=True)
 
 
-def get_image(driver, width: int, height: int, full_screen: bool):
+def get_image(driver, width: int, height: int, full_screen: bool, include_url=False):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
     :param width: desired snapshot width in pixels
     :param height: desired snapshot height in pixels
     :param full_screen: when set to True, the snapshot will take the whole page
                         (safeguard limits defined in MAX_FULLSCREEN_W, MAX_FULLSCREEN_H)
+    :param include_url: when set to True, will include the URL bar in the image result
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
@@ -362,11 +435,48 @@ def get_image(driver, width: int, height: int, full_screen: bool):
         # Reset window size
         driver.set_window_size(calc_width, calc_height)
 
-    image = driver.get_screenshot_as_png()
+    image = get_image_screenshot(driver=driver, include_url=include_url)
 
     driver.quit()
 
     demisto.debug('Capturing screenshot - COMPLETED')
+
+    return image
+
+
+def get_image_screenshot(driver, include_url):
+    """
+    Takes a screenshot using linux display if include_url is set to True and using drive if not, and returns it as an image.
+
+    Args:
+        driver: The driver session.
+        include_url: when set to True, will take the screenshot of the linux machine's display using the ImageMagick's import tool
+                     to include the url bar in the image.
+
+    Returns:
+        The readed .png file of the image.
+    """
+
+    if include_url:
+        try:
+            res = subprocess.run('import -window root screenshot.png'.split(' '), text=True, capture_output=True, check=True,
+                                 env={'DISPLAY': ':0'})
+            demisto.debug(f"Finished taking the screenshot. Stdout: [{res.stdout}] stderr: [{res.stderr}]")
+
+        except subprocess.CalledProcessError as se:
+            demisto.error(f'Subprocess exception: {se}. Stderr: [{se.stderr}] stdout: [{se.stdout}]')
+            raise
+
+        try:
+            with open('screenshot.png', 'rb') as f:
+                image = f.read()
+        except Exception as e:
+            demisto.error(f'Failed to read the screenshot.png image. Exception: {e}')
+            raise
+        finally:
+            os.remove('screenshot.png')
+    else:
+        image = driver.get_screenshot_as_png()
 
     return image
 
@@ -457,6 +567,7 @@ def rasterize_command():
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    include_url = argToBoolean(demisto.args().get('include_url', False))
 
     w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
@@ -465,7 +576,7 @@ def rasterize_command():
     file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load,
-                       full_screen=full_screen, r_mode=r_mode)
+                       full_screen=full_screen, r_mode=r_mode, include_url=include_url)
     if r_type == RasterizeType.JSON:
         return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
         return
@@ -519,8 +630,8 @@ def rasterize_email_command():
 
     w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
-    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "jpeg"}'  # type: ignore
-    with open('htmlBody.html', 'w') as f:
+    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
+    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 

@@ -4,8 +4,7 @@ commonfields:
 name: GetCampaignDuration
 script: ''
 type: python
-comment: Calculate the duration of the current campaign and returns the result in
-  a string with HTML format.
+comment: Calculate the duration of the current campaign and returns the result in a string with HTML format.
 
 tags:
 - dynamic-section
@@ -13,7 +12,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

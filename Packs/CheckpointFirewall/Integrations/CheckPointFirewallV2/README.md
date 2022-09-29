@@ -2833,3 +2833,184 @@ Get checkpoint-packages details.
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
+### checkpoint-add-objects-batch
+***
+Creates new objects in batch. To achieve optimum performance when adding more than one object, use this API. Note: Errors and warnings are ignored when using this API, operation will apply changes while ignoring errors. It is not possible to publish changes that contain validations errors.
+
+
+#### Base Command
+
+`checkpoint-add-objects-batch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| session_id | Executes the command with the specified session ID. | Required | 
+| object_type | Type of objects to be created. Default is host. | Required | 
+| ipaddress | ip addresses to be added. | Required | 
+| name | names of the ip objects to be added. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AddObjectBatch.task-id | string | Task id of the add-objects-batch command. | 
+
+### checkpoint-delete-objects-batch
+***
+Deletes existing objects in batch using object name or uid. To achieve optimum performance when deleting more than one object, use this API.
+
+
+#### Base Command
+
+`checkpoint-delete-objects-batch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| session_id | Executes the command with the specified session ID. | Required | 
+| name | a comma separated list of names of the ip objects to be deleted. | Required | 
+| object_type | Type of objects to be deleted. Default is host. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.DeleteObjectsBatch.task-id | string | Task id of the delete-objects-batch command. | 
+
+### checkpoint-show-threat-protection
+***
+Shows an existing threat protection using object name or uid
+
+
+#### Base Command
+
+`checkpoint-show-threat-protection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uid | . | Optional | 
+| name | . | Optional | 
+| showProfiles | . Possible values are: true, false. Default is false. | Optional | 
+| additionalProperties | . Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ShowThreatProtection | unknown |  | 
+
+### checkpoint-show-threat-protections
+***
+Shows existing threat protections using a filter
+
+
+#### Base Command
+
+`checkpoint-show-threat-protections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | . | Optional | 
+| limit | . | Optional | 
+| offset | . | Optional | 
+| order | . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ShowThreatProtections | unknown |  | 
+
+### checkpoint-set-threat-protection
+***
+Edit existing object using object name or uid.
+
+
+#### Base Command
+
+`checkpoint-set-threat-protection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uid | . | Optional | 
+| name | . | Optional | 
+| comments | . | Optional | 
+| follow_up | . Possible values are: true, false. | Optional | 
+| action | . | Optional | 
+| track | . Possible values are: None, Log, SNMP-Trap, Mail, Alert, User-Alert, User-Alert-2, User-Alert-3. | Optional | 
+| capturePackets | . | Optional | 
+| profiles | . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.SetThreatProtections | unknown |  | 
+
+### checkpoint-add-threat-profile
+***
+Add a new threat profile
+
+
+#### Base Command
+
+`checkpoint-add-threat-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | . | Required | 
+| active_protections_performance_impact | . | Optional | 
+| active_protections_severity | . | Optional | 
+| confidence_level_high | . | Optional | 
+| confidence_level_low | . | Optional | 
+| confidence_level_medium | . | Optional | 
+| ips_settings | . | Optional | 
+| tags | . | Optional | 
+| use_indicators | . | Optional | 
+| anti_bot | . | Optional | 
+| anti_virus | . | Optional | 
+| ips | . | Optional | 
+| threat_emulation | . | Optional | 
+| exclude_protection_with_performance_impact | . | Optional | 
+| exclude_protection_with_performance_impact_mode | . Possible values are: very low, low or very low, medium or lower, high or lower. | Optional | 
+| exclude_protection_with_severity | . | Optional | 
+| exclude_protection_with_severity_mode | . Possible values are: low or above, medium or above, high or above, critical. | Optional | 
+| newly_updated_protections | . Possible values are: active, inactive, staging. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AddedThreatProfiles | unknown |  | 
+
+### checkpoint-delete-threat-protections
+***
+Deletes threat protections.
+
+
+#### Base Command
+
+`checkpoint-delete-threat-protections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| packageFormat | Valid response is "snort". | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.DeletedThreatProtections | unknown |  | 

@@ -463,7 +463,7 @@ script:
     - contextPath: Armis.Device.visibility
       description: The visibility of the device.
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

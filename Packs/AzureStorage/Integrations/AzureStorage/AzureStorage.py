@@ -1,35 +1,47 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 
 urllib3.disable_warnings()
 
 API_VERSION = '2019-06-01'
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
+                       'Authorization Code': "https://management.azure.com/.default"}
 
 
 class ASClient:
-    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
+                 connection_type: str, tenant_id: str = None, enc_key: str = None, auth_code: str = None,
+                 redirect_uri: str = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
             verify=verify,
             proxy=proxy,
-            resource='https://management.core.windows.net',
-            scope='https://management.azure.com/user_impersonation offline_access user.read',
+            resource='https://management.core.windows.net' if 'Device' in connection_type else None,
+            scope=SCOPE_BY_CONNECTION[connection_type],
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
+        self.connection_type = connection_type
 
     @logger
     def storage_account_list_request(self, account_name: str) -> Dict:
@@ -671,11 +683,8 @@ def storage_blob_containers_delete(client, args):
 
 
 def start_auth(client: ASClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
- and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-storage-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!azure-storage-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 def complete_auth(client: ASClient) -> str:
@@ -694,6 +703,29 @@ def reset_auth() -> str:
     process.'
 
 
+def test_module(client: ASClient) -> str:
+    """Tests API connectivity and authentication'
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type ASClient: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if "Device" in client.connection_type:
+        raise DemistoException("Please enable the integration and run `!azure-storage-auth-start`"
+                               "and `!azure-storage-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-storage-auth-test`\n"
+                               "For more details press the (?) button.")
+
+    else:
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-storage-auth-test command in order to test it")
+
+
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
@@ -707,9 +739,14 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            connection_type=params.get('auth_type', 'Device Code'),
+            tenant_id=params.get('tenant_id'),
+            enc_key=params.get('credentials', {}).get('password'),
+            auth_code=(params.get('auth_code', {})).get('password'),
+            redirect_uri=params.get('redirect_uri')
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the azure-storage-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'azure-storage-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-storage-auth-complete':
@@ -739,9 +776,6 @@ def main() -> None:
     except Exception as e:
         demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

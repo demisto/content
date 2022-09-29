@@ -53,7 +53,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.7.33922
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -1552,19 +1552,52 @@ script:
       required: false
       isArray: false
       defaultValue: "0"
+    - name: resourceType
+      description: ResourceType is the single resource type to return vulnerability data for.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+        - 'container'
+        - 'image'
+        - 'host'
+        - 'function'
+        - 'codeRepo'
+        - 'registryImage'
     outputs:
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
-      description: The CVE ID. (The index for the impacted resources.)
+      description: Id is the CVE ID (index for the impacted resources).
       type: String
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeRepos
+      description: CodeRepos is a list of impacted code repositories.
+      type: Array
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount
+      description: CodeReposCount is the total impacted code repositories count
+      type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functions
-      description: The mapping between the function ID and its details.
-      type: Unknown
+      description: Functions is a map between function id to its details.
+      type: Array
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functionsCount
+      description: FunctionsCount is the total impacted functions count.
+      type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts
-      description: The list of impacted hosts.
-      type: String
-    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree
-      description: The risk tree associated with the CVE ID.
-      type: Unknown
+      description: Hosts is the list of impacted hosts.
+      type: Array
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.hostsCount
+      description: HostsCount is the total impacted hosts count.
+      type: integer
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.images
+      description: Images is the list of impacted hosts.
+      type: Array
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.imagesCount
+      description: ImagesCount is the total impacted images count.
+      type: integer
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImages
+      description: RegistryImages is a list of impacted registry images.
+      type: Array
+    - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount
+      description: RegistryImagesCount is the total impacted registry images count.
+      type: integer
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

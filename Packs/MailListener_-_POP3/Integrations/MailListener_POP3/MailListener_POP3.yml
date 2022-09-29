@@ -25,34 +25,31 @@ configuration:
   name: ssl
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
+  defaultvalue: 3 days
 - display: Incident type
   name: incidentType
   required: false
   type: 13
 description: Listen to a mailbox, enable incident triggering via e-mail
-display: MailListener - POP3 Beta
+display: MailListener - POP3
 name: MailListener - POP3 Beta
 script:
   isfetch: true
   runonce: false
   script: '-'
   type: python
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
-beta: true
+  subtype: python3
+  dockerimage: demisto/python3:3.10.6.33415
+beta: false
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
+defaultmapperin: Mail Listener - POP3 - Incoming Mapper

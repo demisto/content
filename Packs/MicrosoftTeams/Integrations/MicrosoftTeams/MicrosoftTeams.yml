@@ -11,15 +11,19 @@ configuration:
   name: bot_password
   required: true
   type: 4
+- display: Tenant ID
+  name: tenant_id
+  required: false
+  type: 0
 - display: Default team
   name: team
   required: true
   type: 0
-- defaultvalue: General
-  display: Notifications channel
+- display: Notifications channel
   name: incident_notifications_channel
   required: true
   type: 0
+  defaultvalue: General
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
@@ -28,9 +32,11 @@ configuration:
   name: key
   required: false
   type: 14
-- defaultvalue: Low
-  display: Minimum incident severity to send notifications to Teams by
+- display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
+  required: false
+  type: 15
+  defaultvalue: 'Low'
   options:
   - Unknown
   - Informational
@@ -38,14 +44,11 @@ configuration:
   - Medium
   - High
   - Critical
-  required: false
-  type: 15
-- additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
-  display: Disable Automatic Notifications
-  hidden: false
+- display: Disable Automatic Notifications
   name: auto_notifications
   required: false
   type: 8
+  additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
   defaultvalue: 'false'
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
@@ -77,246 +80,127 @@ name: Microsoft Teams
 script:
   commands:
   - arguments:
-    - default: false
-      description: The channel to which to send messages.
-      isArray: false
+    - description: The channel to which to send messages.
       name: channel
-      required: false
-      secret: false
-    - default: false
-      description: The message to send to the channel or team member.
-      isArray: false
+    - description: The message to send to the channel or team member.
       name: message
-      required: false
-      secret: false
-    - default: false
-      description: Display name or email address of the team member to send the message to.
-      isArray: false
+    - description: Display name or email address of the team member to send the message to.
       name: team_member
-      required: false
-      secret: false
-    - default: false
-      description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
-      isArray: false
+    - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
-      required: false
-      secret: false
-    - default: false
-      description: The Microsoft Teams adaptive card to send.
-      isArray: false
+    - description: The Microsoft Teams adaptive card to send.
       name: adaptive_card
-      required: false
-      secret: false
-    - default: false
-      description: The team member to which to send the message.
-      isArray: false
+    - description: The team member to which to send the message.
       name: to
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Sends a message to the specified teams.
       To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
-    execution: false
     name: send-notification
   - arguments:
     - auto: PREDEFINED
       default: true
       defaultValue: all
       description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
-      isArray: false
       name: mirror_type
       predefined:
       - all
       - chat
       - none
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to auto-close the channel when the incident is closed in XSOAR. If "true", the channel will be auto-closed. Default is "true".
-      isArray: false
       name: autoclose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: both
       description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both".
-      isArray: false
       name: direction
       predefined:
       - Both
       - FromDemisto
       - ToDemisto
-      required: false
-      secret: false
-    - default: false
-      description: The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
-      isArray: false
+    - description: The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
       name: team
-      required: false
-      secret: false
-    - default: false
-      description: The name of the channel. The default is "incident-<incidentID>".
-      isArray: false
+    - description: The name of the channel. The default is "incident-<incidentID>".
       name: channel_name
-      required: false
-      secret: false
-    deprecated: false
     description: Mirrors the XSOAR investigation to the specified Microsoft Teams channel.
-    execution: false
     name: mirror-investigation
   - arguments:
-    - default: false
-      description: The name of the channel to close.
-      isArray: false
+    - description: The name of the channel to close.
       name: channel
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the specified Microsoft Teams channel.
-    execution: false
     name: close-channel
-  - deprecated: false
-    description: Returns real-time and historical data on the integration status.
-    execution: false
+  - description: Returns real-time and historical data on the integration status.
     name: microsoft-teams-integration-health
+    arguments: []
   - arguments:
-    - default: false
-      description: The name of the channel.
-      isArray: false
+    - description: The name of the channel.
       name: channel_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the channel.
-      isArray: false
+    - description: The description of the channel.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The team in which to create the channel.
-      isArray: false
+    - description: The team in which to create the channel.
       name: team
       required: true
-      secret: false
     deprecated: true
     description: Creates a new channel in a Microsoft Teams team.
-    execution: false
     name: create-channel
   - arguments:
-    - default: false
-      description: The channel to which to add the add the member to this channel
-      isArray: false
+    - description: The channel to which to add the add the member to this channel
       name: channel
       required: true
-      secret: false
-    - default: false
-      description: The channel's team.
-      isArray: false
+    - description: The channel's team.
       name: team
       required: true
-      secret: false
-    - default: false
-      description: The display name of the member to add to the channel.
-      isArray: false
+    - description: The display name of the member to add to the channel.
       name: member
       required: true
-      secret: false
     deprecated: true
     description: Adds a member (user) to a private channel.
-    execution: false
     name: add-user-to-channel
   - arguments:
-    - default: false
-      description: The display name of the member to call.
-      isArray: false
+    - description: The display name of the member to call.
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: 'Ring a user''s Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
-    execution: false
     name: microsoft-teams-ring-user
   - arguments:
-    - default: false
-      description: The channel to which to add the member.
-      isArray: false
+    - description: The channel to which to add the member.
       name: channel
       required: true
-      secret: false
-    - default: false
-      description: The channel's team.
-      isArray: false
+    - description: The channel's team.
       name: team
       required: true
-      secret: false
-    - default: false
-      description: The display name of the member to add to the channel.
-      isArray: false
+    - description: The display name of the member to add to the channel.
       name: member
       required: true
-      secret: false
-    deprecated: false
     description: Adds a member (user) to a private channel.
-    execution: false
     name: microsoft-teams-add-user-to-channel
   - arguments:
-    - default: false
-      description: The name of the channel.
-      isArray: false
+    - description: The name of the channel.
       name: channel_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the channel.
-      isArray: false
+    - description: The description of the channel.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: The team in which to create the channel.
-      isArray: false
+    - description: The team in which to create the channel.
       name: team
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new channel in a Microsoft Teams team.
-    execution: false
     name: microsoft-teams-create-channel
   - arguments:
-    - default: false
-      description: The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
-      isArray: false
+    - description: The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
-      isArray: false
+    - description: The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The meeting subject.
-      isArray: false
+    - description: The meeting subject.
       name: subject
       required: true
-      secret: false
-    - default: false
-      description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
-      isArray: false
+    - description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
       name: member
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new meeting in Microsoft Teams.
-    execution: false
     name: microsoft-teams-create-meeting
     outputs:
     - contextPath: MicrosoftTeams.CreateMeeting.creationDateTime
@@ -340,13 +224,13 @@ script:
     - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
       description: The display name of the participants.
       type: String
-  dockerimage: demisto/teams:1.0.0.26837
+  dockerimage: demisto/teams:1.0.0.34356
   feed: false
   isfetch: false
   longRunning: true
   longRunningPort: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   resetContext: true

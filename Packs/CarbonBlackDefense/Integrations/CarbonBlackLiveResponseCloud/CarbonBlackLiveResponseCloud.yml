@@ -5,11 +5,7 @@ name: CarbonBlackLiveResponseCloud
 display: Carbon Black Live Response Cloud
 fromversion: 5.5.0
 category: Endpoint
-description: VMware Carbon Black Endpoint Standard Live Response is a feature that
-  enables security operators to collect information and take action on remote endpoints
-  in real time. These actions include the ability to upload, download, and remove
-  files, retrieve and remove registry entries, dump contents of physical memory, and execute
-  and terminate processes.
+description: VMware Carbon Black Endpoint Standard Live Response is a feature that enables security operators to collect information and take action on remote endpoints in real time. These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, and execute and terminate processes.
 detaileddescription:
 configuration:
 - display: Server URL
@@ -78,7 +74,7 @@ script:
     - name: source_path
       required: true
       description: Path of the file to be deleted.
-    outputs:
+    outputs: []
     description: Deletes the specified file name on the remote machine.
     execution: true
   - name: cbd-lr-directory-listing
@@ -91,7 +87,7 @@ script:
       description: The directory path. This parameter should end with the path separator or have some filter pattern, e.g., *.txt.
     - name: limit
       description: The maximum number of returned directory entries.
-      defaultValue: "100"
+      defaultValue: '100'
     outputs:
     - contextPath: CarbonBlackDefenseLR.Directory.content
       description: List of dicts, each describing a directory entry.
@@ -113,7 +109,7 @@ script:
       description: The registry key to enumerate.
     - name: limit
       description: The maximum number of returned subkeys.
-      defaultValue: "100"
+      defaultValue: '100'
     outputs:
     - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.key
       description: The parent registry key.
@@ -135,7 +131,7 @@ script:
       description: The registry key to enumerate.
     - name: limit
       description: The maximum number of returned values.
-      defaultValue: "100"
+      defaultValue: '100'
     outputs:
     - contextPath: CarbonBlackDefenseLR.RegistryValues.key
       description: The registry key.
@@ -146,8 +142,7 @@ script:
     - contextPath: CarbonBlackDefenseLR.RegistryValues.device_id
       description: The device (endpoint) ID.
       type: String
-    description: 'Enumerates all registry values from the specified registry key on the remote machine.
-      Due to API limitations, binary values will not be shown.'
+    description: Enumerates all registry values from the specified registry key on the remote machine. Due to API limitations, binary values will not be shown.
   - name: cbd-lr-reg-key-create
     arguments:
     - name: device_id
@@ -156,7 +151,7 @@ script:
     - name: reg_path
       required: true
       description: The registry key to create.
-    outputs:
+    outputs: []
     description: Creates a new registry key on the remote machine.
     execution: true
   - name: cbd-lr-reg-key-delete
@@ -168,13 +163,13 @@ script:
       required: true
       description: The registry key to delete.
     - name: force
-      defaultValue: "False"
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - 'True'
+      - 'False'
       description: True to force delete the registry key with all subkeys if they exist.
-    outputs:
+    outputs: []
     description: Deletes a registry key on the remote machine. The key must be without any subkeys.
     execution: true
   - name: cbd-lr-reg-value-delete
@@ -185,7 +180,7 @@ script:
     - name: reg_path
       required: true
       description: The registry value to delete.
-    outputs:
+    outputs: []
     description: Deletes a registry value on the remote machine.
     execution: true
   - name: cbd-lr-reg-value-set
@@ -212,14 +207,13 @@ script:
       - REG_SZ
       description: 'The type of the value. For example: REG_DWORD, REG_MULTI_SZ, REG_SZ.'
     - name: overwrite
-      defaultValue: "True"
+      defaultValue: 'True'
       description: If True, any existing value will be overwritten.
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
-    description: Sets a registry value on the specified registry key on the remote
-      machine.
+      - 'True'
+      - 'False'
+    description: Sets a registry value on the specified registry key on the remote machine.
     execution: true
   - name: cbd-lr-ps
     arguments:
@@ -228,7 +222,7 @@ script:
       description: The device (endpoint) ID.
     - name: limit
       description: The maximum number of returned processes.
-      defaultValue: "100"
+      defaultValue: '100'
     outputs:
     - contextPath: CarbonBlackDefenseLR.Processes.processes
       description: A list of dicts describing the processes.
@@ -246,7 +240,7 @@ script:
     - name: pid
       required: true
       description: Process ID to be terminated.
-    outputs:
+    outputs: []
     description: Terminates a process on the remote machine.
     execution: true
   - name: cbd-lr-execute
@@ -258,27 +252,26 @@ script:
       required: true
       description: Command string used for the create process operation.
     - name: wait_for_output
-      description: 'True to block on output from the new process (execute in foreground).
-        This will also set the wait_for_completion command.'
-      defaultValue: "True"
+      description: True to block on output from the new process (execute in foreground). This will also set the wait_for_completion command.
+      defaultValue: 'True'
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - 'True'
+      - 'False'
     - name: working_directory
       description: The working directory of the create process operation.
     - name: remote_output_file_name
       description: The remote output file name used for the process output.
     - name: wait_timeout
       description: Timeout used for this command.
-      defaultValue: "30"
+      defaultValue: '30'
     - name: wait_for_completion
       description: True to wait until the process is completed before returning.
-      defaultValue: "True"
+      defaultValue: 'True'
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - 'True'
+      - 'False'
     outputs:
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.return_value
       description: The output of the process.
@@ -289,8 +282,7 @@ script:
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.command_string
       description: The command string used for the create process operation.
       type: String
-    description: Creates a new process on the remote machine with the specified command
-      string.
+    description: Creates a new process on the remote machine with the specified command string.
     execution: true
   - name: cbd-lr-memdump
     arguments:
@@ -302,7 +294,7 @@ script:
       description: Path of the file the memory dump will be stored in on the remote machine.
     description: Performs a memory dump operation on the remote machine.
     execution: true
-    outputs:
-  dockerimage: demisto/carbon-black-cloud:1.0.0.26432
+    outputs: []
+  dockerimage: demisto/carbon-black-cloud:1.0.0.30898
   runonce: false
   subtype: python3
