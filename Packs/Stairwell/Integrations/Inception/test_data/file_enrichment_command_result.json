@@ -27,6 +27,10 @@
 				"harmless": 1,
 				"malicious": 1
 			},
+			"names": [
+				"C:\\GimmeCreds.dll"
+			],
+			"meaningful_name": "C:\\GimmeCreds.dll",
 			"type_description": "EXE",
 			"crowdsourced_yara_results": [
 				{
@@ -37,6 +41,21 @@
 				}
 			],
 			"inception": {
+				"environments": [
+					{
+						"environment_id": {
+							"id": "AAAAAA-BBBBBB-CCCCCC-DDDDDDD"
+						}
+					}
+				],
+				"assets": [
+					{
+						"asset_id": {
+							"id": "DDDDDD-CCCCCC-BBBBBB-AAAAAAA"
+						},
+						"name": "WORKGROUP\\IDABEAR"
+					}
+				]
 			},
 			"magic": "EXE",
 			"imphash": "fe4a2284122da348258c83ef437fbd7b",

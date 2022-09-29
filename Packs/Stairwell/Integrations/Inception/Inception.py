@@ -21,7 +21,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client):
+def test_module(client):  # pragma: no cover
     # We'll use a default file hash, accessible by all, to test the connection
     response = client.get_file_reputation("e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d")
     response = json.dumps(response)
@@ -127,7 +127,7 @@ def variant_discovery_command(client, file_hash):
             raise err
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
