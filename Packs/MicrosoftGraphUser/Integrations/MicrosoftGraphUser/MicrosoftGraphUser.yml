@@ -656,7 +656,7 @@ script:
       deprecated: false
       arguments:
         - name: user_id
-          description: Object ID of the delted user that needs to be restored
+          description: Object ID of the deleted user that needs to be restored
           required: true
           isArray: false
           defaultValue: ""
