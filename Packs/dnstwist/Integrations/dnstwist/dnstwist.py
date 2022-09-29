@@ -17,7 +17,7 @@ if demisto.command() == 'dnstwist-domain-variations':
         if include_whois:
             args.append('-w')
         args.append(domain)
-        res = subprocess.check_output(args)
+        res = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         return json.loads(res)
 
     def get_domain_to_info_map(dns_twist_result):
