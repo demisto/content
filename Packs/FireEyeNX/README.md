@@ -2,15 +2,15 @@ This pack includes XSIAM content.
 
 ## How configure Rsyslog on FireEye
 
-1. Log into the FireEye appliance with an administrator account
-2. Click Settings
-3. Click Notifications
-4. Click rsyslog
-5. Check the Event type check box
-6. Make sure Rsyslog settings are:
-   Default format: CEF
-   Default delivery: Per event 
-   Default send as: Alert
+1. Log into the FireEye appliance with an administrator account.
+2. Click **Settings**.
+3. Click **Notifications**.
+4. Click **rsyslog**.
+5. Check the *Event type* checkbox.
+6. Make sure *Rsyslog* settings are:
+   - Default format: CEF
+   - Default delivery: Per event 
+   - Default send as: Alert
 
 ## Collect Events from Vendor
 
@@ -22,8 +22,8 @@ In either option, you will need to configure the vendor and product for this spe
 ### Broker VM
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).\
 You can configure the specific vendor and product for this instance.
-1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**.
-2. Right-click, and select **Syslog Collector** -> **Configure**.
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
+2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set:
     - vendor as FireEye
     - product as mps
