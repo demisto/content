@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d44fbaec-a4ec-4a07-8426-2fba11f0a653
+    taskid: b93e0f7d-f2f3-4840-8a2d-d250f5ccdfdf
     type: start
     task:
-      id: d44fbaec-a4ec-4a07-8426-2fba11f0a653
+      id: b93e0f7d-f2f3-4840-8a2d-d250f5ccdfdf
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -34,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 77ad7377-c238-4334-88f2-1142c613fc22
+    taskid: 1baeb4f9-145c-41a0-8e6c-95c2d6ddd584
     type: regular
     task:
-      id: 77ad7377-c238-4334-88f2-1142c613fc22
+      id: 1baeb4f9-145c-41a0-8e6c-95c2d6ddd584
       version: -1
       name: Get indicators
       description: Get indicators from Threatconnect.
@@ -49,8 +48,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      indicator_type:
+        simple: URL
       limit:
-        simple: "5"
+        simple: "1"
       offset:
         simple: "0"
       owners:
@@ -72,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7ba9576e-901f-4a43-86af-d13b635a1e7e
+    taskid: a2ae1e34-b555-4749-8036-754ed3c64b6a
     type: regular
     task:
-      id: 7ba9576e-901f-4a43-86af-d13b635a1e7e
+      id: a2ae1e34-b555-4749-8036-754ed3c64b6a
       version: -1
       name: Get feeds owners
       description: Get availble indicators owners.
@@ -103,16 +104,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f182f123-a973-46fb-87eb-025be870044f
+    taskid: 03b25d69-59f4-40d8-8917-e97a193a7a2c
     type: title
     task:
-      id: f182f123-a973-46fb-87eb-025be870044f
+      id: 03b25d69-59f4-40d8-8917-e97a193a7a2c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -130,23 +130,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fa77a778-0eea-4f4b-8233-645172772be9
+    taskid: 7dd8ff0b-886e-4372-89f5-bfd8fe66ebcf
     type: playbook
     task:
-      id: fa77a778-0eea-4f4b-8233-645172772be9
+      id: 7dd8ff0b-886e-4372-89f5-bfd8fe66ebcf
       version: -1
       name: Fetch Indicators Test
       playbookName: Fetch Indicators Test
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       searchfield:
-        simple: value,type,score
+        simple: value,type
       sourcebrand:
         simple: ThreatConnect Feed
     separatecontext: true
