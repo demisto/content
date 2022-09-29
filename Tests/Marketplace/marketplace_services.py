@@ -26,7 +26,8 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP
+    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    ITEMS_NAMES_TO_DISPLAY_MAPPING
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -106,6 +107,7 @@ class Pack(object):
         self._tags = None  # initialized in enhance_pack_attributes function
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
+        self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
@@ -646,6 +648,7 @@ class Pack(object):
             Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
             Metadata.USE_CASES: self._use_cases,
@@ -1946,35 +1949,6 @@ class Pack(object):
         content_items_result: dict = {}
 
         try:
-            # the format is defined in issue #19786, may change in the future
-            content_item_name_mapping = {
-                PackFolders.SCRIPTS.value: "automation",
-                PackFolders.PLAYBOOKS.value: "playbook",
-                PackFolders.INTEGRATIONS.value: "integration",
-                PackFolders.INCIDENT_FIELDS.value: "incidentfield",
-                PackFolders.INCIDENT_TYPES.value: "incidenttype",
-                PackFolders.DASHBOARDS.value: "dashboard",
-                PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
-                PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layoutscontainer",
-                PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget",
-                PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
-                PackFolders.GENERIC_FIELDS.value: "genericfield",
-                PackFolders.GENERIC_MODULES.value: "genericmodule",
-                PackFolders.GENERIC_TYPES.value: "generictype",
-                PackFolders.LISTS.value: "list",
-                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
-                PackFolders.JOBS.value: "job",
-                PackFolders.PARSING_RULES.value: "parsingrule",
-                PackFolders.MODELING_RULES.value: "modelingrule",
-                PackFolders.CORRELATION_RULES.value: "correlationrule",
-                PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
-                PackFolders.XSIAM_REPORTS.value: "xsiamreport",
-                PackFolders.TRIGGERS.value: "trigger",
-                PackFolders.WIZARDS.value: "wizard",
-            }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
@@ -2269,7 +2243,7 @@ class Pack(object):
                         logging.info(f'Failed to collect: {current_directory}')
 
                 if current_directory in PackFolders.pack_displayed_items():
-                    content_item_key = content_item_name_mapping[current_directory]
+                    content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
 
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
@@ -2280,6 +2254,15 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
+
+            def display_getter(items, display):
+                return f'{display}s' if items and len(items) > 1 else display
+
+            self._content_displays_map = {
+                name: display_getter(content_items_result.get(name), display)
+                for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
+                if content_items_result.get(name)
+            }
 
             return task_status
 
