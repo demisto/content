@@ -3,10 +3,11 @@ from TimeComponents import main
 import json
 import datetime
 import pytest
+from freezegun import freeze_time
 
 
 class TestTimeComponents:
-    @pytest.mark.freeze_time('2022-01-23 12:34:56')
+    @freeze_time('2022-01-23 12:34:56')
     def test_main(self, mocker, monkeypatch):
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
