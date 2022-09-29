@@ -14,6 +14,7 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
     | Incident Type |  | False |
     | Fetch mode |  | True |
+    | Retry events fetch (Advanced) | Whether to retry in search events to fetch all events. Defaults to `true`. | False |
     | Number of offenses to pull per API call (max 50) |  | False |
     | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
     | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
@@ -114,10 +115,18 @@ If you're uncertain which API version to use, it is recommended to use the lates
 ## Troubleshooting
 
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
-It is possible, however, that some events may be missed during incident creation.
+It is possible, however, that some events may be missed during incident creation. If **Retry events fetch (Advanced)** is enabled, the integration will try to retry the search query for QRadar to try to get all the events. The default value for retries is 3, and the wait time between retries is 100 seconds.
+In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
+```
+EVENTS_SEARCH_RETRIES=<amount of retries for events search> (default 3)
+EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between retries> (default 100)
+EVENTS_POLLING_RETRIES=<number of times to poll for one search> (default 10)
+```
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
+
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -2546,6 +2555,7 @@ This uses the instance parameters to create the AQL search query for the events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The ID of the offense to retrieve. | Required | 
+| retry_if_not_all_fetched | Whether to retry until all events are polled or stop when the first search is completed. | Optional |
 | search_id | The search id to query the results. | Optional | 
 
 
@@ -2555,7 +2565,7 @@ This uses the instance parameters to create the AQL search query for the events.
 | --- | --- | --- |
 | QRadar.SearchEvents.Events | Unknown | The events from QRadar search. | 
 | QRadar.SearchEvents.ID | String | The search id. | 
-
+| QRadar.SearchEvents.Status | String | The status of the search. | 
 
 #### Command example
 ```!qradar-get-events-polling offense_id=194```

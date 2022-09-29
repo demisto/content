@@ -40,6 +40,12 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
+- display: Retry events fetch (Advanced)
+  additionalinfo: Whether to retry in search events to fetch all events.
+  default: true
+  name: retry_events_fetch
+  type: 8
+  required: false
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
@@ -2736,18 +2742,16 @@ script:
       required: false
       auto: PREDEFINED
       description: Whether to retry until all events are polled or stop when the first search is completed.
-
       predefined:
       - 'true'
       - 'false'
     - name: polling
       required: false
       auto: PREDEFINED
-      default: false
+      default: true
       predefined:
       - 'true'
       - 'false'
-
     deprecated: false
     description: Polling command to search for events of a specific offense.
     name: qradar-search-retrieve-events
@@ -2758,6 +2762,9 @@ script:
       type: Unknown
     - contextPath: QRadar.SearchEvents.Events
       description: The events from QRadar search.
+      type: Unknown
+    - contextPath: QRadar.SearchEvents.Status
+      description: The status of the search.
       type: Unknown
   runonce: false
   script: '-'

@@ -1911,6 +1911,7 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
+    global EVENTS_SEARCH_RETRIES
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     first_fetch = params.get('first_fetch', '3 days')
@@ -1922,7 +1923,8 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-
+    if not params.get('retry_events_fetch', True):
+        EVENTS_SEARCH_RETRIES = 1
     while True:
         try:
             perform_long_running_loop(
@@ -3516,7 +3518,7 @@ def qradar_search_retrieve_events_command(
     """
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
-    is_polling = argToBoolean(args.get('polling', False))
+    is_polling = argToBoolean(args.get('polling', True))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
