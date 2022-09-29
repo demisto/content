@@ -99,7 +99,7 @@ script:
         if file_name:
             headers['filename'] = file_name
             with open(file_name, 'rb') as file_:
-              res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
+                res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
         elif method.upper() == 'GET':
             res = requests.get(url, verify=USE_SSL, headers=headers)
         elif method.upper() == 'POST':
