@@ -2184,7 +2184,7 @@ def main():
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
-            demisto.results('ok')
+            return_results('ok')
             sys.exit(0)
 
         if command == 'fetch-incidents':
@@ -2199,9 +2199,9 @@ def main():
         else:
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                demisto.results(cmd_func(receive_only_accounts))  # type: ignore
+                return_results(cmd_func(receive_only_accounts))  # type: ignore
             else:
-                demisto.results(cmd_func())  # type: ignore
+                return_results(cmd_func())  # type: ignore
 
     except Exception as e:
         import traceback
