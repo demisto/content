@@ -8,9 +8,9 @@ apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
 # test = demisto.params().get('api_key', {}).get('password')
 
 headers = {
-    'Authorization': f"Bearer {apikey}",
+    'Authorization': f'Bearer {apikey}',
 }
-BASE_URL = "https://example.com.aha.io/api/v1/"
+BASE_URL = 'https://example.com.aha.io/api/v1/'
 
 
 def mock_client(mocker, http_request_result=None, throw_error=False):
@@ -21,7 +21,7 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
         mocker.patch.object(client, '_http_request', return_value=http_request_result)
 
     if throw_error:
-        err_msg = "Error in API call [400] - BAD REQUEST}"
+        err_msg = 'Error in API call [400] - BAD REQUEST}'
         mocker.patch.object(client, '_http_request', side_effect=DemistoException(err_msg, res={}))
 
     return client
@@ -40,7 +40,7 @@ def test_getFeatures(mocker):
             - Asserts get all features
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get_features(client=client, from_date="2022-01-01")
+    results = get_features(client=client, from_date='2022-01-01')
     assert len(results.outputs) == 3
 
 
@@ -52,7 +52,7 @@ def test_getFeaturesFromDate(mocker):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
-    results = get_features(client=client, from_date="3000-01-01")
+    results = get_features(client=client, from_date='3000-01-01')
     assert len(results.outputs) == 0
 
 
@@ -64,9 +64,9 @@ def test_getSpecificFeature(mocker):
             - Return the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get_features(client=client, from_date="2020-01-01", feature_name="DEMO-10")
+    result = get_features(client=client, from_date='2020-01-01', feature_name='DEMO-10')
     assert len(result.outputs) == 1
-    assert result.outputs[0]['reference_num'] == "DEMO-10"
+    assert result.outputs[0]['reference_num'] == 'DEMO-10'
 
 
 def test_editFeatureField(mocker):
@@ -77,9 +77,9 @@ def test_editFeatureField(mocker):
             - Return the feature with updated fields.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
-    result = edit_feature(client=client, feature_name="DEMO-10", fields={"name": "DEMO-10", "description": "new description",
-                          "status": "Closed"})
+    result = edit_feature(client=client, feature_name='DEMO-10', fields={'name': 'DEMO-10', 'description': 'new description',
+                          'status': 'Closed'})
     assert len(result.outputs) == 1
-    assert result.outputs[0]['name'] == "Demo-10"
-    assert result.outputs[0]['description'] == "test desc"
-    assert result.outputs[0]['workflow_status'] == "Closed"
+    assert result.outputs[0]['name'] == 'Demo-10'
+    assert result.outputs[0]['description'] == 'test desc'
+    assert result.outputs[0]['workflow_status'] == 'Closed'
