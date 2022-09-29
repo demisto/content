@@ -14,7 +14,7 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
     | Incident Type |  | False |
     | Fetch mode |  | True |
-    | Retry events fetch | Whether to retry in search events to fetch all events. Defaults to `true`. | False |
+    | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5. | False |
     | Number of offenses to pull per API call (max 50) |  | False |
     | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
     | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
@@ -118,8 +118,7 @@ When *Fetch with events* is configured, the integration will fetch the offense e
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
 In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
 ```
-EVENTS_SEARCH_RETRIES=<amount of retries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between retries> (default 100),
-EVENTS_POLLING_RETRIES=<number of times to poll for one search> (default 10),
+EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between tries> (default 100),EVENTS_POLLING_TRIES=<number of times to poll for one search> (default 10),
 ```
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.

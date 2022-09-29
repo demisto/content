@@ -35,8 +35,8 @@ SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
-EVENTS_SEARCH_RETRIES = 3  # number of retries for creating a new search
-EVENTS_POLLING_RETRIES = 10  # number of retries for events polling
+EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
+EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
@@ -1465,9 +1465,9 @@ def test_module_command(client: Client, params: Dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_RETRIES, EVENTS_POLLING_RETRIES
-    EVENTS_SEARCH_RETRIES = 1
-    EVENTS_POLLING_RETRIES = 1
+    global EVENTS_SEARCH_TRIES, EVENTS_POLLING_TRIES
+    EVENTS_SEARCH_TRIES = 1
+    EVENTS_POLLING_TRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
@@ -1523,7 +1523,7 @@ def create_search_with_retry(client: Client,
                              offense: Dict,
                              event_columns: str,
                              events_limit: int,
-                             max_retries: int = EVENTS_SEARCH_RETRIES,
+                             max_retries: int = EVENTS_SEARCH_TRIES,
                              ) -> str:
     """
     Creates a search to retrieve events for an offense.
@@ -1595,7 +1595,7 @@ def poll_offense_events(client: Client,
 def poll_offense_events_with_retry(
     client: Client,
     search_id: str, offense_id: int,
-    max_retries: int = EVENTS_POLLING_RETRIES,
+    max_retries: int = EVENTS_POLLING_TRIES,
 ) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
@@ -1651,7 +1651,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: FetchM
     events: List[dict] = []
     failure_message = ''
     is_success = True
-    for retry in range(EVENTS_SEARCH_RETRIES):
+    for retry in range(EVENTS_SEARCH_TRIES):
         start_time = time.time()
         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                              events_limit)
@@ -1665,7 +1665,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: FetchM
         if is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
             break
         print_debug_msg(f'Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds.'
-                        f'Retry {retry+1}/{EVENTS_SEARCH_RETRIES}')
+                        f'Retry {retry+1}/{EVENTS_SEARCH_TRIES}')
         time_elapsed = int(time.time() - start_time)
         # wait for the rest of the time
         time.sleep(max(EVENTS_SEARCH_RETRY_SECONDS - time_elapsed, 0))
@@ -1911,7 +1911,7 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    global EVENTS_SEARCH_RETRIES
+    global EVENTS_SEARCH_TRIES
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     first_fetch = params.get('first_fetch', '3 days')
@@ -1924,7 +1924,7 @@ def long_running_execution_command(client: Client, params: Dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     if not argToBoolean(params.get('retry_events_fetch', True)):
-        EVENTS_SEARCH_RETRIES = 1
+        EVENTS_SEARCH_TRIES = 1
     while True:
         try:
             perform_long_running_loop(
@@ -3567,15 +3567,14 @@ def qradar_search_retrieve_events_command(
                                   outputs={'Events': events, 'ID': search_id, 'Status': QueryStatus.PARTIAL},
                                   )
 
-        else:
-            return CommandResults(
-                outputs_prefix='QRadar.SearchEvents',
-                outputs_key_field='ID',
-                outputs={'Events': events, 'ID': search_id, 'Status': QueryStatus.SUCCESS},
-                readable_output=tableToMarkdown(f'{get_num_events(events)} Events returned from search_id {search_id}',
-                                                events,
-                                                ),
-            )
+        return CommandResults(
+            outputs_prefix='QRadar.SearchEvents',
+            outputs_key_field='ID',
+            outputs={'Events': events, 'ID': search_id, 'Status': QueryStatus.SUCCESS},
+            readable_output=tableToMarkdown(f'{get_num_events(events)} Events returned from search_id {search_id}',
+                                            events,
+                                            ),
+        )
 
     print_debug_msg(f'Still polling for search results for search ID: {search_id}.')
     polling_args = {

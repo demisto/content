@@ -45,7 +45,7 @@ configuration:
   name: retry_events_fetch
   required: false
   type: 8
-  additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of retries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_RETRIES. e.g EVENTS_SEARCH_RETRIES=5"
+  additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5"
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
