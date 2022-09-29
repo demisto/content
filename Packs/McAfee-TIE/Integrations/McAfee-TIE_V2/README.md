@@ -3,8 +3,8 @@ Connect to McAfee TIE using the McAfee DXL client.
 This integration was integrated and tested with version 2.0 of McAfee Threat Intelligence Exchange V2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mcafee-threat-intelligence-exchange-v2).
-## Changes compared to V1
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes).
+## <a name="breaking-changes"></a>Changes compared to V1
 # Changes in commands
 1. You can now pass more than one file to the commands `tie-set-file-reputation`, and `tie-file-references`.
 2. The code is now python 3 compatible.
@@ -19,12 +19,15 @@ To connect the McAfee TIE using the DXL TIE client, you need to create certifica
 3. Client private key (`client.key` file)
 4. Broker list properties file (`brokerlist.properties` file)
 
-<a name="set-file-instruction"></a>To use the `tie-set-file-reputation` command, you need to authorize the client (Demisto) to run the command. Follow the [instructions](https://xsoar.pan.dev/docs/reference/integrations/mc-afee-dxl#how-to-create-the-rsa-key-pair) to do so. In step #4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
+**Important**: These are the actual certificates, not request certificates.
+
+<a name="set-file-instruction"></a>To use the `tie-set-file-reputation` command, you need to authorize the client (Demisto) to run the command. Follow the [instructions](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html) to do so. In step #4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
 
 ### Dependencies (Python packages)
 You don't need to install the packages, they are included in the Docker image.
   - DXL Client [documentation](https://opendxl.github.io/opendxl-client-python/pydoc/dxlclient.client.html)
   - DXL TIE Client [documentation](https://opendxl.github.io/opendxl-tie-client-python/pydoc/dxltieclient.client.html)
+
 ## Configure McAfee Threat Intelligence Exchange V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -75,24 +78,24 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | How reliable the score is \(for example, "C - fairly reliable"\). | 
 | McAfee.TIE.FilesReputations.Reputations.Hash | String | The value of the hash. | 
-| McAfee.TIE.FilesReputations.Reputations.GTI.Provider_ID | Number | The identifier of the particular provider that provided the reputation. | 
-| McAfee.TIE.FilesReputations.Reputations.GTI.Trust_Level | Number | The trust level for the reputation subject. | 
+| McAfee.TIE.FilesReputations.Reputations.GTI.[Provider_ID](#providers-table) | Number | The identifier of the particular provider that provided the reputation. | 
+| McAfee.TIE.FilesReputations.Reputations.GTI.[Trust_Level](#trust-level-table) | Number | The trust level for the reputation subject. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Create_Date | String | The time this reputation was created. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Original_Response | String | The raw response as returned by the Global Threat Intelligence \(GTI\) reputation provider. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact | String | The time the file was first seen. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Prevalence | String | The number of times the file has been requested. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.Provider_ID | Number | The identifier of the particular provider that provided the reputation. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.Trust_Level | Number | The trust level for the reputation subject. | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[Provider_ID](#providers-table) | Number | The identifier of the particular provider that provided the reputation. | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[Trust_Level](#trust-level-table) | Number | The trust level for the reputation subject. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date | String | The time this reputation was created. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Provider | String | The name of the particular provider that provided the reputation. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.GAM_Score | String | The trust score reported by the Gateway Anti-Malware \(GAM\). | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.AV_Engine_Score | String | The trust score reported by the Anti-Virus engine. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.Sandbox_Score | String | The trust score as a result of the sandbox evaluation. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.Verdict | String | The overall verdict \(taking into consideration all available information\). | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[GAM_Score](#atd-trust-score-table) | String | The trust score reported by the Gateway Anti-Malware \(GAM\). | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[AV_Engine_Score](#atd-trust-score-table) | String | The trust score reported by the Anti-Virus engine. | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[Sandbox_Score](#atd-trust-score-table) | String | The trust score as a result of the sandbox evaluation. | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.[Verdict](#atd-trust-score-table) | String | The overall verdict \(taking into consideration all available information\). | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Behaviors | String | An encoded structure that contains observed behaviors of the file. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider_ID | Number | The identifier of the particular provider that provided the reputation. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Trust_Level | Number | The trust level for the reputation subject. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.[Provider_ID](#providers-table) | Number | The identifier of the particular provider that provided the reputation. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.[Trust_Level](#trust-level-table) | Number | The trust level for the reputation subject. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Create_Date | String | The time this reputation was created. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Server_Version | String | The version of the TIE server that returned the reputations \(encoded version string\). | 
@@ -109,8 +112,40 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Detection_Count | String | The count of detections for the file or certificate. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time | String | The last time a detection occurred. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Is_Prevalent | String | Whether the file is considered to be prevalent within the enterprise. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps | String | The child file reputations \(aggregate string\) according to the following format: - The count of files - The maximum trust level found across the files - The minimum trust level found across the files - The trust level for the last file - The average trust level across the files | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format: - The count of files - The maximum trust level found across the files - The minimum trust level found across the files - The trust level for the last file - The average trust level across the files | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps | String | The child file reputations \(aggregate string\) according to the following format:<br /> - The count of files<br />- The maximum trust level found across the files<br /> - The minimum trust level found across the files<br /> - The trust level for the last file<br /> - The average trust level across the files | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format:<br /> - The count of files<br /> - The maximum trust level found across the files<br /> - The minimum trust level found across the files<br /> - The trust level for the last file<br /> - The average trust level across the files | 
+
+### <a name="providers-table"></a>Providers
+| **Provider** | **Numeric** | **Description** |
+| --- | --- | --- |
+| GTI | 1 | Global Threat Intelligence (GTI). |
+| ENTERPRISE | 3 | Enterprise reputation (specific to the local enterprise). |
+| ATD | 5 | McAfee Advanced Threat Defense (ATD). |
+
+### <a name="trust-level-table"></a>Trust Level Table
+| **Trust Level** | **Numeric** | **Description** |
+| --- | --- | --- |
+| KNOWN_TRUSTED_INSTALLER | 100 | It is a trusted installer. |
+| KNOWN_TRUSTED | 99 | It is a trusted file. |
+| MOST_LIKELY_TRUSTED | 85 | It is almost certain that the file is trusted. |
+| MIGHT_BE_TRUSTED | 70 | It seems to be a benign file. |
+| UNKNOWN | 50 | The reputation provider has encountered the file before but the provider can't determine its reputation at the moment. |
+| MIGHT_BE_MALICIOUS | 30 | It seems to be a suspicious file. |
+| MOST_LIKELY_MALICIOUS | 15 | It is almost certain that the file is malicious. |
+| KNOWN_MALICIOUS | 1 | It is a malicious file. |
+| NOT_SET | 0 | The file's reputation hasn't been determined yet. |
+
+### <a name="atd-trust-score-table"></a>ATD Trust Score Table
+| **Trust Level** | **Numeric** | **Description** |
+| --- | --- | --- |
+| KNOWN_TRUSTED | -1 | It is a trusted file. |
+| MOST_LIKELY_TRUSTED | 0 | It is almost certain that the file is trusted. |
+| MIGHT_BE_TRUSTED | 1 | It seems to be a benign file. |
+| UNKNOWN | 2 | The reputation provider has encountered the file before but the provider can't determine its reputation at the moment. |
+| MIGHT_BE_MALICIOUS | 3 | It seems to be a suspicious file. |
+| MOST_LIKELY_MALICIOUS | 4 | It is almost certain that the file is malicious. |
+| KNOWN_MALICIOUS | 5 | It is a malicious file. |
+| NOT_SET | -2 | The file's reputation hasn't been determined yet. |
 
 ### Command Example
 `!file file=f2c7bb8acc97f92e987a2d4087d021b1,7eb0139d2175739b3ccb0d1110067820be6abd29`
