@@ -255,11 +255,10 @@ def test_branch_delete_command(mocker, bitbucket_client):
     from Bitbucket import branch_delete_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
     args = {'branch_name': 'test'}
-    with pytest.raises(Exception):
-        branch_delete_command(bitbucket_client, args)
-        http_request.assert_called_with(method='DELETE',
-                                        url_suffix='/repositories/workspace/repository/refs/branches/test',
-                                        resp_type='response')
+    branch_delete_command(bitbucket_client, args)
+    http_request.assert_called_with(method='DELETE',
+                                    url_suffix='/repositories/workspace/repository/refs/branches/test',
+                                    resp_type='response')
 
 
 def test_commit_create_command(mocker, bitbucket_client):
@@ -284,12 +283,11 @@ def test_commit_create_command(mocker, bitbucket_client):
         "branch": 'branch',
         'hello.txt': 'Hello world!'
     }
-    with pytest.raises(Exception):
-        commit_create_command(bitbucket_client, args)
-        http_request.assert_called_with(method='POST',
-                                        url_suffix='/repositories/workspace/repository/src',
-                                        data=expected_body,
-                                        resp_type='response')
+    commit_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/src',
+                                    data=expected_body,
+                                    resp_type='response')
 
 
 def test_commit_list_command(mocker, bitbucket_client):
