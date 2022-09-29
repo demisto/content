@@ -1321,7 +1321,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> Dict[str, Any]:
         """Retrieves results according to query.
 
         Args:
@@ -2549,19 +2549,54 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     query = args.get('query', '')
-    timeout = int(args.get('timeout', 10))
-    time_range = args.get('time_range')
-    response = client.get_advanced_hunting(query, timeout, time_range)
-    results = response.get('Results')
-    if isinstance(results, list) and len(results) == 1:
-        report_id = results[0].get('ReportId')
-        if report_id:
-            results[0]['ReportId'] = str(report_id)
-    entry_context = {
-        'MicrosoftATP.Hunt.Result': results
-    }
-    human_readable = tableToMarkdown('Hunt results', results, removeNull=True)
+    query_batch = args.get('query_batch', '')
+    if query and query_batch:
+        raise DemistoException('Both query and query_batch were given, please provide just one')
+    if not query and not query_batch:
+        raise DemistoException('Both query and query_batch were not given, please provide one')
 
+    queries: List[Dict[str, str]] = []
+    if query:
+        queries.append({'timeout': args.get('timeout', '10'),
+                        'time_range': args.get('time_range', ''),
+                        'name': args.get('name', ''),
+                        'query': query
+                        })
+    else:
+        query = safe_load_json(query_batch)
+        queries.extend(query)
+
+    if len(queries) > 10:
+        raise DemistoException('Please provide only up to 10 queries.')
+
+    human_readable = ''
+    outputs = []
+    for query_details in queries:
+        query = query_details.get('query')
+        name = query_details.get('name')
+        timeout = int(query_details.get('timeout', '') or args.get('timeout', 10))
+        time_range = query_details.get('time_range') or args.get('time_range', '')
+
+        response = client.get_advanced_hunting(query, timeout, time_range)
+        results: Dict[str, Any] = response.get('Results', {})
+        if isinstance(results, list) and len(results) == 1:
+            report_id = results[0].get('ReportId')
+            if report_id:
+                results[0]['ReportId'] = str(report_id)
+        if name:
+            outputs.append({name: results})
+        else:
+            outputs = [results]
+        human_readable += tableToMarkdown(f'Hunt results for {name} query:', results, removeNull=True)
+
+    if len(outputs) == 1:
+        entry_context: dict[str, Any] = {
+            'MicrosoftATP.Hunt.Result': outputs[0]
+        }
+    else:
+        entry_context = {
+            'MicrosoftATP.Hunt.Result': outputs
+        }
     return human_readable, entry_context, response
 
 
