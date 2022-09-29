@@ -6,23 +6,26 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Microsoft Defender For Endpoint - Isolate Endpoint
+* Threat Hunting - Generic
 
 ### Integrations
 * MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* ServiceNowCreateIncident
-* SearchIncidentsV2
 * IsIntegrationAvailable
+* ServiceNowCreateIncident
+* AddEvidence
+* SearchIncidentsV2
 
 ### Commands
-* jira-create-issue
-* closeInvestigation
-* setIndicators
-* microsoft-atp-update-alert
-* microsoft-atp-stop-and-quarantine-file
 * microsoft-atp-get-file-related-machines
 * microsoft-atp-sc-indicator-create
+* microsoft-atp-stop-and-quarantine-file
+* setIndicators
+* closeInvestigation
+* jira-create-issue
+* setIncident
+* microsoft-atp-update-alert
 
 ## Playbook Inputs
 ---
@@ -40,8 +43,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoIsolation | Whether host isolation is allowed. | False | Optional |
 | CloseDuplicate | Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.<br/>The playbook looks for the world "Close" in this input. |  | Optional |
 | HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
-| FileSha256 | Enter the File SHA256 you want to block. | ${incident.filesha256} | Optional |
-| FileSha1 | Enter the File SHA1 you want to remove from your protected endpoints. | ${incident.filesha1} | Optional |
+| FileSha256 | Enter the File SHA256 you want to block. | File.SHA256 | Optional |
+| FileSha1 | Enter the File SHA1 you want to remove from your protected endpoints. | File.SHA1 | Optional |
+| ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident. | True | Optional |
 
 ## Playbook Outputs
 ---
@@ -49,4 +53,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![MDE - Retrieve File](../doc_files/MDE_-_Retrieve_File.png)
+![MDE - True Positive Incident Handling](../doc_files/MDE_-_True_Positive_Incident_Handling.png)
