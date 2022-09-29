@@ -40,8 +40,8 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
-- display: Retry events fetch (Advanced)
-  additionalinfo: Whether to retry in search events to fetch all events.
+- display: Retry events fetch
+  additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of retries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_RETRIES. e.g EVENTS_SEARCH_RETRIES=5"
   default: true
   name: retry_events_fetch
   type: 8
@@ -2725,7 +2725,7 @@ script:
     - name: start_time
       required: false
       type: Date
-      description: The start time of the search. Mutually exclusive with query_expression
+      description: The start time of the search. Mutually exclusive with query_expression.
     - name: query_expression
       required: false
       type: String
@@ -2741,11 +2741,12 @@ script:
     - name: retry_if_not_all_fetched
       required: false
       auto: PREDEFINED
-      description: Whether to retry until all events are polled or stop when the first search is completed.
+      description: Whenever set to true, the command retries to fetch all events if the number of events fetched is less than `event_count`.
       predefined:
       - 'true'
       - 'false'
     - name: polling
+      description: Wait for search results.
       required: false
       auto: PREDEFINED
       default: true
@@ -2764,7 +2765,7 @@ script:
       description: The events from QRadar search.
       type: Unknown
     - contextPath: QRadar.SearchEvents.Status
-      description: The status of the search.
+      description: The status of the search ('wait', 'partial', 'success').
       type: Unknown
   runonce: false
   script: '-'
