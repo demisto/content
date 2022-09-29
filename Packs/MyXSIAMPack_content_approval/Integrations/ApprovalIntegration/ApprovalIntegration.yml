@@ -10,10 +10,6 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
-sectionOrder:
-- Connect
-- Collect
-configuration:
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
