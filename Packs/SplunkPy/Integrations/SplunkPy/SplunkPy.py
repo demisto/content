@@ -1042,13 +1042,12 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
-                        is_item_fnd = False
                         job_results = job.results()
-                        for item in results.ResultsReader(job_results):
-                            is_item_fnd = True
-                            enrichment.data.append(item)
-                        if not is_item_fnd:
+                        if not job_results:
                             demisto.debug('No items were found for notable'.format(notable.id))
+                        else:
+                            for item in results.ResultsReader(job_results):
+                                enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
                     demisto.error("Caught an exception while retrieving {} enrichment results for notable {}: "
