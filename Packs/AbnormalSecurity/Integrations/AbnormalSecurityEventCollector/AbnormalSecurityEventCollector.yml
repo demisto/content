@@ -1,0 +1,56 @@
+commonfields:
+  id: Abnormal Security Event Collector
+  version: -1
+name: Abnormal Security Event Collector
+display: Abnormal Security Event Collector
+category: Analytics & SIEM
+description: Abnormal Security Event Collector integration for XSIAM.
+configuration:
+- display: ""
+  displaypassword: Token
+  name: token
+  type: 9
+  required: true
+  hiddenusername: true
+- display: First fetch time interval
+  name: after
+  type: 0
+  defaultvalue: 1 day
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: verify
+  type: 8
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - description: Manual command to fetch events.
+    name: abnormal-security-event-collector-get-events
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: 'False'
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
+        isArray: false
+        name: should_push_events
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
+  dockerimage: demisto/python3:3.10.7.33922
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  isfetchevents: true
+  runonce: false
+  subtype: python3
+fromversion: 6.8.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests
