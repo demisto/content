@@ -1923,7 +1923,7 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-    if not params.get('retry_events_fetch', True):
+    if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_RETRIES = 1
     while True:
         try:
