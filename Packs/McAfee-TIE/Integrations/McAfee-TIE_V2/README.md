@@ -5,7 +5,6 @@ This integration was integrated and tested with version 2.0 of McAfee Threat Int
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes).
 ## <a name="breaking-changes"></a>Changes compared to V1
-# Changes in commands
 1. You can now pass more than one file to the commands `tie-set-file-reputation`, and `tie-file-references`.
 2. Added additional context outputs to the commands `file`, and `tie-file-references`.
 
@@ -151,7 +150,102 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 
 #### Context Example
 ```json
-
+{
+    "DBotScore": [
+        {
+            "Indicator": "f2c7bb8acc97f92e987a2d4087d021b1",
+            "Reliability": "C - Fairly reliable",
+            "Score": 1,
+            "Type": "file",
+            "Vendor": "McAfee Threat Intelligence Exchange V2"
+        },
+        {
+            "Indicator": "7eb0139d2175739b3ccb0d1110067820be6abd29",
+            "Reliability": "C - Fairly reliable",
+            "Score": 3,
+            "Type": "file",
+            "Vendor": "McAfee Threat Intelligence Exchange V2"
+        }
+    ],
+    "File": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "f2c7bb8acc97f92e987a2d4087d021b1"
+                }
+            ],
+            "MD5": "f2c7bb8acc97f92e987a2d4087d021b1"
+        },
+        {
+            "Hashes": [
+                {
+                    "type": "SHA1",
+                    "value": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+                }
+            ],
+            "Malicious": {
+                "Description": "Trust level is 1",
+                "Vendor": "McAfee Threat Intelligence Exchange V2"
+            },
+            "SHA1": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+        }
+    ],
+    "McAfee": {
+        "TIE": {
+            "FilesReputations": [
+                {
+                    "Reputations": {
+                        "Enterprise": {
+                            "Create_Date": "2017-10-15 15:33:20",
+                            "Enterprise_Size": "167528",
+                            "File_Name_Count": "3",
+                            "First_Contact": "2017-10-15 15:33:20",
+                            "Is_Prevalent": "0",
+                            "Prevalence": "4336",
+                            "Provider": "Enterprise reputation",
+                            "Provider_ID": 3,
+                            "Server_Version": "3.0.0.480",
+                            "Trust_Level": 85
+                        },
+                        "GTI": {
+                            "Create_Date": "2017-10-15 15:33:20",
+                            "Original_Response": "2139160704",
+                            "Provider": "Global Threat Intelligence (GTI)",
+                            "Provider_ID": 1,
+                            "Trust_Level": 99
+                        },
+                        "Hash": "f2c7bb8acc97f92e987a2d4087d021b1"
+                    }
+                },
+                {
+                    "Reputations": {
+                        "Enterprise": {
+                            "Create_Date": "2017-10-15 16:30:54",
+                            "Enterprise_Size": "167529",
+                            "File_Name_Count": "1",
+                            "First_Contact": "2017-10-15 16:30:54",
+                            "Is_Prevalent": "0",
+                            "Prevalence": "2736",
+                            "Provider": "Enterprise reputation",
+                            "Provider_ID": 3,
+                            "Server_Version": "3.0.0.480",
+                            "Trust_Level": 1
+                        },
+                        "GTI": {
+                            "Create_Date": "2018-06-04 13:31:02",
+                            "Original_Response": "2139160704",
+                            "Provider": "Global Threat Intelligence (GTI)",
+                            "Provider_ID": 1,
+                            "Trust_Level": 99
+                        },
+                        "Hash": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+                    }
+                }
+            ]
+        }
+    }
+}
 ```
 
 #### Human Readable Output
@@ -185,13 +279,13 @@ Sets the “Enterprise” reputation (trust level, filename, and comment) of the
 
 
 #### Context Output
-There is no context output for this command.
+`There is no context output for this command.`
 
 ### Command Example
 ```!tie-set-file-reputation file=f2c7bb8acc97f92e987a2d4087d021b1,7eb0139d2175739b3ccb0d1110067820be6abd29 trust_level=MOST_LIKELY_TRUSTED comment="For testing" filename="tesing.exe"```
 
 #### Human Readable Output
-Successfully set files reputation
+`Successfully set files reputation.`
 
 ### tie-file-references
 ***
@@ -226,7 +320,84 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 
 #### Context Example
 ```json
-
+{
+    "File": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "f2c7bb8acc97f92e987a2d4087d021b1"
+                }
+            ],
+            "MD5": "f2c7bb8acc97f92e987a2d4087d021b1"
+        },
+        {
+            "Hashes": [
+                {
+                    "type": "SHA1",
+                    "value": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+                }
+            ],
+            "SHA1": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+        }
+    ],
+    "McAfee": {
+        "TIE": {
+            "FilesReferences": [
+                {
+                    "Hash": "f2c7bb8acc97f92e987a2d4087d021b1",
+                    "References": [
+                        {
+                            "AgentGuid": "0c906be0-224c-45d4-8e6f-bc89da69d268",
+                            "Date": "2017-10-15 15:33:20"
+                        },
+                        {
+                            "AgentGuid": "70be2ee9-7166-413b-b03e-64a48f6ab6c8",
+                            "Date": "2017-10-15 15:34:11"
+                        },
+                        {
+                            "AgentGuid": "c21b8995-9c5a-412c-b727-c4284d42380a",
+                            "Date": "2017-10-15 16:30:48"
+                        },
+                        {
+                            "AgentGuid": "24e0e935-2241-47d7-822b-20dfe0fe86de",
+                            "Date": "2017-10-15 16:30:49"
+                        },
+                        {
+                            "AgentGuid": "e50a8b51-2063-42cb-a85f-10bd0a698323",
+                            "Date": "2017-10-15 16:30:51"
+                        }
+                    ]
+                },
+                {
+                    "Hash": "7eb0139d2175739b3ccb0d1110067820be6abd29",
+                    "References": [
+                        {
+                            "AgentGuid": "157eaf84-88ab-4d95-9456-30878fded9d5",
+                            "Date": "2017-10-15 16:30:54"
+                        },
+                        {
+                            "AgentGuid": "0bbcd439-aaed-4931-b9f4-b37e4a49b980",
+                            "Date": "2017-10-16 13:28:43"
+                        },
+                        {
+                            "AgentGuid": "f87fb2c3-2032-4fc5-a54f-7d36b441a122",
+                            "Date": "2017-10-16 13:28:46"
+                        },
+                        {
+                            "AgentGuid": "33b05a2e-6bb2-46c2-998f-893668c46402",
+                            "Date": "2017-10-16 14:12:17"
+                        },
+                        {
+                            "AgentGuid": "99ed15bb-ebc5-4b48-9a4d-5ad1b30abaac",
+                            "Date": "2017-10-16 14:14:36"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
 ```
 
 #### Human Readable Output
