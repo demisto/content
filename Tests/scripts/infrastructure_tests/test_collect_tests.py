@@ -37,6 +37,7 @@ Test Collection Unit-Test cases
 - `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 - `M3` has a pack with support level != xsoar -- should collect pack but not tests.
 - `P` has a Test Playbook which uses a skipped integration - should not be collected.
+- `Q` has an XSIAM-only content item in a pack that is supported in both XSIAM&XSOAR.
 """
 
 
@@ -93,6 +94,7 @@ class MockerCases:
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
     P = CollectTestsMocker(TEST_DATA / 'P')
+    Q = CollectTestsMocker(TEST_DATA / 'Q')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -315,6 +317,9 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/script-myScript.yml',)),
 
+    # (24) XSIAM content in a XSIAM&XSOAR pack, pack should be collected.
+     (MockerCases.Q, (), ('myPack',),None, XSIAM_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/myIntegration/myIntegration.yml',))
      ))
 def test_branch(
         monkeypatch,
