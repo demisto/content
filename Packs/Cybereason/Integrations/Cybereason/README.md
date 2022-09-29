@@ -1035,7 +1035,7 @@ Kill a processes for the malicious file. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process" timeout=60```
+```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process"```
 #### Human Readable Output
 
 >Kill process remediation action status is: SUCCESS
@@ -1064,7 +1064,7 @@ Quarantine the detected malicious file in a secure location. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File" timeout=60```
+```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File"```
 #### Human Readable Output
 
 >Quarantine file remediation action status is: SUCCESS
@@ -1093,7 +1093,7 @@ Unquarantine the detected malicious file in a secure location. (User will get in
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File" timeout=60```
+```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File"```
 #### Human Readable Output
 
 >Unquarantine file remediation action status is: SUCCESS
@@ -1122,7 +1122,7 @@ Block a file only in particular machine. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File" timeout=60```
+```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File"```
 #### Human Readable Output
 
 >Block file remediation action status is: SUCCESS
@@ -1151,7 +1151,7 @@ Delete a registry entry associated with a malicious process. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key" timeout=30```
+```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key"```
 #### Human Readable Output
 
 >Delete registry key remediation action status is: SUCCESS
@@ -1180,7 +1180,7 @@ Prevent detected ransomware from running on the machine. (User will get inputs b
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent" timeout=30```
+```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent"```
 #### Human Readable Output
 
 >Kill prevent unsuspend remediation action status is: SUCCESS
@@ -1209,7 +1209,7 @@ Prevent a file associated with ransomware. (User will get inputs by executing th
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process" timeout=60```
+```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process"```
 #### Human Readable Output
 
 >Unsuspend process remediation action status is: SUCCESS
