@@ -1,22 +1,21 @@
-from splunklib.binding import HTTPError, namespace, AuthenticationError
-
-import demistomock as demisto
-from CommonServerPython import *
-import splunklib.client as client
-
-import splunklib.results as results
-import json
-from datetime import timedelta, datetime
-import pytz  # type: ignore[import]
-import dateparser  # type: ignore
-import urllib2
 import hashlib
-import ssl
-from StringIO import StringIO
-import requests
-import urllib3
 import io
+import json
 import re
+import ssl
+from datetime import datetime, timedelta
+
+import dateparser  # type: ignore
+import demistomock as demisto  # noqa: F401
+import pytz  # type: ignore[import]
+import requests
+import splunklib.client as client
+import splunklib.results as results
+import urllib2
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from splunklib.binding import AuthenticationError, HTTPError, namespace
+from StringIO import StringIO
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -43,7 +42,7 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
-OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer']
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer', 'disposition']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -1361,7 +1360,7 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
                 response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
-                    auth_token=auth_token, sessionKey=session_key
+                    disposition=changed_data.get('disposition'), auth_token=auth_token, sessionKey=session_key
                 )
                 if 'success' not in response_info or not response_info['success']:
                     demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
@@ -1801,7 +1800,7 @@ def convert_to_str(obj):
 
 
 def update_notable_events(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                          searchID=None, auth_token=None, sessionKey=None):
+                          disposition=None, searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
@@ -1841,6 +1840,9 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     # Provide the list of event IDs that you want to change:
     if eventIDs is not None:
         args['ruleUIDs'] = eventIDs
+
+    if disposition:
+        args['disposition'] = disposition
 
     # If you want to manipulate the notable events returned by a search then include the search ID
     if searchID is not None:
