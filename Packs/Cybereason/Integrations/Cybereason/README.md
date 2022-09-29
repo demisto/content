@@ -1028,7 +1028,6 @@ Kill a processes for the malicious file. (User will get inputs by executing the 
 | machine | Machine name to kill the process. | Required | 
 | targetId | Target ID to kill the process. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1058,7 +1057,6 @@ Quarantine the detected malicious file in a secure location. (User will get inpu
 | machine | Machine name to quarantine a file. | Required | 
 | targetId | Target ID to quarantine a file. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1088,7 +1086,6 @@ Unquarantine the detected malicious file in a secure location. (User will get in
 | machine | Machine name to unquarantine a file. | Required | 
 | targetId | Target ID to unquarantine a file. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1118,7 +1115,6 @@ Block a file only in particular machine. (User will get inputs by executing the 
 | machine | Machine name whose files needs to be blocked. | Required | 
 | targetId | Target ID of file to be blocked. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1148,7 +1144,6 @@ Delete a registry entry associated with a malicious process. (User will get inpu
 | machine | Machine name to delete the registry key. | Required | 
 | targetId | Target ID to delete the registry key. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1178,7 +1173,6 @@ Prevent detected ransomware from running on the machine. (User will get inputs b
 | machine | Machine name to prevent detected ransomware from running on the machine. | Required | 
 | targetId | Target ID to prevent detected ransomware from running on the machine. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 
@@ -1208,7 +1202,6 @@ Prevent a file associated with ransomware. (User will get inputs by executing th
 | machine | Machine name to prevent a file associated with ransomware. | Required | 
 | targetId | Target ID to prevent a file associated with ransomware. | Required | 
 | userName | The complete Cybereason user name string for the user performing the request. | Required | 
-| timeout | Timeout (in seconds) to wait for the remediation response. Possible values are: 30, 60. Default is 60. | Optional | 
 | comment | Comment to add to the malop. | Optional | 
 
 

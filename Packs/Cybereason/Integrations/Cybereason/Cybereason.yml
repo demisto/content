@@ -779,13 +779,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Kill a processes for the malicious file. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -803,13 +796,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Quarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -827,13 +813,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Unquarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -851,13 +830,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Block a file only in particular machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -875,13 +847,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Delete a registry entry associated with a malicious process. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -899,13 +864,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Prevent detected ransomware from running on the machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
@@ -923,13 +881,6 @@ script:
     - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
-    - description: Timeout (in seconds) to wait for the remediation response
-      name: timeout
-      defaultValue: '60'
-      auto: PREDEFINED
-      predefined:
-      - '30'
-      - '60'
     - description: Comment to add to the malop
       name: comment
     description: Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
