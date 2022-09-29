@@ -1,10 +1,7 @@
 import demistomock as demisto
 from TimeComponents import main
 import json
-import datetime
-import pytest
-from freezegun import freeze_time
-from datetime import timezone
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 
@@ -13,8 +10,8 @@ class TestTimeComponents:
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
 
-        datetime_mock = MagicMock(spec=datetime.datetime, wraps=datetime.datetime)
-        datetime_mock.utcnow.return_value = datetime.datetime(2022, 1, 23, 12, 34, 56)
+        datetime_mock = MagicMock(spec=datetime, wraps=datetime)
+        datetime_mock.utcnow.return_value = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
         monkeypatch.setattr("TimeComponents.datetime", datetime_mock)
 
         for test_case in test_list:
