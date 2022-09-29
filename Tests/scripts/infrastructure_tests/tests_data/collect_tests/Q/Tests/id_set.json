@@ -1,0 +1,15 @@
+{
+  "scripts": [],
+  "integrations": [
+    {
+      "myIntegration": {
+        "name": "myIntegration",
+        "file_path": "Packs/myPack/Integrations/myIntegration/myIntegration.yml",
+        "pack": "myXSIAMOnlyPack",
+        "tests": []
+      }
+    }
+  ],
+  "TestPlaybooks": [],
+  "Packs": {}
+}

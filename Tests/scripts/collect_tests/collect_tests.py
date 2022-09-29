@@ -665,7 +665,13 @@ class BranchTestCollector(TestCollector):
                     override_pack_compatibility_check=override_pack_compatibility_check
                 ) for test in tests))
         else:
-            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
+            return self._collect_pack(
+                yml.pack_id,
+                reason,
+                'collecting pack only',
+                yml.version_range,
+                allow_incompatible_marketplace=True, # allow XSOAR&XSIAM packs containing XSIAM-only content
+            )
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
