@@ -5,7 +5,7 @@ import os
 from time import time
 
 import pytest
-from demisto_sdk.commands.common.handlers import JSON_Handler
+import json
 
 from CofenseVision import API_ENDPOINTS, ERROR_MESSAGE, STATUS, SUPPORTED_SORT_FORMAT, SUPPORTED_SORT, \
     SUPPORTED_QUARANTINE_EMAILS_FORMAT, SUPPORTED_CRITERIA, SUPPORTED_HASH_VALUE_FORMAT, SUPPORTED_HASH, THREAT_TYPES, \
@@ -37,9 +37,6 @@ EXPECTED_ERROR_MSG_FOR_ACCESS_LIMITATION_ERROR = "Error in API call [401].\nunau
                                                  "required to access this resource."
 TEST_FILE_NAME = "attachment.txt"
 TEST_DAY_DATA = "10 days"
-
-json = JSON_Handler()
-
 
 def util_load_json(path):
     """Load a json file located at the given path."""

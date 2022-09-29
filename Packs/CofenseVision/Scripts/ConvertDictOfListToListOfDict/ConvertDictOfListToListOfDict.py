@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,7 +8,7 @@ def main():
 
     try:
         args: Dict = demisto.args()
-        root = args.get('key')
+        root = args.get('key', [])
 
         for i in root:
             if isinstance(root[i], str) or isinstance(root[i], int):
