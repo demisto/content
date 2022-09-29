@@ -38,6 +38,7 @@ EXPECTED_ERROR_MSG_FOR_ACCESS_LIMITATION_ERROR = "Error in API call [401].\nunau
 TEST_FILE_NAME = "attachment.txt"
 TEST_DAY_DATA = "10 days"
 
+
 def util_load_json(path):
     """Load a json file located at the given path."""
     with io.open(path, mode="r", encoding="utf-8") as file:
