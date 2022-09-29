@@ -503,8 +503,7 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented')
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{err}', error=err)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

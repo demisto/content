@@ -20,8 +20,7 @@ def main():
             "Contents": html
         })
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute FeedCyCognitoGetAssetEndpoint. Error: {str(err)}')
+        return_error(f'Failed to execute FeedCyCognitoGetAssetEndpoint. Error: {err}', error=err)
 
 
 ''' ENTRY POINT '''
