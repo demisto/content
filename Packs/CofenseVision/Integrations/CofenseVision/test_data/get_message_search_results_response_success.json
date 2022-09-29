@@ -1,0 +1,647 @@
+{
+  "raw_response": {
+    "messages": [
+      {
+        "id": 522111,
+        "subject": "test_subject_1",
+        "receivedOn": "2022-07-11T06:50:52.000+00:00",
+        "sentOn": "2022-07-11T06:50:52.000+00:00",
+        "deliveredOn": null,
+        "processedOn": "2022-07-11T06:50:54.690+00:00",
+        "textBody": null,
+        "htmlBody": null,
+        "md5": "c2bebaf186b26c0b0a5cb3d8be2cbad3",
+        "sha1": "fa0d8235ecceb4e1663c82df2e1d1c360d04e9cb",
+        "sha256": "4c9a7dc238afd1eae69efe20ae1c2f2bd64f882b81af1b0e1056ebaca3ee1ee3",
+        "internetMessageId": "<test1-id>",
+        "from": [
+          {
+            "id": 4,
+            "personal": "abc",
+            "address": "abc@xyz.com"
+          }
+        ],
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from abc@xyz.com by pqr@xyz.com with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "From",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "To",
+            "value": "pqr <pqr@xyz.com>"
+          },
+          {
+            "name": "CC",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "test_subject_1"
+          },
+          {
+            "name": "Thread-Topic",
+            "value": "test_subject_1"
+          },
+          {
+            "name": "Thread-Index",
+            "value": "AQHYkIUG5Lh4IAWPc02a/fLS1Q+9vg=="
+          },
+          {
+            "name": "Date",
+            "value": "Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<999999999.999999.999999999999@aaaaaaaaaaa>"
+          },
+          {
+            "name": "Accept-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "Content-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Internal"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthMechanism",
+            "value": "04"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "abc@xyz.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-TransportTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Has-Attach",
+            "value": "yes"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "0000000-0000-0000-0000-00000000000"
+          },
+          {
+            "name": "x-ms-exchange-organization-cross-session-cache",
+            "value": "00HOSFP=c80ed17e-1f06-44b9-b92a-383fb5a10f3c;GWS_Read=V2;CPEPV=10000;CPESV=570;SL=1;EMSL=1;SCL=-1;BL=0;RL=1;PID=0;EXPID=;EIPC2=1904,1607,1609,1803,1608,1903,1681,796;MIPC2=1803;SpfResult=-1;SAUTHOP=1;DkimStatus=7;DkimSS=0;DmarcStatus=4;DmarcAction=0;AUTHRES=[mx.microsoft.com,1]{5,7,TgBvAG4AZQA=,}{9,7,TgBvAG4AZQA=,,YQBjAHQAaQBvAG4A|TgBvAG4AZQA=,aABlAGEAZABlAHIALgBmAHIAbwBtAA==|bQB1AGMAegB5AG4AcwBrAGkAYwBvAGYAZQBuAHMAZQAuAG8AbgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAA==}{2,7,TgBvAG4AZQA=,bQBlAHMAcwBhAGcAZQAgAG4AbwB0ACAAcwBpAGcAbgBlAGQA};PReRC=10;ATCHC=2;URLC_BE=9;URLC_BEC=9;URLC_AE=0;FC_DBG=1099511890176;FPR=BC0DF1FD.AE3A5649.B0F57DC7.4CE9FB5B.2037B;TDNA=7C3DFAFC.AE3A5749.B0F57D87.4CF9D85B.20312;NoDLx=1;CGDLxSupported=1;TMD_SS=1;TMD_AOT=747;TMD_CSUM=773;TMD_DTAET=0;TMD_ES=0;TMD_TT=1;TMD_DMNSPM=15140;TMD_DMSPM=182;TMD_PSATP=0;TMD_PS=0;TMD_SCNT=1;TMD_TSATP=25;TMD_TS=25;TMD_ATPP2=True;TMD_CI=en-US;TMD_CD=2020-06-17 08:03:16.000;TMD_NEWT=0;TMD_NEWTT=0;TMD_QS=1;TR_QS=1;RMX=;DIR=3;ATCHF_DBG=DS:3|SKPD:11;MFP=ef73d951-69ea-415b-aa59-afe100b482ff;EIO=9;URLF_DBG=SKPD:6;ASC=0;HCFP=4c6665f5-e233-4836-bc42-75452046d425;FFV=NSPM;FV_SCL=-1;FSCL=-1"
+          },
+          {
+            "name": "x-ms-exchange-organization-processed-by-gcc-journaling",
+            "value": "Journal Agent"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed;\tboundary=\"_003_9993899379521881657035399834af226d4cfbab_\""
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          }
+        ],
+        "recipients": [
+          {
+            "id": 31,
+            "personal": "pqr",
+            "address": "<pqr@xyz.com>",
+            "recipientType": "to"
+          },
+          {
+            "id": 32,
+            "personal": "abc",
+            "address": "<abc@xyz.com>",
+            "recipientType": "cc"
+          }
+        ],
+        "attachments": [
+          {
+            "size": 62476,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2001907.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "5d066cb44f594fbe2b8f0ebc9c5e0aa0",
+            "sha256": "f3bd8db6324fdeda2688052e71a1fef15c421b692e4ea7eefe1f202e1af3a3e2",
+            "id": 1148604
+          },
+          {
+            "size": 127681,
+            "filename": "text-file-2001907.txt",
+            "contentType": null,
+            "detectedContentType": "text/plain",
+            "md5": "cd8e5c11ac6250738b3cf354f7ecdd87",
+            "sha256": "a83de9d3c4103b0dec6acae80fce62af1eb37417cc04a3a69c9c470b3b348a66",
+            "id": 1148607
+          }
+        ]
+      },
+      {
+        "id": 559812,
+        "subject": "test_subject_2",
+        "receivedOn": "2022-07-11T16:33:05.000+00:00",
+        "sentOn": "2022-07-11T16:33:04.000+00:00",
+        "deliveredOn": null,
+        "processedOn": "2022-07-11T16:33:06.855+00:00",
+        "textBody": null,
+        "htmlBody": null,
+        "md5": "290c1559f1fb2b94b18a809e437b3ecc",
+        "sha1": "0105b0811a4e000fb9ccaa2893027c06b1329c5c",
+        "sha256": "cf3059c9d0cfc2795f2f1190c1961b06979b1084666c12dcf63a0d80956fe5f5",
+        "internetMessageId": "<test2-id>",
+        "from": [
+          {
+            "id": 31,
+            "personal": "pqr",
+            "address": "pqr@xyz.com"
+          }
+        ],
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from abc@xyz.com by pqr@xyz.com with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "To",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "From",
+            "value": "pqr <pqr@xyz.com>"
+          },
+          {
+            "name": "CC",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "test_subject_2"
+          },
+          {
+            "name": "Thread-Topic",
+            "value": "test_subject_2"
+          },
+          {
+            "name": "Thread-Index",
+            "value": "AQHYkIUG5Lh4IAWPc02a/fLS1Q+9vg=="
+          },
+          {
+            "name": "Date",
+            "value": "Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<999999999.999999.999999999999@aaaaaaaaaaa>"
+          },
+          {
+            "name": "Accept-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "Content-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Internal"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthMechanism",
+            "value": "04"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "abc@xyz.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-TransportTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Has-Attach",
+            "value": "yes"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "0000000-0000-0000-0000-00000000000"
+          },
+          {
+            "name": "x-ms-exchange-organization-cross-session-cache",
+            "value": "00HOSFP=c80ed17e-1f06-44b9-b92a-383fb5a10f3c;GWS_Read=V2;CPEPV=10000;CPESV=570;SL=1;EMSL=1;SCL=-1;BL=0;RL=1;PID=0;EXPID=;EIPC2=1904,1607,1609,1803,1608,1903,1681,796;MIPC2=1803;SpfResult=-1;SAUTHOP=1;DkimStatus=7;DkimSS=0;DmarcStatus=4;DmarcAction=0;AUTHRES=[mx.microsoft.com,1]{5,7,TgBvAG4AZQA=,}{9,7,TgBvAG4AZQA=,,YQBjAHQAaQBvAG4A|TgBvAG4AZQA=,aABlAGEAZABlAHIALgBmAHIAbwBtAA==|bQB1AGMAegB5AG4AcwBrAGkAYwBvAGYAZQBuAHMAZQAuAG8AbgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAA==}{2,7,TgBvAG4AZQA=,bQBlAHMAcwBhAGcAZQAgAG4AbwB0ACAAcwBpAGcAbgBlAGQA};PReRC=10;ATCHC=2;URLC_BE=9;URLC_BEC=9;URLC_AE=0;FC_DBG=1099511890176;FPR=BC0DF1FD.AE3A5649.B0F57DC7.4CE9FB5B.2037B;TDNA=7C3DFAFC.AE3A5749.B0F57D87.4CF9D85B.20312;NoDLx=1;CGDLxSupported=1;TMD_SS=1;TMD_AOT=747;TMD_CSUM=773;TMD_DTAET=0;TMD_ES=0;TMD_TT=1;TMD_DMNSPM=15140;TMD_DMSPM=182;TMD_PSATP=0;TMD_PS=0;TMD_SCNT=1;TMD_TSATP=25;TMD_TS=25;TMD_ATPP2=True;TMD_CI=en-US;TMD_CD=2020-06-17 08:03:16.000;TMD_NEWT=0;TMD_NEWTT=0;TMD_QS=1;TR_QS=1;RMX=;DIR=3;ATCHF_DBG=DS:3|SKPD:11;MFP=ef73d951-69ea-415b-aa59-afe100b482ff;EIO=9;URLF_DBG=SKPD:6;ASC=0;HCFP=4c6665f5-e233-4836-bc42-75452046d425;FFV=NSPM;FV_SCL=-1;FSCL=-1"
+          },
+          {
+            "name": "x-ms-exchange-organization-processed-by-gcc-journaling",
+            "value": "Journal Agent"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed;\tboundary=\"_003_9993899379521881657035399834af226d4cfbab_\""
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          }
+        ],
+        "recipients": [
+          {
+            "id": 40,
+            "personal": "pqr",
+            "address": "<pqr@xyz.com>",
+            "recipientType": "to"
+          },
+          {
+            "id": 41,
+            "personal": "abc",
+            "address": "<abc@xyz.com>",
+            "recipientType": "cc"
+          },
+          {
+            "id": 42,
+            "personal": "def",
+            "address": "<def@xyz.com>",
+            "recipientType": "cc"
+          }
+        ],
+        "attachments": [
+          {
+            "size": 28541,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2077304.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "5949cc3834bc51eb63e372e45b2b6927",
+            "sha256": "a96ae6df40d2682ae4b1238082599749465cce95b1f5ac0bcd87ba92b31c63ab",
+            "id": 1231548
+          },
+          {
+            "size": 56664,
+            "filename": "text-file-2077304.txt",
+            "contentType": null,
+            "detectedContentType": "text/plain",
+            "md5": "7895fc2fe289a08b4f28427fcfa01ffc",
+            "sha256": "1cbe2472e4c9df318cdf055e50aa02ae0132e7875d6cafcb1e30e87d70a4e4b1",
+            "id": 1231549
+          },
+          {
+            "size": 81668,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2077305.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "e05cb09ff3687f067d0b5c7c70685ff2",
+            "sha256": "80b9c61ff6b7911f36904a2783daa1ec5bb0c59bae65637b4ca9c763c78912dc",
+            "id": 1231550
+          }
+        ]
+      }
+    ],
+    "search": {
+      "id": 133,
+      "createdBy": "test",
+      "createdDate": "2022-07-07T04:36:50.411813",
+      "modifiedBy": "test",
+      "modifiedDate": "2022-07-07T04:36:50.411813",
+      "subjects": [],
+      "senders": [
+        "abc@xyz.com",
+        "pqr@xyz.com"
+      ],
+      "recipient": null,
+      "attachmentNames": [],
+      "attachmentHashCriteria": {
+        "type": "ANY",
+        "attachmentHashes": []
+      },
+      "domainCriteria": {
+        "type": "ANY",
+        "domains": [],
+        "whiteListUrls": []
+      },
+      "attachmentMimeTypes": [],
+      "attachmentExcludeMimeTypes": [
+        "image"
+      ],
+      "receivedAfterDate": null,
+      "receivedBeforeDate": null,
+      "url": null,
+      "internetMessageId": null,
+      "headers": [],
+      "partialIngest": null
+    }
+  },
+  "outputs": {
+    "id": 133,
+    "createdBy": "test",
+    "createdDate": "2022-07-07T04:36:50.411813",
+    "modifiedBy": "test",
+    "modifiedDate": "2022-07-07T04:36:50.411813",
+    "senders": [
+      "abc@xyz.com",
+      "pqr@xyz.com"
+    ],
+    "attachmentHashCriteria": {
+      "type": "ANY"
+    },
+    "domainCriteria": {
+      "type": "ANY"
+    },
+    "attachmentExcludeMimeTypes": [
+      "image"
+    ],
+    "Message": [
+      {
+        "id": 522111,
+        "subject": "test_subject_1",
+        "receivedOn": "2022-07-11T06:50:52.000+00:00",
+        "sentOn": "2022-07-11T06:50:52.000+00:00",
+        "processedOn": "2022-07-11T06:50:54.690+00:00",
+        "md5": "c2bebaf186b26c0b0a5cb3d8be2cbad3",
+        "sha1": "fa0d8235ecceb4e1663c82df2e1d1c360d04e9cb",
+        "sha256": "4c9a7dc238afd1eae69efe20ae1c2f2bd64f882b81af1b0e1056ebaca3ee1ee3",
+        "internetMessageId": "<test1-id>",
+        "from": [
+          {
+            "id": 4,
+            "personal": "abc",
+            "address": "abc@xyz.com"
+          }
+        ],
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from abc@xyz.com by pqr@xyz.com with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "From",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "To",
+            "value": "pqr <pqr@xyz.com>"
+          },
+          {
+            "name": "CC",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "test_subject_1"
+          },
+          {
+            "name": "Thread-Topic",
+            "value": "test_subject_1"
+          },
+          {
+            "name": "Thread-Index",
+            "value": "AQHYkIUG5Lh4IAWPc02a/fLS1Q+9vg=="
+          },
+          {
+            "name": "Date",
+            "value": "Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<999999999.999999.999999999999@aaaaaaaaaaa>"
+          },
+          {
+            "name": "Accept-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "Content-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Internal"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthMechanism",
+            "value": "04"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "abc@xyz.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-TransportTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Has-Attach",
+            "value": "yes"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "0000000-0000-0000-0000-00000000000"
+          },
+          {
+            "name": "x-ms-exchange-organization-cross-session-cache",
+            "value": "00HOSFP=c80ed17e-1f06-44b9-b92a-383fb5a10f3c;GWS_Read=V2;CPEPV=10000;CPESV=570;SL=1;EMSL=1;SCL=-1;BL=0;RL=1;PID=0;EXPID=;EIPC2=1904,1607,1609,1803,1608,1903,1681,796;MIPC2=1803;SpfResult=-1;SAUTHOP=1;DkimStatus=7;DkimSS=0;DmarcStatus=4;DmarcAction=0;AUTHRES=[mx.microsoft.com,1]{5,7,TgBvAG4AZQA=,}{9,7,TgBvAG4AZQA=,,YQBjAHQAaQBvAG4A|TgBvAG4AZQA=,aABlAGEAZABlAHIALgBmAHIAbwBtAA==|bQB1AGMAegB5AG4AcwBrAGkAYwBvAGYAZQBuAHMAZQAuAG8AbgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAA==}{2,7,TgBvAG4AZQA=,bQBlAHMAcwBhAGcAZQAgAG4AbwB0ACAAcwBpAGcAbgBlAGQA};PReRC=10;ATCHC=2;URLC_BE=9;URLC_BEC=9;URLC_AE=0;FC_DBG=1099511890176;FPR=BC0DF1FD.AE3A5649.B0F57DC7.4CE9FB5B.2037B;TDNA=7C3DFAFC.AE3A5749.B0F57D87.4CF9D85B.20312;NoDLx=1;CGDLxSupported=1;TMD_SS=1;TMD_AOT=747;TMD_CSUM=773;TMD_DTAET=0;TMD_ES=0;TMD_TT=1;TMD_DMNSPM=15140;TMD_DMSPM=182;TMD_PSATP=0;TMD_PS=0;TMD_SCNT=1;TMD_TSATP=25;TMD_TS=25;TMD_ATPP2=True;TMD_CI=en-US;TMD_CD=2020-06-17 08:03:16.000;TMD_NEWT=0;TMD_NEWTT=0;TMD_QS=1;TR_QS=1;RMX=;DIR=3;ATCHF_DBG=DS:3|SKPD:11;MFP=ef73d951-69ea-415b-aa59-afe100b482ff;EIO=9;URLF_DBG=SKPD:6;ASC=0;HCFP=4c6665f5-e233-4836-bc42-75452046d425;FFV=NSPM;FV_SCL=-1;FSCL=-1"
+          },
+          {
+            "name": "x-ms-exchange-organization-processed-by-gcc-journaling",
+            "value": "Journal Agent"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed;\tboundary=\"_003_9993899379521881657035399834af226d4cfbab_\""
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          }
+        ],
+        "recipients": [
+          {
+            "id": 31,
+            "personal": "pqr",
+            "address": "<pqr@xyz.com>",
+            "recipientType": "to"
+          },
+          {
+            "id": 32,
+            "personal": "abc",
+            "address": "<abc@xyz.com>",
+            "recipientType": "cc"
+          }
+        ],
+        "attachments": [
+          {
+            "size": 62476,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2001907.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "5d066cb44f594fbe2b8f0ebc9c5e0aa0",
+            "sha256": "f3bd8db6324fdeda2688052e71a1fef15c421b692e4ea7eefe1f202e1af3a3e2",
+            "id": 1148604
+          },
+          {
+            "size": 127681,
+            "filename": "text-file-2001907.txt",
+            "detectedContentType": "text/plain",
+            "md5": "cd8e5c11ac6250738b3cf354f7ecdd87",
+            "sha256": "a83de9d3c4103b0dec6acae80fce62af1eb37417cc04a3a69c9c470b3b348a66",
+            "id": 1148607
+          }
+        ]
+      },
+      {
+        "id": 559812,
+        "subject": "test_subject_2",
+        "receivedOn": "2022-07-11T16:33:05.000+00:00",
+        "sentOn": "2022-07-11T16:33:04.000+00:00",
+        "processedOn": "2022-07-11T16:33:06.855+00:00",
+        "md5": "290c1559f1fb2b94b18a809e437b3ecc",
+        "sha1": "0105b0811a4e000fb9ccaa2893027c06b1329c5c",
+        "sha256": "cf3059c9d0cfc2795f2f1190c1961b06979b1084666c12dcf63a0d80956fe5f5",
+        "internetMessageId": "<test2-id>",
+        "from": [
+          {
+            "id": 31,
+            "personal": "pqr",
+            "address": "pqr@xyz.com"
+          }
+        ],
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from abc@xyz.com by pqr@xyz.com with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "To",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "From",
+            "value": "pqr <pqr@xyz.com>"
+          },
+          {
+            "name": "CC",
+            "value": "abc <abc@xyz.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "test_subject_2"
+          },
+          {
+            "name": "Thread-Topic",
+            "value": "test_subject_2"
+          },
+          {
+            "name": "Thread-Index",
+            "value": "AQHYkIUG5Lh4IAWPc02a/fLS1Q+9vg=="
+          },
+          {
+            "name": "Date",
+            "value": "Tue, 5 Jul 2022 15:36:41 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<999999999.999999.999999999999@aaaaaaaaaaa>"
+          },
+          {
+            "name": "Accept-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "Content-Language",
+            "value": "en-US"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Internal"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthMechanism",
+            "value": "04"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "abc@xyz.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-TransportTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Has-Attach",
+            "value": "yes"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "0000000-0000-0000-0000-00000000000"
+          },
+          {
+            "name": "x-ms-exchange-organization-cross-session-cache",
+            "value": "00HOSFP=c80ed17e-1f06-44b9-b92a-383fb5a10f3c;GWS_Read=V2;CPEPV=10000;CPESV=570;SL=1;EMSL=1;SCL=-1;BL=0;RL=1;PID=0;EXPID=;EIPC2=1904,1607,1609,1803,1608,1903,1681,796;MIPC2=1803;SpfResult=-1;SAUTHOP=1;DkimStatus=7;DkimSS=0;DmarcStatus=4;DmarcAction=0;AUTHRES=[mx.microsoft.com,1]{5,7,TgBvAG4AZQA=,}{9,7,TgBvAG4AZQA=,,YQBjAHQAaQBvAG4A|TgBvAG4AZQA=,aABlAGEAZABlAHIALgBmAHIAbwBtAA==|bQB1AGMAegB5AG4AcwBrAGkAYwBvAGYAZQBuAHMAZQAuAG8AbgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAA==}{2,7,TgBvAG4AZQA=,bQBlAHMAcwBhAGcAZQAgAG4AbwB0ACAAcwBpAGcAbgBlAGQA};PReRC=10;ATCHC=2;URLC_BE=9;URLC_BEC=9;URLC_AE=0;FC_DBG=1099511890176;FPR=BC0DF1FD.AE3A5649.B0F57DC7.4CE9FB5B.2037B;TDNA=7C3DFAFC.AE3A5749.B0F57D87.4CF9D85B.20312;NoDLx=1;CGDLxSupported=1;TMD_SS=1;TMD_AOT=747;TMD_CSUM=773;TMD_DTAET=0;TMD_ES=0;TMD_TT=1;TMD_DMNSPM=15140;TMD_DMSPM=182;TMD_PSATP=0;TMD_PS=0;TMD_SCNT=1;TMD_TSATP=25;TMD_TS=25;TMD_ATPP2=True;TMD_CI=en-US;TMD_CD=2020-06-17 08:03:16.000;TMD_NEWT=0;TMD_NEWTT=0;TMD_QS=1;TR_QS=1;RMX=;DIR=3;ATCHF_DBG=DS:3|SKPD:11;MFP=ef73d951-69ea-415b-aa59-afe100b482ff;EIO=9;URLF_DBG=SKPD:6;ASC=0;HCFP=4c6665f5-e233-4836-bc42-75452046d425;FFV=NSPM;FV_SCL=-1;FSCL=-1"
+          },
+          {
+            "name": "x-ms-exchange-organization-processed-by-gcc-journaling",
+            "value": "Journal Agent"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed;\tboundary=\"_003_9993899379521881657035399834af226d4cfbab_\""
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          }
+        ],
+        "recipients": [
+          {
+            "id": 40,
+            "personal": "pqr",
+            "address": "<pqr@xyz.com>",
+            "recipientType": "to"
+          },
+          {
+            "id": 41,
+            "personal": "abc",
+            "address": "<abc@xyz.com>",
+            "recipientType": "cc"
+          },
+          {
+            "id": 42,
+            "personal": "def",
+            "address": "<def@xyz.com>",
+            "recipientType": "cc"
+          }
+        ],
+        "attachments": [
+          {
+            "size": 28541,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2077304.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "5949cc3834bc51eb63e372e45b2b6927",
+            "sha256": "a96ae6df40d2682ae4b1238082599749465cce95b1f5ac0bcd87ba92b31c63ab",
+            "id": 1231548
+          },
+          {
+            "size": 56664,
+            "filename": "text-file-2077304.txt",
+            "detectedContentType": "text/plain",
+            "md5": "7895fc2fe289a08b4f28427fcfa01ffc",
+            "sha256": "1cbe2472e4c9df318cdf055e50aa02ae0132e7875d6cafcb1e30e87d70a4e4b1",
+            "id": 1231549
+          },
+          {
+            "size": 81668,
+            "filename": "fileNum-Thread[mailer-003,5,main]-text-file-2077305.txt.zip",
+            "contentType": "application/zip",
+            "detectedContentType": "application/zip",
+            "md5": "e05cb09ff3687f067d0b5c7c70685ff2",
+            "sha256": "80b9c61ff6b7911f36904a2783daa1ec5bb0c59bae65637b4ca9c763c78912dc",
+            "id": 1231550
+          }
+        ]
+      }
+    ]
+  }
+}

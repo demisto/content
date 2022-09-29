@@ -1,0 +1,2576 @@
+id: CofenseVision-Test
+version: -1
+name: CofenseVision-Test
+description: Test playbook for Cofense Vision integartion.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 25af04f6-3da3-4a94-8d05-a7e6e9774760
+    type: start
+    task:
+      id: 25af04f6-3da3-4a94-8d05-a7e6e9774760
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 0eae7d8d-d197-47b3-8c75-b3325b15213b
+    type: regular
+    task:
+      id: 0eae7d8d-d197-47b3-8c75-b3325b15213b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 1fc0ce85-828d-4255-8766-a122f83802fe
+    type: regular
+    task:
+      id: 1fc0ce85-828d-4255-8766-a122f83802fe
+      version: -1
+      name: cofense-message-token-get
+      description: Retrieves a one-time token that can be used to get an email's content.
+      script: '|||cofense-message-token-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      internet_message_id:
+        complex:
+          root: Cofense.Search.Message
+          accessor: internetMessageId
+          transformers:
+          - operator: FirstArrayElement
+      recipient_address:
+        complex:
+          root: Cofense.Search.Message.recipients
+          accessor: address
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: c30a363b-f653-415e-8651-9b540c955b90
+    type: condition
+    task:
+      id: c30a363b-f653-415e-8651-9b540c955b90
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.token
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: b072c7d1-5ddd-43ba-84e7-307cc9cf7e94
+    type: regular
+    task:
+      id: b072c7d1-5ddd-43ba-84e7-307cc9cf7e94
+      version: -1
+      name: cofense-message-metadata-get
+      description: Retrieves the full content of a message that matches the specified Internet message ID and recipient email address of an email.
+      script: '|||cofense-message-metadata-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      internet_message_id:
+        complex:
+          root: Cofense.Search.Message
+          accessor: internetMessageId
+          transformers:
+          - operator: FirstArrayElement
+      recipient_address:
+        complex:
+          root: Cofense.Search.Message.recipients
+          accessor: address
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 2d6fb7ed-0594-456c-8bc8-b01b00b0a7fe
+    type: condition
+    task:
+      id: 2d6fb7ed-0594-456c-8bc8-b01b00b0a7fe
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.receivedOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.sentOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.md5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.sha256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Message.internetMessageId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 981d9dcb-7e88-49b9-85ce-7da8a651ca8c
+    type: regular
+    task:
+      id: 981d9dcb-7e88-49b9-85ce-7da8a651ca8c
+      version: -1
+      name: cofense-message-get
+      description: Fetches full content of an email and returns it as a zip file using a token.
+      script: '|||cofense-message-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments:
+      token:
+        complex:
+          root: Cofense.Message
+          accessor: token
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: ab6d7adf-fd38-4a4a-85b9-2e49b4c89b66
+    type: condition
+    task:
+      id: ab6d7adf-fd38-4a4a-85b9-2e49b4c89b66
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 1e20e5d9-1dac-418a-8076-4cb258a9f878
+    type: regular
+    task:
+      id: 1e20e5d9-1dac-418a-8076-4cb258a9f878
+      version: -1
+      name: cofense-message-attachment-get
+      description: Fetches the full content of an email and returns a zip file.
+      script: '|||cofense-message-attachment-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments:
+      file_name:
+        simple: attachment.txt
+      md5:
+        complex:
+          root: Cofense.Search.Message.attachments
+          accessor: md5
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: a820a82f-fb86-4fa5-8e66-74d62930565e
+    type: condition
+    task:
+      id: a820a82f-fb86-4fa5-8e66-74d62930565e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 80670cbf-0e5d-42de-86fa-ccd55bcab88c
+    type: regular
+    task:
+      id: 80670cbf-0e5d-42de-86fa-ccd55bcab88c
+      version: -1
+      name: cofense-quarantine-jobs-list
+      description: Filters and returns a paginated list of matching quarantine jobs.
+      script: '|||cofense-quarantine-jobs-list'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      size:
+        simple: '2'
+      sort:
+        simple: id:desc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: f43fc195-e39a-4189-85d9-ca69361a18b2
+    type: condition
+    task:
+      id: f43fc195-e39a-4189-85d9-ca69361a18b2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      pending_approval:
+      - '20'
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.stopRequested
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.emailCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.status
+            iscontext: true
+    - label: pending_approval
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.status
+            iscontext: true
+          right:
+            value:
+              simple: PENDING_APPROVAL
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 795736de-1986-4a6b-8f4e-0ae3b785b2e2
+    type: regular
+    task:
+      id: 795736de-1986-4a6b-8f4e-0ae3b785b2e2
+      version: -1
+      name: cofense-quarantine-job-create
+      description: Creates a new quarantine job.
+      script: '|||cofense-quarantine-job-create'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      quarantine_emails:
+        simple: <test_id>:test@example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 079abbad-18c6-4337-8636-e5b321a6b9eb
+    type: regular
+    task:
+      id: 079abbad-18c6-4337-8636-e5b321a6b9eb
+      version: -1
+      name: cofense-quarantine-job-delete
+      description: Deletes the quarantine job identified by its unique ID.
+      script: '|||cofense-quarantine-job-delete'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.QuarantineJob
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 49b8291b-528f-4956-8b10-569349097fde
+    type: condition
+    task:
+      id: 49b8291b-528f-4956-8b10-569349097fde
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.isDeleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 9a194022-868f-4eb9-819d-cc06a25ac3f8
+    type: regular
+    task:
+      id: 9a194022-868f-4eb9-819d-cc06a25ac3f8
+      version: -1
+      name: cofense-quarantine-job-get
+      description: Retrieves quarantine job identified by its unique ID.
+      script: '|||cofense-quarantine-job-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.QuarantineJob
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 98e1a378-1504-4601-83e4-073d6fabb264
+    type: regular
+    task:
+      id: 98e1a378-1504-4601-83e4-073d6fabb264
+      version: -1
+      name: cofense-quarantine-job-restore
+      description: Restores emails quarantined by the job identified by its unique ID.
+      script: '|||cofense-quarantine-job-restore'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.QuarantineJob
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 0ebae6ea-4b32-415b-835d-cd7666753972
+    type: condition
+    task:
+      id: 0ebae6ea-4b32-415b-835d-cd7666753972
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.isRestored
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: f5b54144-ecc0-4ba5-8b58-93d1d3174abf
+    type: regular
+    task:
+      id: f5b54144-ecc0-4ba5-8b58-93d1d3174abf
+      version: -1
+      name: cofense-quarantine-job-approve
+      description: Approves the quarantine job identified by its unique ID. When the "Auto Quarantine" feature is configured which requires manual approvals, this command can approve all the pending quarantine jobs.
+      script: '|||cofense-quarantine-job-approve'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.QuarantineJob
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 6b0c3bf2-f75c-4bd8-8ef5-3e43cf4b65ba
+    type: condition
+    task:
+      id: 6b0c3bf2-f75c-4bd8-8ef5-3e43cf4b65ba
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.isApproved
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: 5c23e69a-092b-4f61-8e50-84784e4db3b4
+    type: regular
+    task:
+      id: 5c23e69a-092b-4f61-8e50-84784e4db3b4
+      version: -1
+      name: cofense-quarantine-job-stop
+      description: Issues a request to stop the quarantine job identified by its unique ID.
+      script: '|||cofense-quarantine-job-stop'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.QuarantineJob
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 84cbe2f2-f84d-4839-8781-ad0de4a934cd
+    type: regular
+    task:
+      id: 84cbe2f2-f84d-4839-8781-ad0de4a934cd
+      version: -1
+      name: cofense-message-searches-list
+      description: Retrieves the list of searches.
+      script: '|||cofense-message-searches-list'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      size:
+        simple: '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: 42482a62-6c7b-4e8f-80bc-48c0d2f77eb3
+    type: condition
+    task:
+      id: 42482a62-6c7b-4e8f-80bc-48c0d2f77eb3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedBy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: f9872171-96f4-43e3-89f9-d226f45fd425
+    type: regular
+    task:
+      id: f9872171-96f4-43e3-89f9-d226f45fd425
+      version: -1
+      name: cofense-message-search-get
+      description: Retrieves the result of the search identified by an ID.
+      script: '|||cofense-message-search-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.Search
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 323c4083-36e3-4ba1-8020-f53f3400f029
+    type: condition
+    task:
+      id: 323c4083-36e3-4ba1-8020-f53f3400f029
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: d5f2f560-3719-4a42-854a-21fbfeec5c1f
+    type: regular
+    task:
+      id: d5f2f560-3719-4a42-854a-21fbfeec5c1f
+      version: -1
+      name: cofense-message-search-create
+      description: Creates a new search.
+      script: '|||cofense-message-search-create'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: 5bf51446-460d-48fc-8f04-6cfb094b5020
+    type: condition
+    task:
+      id: 5bf51446-460d-48fc-8f04-6cfb094b5020
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: e24a8faa-6de2-4a49-8987-c2e2ee192849
+    type: regular
+    task:
+      id: e24a8faa-6de2-4a49-8987-c2e2ee192849
+      version: -1
+      name: cofense-message-search-results-get
+      description: Retrieves the results for the search identified by the search ID.
+      script: '|||cofense-message-search-results-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.Search
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      size:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: e43b439c-b34d-4bce-8bb3-6eb74cd49d98
+    type: condition
+    task:
+      id: e43b439c-b34d-4bce-8bb3-6eb74cd49d98
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Search.modifiedDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: c577ddd9-397b-4cb8-8826-2e1765ec09bd
+    type: regular
+    task:
+      id: c577ddd9-397b-4cb8-8826-2e1765ec09bd
+      version: -1
+      name: cofense-iocs-list
+      description: Lists the IOCs stored in the local IOC Repository.
+      script: '|||cofense-iocs-list'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      size:
+        simple: '2'
+      source:
+        simple: Vision-UI
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: eedfe5cd-8286-488c-8c43-7b6dd179ba99
+    type: condition
+    task:
+      id: eedfe5cd-8286-488c-8c43-7b6dd179ba99
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.threat_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.updated_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.source_names
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '34':
+    id: '34'
+    taskid: 2c0c5e1e-f070-4068-8a09-e034ed375b33
+    type: regular
+    task:
+      id: 2c0c5e1e-f070-4068-8a09-e034ed375b33
+      version: -1
+      name: cofense-ioc-update
+      description: Updates the IOC identified by its unique MD5 ID.
+      script: '|||cofense-ioc-update'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      expires_at:
+        simple: 25/08/2022
+      id:
+        simple: ${Cofense.IOC.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: 37bb7709-e2b8-4094-8536-e1c442d944b9
+    type: condition
+    task:
+      id: 37bb7709-e2b8-4094-8536-e1c442d944b9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 9926c286-3ac0-494d-8d8d-8e78c8c8bf56
+    type: regular
+    task:
+      id: 9926c286-3ac0-494d-8d8d-8e78c8c8bf56
+      version: -1
+      name: cofense-last-ioc-get
+      description: |-
+        Synchronizes the update of data between the IOC source and the IOC repository.
+        Retrieves the last updated IOC from the local IOC Repository. It may return an active or an expired IOC.
+      script: '|||cofense-last-ioc-get'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      source:
+        simple: Vision-UI
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: 35029f1a-7fea-441a-8f26-dff8d2176754
+    type: condition
+    task:
+      id: 35029f1a-7fea-441a-8f26-dff8d2176754
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.threat_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.updated_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.source_names
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: 5a29bd1b-ae47-40fe-8766-af17c0b727b7
+    type: regular
+    task:
+      id: 5a29bd1b-ae47-40fe-8766-af17c0b727b7
+      version: -1
+      name: cofense-ioc-delete
+      description: Deletes a single active or expired IOC from the local IOC Repository.
+      script: '|||cofense-ioc-delete'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '39'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.IOC
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      source:
+        simple: Vision-UI
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '39':
+    id: '39'
+    taskid: b57de038-9392-49f4-8c9e-01695dbdcc51
+    type: condition
+    task:
+      id: b57de038-9392-49f4-8c9e-01695dbdcc51
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.threat_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.updated_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.source_names
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.deleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '40':
+    id: '40'
+    taskid: 6f6705b6-9f85-454f-8c32-248f98ba1ff1
+    type: regular
+    task:
+      id: 6f6705b6-9f85-454f-8c32-248f98ba1ff1
+      version: -1
+      name: cofense-searchable-headers-list
+      description: Retrieves a list of configured header keys that can be used to create a message search.
+      script: '|||cofense-searchable-headers-list'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '41'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 446d45f3-c43f-4e03-80a6-7b32aeea5eda
+    type: condition
+    task:
+      id: 446d45f3-c43f-4e03-80a6-7b32aeea5eda
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.Config.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '42':
+    id: '42'
+    taskid: cad68e36-e849-4871-81e8-c94ef91d0215
+    type: title
+    task:
+      id: cad68e36-e849-4871-81e8-c94ef91d0215
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: 4775f636-70fc-4b79-84f3-2ffe127ba6e6
+    type: condition
+    task:
+      id: 4775f636-70fc-4b79-84f3-2ffe127ba6e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.stopRequested
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.emailCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: 9a7e5e57-60e9-4937-85a5-ea9ae135baf2
+    type: condition
+    task:
+      id: 9a7e5e57-60e9-4937-85a5-ea9ae135baf2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.stopRequested
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.emailCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 6d9738e0-45cc-4dc3-8cb4-fb639bf779d3
+    type: condition
+    task:
+      id: 6d9738e0-45cc-4dc3-8cb4-fb639bf779d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.modifiedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.stopRequested
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.emailCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.createdDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineEmails.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.QuarantineJob.quarantineJobRuns.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: c968d568-f2e4-4d14-8959-03aae9363f5b
+    type: condition
+    task:
+      id: c968d568-f2e4-4d14-8959-03aae9363f5b
+      version: -1
+      name: Verify Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '7'
+      yes:
+      - '8'
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: 1e4250f9-1b09-4ec4-810b-df520da4f4b6
+    type: condition
+    task:
+      id: 1e4250f9-1b09-4ec4-810b-df520da4f4b6
+      version: -1
+      name: Verify Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '9'
+      yes:
+      - '24'
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '51':
+    id: '51'
+    taskid: 9f41ca1d-c039-49ea-8f4c-c2122273e0ec
+    type: regular
+    task:
+      id: 9f41ca1d-c039-49ea-8f4c-c2122273e0ec
+      version: -1
+      name: cofense-iocs-update
+      description: "Updates one or more IOCs stored in the local IOC repository. \nTo update multiple IOCs use iocs_json argument.\n\nNote: iocs_json parameter will take precedence over other parameters. \nthreat_type, threat_value, threat_level, created_at and source_id \nare required parameters to update a single IOC."
+      script: '|||cofense-iocs-update'
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments:
+      iocs_json:
+        simple: |-
+          {
+            "threat_type": "Domain",
+            "threat_value":"example.com",
+            "threat_level": "Malicious",
+            "created_at":"20/08/2022",
+            "source_id":"test_source_1",
+            "updated_at": "20/08/2022",
+            "requested_expiration": "30/08/2022r"
+          }
+      source:
+        simple: Vision-UI
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '52':
+    id: '52'
+    taskid: bbd25b5c-3a10-4f72-8a49-db48fd9a8a57
+    type: condition
+    task:
+      id: bbd25b5c-3a10-4f72-8a49-db48fd9a8a57
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.threat_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.source.updated_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.source_names
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '53':
+    id: '53'
+    taskid: 402c1842-d564-447b-8f89-8135573850e4
+    type: regular
+    task:
+      id: 402c1842-d564-447b-8f89-8135573850e4
+      version: -1
+      name: cofense-ioc-get
+      description: Retrieves the IOC identified by its unique MD5 ID.
+      script: '|||cofense-ioc-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.IOC
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '54':
+    id: '54'
+    taskid: 80463119-1207-4a7c-838b-669630b32e4a
+    type: condition
+    task:
+      id: 80463119-1207-4a7c-838b-669630b32e4a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.attributes.threat_value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.expires_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.created_at
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.match_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cofense.IOC.metadata.quarantine.quarantine_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_26_yes": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
