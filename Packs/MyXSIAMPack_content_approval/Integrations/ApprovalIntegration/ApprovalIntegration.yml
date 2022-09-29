@@ -6,28 +6,114 @@ name: Approval integration
 display: Approval integration
 category: Utilities
 description: This is the Hello World integration for getting started.
+sectionOrder:
+- Connect
+- Collect
 configuration:
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  defaultvalue: C - Fairly reliable
+  type: 15
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+  section: Collect
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+  section: Connect
+- defaultvalue: '65'
+  display: Score threshold for IP reputation command
+  additionalinfo: Set this to determine the HelloAhikam score that will determine if an IP is malicious (0-100)
+  name: threshold_ip
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- defaultvalue: '65'
+  display: Score threshold for domain reputation command
+  additionalinfo: Set this to determine the HelloAhikam score that will determine if a domain is malicious (0-100)
+  name: threshold_domain
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  options:
+  - ACTIVE
+  - CLOSED
+  required: false
+  type: 15
+  section: Collect
+- display: Fetch alerts with type
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+  name: alert_type
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 'Low'
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
+  required: false
   type: 8
-  required: false
-- display: Alerts Fetch Interval
-  name: alertFetchInterval
-  defaultvalue: '1'
-  type: 19
-  required: false
+  section: Connect
 script:
   script: ''
   type: python
