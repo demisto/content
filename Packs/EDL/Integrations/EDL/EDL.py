@@ -643,7 +643,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
     iocs.seek(0)
-    formatted_indicators = tempfile.NamedTemporaryFile(mode='w+t')
+    formatted_indicators = tempfile.TemporaryFile(mode='w+t')
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
