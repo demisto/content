@@ -1,6 +1,7 @@
 import demistomock as demisto
 from TimeComponents import main
 import json
+import datetime
 import pytest
 
 
@@ -10,6 +11,8 @@ class TestTimeComponents:
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
 
+        assert datetime.datetime.utcnow() == datetime.datetime(2022, 1, 23, 12, 34, 56)
+
         for test_case in test_list:
             mocker.patch.object(demisto, 'args', return_value=test_case['args'])
             mocker.patch.object(demisto, 'results')
@@ -17,7 +20,6 @@ class TestTimeComponents:
             assert demisto.results.call_count == 1
             results = demisto.results.call_args[0][0]
 
-            assert type(results) == type(test_case['results'])
             assert len(results) == len(test_case['results'])
 
             if isinstance(results, dict):
