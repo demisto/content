@@ -5,7 +5,7 @@ import os
 import requests
 
 BASE_URL = 'http://api.ipstack.com'
-API_KEY = demisto.params().get('apikey') or demisto.params().get('credentials').get('password')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 RELIABILITY = demisto.params().get('integrationReliability', 'C - Fairly reliable')
 BRAND_NAME = "Ipstack"
 
