@@ -333,7 +333,7 @@ script:
       description: IP address
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator name.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -344,14 +344,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
   - arguments:
     - default: false
