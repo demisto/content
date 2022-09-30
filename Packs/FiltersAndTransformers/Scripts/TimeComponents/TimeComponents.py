@@ -32,7 +32,7 @@ def detect_time_zone(value: Any) -> tzinfo:
 
             # Try to parse as time string
             try:
-                tz = parse_date_time_value(value).tzinfo
+                tz = dateparser.parse(value).tzinfo
                 if tz is not None:
                     return tz
             except Exception:
@@ -58,7 +58,7 @@ def parse_date_time_value(value: Any) -> datetime:
         assert date_time is not None, f'could not parse {value}'
 
         if date_time.tzinfo is None:
-            return pytz.utc.localize(date_time)
+            return date_time.astimezone(timezone.utc)
         else:
             return date_time
     except Exception as err:

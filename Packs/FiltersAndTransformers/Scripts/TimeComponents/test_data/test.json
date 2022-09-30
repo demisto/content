@@ -1,51 +1,5 @@
 [
   {
-    "comments": "Get the current time, time_zone is None",
-    "args": {
-      "value": null,
-      "time_zone": null,
-      "key": null
-    },
-    "results": {
-      "year": 2022,
-      "year_4_digit": "2022",
-      "month": 1,
-      "month_3_letter": "Jan",
-      "month_full_name": "January",
-      "month_2_digit": "01",
-      "day": 23,
-      "day_2_digit": "23",
-      "day_of_week": 0,
-      "day_of_week_3_letter": "Sun",
-      "day_of_week_full_name": "Sunday",
-      "day_of_year": 23,
-      "day_of_year_3_digit": "023",
-      "hour": 12,
-      "hour_12_clock": 12,
-      "hour_2_digit_24_clock": "12",
-      "hour_2_digit_12_clock": "12",
-      "hour_of_day": 12.582222222222223,
-      "minute": 34,
-      "minute_2_digit": "34",
-      "minute_of_day": 322.93333333333334,
-      "second": 56,
-      "second_2_digit": "56",
-      "second_of_day": 19376,
-      "millisecond": 0,
-      "period_12_clock": "PM",
-      "time_zone_hhmm": "+0000",
-      "time_zone_offset": 0.0,
-      "unix_epoch_time": 1642941296,
-      "iso_8601": "2022-01-23T12:34:56+00:00",
-      "y-m-d": "2022-1-23",
-      "yyyy-mm-dd": "2022-01-23",
-      "h:m:s": "12:34:56",
-      "H:m:s": "12:34:56",
-      "hh:mm:ss": "12:34:56",
-      "HH:mm:ss": "12:34:56"
-    }
-  },
-  {
     "comments": "TZ is applied by value",
     "args": {
       "value": "2022-01-23 01:23:45 +09:00",
@@ -136,6 +90,15 @@
       "hh:mm:ss": "12:23:45",
       "HH:mm:ss": "12:23:45"
     }
+  },
+  {
+    "comments": "Value is handled as UTC",
+    "args": {
+      "value": "2022-01-23 01:23:45",
+      "time_zone": null,
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45+00:00"
   },
   {
     "comments": "Parse epoch time",
