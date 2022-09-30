@@ -3,7 +3,6 @@ import TimeComponents
 import json
 import freezegun
 from datetime import datetime, timezone
-import dateparser
 
 
 class TestTimeComponents:

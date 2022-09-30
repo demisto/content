@@ -51,16 +51,32 @@ def parse_date_time_value(value: Any) -> datetime:
         return datetime.now(timezone.utc)
 
     if isinstance(value, int):
-        value = str(value)
+        # Parse as time stamp
+        try:
+            if value > 4294967295:
+                value /= 1000
+
+            date_time = datetime.fromtimestamp(value)
+            return date_time.astimezone(timezone.utc)
+        except Exception as err:
+            raise DemistoException(f'Error with input date / time - {err}')
+
+    if isinstance(value, str):
+        value = value.strip()
+        if value.isdecimal() and value.isascii():
+            # Parse as time stamp
+            return parse_date_time_value(int(value))
 
     try:
         date_time = dateparser.parse(value)
         assert date_time is not None, f'could not parse {value}'
 
-        if date_time.tzinfo is None:
-            return date_time.replace(tzinfo=timezone.utc)
-        else:
+        if date_time.tzinfo is not None:
             return date_time
+
+        date_time = dateparser.parse(value, settings={'TIMEZONE': 'UTC'})
+        assert date_time is not None, f'could not parse {value}'
+        return date_time.replace(tzinfo=timezone.utc)
     except Exception as err:
         raise DemistoException(f'Error with input date / time - {err}')
 
