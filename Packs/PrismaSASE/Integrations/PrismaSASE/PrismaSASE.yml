@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
-  display: API Gateway URL (https://api.sase.paloaltonetworks.com)
+  display: API Gateway URL
   name: url
   required: true
   type: 0
@@ -18,7 +18,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: ""
+- display: Default Tenant Services Group ID (tsg_id) for API calls.
   name: tsg_id
   required: false
   type: 0
@@ -27,13 +27,14 @@ configuration:
   name: oauth_url
   required: false
   type: 0
+  additionalinfo: URL that will be used to obtain OAUTH2 access token.
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-description: Integrate Prisma SASE API
-display: Prisma SASE
+description: Beta integration that provides commands for interaction with Prisma SASE API. 
+display: Prisma SASE (Beta)
 name: Prisma SASE
 script:
   commands:
@@ -109,7 +110,7 @@ script:
     - contextPath: PrismaAccess.CreatedSecurityRule
       description: Created security rule
   - arguments:
-    - description: '"Shared" "Mobile Users" "Remote Networks" "Service Connections" "Mobile Users Container" "Mobile Users Explicit Proxy"'
+    - description: Prisma Access Folder Location for the Rule
       name: folder
       required: true
     - auto: PREDEFINED
@@ -136,7 +137,8 @@ script:
       description: Found security rule
   - arguments:
     - description: Comma separated list of targets (Remote Networks, Mobile Users, Service Connections)
-      name: devices
+      name: folders
+      required: true
     - description: Config Push Job Description
       name: description
     - description: Tenant services group ID
@@ -246,7 +248,7 @@ script:
     - contextPath: PrismaAccess.FoundSecurityRule
       description: Found security rule
   - arguments:
-    - description: Config Job ID
+    - description: Comma separated list of Job IDs
       isArray: true
       name: id
       required: true
@@ -294,6 +296,7 @@ script:
       name: description
     - description: IP/Netmask of the Object using the slash notation
       name: ip_netmask
+      required: true
     - description: Address Object tag(s).  Use , as a delimiter for multiple tags.
       isArray: true
       name: tag
@@ -315,6 +318,7 @@ script:
       name: description
     - description: IP/Netmask of the Object using the slash notation
       name: ip_netmask
+      required: true
     - description: Address Object tag(s).  Use , as a delimiter for multiple tags.
       isArray: true
       name: tag
@@ -335,7 +339,7 @@ script:
     - contextPath: PrismaAccess.DeletedAddressObject
       description: Deleted Address Object
   - arguments:
-    - description: '"Shared" "Mobile Users" "Remote Networks" "Service Connections" "Mobile Users Container" "Mobile Users Explicit Proxy"'
+    - description: Prisma Access Folder Location for the Object
       name: folder
       required: true
     - description: name of the security object

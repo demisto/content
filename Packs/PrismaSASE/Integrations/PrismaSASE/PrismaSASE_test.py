@@ -94,7 +94,7 @@ def test_list_security_rules_command(mocker, requests_mock, args, default_tsg_id
     # Write and define the expected
     "args, default_tsg_id",
     [
-        ({"devices": "Mobile Users",
+        ({"folders": "Mobile Users",
           "description": "Description",
           "tsg_id": "1234567"}, "1234567")
     ]
@@ -278,7 +278,7 @@ def test_get_config_jobs_by_id_command(mocker, requests_mock, args, default_tsg_
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = get_config_jobs_by_id_command(client, args, default_tsg_id)
     assert result.outputs_prefix == 'PrismaAccess.ConfigJob'
-    assert result.outputs == mock_response.get('data')
+    assert result.outputs == mock_response.get('data')[0]
 
 
 @pytest.mark.parametrize(

@@ -8,9 +8,12 @@ import requests
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 # CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SEARCH_LIMIT = 200
+PA_OUTPUT_PREFIX = "PrismaAccess."
 
+# API URI Prefixes
+CONFIG_URI_PREFIX = "/sse/config/v1/"
 
 SECURITYRULE_FIELDS = {
     "name": "",
@@ -57,35 +60,44 @@ class Client(BaseClient):
 
     @staticmethod
     def build_security_rule(args: dict):
-
-        # This method will combine the args into a JSON formatted request body
+        """Build a dictionary of security rule paramters to be used to create or edit a rule
+        Args:
+            args: demisto.args()
+        Returns:
+            Security rule dictionary
+        """
         rule = {}
         keys = args.keys()
         for key in SECURITYRULE_FIELDS:
             if key in keys:
-
-                if args.get(key) != "" and args.get(key) != "None":
+                field_value = args.get(key)
+                if field_value != "" and field_value != "None":
                     if key == 'profile_setting':
-                        if isinstance(args.get(key), list):
-                            val = args.get(key)
+                        if isinstance(field_value, list):
+                            val = field_value
                         else:
-                            val = [x.strip() for x in args.get(key).split(',')]   # type: ignore
-
+                            val = [x.strip() for x in field_value.split(',')]   # type: ignore
                         rule[key] = {'group': val}
-
                     elif isinstance(SECURITYRULE_FIELDS.get(key), str):
-                        rule[key] = args.get(key)   # type: ignore
-
+                        rule[key] = field_value   # type: ignore
                     elif isinstance(SECURITYRULE_FIELDS.get(key), list):
-                        if isinstance(args.get(key), list):
-                            val = args.get(key)
+                        if isinstance(field_value, list):
+                            val = field_value
                         else:
-                            val = [x.strip() for x in args.get(key).split(';')]   # type: ignore
+                            val = [x.strip() for x in field_value.split(';')]   # type: ignore
                         rule[key] = val   # type: ignore
-
         return rule
 
     def create_security_rule(self, rule: dict, folder: str, position: str, tsg_id: str):
+        """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+        Args:
+            rule: Security rule dictionary
+            folder: Prisma Access Folder
+            postition: Prisma access rule position
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/security-rules'
         access_token = self.get_access_token(tsg_id)
 
@@ -108,14 +120,19 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def update_security_rule(self, rule: dict, folder: str, position: str, ruleid: str, tsg_id: str):
+    def update_security_rule(self, rule: dict, ruleid: str, tsg_id: str):
+        """Edit existing Prisma Access security rule
+        Args:
+            rule: Security rule dictionary
+            folder: Prisma Access Folder
+            postition: Prisma access rule position
+            ruleid: identifier of rule to be edited
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = f'/sse/config/v1/security-rules/{ruleid}'
         access_token = self.get_access_token(tsg_id)
-
-        query_params = {
-            'folder': encode_string_results(folder),
-            'position': encode_string_results(position)
-        }
 
         headers = {
             'Accept': 'application/json',
@@ -126,12 +143,18 @@ class Client(BaseClient):
         return self._http_request(
             method="PUT",
             url_suffix=uri,
-            params=query_params,
             json_data=rule,
             headers=headers
         )
 
     def delete_security_rule(self, rule_id: str, tsg_id: str):
+        """Delete Prisma Access security rule
+        Args:
+            rule_id: Identifier of the existing rule to be deleted
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = f'/sse/config/v1/security-rules/{rule_id}'
         access_token = self.get_access_token(tsg_id)
         headers = {
@@ -147,6 +170,14 @@ class Client(BaseClient):
         )
 
     def create_address_object(self, address: dict, folder: str, tsg_id: str):
+        """Create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+        Args:
+            address: address object dictionary
+            folder: Prisma Access Folder
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/addresses'
         access_token = self.get_access_token(tsg_id)
 
@@ -169,6 +200,14 @@ class Client(BaseClient):
         )
 
     def edit_address_object(self, address: dict, addressid: str, tsg_id: str):
+        """Edit existing address object
+        Args:
+            address: Address object dictionary
+            addressid: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = f'/sse/config/v1/addresses/{addressid}'
         access_token = self.get_access_token(tsg_id)
 
@@ -186,6 +225,13 @@ class Client(BaseClient):
         )
 
     def delete_address_object(self, address_id: str, tsg_id: str):
+        """Delete existing address object
+        Args:
+            addressid: Identifier of existing address to be deleted
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = f'/sse/config/v1/addresses/{address_id}'
         access_token = self.get_access_token(tsg_id)
         headers = {
@@ -201,6 +247,13 @@ class Client(BaseClient):
         )
 
     def list_address_objects(self, query_params: dict, tsg_id: str):
+        """Return list of address objects from Prisma Access
+        Args:
+            query_params: query paramters for the request
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/addresses'
 
         access_token = self.get_access_token(tsg_id)
@@ -219,6 +272,13 @@ class Client(BaseClient):
         )
 
     def list_security_rules(self, query_params: dict, tsg_id: str):
+        """Command to list security rules
+        Args:
+            query_params: query paramters for the request
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/security-rules'
 
         access_token = self.get_access_token(tsg_id)
@@ -237,7 +297,14 @@ class Client(BaseClient):
         )
 
     def query_agg_monitor_api(self, tsg_id: str, uri: str, query: dict):
-
+        """Query the Prisma SASE aggregate monitor API
+        Args:
+            uri: Query URI
+            query: Query body represented as json
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         query_params = {
             'agg_by': "tenant"
         }
@@ -246,6 +313,7 @@ class Client(BaseClient):
 
         headers = {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'Authorization': f"Bearer {access_token}"
         }
 
@@ -265,8 +333,15 @@ class Client(BaseClient):
                 headers=headers
             )
 
-    def push_candidate_config(self, devices: str, description: str, tsg_id: str):
-
+    def push_candidate_config(self, folders: str, description: str, tsg_id: str):
+        """Push candidate configuration
+        Args:
+            folders: Target Prisma Access Folders for the configuration commit
+            description: Description for the job
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/config-versions/candidate:push'
 
         access_token = self.get_access_token(tsg_id)
@@ -277,7 +352,7 @@ class Client(BaseClient):
             'Authorization': f"Bearer {access_token}"
         }
 
-        body = {"folders": devices}
+        body = {"folders": folders}
 
         if description:
             body['description'] = description
@@ -290,7 +365,13 @@ class Client(BaseClient):
         )
 
     def get_config_jobs_by_id(self, tsg_id: str, job_id: str):
-
+        """List config jobs filtered by ID
+        Args:
+            job_id: ID of the config job
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = f'/sse/config/v1/jobs/{job_id}'
         access_token = self.get_access_token(tsg_id)
 
@@ -307,7 +388,12 @@ class Client(BaseClient):
         )
 
     def list_config_jobs(self, tsg_id: str, query_params: dict):
-
+        """List config jobs
+        Args:
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
         uri = '/sse/config/v1/jobs'
         access_token = self.get_access_token(tsg_id)
         headers = {
@@ -323,11 +409,22 @@ class Client(BaseClient):
         )
 
     def get_access_token(self, tsg_id: str):
+        """Get access token to use for API call
+        Args:
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
 
-        # Get existin API access token for specific TSG from integration context.
+        If there is an existing access token, and it has not expired, set it as the access token for this request
+        Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
+        as a prefix
+        """
         previous_token = get_integration_context()
+        integration_context = get_integration_context()
         tsg_access_token = f'{tsg_id}.access_token'
         tsg_expiry_time = f'{tsg_id}.expiry_time'
+        previous_token = integration_context.get(tsg_access_token)
+        previous_token_expiry_time = integration_context.get(tsg_expiry_time)
 
         '''
         If there is an existing access token, and it has not expired, set it as the access token for this request
@@ -335,8 +432,8 @@ class Client(BaseClient):
         as a prefix
         '''
 
-        if previous_token.get(tsg_access_token) and previous_token.get(tsg_expiry_time) > date_to_timestamp(datetime.now()):
-            return previous_token.get(tsg_access_token)
+        if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):
+            return previous_token
         else:
             tsg = f'tsg_id:{tsg_id}'
             data = {
@@ -346,7 +443,6 @@ class Client(BaseClient):
             try:
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded',
-
                 }
 
                 res = self._http_request(method='POST',
@@ -361,24 +457,32 @@ class Client(BaseClient):
                     raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
                                            exception)
 
-                if res.get('access_token'):
+                if access_token := res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in', 0) * 1000 - 10
+                    expiry_time += res.get('expires_in') * 1000 - 10
                     new_token = {
-                        tsg_access_token: res.get('access_token'),
+                        tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
                     }
-                    # store received token and expiration time in integration context
+                    # store received token and expiration time in the integration context
                     set_integration_context(new_token)
-                    return res.get('access_token')
+                    return access_token
 
             except Exception as e:
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance configuration.'
-                                       f'\n\n{e.args[0]}')
+                                       f'\n\n{e}')
 
 
-def test_module(client: Client, args: dict, default_tsg_id: str):
-    """
+def test_module(client: Client, default_tsg_id: str):
+    """Test command to determine if integration is working correctly.
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     uri = 'sse/config/v1/config-versions?limit=1'
@@ -397,21 +501,25 @@ def test_module(client: Client, args: dict, default_tsg_id: str):
 
 
 def create_security_rule_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+    """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
     rule = client.build_security_rule(args)
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.create_security_rule(rule, args.get('folder'), args.get('position'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.CreatedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Created', outputs),
@@ -420,8 +528,15 @@ def create_security_rule_command(client: Client, args: dict, default_tsg_id: str
 
 
 def create_address_object_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Create new Prisma Access address object
+    """Command to create new Prisma Access address object
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
     address_object = {
         "ip_netmask": args.get('ip_netmask'),
@@ -433,16 +548,13 @@ def create_address_object_command(client: Client, args: dict, default_tsg_id: st
     if args.get('tag'):
         address_object["tag"] = args.get('tag')
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.create_address_object(address_object, args.get('folder'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.CreatedAddress',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedAddress',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Object Created', outputs),
@@ -451,29 +563,32 @@ def create_address_object_command(client: Client, args: dict, default_tsg_id: st
 
 
 def edit_address_object_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Create new Prisma Access address object
+    """Command to create new Prisma Access address object
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
     address_object = {
         "ip_netmask": args.get('ip_netmask'),
         "name": args.get('name')}
 
-    if args.get('description'):
-        address_object["description"] = args.get('description')
+    if description := args.get('description'):
+        address_object["description"] = description
+    if tag := args.get('tag'):
+        address_object["tag"] = tag
 
-    if args.get('tag'):
-        address_object["tag"] = args.get('tag')
-
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.edit_address_object(address_object, args.get('id'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.EditedAddress',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedAddress',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Object Edited', outputs),
@@ -482,19 +597,23 @@ def edit_address_object_command(client: Client, args: dict, default_tsg_id: str)
 
 
 def delete_address_object_command(client: Client, args: dict, default_tsg_id: str):
+    """Command to delete Prisma Access address object
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
-    # Delete Prisma Access address object
-
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.delete_address_object(args.get('id'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.DeletedAddress',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedAddress',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Object Deleted', outputs),
@@ -503,33 +622,36 @@ def delete_address_object_command(client: Client, args: dict, default_tsg_id: st
 
 
 def list_address_objects_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Get address objects for a given Prisma Access Folder / Position
+    """Command to get address objects for a given Prisma Access Folder / Position
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
-    if args.get('name'):
-        query_params["name"] = encode_string_results(args.get('name'))
+    if name := args.get('name'):
+        query_params["name"] = encode_string_results(name)
 
-    if args.get('limit'):
-        query_params["limit"] = encode_string_results(args.get('limit'))
-
-    if args.get('offset'):
-        query_params["offset"] = encode_string_results(args.get('offset'))
+    if limit := arg_to_number(args.get('limit', 10)):
+        query_params["limit"] = limit
+    if offset := arg_to_number(args.get('offset', 0)):
+        query_params["offset"] = offset
 
     raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
 
-    outputs = (raw_response)['data']
+    outputs = (raw_response).get('data')
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.FoundAddressObjects',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundAddressObjects',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Objects', outputs),
@@ -538,20 +660,24 @@ def list_address_objects_command(client: Client, args: dict, default_tsg_id: str
 
 
 def delete_security_rule_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Delete the specified security rule within the targeted Prisma Access tenant / TSG
+    """Command to delete the specified security rule within the targeted Prisma Access tenant / TSG
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
 
     rule_id = args.get('rule_id')
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.delete_security_rule(rule_id, tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.DeletedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Deleted', outputs),
@@ -560,13 +686,16 @@ def delete_security_rule_command(client: Client, args: dict, default_tsg_id: str
 
 
 def query_agg_monitor_api_command(client: Client, args: dict, default_tsg_id: str):
+    """Command to query the SASE aggregate monitor API
+    Args:
+        uri: Aggregate Monitor URI to query (for example: mt/monitor/v1/agg/threats)
+        tsg_id: Tenant services group ID
+        query_data: JSON structure query data
+    Returns:
+        Query Results
+    """
 
-    # send query to the Prisma SASE Multi-tenant cloud management portal aggregate monitoring API
-
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     if args.get('query_data'):
         query = json.loads(args.get('query_data'))  # type: ignore
@@ -584,22 +713,24 @@ def query_agg_monitor_api_command(client: Client, args: dict, default_tsg_id: st
 
 
 def update_security_rule_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Update / Edit an existing Prisma Access security rule
-
+    """Command to Update / Edit an existing Prisma Access security rule
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
     rule = client.build_security_rule(args)
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
-    raw_response = client.update_security_rule(rule, args.get(
-        'folder'), args.get('position'), args.get('id'), tsg_id)  # type: ignore
+    raw_response = client.update_security_rule(rule, args.get('id'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.UpdatedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}UpdatedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Updated', outputs),
@@ -608,22 +739,25 @@ def update_security_rule_command(client: Client, args: dict, default_tsg_id: str
 
 
 def push_candidate_config_command(client: Client, args: dict, default_tsg_id: str):
+    """Command to Trigger a configuration push for the identified Folder/Devices
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
+    folders = [x.strip() for x in args.get('folders').split(',')]  # type: ignore
 
-    # Trigger a configuration push for the identified Folder/Devices
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
-    devices = [x.strip() for x in args.get('devices').split(',')]  # type: ignore
-
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
-
-    raw_response = client.push_candidate_config(devices, args.get('description'), tsg_id)  # type: ignore
+    raw_response = client.push_candidate_config(folders, args.get('description'), tsg_id)  # type: ignore
 
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.ConfigPush',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigPush',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Configuration Push Requested', outputs),
@@ -632,34 +766,35 @@ def push_candidate_config_command(client: Client, args: dict, default_tsg_id: st
 
 
 def list_security_rules_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Get all security rules for a given Prisma Access Folder / Position
-
+    """Command to Get all security rules for a given Prisma Access Folder / Position
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
     query_params = {
         'folder': encode_string_results(args.get('folder')),
         'position': encode_string_results(args.get('position'))
     }
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
-    if args.get('name'):
-        query_params["name"] = encode_string_results(args.get('name'))
-
-    if args.get('limit'):
-        query_params["limit"] = encode_string_results(args.get('limit'))
-
-    if args.get('offset'):
-        query_params["offset"] = encode_string_results(args.get('offset'))
+    if name := args.get('name'):
+        query_params["name"] = encode_string_results(name)
+    if limit := arg_to_number(args.get('limit', 10)):
+        query_params["limit"] = limit
+    if offset := arg_to_number(args.get('offset', 0)):
+        query_params["offset"] = encode_string_results(offset)
 
     raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
 
-    outputs = (raw_response)['data']
+    outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.FoundSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs),
@@ -668,9 +803,15 @@ def list_security_rules_command(client: Client, args: dict, default_tsg_id: str)
 
 
 def get_security_rule_by_name_command(client: Client, args: dict, default_tsg_id: str):
-
-    # Get single security rule using the rule name as a filter
-
+    """Command to return single security rule from Prisma Access based on name
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
     query_params = {
         'folder': encode_string_results(args.get('folder')),
         'position': encode_string_results(args.get('position')),
@@ -679,17 +820,14 @@ def get_security_rule_by_name_command(client: Client, args: dict, default_tsg_id
         "offset": 0
     }
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
 
-    outputs = (raw_response)['data']
+    outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.FoundSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs),
@@ -698,28 +836,31 @@ def get_security_rule_by_name_command(client: Client, args: dict, default_tsg_id
 
 
 def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: str):
-
-    # List config jobs with a given id(s) for a given prisma access tenant
-
+    """Command to list config jobs from Prisma Access filtered by command id
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
     job_ids = args.get('id')
     job_ids = job_ids.split(',')  # type: ignore
 
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     raw_responses = []
 
     for job_id in job_ids:
 
         raw_response = client.get_config_jobs_by_id(tsg_id, job_id).get('data')[0]
-        raw_responses.append(raw_response) 
+        raw_responses.append(raw_response)
 
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.ConfigJob',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Config Jobs', outputs),
@@ -728,13 +869,16 @@ def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: st
 
 
 def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
-
-    # List all config jobs for a given prisma access tenant
-
-    if args.get('tsg_id'):
-        tsg_id = args.get('tsg_id')
-    else:
-        tsg_id = default_tsg_id
+    """Command to list config jobs from Prisma Access
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+    Returns:
+        Outputs.
+    """
+    tsg_id = args.get('tsg_id') or default_tsg_id
 
     query_params = {}
 
@@ -749,7 +893,7 @@ def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
     outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix='PrismaAccess.ConfigJob',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Config Job', outputs),
@@ -762,16 +906,17 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    base_url = demisto.params()['url'].strip('/')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    base_url = params.get('url').strip('/')
+    verify_certificate = not argToBoolean(params.get('insecure', False))
+    proxy = argToBoolean(params.get('proxy', False))
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
+    oauth_url = params.get('oauth_url')
+    default_tsg_id = params.get('tsg_id')
 
-    client_id = demisto.params().get('credentials').get('identifier')
-    client_secret = demisto.params().get('credentials').get('password')
-    oauth_url = demisto.params().get('oauth_url')
-    default_tsg_id = demisto.params().get('tsg_id')
-
-    LOG(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
     commands = {
         'test-module': test_module,
@@ -790,8 +935,6 @@ def main():
         'prisma-access-list-address-objects': list_address_objects_command
     }
 
-    command = demisto.command()
-
     client = Client(
         base_url=base_url,
         client_id=client_id,
@@ -807,13 +950,13 @@ def main():
 
     try:
         if command in commands:
-            return_results(commands[command](client, demisto.args(), default_tsg_id))
+            return_results(commands[command](client, demisto.args(), default_tsg_id))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
