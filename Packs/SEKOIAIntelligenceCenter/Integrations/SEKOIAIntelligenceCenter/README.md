@@ -1,7 +1,7 @@
 Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
 To use this integration, please create an API Key with the right permissions.
 
-This integration was integrated and tested with version xx of SEKOIAIntelligenceCenter
+This integration was integrated and tested with version 2.20220712 of SEKOIA.IO Intelligence Center.
 
 ## Configure SEKOIAIntelligenceCenter on Cortex XSOAR
 
@@ -91,7 +91,7 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 >| 2020-11-04T00:27:15.9801Z | 2020-11-04T00:27:15.9801Z |
 >### Associated tags
 >**No entries.**
->Please consult the [dedicated page](https:<span>//</span>app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
+>Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
 
 
 ### GetIndicator
@@ -203,7 +203,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 >| lockheed-martin-cyber-kill-chain | delivery |
 >
 >
->Please consult the [dedicated page](https:<span>//</span>app.sekoia.io/intelligence/objects/indicator--d394449b-6bc7-4d48-b392-6f898190bd2a) for more information.
+>Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/indicator--d394449b-6bc7-4d48-b392-6f898190bd2a) for more information.
 
 
 ### ip
@@ -1341,7 +1341,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 >### Indicator 206.189.85.18 is linked to the following:
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
->| FinFisher | [FinFisher](https:<span>//</span>attack.mitre.org/software/S0182) is a government-grade commercial surveillance spyware reportedly sold exclusively to government agencies for use in targeted and lawful criminal investigations. It is heavily obfuscated and uses multiple anti-analysis techniques. It has other variants including [Wingbird](https:<span>//</span>attack.mitre.org/software/S0176). (Citation: FinFisher Citation) (Citation: Microsoft SIR Vol 21) (Citation: FireEye FinSpy Sept 2017) (Citation: Securelist BlackOasis Oct 2017) (Citation: Microsoft FinFisher March 2018) | malware | FinFisher |  | false | 2019-07-19T15:25:38.820741Z | 2021-11-23T09:13:59.891896Z | [More info about FinFisher on SEKOIA.IO](https:<span>//</span>app.sekoia.io/intelligence/objects/malware--a36a2045-61dd-4462-8d5a-95d6732b74c3) |
+>| FinFisher | [FinFisher](https://attack.mitre.org/software/S0182) is a government-grade commercial surveillance spyware reportedly sold exclusively to government agencies for use in targeted and lawful criminal investigations. It is heavily obfuscated and uses multiple anti-analysis techniques. It has other variants including [Wingbird](https://attack.mitre.org/software/S0176). (Citation: FinFisher Citation) (Citation: Microsoft SIR Vol 21) (Citation: FireEye FinSpy Sept 2017) (Citation: Securelist BlackOasis Oct 2017) (Citation: Microsoft FinFisher March 2018) | malware | FinFisher |  | false | 2019-07-19T15:25:38.820741Z | 2021-11-23T09:13:59.891896Z | [More info about FinFisher on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--a36a2045-61dd-4462-8d5a-95d6732b74c3) |
 
 
 ### GetIndicatorContext
@@ -1609,5 +1609,5 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 >### Indicator eicar@sekoia.io is linked to the following:
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
->| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https:<span>//</span>app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
+>| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
 
