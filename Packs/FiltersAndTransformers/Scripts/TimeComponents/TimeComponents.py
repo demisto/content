@@ -42,13 +42,25 @@ def detect_time_zone(value: Any) -> tzinfo:
 
 
 def parse_date_time_value(value: Any) -> datetime:
+    """ Parse a date time value
+
+    :param value: The date or time to parse
+    :return: aware datetime object
+    """
+    if value is None or (isinstance(value, str) and not value):
+        return datetime.now(timezone.utc)
+
     if isinstance(value, int):
         value = str(value)
 
     try:
         date_time = dateparser.parse(value)
         assert date_time is not None, f'could not parse {value}'
-        return date_time
+
+        if date_time.tzinfo is None:
+            return pytz.utc.localize(date_time)
+        else:
+            return date_time
     except Exception as err:
         raise DemistoException(f'Error with input date / time - {err}')
 
@@ -57,15 +69,9 @@ def main():
     try:
         locale.setlocale(locale.LC_TIME, 'C')
 
-        if not (value := demisto.getArg('value')):
-            date_time = datetime.utcnow()
-        else:
-            date_time = parse_date_time_value(value)
-
+        date_time = parse_date_time_value(demisto.getArg('value'))
         if time_zone := demisto.getArg('time_zone'):
             date_time = date_time.astimezone(detect_time_zone(time_zone))
-        elif date_time.tzinfo is None:
-            date_time = date_time.astimezone(timezone.utc)
 
         time_components = {
             'year': date_time.year,
