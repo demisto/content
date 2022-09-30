@@ -58,7 +58,7 @@ def parse_date_time_value(value: Any) -> datetime:
         assert date_time is not None, f'could not parse {value}'
 
         if date_time.tzinfo is None:
-            return date_time.astimezone(timezone.utc)
+            return date_time.replace(tzinfo=timezone.utc)
         else:
             return date_time
     except Exception as err:

@@ -3,6 +3,7 @@ import TimeComponents
 import json
 import freezegun
 from datetime import datetime, timezone
+import dateparser
 
 
 class TestTimeComponents:
@@ -10,7 +11,6 @@ class TestTimeComponents:
     def test_real_time(self, mocker, monkeypatch):
         now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
         assert now == TimeComponents.parse_date_time_value(None).astimezone(timezone.utc)
-        assert now == TimeComponents.parse_date_time_value('now').astimezone(timezone.utc)
 
     def test_main(self, mocker, monkeypatch):
         with open('./test_data/test.json', 'r') as f:
