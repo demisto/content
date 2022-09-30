@@ -173,6 +173,21 @@ def test_get_indicator_context_incomplete(
 
 
 @pytest.mark.parametrize(
+    "command, indicator_type, indicator_value",
+    [
+        (SEKOIAIntelligenceCenter.ip_command, "broken", "broken"),
+    ],
+)
+def test_wrong_ip(
+    client, command, indicator_type, indicator_value
+):
+
+    args = {"ip": indicator_value, "type": indicator_type}
+    with pytest.raises(ValueError):
+        command(client=client, args=args)
+
+
+@pytest.mark.parametrize(
     "indicator_type, indicator_value, json_test_file",
     [
         ("email-addr", "eicar@sekoia.io", "test_data/indicator_context_email.json"),
@@ -316,6 +331,7 @@ def test_get_reputation_score(input: list, output: int):
 @pytest.mark.parametrize(
     "indicator_type, indicator_value, json_test_file",
     [
+        ("ipv6-addr", "2606:4700:4700::1111", "test_data/indicator_context_ip.json"),
         ("ipv4-addr", "206.189.85.18", "test_data/indicator_context_ip.json"),
         ("ipv4-addr", "1.1.1.1", "test_data/indicator_context_unknown.json"),
     ],
