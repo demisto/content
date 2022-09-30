@@ -1,0 +1,21 @@
+{
+    "defaultIncidentType": "Recorded Future Alert",
+    "description": "",
+    "feed": false,
+    "id": "Recorded Future - Classifier",
+    "keyTypeMap": {
+        "Global Vulnerability Risk, New Critical or Pre NVD Vulnerabilities": "Recorded Future New Critical or Pre NVD Vulnerabilities",
+        "Infrastructure and Brand Risk, Potential Typosquatting Watch List Domains": "Recorded Future Potential Typosquat",
+        "Leaked Credential Monitoring": "Recorded Future Leaked Credential Monitoring"
+    },
+    "name": "Recorded Future - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "rule.name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

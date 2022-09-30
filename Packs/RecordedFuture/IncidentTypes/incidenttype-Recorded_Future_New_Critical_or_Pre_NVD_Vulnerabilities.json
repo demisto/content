@@ -1,12 +1,11 @@
 {
-    "id": "Recorded Future Alert",
+    "id": "Recorded Future New Critical or Pre NVD Vulnerabilities",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Recorded Future Alert",
-    "prevName": "Recorded Future Alert",
+    "name": "Recorded Future New Critical or Pre NVD Vulnerabilities",
+    "prevName": "Recorded Future New Critical or Pre NVD Vulnerabilities",
     "color": "#0071cf",
-    "playbookId": "playbook0",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -16,15 +15,15 @@
     "system": false,
     "readonly": false,
     "default": false,
-    "autorun": true,
+    "autorun": false,
     "disabled": false,
-    "reputationCalc": 0,
-    "onChangeRepAlg": 0,
+    "reputationCalc": 1,
+    "onChangeRepAlg": 1,
     "layout": "Recorded Future Incident",
     "detached": false,
     "extractSettings": {
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }
