@@ -16,6 +16,7 @@ DOC_MAPPING = {
     "GetObservable": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Observables/operation/get_observables",  # noqa
     "GetIndicator": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator",  # noqa
     "GetIndicatorContext": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "ip": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
 }
 
 DBOTSCORE_MAPPING = {
