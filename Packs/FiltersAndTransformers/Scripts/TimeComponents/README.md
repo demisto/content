@@ -169,6 +169,59 @@ There are no outputs for this script.
 
 ---
 
+### Get all the time components from the unix timestamp
+
+#### Parameters
+| **Argument Name** | **Value** |
+| --- | --- |
+| value | 1642868625 |
+| time_zone | |
+| key | |
+
+#### Output
+```json
+{
+  "year": 2022,
+  "year_4_digit": "2022",
+  "month": 1,
+  "month_3_letter": "Jan",
+  "month_full_name": "January",
+  "month_2_digit": "01",
+  "day": 22,
+  "day_2_digit": "22",
+  "day_of_week": 6,
+  "day_of_week_3_letter": "Sat",
+  "day_of_week_full_name": "Saturday",
+  "day_of_year": 22,
+  "day_of_year_3_digit": "022",
+  "hour": 16,
+  "hour_12_clock": 4,
+  "hour_2_digit_24_clock": "16",
+  "hour_2_digit_12_clock": "04",
+  "hour_of_day": 16.395833333333332,
+  "minute": 23,
+  "minute_2_digit": "23",
+  "minute_of_day": 407.75,
+  "second": 45,
+  "second_2_digit": "45",
+  "second_of_day": 24465,
+  "millisecond": 0,
+  "period_12_clock": "PM",
+  "time_zone_hhmm": "+0000",
+  "time_zone_offset": 0.0,
+  "unix_epoch_time": 1642868625,
+  "iso_8601": "2022-01-22T16:23:45+00:00",
+  "y-m-d": "2022-1-22",
+  "yyyy-mm-dd": "2022-01-22",
+  "h:m:s": "16:23:45",
+  "H:m:s": "4:23:45",
+  "hh:mm:ss": "04:23:45",
+  "HH:mm:ss": "16:23:45"
+}
+```
+
+---
+
 ### Get a specific time component (day_of_week_full_name)
 
 #### Parameters
