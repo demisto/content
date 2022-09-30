@@ -544,7 +544,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.34956
+  dockerimage: demisto/py3-tools:1.0.0.34985
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
