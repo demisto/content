@@ -7438,7 +7438,7 @@ There is no context output for this command.
 
 ### pan-os-list-templates
 ***
-Returns a list of available templates (Use only in Panorama instances).
+Returns a list of available templates. (Used only in Panorama instances).
 
 
 #### Base Command
@@ -7448,10 +7448,10 @@ Returns a list of available templates (Use only in Panorama instances).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template_name | The name of the template to retrieve, if not provided then all available templates will be brought. | Optional | 
-| limit | The maximum number of templates to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| template_name | The name of the template to retrieve. If not provided then all available templates will be brought. | Optional | 
+| limit | The maximum number of templates to retrieve. This value will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The page size of the templates to return. Default is 50. | Optional | 
-| page | The page at which to start listing templates, must be a positive number. | Optional | 
+| page | The page at which to start listing templates. This must be a positive number. | Optional | 
 
 
 #### Context Output
