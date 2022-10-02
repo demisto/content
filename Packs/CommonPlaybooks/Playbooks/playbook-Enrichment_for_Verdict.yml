@@ -231,8 +231,8 @@ tasks:
     task:
       id: c9ed2037-c42e-40a6-8ddc-0f5b5d987851
       version: -1
-      name: Was the file found as Benign?
-      description: "Was the file found as benign?"
+      name: Was the file found as Suspicious?
+      description: "Was the file found as suspicious?"
       type: condition
       iscommand: false
       brand: ""
@@ -866,13 +866,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
-      - "39"
+      - "48"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3390,
+          "x": 3250,
           "y": 570
         }
       }
@@ -883,121 +882,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 6bee4a16-2bd1-4341-8bd0-8c4e08230647
-    type: title
-    task:
-      id: 6bee4a16-2bd1-4341-8bd0-8c4e08230647
-      version: -1
-      name: AWS
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "49"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3120,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: af0d9707-7b6d-430b-81e3-4695b327b1e0
-    type: title
-    task:
-      id: af0d9707-7b6d-430b-81e3-4695b327b1e0
-      version: -1
-      name: AD
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "48"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3660,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 5ae3c4ec-83cb-4d65-855c-2a3e5d36dbab
-    type: playbook
-    task:
-      id: 5ae3c4ec-83cb-4d65-855c-2a3e5d36dbab
-      version: -1
-      name: AWS IAM - User enrichment
-      description: |
-        Enrich AWS IAM user information from AWS Identity and Access Management.
-        - List user access keys
-        - Get user information
-      playbookName: AWS IAM - User enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      username:
-        complex:
-          root: inputs.awsUser
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 3120,
-          "y": 1235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: c88a3c79-44f7-4a12-8c4f-0a2005e7d523
+    taskid: 078101a2-a404-4b76-8ee4-befd2be1a398
     type: playbook
     task:
-      id: c88a3c79-44f7-4a12-8c4f-0a2005e7d523
+      id: 078101a2-a404-4b76-8ee4-befd2be1a398
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
         Enrich accounts using one or more integrations.
         Supported integrations:
         - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -1006,6 +909,9 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
       Username:
         complex:
           root: inputs.User
@@ -1018,8 +924,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3830,
-          "y": 1050
+          "x": 3440,
+          "y": 910
         }
       }
     note: false
@@ -1246,45 +1152,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
-    taskid: fcf15788-cba9-4b86-8324-ac74f8284760
-    type: condition
-    task:
-      id: fcf15788-cba9-4b86-8324-ac74f8284760
-      version: -1
-      name: Is AWS IAM integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "25"
-      "yes":
-      - "40"
-    scriptarguments:
-      brandname:
-        simple: AWS - IAM
-    results:
-    - brandInstances
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3120,
-          "y": 1055
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "48":
     id: "48"
     taskid: 23f12fc7-72e3-4ed1-8e74-cc26f9d04f36
@@ -1312,54 +1179,12 @@ tasks:
               complex:
                 root: inputs.User
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 3660,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: 8db8b77b-1b5d-4926-8847-2e03a3abeb07
-    type: condition
-    task:
-      id: 8db8b77b-1b5d-4926-8847-2e03a3abeb07
-      version: -1
-      name: Is there an AWS user?
-      description: "Is there an AWS user?"
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "25"
-      "yes":
-      - "47"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.awsUser
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 3120,
-          "y": 865
+          "x": 3250,
+          "y": 740
         }
       }
     note: false
@@ -1505,14 +1330,15 @@ view: |-
       "28_25_#default#": 0.24,
       "44_25_#default#": 0.1,
       "45_25_#default#": 0.27,
-      "47_25_#default#": 0.68,
+      "48_25_#default#": 0.1,
+      "48_41_yes": 0.64,
       "9_35_yes": 0.3,
       "9_36_#default#": 0.56
     },
     "paper": {
       "dimensions": {
         "height": 2075,
-        "width": 4440,
+        "width": 4050,
         "x": -230,
         "y": -390
       }
@@ -1529,8 +1355,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand}
-      and alertname:${alert.name}
+    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
   required: false
   description: |-
     A query for the previous alerts search.
@@ -1607,11 +1432,6 @@ inputs:
       accessor: domainname
   required: false
   description: Domain to enrich and give verdict.
-  playbookInputQuery:
-- key: awsUser
-  value: {}
-  required: false
-  description: Name of the AWS IAM user to enrich.
   playbookInputQuery:
 - key: CommandLine
   value: {}
