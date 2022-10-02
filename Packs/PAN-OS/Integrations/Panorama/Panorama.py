@@ -11266,7 +11266,7 @@ def pan_os_list_templates(template_name: Optional[str]):
 def pan_os_list_templates_command(args):
     template_name = args.get('template_name')
     if not DEVICE_GROUP and VSYS:
-        raise DemistoException('The pan-os-list-templates should only be used for Panorama instances')
+        raise DemistoException('The pan-os-list-templates command should only be used for Panorama instances')
 
     raw_response = pan_os_list_templates(template_name)
     result = raw_response.get('response', {}).get('result', {})
