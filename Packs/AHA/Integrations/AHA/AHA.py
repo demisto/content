@@ -1,5 +1,5 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-# from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *  # noqa
 
 import requests
 from typing import Dict
@@ -9,22 +9,26 @@ from typing import Dict
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
-
+REPLACE = 'replace_from_args'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-URL_SUFFIX = '/products/DEMO/features/'
-EDIT_FIELDS = 'id,reference_num,name,description,workflow_status,created_at'
-DEFAULT_FIELDS = {'reference_num', 'name', 'id', 'created_at'}
+URL_SUFFIX_PATTERN = f'/products/{REPLACE}/features/'
+EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 'created_at']
+DEFAULT_FIELDS = ['reference_num', 'name', 'id', 'created_at']
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def __init__(self, 
-                 headers: dict, 
-                 base_url: str, 
-                 proxy: bool, 
-                 verify: bool):
+    url = ''
+
+    def __init__(self,
+                 headers: dict,
+                 base_url: str,
+                 proxy: bool,
+                 verify: bool,
+                 url: str):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
-        self._headers = headers
+        self.url = url
+        self._headers['Content-Type'] = 'application/json'
 
     def get_features(self,
                      feature_name: str,
@@ -42,10 +46,15 @@ class Client(BaseClient):
             per_page: str pagination specify the number of maximum features per page.
         """
         headers = self._headers
-        url_suffix = f'{URL_SUFFIX}{feature_name}?updated_since={from_date}&fields={fields}&page={page}&per_page={per_page}'
+        params = {
+            'updated_since': from_date,
+            'fields': fields,
+            'page': page,
+            'per_page': per_page,
+        }
         return self._http_request(method='GET',
-                                  url_suffix=url_suffix,
-                                  headers=headers, resp_type='json')
+                                  url_suffix=f'{self.url}{feature_name}',
+                                  headers=headers, params=params, resp_type='json')
 
     def edit_feature(self, feature_name: str, fields: Dict) -> Dict:
         """
@@ -57,26 +66,26 @@ class Client(BaseClient):
         name = fields.get('name')
         desc = fields.get('description')
         status = fields.get('status')
-        payload = {'feature': {'name': name, 'descriptio': desc,
+        payload = {'feature': {'name': name, 'description': desc,
                    'workflow_status': {'name': status}}}
-        demisto.debug(f'payload: {payload}')
-        headers = self._headers
-        headers['Content-Type'] = 'application/json'
-        return self._http_request(method='PUT', url_suffix=f'{URL_SUFFIX}{feature_name}?fields={EDIT_FIELDS}',
-                                  headers=headers, resp_type='json', data=json.dumps(payload))
+        demisto.debug(f'Edit feature payload: {payload}')
+        fields = ','.join(EDIT_FIELDS)
+        return self._http_request(method='PUT', url_suffix=f'{self.url}{feature_name}?fields={fields}',
+                                  resp_type='json', json_data=payload)
 
     ''' HELPER FUNCTIONS'''
 
 
-def parse_features(response: dict, fields: set) -> List:
+def parse_features(response: dict, fields: List) -> List:
     res_list = []
     for res in response:
         curr = parse_feature(res, fields=fields)
         res_list.extend(curr)
+    demisto.debug(f'Parsed response fields: {res_list}')
     return res_list
 
 
-def parse_feature(response: dict, fields: set = DEFAULT_FIELDS) -> List:
+def parse_feature(response: dict, fields: List = DEFAULT_FIELDS) -> List:
     ret_dict = {}
     for curr in fields:
         demisto.info(f'curr: {curr}')
@@ -87,15 +96,6 @@ def parse_feature(response: dict, fields: set = DEFAULT_FIELDS) -> List:
         else:
             ret_dict[curr] = response.get(curr, '')
     return [ret_dict]
-
-
-def convert_string_to_set(fields_as_string: str) -> Set[str]:
-    fields_lst = fields_as_string.split(',')
-    out_set: Set[str] = set()
-    for curr in fields_lst:
-        curr = curr.strip()
-        out_set.add(curr)
-    return out_set
 
 
 ''' COMMAND FUNCTIONS '''
@@ -120,25 +120,21 @@ def test_module(client: Client) -> str:
 def get_features(client: Client,
                  from_date: str,
                  feature_name: str = '',
-                 fields: set = set(),
+                 fields: List = [],
                  page: str = '1',
                  per_page: str = '30') -> CommandResults:
     message: List = []
-    req_fields = ','.join(DEFAULT_FIELDS.union(fields))
-    try:
-        response = client.get_features(feature_name=feature_name, fields=req_fields,
-                                       from_date=from_date, page=page, per_page=per_page)
-        if response:
-            message = parse_features(response['features'], DEFAULT_FIELDS.union(
-                fields)) if 'features' in response else parse_feature(response['feature'], DEFAULT_FIELDS.union(fields))
-            human_readable = tableToMarkdown('Aha! get features',
-                                             message,
-                                             removeNull=True)
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message.append('Authorization Error: make sure API Key is correctly set')
+    req_fields = ','.join(DEFAULT_FIELDS + fields)
+    response = client.get_features(feature_name=feature_name, fields=req_fields,
+                                   from_date=from_date, page=page, per_page=per_page)
+    if response:
+        if 'features' in response:
+            message = parse_features(response['features'], DEFAULT_FIELDS + fields)
         else:
-            raise e
+            message = parse_feature(response['feature'], DEFAULT_FIELDS + fields)
+        human_readable = tableToMarkdown('Aha! get features',
+                                         message,
+                                         removeNull=True)
     return CommandResults(
         outputs_prefix='AHA.Feature',
         outputs_key_field='id',
@@ -148,22 +144,16 @@ def get_features(client: Client,
     )
 
 
-def edit_feature(client: Client, 
+def edit_feature(client: Client,
                  feature_name: str,
                  fields: Dict) -> CommandResults:
     message: List = []
-    try:
-        response = client.edit_feature(feature_name=feature_name, fields=fields)
-        if response:
-            message = parse_feature(response['feature'], fields=convert_string_to_set(EDIT_FIELDS))
-            human_readable = tableToMarkdown('Aha! edit feature',
-                                             message,
-                                             removeNull=True)
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = ['Authorization Error: make sure API Key is correctly set']
-        else:
-            raise e
+    response = client.edit_feature(feature_name=feature_name, fields=fields)
+    if response:
+        message = parse_feature(response['feature'], fields=EDIT_FIELDS)
+        human_readable = tableToMarkdown('Aha! edit feature',
+                                         message,
+                                         removeNull=True)
     return CommandResults(
         outputs_prefix='AHA.Feature',
         outputs_key_field='id',
@@ -178,10 +168,13 @@ def edit_feature(client: Client,
 
 def main() -> None:
 
-    api_key = demisto.params().get('api_key', {}).get('password', {})
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-    proxy = demisto.params().get('proxy', False)
-    verify = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    base_url = urljoin(params['url'], '/api/v1')
+    project_name = params.get('project_name', {})
+    url = URL_SUFFIX_PATTERN.replace(REPLACE, project_name)
+    api_key = params.get('api_key', {}).get('password', {})
+    proxy = params.get('proxy', False)
+    verify = not params.get('insecure', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers: Dict = {'Authorization': f'Bearer {api_key}'}
@@ -189,7 +182,8 @@ def main() -> None:
             headers=headers,
             base_url=base_url,
             proxy=proxy,
-            verify=verify)
+            verify=verify,
+            url=url)
         command = demisto.command()
         args = demisto.args()
 
@@ -199,8 +193,7 @@ def main() -> None:
         elif command == 'aha-get-features':
             from_date = args.get('from_date', '2020-01-01')
             feature_name = args.get('feature_name', '')
-            fields_as_string = args.get('fields', '')
-            fields = convert_string_to_set(fields_as_string)
+            fields = argToList(args.get('fields', ''))
             page = args.get('page', '1')
             per_page = args.get('per_page', '30')
             command_result = get_features(client, from_date=from_date, feature_name=feature_name, fields=fields, page=page,

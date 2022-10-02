@@ -4,11 +4,8 @@ from AHA import Client, get_features, edit_feature
 import io
 
 
-apikey = demisto.contentSecrets['AutoFocusTagsFeed']['api_key']
-# test = demisto.params().get('api_key', {}).get('password')
-
 headers = {
-    'Authorization': f'Bearer {apikey}',
+    'Authorization': 'Bearer test_key',
 }
 BASE_URL = 'https://example.com.aha.io/api/v1/'
 
@@ -16,7 +13,7 @@ BASE_URL = 'https://example.com.aha.io/api/v1/'
 def mock_client(mocker, http_request_result=None, throw_error=False):
 
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
-    client = Client(headers=headers, base_url=BASE_URL, proxy=False, verify=False)
+    client = Client(headers=headers, base_url=BASE_URL, proxy=False, verify=False, url='DEMO')
     if http_request_result:
         mocker.patch.object(client, '_http_request', return_value=http_request_result)
 
@@ -30,6 +27,13 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_Module(mocker):
+    from AHA import test_module
+    client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
+    results = test_module(client=client)
+    assert results == 'ok'
 
 
 def test_getFeatures(mocker):
@@ -80,6 +84,7 @@ def test_editFeatureField(mocker):
     result = edit_feature(client=client, feature_name='DEMO-10', fields={'name': 'DEMO-10', 'description': 'new description',
                           'status': 'Closed'})
     assert len(result.outputs) == 1
-    assert result.outputs[0]['name'] == 'Demo-10'
-    assert result.outputs[0]['description'] == 'test desc'
-    assert result.outputs[0]['workflow_status'] == 'Closed'
+    output = result.outputs[0]
+    assert output.get('name') == 'Demo-10'
+    assert output.get('description') == 'test desc'
+    assert output.get('workflow_status') == 'Closed'

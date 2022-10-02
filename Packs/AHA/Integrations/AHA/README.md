@@ -1,6 +1,5 @@
 Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 This integration was integrated and tested with API version 1.0 of Aha
-
 ## Configure Aha on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -10,6 +9,7 @@ This integration was integrated and tested with API version 1.0 of Aha
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
+    | Project Name | Check the Aha\! project name in the URL. Replace the &amp;lt;PROJECT_NAME&amp;gt; placeholder in the following : exmaple.com.aha.io/products/&amp;lt;PROJECT_NAME&amp;gt;/features | True |
     | Api Key | API Key to access service REST API  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -41,12 +41,12 @@ Will list all features from service, unless a specific feature is specified
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| feature.id | UUID | The feature ID. | 
-| feature.name | String | The feature name. | 
-| feature.reference_num | String | A feature reference num unique. | 
-| feature.workflow_status | String | Feature status description. | 
-| feature.description | String | Description of the feature. | 
-| feature.created_at | Date | Feature creation date. | 
+| AHA.Feature.id | UUID | The feature ID. | 
+| AHA.Feature.name | String | The feature name. | 
+| AHA.Feature.reference_num | String | A feature reference num unique. | 
+| AHA.Feature.workflow_status | String | Feature status description. | 
+| AHA.Feature.description | String | Description of the feature. | 
+| AHA.Feature.created_at | Date | Feature creation date. | 
 
 #### Command example
 ```!aha-get-features```
@@ -73,12 +73,12 @@ Edit of the following fields in a feature: Name, Status and Description
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Aha.feature.id | UUID | The feature ID. | 
-| feature.name | String | The feature name. | 
-| feature.reference_num | String | A feature reference number. | 
-| feature.workflow_status | String | Status name. | 
-| feature.description | String | Description of the feature. | 
-| feature.created_at | Date | Feature creation date. | 
+| AHA.Feature.id | UUID | The feature ID. | 
+| AHA.Feature.name | String | The feature name. | 
+| AHA.Feature.reference_num | String | A feature reference number. | 
+| AHA.Feature.workflow_status | String | Status name. | 
+| AHA.Feature.description | String | Description of the feature. | 
+| AHA.Feature.created_at | Date | Feature creation date. | 
 
 #### Command example
 ```!aha-edit-feature feature_name=DEMO-10 fields=`{"name":"the_new_name", "description":"the_new_desc", "status":"Closed"}```

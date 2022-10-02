@@ -9,6 +9,13 @@ configuration:
     defaultvalue: https://example.com/
     type: 0
     additionalinfo: null
+  - name: project_name
+    display: Project Name
+    required: true
+    defaultvalue: DEMO
+    type: 0
+    additionalinfo: "Check the Aha! project name in the URL.
+      Replace the <PROJECT_NAME> placeholder in the following : exmaple.com.aha.io/products/<PROJECT_NAME>/features"
   - name: api_key
     displaypassword: Api Key
     required: true
