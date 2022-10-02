@@ -7340,7 +7340,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [res.result for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -7369,11 +7378,12 @@ class CommandRunner:
             res.args.pop('using-brand', None)
             command = {'command': res.command,
                        'args': res.args}
+            comment = res.result.get('Contents', 'No contents found, see entry.') if isinstance(res.result, dict) else None
             results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
                                                                                          instance=res.instance),
                                           'Command': command,
                                           'Result': 'Success',
-                                          'Comment': None})
+                                          'Comment': comment})
 
         for err in errors:
             # don't care about using arg in command
