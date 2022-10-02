@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -829,15 +830,29 @@ def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
+    last_run = demisto.getLastRun()
+    last_run_time = last_run.get('time', False)  # This is purely to establish if a first fetch has occurred
+    fetched_ids = last_run.get('fetched_ids', [])
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    fetched_ids = demisto.getLastRun().get('fetched_ids', [])
-    time_range = {
-        'type': 'relative',
-        'value': {
-            "amount": 1,
-            "unit": "hour"
+    if not last_run_time:
+        first_time_fetch = demisto.params().get('fetch_time', '3 days').strip().split(' ')
+        first_fetch_amount = int(first_time_fetch[0])
+        first_fetch_unit = first_time_fetch[1]
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": first_fetch_amount,
+                "unit": first_fetch_unit.replace("s", "")  # This is make the unit singular
+            }
         }
-    }
+    else:
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": 1,
+                "unit": "hour"
+            }
+        }
 
     payload = {"timeRange": time_range, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
     if demisto.getParam('ruleName'):
@@ -865,7 +880,7 @@ def fetch_incidents():
         })
         fetched_ids.append({alert.get('id'): now})
 
-    return incidents, fetched_ids
+    return incidents, fetched_ids, last_run_time
 
 
 def main():
@@ -908,10 +923,13 @@ def main():
         elif command == 'redlock-get-scan-results':
             redlock_get_scan_results()
         elif command == 'fetch-incidents':
-            incidents, fetched_ids = fetch_incidents()
+            incidents, fetched_ids, last_run_time = fetch_incidents()
             demisto.incidents(incidents)
             ids_to_insert = expire_stored_ids(fetched_ids)
-            demisto.setLastRun({'fetched_ids': ids_to_insert})
+            demisto.setLastRun({
+                'fetched_ids': ids_to_insert,
+                'time': last_run_time
+            })
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
