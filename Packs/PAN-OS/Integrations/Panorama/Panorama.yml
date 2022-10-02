@@ -8101,12 +8101,12 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
-    - description: The name of the template to retrieve, if not provided then all available templates will be brought.
+    - description: The name of the template to retrieve. If not provided then all available templates will be returned.
       isArray: false
       name: template_name
       required: false
     - defaultValue: '50'
-      description: The maximum number of templates to retrieve, will be used by default if page argument was not provided.
+      description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
       isArray: false
       name: limit
       required: false
@@ -8115,11 +8115,11 @@ script:
       isArray: false
       name: page_size
       required: false
-    - description: The page at which to start listing templates, must be a positive number.
+    - description: The page at which to start listing templates. This must be a positive number.
       isArray: false
       name: page
       required: false
-    description: Returns a list of available templates (Use only in Panorama instances).
+    description: Returns a list of available templates. (To be used only in Panorama instances).
     name: pan-os-list-templates
     outputs:
     - contextPath: Panorama.Template.Name
@@ -8132,7 +8132,7 @@ script:
       description: The variable name of the template.
       type: String
     - contextPath: Panorama.Template.Variable.Type
-      description: The type of the template.
+      description: The type of template.
       type: String
     - contextPath: Panorama.Template.Variable.Value
       description: The value of the variable of the template.
