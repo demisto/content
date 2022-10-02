@@ -759,5 +759,4 @@ def test_main(mocker):
         main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
-        print(json.dumps(results, indent=2))
         assert json.dumps(results) == json.dumps(t['results'])
