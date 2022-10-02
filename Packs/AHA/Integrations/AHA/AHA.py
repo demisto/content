@@ -88,7 +88,6 @@ def parse_features(response: dict, fields: List) -> List:
 def parse_feature(response: dict, fields: List = DEFAULT_FIELDS) -> List:
     ret_dict = {}
     for curr in fields:
-        demisto.info(f'curr: {curr}')
         if curr == 'description':
             ret_dict[curr] = response.get(curr, {}).get('body')
         elif curr == 'workflow_status':
