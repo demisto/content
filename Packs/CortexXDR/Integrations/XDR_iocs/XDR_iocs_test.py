@@ -291,7 +291,7 @@ class TestCreateFile:
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
-        expected_data = ''
+        expected_data = ' '
         assert data == expected_data, f'create_file_iocs_to_keep with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     @pytest.mark.parametrize('in_iocs, out_iocs', data_test_create_file_iocs_to_keep)
