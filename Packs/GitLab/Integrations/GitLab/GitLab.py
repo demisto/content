@@ -239,47 +239,54 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
         return response
 
-    def merge_request_create_request(self, optional_args: dict, source_branch: str | None, target_branch: str | None,
-                                     title: str | None) -> dict:
+    def merge_request_create_request(self, source_branch: str | None, target_branch: str | None,
+                                     title: str | None, assignee_ids: str | None, reviewer_ids: str | None,
+                                     description: str | None, target_project_id: str | None, labels: str | None,
+                                     milestone_id: str | None, remove_source_branch: str | None,
+                                     allow_collaboration: str | None, allow_maintainer_to_push: str | None,
+                                     approvals_before_merge: str | None, squash: str | None) -> dict:
         headers = self._headers
         suffix = f'/projects/{self.project_id}/merge_requests'
-        params = assign_params(assignee_ids=optional_args.get('assignee_ids'), reviewer_ids=optional_args.get('reviewer_ids'),
-                               description=optional_args.get('description'),
-                               target_project_id=optional_args.get('target_project_id'),
-                               labels=optional_args.get('labels'),
-                               milestone_id=optional_args.get('milestone_id'),
-                               remove_source_branch=optional_args.get('remove_source_branch'),
-                               allow_collaboration=optional_args.get('allow_collaboration'),
-                               allow_maintainer_to_push=optional_args.get('allow_maintainer_to_push'),
-                               approvals_before_merge=optional_args.get('approvals_before_merge'),
-                               squash=optional_args.get('squash'))
+        params = assign_params(assignee_ids=assignee_ids, reviewer_ids=reviewer_ids,
+                               description=description,
+                               target_project_id=target_project_id,
+                               labels=labels,
+                               milestone_id=milestone_id,
+                               remove_source_branch=remove_source_branch,
+                               allow_collaboration=allow_collaboration,
+                               allow_maintainer_to_push=allow_maintainer_to_push,
+                               approvals_before_merge=approvals_before_merge,
+                               squash=squash)
         data = assign_params(source_branch=source_branch, target_branch=target_branch, title=title)
         response = self._http_request('POST', suffix, headers=headers, json_data=data, params=params, ok_codes=[201])
         return response
 
-    def merge_request_update_request(self, optional_args: dict, merge_request_id: int,
-                                     target_branch: str | None, title: str | None) -> dict:
+    def merge_request_update_request(self, merge_request_id: int,
+                                     target_branch: str | None, title: str | None, assignee_ids: str | None, reviewer_ids: str | None,
+                                     description: str | None, target_project_id: str | None, add_labels: str | None,
+                                     remove_labels: str | None, milestone_id: str | None, state_event: str | None, remove_source_branch: str | None,
+                                     allow_collaboration: str | None, allow_maintainer_to_push: str | None, approvals_before_merge: str | None,
+                                     discussion_locked: str | None, squash: str | None) -> dict:
         headers = self._headers
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_id}'
-        params = assign_params(assignee_ids=optional_args.get('assignee_ids'), reviewer_ids=optional_args.get('reviewer_ids'),
-                               description=optional_args.get('description'),
-                               target_project_id=optional_args.get('target_project_id'),
-                               remove_labels=optional_args.get('remove_labels'),
-                               milestone_id=optional_args.get('milestone_id'), state_event=optional_args.get('state_event'),
-                               remove_source_branch=optional_args.get('remove_source_branch'),
-                               allow_collaboration=optional_args.get('allow_collaboration'),
-                               allow_maintainer_to_push=optional_args.get('allow_maintainer_to_push'),
-                               approvals_before_merge=optional_args.get('approvals_before_merge'),
-                               squash=optional_args.get('squash'), discussion_locked=optional_args.get('discussion_locked'))
+        params = assign_params(assignee_ids=assignee_ids, reviewer_ids=reviewer_ids,
+                               description=description,
+                               target_project_id=target_project_id,
+                               add_labels=add_labels,
+                               remove_labels=remove_labels,
+                               milestone_id=milestone_id, state_event=state_event,
+                               remove_source_branch=remove_source_branch,
+                               allow_collaboration=allow_collaboration,
+                               allow_maintainer_to_push=allow_maintainer_to_push,
+                               approvals_before_merge=approvals_before_merge,
+                               squash=squash, discussion_locked=discussion_locked)
         data = assign_params(target_branch=target_branch, title=title)
         response = self._http_request('PUT', suffix, headers=headers, json_data=data, params=params, ok_codes=[200, 202])
         return response
 
-    def merge_request_note_list_request(self, args: dict, per_page: int, page: int) -> dict:
+    def merge_request_note_list_request(self, per_page: int, page: int, merge_request_iid: str | None,
+                                        sort: str | None, order_by: str | None) -> dict:
         headers = self._headers
-        merge_request_iid = args.get('merge_request_iid')
-        sort = args.get('sort')
-        order_by = args.get('order_by')
         params = assign_params(sort=sort, per_page=per_page, page=page, order_by=order_by)
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
@@ -311,9 +318,8 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202])
         return response
 
-    def codes_search_request(self, args: dict, per_page: int, page: int) -> dict:
+    def codes_search_request(self, args: dict, per_page: int, page: int, search: str | Any) -> dict:
         headers = self._headers
-        search = args.get('search')
         params = assign_params(search=search, scope='blobs', page=page, per_page=per_page)
         suffix = f'/projects/{self.project_id}/search'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
@@ -1254,7 +1260,19 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
     source_branch = args.get('source_branch')
     target_branch = args.get('target_branch')
     title = args.get('title')
-    response = client.merge_request_create_request(args, source_branch, target_branch, title)
+    assignee_ids = args.get('assignee_ids')
+    reviewer_ids = args.get('reviewer_ids')
+    description = args.get('description')
+    target_project_id = args.get('target_project_id')
+    labels = args.get('labels')
+    milestone_id = args.get('milestone_id')
+    remove_source_branch = args.get('remove_source_branch')
+    allow_collaboration = args.get('allow_collaboration')
+    allow_maintainer_to_push = args.get('allow_maintainer_to_push')
+    approvals_before_merge = args.get('approvals_before_merge')
+    squash = args.get('squash')
+    response = client.merge_request_create_request(args, source_branch, target_branch, title, assignee_ids, reviewer_ids, description, target_project_id,
+                                                   labels, milestone_id, remove_source_branch, allow_collaboration, allow_maintainer_to_push, approvals_before_merge, squash)
     merge_request_iid = response.get('iid')
     human_readable_str = f'Merge request created successfully with merge_request_iid:\n{merge_request_iid}'
     return CommandResults(
@@ -1281,10 +1299,26 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
     merge_request_id = args.get('merge_request_id')
     target_branch = args.get('target_branch')
     title = args.get('title')
+    assignee_ids = args.get('assignee_ids')
+    reviewer_ids = args.get('reviewer_ids')
+    description = args.get('description')
+    target_project_id = args.get('target_project_id')
+    remove_labels = args.get('remove_labels')
+    add_labels = args.get('add_labels')
+    milestone_id = args.get('milestone_id')
+    state_event = args.get('state_event')
+    remove_source_branch = args.get('remove_source_branch')
+    allow_collaboration = args.get('allow_collaboration')
+    allow_maintainer_to_push = args.get('allow_maintainer_to_push')
+    approvals_before_merge = args.get('approvals_before_merge')
+    squash = args.get('squash')
+    discussion_locked = args.get('discussion_locked')
     if not merge_request_id or not target_branch or not title:
         raise DemistoException('You must specify the "merge_request_id" and the "target_branch" and "title" of the file.')
-    response = client.merge_request_update_request(args, merge_request_id, target_branch, title)
-    human_readable_str = f'Merge request number {merge_request_id} was updated successfully.'
+    response = client.merge_request_update_request(merge_request_id, target_branch, title, assignee_ids, reviewer_ids, description, target_project_id,
+                                                   add_labels, remove_labels, milestone_id, state_event, remove_source_branch,
+                                                   allow_collaboration, allow_maintainer_to_push, approvals_before_merge, discussion_locked, squash)
+    human_readable_str = 'Merge request was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         outputs_key_field='merge_request_id',
@@ -1307,7 +1341,20 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
         raise DemistoException('You must specify the "merge_request_iid"')
     response_to_hr = []
     headers = ['Id', 'Author', 'Text', 'CreatedAt', 'UpdatedAt']
-    response = response_according_pagination(client.merge_request_note_list_request, args)
+    per_page, limit, page = validate_pagination_values(args)
+    items_count_total = 0
+    response: List[Dict[str, Any]] = []
+    merge_request_iid = args.get('merge_request_iid')
+    sort = args.get('sort')
+    order_by = args.get('order_by')
+    while items_count_total < limit:
+        response_temp = client.merge_request_note_list_request(per_page, page, merge_request_iid, sort, order_by)
+        if not response_temp:
+            break
+        response.extend(response_temp)
+        items_count_total += len(response_temp)
+        page += 1
+
     for merge_request_note in response:
         merge_request_note_edit = {'Id': merge_request_note.get('id', ''),
                                    'Text': merge_request_note.get('body', ''),
@@ -1429,7 +1476,17 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         (CommandResults).
     """
-    response = response_according_pagination(client.codes_search_request, args)
+    search = args.get('search')
+    per_page, limit, page = validate_pagination_values(args)
+    items_count_total = 0
+    response: List[Dict[str, Any]] = []
+    while items_count_total < limit:
+        response_temp = client.codes_search_request(per_page, page, search)
+        if not response_temp:
+            break
+        response.extend(response_temp)
+        items_count_total += len(response_temp)
+        page += 1
     return CommandResults(
         outputs_prefix='GitLab.Code',
         # readable_output=response,
