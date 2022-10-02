@@ -1249,7 +1249,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.replyTo
       description: The replyTo recipients of the email.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.34720
   feed: false
   isfetch: true
   longRunning: false
