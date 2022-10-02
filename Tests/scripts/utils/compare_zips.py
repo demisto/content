@@ -17,12 +17,6 @@ from ruamel.yaml import YAML
 yaml = YAML()
 
 
-def order_dict(dct: dict):
-    for k, v in dct.items():
-        if isinstance(v, list):
-            v.sort()
-
-
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
     """Compare two zip files content"""
     # extract zip files
@@ -82,7 +76,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
         output_dict_diff.unlink(missing_ok=True)
         with open(output_dict_diff, 'w') as f:
             with open(file1_path) as f1, open(file2_path) as f2:
-                diff_found = list(dictdiffer.diff(order_dict(load_func(f1)), order_dict(load_func(f2))))
+                diff_found = list(dictdiffer.diff(load_func(f1), load_func(f2)))
                 json.dump(diff_found, f, indent=4)
     except Exception as e:
         print(f'could not diff files {file}: {e}')
