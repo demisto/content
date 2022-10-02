@@ -114,7 +114,8 @@ def test_get_all_endpoints_using_limit(requests_mock):
     When:
         Calling the get_endpoints_command function
     Then:
-        a. Make sure the 'get_endpoints' API is not called (not to be confused with get_endpoint - )
+        a. Make sure the 'get_endpoints' API is not called (not to be confused with get_endpoint - see last comment
+            here: https://jira-hq.paloaltonetworks.local/browse/XSUP-15995)
         b. Make sure the returned result as in the expected format.
     """
     from CoreIRApiModule import get_endpoints_command, CoreClient
