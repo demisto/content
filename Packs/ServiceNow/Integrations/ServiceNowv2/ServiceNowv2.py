@@ -401,10 +401,10 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
         args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     # This is for updating null fields for update_remote_system function for example: assigned_to.
-    for arg in args.keys():
-        if not args[arg]:
-            fields_to_clear.append(arg)
-    demisto.debug(f'Fields to clear {fields_to_clear}')
+    # for arg in args.keys():
+    #     if not args[arg]:
+    #         fields_to_clear.append(arg)
+    # demisto.debug(f'Fields to clear {fields_to_clear}')
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
