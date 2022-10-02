@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Analytics & SIEM
 commonfields:
   id: Tenable.io Event Collector
   version: -1
@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 8
 - display: Vulnerabilities Fetch Interval in minutes
-  additionalinfo: Time in minutes in which the vulnerabilities get export uuid process will run
+  additionalinfo:  Time in minutes between fetches of vulnerabilities.
   name: vuln_fetch_interval
   required: true
   type: 0

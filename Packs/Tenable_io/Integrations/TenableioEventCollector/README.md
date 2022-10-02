@@ -48,36 +48,7 @@ There is no context output for this command.
 
 #### Command example
 ```!tenable-get-audit-logs limit=1```
-#### Context Example
-```json
-{
-    "Tenable": {
-        "AuditLogs": [
-            {
-              "id": "1234",
-              "action": "user.create",
-              "crud": "c",
-              "actor": {
-                "id": "1234",
-                "name": "teste@tenatestble.admin"
-              },
-              "target": {
-                "id": "1234",
-                "name": "test@test.com",
-                "type": "User"
-              },
-              "description": "None",
-              "is_anonymous": "True",
-              "is_failure": "False",
-              "fields": [
-                {"key": "X-Access-Type", "value": "apikey"},
-                {"key": "X-Forwarded-For", "value": "1.3.2.1"},
-                {"key": "X-Request-Uuid", "value": "1.2.3.4"}],
-              "received": "2022-05-18T16:33:02Z"}
-        ]
-    }
-}
-```
+
 
 #### Human Readable Output
 
@@ -109,84 +80,6 @@ Returns vulnerabilities extracted from Tenable io.
 
 There is no context output for this command.
 
-#### Context Example
-```json
-{
-  "Tenable": {
-    "Vulnerabilities": [
-      {
-        "asset": {
-          "device_type": "general-purpose",
-          "fqdn": "test.net",
-          "hostname": "test.net",
-          "uuid": "1234",
-          "ipv4": "1.2.3.4",
-          "last_unauthenticated_results": "2022-08-14T14:53:02Z",
-          "operating_system": [
-            "Linux Kernel 2.6"
-          ],
-          "network_id": "00000000-0000-0000-0000-000000000000",
-          "tracked": True
-        },
-        "output": "test",
-        "plugin": {
-          "checks_for_default_account": False,
-          "checks_for_malware": False,
-          "cvss3_base_score": 0.0,
-          "cvss3_temporal_score": 0.0,
-          "cvss_base_score": 0.0,
-          "cvss_temporal_score": 0.0,
-          "description": "This plugin is a SYN half-open",
-          "exploit_available": False,
-          "exploit_framework_canvas": False,
-          "exploit_framework_core": False,
-          "exploit_framework_d2_elliot": False,
-          "exploit_framework_exploithub": False,
-          "exploit_framework_metasploit": False,
-          "exploited_by_malware": False,
-          "exploited_by_nessus": False,
-          "family": "Port scanners",
-          "family_id": 1,
-          "has_patch": False,
-          "id": 1,
-          "in_the_news": False,
-          "name": "test",
-          "modification_date": "2022-07-19T00:00:00Z",
-          "publication_date": "2009-02-04T00:00:00Z",
-          "risk_factor": "None",
-          "see_also": [
-            ""
-          ],
-          "solution": "test",
-          "synopsis": "test",
-          "type": "remote",
-          "unsupported_by_vendor": False,
-          "version": "1"
-        },
-        "port": {
-          "port": 1,
-          "protocol": "TCP",
-          "service": "smtp"
-        },
-        "scan": {
-          "completed_at": "2022-08-14T14:53:18.852Z",
-          "schedule_uuid": "1234",
-          "started_at": "2022-08-14T14:22:51.230Z",
-          "uuid": "1234"
-        },
-        "severity": "info",
-        "severity_id": 0,
-        "severity_default_id": 0,
-        "severity_modification_type": "NONE",
-        "first_found": "2022-08-14T14:53:18.852Z",
-        "last_found": "2022-08-14T14:53:18.852Z",
-        "state": "OPEN",
-        "indexed": "2022-08-14T14:53:53.627Z"
-      }
-    ]
-  }
-}
-```
 
 #### Human Readable Output
 
