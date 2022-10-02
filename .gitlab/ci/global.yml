@@ -182,7 +182,9 @@
   stage: unittests-and-validations
   artifacts:
     reports:
-      cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -201,7 +203,6 @@
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/scripts/utils/tests -v
     - python3 -m pytest ./Tests/tests -v
     - python3 -m pytest ./Tests/private_build/ -v
     - python3 -m pytest Utils -v
