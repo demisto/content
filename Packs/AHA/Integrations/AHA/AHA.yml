@@ -110,10 +110,13 @@ script:
           predefined:
             - ""
         - name: fields
-          description: Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status
+          description:
+            'Fields in JSON format to edit in a feature. Possible fields are name, description and status.
+            Status should match Aha values under workflow_status.
+            Example:" {"name": "name", "description": "desc", "status" : "Closed"}'
           required: true
           isArray: false
-          defaultValue: '{"name": "name", "description": "desc", "status" : "Closed"}'
+          defaultValue: ""
           predefined:
             - ""
       outputs:
