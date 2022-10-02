@@ -737,9 +737,19 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
     source_host = detection.get('src_host')
     source_host_id = source_host.get('id') if source_host else None
 
-    return common_extract_data(detection) | {
+    summary = detection.get('summary')
+    if summary:
+        description = summary.get('description')
+        dst_ips = summary.get('dst_ips')
+        dst_ports = summary.get('dst_ports')
+    else:
+        description = dst_ips = dst_ports = None
+
+    return common_extract_data(detection) | remove_empty_elements({
         'Category'            : detection.get('category'),                                                # noqa: E203
-        'Description'         : detection.get('description'),                                             # noqa: E203
+        'Description'         : description,                                                              # noqa: E203
+        'DestinationIPs'      : dst_ips,                                                                  # noqa: E203
+        'DestinationPorts'    : dst_ports,                                                                # noqa: E203
         'FirstTimestamp'      : convert_date(detection.get('first_timestamp')),                           # noqa: E203
         'IsTargetingKeyAsset' : detection.get('is_targeting_key_asset'),                                  # noqa: E203
         'LastTimestamp'       : convert_date(detection.get('last_timestamp')),                            # noqa: E203
@@ -750,10 +760,10 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
         'SourceAccountID'     : source_account_id,                                                        # noqa: E203
         'SourceHostID'        : source_host_id,                                                           # noqa: E203
         'SourceIP'            : detection.get('src_ip'),                                                  # noqa: E203
-        'TriageRuleID'        : detection.get('triage_rule_id'),                                          # noqa: E203
+        'TriageRuleID'        : detection.get('triage_rule_id'),                               # noqa: E203
         'Type'                : detection.get('detection'),                                               # noqa: E203
         'URL'                 : forge_entity_url('detection', detection.get('id')),                       # noqa: E203
-    }
+    })
 
 
 def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
@@ -1691,10 +1701,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'vectra-search-accounts':
             return_results(vectra_search_accounts_command(client, **kwargs))
-        elif command == 'vectra-search-detections':
-            return_results(vectra_search_detections_command(client, **kwargs))
         elif command == 'vectra-search-hosts':
             return_results(vectra_search_hosts_command(client, **kwargs))
+        elif command == 'vectra-search-detections':
+            return_results(vectra_search_detections_command(client, **kwargs))
 
         # ## Accounts centric commands
         elif command == 'vectra-account-describe':
