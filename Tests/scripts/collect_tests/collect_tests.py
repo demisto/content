@@ -75,6 +75,7 @@ class CollectionResult:
             id_set: Optional[IdSet],
             is_sanity: bool = False,
             is_nightly: bool = False,
+            override_pack_compatibility_check: bool = False,
     ):
         """
         Collected test playbook, and/or a pack to install.
@@ -92,6 +93,9 @@ class CollectionResult:
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
+        :param override_pack_compatibility_check:
+                whether to install a pack, even if it is not directly compatible.
+                This is used when collecting a pack containing a content item, when their marketplace values differ.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
@@ -99,7 +103,17 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_collection(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
+            # raises if invalid
+            self._validate_collection(
+                pack=pack,
+                test=test,
+                reason=reason,
+                conf=conf,
+                id_set=id_set,
+                is_sanity=is_sanity,
+                is_nightly=is_nightly,
+                skip_pack_compatibility=override_pack_compatibility_check,
+            )
 
         except NonXsoarSupportedPackException:
             if test:
@@ -137,6 +151,7 @@ class CollectionResult:
             id_set: Optional[IdSet],
             is_sanity: bool,
             is_nightly: bool,
+            skip_pack_compatibility: bool,
     ):
         """
         Validates the arguments of the constructor.
@@ -184,9 +199,12 @@ class CollectionResult:
                 PACK_MANAGER.validate_pack(pack)
 
             except NonXsoarSupportedPackException:
-                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    return
-                raise
+                if skip_pack_compatibility:
+                    logger.info(f'overriding pack compatibility check for {pack} - not compliant, but IS collected')
+                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    pass
+                else:
+                    raise
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type:ignore[union-attr]
@@ -568,6 +586,7 @@ class BranchTestCollector(TestCollector):
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
+        override_pack_compatibility_check = False
 
         match actual_content_type:
             case None:
@@ -594,6 +613,7 @@ class BranchTestCollector(TestCollector):
                         suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
 
                     logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
+                    override_pack_compatibility_check = True
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -627,6 +647,7 @@ class BranchTestCollector(TestCollector):
                     if not tests:  # no tests were found in yml nor in id_set
                         logger.warning(f'{actual_content_type.value} {relative_yml_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
+                        override_pack_compatibility_check = True
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
@@ -641,6 +662,7 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set,
                     is_nightly=False,
+                    override_pack_compatibility_check=override_pack_compatibility_check
                 ) for test in tests))
         else:
             return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
