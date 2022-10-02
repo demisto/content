@@ -636,6 +636,9 @@ script:
   - name: zendesk-ticket-list
     description: List Zendesk tickets.
     arguments:
+    - name: query
+      description: 'Query to search for tickets. For more information about the search
+        syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
     - name: ticket_id
       isArray: true
       description: The ID of a specific ticket.

@@ -595,8 +595,9 @@ class ZendeskClient(BaseClient):
                 return f'/users/{user_id}/tickets/{filter}'
 
     def zendesk_ticket_list(self, ticket_id: Optional[STR_OR_STR_LIST] = None, query: Optional[str] = None,
-                            filter: Optional[str] = None, user_id: Optional[str] = None,
-                            sort: Optional[str] = None, page_number: Optional[int] = None, **kwargs):
+                            user_id: Optional[str] = None, sort: Optional[str] = None,
+                            page_number: Optional[int] = None, **kwargs):
+        filter_ = kwargs.pop('filter', None)
         error_msgs = []
         command_results = []
         if query is not None:
@@ -621,7 +622,7 @@ class ZendeskClient(BaseClient):
         else:
             can_use_cursor_paging = page_number is not None
             sort_params = self._get_sort_params(sort, can_use_cursor_paging) if sort else None
-            url_suffix = self.__get_tickets_url_suffix(filter, user_id)
+            url_suffix = self.__get_tickets_url_suffix(filter_, user_id)
             tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
                                                params=sort_params, page_number=page_number, **kwargs))
 
