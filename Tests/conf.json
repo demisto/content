@@ -782,7 +782,14 @@
         {
             "integrations": "Server Message Block (SMB) v2",
             "playbookID": "SMB_v2-Test",
-            "has_api": false
+            "has_api": false,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB test",
+            "has_api": false,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -2568,10 +2575,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Symantec Advanced Threat Protection",
-            "playbookID": "Symantec ATP Test"
-        },
-        {
             "playbookID": "HTTPListRedirects - Test SSL",
             "has_api": true
         },
@@ -2781,7 +2784,8 @@
                 "Image OCR"
             ],
             "playbookID": "Rasterize Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Rasterize",
@@ -4338,14 +4342,6 @@
             ]
         },
         {
-            "playbookID": "SMB test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Server Message Block (SMB) v2",
-                "Server Message Block (SMB)"
-            ]
-        },
-        {
             "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -4639,34 +4635,6 @@
                 "OpenLDAP"
             ],
             "instance_names": "LDAP Authentication (Active Directory)"
-        },
-        {
-            "playbookID": "Splunk-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPySearch_Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy KV commands",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy-Test-V2",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
@@ -5106,7 +5074,8 @@
             "integrations": [
                 "Whois",
                 "Rasterize"
-            ]
+            ],
+            "memory_threshold": 150
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
@@ -5215,13 +5184,22 @@
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
             "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "PAN-OS Create Or Edit Rule Test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Panorama"
+            ]
         }
     ],
     "skipped_tests": {
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
+        "PAN-OS Create Or Edit Rule Test": "this test should run only when running palo_alto_panorama_test_pb and not on its own",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
+        "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
@@ -5356,7 +5334,10 @@
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
-        "Carbon Black Enterprise Protection V2 Test": "No credentials"
+        "Carbon Black Enterprise Protection V2 Test": "No credentials",
+        "TruSTAR v2-Test": "No credentials",
+        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "AD v2 - debug-mode": "No credentials"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
@@ -5671,6 +5652,7 @@
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
         "HelloWorld",
+        "Image OCR",
         "JSON Feed",
         "Lastline v2",
         "LogRhythmRest",
