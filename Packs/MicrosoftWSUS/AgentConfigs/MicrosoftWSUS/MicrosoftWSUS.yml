@@ -1,8 +1,11 @@
-filebeat.modules:
-  module: iis
-  access:
-    enabled: true
-    var.paths: ["C:/inetpub/logs/LogFiles/*/*.log"]
-  error:
-    enabled: true
-    var.paths: ["C:/Windows/System32/LogFiles/HTTPERR/*.log"]
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - C:\Program Files\Update Services\LogFiles\Change.log
+    - C:\Program Files\Update Services\LogFiles\SoftwareDistribution.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: msft
+          product: WSUS
