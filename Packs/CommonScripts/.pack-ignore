@@ -88,3 +88,9 @@ AttachmentFile
 formatter
 FPs
 GetIndicatorDBotScore
+stringify
+Okta
+MicrosoftGraphUser
+SailPointIdentityIQ
+ActiveDirectoryQuery
+GenericPolling
