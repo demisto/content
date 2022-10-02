@@ -5,6 +5,7 @@ import argparse
 import filecmp
 import json
 from pathlib import Path
+import shutil
 import tempfile
 from zipfile import ZipFile
 
@@ -13,6 +14,7 @@ from contextlib import redirect_stdout
 import dictdiffer
 
 from ruamel.yaml import YAML
+from slack_sdk import WebClient
 
 yaml = YAML()
 
@@ -87,10 +89,12 @@ if __name__ == '__main__':
     parser.add_argument('--zip-id-set', help='id_set zip file to compare')
     parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
     parser.add_argument('--output-path', help='Output path')
+    parser.add_argument('--slack-token', '-s', help='Slack token')
     args = parser.parse_args()
     zip_id_set = Path(args.zip_id_set)
     zip_graph = Path(args.zip_graph)
     output_path = Path(args.output_path)
+    slack_token = args.slack_token
     output_path.mkdir(exist_ok=True, parents=True)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
@@ -98,3 +102,9 @@ if __name__ == '__main__':
     for file in dir_cmp.common_files:
         pack = file.removesuffix('.zip')
         compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
+    shutil.make_archive('diff', 'zip', output_path)
+    slack_client = WebClient(token=slack_token)
+    slack_client.chat_postMessage(channel='dmst-graph-tests',
+                                  text=f'Zip difference for {output_path}')
+    with (output_path / 'diff.zip').open() as f:
+        slack_client.files_upload(f, 'diff.zip', channels='dmst-graph-tests')
