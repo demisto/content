@@ -60,6 +60,32 @@ class SiteImportance(Enum):
     VERY_HIGH = 5
 
 
+class VulnerabilityExceptionState(Enum):
+    """An Enum of possible vulnerability exception scope type values."""
+    DELETED = 1
+    EXPIRED = 2
+    APPROVED = 3
+    REJECTED = 4
+
+
+class VulnerabilityExceptionScopeType(Enum):
+    """An Enum of possible vulnerability exception scope type values."""
+    GLOBAL = 1
+    SITE = 2
+    ASSET = 3
+    ASSET_GROUP = 4
+    INSTANCE = 5
+
+
+class VulnerabilityExceptionReason(Enum):
+    """An Enum of possible vulnerability exception reason values."""
+    FALSE_POSITIVE = 1
+    COMPENSATING_CONTROL = 2
+    ACCEPTED_USE = 3
+    ACCEPTED_RISK = 4
+    OTHER = 5
+
+
 class InvalidSiteNameException(DemistoException):
     pass
 
@@ -327,6 +353,57 @@ class Client(BaseClient):
 
         return self._http_request(
             url_suffix="/sites",
+            method="POST",
+            json_data=post_data,
+            resp_type="json",
+        )
+
+    def create_vulnerability_exception(self, vulnerability_id: str, scope_type: str, state: str, reason: str,
+                                       expires: Optional[str] = None, comment: Optional[str] = None):
+        """
+        | Create a new vulnerability exception.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createVulnerabilityException
+
+        Args:
+            vulnerability_id (str): ID of the vulnerability to create an exception for.
+            scope_type (str): The type of the exception scope.
+                Can be one of: "Global", "Site", "Asset", "Asset Group", and "Instance".
+            state (str): The state of the vulnerability exception.
+                Can be one of: "Deleted", "Expired", "Approved", "Rejected", and "Under Review".
+            reason (str): The reason the vulnerability exception was submitted.
+                Can be one of: "False Positive", "Compensating Control", "Acceptable Use",
+                "Acceptable Risk", and "Other".
+            expires (str | None, optional): The date and time the vulnerability exception is set to expire.
+            comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
+
+        Returns:
+            dict: API response with information about the newly created vulnerability exception.
+        """
+        scope_obj = find_valid_params(
+            id=vulnerability_id,
+            type=scope_type,
+        )
+
+        submit_obj = find_valid_params(
+            reason=reason,
+            comment=comment,
+        )
+
+        # Change to None if empty dict (no parameters used).
+        submit_obj = submit_obj if submit_obj else None
+        scope_obj = scope_obj if scope_obj else None
+
+        post_data = find_valid_params(
+            expires=expires,
+            scope=scope_obj,
+            state=state,
+            submit=submit_obj,
+        )
+
+        return self._http_request(
+            url_suffix="/vulnerability_exceptions",
             method="POST",
             json_data=post_data,
             resp_type="json",
@@ -1959,6 +2036,41 @@ def delete_site_command(client: Client, site: Site) -> CommandResults:
     )
 
 
+def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
+                                           scope_type: VulnerabilityExceptionScopeType,
+                                           state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
+                                           expires: Optional[str] = None,
+                                           comment: Optional[str] = None) -> CommandResults:
+    """
+    Create a vulnerability exception.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_id (str): ID of the vulnerability to create the exception for.
+        scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
+        state (VulnerabilityExceptionState): The state of the vulnerability exception.
+        reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
+        expires (str | None, optional): The date and time the vulnerability exception is set to expire.
+        comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
+    """
+    response_data = client.create_vulnerability_exception(
+        vulnerability_id=vulnerability_id,
+        scope_type=scope_type.name.lower().replace("_", " ").title(),
+        state=state.name.lower().replace("_", " ").title(),
+        reason=reason.name.lower().replace("_", " ").title(),
+        expires=expires,
+        comment=comment,
+    )
+
+    return CommandResults(
+        readable_output=f"New vulnerability exception has been created with ID {str(response_data['id'])}.",
+        outputs_prefix="Nexpose.VulnerabilityException",
+        outputs_key_field="Id",
+        outputs={"Id": response_data["id"]},
+        raw_response=response_data,
+    )
+
+
 def download_report_command(client: Client, report_id: str, instance_id: str,
                             report_format: ReportFileFormat, report_name: Optional[str] = None) -> dict:
     """
@@ -3206,6 +3318,17 @@ def main():
                 report_name=args.get("name"),
                 report_format=report_format,
                 download_immediately=argToBoolean(args.get("download_immediately")),
+            )
+        elif command == "nexpose-create-vulnerability-exception":
+            results = create_vulnerability_exception_command(
+                client=client,
+                vulnerability_id=args["vulnerability_id"],
+                scope_type=VulnerabilityExceptionScopeType(args["scope_type"].upper().replace(' ', '_')),
+                state=VulnerabilityExceptionState(args["state"].upper().replace(' ', '_')),
+                reason=VulnerabilityExceptionReason(args["reason"].upper().replace(' ', '_')),
+                expires=args.get("expires"),
+                comment=args.get("comment"),
+
             )
         elif command == "nexpose-delete-scan-schedule":
             results = delete_scheduled_scan_command(
