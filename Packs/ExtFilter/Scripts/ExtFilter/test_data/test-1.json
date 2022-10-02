@@ -8167,5 +8167,36 @@
                 "result": ["a.dat", "b.exe", "c.txt"]
             }
         ]
+    }, {
+        "path": "",
+        "operation": "is replaced with",
+        "filter": "${name${name2}}",
+        "ctx_demisto": {
+            "name1": "xxx",
+            "name2": 1
+        },
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["zzz"],
+                "result": ["xxx"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is replaced with",
+        "filter": "{${name}}",
+        "ctx_demisto": {
+            "name": "xxx"
+        },
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["zzz"],
+                "result": ["{xxx}"]
+            }
+        ]
     }
 ]
