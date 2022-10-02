@@ -23,6 +23,8 @@ testdata = [
     ('Xsoar[@]xsoar.xlsx', False),
     ('Xsoa r[@] test.BmP', False),
     ('bt53h6htyj8j57k9k=organization.org[@]ozzy.qwer.de', True),
+    ('xsoar@test[.]com', True),
+    ('xsoar[@]test[.]com', True),
 ]
 
 

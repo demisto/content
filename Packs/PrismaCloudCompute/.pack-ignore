@@ -23,3 +23,9 @@ ignore=PA129
 
 [file:classifier-PrismaCloudCompute.json]
 ignore=BA101
+
+[known_words]
+resourceType
+resourceID
+codeRepo
+registryImage
