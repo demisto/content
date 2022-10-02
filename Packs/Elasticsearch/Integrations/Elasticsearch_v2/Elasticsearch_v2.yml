@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Elasticsearch v2_dev
+  id: Elasticsearch v2
   version: -1
 configuration:
 - display: Server URL
@@ -86,8 +86,8 @@ configuration:
   required: false
   type: 8
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: Elasticsearch v2 (Dev)
-name: Elasticsearch v2_dev
+display: Elasticsearch v2
+name: Elasticsearch v2
 script:
   commands:
   - arguments:
