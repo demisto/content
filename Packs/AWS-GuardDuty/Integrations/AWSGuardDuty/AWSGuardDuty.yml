@@ -54,6 +54,9 @@ configuration:
   type: 0
 - display: Guard Duty Severity level
   name: gs_severity
+  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". 
+    For example, if you set the severity
+    level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -1273,15 +1276,15 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3py3:1.0.0.33854
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
-- No test
+- No tests
 fromversion: 5.0.0

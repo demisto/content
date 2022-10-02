@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer, Build, get_packs_with_higher_min_version
+    XSOARBuild, XSOARServer, XSIAMBuild, XSIAMServer, Build, get_packs_with_higher_min_version
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging

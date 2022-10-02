@@ -57,6 +57,7 @@ class TestPrivatePacks:
                                   'partnerId': 'partnerId',
                                   'partnerName': 'partnerName',
                                   'contentCommitHash': "",
+                                  'disableMonthly': False
                                   }]
 
     def test_get_private_packs_empty(self, mocker):

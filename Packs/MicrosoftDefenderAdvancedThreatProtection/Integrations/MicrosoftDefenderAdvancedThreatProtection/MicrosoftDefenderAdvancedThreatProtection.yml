@@ -31,6 +31,26 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_type
+  defaultvalue: Client Credentials
+  options:
+  - Authorization Code
+  - Client Credentials
+  type: 15
+- display: Application redirect URI (for authorization code mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+    Instructions section
+  hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
@@ -85,6 +105,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -105,6 +130,10 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - deprecated: false
+    description: Tests connectivity to Microsoft Defender for Endpoint.
+    execution: false
+    name: microsoft-atp-test
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -261,6 +290,18 @@ script:
       description: The machine's OS platform. Only a single platform can be added.
       isArray: false
       name: os_platform
+      required: false
+      secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000.
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The page number to retrieve.
+      defaultValue: '1'
+      name: page_num
       required: false
       secret: false
     deprecated: false
@@ -812,26 +853,52 @@ script:
       type: Date
   - arguments:
     - default: true
-      description: The query to run.
+      description: The query to run. Must be passed if query_batch argument is not provided.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
+      description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array.
       isArray: false
       name: timeout
       required: false
       secret: false
     - name: time_range
-      description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
+      description: Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
       required: false
       isArray: false
       defaultValue: ''
       predefined:
       - ''
-    deprecated: false
+    - default: false
+      description:  |-
+        A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
+        [{
+          "query": "query #1",
+          "name": "name #1",
+          "timeout": "timeout #1",
+          "time_range": "2 days ago"
+          },
+          {
+          "query": "query #2",
+          "name": "name #2",
+          "timeout": "timeout #2",
+          "time_range": "6 days ago"
+          }]
+        The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
+      isArray: false
+      name: query_batch
+      required: false
+      secret: false
+      deprecated: false
+    - default: false
+      description: If stated along with query, the response will be be saved in context under the Result.name path.
+      isArray: false
+      name: name
+      required: false
+      secret: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
     execution: false
     name: microsoft-atp-advanced-hunting
@@ -3016,7 +3083,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3664,6 +3731,12 @@ script:
       name: rbac_group_names
       required: false
       secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified indicator.
     execution: false
@@ -3784,7 +3857,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
@@ -3839,6 +3912,12 @@ script:
       description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
+      required: false
+      secret: false
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
       required: false
       secret: false
     deprecated: false
@@ -5779,7 +5858,7 @@ script:
     - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
       description: Troubleshooting information.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.34720
   feed: false
   isfetch: true
   longRunning: false

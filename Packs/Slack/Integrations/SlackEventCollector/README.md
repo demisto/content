@@ -11,8 +11,6 @@ This integration was integrated and tested with version v1 of Slack Audit Logs A
     | --- | --- | --- |
     | Server URL |  | True |
     | User Token |  | True |
-    | The product name corresponding to the integration that originated the events |  | False |
-    | The vendor name corresponding to the integration that originated the events |  | False |
     | The maximum number of audit logs to fetch |  | False |
     | First fetch time interval | Data is not available prior to March 2018. | False |
     | Trust any certificate (not secure) |  | False |

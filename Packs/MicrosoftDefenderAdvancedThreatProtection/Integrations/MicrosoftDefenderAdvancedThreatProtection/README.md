@@ -15,26 +15,33 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Authentication
 ---
+There are two different authentication methods for self-deployed configuration: 
+- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
+- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
+
+**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+
 ### Required Permissions
-* AdvancedQuery.Read.All - Application
-* Alert.ReadWrite.All - Application
-* File.Read.All - Application
-* Ip.Read.All - Application
-* Machine.CollectForensics - Application
-* Machine.Isolate - Application
-* Machine.ReadWrite.All - Application
-* Machine.RestrictExecution - Application
-* Machine.Scan - Application
-* Machine.StopAndQuarantine - Application
-* ThreatIndicators.ReadWrite.OwnedBy - Application. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application
-* User.Read.All - Application
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
-* Vulnerability.Read.All - Application
+Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
+* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* File.Read.All - Application / Delegated
+* Ip.Read.All - Application / Delegated
+* Machine.CollectForensics - Application / Delegated
+* Machine.Isolate - Application / Delegated
+* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* Machine.RestrictExecution - Application / Delegated
+* Machine.Scan - Application / Delegated
+* Machine.StopAndQuarantine - Application / Delegated
+* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* Url.Read.All - Application / Delegated
+* User.Read.All - Application / Delegated
+* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -59,6 +66,11 @@ For more details about the authentication used in this integration, see [Microso
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
     | self-deployed | Use a self-deployed Azure Application. |  N/A |
+    | Using GCC | Whether a GCC edpoint is used. |  False |
+    | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -340,6 +352,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
 | health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
+| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional | 
+| page_num | The page number to retrieve. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -1074,24 +1088,58 @@ AdvancedQuery.Read.All
 ##### Base Command
 
 `microsoft-atp-advanced-hunting`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to run. | Required | 
-| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. | Optional | 
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
+| query | The query to run. Must be passed if query_batch argument is empty. | Optional | 
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array. Default is 10. | Optional | 
+| time_range | Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array. | Optional | 
+| query_batch | A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:<br/>[<br/>    {<br/>    "query": "query #1",<br/>    "name": "name #1",<br/>    "timeout": "timeout #1"<br/>    "time_range": "2 days ago"	// Non-mandatory, will override the {time_range} argument<br/>    },<br/>    {<br/>    "query": "query #2",<br/>    "name": "name #2",<br/>    "timeout": "timeout #2"<br/>    "time_range": "6 days ago"t<br/>    }<br/>  ]<br/>. The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.| Optional | 
+| name | If stated along with query, the response will be saved in context under the Result.name path. | Optional | 
 
-##### Context Output
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Hunt.Result | String | The query results. | 
 
+#### Command example
+```!microsoft-atp-advanced-hunting query_batch=`{"queries": [{"query": "DeviceInfo | where OnboardingStatus == 'Onboarded' | limit 10 | distinct DeviceName", "name": "name", "timeout": "20"}]}````
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Hunt": {
+            "Result": [
+                {
+                    "name": [
+                        {
+                            "DeviceName": "msde-agent-host-centos7.c.dmst-integrations.internal"
+                        },
+                        {
+                            "DeviceName": "desktop-s2455r8"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Hunt results for name query:
+>|DeviceName|
+>|---|
+>| msde-agent-host-centos7.c.dmst-integrations.internal |
+>| desktop-s2455r8 |
+
 
 ##### Command Example
 ```!microsoft-atp-advanced-hunting query="DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)"```
-
 ##### Context Example
 ```
 {
@@ -1110,8 +1158,6 @@ AdvancedQuery.Read.All
 |Timestamp|DeviceId|ReportId|
 |---|---|---|
 | 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
-
-
 ### 10. microsoft-atp-create-alert
 ---
 Creates a new alert entity using event data, as obtained from the Advanced Hunting.
@@ -6011,3 +6057,18 @@ Collect and download an investigation package as a gz file.
 >| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
+### microsoft-atp-test
+***
+Tests connectivity to Microsoft Defender for Endpoint.
+
+
+#### Base Command
+
+`microsoft-atp-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

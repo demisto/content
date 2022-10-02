@@ -36,7 +36,7 @@ def http_request(method, url, verify_certificates, headers):
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': 'error has occured: %s' % (e.message, ),
+            'Contents': f'error has occured: {e}',
         })
 
 
@@ -724,7 +724,7 @@ def main():
             file_command(**params)
 
     except Exception as e:
-        return_error('An error has occurred: %s' % (e.message))
+        return_error(f'An error has occurred: {e}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

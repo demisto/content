@@ -53,6 +53,10 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
+    'monitoring.pprof': 'true',
+    'enable.pprof.memory.dump': 'true',
+    'limit.memory.dump.size': '14000',
+    'memdump.debug.level': '1',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -345,8 +349,7 @@ class Build:
                 if self.is_xsiam and not filtered_tests:
                     tests_for_iteration = []
                 else:
-                    tests_for_iteration = [test for test in tests
-                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 

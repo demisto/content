@@ -1,0 +1,39 @@
+{
+    "author": "Vectra TME Integrations",
+    "categories": [
+        "Network Security"
+    ],
+    "created": "2022-06-27T10:00:00Z",
+    "currentVersion": "1.1.0",
+    "description": "This content pack allows to create incidents based on Vectra Accounts/Hosts/Detections objects.",
+    "devEmail": [
+        "tme@vectra.ai"
+    ],
+    "displayedImages": [
+        "CommonTypes"
+    ],
+    "email": "support@vectra.ai",
+    "githubUser": [
+        "Vectra-ODuda"
+    ],
+    "itemPrefix": "Vectra",
+    "keywords": [
+        "Vectra",
+        "Vectra AI"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "name": "Vectra AI",
+    "support": "partner",
+    "tags": [
+        "Alerts",
+        "Incident Response",
+        "Security"
+    ],
+    "url": "https://support.vectra.ai",
+    "useCases": [
+        "Network Security"
+    ]
+}

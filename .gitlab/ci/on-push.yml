@@ -108,25 +108,15 @@ create-instances:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Collect Tests and Content Packs"
+    - section_start "Collect Tests"
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
       fi
-    - section_end "Collect Tests and Content Packs"
-
-    - section_start "Collect Tests V2"
-    - |
-      if [ -n "${INSTANCE_TESTS}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY || echo "failed"
-      fi
-    - section_end "Collect Tests V2"
+    - section_end "Collect Tests"
     
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
@@ -145,6 +135,7 @@ create-instances:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 prepare-testing-bucket-mpv2:
   tags:
@@ -191,13 +182,13 @@ prepare-testing-bucket-mpv2:
     - section_start "Collect Tests and Content Packs"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
     
     - section_start "Collect Tests V2"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY || echo "failed"
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests V2"
 
     - section_start "Prepare Content Packs for Testing"
@@ -207,6 +198,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 .test_content_on_xsoar_server_instances_base:
   tags:
@@ -221,6 +213,7 @@ prepare-testing-bucket-mpv2:
   needs: ["create-instances"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -343,6 +336,7 @@ slack-notify-nightly-build:
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
 

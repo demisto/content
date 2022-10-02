@@ -1,11 +1,10 @@
 from typing import Any, Dict, Union
 
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 from requests import Response
-
-import demistomock as demisto
-from CommonServerPython import *
 
 urllib3.disable_warnings()
 
@@ -128,6 +127,42 @@ class Client(BaseClient):
             },
             resp_type='response',
             ok_codes=(200, 404),
+        )
+
+    @logger
+    def get_user(self, email_or_uid: str) -> Response:
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/enduser/{email_or_uid}'
+        )
+
+    @logger
+    def create_user(self, email: str, fields: dict, attributes: dict) -> Response:
+        json_data = {'attributes': attributes}
+        json_data.update(fields)
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/enduser/{email}',
+            json_data=json_data,
+            ok_codes=(200, 400)
+        )
+
+    @logger
+    def modify_user(self, email_or_uid: str, fields: dict, attributes: dict) -> Response:
+        json_data = {'attributes': attributes}
+        json_data.update(fields)
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/enduser/{email_or_uid}',
+            json_data=json_data
+        )
+
+    @logger
+    def delete_user(self, email_or_uid: str) -> Response:
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/enduser/{email_or_uid}',
+            ok_codes=(200, 404)
         )
 
 
@@ -288,6 +323,118 @@ def download_message(client: Client, args: Dict[str, Any]) -> Union[CommandResul
     return fileResult(guid + '.eml', result.content)
 
 
+def get_user(client: Client, args: Dict[str, Any]) -> CommandResults:
+    email = args.get('email')
+    uid = args.get('uid')
+    if email or uid:
+        result = client.get_user(email or uid)
+        if isinstance(result, dict):
+            command_results_args = {
+                'readable_output': tableToMarkdown(
+                    'Proofpoint Protection Server Users',
+                    result,
+                    ['uid', 'email', 'firstname', 'lastname', 'created', 'lastmodified'],
+                ),
+                'outputs_prefix': 'Proofpoint.User',
+                'outputs_key_field': 'email',
+                'outputs': result,
+                'raw_response': result,
+            }
+        else:
+            raise RuntimeError(f'Failed to get user.\n{result}')
+    else:
+        command_results_args = {
+            'readable_output': 'Please specify an email or uid'
+        }
+    return CommandResults(**command_results_args)
+
+
+def create_user(client: Client, args: Dict[str, Any]) -> CommandResults:
+    email = args.get('email')
+    fields = json.loads(args.get('fields', '{}'))
+    attributes = json.loads(args.get('attributes', '{}'))
+    result = client.create_user(email, fields, attributes)
+    demisto.debug(f'result: {result}')
+    if isinstance(result, dict):
+        if result.get('status') == 400:
+            if result.get('errors', {}).get('invalidarguments', [])[0].get('error') == 'User already exists':
+                command_results_args: Dict[str, Any] = {
+                    'readable_output': 'User already exists'
+                }
+            else:
+                raise RuntimeError(f'Failed to create user.\n{result}')
+        else:
+            command_results_args = {
+                'readable_output': tableToMarkdown(
+                    'User created',
+                    result,
+                    ['uid', 'email', 'firstname', 'lastname', 'created', 'lastmodified'],
+                ),
+                'outputs_prefix': 'Proofpoint.User',
+                'outputs_key_field': 'email',
+                'outputs': result,
+                'raw_response': result
+            }
+        return CommandResults(**command_results_args)
+    else:
+        raise RuntimeError(f'Failed to create user.\n{result}')
+
+
+def modify_user(client: Client, args: Dict[str, Any]) -> CommandResults:
+    email = args.get('email')
+    uid = args.get('uid')
+    fields = json.loads(args.get('fields', '{}'))
+    attributes = json.loads(args.get('attributes', '{}'))
+    if email or uid:
+        result = client.modify_user(email or uid, fields, attributes)
+        if isinstance(result, dict):
+            command_results_args: Dict[str, Any] = {
+                'readable_output': tableToMarkdown(
+                    'Modified User',
+                    result,
+                    ['uid', 'email', 'firstname', 'lastname', 'created', 'lastmodified'],
+                ),
+                'outputs_prefix': 'Proofpoint.User',
+                'outputs_key_field': 'email',
+                'outputs': result,
+                'raw_response': result,
+            }
+        else:
+            raise RuntimeError(f'Failed to modify user.\n{result}')
+    else:
+        command_results_args = {
+            'readable_output': 'Please specify an email or uid'
+        }
+    return CommandResults(**command_results_args)
+
+
+def delete_user(client: Client, args: Dict[str, Any]) -> CommandResults:
+    email = args.get('email')
+    uid = args.get('uid')
+    if email or uid:
+        result = client.delete_user(email or uid)
+        if isinstance(result, dict):
+            if result.get('status') == 404:
+                if result.get('errors', {}).get('invalidarguments', [])[0].get('error') == 'User not found':
+                    command_results_args: Dict[str, Any] = {
+                        'readable_output': 'User not found'
+                    }
+                else:
+                    raise RuntimeError(f'Failed to delete user.\n{result}')
+            else:
+                command_results_args = {
+                    'readable_output': 'Deleted User',
+                    'raw_response': result,
+                }
+        else:
+            raise RuntimeError(f'Failed to delete user.\n{result}')
+    else:
+        command_results_args = {
+            'readable_output': 'Please specify an email or uid'
+        }
+    return CommandResults(**command_results_args)
+
+
 def main() -> None:
     try:
         command = demisto.command()
@@ -299,6 +446,12 @@ def main() -> None:
             verify=not params.get('unsecure', False),
             proxy=params.get('proxy', False),
         )
+        commands = {
+            'proofpoint-pps-get-user': get_user,
+            'proofpoint-pps-create-user': create_user,
+            'proofpoint-pps-modify-user': modify_user,
+            'proofpoint-pps-delete-user': delete_user,
+        }
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'proofpoint-pps-smart-search':
@@ -317,6 +470,8 @@ def main() -> None:
             return_results(delete_message(client, demisto.args()))
         elif command == 'proofpoint-pps-quarantine-message-download':
             return_results(download_message(client, demisto.args()))
+        elif command in commands:
+            return_results(commands[command](client, demisto.args()))
 
     except Exception as e:
         return_error(str(e), error=e)
