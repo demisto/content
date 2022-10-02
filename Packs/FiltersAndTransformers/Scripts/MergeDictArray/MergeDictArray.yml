@@ -26,10 +26,8 @@ args:
   predefined:
   - "true"
   - "false"
-comment: |-
-  Deprecated. Use Filters And Transformers instead.
-
-  Each entry in an array is merged into the existing array if the keyed-value matches.
+comment: Each entry in an array is merged into the existing array if the keyed-value
+  matches.
 commonfields:
   id: MergeDictArray
   version: -1
@@ -37,7 +35,6 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 enabled: true
-deprecated: true
 name: MergeDictArray
 runas: DBotWeakRole
 runonce: false

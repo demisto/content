@@ -4,15 +4,11 @@ args:
   isArray: true
   name: value
   required: true
-comment: |-
-  Deprecated. Use Filters And Transformers instead.
-
-  Return the string encoded with JSON from the whole array.
+comment: Return the string encoded with JSON from the whole array
 commonfields:
   id: StringifyArray
   version: -1
 enabled: true
-deprecated: true
 name: StringifyArray
 runas: DBotWeakRole
 runonce: false

@@ -9,12 +9,9 @@ tags:
 - string
 - entirelist
 comment: |-
-  Deprecated. Use Filters And Transformers instead.
-
   Extract the strings matched to the patterns by doing backslash substitution on the template string.
   This transformer allow to input multiple regex patterns and multiple match targets, and those can be given in the input value and the argument parameters.
 enabled: true
-deprecated: true
 args:
 - name: value
   description: List of regex or text for the pattern match.
@@ -51,7 +48,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.9.25564
+dockerimage: demisto/python3:3.10.7.33922
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
