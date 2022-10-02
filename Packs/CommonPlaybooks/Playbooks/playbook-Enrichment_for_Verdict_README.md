@@ -4,7 +4,6 @@ This playbook checks prior alert closing reasons and performs enrichment and pre
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* AWS IAM - User enrichment
 * IP Enrichment - Generic v2
 * Domain Enrichment - Generic v2
 * URL Enrichment - Generic v2
