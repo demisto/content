@@ -74,10 +74,10 @@ tasks:
       id: 4a6c8a03-1490-4bb8-8807-ecacd73aea2c
       version: -1
       name: Is ticketing system input defined?
-      description: Is ticketing system input defined?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Is ticketing system input defined?'
     nexttasks:
       '#default#':
       - '5'
@@ -493,10 +493,10 @@ tasks:
       id: 13e4742d-d344-4795-874e-bfe7f3d19013
       version: -1
       name: Was this an incident or alert?
-      description: Was this an incident or alert?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Was this an incident or alert?'
     nexttasks:
       detection:
       - '15'
@@ -695,10 +695,10 @@ tasks:
       id: d8b21ec7-c705-41d5-8ecc-1ea808f01ce9
       version: -1
       name: Allow to remove file
-      description: Allow to remove file
       type: collection
       iscommand: false
       brand: ''
+      description: 'Allow to remove file'
     nexttasks:
       '#none#':
       - '50'
@@ -868,10 +868,10 @@ tasks:
       id: 8e581b19-c104-4a84-8851-61776c01bd69
       version: -1
       name: Is auto isolation allowed?
-      description: Is auto isolation allowed?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Is auto isolation allowed?'
     nexttasks:
       '#default#':
       - '31'
@@ -985,10 +985,10 @@ tasks:
       id: cc973a32-27d9-40c0-8906-5f60c3c0aa41
       version: -1
       name: Is IOC allowed to be added globally?
-      description:  Is IOC allowed to be added globally?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Is IOC allowed to be added globally?'
     nexttasks:
       '#default#':
       - '10'
@@ -1093,10 +1093,10 @@ tasks:
       id: 4d39776a-0a20-4914-8ce7-b9278e6af590
       version: -1
       name: Confirm Indicators to block
-      description: Confirm Indicators to block
       type: collection
       iscommand: false
       brand: ''
+      description: 'Confirm Indicators to block'
     nexttasks:
       '#none#':
       - '49'
@@ -1193,10 +1193,10 @@ tasks:
       id: bea75fc0-ea15-4515-80d9-d8b09c67948e
       version: -1
       name: Were are values provided?
-      description: Were are values provided?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Were are values provided?'
     nexttasks:
       '#default#':
       - '10'
@@ -1238,10 +1238,10 @@ tasks:
       id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
       version: -1
       name: Were are values provided?
-      description: Were are values provided?
       type: condition
       iscommand: false
       brand: ''
+      description: 'Were are values provided?'
     nexttasks:
       '#default#':
       - '27'
@@ -1438,7 +1438,7 @@ tasks:
           - operator: uniq
       SHA256:
         complex:
-          root: inputs.FileSha256
+          root: inputs.Sha256
           transformers:
           - operator: If-Then-Else
             args:
@@ -1460,7 +1460,7 @@ tasks:
                 iscontext: true
               then:
                 value:
-                  simple: inputs.FileSha256
+                  simple: inputs.Sha256
           - operator: uniq
       SplunkEarliestTime:
         simple: -7d@d
@@ -1635,7 +1635,7 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: inputs.FileSha256
+            root: inputs.Sha256
             transformers:
             - operator: uniq
         fieldassociated: ""
@@ -1959,6 +1959,70 @@ inputs:
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
   playbookInputQuery:
+- key: IP
+  description: |-
+    IP information to be hunt on
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File.MD5
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: "MD5 file information to be hunt upon"
+  playbookInputQuery:
+- key: URL_or_Domain
+  description: "URL or Domain information to be hunt upon"
+  value:
+    complex:
+      root: Domain
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain
+            iscontext: true
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: URL
+      - operator: uniq
+- key: FileSha1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.filesha1
+            iscontext: true
+      - operator: uniq
+  required: false
+  description: File SHA1 information to be hunt upon.
 outputs: []
 tests:
 - Test - CrowdStrike Falcon

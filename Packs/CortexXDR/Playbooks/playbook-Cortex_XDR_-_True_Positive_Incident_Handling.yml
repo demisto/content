@@ -36,7 +36,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter the File Sha256 you would like to block.
+- description: Enter the File Sha256 you would like to block. Also, this input can be used in the Threat Hunting step.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -62,6 +62,78 @@ inputs:
       accessor: processpaths
       transformers:
       - operator: uniq
+- key: ManuallyChooseIOCForHunting
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
+    If false, it will hunt for all IOCs detected in the incident.
+  playbookInputQuery: null
+- key: IP
+  description: |-
+    IP information to be hunt on
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  playbookInputQuery: null
+- key: MD5
+  value:
+    complex:
+      root: File.MD5
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: "MD5 file information to be hunt upon"
+  playbookInputQuery: null
+- key: URL_or_Domain
+  description: "URL or Domain information to be hunt upon"
+  value:
+    complex:
+      root: Domain
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain
+            iscontext: true
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: URL
+      - operator: uniq
+- key: FileSha1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.filesha1
+            iscontext: true
+      - operator: uniq
+  required: false
+  description: File SHA1 information to be hunt upon.
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
 starttaskid: '0'
