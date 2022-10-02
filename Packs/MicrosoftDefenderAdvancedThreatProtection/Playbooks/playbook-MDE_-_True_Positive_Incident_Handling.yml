@@ -1,35 +1,140 @@
-id: MDE - True Positive Incident Handling
-version: 49
 contentitemexportablefields:
-  contentitemfields:
-    packID: MicrosoftDefenderAdvancedThreatProtection
-    packName: Microsoft Defender for Endpoint
-    itemVersion: 1.12.5
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: MDE - True Positive Incident Handling
+  contentitemfields: {}
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
-starttaskid: "0"
+id: MDE - True Positive Incident Handling
+inputs:
+- description: 'The Cortex XSOAR investigation IDs to be closed. '
+  key: DupAlertIDsToBeClosed
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Add a comment to close an incident on the Microsoft Defender For Endpoint side.
+  key: Comment
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'XSOAR Incident #${incident.id}'
+- description: |-
+    Provide a reason for closing the incident. Choose one of the following:
+    "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
+  key: Reason
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
+  key: Classification
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Specify the ticket description for this section. '
+  key: TicketDescription
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Specify the banning tag name for the found indicators.
+  key: BlockTag
+  playbookInputQuery:
+  required: false
+  value:
+    simple: BlockTag
+- description: If you are using Jira, specify the Jira Project Key here (can be retrieved from the Jira console).
+  key: TicketProjectName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The name of the ticketing system to use, for example Jira or ServiceNow.
+  key: TicketingSystemToUse
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    Whether host isolation is allowed.
+  key: AutoIsolation
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: |-
+    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
+    The playbook looks for the world "Close" in this input.
+  key: CloseDuplicate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The ID of the host for running an isolation process.
+  key: HostID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.deviceid}
+- description: Enter the File SHA256 you want to block.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.filesha256
+            iscontext: true
+      - operator: uniq
+- description: Enter the File SHA1 you want to remove from your protected endpoints.
+  key: FileSha1
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.filesha1
+            iscontext: true
+      - operator: uniq
+- key: ManuallyChooseIOCForHunting
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
+    If false, it will hunt for all IOCs detected in the incident.
+  playbookInputQuery:
+name: MDE - True Positive Incident Handling
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
-    type: start
-    task:
-      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "106"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -37,71 +142,27 @@ tasks:
           "y": -180
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
-    type: collection
-    task:
-      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
-      version: -1
-      name: Confirm Indicators to block
-      description: Confirms the indicators to block.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "72"
-    separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1480,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to: null
-      subject: null
-      body: null
-      methods: []
-      format: ""
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
+  '27':
     form:
+      description: ''
+      expired: false
       questions:
-      - id: "0"
-        label: ""
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
         labelarg:
           simple: Mark the indicators to block
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
         options: []
         optionsarg:
         - simple: ${inputs.FileSha256}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        placeholder: ''
         readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
       - id: "1"
         label: ""
         labelarg:
@@ -118,38 +179,82 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
+      sender: ''
       title: Indicators to block
-      description: ""
-      sender: ""
-      expired: false
       totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
+    id: '27'
+    ignoreworker: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 0bda6212-cc57-479f-8f57-7154e95f96cd
-    type: regular
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '72'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 0bda6212-cc57-479f-8f57-7154e95f96cd
+      brand: ''
+      description: Confirms the indicators to block.
+      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+      iscommand: false
+      name: Confirm Indicators to block
+      type: collection
       version: -1
-      name: Tag Indicators
-      description: commands.local.cmd.set.indicators
-      script: Builtin|||setIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1510
+        }
+      }
+    continueonerrortype: ""
+  '29':
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "86"
+    note: false
+    quietmode: 0
     scriptarguments:
       indicatorsValues:
         simple: ${Indicators to block.Answers.0}
       tags:
         simple: ${inputs.BlockTag}
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicators
+      id: 0bda6212-cc57-479f-8f57-7154e95f96cd
+      iscommand: true
+      name: Tag Indicators
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 0bda6212-cc57-479f-8f57-7154e95f96cd
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -157,34 +262,20 @@ tasks:
           "y": 1990
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '68':
+    id: '68'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
-    type: regular
-    task:
-      id: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
-      version: -1
-      name: Create IOC on Microsoft Defender For Endpoint
-      description: Creates a new indicator.
-      script: '|||microsoft-atp-sc-indicator-create'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
       - "86"
+    note: false
+    quietmode: 0
     scriptarguments:
       action:
         simple: Allowed
-      generate_alert:
-        simple: ${Indicators to block.Answers.1}
       indicator_description:
         simple: 'Added by Cortex XSOAR - Incident #${incident.id}'
       indicator_title:
@@ -195,8 +286,22 @@ tasks:
         simple: ${Indicators to block.Answers.0}
       severity:
         simple: Informational
+      generate_alert:
+        simple: ${Indicators to block.Answers.1}
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Creates a new indicator.
+      id: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+      iscommand: true
+      name: Create IOC on Microsoft Defender For Endpoint
+      script: '|||microsoft-atp-sc-indicator-create'
+      type: regular
+      version: -1
+    taskid: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -204,43 +309,43 @@ tasks:
           "y": 1990
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '72':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Indicators to block.Answers.0
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '72'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "72":
-    id: "72"
-    taskid: 83e10ad8-4cae-4707-8814-e7848604d2b9
-    type: condition
-    task:
-      id: 83e10ad8-4cae-4707-8814-e7848604d2b9
-      version: -1
-      name: Was there any hash selected?
-      description: Was a hash selected?
-      type: condition
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#default#':
       - "86"
-      "yes":
-      - "68"
-      - "29"
+      yes:
+      - '68'
+      - '29'
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Indicators to block.Answers.0
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Was a hash selected?
+      id: 83e10ad8-4cae-4707-8814-e7848604d2b9
+      iscommand: false
+      name: Was there any hash selected?
+      type: condition
+      version: -1
+    taskid: 83e10ad8-4cae-4707-8814-e7848604d2b9
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -248,13 +353,7 @@ tasks:
           "y": 1660
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "74":
     id: "74"
     taskid: f2f50926-288f-41ad-8aa9-0d1536b4dd3b
@@ -359,6 +458,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -451,14 +551,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Approve Endpoint Isolation
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -527,6 +627,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "81"
@@ -622,6 +723,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -652,6 +754,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -682,6 +785,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -712,6 +816,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -744,6 +849,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "92"
@@ -776,6 +882,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "79"
@@ -803,8 +910,7 @@ tasks:
       id: 52db898c-b3f1-4741-8461-d2f0cbb100dd
       version: -1
       name: Microsoft Defender For Endpoint - Isolate Endpoint
-      description: This playbook accepts an endpoint ID, IP, or host name and isolates
-        it using the Microsoft Defender For Endpoint integration.
+      description: This playbook accepts an endpoint ID, IP, or host name and isolates it using the Microsoft Defender For Endpoint integration.
       playbookName: Microsoft Defender For Endpoint - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -854,6 +960,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -884,6 +991,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "96"
@@ -1162,6 +1270,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -1194,6 +1303,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "103"
@@ -1280,13 +1390,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1373,6 +1483,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "108"
@@ -1400,9 +1511,7 @@ tasks:
       id: 43b90bfd-2a17-498c-8204-7b1bac29b35e
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise.
-        It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os
-        \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -1647,12 +1756,12 @@ tasks:
         simple: Analyst
       subject:
         simple: Specify IOCs to hunt upon
-      body: null
+      body:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1772,6 +1881,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "89"
@@ -1805,6 +1915,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -1956,7 +2067,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1969,110 +2080,8 @@ view: |-
       }
     }
   }
-inputs:
-- key: DupAlertIDsToBeClosed
-  value: {}
-  required: false
-  description: 'The Cortex XSOAR investigation IDs to be closed. '
-  playbookInputQuery: null
-- key: Comment
-  value:
-    simple: 'XSOAR Incident #${incident.id}'
-  required: false
-  description: Add a comment to close an incident on the Microsoft Defender For Endpoint
-    side.
-  playbookInputQuery: null
-- key: Reason
-  value: {}
-  required: false
-  description: |-
-    Provide a reason for closing the incident. Choose one of the following:
-    "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
-  playbookInputQuery: null
-- key: Classification
-  value: {}
-  required: false
-  description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
-  playbookInputQuery: null
-- key: TicketDescription
-  value: {}
-  required: false
-  description: 'Specify the ticket description for this section. '
-  playbookInputQuery: null
-- key: BlockTag
-  value:
-    simple: BlockTag
-  required: false
-  description: Specify the banning tag name for the found indicators.
-  playbookInputQuery: null
-- key: TicketProjectName
-  value: {}
-  required: false
-  description: If you are using Jira, specify the Jira Project Key here (can be retrieved
-    from the Jira console).
-  playbookInputQuery: null
-- key: TicketingSystemToUse
-  value: {}
-  required: false
-  description: The name of the ticketing system to use, for example Jira or ServiceNow.
-  playbookInputQuery: null
-- key: AutoIsolation
-  value:
-    simple: "False"
-  required: false
-  description: Whether host isolation is allowed.
-  playbookInputQuery: null
-- key: CloseDuplicate
-  value: {}
-  required: false
-  description: |-
-    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
-    The playbook looks for the world "Close" in this input.
-  playbookInputQuery: null
-- key: HostID
-  value:
-    simple: ${incident.deviceid}
-  required: false
-  description: The ID of the host for running an isolation process.
-  playbookInputQuery: null
-- key: FileSha256
-  value:
-    complex:
-      root: File
-      accessor: SHA256
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: incident.filesha256
-            iscontext: true
-      - operator: uniq
-  required: false
-  description: Enter the File SHA256 you want to block.
-  playbookInputQuery: null
-- key: FileSha1
-  value:
-    complex:
-      root: File
-      accessor: SHA1
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: incident.filesha1
-            iscontext: true
-      - operator: uniq
-  required: false
-  description: Enter the File SHA1 you want to remove from your protected endpoints.
-  playbookInputQuery: null
-- key: ManuallyChooseIOCForHunting
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
-    If false, it will hunt for all IOCs detected in the incident.
-  playbookInputQuery: null
-outputs: []
+tests:
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender - ATP - Indicators SC Test
+fromversion: 6.5.0
+system: true
