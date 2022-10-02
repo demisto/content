@@ -673,7 +673,7 @@ def search_for_ioc():
     """
     Search for IOC by value
     """
-    response = http_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
     if response:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
@@ -929,7 +929,7 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = http_request('GET', '/public/v3/iocs', params=handle_filters(), json_response=True)
     domains = []
     ip_infos = []
     url_infos = []
