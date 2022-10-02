@@ -811,7 +811,7 @@ def expire_stored_ids(fetched_ids):
         The list of fetched ids.
 
     """
-    if len(fetched_ids) is 0:
+    if len(fetched_ids) == 0:
         return []
     cleaned_cache = []
 
