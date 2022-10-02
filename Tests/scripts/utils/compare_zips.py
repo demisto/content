@@ -12,6 +12,7 @@ from zipfile import ZipFile
 import difflib
 from contextlib import redirect_stdout
 import dictdiffer
+from regex import D
 
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
@@ -19,12 +20,20 @@ from slack_sdk import WebClient
 yaml = YAML()
 
 
-def compare_zips(zip1: Path, zip2: Path, output_path: Path):
+def sort_dict(dct: dict):
+    for k, v in dct.items():
+        if isinstance(v, dict):
+            sort_dict(v)
+        if isinstance(v, list):
+            v.sort()
+
+
+def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
     """Compare two zip files content"""
     # extract zip files
     output_path.mkdir(parents=True, exist_ok=True)
-    zip1_files = tempfile.mktemp()
-    zip2_files = tempfile.mktemp()
+    zip1_files = str(output_path / 'id_set_tmp')
+    zip2_files = str(output_path / 'graph_tmp')
     with ZipFile(zip1, "r") as zip1_content, ZipFile(zip2, "r") as zip2_content:
         # get the list of files in the zip files
         zip1_content.extractall(path=zip1_files)
@@ -36,16 +45,17 @@ def compare_zips(zip1: Path, zip2: Path, output_path: Path):
     with open(full_report_path, 'w') as f:
         with redirect_stdout(f):
             dir_compare.report_full_closure()
+    diff_files: list[str] = []
+    compare_files(dir_compare, zip1_files, zip2_files, output_path, diff_files)
+    return diff_files
 
-    compare_files(dir_compare, zip1_files, zip2_files, output_path)
 
-
-def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path):
+def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path: Path, diff_files: list[str]):
     for file in dir_compare.common_files:
         if file not in dir_compare.same_files and file != 'signatures.sf':
-            file_diff(output_path, zip1_files, zip2_files, file)
+            file_diff(output_path, zip1_files, zip2_files, file, diff_files)
     for subdir in dir_compare.subdirs.values():
-        compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name)
+        compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name, diff_files)
 
 
 def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
@@ -61,7 +71,7 @@ def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
                 f.writelines(diffs)
 
 
-def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
+def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, diff_files: list[str]):
     output_path.mkdir(exist_ok=True, parents=True)
     try:
         file1_path = (Path(zip1_files) / file)
@@ -78,8 +88,17 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str):
         output_dict_diff.unlink(missing_ok=True)
         with open(output_dict_diff, 'w') as f:
             with open(file1_path) as f1, open(file2_path) as f2:
-                diff_found = list(dictdiffer.diff(load_func(f1), load_func(f2)))
-                json.dump(diff_found, f, indent=4)
+                dct1 = load_func(f1)
+                dct2 = load_func(f2)
+                sort_dict(dct1)
+                sort_dict(dct2)
+                diff_found = list(dictdiffer.diff(dct1, dct2))
+                if diff_found:
+                    json.dump(diff_found, f, indent=4)
+                    shutil.copyfile(file1_path, output_path / f'id-set-{file1_path.name}')
+                    shutil.copyfile(file2_path, output_path / f'graph-{file2_path.name}')
+                    diff_files.append(file1_path.name)
+
     except Exception as e:
         print(f'could not diff files {file}: {e}')
 
@@ -99,12 +118,14 @@ if __name__ == '__main__':
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
     dir_cmp.report_full_closure()
+    message = [f'Zip difference for {output_path}']
     for file in dir_cmp.common_files:
         pack = file.removesuffix('.zip')
-        compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
-    shutil.make_archive('diff', 'zip', output_path)
+        diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
+        message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
+    shutil.make_archive(str(output_path / 'diff'), 'zip', output_path)
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(channel='dmst-graph-tests',
-                                  text=f'Zip difference for {output_path}')
+                                  text='\n'.join(message))
     with (output_path / 'diff.zip').open() as f:
         slack_client.files_upload(f, 'diff.zip', channels='dmst-graph-tests')
