@@ -56,7 +56,7 @@ def test_fetch_incidents_first_time_fetch(mocker):
     mocker.patch('RedLock.req', return_value=[])
 
     _, _, next_run = fetch_incidents()
-    assert next_run == 1625938454758
+    assert next_run == 1625927654.758295
 
 
 @freeze_time("2021-07-10T16:34:14.758295 UTC+1")
@@ -78,7 +78,7 @@ def test_fetch_incidents_fetch_all_new(mocker):
     mocker.patch('RedLock.req', return_value=sample_incidents)
 
     incidents, fetched_ids, next_run = fetch_incidents()
-    assert next_run == 1625938454758
+    assert next_run == 1625927654.758295
     assert len(fetched_ids) == 2
     assert incidents == expected_incidents
 
@@ -100,7 +100,7 @@ def test_fetch_incidents_fetch_previously_fetched(mocker):
     """
     mock_last_run = {
         'fetched_ids': [{'P-12345': 123456789}],
-        'time': 1625938454758
+        'time': 1625927654.758295
     }
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
@@ -108,7 +108,7 @@ def test_fetch_incidents_fetch_previously_fetched(mocker):
     mocker.patch('RedLock.req', return_value=sample_incidents)
 
     incidents, fetched_ids, next_run = fetch_incidents()
-    assert next_run == 1625938454758
+    assert next_run == 1625927654.758295
     assert len(fetched_ids) == 2
     assert len(incidents) == 1
 

@@ -833,7 +833,7 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     last_run_time = last_run.get('time')  # This is purely to establish if a first fetch has occurred
     fetched_ids = last_run.get('fetched_ids', [])
-    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    now = datetime.timestamp(datetime.utcnow())
     if not last_run_time:
         first_time_fetch = demisto.params().get('fetch_time', '3 days').strip().split(' ')
         first_fetch_amount = int(first_time_fetch[0])
