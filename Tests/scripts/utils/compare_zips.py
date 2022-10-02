@@ -17,20 +17,11 @@ from ruamel.yaml import YAML
 yaml = YAML()
 
 
-def order_dict(obj):
-    if isinstance(obj, dict):
-        obj = dict(sorted(obj.items()))
-        for k, v in obj.items():
-            if isinstance(v, dict) or isinstance(v, list):
-                obj[k] = order_dict(v)
+def order_dict(dct: dict):
+    for k, v in dct.items():
+        if isinstance(v, list):
+            v.sort()
 
-    if isinstance(obj, list):
-        for i, v in enumerate(obj):
-            if isinstance(v, dict) or isinstance(v, list):
-                obj[i] = order_dict(v)
-        obj = sorted(obj, key=lambda x: json.dumps(x))
-
-    return obj
 
 def compare_zips(zip1: Path, zip2: Path, output_path: Path):
     """Compare two zip files content"""
@@ -111,6 +102,5 @@ if __name__ == '__main__':
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
     dir_cmp.report_full_closure()
     for file in dir_cmp.common_files:
-        pack = file.strip('.zip')
+        pack = file.removesuffix('.zip')
         compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
-

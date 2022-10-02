@@ -3771,7 +3771,7 @@ def get_last_commit_from_index(service_account):
 
 def get_graph_entity_by_path(entity_path: Path, marketplace):
     with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.get_node_by_path(entity_path, marketplace)
+        return content_graph_interface.get_single_node(marketplace, path=entity_path).dict()
 
 
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
