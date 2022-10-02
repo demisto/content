@@ -1166,7 +1166,7 @@ script:
     outputs:
     - contextPath: Zendesk.Ticket.Comment.attachments.content_type
       type: string
-      description: 'The content type of the image. Example value: "image/png"'.
+      description: 'The content type of the image. Example value: "image/png".'
     - contextPath: Zendesk.Ticket.Comment.attachments.content_url
       type: string
       description: A full URL where the attached image file can be downloaded.
