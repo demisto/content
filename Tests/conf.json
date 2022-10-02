@@ -3004,7 +3004,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "QRadar_v2",
+            "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
             "fromversion": "6.0.0"
