@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from CrowdStrikeFalconX import Client, \
@@ -538,7 +537,7 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
                            {'headers': {'Content-Type': 'application/json'}},
                            None),
                           ))
-def test_download_ioc_command(requests_mock, mocker, mocked_address: str, ioc_id: str, mocked_response: dict, command_results_output):
+def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, mocked_response, command_results_output):
     """
     Given
             IOCs to download
@@ -555,4 +554,3 @@ def test_download_ioc_command(requests_mock, mocker, mocked_address: str, ioc_id
     requests_mock.get(mocked_address, headers=mocked_response.get('headers'), json={})
     command_results = download_ioc_command(client, ioc_id)
     assert command_results.outputs.get('File') == command_results_output
-
