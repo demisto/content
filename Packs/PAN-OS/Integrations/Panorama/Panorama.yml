@@ -8168,43 +8168,43 @@ script:
     description: Returns a list of nat-rules of either Panorama/firewall instance.
     name: pan-os-list-nat-rules
     outputs:
-    - contextPath: Panorama.Nat.Name
+    - contextPath: Panorama.NAT.Name
       description: The name of the rule.
       type: String
-    - contextPath: Panorama.Nat.Location
+    - contextPath: Panorama.NAT.Location
       description: The device group that the rule is part of.
       type: String
-    - contextPath: Panorama.Nat.Tags
+    - contextPath: Panorama.NAT.Tags
       description: The tags in which the rule is part of.
       type: String
-    - contextPath: Panorama.Nat.SourceZone
+    - contextPath: Panorama.NAT.SourceZone
       description: The source zone of the rule.
       type: String
-    - contextPath: Panorama.Nat.DestinationZone
+    - contextPath: Panorama.NAT.DestinationZone
       description: The destination zone of the rule.
       type: String
-    - contextPath: Panorama.Nat.SourceAddress
+    - contextPath: Panorama.NAT.SourceAddress
       description: The source address of the rule.
       type: String
-    - contextPath: Panorama.Nat.DestinationAddress
+    - contextPath: Panorama.NAT.DestinationAddress
       description: The destination address of the rule.
       type: String
-    - contextPath: Panorama.Nat.DestinationInterface
+    - contextPath: Panorama.NAT.DestinationInterface
       description: The destination interface of the rule.
       type: String
-    - contextPath: Panorama.Nat.Service
+    - contextPath: Panorama.NAT.Service
       description: The service in which the rule has.
       type: String
-    - contextPath: Panorama.Nat.Description
+    - contextPath: Panorama.NAT.Description
       description: The description of the rule.
       type: String
-    - contextPath: Panorama.Nat.SourceTranslation
+    - contextPath: Panorama.NAT.SourceTranslation
       description: The source translation of the rule.
       type: Unknown
-    - contextPath: Panorama.Nat.DestinationTranslation
+    - contextPath: Panorama.NAT.DestinationTranslation
       description: The destination translation of the rule.
       type: Unknown
-    - contextPath: Panorama.Nat.DynamicDestinationTranslation
+    - contextPath: Panorama.NAT.DynamicDestinationTranslation
       description: The dynamic destination translation of the rule.
       type: Unknown
   - arguments:
@@ -8342,11 +8342,11 @@ script:
       predefined:
       - forward
       - reverse
-    description: Creates a new nat-rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+    description: Creates a new nat-rule in panorama/firewall instance.
     name: pan-os-create-nat-rule
     outputs: []
   - arguments:
-    - description: The name of the nat-rule to delete.
+    - description: The name of the nat-rule to delete, can be retrieved from the pan-os-list-nat-rules command.
       isArray: false
       name: rulename
       required: true
@@ -8364,7 +8364,7 @@ script:
     name: pan-os-delete-nat-rule
     outputs: []
   - arguments:
-    - description: The name of the nat-rule to edit.
+    - description: The name of the nat-rule to edit, can be retrieved from the pan-os-list-nat-rules command.
       isArray: false
       name: rulename
       required: true
@@ -8606,7 +8606,7 @@ script:
       isArray: true
       name: filter_bgp_extended_community
       required: false
-    description: Creates a new redistribution-profile under a virtual-router for panorama/firewall instance. If trying to create an existing redistribution-profile, it will override its configuration.
+    description: Creates a new redistribution-profile under a virtual-router for panorama/firewall instance.
     name: pan-os-create-redistribution-profile
     outputs: []
   - arguments:
@@ -8859,11 +8859,11 @@ script:
       isArray: true
       name: nexthop_address_list
       required: false
-    description: Creates a new policy-based-forwarding (PBF) rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+    description: Creates a new policy-based-forwarding (PBF) rule in panorama/firewall instance.
     name: pan-os-create-pbf-rule
     outputs: []
   - arguments:
-    - description: The name of the PBF rule to edit.
+    - description: The name of the PBF rule to edit, can be retrieved from the pan-os-list-pbf-rules command.
       isArray: false
       name: rulename
       required: true
@@ -8914,7 +8914,7 @@ script:
     description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
   - arguments:
-    - description: The name of the pbf-rule to delete.
+    - description: The name of the pbf-rule to delete, can be retrieved from the pan-os-list-pbf-rules command.
       isArray: false
       name: rulename
       required: true
@@ -8986,7 +8986,7 @@ script:
       isArray: false
       name: device-group
       required: false
-    description: Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
+    description: Creates a new application group rule in panorama/firewall instance.
     name: pan-os-create-application-group
     outputs:
     - contextPath: Panorama.ApplicationGroup.Name
@@ -8999,7 +8999,7 @@ script:
       description: The number of the applications that are part of the application-group
       type: Number
   - arguments:
-    - description: The name for the application-group to be created with.
+    - description: The name for the application-group to be edit, can be retrieved from the pan-os-list-application-groups command.
       isArray: false
       name: name
       required: true
@@ -9033,7 +9033,7 @@ script:
       description: The number of the applications that are part of the application-group
       type: Number
   - arguments:
-    - description: The name of the application-group to delete.
+    - description: The name of the application-group to delete, can be retrieved from the pan-os-list-application-groups command.
       isArray: false
       name: name
       required: true

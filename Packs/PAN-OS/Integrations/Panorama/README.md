@@ -280,6 +280,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
 108. [Download the running configuration](#pan-os-get-running-config)
 109. [Download the merged configuration](#pan-os-get-merged-config)
+110. [Create Nat-rule](#pan-os-create-nat-rule)
+111. [Create PBF-rule](#pan-os-create-pbf-rule)
 
 
 
@@ -7952,7 +7954,7 @@ There is no context output for this command.
 
 ### pan-os-create-redistribution-profile
 ***
-Creates a new redistribution-profile in panorama/firewall instance. If trying to create an existing profile, it will override its configuration.
+Creates a new redistribution-profile in panorama/firewall instance.
 
 
 #### Base Command
@@ -8136,7 +8138,7 @@ Returns a list of pbf-rules of either Panorama/firewall instance.
 
 ### pan-os-create-pbf-rule
 ***
-Creates a new policy-based-forwarding rule in panorama/firewall instance. If trying to create an existing rule, it will override its configuration.
+Creates a new policy-based-forwarding rule in panorama/firewall instance.
 
 
 #### Base Command
@@ -8302,7 +8304,7 @@ Returns a list of application-groups of either Panorama/firewall instance.
 
 ### pan-os-create-application-group
 ***
-Creates a new application group rule in panorama/firewall instance. If trying to create an existing group, it will override its configuration.
+Creates a new application group rule in panorama/firewall instance.
 
 
 #### Base Command

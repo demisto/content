@@ -11349,7 +11349,7 @@ def pan_os_list_nat_rules_command(args):
                 'DestinationAddress', 'DestinationInterface', 'Service', 'Description'
             ]
         ),
-        outputs_prefix='Panorama.Nat',
+        outputs_prefix='Panorama.NAT',
         outputs_key_field='Name'
     )
 
