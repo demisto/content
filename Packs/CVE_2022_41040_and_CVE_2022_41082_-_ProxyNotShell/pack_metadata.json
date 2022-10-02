@@ -19,14 +19,18 @@
         "zero-day",
         "0-day",
         "zero day",
-        "MSDT",
+        "Exchange",
+        "Microsoft Exchange",
+        "IIS",
+        "Microsoft",
         "ProxyNotShell",
         "CVE",
         "CVE-2022-41040",
         "CVE-2022-41082",
         "41040",
         "41082",
-        "RCE"
+        "RCE",
+        "SSRF"
     ],
     "marketplaces": [
         "xsoar",
