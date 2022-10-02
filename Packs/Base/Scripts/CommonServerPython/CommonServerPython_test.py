@@ -4678,7 +4678,8 @@ class TestGetResultsWrapper:
                                                   args=args,
                                                   brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
                                                   instance='instance',
-                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
+                                                  result='Command did not succeeded' if command == 'error-command' else {'Contents': 'Good',
+                                                                                                                         'HumanReadable': 'Good'})
             if command == 'error-command':
                 errors.append(result_wrapper)
             elif command != 'unsupported-command':
@@ -4705,24 +4706,27 @@ class TestGetResultsWrapper:
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         results = CommandRunner.run_commands_with_summary(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
-        assert all(res == 'Good' for res in results[:-1])
+        assert results[:-1] == [{'Contents': 'Good', 'HumanReadable': '***my-brand1 (instance)***\nGood'},
+                                {'Contents': 'Good', 'HumanReadable': '***my-brand2 (instance)***\nGood'},
+                                {'Contents': 'Good', 'HumanReadable': '***my-brand2 (instance)***\nGood'}]
+
         assert isinstance(results[-1], CommandResults)
         if IS_PY3:
             md_summary = """### Results Summary
 |Instance|Command|Result|Comment|
 |---|---|---|---|
-| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
-| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
-| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success | Good |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success | Good |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success | Good |
 | ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
 """
         else:
             md_summary = u"""### Results Summary
 |Instance|Command|Result|Comment|
 |---|---|---|---|
-| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
-| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
-| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success | Good |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success | Good |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success | Good |
 | ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
 """
         assert results[-1].readable_output == md_summary

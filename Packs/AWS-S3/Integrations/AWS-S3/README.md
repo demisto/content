@@ -419,3 +419,60 @@ There is no context output for this command.
 #### Human Readable Output
 
 Successfully applied public access block to the {bucket} bucket.
+
+### aws-s3-get-bucket-encryption
+***
+Get AWS S3 Bucket Encryption
+
+#### Base Command
+
+`aws-s3-get-bucket-encryption`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of the bucket from which the server-side encryption configuration is retrieved. | Required |
+| expectedBucketOwner | The account ID of the exepcted bucket owner. | Optional |
+| region | The AWS Region, if not specified the default region will be used. | Optional |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
+| roleSessionName | An identifier for the assumed role session. | Optional |
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.ApplyServerSideEncryptionByDefault.SSEAlgorithm | String | S3 Bucket Encryption SSE Algorithm. |
+| AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.ApplyServerSideEncryptionByDefault.KMSMasterKeyID | String | S3 Bucket Encryption KMS Master Key ID. |
+| AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.BucketKeyEnabled | Boolean | S3 Bucket Encryption Key Enabled. |
+
+#### Command Example
+
+``` !aws-s3-put-public-access-block bucket="bucket name" BlockPublicAcls=True IgnorePublicAcls=False BlockPublicPolicy=True RestrictPublicBuckets=True```
+
+
+#### Context Example
+
+```
+{
+    "AWS": {
+        "S3": {
+            "Buckets": [
+                {
+                    "BucketName": "bucket-a",
+                    "ServerSideEncryptionConfiguration": {
+                        "Rules": [
+                            {
+                                "ApplyServerSideEncryptionByDefault": {
+                                    "SSEAlgorithm": "AES256"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
+```

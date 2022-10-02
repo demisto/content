@@ -1,0 +1,37 @@
+{
+  "result_count" : 4,
+  "passivedns" : [ {
+    "account_uuid" : "b6f04b3f-f90b-4fd8-a500-20db20600dca",
+    "first_seen" : "2016-07-05T00:00:00.000Z",
+    "last_seen" : "2016-07-08T00:00:00.000Z",
+    "record_type" : "MX",
+    "resolved" : "rtn1.groups.a03.yahoodns.net",
+    "sensor_id" : "YYc9PaT8jrt",
+    "source" : "ICEBRG_DNS"
+  }, {
+    "account_uuid" : "b6f04b3f-f90b-4fd8-a500-20db20600dca",
+    "first_seen" : "2016-07-05T00:00:00.000Z",
+    "last_seen" : "2016-07-05T00:00:00.000Z",
+    "record_type" : "MX",
+    "resolved" : "sveds03.direct.gq1.yahoo.com",
+    "sensor_id" : "YYc9PaT8jrt",
+    "source" : "ICEBRG_DNS"
+  }, {
+    "account_uuid" : "b6f04b3f-f90b-4fd8-a500-20db20600dca",
+    "first_seen" : "2016-07-05T00:00:00.000Z",
+    "last_seen" : "2016-07-05T00:00:00.000Z",
+    "record_type" : "MX",
+    "resolved" : "sveds02.direct.gq1.yahoo.com",
+    "sensor_id" : "YYc9PaT8jrt",
+    "source" : "ICEBRG_DNS"
+  }, {
+    "account_uuid" : "b6f04b3f-f90b-4fd8-a500-20db20600dca",
+    "first_seen" : "2016-07-05T00:00:00.000Z",
+    "last_seen" : "2016-07-05T00:00:00.000Z",
+    "record_type" : "MX",
+    "resolved" : "sveds01.direct.gq1.yahoo.com",
+    "sensor_id" : "YYc9PaT8jrt",
+    "source" : "ICEBRG_DNS"
+  } ],
+  "query_type": "HOST_NAME"
+}

@@ -11,8 +11,6 @@ requests.packages.urllib3.disable_warnings()
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
-SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
-
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -110,9 +108,9 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
-                  'priority', 'state', 'urgency', 'severity', 'closed_at',
-                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
+SIR_OUT_FIELDS = ['attack_vector', 'affected_user', 'change_request', 'incident', 'parent_security_incident',
+                  'substate']
+
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -1502,10 +1500,11 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
     fields_delimiter = args.get('fields_delimiter', ';')
+    fields = get_ticket_fields(args, ticket_type=table_name)
 
-    fields = {}
     if fields_str:
-        fields = split_fields(fields_str, fields_delimiter)
+        additional_fields = split_fields(fields_str, fields_delimiter)
+        fields.update(additional_fields)
     custom_fields = {}
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str, fields_delimiter)
@@ -2423,7 +2422,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
+    out_fields = SNOW_ARGS + SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
     for field in out_fields:
         incident_type_scheme.add_field(field)
 

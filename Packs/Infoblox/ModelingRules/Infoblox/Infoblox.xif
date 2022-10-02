@@ -43,6 +43,6 @@ filter _raw_log ~= "httpd"
 | alter XDM.Auth.Server.process.name = Server_process_name
 | alter XDM.Auth.Client.ipv4 = Client_ipv4
 | alter XDM.Auth.auth_method = auth_methods
-| alter XDM.Auth.Client.user.groups = arraycreate(coalesce(Client_user_groups, ""));
+| alter XDM.Auth.Client.user.groups = arraycreate(coalesce(Client_user_groups, ""))
 | alter XDM.Auth.application_protocol  = application_protocols;
 

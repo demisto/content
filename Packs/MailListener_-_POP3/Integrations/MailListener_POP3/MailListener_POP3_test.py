@@ -24,7 +24,7 @@ def test_parse_mail_parts():
     parts = [part]
 
     body, html, attachments = parse_mail_parts(parts)
-    assert body == 'el Niño'
+    assert body.encode('utf-8') == b'el Ni\xc3\xb1o'
 
 
 def test_base64_mail_decode():
