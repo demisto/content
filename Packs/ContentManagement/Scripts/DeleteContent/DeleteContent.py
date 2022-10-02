@@ -5,14 +5,16 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 from urllib.parse import quote
 
+import requests
 import json
 
 SCRIPT_NAME = 'DeleteContent'
-ALWAYS_EXCLUDED_PACKS = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
-                   'CommonPlaybooks', 'CommonTypes', 'CommonWidgets', 'DemistoRESTAPI', 'FiltersAndTransformers',
-                   'DefaultPlaybook', 'DemistoLocking']  # TODO: get dynamically
-
-ALWAYS_EXCLUDED_SCRIPTS = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer']
+ALWAYS_EXCLUDED_SCRIPTS = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
+ALWAYS_EXCLUDED_PACKS_SPECIFIC = ['ContentManagement', 'CleanUpContent']
+skip_proxy()
+CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json"
+core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=False)
+ALWAYS_EXCLUDED_PACKS = json.loads(core_packs_response.text) + ALWAYS_EXCLUDED_PACKS_SPECIFIC
 
 
 def verify_search_response_in_list(response: Union[dict, str, list], name: str):
@@ -84,7 +86,7 @@ class IntegrationAPI(EntityAPI):  # works
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration/search',
-                                'body': {'page': 0, 'size': 100}},
+                                'body': {'page': 0, 'size': 100, 'query': f'name:{specific_id}'}},
                                fail_on_error=False)
 
     def search_all(self):
@@ -114,7 +116,7 @@ class ScriptAPI(EntityAPI):  # works :)
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/automation/search',
-                                'body': {'page': 0, 'size': 100}},
+                                'body': {'page': 0, 'size': 100, 'query': f'name:{specific_id}'}},
                                fail_on_error=False)
 
     def search_all(self):
@@ -450,8 +452,7 @@ def search_and_delete_existing_entity(name: str, entity_api: EntityAPI, dry_run:
     status, res = entity_api.search_specific_id(specific_id=name)
 
     if not status:
-        error_message = f'{SCRIPT_NAME} - Search {entity_api.name} - {res}'
-        demisto.debug(error_message)
+        demisto.debug(f'Could not find {entity_api.name} with id {name} - Response:\n{res}')
         return False
 
     specific_id = entity_api.verify_specific_search_response(res.get('response'), name)
@@ -462,12 +463,12 @@ def search_and_delete_existing_entity(name: str, entity_api: EntityAPI, dry_run:
     if not dry_run:
         status, res = entity_api.delete_specific_id(specific_id=specific_id)
     else:
+        demisto.debug(f'DRY RUN - Not deleting {entity_api.name} with id {name}.')
         status = True
         res = True
 
     if not status:
-        error_message = f'{SCRIPT_NAME} - Delete {entity_api.name} - {res}'
-        demisto.debug(error_message)
+        demisto.debug(f'Could not delete {entity_api.name} with id {name} - Response:\n{res}')
         return False
 
     return True
@@ -485,7 +486,7 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
     status, res = entity_api.search_all()
 
     if not status:
-        error_message = f'{SCRIPT_NAME} - Search All {entity_api.name}s - {res}'
+        error_message = f'Search All {entity_api.name}s - {res}'
         demisto.debug(error_message)
         raise Exception(error_message)
 
@@ -507,6 +508,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     Returns:
         (list) successfully deleted ids, (list) not deleted ids
     """
+    demisto.debug(f'Starting handling {entity_api.name} entities.')
     succesfully_deleted = []
     not_deleted = []
 
@@ -519,6 +521,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
         excluded_ids += ALWAYS_EXCLUDED_SCRIPTS
 
     new_included_ids = [item for item in included_ids if item not in excluded_ids]
+    demisto.debug(f'Included ids for {entity_api.name} after excluding excluded are {new_included_ids}')
 
     if included_ids:
         for included_id in included_ids:
@@ -531,6 +534,11 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
                 not_deleted.append(included_id)
 
     else:
+        if entity_api.name == InstalledPackAPI.name:
+            demisto.info(f'Not deleting unspecified installed packs. To delete an installed pack, '
+                         f'use the included_ids option.')
+            return [], []
+
         all_entities = search_for_all_entities(entity_api=entity_api)
         if not all_entities:
             return [], []
@@ -540,6 +548,8 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
                 if search_and_delete_existing_entity(entity_id, entity_api=entity_api, dry_run=dry_run):
                     succesfully_deleted.append(entity_id)
                 else:
+                    demisto.debug(f'Did not find or could not delete {entity_api.name} with '
+                                  f'id {entity_id} in xsoar.')
                     not_deleted.append(entity_id)
             else:
                 not_deleted.append(entity_id)
@@ -629,8 +639,9 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
         outputs_prefix='ConfigurationSetup.Deletion',
         outputs_key_field='name',
         outputs={
-            'successfully_deleted': all_deleted,
-            'not_deleted': all_not_deleted,
+            # Only show keys with values.
+            'successfully_deleted': {key: value for key, value in all_deleted.items() if value},
+            'not_deleted': {key: value for key, value in all_not_deleted.items() if value},
             'status': deletion_status,
         },
     )
@@ -641,7 +652,7 @@ def main():
         return_results(get_and_delete_needed_ids(demisto.args()))
 
     except Exception as e:
-        return_error(f'{SCRIPT_NAME} - Error occurred while deleting contents.\n{e}'
+        return_error(f'Error occurred while deleting contents.\n{e}'
                      f'\n{traceback.format_exc()}')
 
 
