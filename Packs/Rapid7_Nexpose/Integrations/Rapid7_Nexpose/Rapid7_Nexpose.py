@@ -152,7 +152,7 @@ class Client(BaseClient):
 
         return result
 
-    def create_report(self, report_id: str) -> str:
+    def create_report(self, report_id: str) -> dict:
         """
         | Generates a configured report.
         |
@@ -168,10 +168,10 @@ class Client(BaseClient):
             url_suffix=f"/reports/{report_id}/generate",
             method="POST",
             resp_type="json",
-        )["id"]
+        )
 
     def create_report_config(self, scope: dict[str, Any], template_id: str,
-                             report_name: str, report_format: str) -> str:
+                             report_name: str, report_format: str) -> dict:
         """
         | Create a new report configuration.
         |
@@ -184,7 +184,7 @@ class Client(BaseClient):
             report_format (str): Format of the report that will be generated.
 
         Returns:
-            str: ID of the newly created report configuration.
+            dict: API response with information about the newly created report configuration.
         """
         post_data = {
             "scope": scope,
@@ -198,7 +198,7 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
-        )["id"]
+        )
 
     def create_site_scan_schedule(self, site_id: str, start_date: str,
                                   excluded_asset_groups: Optional[list[int]] = None,
@@ -206,10 +206,10 @@ class Client(BaseClient):
                                   included_asset_groups: Optional[list[int]] = None,
                                   included_targets: Optional[list[str]] = None,
                                   duration: Optional[str] = None, enabled: bool = None,
-                                  repeat_behaviour: RepeatBehaviour = None,
-                                  frequency: Optional[RepeatFrequencyType] = None,
+                                  repeat_behaviour: Optional[str] = None,
+                                  frequency: Optional[str] = None,
                                   interval: Optional[int] = None, date_of_month: Optional[int] = None,
-                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> str:
+                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
         """
         | Create a new site scan schedule.
         |
@@ -228,24 +228,25 @@ class Client(BaseClient):
             duration (str, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
             enabled (bool): A flag indicating whether the scan schedule is enabled.
-            repeat_behaviour (RepeatBehaviour, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (str, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
-            frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+                Can be one of: "restart-scan", "resume-scan".
+            frequency (str, optional): Frequency for the schedule to repeat.
+                Can be one of: "hour", "day", "week", "date-of-month", "day-of-month".
+                Required if using other repeaet settings.
             interval (int, optional): The interval time the schedule should repeat.
-                Required if frequency is set to any value other than `DATE_OF_MONTH`.
+                Required if using other repeaet settings.
             date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
-                Required and used only if frequency is set to `DATE_OF_MONTH`.
+                Required and used only if frequency is set to "DATE_OF_MONTH".
             scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
                 If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
             scan_template_id (str, optional): ID of the scan template to use.
 
         Returns:
-            str: ID of the newly created scan schedule.
+            dict: API response with information about the newly created scan schedule.
         """
         assets = {}
         repeat = {}
-
-        repeat_behaviour_str = repeat_behaviour.name.lower().replace("_", "-")
 
         if excluded_asset_groups:
             assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
@@ -259,17 +260,14 @@ class Client(BaseClient):
         if included_targets:
             assets["includedTargets"] = {"addresses": included_targets}
 
-        if frequency:
-            frequency_str = frequency.name.lower().replace("_", "-")
-
-            if not interval:
+            if interval is None:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+            if frequency == "date_of_month" and not date_of_month:
                 raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency_str,
+                every=frequency,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -278,7 +276,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour_str,
+            onScanRepeat=repeat_behaviour,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -293,7 +291,7 @@ class Client(BaseClient):
         )["id"]
 
     def create_site(self, name: str, description: Optional[str] = None, assets: Optional[list[str]] = None,
-                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> str:
+                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> dict:
         """
         | Create a new site.
         |
@@ -332,7 +330,7 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
-        )["id"]
+        )
 
     def delete_scan_schedule(self, site_id: str, scheduled_scan_id: str) -> dict:
         """
@@ -1004,8 +1002,8 @@ class Client(BaseClient):
                                   included_asset_groups: Optional[list[int]] = None,
                                   included_targets: Optional[list[str]] = None,
                                   duration: Optional[str] = None, enabled: bool = None,
-                                  repeat_behaviour: RepeatBehaviour = None,
-                                  frequency: Optional[RepeatFrequencyType] = None,
+                                  repeat_behaviour: Optional[str] = None,
+                                  frequency: Optional[str] = None,
                                   interval: Optional[int] = None, date_of_month: Optional[int] = None,
                                   scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
         """
@@ -1027,11 +1025,14 @@ class Client(BaseClient):
             duration (str, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
             enabled (bool): A flag indicating whether the scan schedule is enabled.
-            repeat_behaviour (RepeatBehaviour, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (str, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
-            frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+                Can be one of: "restart-scan", "resume-scan".
+            frequency (str, optional): Frequency for the schedule to repeat.
+                Can be one of: "hour", "day", "week", "date-of-month", "day-of-month".
+                Required if using other repeaet settings.
             interval (int, optional): The interval time the schedule should repeat.
-                Required if frequency is set to any value other than `DATE_OF_MONTH`.
+                Required if using other repeaet settings.
             date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
                 Required and used only if frequency is set to `DATE_OF_MONTH`.
             scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
@@ -1043,8 +1044,6 @@ class Client(BaseClient):
         """
         assets = {}
         repeat = {}
-
-        repeat_behaviour_str = repeat_behaviour.name.lower().replace("_", "-")
 
         if excluded_asset_groups:
             assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
@@ -1058,17 +1057,14 @@ class Client(BaseClient):
         if included_targets:
             assets["includedTargets"] = {"addresses": included_targets}
 
-        if frequency:
-            frequency_str = frequency.name.lower().replace("_", "-")
-
             if not interval:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+            if frequency == "date_of_month" and not date_of_month:
                 raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency_str,
+                every=frequency,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -1077,7 +1073,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour_str,
+            onScanRepeat=repeat_behaviour,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -1209,7 +1205,8 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
 
 def convert_datetime_str(time_str: str) -> struct_time:
     """
-    Convert a time string formatted in one of the time formats used by Nexpose's API for scans to a `struct_time` object.
+    Convert a time string formatted in one of the time formats used by Nexpose's API
+        for scans to a `struct_time` object.
 
     Args:
         time_str (str): A time string formatted in one of the time formats used by Nexpose's API for scans.
@@ -1227,7 +1224,7 @@ def convert_datetime_str(time_str: str) -> struct_time:
 def convert_to_duration_time(years: Optional[int] = None, months: Optional[int] = None,
                              weeks: Optional[int] = None, days: Optional[int] = None,
                              hours: Optional[int] = None, minutes: Optional[int] = None,
-                             seconds: Optional[float] = None) -> str:
+                             seconds: Optional[float] = None) -> Optional[str]:
     """
     | Generate an ISO 8601 duration string.
     | More info about format's specification can be found on:
@@ -1247,6 +1244,9 @@ def convert_to_duration_time(years: Optional[int] = None, months: Optional[int] 
     Returns:
         str: The duration represented in an ISO 8601 duration string.
     """
+    if not any((years, months, weeks, days, hours, minutes, seconds)):
+        return None
+
     duration_str = "P"
 
     if years:
@@ -1380,6 +1380,8 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
     if not report_format:
         report_format = ReportFileFormat.PDF
 
+    report_format_str = report_format.name.lower()
+
     if download_immediately is None:
         download_immediately = True
 
@@ -1387,16 +1389,16 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format.name.lower(),
-    )
+        report_format=report_format_str,
+    )["id"]
 
-    instance_id = client.create_report(report_id)
+    instance_id = client.create_report(report_id)["id"]
 
     context = {
         "Name": report_name,
         "ID": report_id,
         "InstanceID": instance_id,
-        "Format": report_format.name.lower(),
+        "Format": report_format_str,
     }
     hr = tableToMarkdown("Report Information", context)
 
@@ -1732,6 +1734,9 @@ def create_assets_report_command(client: Client, asset_ids: list[str], template_
     """
     scope = {"assets": [int(asset_id) for asset_id in asset_ids]}
 
+    if report_format is not None:
+        report_format = report_format.name.lower()
+
     return create_report(
         client=client,
         scope=scope,
@@ -1759,6 +1764,9 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
             Defaults to True.
     """
     scope = {"scan": scan_id}
+
+    if report_format is not None:
+        report_format = report_format.name.lower()
 
     return create_report(
         client=client,
@@ -1803,20 +1811,26 @@ def create_scan_schedule_command(client: Client, site: Site, enabled: bool, repe
         duration_minutes (int, optional): Maximum duration of the scan in minutes.
             Can be used along with `duration_days` and `duration_hours`.
         frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+            Required if using other repeaet settings.
         interval (int, optional): The interval time the schedule should repeat.
-            Required if frequency is set to any value other than `DATE_OF_MONTH`.
+            Required if using other repeaet settings.
         date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
             Required and used only if frequency is set to `DATE_OF_MONTH`.
         scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str, optional): ID of the scan template to use.
     """
-    duration_str = convert_to_duration_time(
+    repeat_behaviour = repeat_behaviour.name.lower().replace("_", "-")
+
+    duration = convert_to_duration_time(
         days=duration_days,
         hours=duration_hours,
         minutes=duration_minutes)
 
-    site_scan_id = client.create_site_scan_schedule(
+    if frequency is not None:
+        frequency = frequency.name.lower().replace("_", "-")
+
+    response_data = client.create_site_scan_schedule(
         site_id=site.id,
         enabled=enabled,
         repeat_behaviour=repeat_behaviour,
@@ -1825,7 +1839,7 @@ def create_scan_schedule_command(client: Client, site: Site, enabled: bool, repe
         excluded_targets=excluded_targets,
         included_asset_groups=included_asset_groups,
         included_targets=included_targets,
-        duration=duration_str,
+        duration=duration,
         frequency=frequency,
         interval=interval,
         date_of_month=date_of_month,
@@ -1833,15 +1847,12 @@ def create_scan_schedule_command(client: Client, site: Site, enabled: bool, repe
         scan_template_id=scan_template_id,
     )
 
-    output = {
-        "Id": site_scan_id
-    }
-
     return CommandResults(
-        readable_output=f"New scheduled scan has been created with ID {site_scan_id}.",
+        readable_output=f"New scheduled scan has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.ScanSchedule",
         outputs_key_field="Id",
-        outputs=output,
+        outputs={"Id": response_data['id']},
+        raw_response=response_data,
     )
 
 
@@ -1863,22 +1874,19 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
     """
     site_importance_str = site_importance.name.lower() if site_importance else None
 
-    site_id = client.create_site(
+    response_data = client.create_site(
         name=name,
         description=description,
         assets=assets,
         site_importance=site_importance_str,
         template_id=template_id)
 
-    output = {
-        "Id": site_id
-    }
-
     return CommandResults(
-        readable_output=f"New site has been created with ID {site_id}.",
+        readable_output=f"New site has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
-        outputs=output,
+        outputs={"Id": response_data['id']},
+        raw_response=response_data,
     )
 
 
@@ -1900,6 +1908,9 @@ def create_sites_report_command(client: Client, sites: list[Site],
             Defaults to True.
     """
     scope = {"sites": sites}
+
+    if report_format is not None:
+        report_format = report_format.name.lower()
 
     return create_report(
         client=client,
@@ -1949,7 +1960,7 @@ def delete_site_command(client: Client, site: Site) -> CommandResults:
 
 
 def download_report_command(client: Client, report_id: str, instance_id: str,
-                            report_name: Union[str, None], report_format: ReportFileFormat) -> dict:
+                            report_format: ReportFileFormat, report_name: Optional[str] = None) -> dict:
     """
     Download a report file.
 
@@ -1957,9 +1968,9 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
         client (Client): Client to use for API requests.
         report_id (str): ID of the report to download.
         instance_id (str): ID of the report instance.
+        report_format (ReportFileFormat): File format to use for the generated report.
         report_name (str | None, optional): Name to give the generated report file.
             Defaults to None (results in using a "report <date>" format as a name).
-        report_format (ReportFileFormat): File format to use for the generated report.
 
     Returns:
         dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
@@ -2696,7 +2707,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
-def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: Optional[are] = None,
+def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: Optional[str] = None,
                                           page_size: Optional[int] = None, page: Optional[int] = None,
                                           sort: Optional[str] = None, limit: Optional[int] = None) -> CommandResults:
     """
@@ -3063,10 +3074,15 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str, optional): ID of the scan template to use.
     """
-    duration_str = convert_to_duration_time(
+    repeat_behaviour = repeat_behaviour.name.lower().replace("_", "-")
+
+    duration = convert_to_duration_time(
         days=duration_days,
         hours=duration_hours,
         minutes=duration_minutes)
+
+    if frequency is not None:
+        frequency = frequency.name.lower().replace("_", "-")
 
     client.update_site_scan_schedule(
         site_id=site.id,
@@ -3078,7 +3094,7 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         excluded_targets=excluded_targets,
         included_asset_groups=included_asset_groups,
         included_targets=included_targets,
-        duration=duration_str,
+        duration=duration,
         frequency=frequency,
         interval=interval,
         date_of_month=date_of_month,
