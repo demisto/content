@@ -929,7 +929,7 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = http_request('GET', '/public/v3/iocs', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs', params=handle_filters(), json_response=True)
     domains = []
     ip_infos = []
     url_infos = []
