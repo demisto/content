@@ -74,6 +74,7 @@ tasks:
       id: 4a6c8a03-1490-4bb8-8807-ecacd73aea2c
       version: -1
       name: Is ticketing system input defined?
+      description: Is ticketing system input defined?
       type: condition
       iscommand: false
       brand: ''
@@ -492,6 +493,7 @@ tasks:
       id: 13e4742d-d344-4795-874e-bfe7f3d19013
       version: -1
       name: Was this an incident or alert?
+      description: Was this an incident or alert?
       type: condition
       iscommand: false
       brand: ''
@@ -693,6 +695,7 @@ tasks:
       id: d8b21ec7-c705-41d5-8ecc-1ea808f01ce9
       version: -1
       name: Allow to remove file
+      description: Allow to remove file
       type: collection
       iscommand: false
       brand: ''
@@ -865,6 +868,7 @@ tasks:
       id: 8e581b19-c104-4a84-8851-61776c01bd69
       version: -1
       name: Is auto isolation allowed?
+      description: Is auto isolation allowed?
       type: condition
       iscommand: false
       brand: ''
@@ -981,6 +985,7 @@ tasks:
       id: cc973a32-27d9-40c0-8906-5f60c3c0aa41
       version: -1
       name: Is IOC allowed to be added globally?
+      description:  Is IOC allowed to be added globally?
       type: condition
       iscommand: false
       brand: ''
@@ -1088,6 +1093,7 @@ tasks:
       id: 4d39776a-0a20-4914-8ce7-b9278e6af590
       version: -1
       name: Confirm Indicators to block
+      description: Confirm Indicators to block
       type: collection
       iscommand: false
       brand: ''
@@ -1187,6 +1193,7 @@ tasks:
       id: bea75fc0-ea15-4515-80d9-d8b09c67948e
       version: -1
       name: Were are values provided?
+      description: Were are values provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1231,6 +1238,7 @@ tasks:
       id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
       version: -1
       name: Were are values provided?
+      description: Were are values provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1514,6 +1522,7 @@ tasks:
       id: edb42e94-ac59-40d2-8152-f51029be4cfe
       version: -1
       name: Should the analyst choose the indicators to hunt?
+      description: Should the analyst choose the indicators to hunt?
       type: condition
       iscommand: false
       brand: ""
@@ -1558,6 +1567,7 @@ tasks:
       id: 67cc138a-8ee1-41c0-8a0d-b45b456d9878
       version: -1
       name: Specify IOCs to hunt upon
+      description: Specify IOCs to hunt upon
       type: collection
       iscommand: false
       brand: ""
@@ -1810,7 +1820,8 @@ tasks:
     task:
       id: 8e347541-6eb3-4df0-86dd-2bc8233ae42d
       version: -1
-      name: Are any results?
+      name: Are there any results?
+      description: Are there any results?
       type: condition
       iscommand: false
       brand: ""

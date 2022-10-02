@@ -1394,6 +1394,7 @@ tasks:
       id: ef864f21-de9b-4e97-83fc-af2f028f865a
       version: -1
       name: Are there any batch queries?
+      description: Are there any batch queries?
       type: condition
       iscommand: false
       brand: ""

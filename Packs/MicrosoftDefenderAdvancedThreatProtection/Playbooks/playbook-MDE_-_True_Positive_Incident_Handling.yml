@@ -1689,6 +1689,7 @@ tasks:
       id: 94aa6066-52bd-4ef8-8b40-bbb1590dd813
       version: -1
       name: Should the analyst choose the indicators to hunt?
+      description: Should the analyst choose the indicators to hunt?
       type: condition
       iscommand: false
       brand: ""
@@ -1733,6 +1734,7 @@ tasks:
       id: 61158fa1-fcd4-4b00-83ea-00702a7f103f
       version: -1
       name: Specify IOCs to hunt upon
+      description: Specify IOCs to hunt upon
       type: collection
       iscommand: false
       brand: ""
@@ -2019,7 +2021,8 @@ tasks:
     task:
       id: 86356707-addf-4fcf-887e-aa224a0683c9
       version: -1
-      name: Are any results?
+      name: Are there any results?
+      description: Are there any results?
       type: condition
       iscommand: false
       brand: ""
