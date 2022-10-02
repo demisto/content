@@ -701,8 +701,9 @@ class MsGraphClient:
             "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
-        emails_as_html =  self.ms_client.http_request('GET', suffix_endpoint, params=params,
-                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value') or []
+        emails_as_html = self.ms_client.http_request('GET', suffix_endpoint, params=params,
+                                                     overwrite_rate_limit_retry=overwrite_rate_limit_retry)\
+                             .get('value') or []
 
         headers = {
             "Prefer": "outlook.body-content-type='text'"
