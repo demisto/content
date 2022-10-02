@@ -931,7 +931,6 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
-    deprecated: false
     - default: false
       description:  |-
         A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
