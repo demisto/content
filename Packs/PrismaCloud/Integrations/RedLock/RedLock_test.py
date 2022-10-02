@@ -56,7 +56,7 @@ def test_fetch_incidents_first_time_fetch(mocker):
     mocker.patch('RedLock.req', return_value=[])
 
     _, _, next_run = fetch_incidents()
-    assert next_run == 1625927654.758295
+    assert next_run == 1625938454.758295
 
 
 @freeze_time("2021-07-10T16:34:14.758295 UTC+1")
@@ -78,7 +78,7 @@ def test_fetch_incidents_fetch_all_new(mocker):
     mocker.patch('RedLock.req', return_value=sample_incidents)
 
     incidents, fetched_ids, next_run = fetch_incidents()
-    assert next_run == 1625927654.758295
+    assert next_run == 1625938454.758295
     assert len(fetched_ids) == 2
     assert incidents == expected_incidents
 
