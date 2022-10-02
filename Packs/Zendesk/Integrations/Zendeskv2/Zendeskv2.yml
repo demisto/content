@@ -34,7 +34,7 @@ configuration:
   required: false
   type: 15
 - display: Close mirrored incidents
-  name: close_incidents
+  name: close_incident
   defaultvalue: "true"
   type: 8
   required: false
@@ -46,12 +46,6 @@ configuration:
   name: mirror_tags
   required: false
   type: 0
-- additionalinfo: Fetch comments for a Zendesk ticket.
-  display: Fetch comments.
-  hidden: false
-  name: fetch_comments
-  required: false
-  type: 8
 - display: Ticket types to fetch
   name: ticket_types
   defaultvalue: all

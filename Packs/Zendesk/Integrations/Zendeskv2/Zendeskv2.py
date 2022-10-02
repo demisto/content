@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from copy import copy
 from functools import lru_cache
 from urllib.parse import urlencode
 from urllib3 import disable_warnings
@@ -53,9 +54,7 @@ MIRROR_DIRECTION = {
 FIELDS_TO_REMOVE_FROM_MIROR_IN = ['url', 'id', 'created_at']
 DEFAULT_UPLOAD_FILES_COMMENT = 'Uploaded from XSOAR.'
 MIRROR_TAGS = params.get('mirror_tags') or []
-MIRROR_COMMENTS_IN = argToBoolean(params.get('fetch_comments', True))
-CLOSE_INCIDENT = True   # params.get('close_incident')
-CLOSE_REMOTE_TICKET = True  # params.get('close_remote_ticket')
+CLOSE_INCIDENT = argToBoolean(params.get('close_incident', False))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 CACHE = None
 
@@ -127,10 +126,6 @@ class CacheManager:
 
 def datetime_to_iso(date: datetime) -> str:
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-
-def headers_transform(header: str) -> str:
-    return header.replace('_', ' ')
 
 
 def prepare_kwargs(kwargs: Dict[str, Any], ignore_args: STR_OR_STR_LIST = [],
@@ -427,7 +422,7 @@ class ZendeskClient(BaseClient):
         raw_results = copy(users)
         context = list(map(_iter_context, users))
         readable_outputs = tableToMarkdown(name='Zendek users:', t=context, headers=USERS_HEADERS,
-                                           headerTransform=headers_transform)
+                                           headerTransform=camelize_string)
         return CommandResults(outputs_prefix=USER_CONTEXT_PATH, outputs=context,
                               readable_output=readable_outputs, raw_response=raw_results)
 
@@ -534,7 +529,7 @@ class ZendeskClient(BaseClient):
     @staticmethod
     def __command_results_zendesk_organizations(organizations: List[Dict]):  # pragma: no cover
         readable_outputs = tableToMarkdown(name='Zendek organizations:', t=organizations, headers=ORGANIZATIONS_HEADERS,
-                                           headerTransform=headers_transform)
+                                           headerTransform=camelize_string)
         return CommandResults(outputs_prefix="Zendesk.Organization",
                               outputs=organizations, readable_output=readable_outputs)
 
@@ -566,7 +561,7 @@ class ZendeskClient(BaseClient):
         raw = tickets
         context = list(map(ZendeskClient.__ticket_context, tickets))
         readable_outputs = tableToMarkdown(name='Zendek tickets:', t=context, headers=TICKETS_HEADERS,
-                                           headerTransform=headers_transform)
+                                           headerTransform=camelize_string)
         return CommandResults(outputs_prefix="Zendesk.Ticket",
                               outputs=tickets, readable_output=readable_outputs, raw_response=raw)
 
@@ -599,11 +594,22 @@ class ZendeskClient(BaseClient):
                 Validators.validate_ticket_filter(filter)
                 return f'/users/{user_id}/tickets/{filter}'
 
-    def zendesk_ticket_list(self, ticket_id: Optional[STR_OR_STR_LIST] = None,
+    def zendesk_ticket_list(self, ticket_id: Optional[STR_OR_STR_LIST] = None, query: Optional[str] = None,
                             filter: Optional[str] = None, user_id: Optional[str] = None,
                             sort: Optional[str] = None, page_number: Optional[int] = None, **kwargs):
         error_msgs = []
         command_results = []
+        if query is not None:
+            assert ticket_id is None, "please provide either 'query' or 'ticket_id' not both."
+            ticket_filter = 'type:ticket'
+            query = query if query.startswith(ticket_filter) else f'{ticket_filter} {query}'
+            ticket_id = list(map(
+                lambda x: x['id'],
+                filter(
+                    lambda x: x['result_type'] == 'ticket',
+                    self.__zebdesk_search_results(query=query, page_number=page_number, **kwargs)
+                )
+            ))
         if ticket_id is not None:
             tickets = []
             for single_ticket in argToList(ticket_id):
@@ -616,11 +622,8 @@ class ZendeskClient(BaseClient):
             can_use_cursor_paging = page_number is not None
             sort_params = self._get_sort_params(sort, can_use_cursor_paging) if sort else None
             url_suffix = self.__get_tickets_url_suffix(filter, user_id)
-            if True:
-                tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
-                                                   params=sort_params, page_number=page_number, **kwargs))
-            else:
-                pass
+            tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
+                                               params=sort_params, page_number=page_number, **kwargs))
 
         if tickets:
             command_results.append(self.__command_results_zendesk_tickets(tickets))
@@ -646,7 +649,7 @@ class ZendeskClient(BaseClient):
             if priority:
                 Validators.validate_ticket_priority(priority)
                 self._data['priority'] = priority
-            if comment is not None:
+            if comment:
                 self._data['comment'] = {'body': comment}
                 if public:
                     self._data['comment']['public'] = argToBoolean(public)
@@ -735,7 +738,7 @@ class ZendeskClient(BaseClient):
     def __command_results_zendesk_ticket_comments(comments: List[Dict]):
         readable_pre_proces = list(map(ZendeskClient._map_comment_attachments, comments))
         readable_outputs = tableToMarkdown(name='Zendek comments:', t=readable_pre_proces, headers=COMMENTS_HEADERS,
-                                           headerTransform=headers_transform, is_auto_json_transform=True)
+                                           headerTransform=camelize_string, is_auto_json_transform=True)
         return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
                               outputs=comments, readable_output=readable_outputs)
 
@@ -791,7 +794,7 @@ class ZendeskClient(BaseClient):
 
         attachments = list(map(filter_thumbnails, attachments))
         readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
-                                          headers=ATTACHMENTS_HEADERS, headerTransform=headers_transform)
+                                          headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string)
         results = [CommandResults(outputs_prefix='Zendesk.Attachment',
                                   outputs=attachments, readable_output=readable_output)]
         for attachment_link, attachment_name in map(lambda x: (x['content_url'], x['file_name']), attachments):
@@ -910,7 +913,7 @@ class ZendeskClient(BaseClient):
         attachments = comment.get('attachments')
         if attachments:
             attachments_table = tableToMarkdown("attachments", attachments, [
-                                                "file_name", "id"], headerTransform=headers_transform)
+                                                "file_name", "id"], headerTransform=camelize_string)
             comment_body = f'{comment_body}\n{attachments_table}'
 
         return {
@@ -972,7 +975,7 @@ class ZendeskClient(BaseClient):
                     args.delta['priority'] = priority
                     break
 
-        if args.incident_changed and CLOSE_REMOTE_TICKET:
+        if args.incident_changed and CLOSE_INCIDENT:
             if args.inc_status == IncidentStatus.DONE or (args.data.get('state') == 'closed'):
                 args.delta['status'] = 'closed'
 
@@ -1095,14 +1098,12 @@ def main():  # pragma: no cover
         demisto.debug(f'command {command} called')
 
         if command in commands:
-            command_res: Any = commands[command](**args)
-            demisto.error(f'{command_res=}')
-            if command_res:
+            if command_res := commands[command](**args):
                 return_results(command_res)
         else:
             raise NotImplementedError(command)
     except Exception as e:
-        return_error(str(e))
+        return_error(f'An error occurred: {e}', error=e)
     finally:
         CACHE.save()
 
