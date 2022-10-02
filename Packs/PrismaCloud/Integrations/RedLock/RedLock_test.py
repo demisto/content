@@ -99,9 +99,9 @@ def test_fetch_incidents_fetch_previously_fetched(mocker):
             - Validate that only one incident was created
     """
     mock_last_run = {
-                'fetched_ids': [{'P-12345': 123456789}],
-                'time': 1625938454758
-            }
+        'fetched_ids': [{'P-12345': 123456789}],
+        'time': 1625938454758
+    }
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
     from RedLock import fetch_incidents
