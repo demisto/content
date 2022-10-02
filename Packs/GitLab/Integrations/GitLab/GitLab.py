@@ -327,6 +327,13 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
+    def project_user_list_request(self, per_page: int, page: int, search: str | Any) -> dict:
+        headers = self._headers
+        params = assign_params(search=search, page=page, per_page=per_page)
+        suffix = f'/projects/{self.project_id}/users'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -350,9 +357,15 @@ def check_args_for_update(args: dict, optinal_params: list) -> dict:
 
 
 def validate_pagination_values(args) -> tuple[int, int, int]:
-    per_page = int(args.get('per_page', '50'))
-    page_number = int(args.get('page', '1'))
-    limit = int(args.get('limit', '50'))
+    per_page = arg_to_number(args.get('per_page'))
+    if not per_page:
+        per_page = 50
+    page_number = arg_to_number(args.get('page'))
+    if not page_number:
+        page_number = 1
+    limit = arg_to_number(args.get('limit'))
+    if not limit:
+        limit = 50
     if limit < 0 or page_number < 0:
         raise DemistoException('Pagination values must be positive')
 
@@ -1462,7 +1475,45 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         page += 1
     return CommandResults(
         outputs_prefix='GitLab.Code',
-        # readable_output=response,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a results of all the project's users.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments
+    Returns:
+        (CommandResults).
+    """
+    search = args.get('search')
+    headers = ['Id', 'UserName', 'Name', 'State', 'WebLink']
+    response_to_hr = []
+    per_page, limit, page = validate_pagination_values(args)
+    items_count_total = 0
+    response: List[Dict[str, Any]] = []
+    while items_count_total < limit:
+        response_temp = client.project_user_list_request(per_page, page, search)
+        if not response_temp:
+            break
+        response.extend(response_temp)
+        items_count_total += len(response_temp)
+        page += 1
+
+    for user in response:
+        response_to_hr.append({'Id': user.get('id', ''),
+                               'UserName': user.get('username', ''),
+                               'Name': user.get('name', ''),
+                               'State': user.get('state', ''),
+                               'WebLink': user.get('web_url', '')})
+    human_readable = tableToMarkdown('List Users', response_to_hr, removeNull=True, headers=headers)
+    return CommandResults(
+        outputs_prefix='GitLab.User',
+        outputs_key_field='Id',
+        readable_output=human_readable,
         outputs=response,
         raw_response=response
     )
@@ -1510,7 +1561,8 @@ def main() -> None:
                 'gitlab-file-create': file_create_command,
                 'gitlab-file-update': file_update_command,
                 'gitlab-file-delete': file_delete_command,
-                'gitlab-code-search': code_search_command
+                'gitlab-code-search': code_search_command,
+                'gitlab-project-user-list': project_user_list_command
                 }
 
     try:

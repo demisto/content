@@ -216,7 +216,7 @@ script:
     description: Get a list of a project's issues.
     arguments:
     - name: assignee_id
-      description: Return issues assigned to the given user id.
+      description: Return issues assigned to the given user id. The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: assignee_username
@@ -382,7 +382,7 @@ script:
       required: false
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the issue to. Set to 0 or provide an empty value to unassign all assignees.
+      description: The ID of the users to assign the issue to.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: confidential
@@ -729,15 +729,15 @@ script:
       required: false
       isArray: false
     - name: assignee_id
-      description: Returns merge requests assigned to the given user id. None returns unassigned merge requests. Any returns merge requests with an assignee.
+      description: Returns merge requests assigned to the given user id.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: reviewer_id
-      description: Returns merge requests which have the user as a reviewer with the given user id.
+      description: Returns merge requests which have the user as a reviewer with the given user id.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: reviewer_username
-      description: Returns merge requests which have the user as a reviewer with the given username. None returns merge requests with no reviewers. Any returns merge requests with any reviewer. Mutually exclusive with reviewer_id.
+      description: Returns merge requests which have the user as a reviewer with the given username.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: source_branch
@@ -806,11 +806,11 @@ script:
       required: true
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the MR to. Set to 0 or provide an empty value to unassign all assignees.
+      description: The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: reviewer_ids
-      description: The ID of the users added as a reviewer to the MR. If set to 0 or left empty, no reviewers are added.
+      description: The ID of the users added as a reviewer to the MR.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: false
     - name: description
@@ -1094,11 +1094,11 @@ script:
       required: true
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the MR to. Set to 0 or provide an empty value to unassign all assignees.
+      description: The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: true
     - name: reviewer_ids
-      description: The ID of the users set as a reviewer to the MR. Set the value to 0 or provide an empty value to unset all reviewers.
+      description: The ID of the users set as a reviewer to the MR. The command gitlab-project-user-list gives a list of all relevent users.
       required: false
       isArray: true
     - name: description
@@ -2281,7 +2281,7 @@ script:
       description: The visibility of the project Public, Private or Internal.
     - type: Boolean
       contextPath: GitLab.Project.resolve_outdated_diff_discussions
-      description: The resolve outdated diff discussions.  # ????????????????????????
+      description: The resolve outdated diff discussions.
     - type: String
       contextPath: GitLab.Project.container_expiration_policy.cadence
       description: The cadence of the container expiration policy.
@@ -3215,6 +3215,16 @@ script:
       description: The search query.
       required: true
       isArray: true
+    - defaultValue: 50
+      name: limit
+      description: Maximum number of results to return.
+      required: false
+      isArray: false
+    - defaultValue: 1
+      name: page
+      description: The number of results on the page.
+      required: false
+      isArray: false
     outputs:
     - contextPath: GitLab.Code.basename
       description: The base name of the code.
@@ -3240,6 +3250,42 @@ script:
     - contextPath: GitLab.Code.project_id
       description: The project's id.
       type: Number
+  - name: gitlab-project-user-list
+    description: Get the users list of a project.
+    arguments:
+    - name: Get the users list of a project.
+      description: The search query.
+      required: false
+      isArray: true
+    - defaultValue: 50
+      name: limit
+      description: Maximum number of results to return.
+      required: false
+      isArray: false
+    - defaultValue: 1
+      name: page
+      description: The number of results on the page.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: GitLab.User.id
+      description: The user's Id.
+      type: Number
+    - contextPath: GitLab.User.username
+      description: The user's username.
+      type: String
+    - contextPath: GitLab.User.name
+      description: The user's name.
+      type: String
+    - contextPath: GitLab.User.state
+      description: The user's state.
+      type: String
+    - contextPath: GitLab.User.avatar_url
+      description: The user's avatar url.
+      type: String
+    - contextPath: GitLab.User.web_url
+      description: The user's web url.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
