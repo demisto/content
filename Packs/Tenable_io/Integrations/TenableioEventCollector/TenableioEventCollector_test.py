@@ -84,21 +84,22 @@ def test_fetch_audit_logs_no_duplications(requests_mock):
     from TenableioEventCollector import fetch_events_command
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
-    last_run = {'next_fetch': '2022-09-20'}
-    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    last_run = {'last_fetch_time': '2022-09-20'}
+    first_fetch = arg_to_datetime('3 days')
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
-    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'next_fetch': '2022-09-20'})
-    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
     assert new_last_run.get('index_audit_logs') == 2
 
-    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'next_fetch': '2022-09-20'})
-    audit_logs, new_last_run = fetch_events_command(client, None, last_run, 1)
+    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '123456'

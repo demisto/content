@@ -166,7 +166,7 @@ def generate_export_uuid(client: Client, first_fetch: datetime, last_run: Dict[s
     last_run.update({'last_found_use': last_found, 'last_fetch_vuln': next_run_vuln, 'export_uuid': export_uuid})
 
 
-def run_vulnerabilities_fetch(last_run: Dict[str, Union[str, float, Any]], first_fetch: datetime,
+def run_vulnerabilities_fetch(last_run, first_fetch: datetime,
                               vuln_fetch_interval: int):
     """
 
@@ -179,9 +179,9 @@ def run_vulnerabilities_fetch(last_run: Dict[str, Union[str, float, Any]], first
 
     """
     if not last_run.get('last_fetch_vuln'):
-        time_to_check = time.mktime(first_fetch.timetuple())
+        time_to_check: float = time.mktime(first_fetch.timetuple())
     else:
-        time_to_check = float(last_run.get('last_fetch_vuln'))
+        time_to_check = last_run['last_fetch_vuln']
     return time.time() - time_to_check > vuln_fetch_interval and not last_run.get('export_uuid')
 
 
@@ -409,8 +409,9 @@ def main() -> None:  # pragma: no cover
                 return_results(results)
             elif command == 'tenable-get-vulnerabilities':
                 results = get_vulnerabilities_command(args, client)
-                if isinstance(results, CommandResults) and results.raw_response:  # pylint: disable=E1101
-                    vulnerabilities = results.raw_response  # pylint: disable=E1101
+                if isinstance(results, CommandResults):
+                    if results.raw_response:
+                        vulnerabilities = results.raw_response  # type: ignore
                 return_results(results)
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
