@@ -647,10 +647,9 @@ def merged_branch_delete_command(client: Client, args: Dict[str, Any]) -> Comman
         (CommandResults).
     """
     response = client.delete_merged_branches_request()
-    human_readable_string = f'Deleation Result:\n {response}'
+    human_readable_string = 'Merged branches Deleted successfully'
     command_results = CommandResults(
         readable_output=human_readable_string,
-        outputs_key_field='',
         outputs=response,
         raw_response=response
     )
