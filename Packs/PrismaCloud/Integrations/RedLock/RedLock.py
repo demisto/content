@@ -831,7 +831,7 @@ def fetch_incidents():
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     last_run = demisto.getLastRun()
-    last_run_time = last_run.get('time', False)  # This is purely to establish if a first fetch has occurred
+    last_run_time = last_run.get('time')  # This is purely to establish if a first fetch has occurred
     fetched_ids = last_run.get('fetched_ids', [])
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     if not last_run_time:
@@ -845,6 +845,7 @@ def fetch_incidents():
                 "unit": first_fetch_unit.replace("s", "")  # This is make the unit singular
             }
         }
+        last_run_time = now
     else:
         time_range = {
             'type': 'relative',
