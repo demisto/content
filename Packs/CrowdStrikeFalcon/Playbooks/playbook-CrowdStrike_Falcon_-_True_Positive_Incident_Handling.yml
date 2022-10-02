@@ -1,37 +1,25 @@
 id: CrowdStrike Falcon - True Positive Incident Handling
-version: 11
-contentitemexportablefields:
-  contentitemfields:
-    packID: CrowdStrikeFalcon
-    packName: CrowdStrike Falcon
-    itemVersion: 1.9.3
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 6.5.0
 name: CrowdStrike Falcon - True Positive Incident Handling
-description: This playbook is part of the 'Malware Investigation And Response' pack.
-  For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook handles a CrowdStrike incident that was determined to be a true positive
-  by the analyst. Actions include isolating the host, blocking the indicator by the
-  EDR, and tagging it.
-starttaskid: "0"
+description: This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst. Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 60d8e1b7-506b-4eb4-8fda-18bad595c297
     type: start
     task:
       id: 60d8e1b7-506b-4eb4-8fda-18bad595c297
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - "52"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -46,8 +34,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+    continueonerrortype: ""
+  '1':
+    id: '1'
     taskid: 528230b6-5ae3-48cf-8606-2352301ca550
     type: title
     task:
@@ -56,12 +45,12 @@ tasks:
       name: IT remediation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,8 +65,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+    continueonerrortype: ""
+  '2':
+    id: '2'
     taskid: 4a6c8a03-1490-4bb8-8807-ecacd73aea2c
     type: condition
     task:
@@ -86,14 +76,14 @@ tasks:
       name: Is ticketing system input defined?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
+      - '5'
       JIRA:
-      - "22"
+      - '22'
       SNOW:
-      - "21"
+      - '21'
     separatecontext: false
     conditions:
     - label: SNOW
@@ -127,7 +117,6 @@ tasks:
             value:
               simple: JIRA
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -142,8 +131,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+    continueonerrortype: ""
+  '3':
+    id: '3'
     taskid: caccc895-7127-4fa4-8110-845a64208b14
     type: regular
     task:
@@ -157,15 +147,14 @@ tasks:
       scriptName: ServiceNowCreateIncident
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       description:
         simple: ${inputs.TicketDescription}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,8 +169,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+    continueonerrortype: ""
+  '5':
+    id: '5'
     taskid: 637c7650-e6bc-4d8b-87ef-f30dc0aea1e3
     type: title
     task:
@@ -190,12 +180,12 @@ tasks:
       name: Done IT Remediation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -210,8 +200,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+    continueonerrortype: ""
+  '6':
+    id: '6'
     taskid: 8487b040-6d7c-4baf-85e9-07f0d6e7aed0
     type: title
     task:
@@ -220,12 +211,12 @@ tasks:
       name: Block Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -240,8 +231,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+    continueonerrortype: ""
+  '8':
+    id: '8'
     taskid: 161ac39a-06c1-4fc7-87c0-a6cee8d13ad2
     type: regular
     task:
@@ -252,15 +244,15 @@ tasks:
       script: '|||cs-falcon-upload-custom-ioc'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       action:
         simple: prevent
       applied_globally:
-        simple: "true"
+        simple: 'true'
       description:
         simple: due to XSOAR incident ${incident.id}
       ioc_type:
@@ -270,7 +262,6 @@ tasks:
       value:
         simple: ${Indicators to block.Answers.0}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -285,8 +276,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+    continueonerrortype: ""
+  '9':
+    id: '9'
     taskid: 4e6cdd2e-5ef1-49a9-8905-aa8088bbc0c0
     type: regular
     task:
@@ -300,14 +292,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       indicatorsValues:
         simple: ${Indicators to block.Answers.0}
       tags:
         simple: ${inputs.BlockIOCTagName}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -322,8 +313,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+    continueonerrortype: ""
+  '10':
+    id: '10'
     taskid: c3de6e2f-bbdf-4188-8e76-abe9627130e1
     type: title
     task:
@@ -332,12 +324,12 @@ tasks:
       name: Done Block Indicators
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -352,8 +344,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+    continueonerrortype: ""
+  '11':
+    id: '11'
     taskid: f4f02e90-8c80-47e0-8544-136691f10752
     type: title
     task:
@@ -362,12 +355,12 @@ tasks:
       name: True Positive Incident Closing
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -386,8 +379,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+    continueonerrortype: ""
+  '12':
+    id: '12'
     taskid: d0c30917-314b-4f3c-8334-befe4a17b7cc
     type: title
     task:
@@ -396,9 +390,9 @@ tasks:
       name: Done True Positive
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -413,8 +407,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+    continueonerrortype: ""
+  '14':
+    id: '14'
     taskid: bfacf224-5d44-475f-8704-2a208fc11e17
     type: regular
     task:
@@ -425,17 +420,16 @@ tasks:
       script: '|||cs-falcon-resolve-incident'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       ids:
         simple: ${incident.externalsystemid}
       status:
         simple: Closed
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -450,24 +444,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+    continueonerrortype: ""
+  '15':
+    id: '15'
     taskid: 91e0201f-ece7-46ad-8708-c95cf1ac8399
     type: regular
     task:
       id: 91e0201f-ece7-46ad-8708-c95cf1ac8399
       version: -1
       name: Resolve CS detection
-      description: Resolves and updates a CrowdStrike Falcon detection using the provided
-        arguments. At least one optional argument must be passed, otherwise no change
-        will take place.
+      description: Resolves and updates a CrowdStrike Falcon detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
       script: '|||cs-falcon-resolve-detection'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       comment:
         simple: ${inputs.CloseNotes}
@@ -476,7 +469,6 @@ tasks:
       status:
         simple: true_positive
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -491,8 +483,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+    continueonerrortype: ""
+  '20':
+    id: '20'
     taskid: 13e4742d-d344-4795-874e-bfe7f3d19013
     type: condition
     task:
@@ -501,12 +494,12 @@ tasks:
       name: Was this an incident or alert?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       detection:
-      - "15"
+      - '15'
       incident:
-      - "14"
+      - '14'
     separatecontext: false
     conditions:
     - label: incident
@@ -529,7 +522,6 @@ tasks:
           right:
             value:
               simple: detection
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -544,8 +536,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+    continueonerrortype: ""
+  '21':
+    id: '21'
     taskid: 90d0d8ac-75b4-41ce-81ce-f6639d1c695f
     type: condition
     task:
@@ -556,19 +549,18 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "5"
-      "yes":
-      - "3"
+      no:
+      - '5'
+      yes:
+      - '3'
     scriptarguments:
       brandname:
         simple: ServiceNow v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -583,8 +575,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+    continueonerrortype: ""
+  '22':
+    id: '22'
     taskid: ee436f66-fde3-4caa-8730-2ddf0425a959
     type: condition
     task:
@@ -595,19 +588,18 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "5"
-      "yes":
-      - "38"
+      no:
+      - '5'
+      yes:
+      - '38'
     scriptarguments:
       brandname:
         simple: jira-v2
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -622,23 +614,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+    continueonerrortype: ""
+  '23':
+    id: '23'
     taskid: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
     type: regular
     task:
       id: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
       version: -1
       name: Remove file
-      description: Batch executes RTR active-responder remove file across the hosts
-        mapped to a specific batch ID.
+      description: Batch executes RTR active-responder remove file across the hosts mapped to a specific batch ID.
       script: '|||cs-falcon-rtr-remove-file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       file_path:
         simple: ${Select the file path to remove.Answers.0}
@@ -647,7 +639,6 @@ tasks:
       os:
         simple: ${inputs.OperatingSystemToRemoveFrom}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -662,8 +653,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+    continueonerrortype: ""
+  '24':
+    id: '24'
     taskid: 12197a47-0fc1-47bb-84fa-566e4b2b066c
     type: title
     task:
@@ -672,12 +664,12 @@ tasks:
       name: Remove File
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -692,8 +684,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+    continueonerrortype: ""
+  '26':
+    id: '26'
     taskid: d8b21ec7-c705-41d5-8ecc-1ea808f01ce9
     type: collection
     task:
@@ -702,12 +695,11 @@ tasks:
       name: Allow to remove file
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -719,14 +711,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Provide path to remove file from
       methods: []
-      format: ""
-      bcc: null
-      cc: null
+      format: ''
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -734,12 +726,12 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - "Yes"
-      - "No"
+      - Yes
+      - No
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Select the file path to remove
         required: false
@@ -749,21 +741,22 @@ tasks:
         options: []
         optionsarg:
         - simple: ${inputs.PathsForFilesToRemove}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Select the file path to remove
-      description: ""
-      sender: ""
+      description: ''
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+    continueonerrortype: ""
+  '27':
+    id: '27'
     taskid: 4ff0b30c-fdfa-46e5-80bc-aa7382e45ddb
     type: title
     task:
@@ -772,12 +765,12 @@ tasks:
       name: Done File Removal
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -792,31 +785,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+    continueonerrortype: ""
+  '28':
+    id: '28'
     taskid: e8f22502-f0dd-4c13-899a-9f94b25f38b3
     type: playbook
     task:
       id: e8f22502-f0dd-4c13-899a-9f94b25f38b3
       version: -1
       name: Crowdstrike Falcon - Isolate Endpoint
-      description: This playbook auto isolates endpoints by the device ID provided
-        in the playbook.
+      description: This playbook auto isolates endpoints by the device ID provided in the playbook.
       playbookName: Crowdstrike Falcon - Isolate Endpoint
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       Device_id:
         simple: ${inputs.HostID}
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -833,8 +825,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+    continueonerrortype: ""
+  '29':
+    id: '29'
     taskid: 30545134-219f-4588-8646-c807f9cc56f1
     type: title
     task:
@@ -843,12 +836,12 @@ tasks:
       name: 'Isolate '
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -863,8 +856,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+    continueonerrortype: ""
+  '30':
+    id: '30'
     taskid: 8e581b19-c104-4a84-8851-61776c01bd69
     type: condition
     task:
@@ -873,15 +867,15 @@ tasks:
       name: Is auto isolation allowed?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "31"
-      "yes":
-      - "28"
+      - '31'
+      yes:
+      - '28'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -890,9 +884,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -907,8 +900,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+    continueonerrortype: ""
+  '31':
+    id: '31'
     taskid: e3b76903-336e-4ae4-8c55-d65c7601a0ed
     type: title
     task:
@@ -917,12 +911,12 @@ tasks:
       name: Done Isolation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -937,8 +931,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+    continueonerrortype: ""
+  '38':
+    id: '38'
     taskid: 952f7817-17c5-4136-8935-7d8aa53729b4
     type: regular
     task:
@@ -949,10 +944,10 @@ tasks:
       script: '|||jira-create-issue'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       description:
         complex:
@@ -963,7 +958,6 @@ tasks:
       summary:
         simple: ${inputs.TicketDescription}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -978,8 +972,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+    continueonerrortype: ""
+  '41':
+    id: '41'
     taskid: cc973a32-27d9-40c0-8906-5f60c3c0aa41
     type: condition
     task:
@@ -988,14 +983,14 @@ tasks:
       name: Is IOC allowed to be added globally?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
+      - '10'
       Globally:
-      - "8"
+      - '8'
       Host Group:
-      - "43"
+      - '43'
     separatecontext: false
     conditions:
     - label: Globally
@@ -1007,7 +1002,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
     - label: Host Group
       condition:
@@ -1018,14 +1013,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
           ignorecase: true
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.BlockHostGroupName
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1040,8 +1034,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+    continueonerrortype: ""
+  '43':
+    id: '43'
     taskid: 41a97e56-51c9-4a73-8c81-fc993dd7d9b7
     type: regular
     task:
@@ -1052,10 +1047,10 @@ tasks:
       script: '|||cs-falcon-upload-custom-ioc'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       action:
         simple: prevent
@@ -1070,7 +1065,6 @@ tasks:
       value:
         simple: ${Indicators to block.Answers.0}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1085,8 +1079,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+    continueonerrortype: ""
+  '45':
+    id: '45'
     taskid: 4d39776a-0a20-4914-8ce7-b9278e6af590
     type: collection
     task:
@@ -1095,12 +1090,11 @@ tasks:
       name: Confirm Indicators to block
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1112,13 +1106,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
-      format: ""
-      bcc: null
-      cc: null
+      format: ''
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1127,8 +1121,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Mark the indicators to block
         required: false
@@ -1138,21 +1132,22 @@ tasks:
         options: []
         optionsarg:
         - simple: ${inputs.Sha256}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Indicators to block
-      description: ""
-      sender: ""
+      description: ''
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+    continueonerrortype: ""
+  '46':
+    id: '46'
     taskid: 65c339fc-ab0f-4e74-8efd-ffae5c159dc3
     type: title
     task:
@@ -1161,12 +1156,12 @@ tasks:
       name: Remediation
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1183,8 +1178,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+    continueonerrortype: ""
+  '49':
+    id: '49'
     taskid: bea75fc0-ea15-4515-80d9-d8b09c67948e
     type: condition
     task:
@@ -1193,26 +1189,25 @@ tasks:
       name: Were are values provided?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "41"
-      - "9"
+      - '10'
+      yes:
+      - '41'
+      - '9'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: "1"
+              simple: '1'
             iscontext: true
           right:
             value:
-              simple: "1"
-    continueonerrortype: ""
+              simple: '1'
     view: |-
       {
         "position": {
@@ -1227,8 +1222,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+    continueonerrortype: ""
+  '50':
+    id: '50'
     taskid: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
     type: condition
     task:
@@ -1237,22 +1233,21 @@ tasks:
       name: Were are values provided?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "27"
-      "yes":
-      - "23"
+      - '27'
+      yes:
+      - '23'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Select the file path to remove.Answers.0
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1267,6 +1262,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 23df4ffd-d9a8-46de-8ddd-c7636214fcd6
@@ -1278,6 +1274,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1311,6 +1308,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -1338,9 +1336,7 @@ tasks:
       id: 56d7fc84-c0a2-4faa-86de-1a4620443e90
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise.
-        It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os
-        \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -1585,12 +1581,12 @@ tasks:
         simple: Analyst
       subject:
         simple: Specify IOCs to hunt upon
-      body: null
+      body:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1710,6 +1706,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "51"
@@ -1861,7 +1858,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1881,70 +1877,69 @@ inputs:
   value: {}
   required: false
   description: The name of the ticketing system to use, for example Jira or ServiceNow.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockIOCTagName
   value: {}
   required: false
   description: The tag to assign for indicators to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HostID
   value: {}
   required: false
   description: The ID of the host to use.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoIsolation
   value:
-    simple: "false"
+    simple: 'false'
   required: false
   description: |
     Whether automatic host isolation is allowed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: TicketProjectName
   value: {}
   required: false
   description: The ticket project name (required for Jira).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockMaliciousIOCGlobally
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: |-
     Whether adding to block list is global.
     If False, provide an input for the BlockHostGroup input with the group name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockHostGroupName
   value: {}
   required: false
-  description: The name of the allow list group to apply if BlockMaliciousIOCGlobally
-    is set to False.
-  playbookInputQuery: null
+  description: The name of the allow list group to apply if BlockMaliciousIOCGlobally is set to False.
+  playbookInputQuery:
 - key: TicketDescription
   value: {}
   required: false
   description: The description to be used by the ticketing system.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CloseNotes
   value: {}
   required: false
   description: Provide the close notes to be listed in CrowdStrike.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Sha256
   value: {}
   required: false
   description: The SHA256 value to manage.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PathsForFilesToRemove
   value: {}
   required: false
   description: Provide the path for the file to remove.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OperatingSystemToRemoveFrom
   value: {}
   required: false
   description: |-
     Values can be
     Windows, Linux, Mac
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ManuallyChooseIOCForHunting
   value:
     simple: "True"
@@ -1952,5 +1947,10 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- Test - CrowdStrike Falcon
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

@@ -1,40 +1,133 @@
-id: MDE - Host Advanced Hunting
-version: 21
 contentitemexportablefields:
-  contentitemfields:
-    packID: MicrosoftDefenderAdvancedThreatProtection
-    packName: Microsoft Defender for Endpoint
-    itemVersion: 1.12.2
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: MDE - Host Advanced Hunting
+  contentitemfields: {}
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature based on the provided inputs.
-starttaskid: "0"
+id: MDE - Host Advanced Hunting
+inputs:
+- description: A comma-separated list of file SHA1 hashes to hunt.
+  key: FileSha1
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of file Sha256 hashes to hunt.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of IPs to hunt.
+  key: IP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of host names to hunt.
+  key: DeviceName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of file names to hunt.
+  key: FileName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of device ID to hunt.
+  key: DeviceID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of file MD5 hashes to hunt.
+  key: FileMd5
+  playbookInputQuery:
+  required: false
+  value: {}
+- key: QueryBatch
+  value: {}
+  required: false
+  description: Define the custom queries you would like to run as a part of the 'MDE - Host Advanced Hunting' playbook.  This input will be passed to the 'query_batch' argument in the '!microsoft-atp-advanced-hunting' command. For more information and examples, check the command's hints.
+  playbookInputQuery:
+name: MDE - Host Advanced Hunting
+outputs:
+- contextPath: MicrosoftATP.HuntTampering
+  description: The query results for hunt tampering.
+  type: unknown
+- contextPath: MicrosoftATP.HuntTampering.Result
+  description: The query results.
+- contextPath: MicrosoftATP.HuntPrivilegeEscalation
+  description: The query results for hunt privilege escalation.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
+  description: The query results.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for hunt lateral movement evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on network connections.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+  description: Query Results from the Microsoft Defender For Endpoint Advanced Hunting on SMB connections.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on credential dumping.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting on management connections.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt lateral movement evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for hunt persistence evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for scheduled jobs.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for registry entries.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for startup folder changes.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for created new services.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for updated services.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for replaced files.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new users.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for new groups.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in group users.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the local firewall.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting for changes in the host file.
+- contextPath: MicrosoftATP.File
+  description: File information from Microsoft ATP.
+  type: unknown
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: e1f36156-43d0-496d-8e38-8c3e0b9acd38
-    type: start
-    task:
-      id: e1f36156-43d0-496d-8e38-8c3e0b9acd38
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "3"
-      - "17"
-      - "13"
-      - "85"
-      - "90"
+      - '3'
+      - '17'
+      - '13'
+      - '85'
+      - '90'
       - "91"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e1f36156-43d0-496d-8e38-8c3e0b9acd38
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: e1f36156-43d0-496d-8e38-8c3e0b9acd38
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -42,29 +135,30 @@ tasks:
           "y": 60
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '3':
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 80881684-437d-4f3f-8f5a-08635fc83ec6
-    type: title
-    task:
-      id: 80881684-437d-4f3f-8f5a-08635fc83ec6
-      version: -1
-      name: Network Activity
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "82"
+      - '82'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 80881684-437d-4f3f-8f5a-08635fc83ec6
+      iscommand: false
+      name: Network Activity
+      type: title
+      version: -1
+      description: ''
+    taskid: 80881684-437d-4f3f-8f5a-08635fc83ec6
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -72,30 +166,31 @@ tasks:
           "y": 210
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '9':
+    id: '9'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
-    type: title
-    task:
-      id: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
-      version: -1
-      name: Privilege Escalation
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "26"
-      - "27"
+      - '26'
+      - '27'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
+      iscommand: false
+      name: Privilege Escalation
+      type: title
+      version: -1
+      description: ''
+    taskid: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -103,29 +198,30 @@ tasks:
           "y": 420
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '13':
+    id: '13'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
-    type: title
-    task:
-      id: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
-      version: -1
-      name: PowerShell Analysis
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "80"
+      - '80'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
+      iscommand: false
+      name: PowerShell Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -133,30 +229,30 @@ tasks:
           "y": 210
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '17':
+    id: '17'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: b0532ae0-413b-47ec-866f-ba24eb3ccb6a
-    type: title
-    task:
-      id: b0532ae0-413b-47ec-866f-ba24eb3ccb6a
-      version: -1
-      name: Persistence
-      description: Finds sandbox reports by providing an FQL filter and paging details.
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "81"
+      - '81'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Finds sandbox reports by providing an FQL filter and paging details.
+      id: b0532ae0-413b-47ec-866f-ba24eb3ccb6a
+      iscommand: false
+      name: Persistence
+      type: title
+      version: -1
+    taskid: b0532ae0-413b-47ec-866f-ba24eb3ccb6a
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -164,29 +260,30 @@ tasks:
           "y": 210
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '26':
+    id: '26'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
-    type: title
-    task:
-      id: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
-      version: -1
-      name: Mimikatz/Other Lsaas manipulation
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
+      iscommand: false
+      name: Mimikatz/Other Lsaas manipulation
+      type: title
+      version: -1
+      description: ''
+    taskid: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -194,29 +291,30 @@ tasks:
           "y": 570
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '27':
+    id: '27'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 76fa906f-09b2-4504-8c7b-fa9b08b11910
-    type: title
-    task:
-      id: 76fa906f-09b2-4504-8c7b-fa9b08b11910
-      version: -1
-      name: Is the Local Admin Signed to the Device?
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 76fa906f-09b2-4504-8c7b-fa9b08b11910
+      iscommand: false
+      name: Is the Local Admin Signed to the Device?
+      type: title
+      version: -1
+      description: ''
+    taskid: 76fa906f-09b2-4504-8c7b-fa9b08b11910
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -224,29 +322,30 @@ tasks:
           "y": 570
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '28':
+    id: '28'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: a01ea774-9fa9-4b88-8baa-c75302acab66
-    type: title
-    task:
-      id: a01ea774-9fa9-4b88-8baa-c75302acab66
-      version: -1
-      name: Defense Evasion
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a01ea774-9fa9-4b88-8baa-c75302acab66
+      iscommand: false
+      name: Defense Evasion
+      type: title
+      version: -1
+      description: ''
+    taskid: a01ea774-9fa9-4b88-8baa-c75302acab66
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -254,34 +353,40 @@ tasks:
           "y": 420
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '29':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Tempering Activity query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Tempering Action
+    id: '29'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
-    type: regular
-    task:
-      id: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
-      version: -1
-      name: Is there an attempt to disable MS?
-      description: Detects any evidence of MDE agent/sensor manipulation.
-      script: '|||microsoft-atp-advanced-hunting-tampering'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
+    note: false
+    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Detects any evidence of MDE agent/sensor manipulation.
+      id: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
+      iscommand: true
+      name: Is there an attempt to disable MS?
+      script: '|||microsoft-atp-advanced-hunting-tampering'
+      type: regular
+      version: -1
+    taskid: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -289,36 +394,23 @@ tasks:
           "y": 715
         }
       }
-    note: false
+    continueonerrortype: ""
+  '37':
     evidencedata:
-      description:
-        simple: Results on Tempering Activity query in Advanced Hunting feature -
-          Microsoft Defender For Endpoint
-      tags:
-        simple: Tempering Action
       customfields: {}
-    timertriggers: []
+      description:
+        simple: Results on Local Admin query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Local Admin
+    id: '37'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: d586a7ba-cae8-4eb5-87f7-340c05f4880e
-    type: regular
-    task:
-      id: d586a7ba-cae8-4eb5-87f7-340c05f4880e
-      version: -1
-      name: Local Admin user was logged in?
-      description: Is there evidence for privilege escalation?
-      script: '|||microsoft-atp-advanced-hunting-privilege-escalation'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "83"
+      - '83'
+    note: false
+    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -327,7 +419,19 @@ tasks:
       query_operation:
         simple: or
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence for privilege escalation?
+      id: d586a7ba-cae8-4eb5-87f7-340c05f4880e
+      iscommand: true
+      name: Local Admin user was logged in?
+      script: '|||microsoft-atp-advanced-hunting-privilege-escalation'
+      type: regular
+      version: -1
+    taskid: d586a7ba-cae8-4eb5-87f7-340c05f4880e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -335,37 +439,23 @@ tasks:
           "y": 715
         }
       }
-    note: false
+    continueonerrortype: ""
+  '38':
     evidencedata:
-      description:
-        simple: Results on Local Admin query in Advanced Hunting feature - Microsoft
-          Defender For Endpoint
-      tags:
-        simple: Local Admin
       customfields: {}
-    timertriggers: []
+      description:
+        simple: Results on Credential Dump query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Credential Dump
+    id: '38'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: d78da24b-058f-4a6d-8527-4c64f52fd4fb
-    type: regular
-    task:
-      id: d78da24b-058f-4a6d-8527-4c64f52fd4fb
-      version: -1
-      name: Password manipulation
-      description: Is there evidence of attempted lateral movement? By selecting a
-        “query_purpose” argument, a designated query template will be used.
-      script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "54"
+      - '54'
+    note: false
+    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -374,7 +464,19 @@ tasks:
       query_purpose:
         simple: credential_dumping
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: d78da24b-058f-4a6d-8527-4c64f52fd4fb
+      iscommand: true
+      name: Password manipulation
+      script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
+      type: regular
+      version: -1
+    taskid: d78da24b-058f-4a6d-8527-4c64f52fd4fb
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -382,33 +484,27 @@ tasks:
           "y": 715
         }
       }
-    note: false
-    evidencedata:
-      description:
-        simple: Results on Credential Dump query in Advanced Hunting feature - Microsoft
-          Defender For Endpoint
-      tags:
-        simple: Credential Dump
-      customfields: {}
-    timertriggers: []
+    continueonerrortype: ""
+  '40':
+    id: '40'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 90714257-1b61-4033-8da6-89bc2ff4b75c
-    type: title
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: 90714257-1b61-4033-8da6-89bc2ff4b75c
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
+      version: -1
+      description: ''
+    taskid: 90714257-1b61-4033-8da6-89bc2ff4b75c
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -416,42 +512,42 @@ tasks:
           "y": 1280
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: 98aff37a-37d5-49df-8e7c-66face7cc480
-    type: condition
-    task:
-      id: 98aff37a-37d5-49df-8e7c-66face7cc480
-      version: -1
-      name: Any results?
-      description: Any results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
-      "yes":
-      - "50"
-    separatecontext: false
+    continueonerrortype: ""
+  '49':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MicrosoftATP.HuntTampering.Result
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
-    continueonerrortype: ""
+      label: yes
+    id: '49'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '50'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results
+      id: 98aff37a-37d5-49df-8e7c-66face7cc480
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 98aff37a-37d5-49df-8e7c-66face7cc480
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -459,38 +555,38 @@ tasks:
           "y": 915
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '50':
+    id: '50'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 6a4a3f16-815d-42bb-8fb2-350acde766aa
-    type: regular
-    task:
-      id: 6a4a3f16-815d-42bb-8fb2-350acde766aa
-      version: -1
-      name: Raise the severity of the incident and add the "Tempering Action" tag.
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
         simple: Tempering Action
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6a4a3f16-815d-42bb-8fb2-350acde766aa
+      iscommand: true
+      name: Raise the severity of the incident and add the "Tempering Action" tag.
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6a4a3f16-815d-42bb-8fb2-350acde766aa
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -498,36 +594,36 @@ tasks:
           "y": 1100
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '53':
+    id: '53'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: 34269eb1-ede9-4203-801a-33448974015c
-    type: regular
-    task:
-      id: 34269eb1-ede9-4203-801a-33448974015c
-      version: -1
-      name: Add "Credential Dump" tag
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         simple: Credential Dump
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 34269eb1-ede9-4203-801a-33448974015c
+      iscommand: true
+      name: Add "Credential Dump" tag
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 34269eb1-ede9-4203-801a-33448974015c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -535,42 +631,42 @@ tasks:
           "y": 1100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 22bb1d45-e100-44bc-82ee-7b203b41fda7
-    type: condition
-    task:
-      id: 22bb1d45-e100-44bc-82ee-7b203b41fda7
-      version: -1
-      name: Any results?
-      description: Any results?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
-      "yes":
-      - "53"
-    separatecontext: false
+    continueonerrortype: ""
+  '54':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
-    continueonerrortype: ""
+      label: yes
+    id: '54'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '53'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 22bb1d45-e100-44bc-82ee-7b203b41fda7
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 22bb1d45-e100-44bc-82ee-7b203b41fda7
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -578,30 +674,22 @@ tasks:
           "y": 915
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '80':
+    id: '80'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "80":
-    id: "80"
-    taskid: e8cd08d7-1da1-4612-86b0-b219262d8398
-    type: playbook
-    task:
-      id: e8cd08d7-1da1-4612-86b0-b219262d8398
-      version: -1
-      name: MDE - Host Advanced Hunting For Powershell Executions
-      description: This playbook uses the Microsoft Defender For Endpoint Advanced
-        Hunting feature to hunt for host PowerShell executions.
-      playbookName: MDE - Host Advanced Hunting For Powershell Executions
-      type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       DeviceID:
         complex:
@@ -639,12 +727,19 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
-    loop:
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e8cd08d7-1da1-4612-86b0-b219262d8398
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: MDE - Host Advanced Hunting For Powershell Executions
+      type: playbook
+      version: -1
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.'
+      playbookName: MDE - Host Advanced Hunting For Powershell Executions
+    taskid: e8cd08d7-1da1-4612-86b0-b219262d8398
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -652,30 +747,22 @@ tasks:
           "y": 505
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '81':
+    id: '81'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "81":
-    id: "81"
-    taskid: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
-    type: playbook
-    task:
-      id: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
-      version: -1
-      name: MDE - Host Advanced Hunting For Persistence
-      description: This playbook uses the Microsoft Defender For Endpoint Advanced
-        Hunting feature to hunt for host persistence evidence.
-      playbookName: MDE - Host Advanced Hunting For Persistence
-      type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       DeviceID:
         complex:
@@ -685,11 +772,6 @@ tasks:
       DeviceName:
         complex:
           root: inputs.DeviceName
-          transformers:
-          - operator: uniq
-      FileMd5:
-        complex:
-          root: inputs.FileMd5
           transformers:
           - operator: uniq
       FileName:
@@ -712,13 +794,25 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
+      FileMd5:
+        complex:
+          root: inputs.FileMd5
+          transformers:
+          - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
-    loop:
+    skipunavailable: false
+    task:
+      brand: ''
+      description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
+      id: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: MDE - Host Advanced Hunting For Persistence
+      type: playbook
+      version: -1
+      playbookName: MDE - Host Advanced Hunting For Persistence
+    taskid: 1b17ebad-cdd4-4e5b-8c33-d009cc922a8d
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -726,30 +820,22 @@ tasks:
           "y": 505
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '82':
+    id: '82'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "82":
-    id: "82"
-    taskid: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
-    type: playbook
-    task:
-      id: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
-      version: -1
-      name: MDE - Host Advanced Hunting For Network Activity
-      description: This playbook uses the Microsoft Defender For Endpoint Advanced
-        Hunting feature to hunt for host network activity.
-      playbookName: MDE - Host Advanced Hunting For Network Activity
-      type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       DeviceID:
         complex:
@@ -787,12 +873,19 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
-    loop:
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: MDE - Host Advanced Hunting For Network Activity
+      type: playbook
+      version: -1
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.'
+      playbookName: MDE - Host Advanced Hunting For Network Activity
+    taskid: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -800,42 +893,42 @@ tasks:
           "y": 505
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: 9f356086-d122-4912-8b9d-cc8f985b8c89
-    type: condition
-    task:
-      id: 9f356086-d122-4912-8b9d-cc8f985b8c89
-      version: -1
-      name: Any results?
-      description: Any results?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
-      "yes":
-      - "84"
-    separatecontext: false
+    continueonerrortype: ""
+  '83':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MicrosoftATP.HuntPrivilegeEscalation.Result
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
-    continueonerrortype: ""
+      label: yes
+    id: '83'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '84'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 9f356086-d122-4912-8b9d-cc8f985b8c89
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 9f356086-d122-4912-8b9d-cc8f985b8c89
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -843,36 +936,36 @@ tasks:
           "y": 915
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '84':
+    id: '84'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "84":
-    id: "84"
-    taskid: 923a4c23-ff07-41eb-8060-1d5dfe3975e7
-    type: regular
-    task:
-      id: 923a4c23-ff07-41eb-8060-1d5dfe3975e7
-      version: -1
-      name: Add "Local Admin" Tag
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         simple: Local Admin
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 923a4c23-ff07-41eb-8060-1d5dfe3975e7
+      iscommand: true
+      name: Add "Local Admin" Tag
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 923a4c23-ff07-41eb-8060-1d5dfe3975e7
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -880,29 +973,30 @@ tasks:
           "y": 1100
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '85':
+    id: '85'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "85":
-    id: "85"
-    taskid: 93201884-f8ac-48db-81bb-d350f685faf3
-    type: title
-    task:
-      id: 93201884-f8ac-48db-81bb-d350f685faf3
-      version: -1
-      name: File Signature Check
-      type: title
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "89"
+      - '89'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 93201884-f8ac-48db-81bb-d350f685faf3
+      iscommand: false
+      name: File Signature Check
+      type: title
+      version: -1
+      description: ''
+    taskid: 93201884-f8ac-48db-81bb-d350f685faf3
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -910,43 +1004,48 @@ tasks:
           "y": 210
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '86':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on File Information by SHA1 - Microsoft Defender For Endpoint
+      tags:
+        simple: File Information by SHA1
+    id: '86'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
-    type: regular
-    task:
-      id: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
-      version: -1
-      name: Gets file information.
-      description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the
-        given hash is not part of the results, it was not found.
-      script: '|||microsoft-atp-get-file-info'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "87"
+      - '87'
+    note: false
+    quietmode: 0
     scriptarguments:
       hash:
         complex:
           root: inputs.FileSha1
           transformers:
-          - operator: append
-            args:
+          - args:
               item:
+                iscontext: true
                 value:
                   simple: inputs.FileSha256
-                iscontext: true
+            operator: append
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the given hash is not part of the results, it was not found.
+      id: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
+      iscommand: true
+      name: Gets file information.
+      script: '|||microsoft-atp-get-file-info'
+      type: regular
+      version: -1
+    taskid: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -954,48 +1053,42 @@ tasks:
           "y": 715
         }
       }
-    note: false
-    evidencedata:
-      description:
-        simple: Results on File Information by SHA1 - Microsoft Defender For Endpoint
-      tags:
-        simple: File Information by SHA1
-      customfields: {}
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: c5c560ec-0485-4d28-8c0f-91156eeaa22b
-    type: condition
-    task:
-      id: c5c560ec-0485-4d28-8c0f-91156eeaa22b
-      version: -1
-      name: Any digital signing info?
-      description: Any digital signing info?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
-      "yes":
-      - "88"
-    separatecontext: false
+    continueonerrortype: ""
+  '87':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MicrosoftATP.File.Signer
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
-    continueonerrortype: ""
+      label: yes
+    id: '87'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '88'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any digital signing info?
+      id: c5c560ec-0485-4d28-8c0f-91156eeaa22b
+      iscommand: false
+      name: Any digital signing info?
+      type: condition
+      version: -1
+    taskid: c5c560ec-0485-4d28-8c0f-91156eeaa22b
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1003,38 +1096,38 @@ tasks:
           "y": 915
         }
       }
-    note: false
-    timertriggers: []
+    continueonerrortype: ""
+  '88':
+    id: '88'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "88":
-    id: "88"
-    taskid: 09efc76c-787c-4434-826e-fa6d4445aa76
-    type: regular
-    task:
-      id: 09efc76c-787c-4434-826e-fa6d4445aa76
-      version: -1
-      name: Updates the "Signed File" tag and sets the signature incident field.
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
+    quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       signature:
         simple: ${MicrosoftATP.File.Signer}
       tags:
         simple: Signed File
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 09efc76c-787c-4434-826e-fa6d4445aa76
+      iscommand: true
+      name: Updates the "Signed File" tag and sets the signature incident field.
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 09efc76c-787c-4434-826e-fa6d4445aa76
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1042,15 +1135,9 @@ tasks:
           "y": 1090
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "89":
-    id: "89"
+    continueonerrortype: ""
+  '89':
+    id: '89'
     taskid: 0a3ba1a2-67eb-4d83-8e17-962c519073d4
     type: condition
     task:
@@ -1060,15 +1147,15 @@ tasks:
       description: Is there a hash?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "86"
+      - '40'
+      yes:
+      - '86'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1082,7 +1169,6 @@ tasks:
             value:
               simple: inputs.FileSha256
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1097,8 +1183,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "90":
-    id: "90"
+    continueonerrortype: ""
+  '90':
+    id: '90'
     taskid: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
     type: condition
     task:
@@ -1108,16 +1195,16 @@ tasks:
       description: Check if device information was provided.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "9"
-      - "28"
+      - '40'
+      yes:
+      - '9'
+      - '28'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1129,7 +1216,6 @@ tasks:
             value:
               simple: inputs.DeviceID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1144,6 +1230,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "91":
     id: "91"
     taskid: 5d0575ec-de5f-4e07-809a-7752524442c8
@@ -1155,6 +1242,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "95"
@@ -1182,12 +1270,7 @@ tasks:
       id: 840d2674-b2d8-459f-8bf9-631f804f0323
       version: -1
       name: Run Custom Queries
-      description: 'Allows you to run programmatic queries like in Microsoft Defender
-        ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You
-        can only run a query on data from the last 30 days. The results include a
-        maximum of 10,000 rows. The number of executions is limited (up to 15 calls
-        per minute, 15 minutes of running time every hour and 4 hours of running time
-        a day).'
+      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
       script: '|||microsoft-atp-advanced-hunting'
       type: regular
       iscommand: true
@@ -1213,8 +1296,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Results for the custom batch queries in Advanced Hunting feature -
-          Microsoft Defender For Endpoint
+        simple: Results for the custom batch queries in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Custom Queries
       customfields: {}
@@ -1344,7 +1426,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1357,117 +1439,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: FileSha1
-  value: {}
-  required: false
-  description: A comma-separated list of file SHA1 hashes to hunt.
-  playbookInputQuery: null
-- key: FileSha256
-  value: {}
-  required: false
-  description: A comma-separated list of file Sha256 hashes to hunt.
-  playbookInputQuery: null
-- key: IP
-  value: {}
-  required: false
-  description: A comma-separated list of IPs to hunt.
-  playbookInputQuery: null
-- key: DeviceName
-  value: {}
-  required: false
-  description: A comma-separated list of host names to hunt.
-  playbookInputQuery: null
-- key: FileName
-  value: {}
-  required: false
-  description: A comma-separated list of file names to hunt.
-  playbookInputQuery: null
-- key: DeviceID
-  value: {}
-  required: false
-  description: A comma-separated list of device ID to hunt.
-  playbookInputQuery: null
-- key: FileMd5
-  value: {}
-  required: false
-  description: A comma-separated list of file MD5 hashes to hunt.
-  playbookInputQuery: null
-- key: QueryBatch
-  value: {}
-  required: false
-  description: Define the custom queries you would like to run as a part of the 'MDE
-    - Host Advanced Hunting' playbook.  This input will be passed to the 'query_batch'
-    argument in the '!microsoft-atp-advanced-hunting' command. For more information
-    and examples, check the command's hints.
-  playbookInputQuery: null
-outputs:
-- contextPath: MicrosoftATP.HuntTampering
-  description: The query results for hunt tampering.
-  type: unknown
-- contextPath: MicrosoftATP.HuntTampering.Result
-  description: The query results.
-- contextPath: MicrosoftATP.HuntPrivilegeEscalation
-  description: The query results for hunt privilege escalation.
-  type: unknown
-- contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
-  description: The query results.
-- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
-  description: The query results for hunt lateral movement evidence.
-  type: unknown
-- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    on network connections.
-- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
-  description: Query Results from the Microsoft Defender For Endpoint Advanced Hunting
-    on SMB connections.
-- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    on credential dumping.
-- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    on management connections.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for hunt lateral movement evidence.
-  type: unknown
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for hunt persistence evidence.
-  type: unknown
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for scheduled jobs.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for registry entries.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for startup folder changes.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for created new services.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for updated services.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for replaced files.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for new users.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for new groups.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for changes in group users.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for changes in the local firewall.
-- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
-  description: Query results from the Microsoft Defender For Endpoint Advanced Hunting
-    for changes in the host file.
-- contextPath: MicrosoftATP.File
-  description: File information from Microsoft ATP.
-  type: unknown
+tests:
+- Microsoft Defender Advanced Threat Protection - Test
+fromversion: 6.5.0
+system: true
