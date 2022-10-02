@@ -638,6 +638,84 @@ def test_main(mocker):
                     ]
                 }
             ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                      <tr>
+                        <th rowspan="a" colspan="a">th1</th>
+                        <th>th2</th>
+                      </tr>
+                      <tr>
+                        <td>td1</td>
+                        <td>td2</td>
+                      </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    "table1": {
+                        "th1": "td1",
+                        "th2": "td2"
+                    }
+                }
+            ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                      <tr>
+                        <th>th1</th>
+                      </tr>
+                      <tr>
+                        <td>td1</td>
+                      </tr>
+                      <tr>
+                        <td>td2</td>
+                      </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    "table1": {
+                        "th1": [
+                            "td1",
+                            "td2"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                      <tr>
+                        <td>td1-1</td>
+                        <td>td1-2</td>
+                      </tr>
+                      <tr>
+                        <td>td2-1</td>
+                        <td>td2-2</td>
+                      </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    "table1": {
+                        "td1-1": "td1-2",
+                        "td2-1": "td2-2"
+                    }
+                }
+            ]
         }
     ]
 

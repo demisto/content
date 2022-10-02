@@ -229,7 +229,7 @@ Extract the user name field from an text in an Active Directory user account for
     {
         "([^@]+)@.+": "\\1",
         "[^\\\\]+\\\\(.+)": "\\1",
-        "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
+        "[a-zA-Z_][0-9a-zA-Z\\.-_]*": null,
         ".*": "<unknown>"
     }
 ```
@@ -267,13 +267,13 @@ Extract the user name field from an quoted text in an Active Directory user acco
             "next": {
                 "([^@]+)@.+": "\\1",
                 "[^\\\\]+\\\\(.+)": "\\1",
-                "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": "\\0",
+                "[a-zA-Z_][0-9a-zA-Z\\.-_]*": "\\0",
                 ".*": "<unknown>"
             }
         },
         "([^@]+)@.+": "\\1",
         "[^\\\\]+\\\\(.+)": "\\1",
-        "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
+        "[a-zA-Z_][0-9a-zA-Z\\.-_]*": null,
         ".*": "<unknown>"
     }
 ```
