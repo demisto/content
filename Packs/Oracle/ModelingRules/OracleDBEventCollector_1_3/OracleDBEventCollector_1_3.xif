@@ -4,7 +4,7 @@ filter
 | alter
     _time = EVENT_TIMESTAMP_UTC,
     xdm.source.user.username = OS_USERNAME,
-    xdm.event.operation_sub_type = ACTION_NAME,
+    xdm.event.operation = ACTION_NAME,
     xdm.event.outcome_reason = SQL_TEXT;
 
 filter
