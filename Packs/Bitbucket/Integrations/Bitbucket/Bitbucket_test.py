@@ -109,7 +109,7 @@ def test_project_list_command(mocker, bitbucket_client):
         - All relevant arguments for the command
 
     When:
-        - bitcucket-project-list command is executed
+        - bitbucket-project-list command is executed
 
     Then:
         - The http request is called with the right arguments, and returns the right command result.
@@ -133,7 +133,7 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
         - All relevant arguments for the command
 
     When:
-        - bitcucket-project-list command is executed
+        - bitbucket-project-list command is executed
 
     Then:
         - The http request is called with the right arguments, and returns the right command result.
@@ -156,7 +156,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-open-branch-list command is executed
+        - bitbucket-open-branch-list command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -179,7 +179,7 @@ def test_branch_get_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-branch-get command is executed
+        - bitbucket-branch-get command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -200,7 +200,7 @@ def test_branch_create_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-branch-create command is executed
+        - bitbucket-branch-create command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -224,7 +224,7 @@ def test_branch_delete_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-branch-delete command is executed
+        - bitbucket-branch-delete command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -242,7 +242,7 @@ def test_commit_create_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-commit-create command is executed
+        - bitbucket-commit-create command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -271,7 +271,7 @@ def test_commit_list_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-commit-list command is executed
+        - bitbucket-commit-list command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -298,7 +298,7 @@ def test_issue_create_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-issue-create command is executed
+        - bitbucket-issue-create command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -331,7 +331,7 @@ def test_issue_list_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-issue-list command is executed
+        - bitbucket-issue-list command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -358,7 +358,7 @@ def test_issue_update_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-issue-update command is executed
+        - bitbucket-issue-update command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -392,7 +392,7 @@ def test_pull_request_create_command(mocker, bitbucket_client):
     Given:
         - All relevant arguments for the command
     When:
-        - bitcucket-pull-request-create command is executed
+        - bitbucket-pull-request-create command is executed
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
@@ -424,3 +424,53 @@ def test_pull_request_create_command(mocker, bitbucket_client):
     http_request.assert_called_with(method='POST',
                                     url_suffix='/repositories/workspace/repository/pullrequests',
                                     json_data=expected_body)
+
+
+def test_pull_request_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-pull-request-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import pull_request_list_command
+    args = {'limit': '2'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_list_command')
+    mocker.patch.object(bitbucket_client, 'pull_request_list_request', return_value=response)
+    expected_human_readable = '### List of the pull requests\n' \
+                              '|Id|Title|Description|SourceBranch|DestinationBranch|State|CreatedBy|CreatedAt' \
+                              '|UpdatedAt|\n' \
+                              '|---|---|---|---|---|---|---|---|---|\n' \
+                              '| 8 | pull_request | updating description | test | master | OPEN | Some User |' \
+                              ' 2022-09-12T00:00:00.000000+00:00 | 2022-09-29T00:00:00.000000+00:00 |\n' \
+                              '| 6 | uuuupdate | updates description | branch | master | OPEN | Some User |' \
+                              ' 2022-09-08T00:00:00.000000+00:00 | 2022-09-28T00:00:00.000000+00:00 |\n'
+    result = pull_request_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')
+
+
+def test_issue_comment_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-issue-comment-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_comment_list_command
+    args = {'limit': '2', 'issue_id': '8'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_issue_comment_list_command')
+    mocker.patch.object(bitbucket_client, 'issue_comment_list_request', return_value=response)
+    expected_human_readable = '### List of the comments on issue "8"\n' \
+                              '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|IssueId|IssueTitle|\n' \
+                              '|---|---|---|---|---|---|---|\n' \
+                              '| 11111111 |  | Some User | 2022-09-14T00:00:00.000000+00:00 |  | 8 | hi resolved |\n' \
+                              '| 22222222 | The new and updated comment | Some User | 2022-09-14T00:00:00.000000+00:00 '\
+                              '| 2022-09-14T00:00:00.000000+00:00 | 8 | hi resolved |\n'
+    result = issue_comment_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')

@@ -1037,7 +1037,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
     arg_limit = arg_to_number(args.get('limit', 50))
     limit = arg_limit if arg_limit else 50
     page = arg_to_number(args.get('page', 1))
-    page_size = min(limit, 100)
+    page_size = min(limit, 50)
     response = client.pull_request_list_request(repo, pull_request_id, page, page_size, state)
     if pull_request_id:
         results = [response]
