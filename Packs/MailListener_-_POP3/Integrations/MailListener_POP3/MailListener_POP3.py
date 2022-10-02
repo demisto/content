@@ -7,9 +7,8 @@ import poplib
 import base64
 import quopri
 from email.parser import Parser
-from htmlentitydefs import name2codepoint
-from HTMLParser import HTMLParser, HTMLParseError
-
+from html.entities import name2codepoint
+from html.parser import HTMLParser
 
 ''' GLOBALS/PARAMS '''
 SERVER = demisto.params().get('server', '')
@@ -51,18 +50,17 @@ def get_user_emails():
     _, mails_list, _ = pop3_server_conn.list()  # type: ignore
 
     mails = []
-    index = ''
 
     for mail in mails_list:
         try:
-            index = mail.split(' ')[0]
+            index = int(mail.split(b' ')[0])
             (resp_message, lines, octets) = pop3_server_conn.retr(index)  # type: ignore
-            msg_content = unicode(b'\r\n'.join(lines), errors='ignore').encode("utf-8")
+            msg_content = str(b'\r\n'.join(lines), errors='ignore')
             msg = Parser().parsestr(msg_content)
             msg['index'] = index
             mails.append(msg)
         except Exception:
-            demisto.error("Failed to get email with index " + index + 'from the server.')
+            demisto.error("Failed to get email with index " + str(index) + 'from the server.')
             raise
 
     return mails
@@ -128,14 +126,14 @@ class TextExtractHtmlParser(HTMLParser):
 
     def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
-            self._texts.append(unichr(name2codepoint[name]))
+            self._texts.append(chr(name2codepoint[name]))
 
     def handle_charref(self, name):
         if not self._ignore:
             if name.startswith('x'):
-                c = unichr(int(name[1:], 16))
+                c = chr(int(name[1:], 16))
             else:
-                c = unichr(int(name))
+                c = chr(int(name))
             self._texts.append(c)
 
     def get_text(self):
@@ -144,11 +142,8 @@ class TextExtractHtmlParser(HTMLParser):
 
 def html_to_text(html):
     parser = TextExtractHtmlParser()
-    try:
-        parser.feed(html)
-        parser.close()
-    except HTMLParseError:
-        pass
+    parser.feed(html)
+    parser.close()
     return parser.get_text()
 
 
@@ -185,13 +180,14 @@ def get_email_context(email_data):
 
     raw = dict(email_data)
     raw['Body'] = context['Body']
-    context['RawData'] = json.dumps(raw)
+    raw = {key.lower(): value for key, value in raw.items()}
+    context['RawData'] = raw
     return context, headers
 
 
 def parse_mail_parts(parts):
-    body = unicode("", "utf-8")
-    html = unicode("", "utf-8")
+    body = ""
+    html = ""
 
     attachments = []  # type: ignore
     for part in parts:
@@ -202,8 +198,8 @@ def parse_mail_parts(parts):
 
         content_type = headers.get('content-type', 'text/plain')
 
-        is_attachment = headers.get('content-disposition', '').startswith('attachment')\
-            or headers.get('x-attachment-id') or "image" in content_type
+        is_attachment = headers.get('content-disposition', '').startswith('attachment') or headers.get(
+            'x-attachment-id') or "image" in content_type
 
         if 'multipart' in content_type or isinstance(part._payload, list):
             part_body, part_html, part_attachments = parse_mail_parts(part._payload)
@@ -214,16 +210,16 @@ def parse_mail_parts(parts):
             if headers.get('content-transfer-encoding') == 'base64':
                 text = base64.b64decode(part._payload).decode('utf-8', 'replace')
             elif headers.get('content-transfer-encoding') == 'quoted-printable':
-                str_utf8 = part._payload.decode('cp1252')
+                str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
                 decoded_string = quopri.decodestring(str_utf8)
-                text = unicode(decoded_string, errors='ignore').encode("utf-8")
+                text = str(decoded_string, errors='ignore')
             else:
-                str_utf8 = part._payload.decode('cp1252')
+                str_utf8 = part._payload.encode().decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
-                text = quopri.decodestring(str_utf8)
+                text = quopri.decodestring(str_utf8)  # type: ignore
 
-            if not isinstance(text, unicode):
+            if not isinstance(text, str):
                 text = text.decode('unicode-escape')
 
             if 'text/html' in content_type:
@@ -231,11 +227,16 @@ def parse_mail_parts(parts):
             else:
                 body += text
 
-        else:
+        if is_attachment:
+            payload = part._payload
+            if isinstance(payload, list):
+                # indicating that the attachment is eml file.
+                message_object = payload[0]
+                payload = message_object.as_string()
             attachments.append({
                 'ID': headers.get('x-attachment-id', 'None'),
                 'Name': get_attachment_name(headers),
-                'Data': part._payload
+                'Data': payload
             })
 
     return body, html, attachments
@@ -261,7 +262,7 @@ def create_incident_labels(parsed_msg, headers):
     labels.extend([{'type': 'Email/bcc', 'value': bcc}
                    for bcc in headers.get('Bcc', '').split(',')])
     for key, val in headers.items():
-        labels.append({'type': 'Email/Header/' + key, 'value': val})
+        labels.append({'type': 'Email/Header/' + key, 'value': str(val)})
 
     return labels
 
@@ -272,7 +273,9 @@ def mail_to_incident(msg):
 
     file_names = []
     for attachment in parsed_msg.get('Attachments', []):
-        file_data = base64.urlsafe_b64decode(attachment['Data'].encode('ascii'))
+        file_data = attachment['Data']
+        if not attachment.get('Name', '').endswith('.eml'):
+            file_data = base64.urlsafe_b64decode(file_data.encode('ascii'))
 
         # save the attachment
         file_result = fileResult(attachment['Name'], file_data)
@@ -287,13 +290,16 @@ def mail_to_incident(msg):
             'name': attachment['Name'],
         })
 
+    raw_data = parsed_msg['RawData']
+    raw_data.update({'attachments': file_names})
+
     return {
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
         'occurred': parse_time(parsed_msg['Date']),
         'attachment': file_names,
-        'rawJSON': parsed_msg['RawData']
+        'rawJSON': json.dumps(raw_data)
     }
 
 
@@ -337,7 +343,7 @@ def fetch_incidents():
 
 def test_module():
     resp_message, _, _ = pop3_server_conn.list()  # type: ignore
-    if "OK" in resp_message:
+    if b"OK" in resp_message:
         demisto.results('ok')
 
 

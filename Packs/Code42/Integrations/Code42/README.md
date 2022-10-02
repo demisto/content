@@ -956,3 +956,487 @@ List all users who have been explicitly added to a given watchlist.
 >| 2022-03-31T20:41:47.2985 | user_b@example.com | b55978d5-2d50-494d-bec9-678867f3830c |
 >| 2022-03-31T14:43:48.059325 | user_c@example.com | b55978d5-2d50-494d-bec9-678867f3830c |
 
+
+### code42-departingemployee-add
+***
+Adds a user to the Departing Employee List.
+
+
+#### Base Command
+
+`code42-departingemployee-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to add to the Departing Employee List. | Required |
+| departuredate | The departure date for the employee, in the format YYYY-MM-DD. | Optional |
+| note | Note to attach to the Departing Employee. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
+
+
+#### Command Example
+```!code42-departingemployee-add username="john.user@123.org" departuredate="2020-02-28" note="Leaving for competitor"```
+
+#### Human Readable Output
+
+| **UserID** | **DepartureDate** | **Note** | **Username** | **CaseID** |
+| --- | --- | --- | --- |
+| 123 | 2020-02-28 | Leaving for competitor | john.user@example.com | 123 |
+
+
+### code42-departingemployee-remove
+***
+Removes a user from the Departing Employee List.
+
+
+#### Base Command
+
+`code42-departingemployee-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to remove from the Departing Employee List. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+
+
+#### Command Example
+```!code42-departingemployee-remove username="john.user@example.com"```
+
+#### Human Readable Output
+
+| **UserID** | **Username** |
+| --- | --- |
+| 123 | john.user@example.com |
+
+
+### code42-departingemployee-get
+***
+Retrieve departing employee details.
+
+
+#### Base Command
+
+`code42-departingemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Email id of the departing employee. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
+
+
+#### Command Example
+```!code42-departingemployee-get username="partner.demisto@example.com"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "DepartingEmployee": {
+            "DepartureDate": null,
+            "Note": "Risky activity",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Retrieve departing employee
+|DepartureDate|Note|UserID|Username|
+|---|---|---|---|
+|  | Risky activity | 942876157732602741 | partner.demisto@example.com |
+
+
+### code42-departingemployee-get-all
+***
+Get all employees on the Departing Employee List.
+
+
+#### Base Command
+
+`code42-departingemployee-get-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| results | The number of items to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
+
+
+#### Command Example
+```!code42-departingemployee-get-all```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "DepartingEmployee": [
+            {
+                "DepartureDate": null,
+                "Note": "test",
+                "UserID": "921333907298179098",
+                "Username": "user1@example.com"
+            },
+            {
+                "DepartureDate": "2020-07-20",
+                "Note": "This is added using csv file to test bulk adding of users to high risk employee list",
+                "UserID": "948333588694228306",
+                "Username": "user2@example.com"
+            },
+            {
+                "DepartureDate": null,
+                "Note": "",
+                "UserID": "912211111144144039",
+                "Username": "user3@example.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### All Departing Employees
+|DepartureDate|Note|UserID|Username|
+|---|---|---|---|
+| 2020-07-19 | User added from XSOAR | 921286907298179098 | user1@example.com |
+| 2020-07-20 | User added from Jira ticket | 948938588694228306 | user1@example.com |
+| 2020-07-20 | No note. | 912249223544144039 | unicode@example.com |
+| 2020-07-20 | Lots of suspicious activity | 894165832411107815 | testuser@example.com |
+| 2020-07-20 | L3 security risk | 949093399968329042 | user2@example.com |
+| 2020-07-21 | Problems with performance | 942897397520286581 | user3@example.com |
+| 2020-07-21 | Problems with performance | 906619740182876328 | user4@example.com |
+| 2020-07-21 | Was a contract employee | 906619632003387560 | user5@example.com |
+| 2020-07-21 | Was a contract employee | 912338501981077099 | user6@example.com |
+| 2020-07-25 | Leaving for competitor | 951984198921509692 | user7@example.com.com |
+| 2020-07-25 | Leaving for competitor | 895005723650937319 | user8@example.com |
+
+
+### code42-highriskemployee-add
+***
+Adds a user from the High Risk Employee List.
+
+
+#### Base Command
+
+`code42-highriskemployee-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to add to the High Risk Employee List. | Required |
+| note | Note to attach to the High Risk Employee. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-add username="partner.demisto@example.com" note="Risky activity"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": {
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Code42 High Risk Employee List User Added
+|UserID|Username|
+|---|---|
+| 942876157732602741 | partner.demisto@example.com |
+
+
+### code42-highriskemployee-remove
+***
+Removes a user from the High Risk Employee List.
+
+
+#### Base Command
+
+`code42-highriskemployee-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to remove from the High Risk Employee List. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | Unknown | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | Unknown | The username of the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-remove username="partner.demisto@example.com" note="Risky activity"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": {
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Code42 High Risk Employee List User Removed
+|UserID|Username|
+|---|---|
+| 942876157732602741 | partner.demisto@example.com |
+
+
+
+### code42-highriskemployee-get
+***
+Retrieve high risk employee details.
+
+
+#### Base Command
+
+`code42-highriskemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Email id of the user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-get username="partner.demisto@example.com"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": {
+            "Note": "Risky activity",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Retrieve high risk employee
+|Note|UserID|Username|
+|---|---|---|
+| Risky activity | 942876157732602741 | partner.demisto@example.com |
+
+
+### code42-highriskemployee-get-all
+***
+Get all employees on the High Risk Employee List.
+
+
+#### Base Command
+
+`code42-highriskemployee-get-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| risktags | To filter results by employees who have these risk tags. Space delimited. | Optional |
+| results | The number of items to return. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-get-all```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": [
+            {
+                "Note": "tests and more tests",
+                "UserID": "111117397520286581",
+                "Username": "user1@example.com"
+            },
+            {
+                "Note": "Leaving for competitor",
+                "UserID": "822222723650937319",
+                "Username": "user2@example.com"
+            },
+            {
+                "Note": "Test user addition from XSOAR",
+                "UserID": "913333363086307495",
+                "Username": "user3@example.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### Retrieved All High Risk Employees
+|Note|UserID|Username|
+|---|---|---|
+| Clicked Phishing link | 942897397520286581 | user1@example.com |
+| Lots of non-work-related activity | 895005723650937319 | user2@example.com |
+| User added using XSOAR | 912098363086307495 | user3@example.com |
+| User has performance concerns | 921286907298179098 | user4@example.com |
+| Highly demanded employee | 942876157732602741 | user5@example.com |
+
+
+### code42-highriskemployee-add-risk-tags
+***
+
+
+
+#### Base Command
+
+`code42-highriskemployee-add-risk-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the High Risk Employee. | Required |
+| risktags | Space-delimited risk tags to associate with the High Risk Employee. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to associate with the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-add-risk-tags username="partner.demisto@example.com" note="PERFORMANCE_CONCERN"```
+
+#### Human Readable Output
+### Code42 Risk Tags Added
+| RiskTags | UserID | Username |
+| -------- | ------ | -------- |
+| PERFORMANCE_CONCERNS | 1234567890 | partners.demisto@example.com |
+
+
+### code42-highriskemployee-remove-risk-tags
+***
+
+
+
+#### Base Command
+
+`code42-highriskemployee-remove-risk-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the High Risk Employee. | Required |
+| risktags | Space-delimited risk tags to disassociate from the High Risk Employee. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to disassociate from the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-remove-risk-tags username="partner.demisto@example.com" risktags="PERFORMANCE_CONCERNS"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": [
+            {
+                "RiskTags": "PERFORMANCE_CONCERNS",
+                "UserID": "942876157732602741",
+                "Username": "partner.demisto@example.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### Code42 Risk Tags Removed
+|RiskTags|UserID|Username|
+|---|---|---|
+| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |

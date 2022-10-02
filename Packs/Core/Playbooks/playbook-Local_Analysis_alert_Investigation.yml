@@ -15,7 +15,7 @@ description: |-
 
   **Response Actions**
 
-  The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+  The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
 
   * Auto block indicators
   * Auto file quarantine
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 430,
           "y": -900
         }
       }
@@ -71,13 +71,13 @@ tasks:
     isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: 4946934b-2333-45e4-80ba-62d12ec85632
+    taskid: 762b80b1-46c9-4791-883d-9a23a20a373a
     type: condition
     task:
-      id: 4946934b-2333-45e4-80ba-62d12ec85632
+      id: 762b80b1-46c9-4791-883d-9a23a20a373a
       version: -1
       name: Continue by Verdict
-      description: Checks the verdict returned by 'Enrichment for Verdict' playbook.
+      description: Checks the verdict returned by the 'Enrichment for Verdict' playbook.
       type: condition
       iscommand: false
       brand: ''
@@ -102,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 430,
           "y": -480
         }
       }
@@ -132,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 430,
           "y": -765
         }
       }
@@ -205,7 +205,7 @@ tasks:
       '#default#':
       - '39'
       Benign:
-      - '59'
+      - "77"
     separatecontext: false
     conditions:
     - label: Benign
@@ -243,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 815
+          "y": 875
         }
       }
     note: false
@@ -267,13 +267,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '34'
+      - "75"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2030
+          "x": 430,
+          "y": 1640
         }
       }
     note: false
@@ -301,16 +301,16 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      '#default#':
-      - '67'
       No:
       - '39'
+      "Yes":
+      - "67"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2150
+          "x": 430,
+          "y": 2075
         }
       }
     note: false
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2320
+          "y": 2370
         }
       }
     note: false
@@ -400,8 +400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": 2790
+          "x": 900,
+          "y": 2910
         }
       }
     note: false
@@ -425,9 +425,10 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '50'
+      - "47"
       yes:
       - '41'
+      - "76"
     separatecontext: false
     conditions:
     - label: yes
@@ -443,7 +444,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2620
+          "y": 2670
         }
       }
     note: false
@@ -455,12 +456,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '45':
     id: '45'
-    taskid: babac2c2-8bc1-4d75-8666-03042fb40c09
+    taskid: 13ddb69e-6c8a-4a92-83e6-d77d652fd625
     type: regular
     task:
-      id: babac2c2-8bc1-4d75-8666-03042fb40c09
+      id: 13ddb69e-6c8a-4a92-83e6-d77d652fd625
       version: -1
-      name: close alert
+      name: Close alert
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -474,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3930
+          "y": 4090
         }
       }
     note: false
@@ -491,7 +492,7 @@ tasks:
     task:
       id: a3c1d4d1-3242-47cd-81aa-28d10f0bd155
       version: -1
-      name: Should restore affected endpoint?
+      name: Restore affected endpoint?
       description: Whether to execute the Recovery Plan playbook.
       type: condition
       iscommand: false
@@ -519,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3245
+          "y": 3410
         }
       }
     note: false
@@ -536,7 +537,7 @@ tasks:
     task:
       id: b8a41bf5-ad48-43c0-8a8b-67ccfa036bb0
       version: -1
-      name: Should close alert automatically?
+      name: Close alert automatically?
       description: Whether to close the alert automatically.
       type: condition
       iscommand: false
@@ -564,7 +565,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3590
+          "y": 3750
         }
       }
     note: false
@@ -593,8 +594,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 3760
+          "x": 1270,
+          "y": 3920
         }
       }
     note: false
@@ -624,7 +625,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3100
+          "y": 3255
         }
       }
     note: false
@@ -650,8 +651,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 4110
+          "x": 430,
+          "y": 4270
         }
       }
     note: false
@@ -680,8 +681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 190
+          "x": 1410,
+          "y": 180
         }
       }
     note: false
@@ -693,10 +694,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '55':
     id: '55'
-    taskid: 91acb8fe-2717-4c3c-8295-5558efde8fa8
+    taskid: 2f9b0888-8966-46ed-856d-129f2e692d53
     type: condition
     task:
-      id: 91acb8fe-2717-4c3c-8295-5558efde8fa8
+      id: 2f9b0888-8966-46ed-856d-129f2e692d53
       version: -1
       name: Check hash execution timestamp
       description: Checks for the hash execution timestamp.
@@ -727,7 +728,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
+          "x": 1410,
           "y": 20
         }
       }
@@ -764,7 +765,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
+          "x": 1410,
           "y": -140
         }
       }
@@ -810,8 +811,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 330
+          "x": 1410,
+          "y": 320
         }
       }
     note: false
@@ -850,8 +851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1030
+          "x": 1280,
+          "y": 1720
         }
       }
     note: false
@@ -886,8 +887,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1180
+          "x": 1280,
+          "y": 1880
         }
       }
     note: false
@@ -899,17 +900,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '61':
     id: '61'
-    taskid: 86d64a94-142d-44fe-8c72-82034fb883d9
+    taskid: 5014f36a-3191-46f7-8caa-40f5ee33d4fd
     type: playbook
     task:
-      id: 86d64a94-142d-44fe-8c72-82034fb883d9
+      id: 5014f36a-3191-46f7-8caa-40f5ee33d4fd
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - '2'
@@ -917,7 +918,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 430,
           "y": -640
         }
       }
@@ -928,6 +929,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+      query:
+        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+      threshold:
+        simple: "5"
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   '62':
     id: '62'
     taskid: e5dad5e0-215d-4537-8912-86a93f3c5bef
@@ -1037,8 +1070,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
-          "y": 520
+          "x": 1410,
+          "y": 510
         }
       }
     note: false
@@ -1056,7 +1089,7 @@ tasks:
       id: fb368c9f-ccb4-40e1-8010-f664993677ab
       version: -1
       name: Endpoint Investigation Plan
-      description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -1103,7 +1136,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2450
+          "y": 2500
         }
       }
     note: false
@@ -1199,8 +1232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 2930
+          "x": 1300,
+          "y": 3050
         }
       }
     note: false
@@ -1254,8 +1287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 2930
+          "x": 900,
+          "y": 3050
         }
       }
     note: false
@@ -1308,8 +1341,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 3420
+          "x": 1370,
+          "y": 3580
         }
       }
     note: false
@@ -1321,17 +1354,19 @@ tasks:
     isautoswitchedtoquietmode: false
   '67':
     id: '67'
-    taskid: e9c585d3-5b5e-4666-8db6-447293bcd70e
+    taskid: 84962fd2-6212-4fc0-8018-63b0c08b2e4f
     type: playbook
     task:
-      id: e9c585d3-5b5e-4666-8db6-447293bcd70e
+      id: 84962fd2-6212-4fc0-8018-63b0c08b2e4f
       version: -1
       name: Handle False Positive Alerts
       playbookName: Handle False Positive Alerts
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: |
+        This playbook handles false positive alerts.
+        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
     nexttasks:
       '#none#':
       - '51'
@@ -1355,6 +1390,9 @@ tasks:
         complex:
           root: alert
           accessor: username
+      ShouldHandleFPautomatically:
+        complex:
+          root: inputs.ShouldManualReviewFP
     separatecontext: true
     loop:
       iscommand: false
@@ -1364,8 +1402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2620
+          "x": 430,
+          "y": 2500
         }
       }
     note: false
@@ -1384,7 +1422,7 @@ tasks:
       version: -1
       name: |
         Extract retrieved file
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files are loaded to the War Room and names are put in the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -1399,8 +1437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1330
+          "x": 1280,
+          "y": 2040
         }
       }
     note: false
@@ -1426,7 +1464,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '70'
+      - "39"
     scriptarguments:
       File:
         complex:
@@ -1482,8 +1520,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1480
+          "x": 1280,
+          "y": 2200
         }
       }
     note: false
@@ -1501,13 +1539,13 @@ tasks:
       id: 4bdcb352-0176-4423-897b-abac5ffcc221
       version: -1
       name: Check WildFire alert verdict
-      description: cheks the WildFire verdict received.
+      description: Checks the WildFire verdict received.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
-      - '39'
+      - "50"
       Benign:
       - '71'
     separatecontext: false
@@ -1527,8 +1565,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1630
+          "x": 1760,
+          "y": 3050
         }
       }
     note: false
@@ -1540,12 +1578,12 @@ tasks:
     isautoswitchedtoquietmode: false
   '71':
     id: '71'
-    taskid: cd14d799-ed48-415c-820a-59e35a1b3698
+    taskid: 383805c3-25cf-4f01-865f-6b7187669557
     type: regular
     task:
-      id: cd14d799-ed48-415c-820a-59e35a1b3698
+      id: 383805c3-25cf-4f01-865f-6b7187669557
       version: -1
-      name: WildFire report  - Flip verdict
+      name: Flip verdict request to keep WF updated
       description: Reports to WildFire about incorrect hash verdict through Cortex.
       script: '|||core-report-incorrect-wildfire'
       type: regular
@@ -1553,7 +1591,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '33'
+      - "46"
     scriptarguments:
       file_hash:
         complex:
@@ -1562,13 +1600,169 @@ tasks:
       new_verdict:
         simple: '1'
       reason:
-        simple: XDR Local Analysis found the file to be malicious.
+        simple: Cortex XDR Local Analysis found the file to be malicious.
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1860
+          "x": 1760,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: a953691c-5334-47a3-821f-304f8ed1fbfd
+    type: condition
+    task:
+      id: a953691c-5334-47a3-821f-304f8ed1fbfd
+      version: -1
+      name: Is manual review required?
+      description: Checks whether the playbook should wait for manual review.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldManualReviewFP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: a6fde59e-ee3e-40c4-8ba6-722934ef8be0
+    type: title
+    task:
+      id: a6fde59e-ee3e-40c4-8ba6-722934ef8be0
+      version: -1
+      name: Flip WildFire Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 078887a5-4228-44f2-89d5-aa95c2bcb770
+    type: regular
+    task:
+      id: 078887a5-4228-44f2-89d5-aa95c2bcb770
+      version: -1
+      name: Check for existing WF report
+      description: Retrieves results for a file hash using WildFire.
+      script: '|||internal-wildfire-get-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      sha256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 37332a6e-db70-4828-82b0-7be714a388dd
+    type: condition
+    task:
+      id: 37332a6e-db70-4828-82b0-7be714a388dd
+      version: -1
+      name: Should detonate file?
+      description: "Do we have a WildFire report or should we detonate the file?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "no":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire.Report
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1480
         }
       }
     note: false
@@ -1581,14 +1775,11 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "14_39_#default#": 0.11,
-      "14_59_Benign": 0.44,
+      "14_39_#default#": 0.23,
       "2_33_#default#": 0.1,
       "2_6_True Positive": 0.71,
-      "34_39_No": 0.34,
-      "34_67_#default#": 0.69,
-      "44_41_yes": 0.68,
-      "44_50_#default#": 0.45,
+      "34_39_No": 0.58,
+      "34_67_Yes": 0.54,
       "46_47_#default#": 0.54,
       "46_66_yes": 0.49,
       "47_48_#default#": 0.5,
@@ -1596,14 +1787,16 @@ view: |-
       "58_35_#default#": 0.33,
       "6_35_Blocked": 0.12,
       "6_57_#default#": 0.58,
-      "70_39_#default#": 0.46,
-      "70_71_Benign": 0.63
+      "70_71_Benign": 0.63,
+      "75_67_#default#": 0.67,
+      "78_39_no": 0.14,
+      "78_59_#default#": 0.72
     },
     "paper": {
       "dimensions": {
-        "height": 5075,
-        "width": 1590,
-        "x": 440,
+        "height": 5235,
+        "width": 1710,
+        "x": 430,
         "y": -900
       }
     }
@@ -1660,6 +1853,12 @@ inputs:
     simple: 'True'
   required: false
   description: Whether to rescan (Using WildFire detonate file) benign files.
+  playbookInputQuery:
+- key: ShouldManualReviewFP
+  value:
+    simple: "False"
+  required: false
+  description: Whether to ask for a manual review before false positive handling. Should be True or False
   playbookInputQuery:
 outputs: []
 tests:

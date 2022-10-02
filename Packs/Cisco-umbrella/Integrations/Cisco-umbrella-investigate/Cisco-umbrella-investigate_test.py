@@ -8,6 +8,34 @@ from CommonServerPython import DBotScoreReliability
 Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
 
 
+ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid threshold values for the Suspicious and Malicious thresholds when ' \
+                                 'Suspicious is greater than Malicious and both are within a range of -100 to 100'
+
+
+@pytest.mark.parametrize('suspicous, malicious, expected_mock_result', [
+    (0, -100, None),
+    (0, -200, ERROR_VERIFY_THRESHOLD_MESSAGE),
+    (200, -100, ERROR_VERIFY_THRESHOLD_MESSAGE),
+    (0, 50, ERROR_VERIFY_THRESHOLD_MESSAGE)
+])
+def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicious, expected_mock_result, mocker):
+    """
+        Given:
+            - The suspicious and malicious thresholds params
+        When:
+            - Running the integration
+        Then:
+            - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
+    """
+    mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
+    Cisco_umbrella_investigate.verify_threshold_params(suspicous, malicious)
+
+    if not mock_result.call_args:
+        assert not expected_mock_result
+    else:
+        assert mock_result.call_args[0][0] == expected_mock_result
+
+
 def test_reliability_in_get_domain_security_command(mocker):
     """
         Given:

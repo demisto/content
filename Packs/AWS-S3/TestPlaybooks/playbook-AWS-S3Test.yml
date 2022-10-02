@@ -1,14 +1,23 @@
 id: 97393cfc-2fc4-4dfe-8b6e-af64067fc436
-version: -1
+version: 11
+contentitemexportablefields:
+  contentitemfields:
+    packID: AWS-S3
+    packName: AWS - S3
+    itemVersion: 1.2.3
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: AWS - S3 Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
+    taskid: a9ad3c63-47ff-4a65-8564-4a83ad27621b
     type: start
     task:
-      id: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
+      id: a9ad3c63-47ff-4a65-8564-4a83ad27621b
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +26,7 @@ tasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -27,12 +37,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c3a6d97c-43a0-47fc-86ff-1010d041451a
+    taskid: 6dcb3947-2bb8-46b3-829f-c51d01ffbb0c
     type: regular
     task:
-      id: c3a6d97c-43a0-47fc-86ff-1010d041451a
+      id: 6dcb3947-2bb8-46b3-829f-c51d01ffbb0c
       version: -1
       name: aws-s3-list-buckets
       description: List all S3 buckets in AWS account
@@ -43,12 +57,8 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    scriptarguments:
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -59,12 +69,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
+    taskid: fc75291c-3704-46dc-8e1a-446659321da8
     type: regular
     task:
-      id: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
+      id: fc75291c-3704-46dc-8e1a-446659321da8
       version: -1
       name: aws-s3-upload-file
       description: Upload file to S3 bucket
@@ -82,11 +96,8 @@ tasks:
         simple: ${File.EntryID}
       key:
         simple: ${File.Name}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,12 +108,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
+    taskid: 4e122b5b-33c9-48e5-80bf-27f964c37064
     type: regular
     task:
-      id: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
+      id: 4e122b5b-33c9-48e5-80bf-27f964c37064
       version: -1
       name: aws-s3-download-file
       description: Download a file from S3 bucket to war room.
@@ -118,11 +133,8 @@ tasks:
         simple: demisto-test1234
       key:
         simple: binks
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -133,12 +145,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ec4798c4-992d-450c-8e2d-e05880ffb394
+    taskid: 5e8005fe-3861-4b66-8de7-aa62475a33ae
     type: regular
     task:
-      id: ec4798c4-992d-450c-8e2d-e05880ffb394
+      id: 5e8005fe-3861-4b66-8de7-aa62475a33ae
       version: -1
       name: aws-s3-get-bucket-policy
       description: Get AWS S3 Bucket Policy
@@ -146,14 +162,14 @@ tasks:
       type: regular
       iscommand: true
       brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       bucket:
         simple: demisto-test1234
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -164,12 +180,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 877f95f8-cfb5-4346-87f6-81af40c129cc
+    taskid: 774f7a1c-d98b-450d-8f08-35e1e16710f8
     type: regular
     task:
-      id: 877f95f8-cfb5-4346-87f6-81af40c129cc
+      id: 774f7a1c-d98b-450d-8f08-35e1e16710f8
       version: -1
       name: aws-s3-list-bucket-objects
       description: List object in S3 bucket.
@@ -183,11 +203,8 @@ tasks:
     scriptarguments:
       bucket:
         simple: demisto-test1234
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -198,12 +215,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3d24876e-3af0-45e8-8663-3a0561d9997e
+    taskid: e25274b1-91cd-4291-8967-958e6a80eb40
     type: regular
     task:
-      id: 3d24876e-3af0-45e8-8663-3a0561d9997e
+      id: e25274b1-91cd-4291-8967-958e6a80eb40
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -215,22 +236,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      body: {}
       filename:
         simple: file_to_upload
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
-        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg  # disable-secrets-detection
-      username: {}
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -241,12 +256,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
+    taskid: 38fc3e2c-de3d-4251-8802-c55157ea0379
     type: regular
     task:
-      id: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
+      id: 38fc3e2c-de3d-4251-8802-c55157ea0379
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -260,11 +279,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -275,12 +291,49 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 04c113c8-b2fd-4e20-809c-69c9e404e008
+    type: regular
+    task:
+      id: 04c113c8-b2fd-4e20-809c-69c9e404e008
+      version: -1
+      name: aws-s3-get-bucket-encryption
+      description: Get AWS S3 Bucket Encryption
+      script: AWS - S3|||aws-s3-get-bucket-encryption
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1225,
+        "height": 1385,
         "width": 380,
         "x": 50,
         "y": -60
@@ -288,5 +341,5 @@ view: |-
     }
   }
 inputs: []
-outputs: []
 fromversion: 5.0.0
+outputs: []
