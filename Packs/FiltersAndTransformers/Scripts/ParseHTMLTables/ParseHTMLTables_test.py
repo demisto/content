@@ -716,6 +716,37 @@ def test_main(mocker):
                     }
                 }
             ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                        <tr>
+                            <td>
+                                <table>
+                                  <tr>
+                                    <td>td1-1</td>
+                                    <td>td1-2</td>
+                                  </tr>
+                                  <tr>
+                                    <td>td2-1</td>
+                                    <td>td2-2</td>
+                                  </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    "table1": {
+                        "td1-1": "td1-2",
+                        "td2-1": "td2-2"
+                    }
+                }
+            ]
         }
     ]
 
@@ -728,4 +759,5 @@ def test_main(mocker):
         main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
+        print(json.dumps(results, indent=2))
         assert json.dumps(results) == json.dumps(t['results'])
