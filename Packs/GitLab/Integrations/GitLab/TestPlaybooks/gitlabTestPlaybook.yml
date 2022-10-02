@@ -1,5 +1,6 @@
-id: gitlab
-version: -1
+id: d84642ca-065b-4bd5-86ca-dbdf63746d48
+version: 397
+vcShouldKeepItemLegacyProdMachine: false
 name: gitlab
 starttaskid: "0"
 tasks:
@@ -13,16 +14,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "50"
+      - "86"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": -3630
+          "x": 860,
+          "y": -4030
         }
       }
     note: false
@@ -52,6 +53,7 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -74,7 +76,8 @@ tasks:
       id: ebc1362f-b8c1-4d82-8585-bf38b2c4e8f5
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
+      description: Updates an existing project issue. This call is also used to mark
+        an issue as closed. The id can be taken from gitlab-issue-list.
       script: '|||gitlab-issue-update'
       type: regular
       iscommand: true
@@ -92,6 +95,7 @@ tasks:
       title:
         simple: whatnu
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -129,6 +133,7 @@ tasks:
             value:
               simple: GitLab.Issue.iid
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -166,6 +171,7 @@ tasks:
             value:
               simple: GitLab.Issue.labels
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -191,8 +197,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -229,6 +235,7 @@ tasks:
       issue_iid:
         simple: ${GitLab.Issue.iid}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -266,6 +273,7 @@ tasks:
             value:
               simple: GitLab.IssueNote.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -303,6 +311,7 @@ tasks:
             value:
               simple: GitLab.Issue.updated_at
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -339,6 +348,7 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -376,6 +386,7 @@ tasks:
             value:
               simple: GitLab.IssueNote.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -398,7 +409,8 @@ tasks:
       id: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
       version: -1
       name: Get Version
-      description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
+      description: Retrieve version information for this GitLab instance. Responds
+        200 OK for authenticated users.
       script: '|||gitlab-version-get'
       type: regular
       iscommand: true
@@ -407,6 +419,7 @@ tasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -449,6 +462,7 @@ tasks:
             value:
               simple: GitLab.Version.revision
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -483,6 +497,7 @@ tasks:
       limit:
         simple: "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -520,6 +535,7 @@ tasks:
             value:
               simple: GitLab.Commit.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -536,10 +552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4d3d2363-0c78-479b-808d-ef43001d96a3
+    taskid: d46c60c1-2831-4b2b-8472-353d4e3fc7ff
     type: regular
     task:
-      id: 4d3d2363-0c78-479b-808d-ef43001d96a3
+      id: d46c60c1-2831-4b2b-8472-353d4e3fc7ff
       version: -1
       name: 'get commit '
       description: Get a list of repository commits in a project.
@@ -552,8 +568,9 @@ tasks:
       - "23"
     scriptarguments:
       commit_id:
-        simple: c156b66b
+        simple: 7d584f46
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -591,6 +608,7 @@ tasks:
             value:
               simple: GitLab.Commit.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -627,6 +645,7 @@ tasks:
       note_id:
         simple: ${issue_note_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -663,6 +682,7 @@ tasks:
       ref:
         simple: main
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -685,7 +705,8 @@ tasks:
       id: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, sorted by name alphabetically.
+      description: Get a list of repository branches from a project, sorted by name
+        alphabetically.
       script: '|||gitlab-branch-list'
       type: regular
       iscommand: true
@@ -697,6 +718,7 @@ tasks:
       branch_name:
         simple: ${GitLab.Branch.name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -734,6 +756,7 @@ tasks:
             value:
               simple: GitLab.Branch.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -771,6 +794,7 @@ tasks:
             value:
               simple: GitLab.Branch.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -805,6 +829,7 @@ tasks:
       branch:
         simple: ${GitLab.Branch.name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -845,6 +870,7 @@ tasks:
       title:
         simple: playbook
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -882,6 +908,7 @@ tasks:
             value:
               simple: GitLab.MergeRequest.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -904,7 +931,8 @@ tasks:
       id: b626b060-e5a6-413f-8c2a-7c30b58f950b
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
+      description: Updates an existing merge request. You can change the target branch,
+        title, or even close the MR.
       script: '|||gitlab-merge-request-update'
       type: regular
       iscommand: true
@@ -924,6 +952,7 @@ tasks:
       title:
         simple: title update
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -968,6 +997,7 @@ tasks:
             value:
               simple: GitLab.MergeRequest.description
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1004,6 +1034,7 @@ tasks:
       title:
         simple: I'm a issue
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1041,6 +1072,7 @@ tasks:
             value:
               simple: GitLab.Issue.iid
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1063,7 +1095,9 @@ tasks:
       id: 5241325c-bc7d-4488-89d4-17a93a8a8684
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
+      description: Get a list of visible groups for the authenticated user. When accessed
+        without authentication, only public groups are returned. By default, this
+        request returns 20 results at a time because the API results are paginated
       script: '|||gitlab-group-list'
       type: regular
       iscommand: true
@@ -1075,6 +1109,7 @@ tasks:
       limit:
         simple: "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1112,6 +1147,7 @@ tasks:
             value:
               simple: GitLab.Group.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1128,13 +1164,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 6ad7fff7-f726-4e3a-8107-303ed213d71d
+    taskid: e0628c3c-f912-491b-834a-1ff76337ed3b
     type: regular
     task:
-      id: 6ad7fff7-f726-4e3a-8107-303ed213d71d
+      id: e0628c3c-f912-491b-834a-1ff76337ed3b
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated user.
+      description: Gets a list of group or project members viewable by the authenticated
+        user.
       script: '|||gitlab-group-member-list'
       type: regular
       iscommand: true
@@ -1144,8 +1181,9 @@ tasks:
       - "47"
     scriptarguments:
       group_id:
-        simple: "55694272"
+        simple: "58584155"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1183,6 +1221,7 @@ tasks:
             value:
               simple: GitLab.Group.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1205,7 +1244,9 @@ tasks:
       id: e2300d70-3fda-436d-8d65-3dd265805ef7
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
+      description: Get a list of all visible projects across GitLab for the authenticated
+        user. When accessed without authentication, only public projects with simple
+        fields are returned.
       script: '|||gitlab-project-list'
       type: regular
       iscommand: true
@@ -1217,6 +1258,7 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1254,6 +1296,7 @@ tasks:
             value:
               simple: GitLab.Project.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1270,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 3c372308-28b0-4137-8311-795d9e17e60a
+    taskid: 172b6826-4a8a-4ce4-8d49-73148cef849c
     type: regular
     task:
-      id: 3c372308-28b0-4137-8311-795d9e17e60a
+      id: 172b6826-4a8a-4ce4-8d49-73148cef849c
       version: -1
       name: group project list
       description: Get the list of projects of a given group.
@@ -1286,10 +1329,11 @@ tasks:
       - "61"
     scriptarguments:
       group_id:
-        simple: "55694272"
+        simple: "58584155"
       limit:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1332,6 +1376,7 @@ tasks:
       Uppercase:
         simple: "False"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1369,6 +1414,7 @@ tasks:
             value:
               simple: GitLab.GroupProject.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1385,13 +1431,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: fde87384-ec87-4e4e-8e3f-9b6fa9014f7e
+    taskid: 59d60a03-3f33-480a-8a7e-7178844be05e
     type: regular
     task:
-      id: fde87384-ec87-4e4e-8e3f-9b6fa9014f7e
+      id: 59d60a03-3f33-480a-8a7e-7178844be05e
       version: -1
       name: File get
-      description: Allows to receive information about file in repository like name, size, content.
+      description: Allows to receive information about file in repository like name,
+        size, content.
       script: '|||gitlab-file-get'
       type: regular
       iscommand: true
@@ -1401,15 +1448,16 @@ tasks:
       - "74"
     scriptarguments:
       file_path:
-        simple: .gitlab-ci.yml
+        simple: ./CheckFileCommand
       ref:
         simple: main
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 5910
+          "x": 820,
+          "y": 6090
         }
       }
     note: false
@@ -1421,10 +1469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 04522af3-e4be-4fa6-8f6c-2c53d8bd9b13
+    taskid: ba15cd72-6eb9-4338-8da0-b220361b1729
     type: regular
     task:
-      id: 04522af3-e4be-4fa6-8f6c-2c53d8bd9b13
+      id: ba15cd72-6eb9-4338-8da0-b220361b1729
       version: -1
       name: Get raw file
       description: Get raw file.
@@ -1434,13 +1482,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "88"
     scriptarguments:
       file_path:
-        simple: .gitlab-ci.yml
+        simple: ./CheckFileCommand
       ref:
         simple: main
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1480,6 +1529,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1516,6 +1566,7 @@ tasks:
       merge_request_iid:
         simple: ${merge_request_iid}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1555,6 +1606,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1593,6 +1645,7 @@ tasks:
       note_id:
         simple: ${merge_request_note_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1629,6 +1682,7 @@ tasks:
       note_id:
         simple: ${merge_request_note_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1665,6 +1719,7 @@ tasks:
       merge_request_iid:
         simple: ${merge_request_iid}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1702,6 +1757,7 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1718,10 +1774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 38d12081-e21e-43bc-83ef-a2c5223b29bb
+    taskid: a5ddc8e8-8e6d-42ba-8d35-af1262897cb3
     type: regular
     task:
-      id: 38d12081-e21e-43bc-83ef-a2c5223b29bb
+      id: a5ddc8e8-8e6d-42ba-8d35-af1262897cb3
       version: -1
       name: file update
       description: Editing existing file in repository.
@@ -1742,8 +1798,9 @@ tasks:
       file_content:
         simple: I've been updated
       file_path:
-        simple: testByPlaybookGitlab
+        simple: testByPlaybookGitlab_test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1781,6 +1838,7 @@ tasks:
             value:
               simple: GitLab.File.file_path
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1818,11 +1876,12 @@ tasks:
             value:
               simple: GitLab.File.file_path
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 6135
+          "x": 820,
+          "y": 6295
         }
       }
     note: false
@@ -1834,13 +1893,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: c3bec487-7217-4270-8a62-cb9cff0e7ddb
+    taskid: cda89375-22ff-4fa2-866e-0aee54c88722
     type: regular
     task:
-      id: c3bec487-7217-4270-8a62-cb9cff0e7ddb
+      id: cda89375-22ff-4fa2-866e-0aee54c88722
       version: -1
       name: file-create
-      description: This allows you to create a single file. File path or entry_id must be specified.
+      description: This allows you to create a single file. File path or entry_id
+        must be specified.
       script: '|||gitlab-file-create'
       type: regular
       iscommand: true
@@ -1858,13 +1918,14 @@ tasks:
       file_content:
         simple: IAmContent
       file_path:
-        simple: testByPlaybookGitlab
+        simple: testByPlaybookGitlab_test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 810,
-          "y": 6430
+          "y": 6470
         }
       }
     note: false
@@ -1882,7 +1943,8 @@ tasks:
       id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id must be specified.
+      description: This allows you to create a single file. File path or entry_id
+        must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -1905,11 +1967,12 @@ tasks:
             value:
               simple: GitLab.File.branch
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 6610
+          "x": 800,
+          "y": 6650
         }
       }
     note: false
@@ -1921,10 +1984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: a4c688ac-e7d9-4a25-8a16-d240e1974f1a
+    taskid: fb550f2d-455e-436c-8885-215c09041d3b
     type: regular
     task:
-      id: a4c688ac-e7d9-4a25-8a16-d240e1974f1a
+      id: fb550f2d-455e-436c-8885-215c09041d3b
       version: -1
       name: file delete
       description: Editing existing file in repository.
@@ -1941,8 +2004,9 @@ tasks:
       commit_message:
         simple: delete file via playbook
       file_path:
-        simple: testByPlaybookGitlab
+        simple: testByPlaybookGitlab_test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1980,6 +2044,7 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2002,7 +2067,8 @@ tasks:
       id: 63c40424-3f2e-4df2-8d2b-51a0188df937
       version: -1
       name: issue-note_id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      description: Deprecated. No available replacement. Sets key/value pair in incident's
+        context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -2016,6 +2082,7 @@ tasks:
       value:
         simple: ${GitLab.IssueNote.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2038,7 +2105,8 @@ tasks:
       id: b14f9c49-9a3f-467e-841e-e44faeb4fe93
       version: -1
       name: issue id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      description: Deprecated. No available replacement. Sets key/value pair in incident's
+        context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -2052,6 +2120,7 @@ tasks:
       value:
         simple: ${GitLab.IssueNote.noteable_iid}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2090,6 +2159,7 @@ tasks:
       note_id:
         simple: ${issue_note_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2112,7 +2182,8 @@ tasks:
       id: 45533628-d57e-4f6c-8e10-4e71aefbe580
       version: -1
       name: merge request iid save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      description: Deprecated. No available replacement. Sets key/value pair in incident's
+        context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -2126,6 +2197,7 @@ tasks:
       value:
         simple: ${GitLab.MergeRequest.iid}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2148,7 +2220,8 @@ tasks:
       id: c1e99ede-c2ac-40fd-8e2d-7e3f0309ad1b
       version: -1
       name: merge request note id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
+      description: Deprecated. No available replacement. Sets key/value pair in incident's
+        context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -2162,6 +2235,7 @@ tasks:
       value:
         simple: ${GitLab.MergeRequestNote.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2178,13 +2252,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 020a8eb3-f702-4dc4-87f8-d1b5f5f0221e
+    taskid: 782ae94e-2a81-45e5-8d32-e7b579a99846
     type: regular
     task:
-      id: 020a8eb3-f702-4dc4-87f8-d1b5f5f0221e
+      id: 782ae94e-2a81-45e5-8d32-e7b579a99846
       version: -1
       name: Code search
-      description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
+      description: Using Scope blobs. Blobs searches are performed on both filenames
+        and contents.
       script: '|||gitlab-code-search'
       type: regular
       iscommand: true
@@ -2194,8 +2269,9 @@ tasks:
       - "85"
     scriptarguments:
       search:
-        simple: moishy changed
+        simple: Friends
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2233,11 +2309,123 @@ tasks:
             value:
               simple: GitLab.Code.ref
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 810,
           "y": 7670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 0386f5aa-b455-4785-8796-b3341b0da323
+    type: regular
+    task:
+      id: 0386f5aa-b455-4785-8796-b3341b0da323
+      version: -1
+      name: list users
+      description: Get the users list of a project.
+      script: '|||gitlab-project-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 2a59c7a0-d84d-4ad9-8792-72de2822a353
+    type: condition
+    task:
+      id: 2a59c7a0-d84d-4ad9-8792-72de2822a353
+      version: -1
+      name: VERIFY project user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.User.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: e3174fbd-bfdc-492f-8fad-afb1bdc05d66
+    type: condition
+    task:
+      id: e3174fbd-bfdc-492f-8fad-afb1bdc05d66
+      version: -1
+      name: VERIFY raw file get
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.content
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 5870
         }
       }
     note: false
@@ -2254,14 +2442,12 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 11595,
+        "height": 11995,
         "width": 930,
         "x": 800,
-        "y": -3630
+        "y": -4030
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
-description: gitlab playbook
