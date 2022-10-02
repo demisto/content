@@ -710,7 +710,7 @@ class MsGraphClient:
         }
 
         emails_as_text = self.ms_client.http_request(
-            'GET', suffix_endpoint, params=params,overwrite_rate_limit_retry=overwrite_rate_limit_retry, headers=headers
+            'GET', suffix_endpoint, params=params, overwrite_rate_limit_retry=overwrite_rate_limit_retry, headers=headers
         ).get('value') or []
 
         return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
