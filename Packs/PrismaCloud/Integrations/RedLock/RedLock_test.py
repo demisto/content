@@ -124,10 +124,10 @@ def test_expire_stored_ids_should_not_expire():
             - Validate that cleaned IDs returned contains the unexpired ID.
     """
     from RedLock import expire_stored_ids
-    fetched_ids = [{'P-12345': 1625938454758}]
+    fetched_ids = [{'P-12345': 1625927654.758295}]
 
     cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
-    assert cleaned_ids == [{'P-12345': 1625938454758}]
+    assert cleaned_ids == [{'P-12345': 1625927654.758295}]
 
 
 @freeze_time("2022-07-10T16:34:14.758295 UTC+1")
@@ -141,7 +141,7 @@ def test_expire_stored_ids_should_expire():
             - Validate that the ID is expired and an empty array is returned
     """
     from RedLock import expire_stored_ids
-    fetched_ids = [{'P-12345': 1625938454758}]
+    fetched_ids = [{'P-12345': 1625927654.758295}]
 
     cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
     assert cleaned_ids == []
