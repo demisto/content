@@ -13,15 +13,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
   defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -64,6 +55,15 @@ configuration:
   name: post_url_id
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 display: Proofpoint Threat Response Event Collector
 name: ProofpointThreatResponseEventCollector

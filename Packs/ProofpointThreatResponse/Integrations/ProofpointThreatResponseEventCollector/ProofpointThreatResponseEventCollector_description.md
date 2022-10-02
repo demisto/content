@@ -2,5 +2,5 @@ In order to create the API Key go to:
 
   Settings -> API Key -> Add api key
   
-- If the **fetch-incidents** result in timeout, please consider changing **fetch-delta** and **fetch-limit** parameters 
-which will limit the api calls and the result.
+**Note:** if the **fetch-events** command results in a timeout, 
+consider changing **fetch_delta** and **fetch_limit** parameters to reduce the number of API calls and results.

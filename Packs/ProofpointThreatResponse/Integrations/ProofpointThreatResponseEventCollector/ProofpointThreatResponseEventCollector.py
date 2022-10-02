@@ -315,6 +315,31 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
 
 
 def get_events_from_incidents(incidents):
+    """
+    Parses events from incidents.
+    Each incident contains list of events:
+    {'id':1,
+    'updated_at': '01-01-2020',
+    'events': [first_event_data, second_event_data, ...]
+    'additional_fields': ...
+    }
+
+    The function parses the data in the following way:
+    {'id':1,
+    'updated_at': '01-01-2020',
+    'event': first_event_data
+    'additional_fields': ...
+    },
+    {'id':1,
+    'updated_at': '01-01-2020',
+    'events': second_event_data
+    'additional_fields': ...
+    }
+    ....
+
+    :param incidents: list of incidents that contains events.
+    :return: parsed events.
+    """
     fetched_events = []
     for incident in incidents:
         if events := incident.get('events'):
@@ -338,7 +363,7 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     api_key = params.get('credentials', {}).get('password')
-    base_url = demisto.params().get('url')
+    base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
