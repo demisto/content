@@ -701,8 +701,42 @@ class MsGraphClient:
             "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
-        return self.ms_client.http_request('GET', suffix_endpoint, params=params,
+        emails_as_html =  self.ms_client.http_request('GET', suffix_endpoint, params=params,
                                            overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value') or []
+
+        headers = {
+            "Prefer": "outlook.body-content-type='text'"
+        }
+
+        emails_as_text = self.ms_client.http_request(
+            'GET', suffix_endpoint, params=params,overwrite_rate_limit_retry=overwrite_rate_limit_retry, headers=headers
+        ).get('value') or []
+
+        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
+
+    @staticmethod
+    def get_emails_as_text_and_html(emails_as_html, emails_as_text):
+
+        text_emails_ids = {email.get('id'): email for email in emails_as_text}
+        emails_as_html_and_text = []
+
+        for email_as_html in emails_as_html:
+            html_email_id = email_as_html.get('id')
+            text_email_data = text_emails_ids.get(html_email_id) or {}
+            if not text_email_data:
+                demisto.info(f'There is no matching text email to html email-ID {html_email_id}')
+
+            body_as_text = text_email_data.get('body')
+            if body_as_html := email_as_html.get('body'):
+                email_as_html['body'] = (body_as_html, body_as_text)
+
+            unique_body_as_text = text_email_data.get('uniqueBody')
+            if unique_body_as_html := email_as_html.get('uniqueBody'):
+                email_as_html['uniqueBody'] = (unique_body_as_html, unique_body_as_text)
+
+            emails_as_html_and_text.append(email_as_html)
+
+        return emails_as_html_and_text
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
@@ -745,7 +779,21 @@ class MsGraphClient:
         return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
-    def _parse_item_as_dict(email):
+    def get_email_content_as_text_and_html(email):
+        email_body = email.get('body') or tuple()  # email body including replyTo emails.
+        email_unique_body = email.get('uniqueBody') or tuple()  # email-body without replyTo emails.
+
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
+        try:
+            email_content_as_html, email_content_as_text = email_body or email_unique_body
+        except ValueError:
+            demisto.info(f'email body content is missing from email {email}')
+            return '', ''
+
+        return email_content_as_html.get('content'), email_content_as_text.get('content')
+
+    def _parse_item_as_dict(self, email):
         """
         Parses basic data of email.
 
@@ -760,9 +808,13 @@ class MsGraphClient:
         parsed_email = {EMAIL_DATA_MAPPING[k]: v for (k, v) in email.items() if k in EMAIL_DATA_MAPPING}
         parsed_email['Headers'] = email.get('internetMessageHeaders', [])
 
-        email_body = email.get('body', {}) or email.get('uniqueBody', {})
-        parsed_email['Body'] = email_body.get('content', '')
-        parsed_email['BodyType'] = email_body.get('contentType', '')
+        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
+        # in those cases for both html/text formats.
+        email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
+
+        parsed_email['Body'] = email_content_as_html
+        parsed_email['Text'] = email_content_as_text
+        parsed_email['BodyType'] = 'html'
 
         parsed_email['Sender'] = MsGraphClient._get_recipient_address(email.get('sender', {}))
         parsed_email['From'] = MsGraphClient._get_recipient_address(email.get('from', {}))
@@ -860,7 +912,7 @@ class MsGraphClient:
         :return: Parsed email
         :rtype: ``dict``
         """
-        parsed_email = MsGraphClient._parse_item_as_dict(email)
+        parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
         attachments = self._get_email_attachments(message_id=email.get('id', ''))
@@ -871,8 +923,7 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.display_full_email_body:
-            # parse HTML into plain-text
-            body = get_text_from_html(parsed_email.get('Body') or '')
+            _, body = self.get_email_content_as_text_and_html(email)
 
         incident = {
             'name': parsed_email.get('Subject'),
