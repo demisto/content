@@ -1,5 +1,4 @@
-"""Bitbucket Integration for Cortex XSOAR - Unit Tests file
-
+"""
 Pytest Unit Tests: all function names must start with "test_"
 
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
@@ -30,29 +29,6 @@ def bitbucket_client():
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
-
-
-ARGS_CASES = [
-    (-1, None, 'The limit value must be equal to 1 or bigger.'),
-    (1, 0, 'The page value must be equal to 1 or bigger.')
-]
-
-
-@pytest.mark.parametrize('limit, page, expected_results', ARGS_CASES)
-def test_check_args(limit, page, expected_results):
-    """
-        Given:
-            - A command's arguments
-        When:
-            - running commands that has pagination
-        Then:
-            - checking that if the parameters < 1 , exception is thrown
-        """
-    from Bitbucket import check_args
-
-    with pytest.raises(Exception) as e:
-        check_args(limit, page)
-    assert e.value.args[0] == expected_results
 
 
 def test_get_paged_results(mocker, bitbucket_client):

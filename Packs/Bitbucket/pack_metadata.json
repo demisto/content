@@ -1,6 +1,6 @@
 {
     "name": "Bitbucket",
-    "description": "Pack for handling Bitbucket operations",
+    "description": "Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

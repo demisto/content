@@ -5,7 +5,7 @@ commonfields:
 name: Bitbucket
 display: Bitbucket
 fromversion: 6.5.0
-description: Pack for handling Bitbucket operations
+description: Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira
 configuration:
   - name: workspace
     display: Workspace
@@ -33,13 +33,11 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
 script:
@@ -66,14 +64,8 @@ script:
         - contextPath: Bitbucket.Project.owner.display_name
           description: 'The project owner name.'
           type: String
-        - contextPath: Bitbucket.Project.owner.links.self.href
-          description: 'The link to a json with the information about the owner of the project.'
-          type: String
-        - contextPath: Bitbucket.Project.owner.links.avatar.href
-          description: 'A link to the project owner photo.'
-          type: String
-        - contextPath: Bitbucket.Project.owner.links.html.href
-          description: 'A link to the project owner repositories.'
+        - contextPath: Bitbucket.Project.owner.links
+          description: 'Links with information about the project owner'
           type: String
         - contextPath: Bitbucket.Project.owner.type
           description: 'The type of the project owner.'
@@ -99,14 +91,8 @@ script:
         - contextPath: Bitbucket.Project.workspace.slug
           description: 'The slug of the project workspace.'
           type: String
-        - contextPath: Bitbucket.Project.workspace.links.avatar.href
-          description: 'A link to the project workspace photo.'
-          type: String
-        - contextPath: Bitbucket.Project.workspace.links.html.href
-          description: 'A link to the project workspace repositories.'
-          type: String
-        - contextPath: Bitbucket.Project.workspace.links.self.href
-          description: 'A link to the result json.'
+        - contextPath: Bitbucket.Project.workspace.links
+          description: 'Links to information about the workspace.'
           type: String
         - contextPath: Bitbucket.Project.key
           description: 'The project key.'
@@ -123,17 +109,8 @@ script:
         - contextPath: Bitbucket.Project.description
           description: 'The project description.'
           type: String
-        - contextPath: Bitbucket.Project.links.self.href
-          description: 'A link to the result json.'
-          type: String
-        - contextPath: Bitbucket.Project.links.html.href
-          description: 'A link to the project repositories.'
-          type: String
-        - contextPath: Bitbucket.Project.links.repositories.href
-          description: 'A link to the project repositories.'
-          type: String
-        - contextPath: Bitbucket.Project.links.avatar.href
-          description: 'A link to the project photo.'
+        - contextPath: Bitbucket.Project.links
+          description: 'Links to information about the project.'
           type: String
         - contextPath: Bitbucket.Project.created_on
           description: 'The date the project was created.'
@@ -181,14 +158,8 @@ script:
         - contextPath: Bitbucket.Branch.target.author.user.display_name
           description: 'The display name of the author of the last action.'
           type: String
-        - contextPath: Bitbucket.Branch.target.author.user.links.self.href
-          description: 'The link to a json with the information about the author of the last action in the branch.'
-          type: String
-        - contextPath: Bitbucket.Branch.target.author.user.links.avatar.href
-          description: 'A link to the image of the author of the last action in the branch.'
-          type: String
-        - contextPath: Bitbucket.Branch.target.author.user.links.html.href
-          description: 'A link to the user repository'
+        - contextPath: Bitbucket.Branch.target.author.user.links
+          description: 'Links to information about the user.'
           type: String
         - contextPath: Bitbucket.Branch.target.author.user.type
           description: 'The type of the user who made the last action in the branch.'
@@ -223,14 +194,8 @@ script:
         - contextPath: Bitbucket.Branch.target.repository.full_name
           description: 'The full name of the repository.'
           type: String
-        - contextPath: Bitbucket.Branch.target.repository.links.self.href
-          description: 'The api request to the repository'
-          type: String
-        - contextPath: Bitbucket.Branch.target.repository.links.html.href
-          description: 'A link to the repository.'
-          type: String
-        - contextPath: Bitbucket.Branch.target.repository.links.avatar.href
-          description: 'A link to the repository image'
+        - contextPath: Bitbucket.Branch.target.repository.links
+          description: 'Links with information about the relevant repository.'
           type: String
         - contextPath: Bitbucket.Branch.target.repository.name
           description: 'The name of the repository'
@@ -238,14 +203,8 @@ script:
         - contextPath: Bitbucket.Branch.target.repository.uuid
           description: 'The repository unique id.'
           type: String
-        - contextPath: Bitbucket.Branch.links.self.href
-          description: 'The api request to the branch.'
-          type: String
-        - contextPath: Bitbucket.Branch.links.commits.href
-          description: 'A link to api request to the commits of the branch.'
-          type: String
-        - contextPath: Bitbucket.Branch.links.html.href
-          description: 'A link to the commits in the branch.'
+        - contextPath: Bitbucket.Branch.links
+          description: 'Links with information about the branch.'
           type: String
         - contextPath: Bitbucket.Branch.type
           description: 'The type of the branch.'
@@ -266,7 +225,7 @@ script:
         - name: branch_name
           required: true
           isArray: false
-          description: The name of the wanted branch.
+          description: The name of the branch to retrieve the information.
       outputs:
         - contextPath: Bitbucket.Branch.name
           description: 'The name of the branch.'
@@ -1150,11 +1109,11 @@ script:
           isArray: false
         - name: source_branch
           required: true
-          description: The branch to merge.
+          description: The branch that contains the proposed changes.
           isArray: false
         - name: destination_branch
           required: false
-          description: The branch to merge to.
+          description: The branch that will contain the changes after the merge process.
           isArray: false
         - name: reviewer_id
           required: false
@@ -1340,11 +1299,11 @@ script:
           isArray: false
         - name: source_branch
           required: false
-          description: The branch to merge.
+          description: The branch that contains the proposed changes.
           isArray: false
         - name: destination_branch
           required: false
-          description: The branch to merge to.
+          description: The branch that will contain the changes after the merge process.
           isArray: false
         - name: reviewer_id
           required: false
