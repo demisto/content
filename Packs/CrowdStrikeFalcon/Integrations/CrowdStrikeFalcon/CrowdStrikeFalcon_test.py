@@ -3289,7 +3289,7 @@ def test_get_endpint_command(requests_mock, mocker):
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
+    assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
 def test_create_hostgroup_invalid(requests_mock, mocker):
