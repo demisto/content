@@ -816,7 +816,6 @@ def expire_stored_ids(fetched_ids):
     cleaned_cache = []
 
     two_hours = timedelta(hours=2).total_seconds() * 1000
-    # now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     now = datetime.timestamp(datetime.utcnow())
 
     for i in range(len(fetched_ids)):
