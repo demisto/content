@@ -9,7 +9,6 @@ description: multi-scanning engine uses 30+ anti-malware engines to scan files f
 configuration:
 - display: Server URL (e.g. http://localhost:8008/metascan_rest/)
   name: url
-  defaultvalue: http://localhost:8008/metascan_rest/
   type: 0
   required: true
 - display: API Key - Needed in cloud based solutions
@@ -72,7 +71,7 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.7.33922
   subtype: python3
   runonce: false
 tests:
