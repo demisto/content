@@ -8101,7 +8101,7 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
-    - description: The name of the template to retrieve, if not mentioned will bring all the available templates.
+    - description: The name of the template to retrieve, if not provided then all available templates will be brought.
       isArray: false
       name: template_name
       required: false
