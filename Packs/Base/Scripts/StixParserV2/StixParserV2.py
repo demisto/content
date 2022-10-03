@@ -649,7 +649,7 @@ class STIX2Parser:
         Returns:
             A dict of relationship value to processed relationships as indicator object.
         """
-        a_value_to_relationship = {}
+        a_value_to_relationship: Dict[str, Any] = dict()
         for relationships_object in relationships_lst:
             relationship_type = relationships_object.get('relationship_type')
             if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():

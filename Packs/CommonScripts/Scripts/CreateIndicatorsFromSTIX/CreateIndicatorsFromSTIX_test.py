@@ -1,6 +1,41 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from CreateIndicatorsFromSTIX import *
 
-# todo: tests
-# todo: test playbook
+
+def test_create_indicators_loop(mocker):
+    """
+    Given:
+        - A collection of indicators in XSOAR Format
+
+    When:
+        - Parsing stix indicators.
+
+    Then:
+        - Validate the indicators extract without errors.
+    """
+    with open('test_data/ip-stix-ioc-results.json') as json_f:
+        indicators = json.load(json_f)
+    mocker.patch.object(demisto, 'executeCommand', return_value=[None])
+    errors = create_indicators_loop(indicators=indicators)
+    assert errors == []
+
+
+def test_parse_indicators_using_stix_parser(mocker):
+    """
+    Given:
+        - A collection of indicators in STIX Format
+
+    When:
+        - Parsing stix indicators using STIXParserV2.
+
+    Then:
+        - Validate the indicators extract without errors.
+    """
+    with open('test_data/ip-stix-ioc-results.json') as json_f:
+        expected_res = json.load(json_f)
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': expected_res, 'Type': 1}])
+    mocker.patch('CommonServerPython.is_error', False)
+    indicators = parse_indicators_using_stix_parser(expected_res)
+    assert expected_res == indicators
