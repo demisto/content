@@ -178,7 +178,7 @@ class Client:
                         filename = 'filename'  # todo: what name should be given if no name was detected?
                     stored_file = fileResult(filename, res.content)
                     file_entry = {
-                        'Type': entryTypes['image'],  # todo: should we change this to 'file'
+                        'Type': entryTypes['image'],
                         'ContentsFormat': formats['text'],
                         'File': stored_file['File'],
                         'FileID': stored_file['FileID'],
