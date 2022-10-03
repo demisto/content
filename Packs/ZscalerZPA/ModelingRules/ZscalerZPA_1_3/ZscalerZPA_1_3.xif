@@ -2,10 +2,6 @@
 filter
     cat in ("ZPA User Status", "ZPA User Activity")
 | alter
-    timestamp = _time
-| alter
-    _collection_timestamp = _insert_time,
-    _time = timestamp,
     xdm.network.rule = policy,
     xdm.target.port = dstPort,
     xdm.target.ipv4 = dst,
@@ -35,10 +31,6 @@ filter
 
 filter cat in ("Connector Status")
 | alter
-    timestamp = _time
-| alter
-    _collection_timestamp = _insert_time,
-    _time = timestamp,
     xdm.event.id = _id,
     xdm.event.type = cat,
     xdm.source.agent.version = Version,
