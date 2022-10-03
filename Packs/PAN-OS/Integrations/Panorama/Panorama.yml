@@ -8100,7 +8100,47 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  - arguments:
+    - description: The name of the template to retrieve. If not provided then all available templates will be returned.
+      isArray: false
+      name: template_name
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the templates to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing templates. This must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of available templates. (To be used only in Panorama instances).
+    name: pan-os-list-templates
+    outputs:
+    - contextPath: Panorama.Template.Name
+      description: The name of the template.
+      type: String
+    - contextPath: Panorama.Template.Description
+      description: The description of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Name
+      description: The variable name of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Type
+      description: The type of template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Value
+      description: The value of the variable of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Description
+      description: The description of the variable of the template.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false
   longRunning: false
