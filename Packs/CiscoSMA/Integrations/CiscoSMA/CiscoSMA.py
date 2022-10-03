@@ -74,7 +74,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if "401" in str(e):
+            if e.res.status_code == 401:                
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
                 )
@@ -727,10 +727,10 @@ def validate_pagination_arguments(page: int, page_size: int, limit: int):
             )
 
         if page < MIN_PAGE_NUMBER:
-            raise ValueError(f"page argument must be greater than {MIN_PAGE_NUMBER}.")
+            raise ValueError(f"page argument must be equal or greater than {MIN_PAGE_NUMBER}.")
     else:
         if limit < MIN_LIMIT:
-            raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
+            raise ValueError(f"limit argument must be equal or greater than {MIN_LIMIT}.")
 
 
 def validate_related_arguments(
@@ -781,7 +781,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
             )
     else:
         raise DemistoException(
-            'Please validate the value of argument "view_by". Valid values are recipient/sender.'
+            f'Please check the value of argument "view_by". Valid values are recipient/sender, got {view_by}.'
         )
 
     return args
@@ -873,7 +873,7 @@ def spam_quarantine_message_search_command(
     )
 
     spam_quarantine_message_lists = [
-        dict(message.get("attributes"), **{"mid": message.get("mid")})
+        dict(message.get("attributes", {}), **{"mid": message.get("mid")})
         for message in output
     ]
 
@@ -914,7 +914,7 @@ def spam_quarantine_message_get_command(
         quarantine_type, message_id
     ).get("data")
 
-    new_message = dict(response.get("attributes"), **{"mid": response.get("mid")})
+    new_message = dict(response.get("attributes", {}), **{"mid": response.get("mid")})
     readable_message = (
         f'Found spam quarantine message with ID: {new_message.get("mid")}'
     )
@@ -1245,7 +1245,7 @@ def list_entry_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
     deleted_entries = (
-        ", ".join(recipient_list) if view_by == "recipient" else ", ".join(sender_list)
+        ", ".join(recipient_list if view_by == "recipient" else sender_list)
     )
 
     return CommandResults(
@@ -1312,7 +1312,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     messages_lists = [
         dict(
-            message.get("attributes"),
+            message.get("attributes", {}),
             **{
                 "timestamp": format_timestamp(
                     dict_safe_get(message, ["attributes", "timestamp"])
@@ -1382,7 +1382,8 @@ def message_details_get_command(client: Client, args: Dict[str, Any]) -> Command
         .get("messages", {})
     )
 
-    if len(response.get("mid", [])) == 0 or "N/A" in response.get("mid"):
+    mid = response.get("mid")
+    if not mid or "N/A" in mid:
         raise DemistoException(
             f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
             f"Please check message IDs or Serial Number."
@@ -1459,7 +1460,8 @@ def message_amp_details_get_command(
         .get("messages", {})
     )
 
-    if len(response.get("mid", [])) == 0 or "N/A" in response.get("mid"):
+    mid = response.get("mid")
+    if not mid or "N/A" in mid:
         raise DemistoException(
             f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
             f"Please check message IDs or Serial Number."
@@ -1533,7 +1535,8 @@ def message_dlp_details_get_command(
         .get("messages", {})
     )
 
-    if len(response.get("mid", [])) == 0 or "N/A" in response.get("mid"):
+    mid = response.get("mid")
+    if not mid or "N/A" in mid:
         raise DemistoException(
             f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
             f"Please check message IDs or Serial Number."
@@ -1604,7 +1607,8 @@ def message_url_details_get_command(
         .get("messages", {})
     )
 
-    if len(response.get("mid", [])) == 0 or "N/A" in response.get("mid"):
+    mid = response.get("mid")
+    if not mid or "N/A" in mid:
         raise DemistoException(
             f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
             f"Please check message IDs or Serial Number."
@@ -1795,7 +1799,7 @@ def fetch_incidents(
             )
 
             incident_details = dict(
-                quarantine_message.get("attributes"),
+                quarantine_message.get("attributes", {}),
                 **{"mid": quarantine_message.get("mid"), "integration": "CiscoSMA"},
             )
             incidents.append(
@@ -1806,7 +1810,7 @@ def fetch_incidents(
                 }
             )
 
-    if len(incidents) > 0:
+    if incidents:
         start_time = incidents[-1].get("occurred")
         last_run["start_time"] = start_time
         last_run["last_minute_incident_ids"] = [

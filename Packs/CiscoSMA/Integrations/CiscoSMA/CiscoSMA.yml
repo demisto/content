@@ -10,7 +10,7 @@ configuration:
   display: Server URL
   type: 0
   required: true
-  additionalinfo: "Base URL Example: https://XXX.eu.iphmx.com"
+  additionalinfo: Base URL, e.g. https://XXX.eu.iphmx.com
 - name: credentials
   display: Username
   required: true

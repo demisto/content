@@ -8,7 +8,7 @@
     - Spam Quarantine from Quarantine types list
 
 ## Time Zone
-Time zone should be configured to GMT +00:00.
+The time zone should be configured to GMT +00:00.
 
 - In time zone configuration settings set the following:
     - Region: GMT offset
