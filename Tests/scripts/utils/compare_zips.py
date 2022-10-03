@@ -26,7 +26,7 @@ def sort_dict(dct: dict):
             try:
                 v.sort()
             except TypeError:
-                v.sort(key=lambda item: item.get('id'))
+                v.sort(key=lambda item: item.get('name'))
 
 
 def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
@@ -48,6 +48,7 @@ def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
             dir_compare.report_full_closure()
     diff_files: list[str] = []
     compare_files(dir_compare, zip1_files, zip2_files, output_path, diff_files)
+    # TODO delete tmp folders?
     return diff_files
 
 
@@ -101,7 +102,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
                     diff_files.append(file1_path.name)
 
     except Exception as e:
-        print(f'could not diff files {file}: {e}')
+        print(f'could not diff files {file1_path}:{file2_path}: {e}')
 
 
 if __name__ == '__main__':
@@ -128,5 +129,5 @@ if __name__ == '__main__':
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(channel='dmst-graph-tests',
                                   text='\n'.join(message))
-    with (output_path / 'diff.zip').open() as f:
-        slack_client.files_upload(file=f, filename='diff.zip', channels='dmst-graph-tests')
+    with (output_path / 'diff.zip').open('rb') as f:
+        slack_client.files_upload(f, channels='dmst-graph-tests')
