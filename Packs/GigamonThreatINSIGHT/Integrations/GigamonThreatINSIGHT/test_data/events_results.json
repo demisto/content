@@ -1,0 +1,27 @@
+{
+  "total": 7,
+  "events": [
+    {
+      "event_type": "observation",
+      "uuid": "2e884d0b-e2c2-11ec-9da1-02884ad11710",
+      "timestamp": "2022-06-02T10:45:12.801Z",
+      "src": {
+        "ip": "21.1.70.100",
+        "internal": true
+      },
+      "sensor_ids": [
+        "test"
+      ]
+    },
+    {
+      "event_type": "observation",
+      "uuid": "2e884d0b-e2c2-11ec-9da1-02884ad11711",
+      "timestamp": "2022-06-02T10:45:12.291Z",
+      "src": {
+        "ip": "21.1.70.100",
+        "internal": true
+      }
+    }
+  ],
+  "limit": 2
+}
