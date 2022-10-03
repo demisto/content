@@ -156,12 +156,11 @@ Searches for devices that match the query.
 ```
 #### Human Readable Output
 
-### Devices
-
-| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
-| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
+>### Devices
+>| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+>| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior
@@ -238,12 +237,11 @@ Searches for and fetches the behavior that matches the query.
 ```
 #### Human Readable Output
 
-### Behavior ID: 3206
-
-| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
-| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
-| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
-|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
+>### Behavior ID: 3206
+>| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
+>| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
+>| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
+>|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
 
  
 
@@ -382,12 +380,11 @@ or by providing the IDs of the detections.
 ```
 #### Human Readable Output
 
-### Detections Found:
-
-  |ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
-  |----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
-  |ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
-  |ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
+>### Detections Found:
+>|ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
+>|----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
+>|ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
+>|ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
 
  
 
@@ -523,10 +520,11 @@ Sends commands to hosts.
 ```
 
 #### Human Readable Output
-### Command ls C:\\ results
-|BaseCommand|Command|HostID|Stderr|Stdout|
-|---|---|---|---|---|
-| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+
+>### Command ls C:\\ results
+>|BaseCommand|Command|HostID|Stderr|Stdout|
+>|---|---|---|---|---|
+>| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 ### 8. cs-falcon-upload-script
 ---
@@ -647,10 +645,11 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
-|---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+
+>### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 12. cs-falcon-list-files
 ---
@@ -702,10 +701,11 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
-|---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+
+>### CrowdStrike Falcon files
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 13. cs-falcon-get-script
 ---
@@ -765,10 +765,11 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
-|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
-|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+
+>### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
+>|---|---|---|---|---|---|---|---|---|
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 14. cs-falcon-delete-script
@@ -841,10 +842,11 @@ Returns a list of custom script IDs that are available for the user in the `runs
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon scripts
-| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+
+>### CrowdStrike Falcon scripts
+>| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 16. cs-falcon-run-script
@@ -893,10 +895,11 @@ Runs a script on the agent host.
 ```
 
 #### Human Readable Output
-### Command runscript -Raw=Write-Output 'Hello, World! results
-|BaseCommand|Command|HostID|Stderr|Stdout|
-|---|---|---|---|---|
-| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+
+>### Command runscript -Raw=Write-Output 'Hello, World! results
+>|BaseCommand|Command|HostID|Stderr|Stdout|
+>|---|---|---|---|---|
+>| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 
 ### 17. cs-falcon-run-get-command
@@ -954,10 +957,11 @@ The running status you requested the `get` command can be checked with `cs-falco
 ```
 
 #### Human Readable Output
-### Get command has requested for a file c:\Windows\notepad.exe
-|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
-|---|---|---|---|---|---|---|---|
-| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
+
+>### Get command has requested for a file c:\Windows\notepad.exe
+>|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
+>|---|---|---|---|---|---|---|---|
+>| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
 
 
 
@@ -1022,10 +1026,11 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
-|---|---|---|---|---|---|---|---|
-| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
+
+>### CrowdStrike Falcon files
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
+>|---|---|---|---|---|---|---|---|
+>| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
 
 
 ### 19. cs-falcon-status-command
@@ -1079,10 +1084,11 @@ Get status of an executed command on a host
 ```
 
 #### Human Readable Output
-### Command status results
-|BaseCommand|Complete|Stdout|TaskID|
-|---|---|---|---|
-| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
+
+>### Command status results
+>|BaseCommand|Complete|Stdout|TaskID|
+>|---|---|---|---|
+>| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
 
 
 ### 20. cs-falcon-get-extracted-file
@@ -1188,10 +1194,11 @@ Get a list of files for the specified RTR session on a host.
 ```
 
 #### Human Readable Output
-### CrowdStrike Falcon files
-|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
-|---|---|---|---|---|---|---|---|---|
-| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
+
+>### CrowdStrike Falcon files
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
+>|---|---|---|---|---|---|---|---|---|
+>| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
 
 
 ### 22. cs-falcon-refresh-session
@@ -2104,7 +2111,8 @@ Lists incident summaries.
 >|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
 >|---|---|---|---|---|---|---|---|
 >| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
-### cs-falcon-create-host-group
+
+### 35. cs-falcon-create-host-group
 ***
 Create a host group
 
@@ -2164,7 +2172,7 @@ Create a host group
 >|---|---|---|---|---|---|---|---|
 >| api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_description | static | f82edc8a565d432a8114ebdbf255f5b2 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
 
-### cs-falcon-update-host-group
+### 36. cs-falcon-update-host-group
 ***
 Update a host group.
 
@@ -2227,7 +2235,7 @@ Update a host group.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-list-host-group-members
+### 37. cs-falcon-list-host-group-members
 ***
 Get the list of host group members.
 
@@ -2335,7 +2343,7 @@ Get the list of host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| 0bde2c4645294245aca522971ccc44c4 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
 
-### cs-falcon-add-host-group-members
+### 38. cs-falcon-add-host-group-members
 ***
 Add host group members.
 
@@ -2396,7 +2404,7 @@ Add host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-remove-host-group-members
+### 39. cs-falcon-remove-host-group-members
 ***
 Remove host group members.
 
@@ -2457,7 +2465,7 @@ Remove host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-resolve-incident
+### 40. cs-falcon-resolve-incident
 ***
 Resolve incidents
 
@@ -2484,7 +2492,7 @@ There is no context output for this command.
 
 >inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef changed successfully to Closed
 >inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
-### cs-falcon-list-host-groups
+### 41. cs-falcon-list-host-groups
 ***
 List the available host groups.
 
@@ -3063,7 +3071,7 @@ List the available host groups.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:50.175530821Z | description2 | static | 29ae859b9a01409d83bf7fb7f7a04c69 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
 
-### cs-falcon-delete-host-groups
+### 42. cs-falcon-delete-host-groups
 ***
 Delete the requested host groups.
 
@@ -3091,7 +3099,7 @@ There is no context output for this command.
 >host group id 9a7291431c3046ccb7b750240f924854 deleted successfully
 
 
-### cs-falcon-search-custom-iocs
+### 43. cs-falcon-search-custom-iocs
 ***
 Returns a list of your uploaded IOCs that match the search criteria.
 
@@ -3184,7 +3192,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 >| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
 >| 54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
-### cs-falcon-get-custom-ioc
+### 44. cs-falcon-get-custom-ioc
 ***
 Gets the full definition of one or more indicators that you are watching.
 
@@ -3256,7 +3264,7 @@ Gets the full definition of one or more indicators that you are watching.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z |  | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
-### cs-falcon-upload-custom-ioc
+### 45. cs-falcon-upload-custom-ioc
 ***
 Uploads an indicator for CrowdStrike to monitor.
 
@@ -3330,7 +3338,7 @@ Uploads an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### cs-falcon-update-custom-ioc
+### 46. cs-falcon-update-custom-ioc
 ***
 Updates an indicator for CrowdStrike to monitor.
 
@@ -3400,7 +3408,7 @@ Updates an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### cs-falcon-delete-custom-ioc
+### 47. cs-falcon-delete-custom-ioc
 ***
 Deletes a monitored indicator.
 
@@ -3427,7 +3435,7 @@ There is no context output for this command.
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
 
-### cs-falcon-batch-upload-custom-ioc
+### 48. cs-falcon-batch-upload-custom-ioc
 ***
 Uploads a batch of indicators.
 
@@ -3495,7 +3503,7 @@ Uploads a batch of indicators.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
 
-### cs-falcon-rtr-kill-process
+### 49. cs-falcon-rtr-kill-process
 
 ***
 Execute an active responder kill command on a single host.
@@ -3556,7 +3564,7 @@ Execute an active responder kill command on a single host.
 >Note: you don't see the following IDs in the results as the request was failed for them.
 > ID 123 failed as it was not found.
 
-### cs-falcon-rtr-remove-file
+### 50. cs-falcon-rtr-remove-file
 
 ***
 Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
@@ -3606,7 +3614,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 >|---|---|
 >| 15dbb9d8f06b45fe9f61eb46e829d986 | Success |
 
-### cs-falcon-rtr-list-processes
+### 51. cs-falcon-rtr-list-processes
 
 ***
 Executes an RTR active-responder ps command to get a list of active processes across the given host.
@@ -3664,7 +3672,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
 
-### cs-falcon-rtr-list-network-stats
+### 52. cs-falcon-rtr-list-network-stats
 
 ***
 Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given
@@ -3723,7 +3731,7 @@ host.
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
 
-### cs-falcon-rtr-read-registry
+### 53. cs-falcon-rtr-read-registry
 
 ***
 Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for
@@ -3790,7 +3798,7 @@ HKEY_LOCAL_MACHINE,HKEY_USERS````
 >| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
 >| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
 
-### cs-falcon-rtr-list-scheduled-tasks
+### 54. cs-falcon-rtr-list-scheduled-tasks
 
 ***
 Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is
@@ -3847,7 +3855,7 @@ There is no context output for this command.
 ---------------------------|---|
 >| TOO MUCH INFO TO DISPLAY  |
 
-### cs-falcon-rtr-retrieve-file
+### 55. cs-falcon-rtr-retrieve-file
 
 ***
 Gets the RTR extracted file contents for the specified file path.
@@ -3893,7 +3901,7 @@ Gets the RTR extracted file contents for the specified file path.
 
 > Waiting for the polling execution
 
-### cs-falcon-get-detections-for-incident
+### 56. cs-falcon-get-detections-for-incident
 ***
 Gets the detections for a specific incident.
 
