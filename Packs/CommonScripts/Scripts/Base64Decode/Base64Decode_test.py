@@ -1,16 +1,19 @@
 import pytest
 
 
-@pytest.mark.parametrize('value, expected_result', [
-    ('aGVsbG8=', 'hello'),
-    ('dGhpcw==', 'this'),
-    ('VGhpcyBpcyBhIHRlc3Q', 'This is a test'),
-    ('VGhpcyBpcyBhIHRlc3Q=', 'This is a test'),
-    (' aGVs bG 8 ', 'hello'),
-    ('', ''),
-    ('    ', ''),
-    (' ', ''),
-])
+@pytest.mark.parametrize(
+    "value, expected_result",
+    [
+        ("aGVsbG8=", "hello"),
+        ("dGhpcw==", "this"),
+        ("VGhpcyBpcyBhIHRlc3Q", "This is a test"),
+        ("VGhpcyBpcyBhIHRlc3Q=", "This is a test"),
+        (" aGVs bG 8 ", "hello"),
+        ("", ""),
+        ("    ", ""),
+        (" ", ""),
+    ],
+)
 def test_decoding(value, expected_result):
     """
     Given:
@@ -23,27 +26,24 @@ def test_decoding(value, expected_result):
         - Validating the value of the decoding process.
     """
     from Base64Decode import decode
-    actual_result = decode(value)
-    to_context = actual_result.to_context()
-    # assert to_context['HumanReadable'] == expected_result
-    assert to_context['EntryContext'] == {
-        "Base64":
-            {
-                "originalValue": value,
-                "decoded": expected_result
-            }
-    }
+
+    actual_result, output = decode(value)
+    assert actual_result == expected_result
+    assert output == {"Base64": {"originalValue": value, "decoded": expected_result}}
 
 
-@pytest.mark.parametrize('value, expected_result', [
-    ('aGVsbG80l', 'aGVsbG80l==='),
-    ('dGhpcw', 'dGhpcw=='),
-    ('VGhpcyBpcyBhIHRlc3Q', 'VGhpcyBpcyBhIHRlc3Q='),
-    ('ERVKHBEK0ejbce8IUBninli0', 'ERVKHBEK0ejbce8IUBninli0'),
-    (' ', ' '),
-    ('', ''),
-    ('   ', '   ')
-])
+@pytest.mark.parametrize(
+    "value, expected_result",
+    [
+        ("aGVsbG80l", "aGVsbG80l==="),
+        ("dGhpcw", "dGhpcw=="),
+        ("VGhpcyBpcyBhIHRlc3Q", "VGhpcyBpcyBhIHRlc3Q="),
+        ("ERVKHBEK0ejbce8IUBninli0", "ERVKHBEK0ejbce8IUBninli0"),
+        (" ", " "),
+        ("", ""),
+        ("   ", "   "),
+    ],
+)
 def test_padding(value, expected_result):
     """
     Given:
@@ -56,6 +56,7 @@ def test_padding(value, expected_result):
         - Validating the value of the padded string.
     """
     from Base64Decode import add_padding
+
     padded_result = add_padding(value=value)
 
     assert padded_result == expected_result
