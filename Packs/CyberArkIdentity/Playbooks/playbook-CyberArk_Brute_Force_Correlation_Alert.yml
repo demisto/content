@@ -1,0 +1,744 @@
+id: CyberArk - BruteForce Correlation alert
+version: -1
+name: CyberArk - BruteForce Correlation alert
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8466b61-355a-4908-8a9f-869172b02768
+    type: start
+    task:
+      id: f8466b61-355a-4908-8a9f-869172b02768
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 45e6281a-78fb-455f-8524-28d64c697a58
+    type: title
+    task:
+      id: 45e6281a-78fb-455f-8524-28d64c697a58
+      version: -1
+      name: Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7758f59b-75ab-4d87-81e5-fa9717f9efb1
+    type: title
+    task:
+      id: 7758f59b-75ab-4d87-81e5-fa9717f9efb1
+      version: -1
+      name: Source User Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9461b448-af09-43c1-8e75-5482ee5ae5ed
+    type: title
+    task:
+      id: 9461b448-af09-43c1-8e75-5482ee5ae5ed
+      version: -1
+      name: Source IP Address Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: bdc0432d-995e-49ae-8f75-63ca629f03ca
+    type: playbook
+    task:
+      id: bdc0432d-995e-49ae-8f75-63ca629f03ca
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      scriptArguments:
+        IP:
+          complex:
+            root: inputs.SrcIP
+            transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.DstIP
+                  iscontext: true
+            - operator: uniq
+        ResolveIP:
+          simple: "True"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3c9fda07-7356-4aaa-8c73-855539910ef2
+    type: condition
+    task:
+      id: 3c9fda07-7356-4aaa-8c73-855539910ef2
+      version: -1
+      name: 'Check if the User has high privileges? '
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.roles
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.roles
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.admin_roles
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c54d7d42-fd1e-471a-822e-e3a35bff69fb
+    type: condition
+    task:
+      id: c54d7d42-fd1e-471a-822e-e3a35bff69fb
+      version: -1
+      name: Lock User Account
+      description: |-
+        Lock the user account
+
+        username: ${alert.username}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      User Account Locked:
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 966e1c50-fd5e-4a96-8743-eab633bc3c21
+    type: condition
+    task:
+      id: 966e1c50-fd5e-4a96-8743-eab633bc3c21
+      version: -1
+      name: Communicate with user
+      description: |+
+        Ask the user to recognize these multiple failed logins attempts and verify that they were made by him.
+
+        Did the user, ${alert.username}, made these login attempts?
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "NO":
+      - "20"
+      "YES":
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1318dd15-e832-43ad-86f5-07fbb9e22f39
+    type: title
+    task:
+      id: 1318dd15-e832-43ad-86f5-07fbb9e22f39
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3631b2c8-ae23-47bc-8505-da6e6772de76
+    type: condition
+    task:
+      id: 3631b2c8-ae23-47bc-8505-da6e6772de76
+      version: -1
+      name: Was there a successful login?
+      description: Check if there was a successful login
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "NO":
+      - "18"
+      "YES":
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 70ab33c0-3f15-4e5c-8396-e54da55d6fb6
+    type: condition
+    task:
+      id: 70ab33c0-3f15-4e5c-8396-e54da55d6fb6
+      version: -1
+      name: Check if the user is locked?
+      description: Check if the user account is locked in CyberArk Identity portal
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "NO":
+      - "21"
+      "YES":
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 459d11fa-e7de-4bf8-818e-9f7c5ecf6e1e
+    type: condition
+    task:
+      id: 459d11fa-e7de-4bf8-818e-9f7c5ecf6e1e
+      version: -1
+      name: Continue Manual Investigation
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Done:
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8ca34664-ef56-44d5-8b3a-907e3bf1c073
+    type: title
+    task:
+      id: 8ca34664-ef56-44d5-8b3a-907e3bf1c073
+      version: -1
+      name: True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9c1d7b87-7b7d-45c9-8e7f-d058d124d075
+    type: regular
+    task:
+      id: 9c1d7b87-7b7d-45c9-8e7f-d058d124d075
+      version: -1
+      name: Close the alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      closeNotes:
+        simple: The user made these multiple failed logins
+      closeReason:
+        simple: false  positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 067f711a-5508-4242-8bff-4f624a4fe72c
+    type: title
+    task:
+      id: 067f711a-5508-4242-8bff-4f624a4fe72c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f963c7e0-d98d-4550-8339-810769c631c8
+    type: title
+    task:
+      id: f963c7e0-d98d-4550-8339-810769c631c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 323dd37e-5ec7-4c1b-8a6a-5fc783e22250
+    type: condition
+    task:
+      id: 323dd37e-5ec7-4c1b-8a6a-5fc783e22250
+      version: -1
+      name: Unlock the account
+      description: Unlock the user account from CyberArk Identity admin portal
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      User Account Unlocked:
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 1c3ecdab-51f2-4fe2-8791-c0c17100cc53
+    type: playbook
+    task:
+      id: 1c3ecdab-51f2-4fe2-8791-c0c17100cc53
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      Username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 78b28478-ccb3-4c2b-8612-6f5e96068979
+    type: condition
+    task:
+      id: 78b28478-ccb3-4c2b-8612-6f5e96068979
+      version: -1
+      name: Check if Source IP address is malicious
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Verdict
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Malicious
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_18_NO": 0.51,
+      "6_15_#default#": 0.64,
+      "6_7_yes": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1995,
+        "width": 1270,
+        "x": -100,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: AdminRoles
+  value: {}
+  required: false
+  description: List of Administrative roles
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: List of Internal IP ranges
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: This playbook investigates a “Brute Force” correlation alert by gathering user, IP information and information received from the user, to perform remediation and handle the alert.
