@@ -23,7 +23,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException)
-from Tests.scripts.collect_tests.id_set import IdSet, IdSetItem
+from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
@@ -244,9 +244,12 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions):
+    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace, PATHS.id_set_path)
+        if graph:
+            self.id_set = Graph(marketplace)
+        else:
+            self.id_set = IdSet(marketplace, PATHS.id_set_path)
         self.conf = TestConf(PATHS.conf_path)
         self.trigger_sanity_tests = False
 
@@ -524,6 +527,7 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
             private_pack_path: Optional[str] = None,
+            graph: Optional[bool] = False,
     ):
         """
 
@@ -532,7 +536,7 @@ class BranchTestCollector(TestCollector):
         :param service_account: used for comparing with the latest upload bucket
         :param private_pack_path: path to a pack, only used for content-private.
         """
-        super().__init__(marketplace)
+        super().__init__(marketplace, graph)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
@@ -970,6 +974,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
+    parser.add_argument('--graph', '-g', type=bool, help='Should use graph', default=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
@@ -979,23 +984,23 @@ if __name__ == '__main__':
     marketplace = MarketplaceVersions(args.marketplace)
     nightly = args.nightly
     service_account = args.service_account
-
+    graph = args.graph
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        collector = UploadCollector(branch_name, marketplace, service_account)
+        collector = UploadCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
         match (nightly, marketplace):
             case False, _:  # not nightly
-                collector = BranchTestCollector(branch_name, marketplace, service_account)
+                collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector()
+                collector = XSOARNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector()
+                collector = XSIAMNightlyTestCollector(graph=graph)
             case _:
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 

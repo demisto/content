@@ -5,6 +5,9 @@ from typing import Iterable, Optional
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from demisto_sdk.commands.content_graph.common import ContentType
+from demisto_sdk.commands.content_graph.objects.content_item import ContentItem
+from demisto_sdk.commands.content_graph.objects.test_playbook import TestPlaybook
+
 
 from Tests.scripts.collect_tests.constants import \
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
@@ -38,6 +41,19 @@ class IdSetItem(DictBased):
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
+
+    @classmethod
+    def from_model(cls, model: ContentItem):
+        pack_path = cls._calculate_pack_path(model.path)
+        pack_id = pack_path.name
+        return cls(id=model.object_id,
+                   file_path_str=str(model.path),
+                   path=model.path,
+                   name=model.name,
+                   pack_id=pack_id,
+                   pack_path=pack_path,
+                   deprecated=model.deprecated,
+                   )
 
     @property
     def integrations(self):
@@ -156,8 +172,24 @@ class IdSet(DictFileBased):
 class Graph:
     def __init__(self, marketplace: MarketplaceVersions) -> None:
         with Neo4jContentGraphInterface() as content_graph_interface:
-            self.integrations = content_graph_interface.search_nodes(marketplace=marketplace,
-                                                                     content_type=ContentType.INTEGRATION)
-            self.scripts = content_graph_interface.search_nodes(marketplace=marketplace,
-                                                                content_type=ContentType.SCRIPT)
-            self.content_items_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
+
+            integrations = content_graph_interface.search_nodes(marketplace=marketplace,
+                                                                content_type=ContentType.INTEGRATION)
+            scripts = content_graph_interface.search_nodes(marketplace=marketplace,
+                                                           content_type=ContentType.SCRIPT)
+            test_playbooks = content_graph_interface.search_nodes(marketplace=marketplace,
+                                                                  content_type=ContentType.TEST_PLAYBOOK)
+            # maps content_items to test playbook where they are used recursively
+            content_items_to_tests: dict[ContentItem, list[TestPlaybook]
+                                         ] = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
+
+            self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
+            self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
+            self.id_to_test_playbooks = {
+                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+            self.implemented_playbooks_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
+                                                   for item, tests in content_items_to_tests.items()
+                                                   if item.content_type == ContentType.PLAYBOOK}
+            self.implemented_scripts_to_tests = {item.object_id: tests for item,
+                                                 tests in content_items_to_tests.items() if
+                                                 item.content_type == ContentType.SCRIPT}

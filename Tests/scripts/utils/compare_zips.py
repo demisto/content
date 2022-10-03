@@ -1,6 +1,5 @@
 # function to compare two zip files
 
-# %%
 import argparse
 import filecmp
 import json
@@ -30,7 +29,21 @@ def sort_dict(dct: dict):
                 v.sort(key=lambda item: item.get('name'))
 
 
-def compare_dirs(dir1: str, dir2: str, output_path: Path):
+def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path: Path) -> bool:
+    with index_id_set_path.open() as f1, index_graph_path.open() as f2:
+        index_id_set = json.load(f1)
+        index_graph = json.load(f2)
+        sort_dict(index_id_set)
+        sort_dict(index_graph)
+        diff_list = dictdiffer.diff(index_id_set, index_graph)
+    if diff_list:
+        with output_path.open('w') as output:
+            json.dump(diff_list, output, indent=4)
+        return True
+    return False
+
+
+def compare_dirs(dir1: str, dir2: str, output_path: Path) -> list[str]:
     dir_compare = filecmp.dircmp(dir1, dir2)
     full_report_path = output_path / 'full_report.log'
     with open(full_report_path, 'w') as f:
@@ -116,6 +129,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--zip-id-set', help='id_set zip file to compare')
     parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
+    parser.add_argument('--index-id-set', help='id set index')
+    parser.add_argument('--index-graph', help='graph index')
+    parser.add_argument('--marketplace', '--mp', help='Marketplace to use')
     parser.add_argument('--output-path', help='Output path')
     parser.add_argument('--slack-token', '-s', help='Slack token', required=False)
 
@@ -124,21 +140,26 @@ def main():
     zip_graph = Path(args.zip_graph)
     output_path = Path(args.output_path)
     slack_token = args.slack_token
+    index_id_set_path = Path(args.index_id_set)
+    index_graph_path = Path(args.index_graph)
+    marketplace = args.marketplace
     output_path.mkdir(exist_ok=True, parents=True)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
     dir_cmp.report_full_closure()
-    message = [f'JOB URL: {os.getenv("CI_JOB_URL")}. Zip difference for {output_path}']
+    message = [f'Diff report for {marketplace}', f'Job URL: {os.getenv("CI_JOB_URL")}', f'Zip difference for {output_path}']
     for file in dir_cmp.common_files:
         pack = file.removesuffix('.zip')
         diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
         message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
-    shutil.make_archive(str(output_path / 'diff'), 'zip', output_path)
+    if compare_indexes(index_id_set_path, index_graph_path, output_path / 'index-diff.json'):
+        message.append('index.json is also different')
+    shutil.make_archive(str(output_path / f'diff-{marketplace}'), 'zip', output_path)
     if slack_token:
         slack_client = WebClient(token=slack_token)
         slack_client.chat_postMessage(channel='dmst-graph-tests',
                                       text='\n'.join(message))
-        slack_client.files_upload(file=str(output_path / 'diff.zip'), channels='dmst-graph-tests')
+        slack_client.files_upload(file=str(output_path / f'diff-{marketplace}.zip'), channels='dmst-graph-tests')
 
 
 if __name__ == '__main__':

@@ -45,22 +45,19 @@ graph-create-instances:
     #   fi
     # - section_end "Collect Tests and Content Packs"
 
-    # - section_start "Collect Tests V2"
-    # - |
-    #   if [ -n "${INSTANCE_TESTS}" ]; then
-    #     echo "Skipping - not running in INSTANCE_TESTS build"
-    #   else
-    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #     python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-    #   fi
-    # - section_end "Collect Tests V2"
+    - section_start "Collect Tests V2"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
+      fi
+    - section_end "Collect Tests V2"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
     
-    # this replaces @dorschw collect tests
-    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
-
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
@@ -115,13 +112,15 @@ graph-prepare-testing-bucket-mpv2:
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
-    # - section_start "Collect Tests and Content Packs"
-    # - |
-    #   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #   python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    # - section_end "Collect Tests and Content Packs"
-
-    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+    - section_start "Collect Tests V2"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
+      fi
+    - section_end "Collect Tests V2"
 
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
@@ -140,7 +139,7 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_MPV2/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_MPV2/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-graph --index-id-set $ARTIFACTS_FOLDER_XSOAR/index-id-set.json --index-graph $ARTIFACTS_FOLDER_XSOAR/index-graph.json --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_MPV2/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_MPV2/uploaded_packs-graph --index-id-set $ARTIFACTS_FOLDER_MPV2/index-id-set.json --index-graph $ARTIFACTS_FOLDER_MPV2/index-graph.json --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
 
 
