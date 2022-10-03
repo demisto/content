@@ -367,6 +367,86 @@ def extract_objects_info_by_key(_entry, _key):
     return None
 
 
+def build_body_request_to_edit_pan_os_object(
+    behavior,
+    object_name,
+    element_value,
+    is_listable,
+    xpath='',
+    should_contain_entries=True,
+    is_entry=False,
+    is_empty_tag=False,
+    is_commit_required=True
+):
+    """
+    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
+    the requested behavior and a full xpath to the object.
+
+    Args:
+        behavior (str): must be one of add/remove/replace.
+        object_name (str): the name of the object that needs to be updated.
+        element_value (str): the value of the new element.
+        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
+        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
+        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+        is_entry (bool): whether the element should be of the following form:
+            <entry name="{entry_name}"/>
+        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
+        is_commit_required (bool): whether a commit is required when trying to add pan-os-object.
+
+    Returns:
+        dict: a body request for the new object to update it.
+    """
+
+    if behavior not in {'replace', 'remove', 'add'}:
+        raise ValueError(f'behavior argument must be one of replace/remove/add values')
+
+    if behavior == 'replace':
+        element = prepare_pan_os_objects_body_request(
+            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
+    else:  # add or remove is only for listable objects.
+        current_objects_items = panorama_get_current_element(
+            element_to_change=object_name, xpath=xpath, is_commit_required=is_commit_required
+        )
+        if behavior == 'add':
+            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
+        else:  # remove
+            updated_object_items = [item for item in current_objects_items if item not in argToList(element_value)]
+            if not updated_object_items and should_contain_entries:
+                raise DemistoException(f'The object: {object_name} must have at least one item.')
+
+        element = prepare_pan_os_objects_body_request(
+            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
+
+    return element
+
+
+def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
+    if is_entry:
+        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
+    if is_empty_tag:
+        return {key: f'<{value}/>'}
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def dict_to_xml(_dictionary, contains_xml_chars=False):
+    """
+    Transforms a dict object to an XML string.
+
+    Args:
+        _dictionary (dict): the dict to parse into XML
+        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
+
+    Returns:
+        str: the dict representation in XML.
+    """
+    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    if contains_xml_chars:
+        return xml.replace('&gt;', '>').replace('&lt;', '<')
+    return xml
+
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
@@ -11761,22 +11841,6 @@ def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
     return http_request(URL, 'POST', params=params)
 
 
-def extract_objects_info_by_key(_entry, _key):
-
-    if isinstance(_entry, dict):
-        key_info = _entry.get(_key)
-        if not key_info:  # api could not return the key
-            return None
-
-        if isinstance(key_info, dict) and (_member := key_info.get('member')):
-            return _member
-        elif isinstance(key_info, str):
-            return key_info
-    elif isinstance(_entry, list):
-        return [item.get(_key) for item in _entry]
-    return None
-
-
 def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
 
     if show_uncommitted:
@@ -11829,22 +11893,6 @@ def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
         )
 
     return human_readable, context
-
-
-def do_pagination(
-    entries,
-    page: Optional[int] = None,
-    page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
-    limit: int = DEFAULT_LIMIT_PAGE_SIZE
-):
-    if page is not None:
-        if page <= 0:
-            raise DemistoException(f'page {page} must be a positive number')
-        entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
-        entries = entries[:limit]
-
-    return entries
 
 
 def pan_os_list_virtual_routers_command(args):
@@ -11965,31 +12013,6 @@ def pan_os_list_redistribution_profile_command(args):
     )
 
 
-def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
-    if is_entry:
-        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
-    if is_empty_tag:
-        return {key: f'<{value}/>'}
-    return {key: {'member': argToList(value)}} if is_list else {key: value}
-
-
-def dict_to_xml(_dictionary, contains_xml_chars=False):
-    """
-    Transforms a dict object to an XML string.
-
-    Args:
-        _dictionary (dict): the dict to parse into XML
-        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
-
-    Returns:
-        str: the dict representation in XML.
-    """
-    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
-    if contains_xml_chars:
-        return xml.replace('&gt;', '>').replace('&lt;', '<')
-    return xml
-
-
 def pan_os_create_redistribution_profile(args):
     def _set_up_body_request():
         def _set_up_ospf_filter_body_request():
@@ -12101,62 +12124,6 @@ def pan_os_edit_redistribution_profile(
     }
 
     return http_request(URL, 'POST', params=params)
-
-
-def build_body_request_to_edit_pan_os_object(
-    behavior,
-    object_name,
-    element_value,
-    is_listable,
-    xpath='',
-    should_contain_entries=True,
-    is_entry=False,
-    is_empty_tag=False,
-    is_commit_required=True
-):
-    """
-    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
-    the requested behavior and a full xpath to the object.
-
-    Args:
-        behavior (str): must be one of add/remove/replace.
-        object_name (str): the name of the object that needs to be updated.
-        element_value (str): the value of the new element.
-        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
-        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
-        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
-        is_entry (bool): whether the element should be of the following form:
-            <entry name="{entry_name}"/>
-        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
-        is_commit_required (bool): whether a commit is required when trying to add pan-os-object.
-
-    Returns:
-        dict: a body request for the new object to update it.
-    """
-
-    if behavior not in {'replace', 'remove', 'add'}:
-        raise ValueError(f'behavior argument must be one of replace/remove/add values')
-
-    if behavior == 'replace':
-        element = prepare_pan_os_objects_body_request(
-            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
-        )
-    else:  # add or remove is only for listable objects.
-        current_objects_items = panorama_get_current_element(
-            element_to_change=object_name, xpath=xpath, is_commit_required=is_commit_required
-        )
-        if behavior == 'add':
-            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
-        else:  # remove
-            updated_object_items = [item for item in current_objects_items if item not in argToList(element_value)]
-            if not updated_object_items and should_contain_entries:
-                raise DemistoException(f'The object: {object_name} must have at least one item.')
-
-        element = prepare_pan_os_objects_body_request(
-            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
-        )
-
-    return element
 
 
 def pan_os_edit_redistribution_profile_command(args):
