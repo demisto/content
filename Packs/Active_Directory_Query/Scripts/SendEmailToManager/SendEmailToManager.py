@@ -33,8 +33,8 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
         demisto.results(response)
         sys.exit(0)
 
-    if not (type(response == list and type(response[0].get('Contents')) == list
-                 and type(response[0]['Contents'][0]) == dict)):
+    if not (type(response) == list and type(response[0].get('Contents')) == list
+            and type(response[0]['Contents'][0]) == dict):
         demisto.results('Unable to find manager email.')
         sys.exit(0)
 
