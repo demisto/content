@@ -547,7 +547,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable = tableToMarkdown('List Issues', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
-        outputs_key_field='id',
+        outputs_key_field='iid',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -561,8 +561,9 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
             - 'state': The state of the issue.
-            - 'labels': Retrieve only issues with the given labels.
-            - 'assignee_username': Retrieve issues by assignee username.
+            - 'labels': Create issue with the given labels.
+            - 'title': Create issue with given title.
+            - 'description': Create issue with the given description.
 
     Returns:
         (CommandResults).
@@ -585,7 +586,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     human_readable = tableToMarkdown('Created Issue', human_readable_dict, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
-        outputs_key_field='Iid',
+        outputs_key_field='iid',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -593,6 +594,17 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates new branch.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'branch': The name of the new branch.
+            - 'ref': The current branch.
+
+    Returns:
+        (CommandResults).
+    """
     branch = args.get('branch', '')
     ref = args.get('ref', '')
     headers = ['Title', 'CommitShortId', 'CommitTitle', 'CreatedAt', 'IsMerge', 'IsProtected']
@@ -608,7 +620,7 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     human_readable = tableToMarkdown('Create Branch', human_readable_dict, headers=headers)
     command_results = CommandResults(
         outputs_prefix='GitLab.Branch',
-        outputs_key_field='CommitShortId',
+        outputs_key_field='short_id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -617,12 +629,21 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes branch.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+        - branch: branch name to delete.
+
+    Returns:
+        (CommandResults).
+    """
     branch = str(args.get('branch', ''))
     response = client.branch_delete_request(branch)
     human_readable_string = 'Branch deleted successfully'
     command_results = CommandResults(
         readable_output=human_readable_string,
-        outputs_key_field='',
         outputs=response,
         raw_response=response
     )
@@ -688,9 +709,12 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
-            - 'state': The state of the issue.
-            - 'labels': Retrieve only issues with the given labels.
-            - 'assignee_username': Retrieve issues by assignee username.
+            - 'issue_iid': The iid of the issue.
+
+        [at least one of the following args is needed for the opertion to be successfull:
+            'add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked',
+            'due_date', 'epic_id', 'epic_iid', 'issue_type', 'milestone_id', 'remove_labels',
+            'state_event', 'title']
 
     Returns:
         (CommandResults).
@@ -716,7 +740,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     human_readable = tableToMarkdown('Update Issue', human_readable_dict, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
-        outputs_key_field='Iid',
+        outputs_key_field='iid',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -814,6 +838,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable_string = 'File created successfully'
     return CommandResults(
         outputs_prefix='GitLab.File',
+        outputs_key_field='path',
         readable_output=human_readable_string,
         outputs=response,
         raw_response=response
@@ -822,7 +847,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    updating a file.
+    Updating a file.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR required arguments:
@@ -859,6 +884,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable_str = 'File updated successfully'
     return CommandResults(
         outputs_prefix='GitLab.File',
+        outputs_key_field='path',
         readable_output=human_readable_str,
         outputs=response,
         raw_response=response
@@ -883,6 +909,7 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable_string = 'File deleted successfully'
     command_results = CommandResults(
         outputs_prefix='GitLab.File',
+        outputs_key_field='path',
         readable_output=human_readable_string,
         outputs=response,
         raw_response=response
@@ -935,7 +962,7 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Commit',
-        outputs_key_field='ShortId',
+        outputs_key_field='short_id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -981,7 +1008,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Branch',
-        outputs_key_field='ShortId',
+        outputs_key_field='short_id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1028,7 +1055,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Group',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1055,6 +1082,7 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     human_readable_str = 'Issue note created successfully'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
+        outputs_key_field='id',
         readable_output=human_readable_str,
         outputs=response,
         raw_response=response
@@ -1063,7 +1091,7 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def issue_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    deletes an issue note.
+    Deletes an issue note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1084,7 +1112,7 @@ def issue_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    updating an issue note.
+    Updating an issue note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1104,7 +1132,7 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     human_readable_str = 'Issue note updated was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
-        outputs_key_field='issue_id',
+        outputs_key_field='id',
         readable_output=human_readable_str,
         outputs=response,
         raw_response=response
@@ -1147,7 +1175,7 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     human_readable = tableToMarkdown('List Issue notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1212,7 +1240,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     human_readable = tableToMarkdown('List Merge requests', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
-        outputs_key_field='Iid',
+        outputs_key_field='iid',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1262,13 +1290,11 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def merge_request_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    updating an merge request.
+    Updating an merge request.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
-            - 'state': The state of the issue.
-            - 'labels': Retrieve only issues with the given labels.
-            - 'assignee_username': Retrieve issues by assignee username.
+            - 'merge_request_id': The id of the merge request to update.
 
     Returns:
         (CommandResults).
@@ -1345,7 +1371,7 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
     human_readable = tableToMarkdown('List Merge Issue Notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1369,7 +1395,7 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
     human_readable_str = 'Merge request note created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable_str,
         outputs=response,
         raw_response=response
@@ -1396,7 +1422,7 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
     human_readable_str = 'Merge request note was updated successfully'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable_str,
         outputs=response,
         raw_response=response
@@ -1439,7 +1465,7 @@ def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     human_readable = tableToMarkdown('List Group Member', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.GroupMember',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response
@@ -1505,7 +1531,7 @@ def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     human_readable = tableToMarkdown('List Users', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.User',
-        outputs_key_field='Id',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=response,
         raw_response=response

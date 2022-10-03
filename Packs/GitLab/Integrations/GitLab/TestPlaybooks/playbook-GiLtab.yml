@@ -1,6 +1,5 @@
 id: GitLab-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GitLab-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "86"
@@ -70,14 +70,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ebc1362f-b8c1-4d82-8585-bf38b2c4e8f5
+    taskid: 0e5392c2-9cf2-4407-82e5-91dd2551d86c
     type: regular
     task:
-      id: ebc1362f-b8c1-4d82-8585-bf38b2c4e8f5
+      id: 0e5392c2-9cf2-4407-82e5-91dd2551d86c
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark
-        an issue as closed. The id can be taken from gitlab-issue-list.
+      description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
       script: '|||gitlab-issue-update'
       type: regular
       iscommand: true
@@ -89,7 +88,7 @@ tasks:
       add_labels:
         simple: GitlabLabel5
       description:
-        simple: Pica
+        simple: desc after change by playbook
       issue_iid:
         simple: ${GitLab.Issue.iid}
       title:
@@ -197,6 +196,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -263,7 +263,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "79"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -315,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1670
+          "x": 830,
+          "y": 1750
         }
       }
     note: false
@@ -328,10 +328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9517cbe6-5748-406f-8236-72603bd978d0
+    taskid: b36ef0c3-53a5-48c3-8327-506a61df531c
     type: regular
     task:
-      id: 9517cbe6-5748-406f-8236-72603bd978d0
+      id: b36ef0c3-53a5-48c3-8327-506a61df531c
       version: -1
       name: issue-note-list
       description: Gets a list of all notes for a single issue.
@@ -409,8 +409,7 @@ tasks:
       id: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
       version: -1
       name: Get Version
-      description: Retrieve version information for this GitLab instance. Responds
-        200 OK for authenticated users.
+      description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
       script: '|||gitlab-version-get'
       type: regular
       iscommand: true
@@ -625,10 +624,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2896cec4-ccd9-4c34-816d-fc3cf8d75988
+    taskid: 978f401a-11f7-46d9-882e-c4549ce4e647
     type: regular
     task:
-      id: 2896cec4-ccd9-4c34-816d-fc3cf8d75988
+      id: 978f401a-11f7-46d9-882e-c4549ce4e647
       version: -1
       name: delete issue-note
       description: Deletes an existing note of an issue.
@@ -641,16 +640,16 @@ tasks:
       - "25"
     scriptarguments:
       issue_iid:
-        simple: ${issue_iid}
+        simple: ${GitLab.Issue.iid}
       note_id:
-        simple: ${issue_note_id}
+        simple: ${GitLab.IssueNote.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1810
+          "x": 870,
+          "y": 1910
         }
       }
     note: false
@@ -686,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1990
+          "x": 840,
+          "y": 2070
         }
       }
     note: false
@@ -705,8 +704,7 @@ tasks:
       id: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, sorted by name
-        alphabetically.
+      description: Get a list of repository branches from a project, sorted by name alphabetically.
       script: '|||gitlab-branch-list'
       type: regular
       iscommand: true
@@ -898,7 +896,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "82"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -925,14 +923,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b626b060-e5a6-413f-8c2a-7c30b58f950b
+    taskid: ae449056-95fe-47c4-8934-9589d4c209c8
     type: regular
     task:
-      id: b626b060-e5a6-413f-8c2a-7c30b58f950b
+      id: ae449056-95fe-47c4-8934-9589d4c209c8
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch,
-        title, or even close the MR.
+      description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
       script: '|||gitlab-merge-request-update'
       type: regular
       iscommand: true
@@ -946,7 +943,7 @@ tasks:
       description:
         simple: descc
       merge_request_id:
-        simple: ${merge_request_iid}
+        simple: ${GitLab.MergeRequest.iid}
       target_branch:
         simple: main
       title:
@@ -956,7 +953,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
+          "x": 840,
           "y": 3720
         }
       }
@@ -1095,9 +1092,7 @@ tasks:
       id: 5241325c-bc7d-4488-89d4-17a93a8a8684
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed
-        without authentication, only public groups are returned. By default, this
-        request returns 20 results at a time because the API results are paginated
+      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
       script: '|||gitlab-group-list'
       type: regular
       iscommand: true
@@ -1170,8 +1165,7 @@ tasks:
       id: e0628c3c-f912-491b-834a-1ff76337ed3b
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated
-        user.
+      description: Gets a list of group or project members viewable by the authenticated user.
       script: '|||gitlab-group-member-list'
       type: regular
       iscommand: true
@@ -1244,9 +1238,7 @@ tasks:
       id: e2300d70-3fda-436d-8d65-3dd265805ef7
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated
-        user. When accessed without authentication, only public projects with simple
-        fields are returned.
+      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
       script: '|||gitlab-project-list'
       type: regular
       iscommand: true
@@ -1437,8 +1429,7 @@ tasks:
       id: 59d60a03-3f33-480a-8a7e-7178844be05e
       version: -1
       name: File get
-      description: Allows to receive information about file in repository like name,
-        size, content.
+      description: Allows to receive information about file in repository like name, size, content.
       script: '|||gitlab-file-get'
       type: regular
       iscommand: true
@@ -1546,10 +1537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: d5b949a7-2e73-4622-8b3f-d87f61440667
+    taskid: e1e73c4c-bc19-4619-8c0c-8a24b7dc5ca1
     type: regular
     task:
-      id: d5b949a7-2e73-4622-8b3f-d87f61440667
+      id: e1e73c4c-bc19-4619-8c0c-8a24b7dc5ca1
       version: -1
       name: merge request note create
       description: Creates a new note for a single merge request.
@@ -1564,7 +1555,7 @@ tasks:
       body:
         simple: ${RandomString}
       merge_request_iid:
-        simple: ${merge_request_iid}
+        simple: ${GitLab.MergeRequest.iid}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1594,7 +1585,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "83"
+      - "68"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1623,10 +1614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 08c6f546-1117-4d6e-88cb-140dd9e0ca8b
+    taskid: ea1017e3-0b49-41a0-8f7e-cebff0ffc9b5
     type: regular
     task:
-      id: 08c6f546-1117-4d6e-88cb-140dd9e0ca8b
+      id: ea1017e3-0b49-41a0-8f7e-cebff0ffc9b5
       version: -1
       name: 'merge request note update '
       description: Modify existing note of a merge request.
@@ -1641,9 +1632,9 @@ tasks:
       body:
         simple: update from playbook
       merge_request_iid:
-        simple: ${merge_request_iid}
+        simple: ${GitLab.MergeRequest.iid}
       note_id:
-        simple: ${merge_request_note_id}
+        simple: ${GitLab.MergeRequestNote.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1662,10 +1653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 041fb813-0b71-4f65-81de-7a70fa6b2703
+    taskid: 06328d19-89de-4e33-84ff-a81b0e7d5d90
     type: regular
     task:
-      id: 041fb813-0b71-4f65-81de-7a70fa6b2703
+      id: 06328d19-89de-4e33-84ff-a81b0e7d5d90
       version: -1
       name: 'merge request note delete '
       description: Deletes an existing note of a merge request.
@@ -1678,9 +1669,9 @@ tasks:
       - "64"
     scriptarguments:
       merge_request_iid:
-        simple: ${merge_request_iid}
+        simple: ${GitLab.MergeRequest.iid}
       note_id:
-        simple: ${merge_request_note_id}
+        simple: ${GitLab.MergeRequestNote.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1699,10 +1690,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 74ba7ec5-55fa-45d8-8e34-7b4a74f35c3c
+    taskid: 000cac27-7048-4b15-8e4a-bf042e565f68
     type: regular
     task:
-      id: 74ba7ec5-55fa-45d8-8e34-7b4a74f35c3c
+      id: 000cac27-7048-4b15-8e4a-bf042e565f68
       version: -1
       name: merge request note list
       description: Gets a list of all notes for a single merge request.
@@ -1717,7 +1708,7 @@ tasks:
       limit:
         simple: "1"
       merge_request_iid:
-        simple: ${merge_request_iid}
+        simple: ${GitLab.MergeRequest.iid}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1899,8 +1890,7 @@ tasks:
       id: cda89375-22ff-4fa2-866e-0aee54c88722
       version: -1
       name: file-create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       script: '|||gitlab-file-create'
       type: regular
       iscommand: true
@@ -1943,8 +1933,7 @@ tasks:
       id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -2059,88 +2048,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
-    taskid: 63c40424-3f2e-4df2-8d2b-51a0188df937
-    type: regular
-    task:
-      id: 63c40424-3f2e-4df2-8d2b-51a0188df937
-      version: -1
-      name: issue-note_id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's
-        context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "80"
-    scriptarguments:
-      key:
-        simple: issue_note_id
-      value:
-        simple: ${GitLab.IssueNote.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 830,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "80":
-    id: "80"
-    taskid: b14f9c49-9a3f-467e-841e-e44faeb4fe93
-    type: regular
-    task:
-      id: b14f9c49-9a3f-467e-841e-e44faeb4fe93
-      version: -1
-      name: issue id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's
-        context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      key:
-        simple: issue_iid
-      value:
-        simple: ${GitLab.IssueNote.noteable_iid}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 830,
-          "y": 1130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 9c85a0cd-7a99-470c-8279-be7bd34878c7
+    taskid: 7a3a78e2-3e43-437e-8b30-d92e63a737a7
     type: regular
     task:
-      id: 9c85a0cd-7a99-470c-8279-be7bd34878c7
+      id: 7a3a78e2-3e43-437e-8b30-d92e63a737a7
       version: -1
       name: issue note update
       description: Modify existing note of an issue.
@@ -2155,9 +2068,9 @@ tasks:
       body:
         simple: changeed
       issue_iid:
-        simple: ${issue_iid}
+        simple: ${GitLab.Issue.iid}
       note_id:
-        simple: ${issue_note_id}
+        simple: ${GitLab.IssueNote.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2165,82 +2078,6 @@ tasks:
         "position": {
           "x": 830,
           "y": 1620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "82":
-    id: "82"
-    taskid: 45533628-d57e-4f6c-8e10-4e71aefbe580
-    type: regular
-    task:
-      id: 45533628-d57e-4f6c-8e10-4e71aefbe580
-      version: -1
-      name: merge request iid save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's
-        context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      key:
-        simple: 'merge_request_iid '
-      value:
-        simple: ${GitLab.MergeRequest.iid}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 820,
-          "y": 3570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: c1e99ede-c2ac-40fd-8e2d-7e3f0309ad1b
-    type: regular
-    task:
-      id: c1e99ede-c2ac-40fd-8e2d-7e3f0309ad1b
-      version: -1
-      name: merge request note id save
-      description: Deprecated. No available replacement. Sets key/value pair in incident's
-        context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "68"
-    scriptarguments:
-      key:
-        simple: merge_request_note_id
-      value:
-        simple: ${GitLab.MergeRequestNote.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 820,
-          "y": 4400
         }
       }
     note: false
@@ -2258,8 +2095,7 @@ tasks:
       id: 782ae94e-2a81-45e5-8d32-e7b579a99846
       version: -1
       name: Code search
-      description: Using Scope blobs. Blobs searches are performed on both filenames
-        and contents.
+      description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
       script: '|||gitlab-code-search'
       type: regular
       iscommand: true
@@ -2443,7 +2279,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 11995,
-        "width": 930,
+        "width": 450,
         "x": 800,
         "y": -4030
       }
@@ -2452,4 +2288,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: GitLab test playbook
+description: GitLab playbbok
