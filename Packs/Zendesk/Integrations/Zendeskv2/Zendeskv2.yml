@@ -637,8 +637,7 @@ script:
     description: List Zendesk tickets.
     arguments:
     - name: query
-      description: 'Query to search for tickets. For more information about the search
-        syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
+      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
     - name: ticket_id
       isArray: true
       description: The ID of a specific ticket.
@@ -1318,7 +1317,7 @@ script:
     description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
   isfetch: true
   runonce: false
   subtype: python3
