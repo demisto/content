@@ -327,8 +327,7 @@ obj = namedtuple('obj', ['name', 'id', 'type'])
 
 PARAMS_GET_TAG = [
     ({'category': 'test1', 'tag': 'tag-test'}, '1'),
-    ({'category': 'test1', 'tag': 'tag'}, None),
-    ({'category': 'tet1', 'tag': 'tag'}, None)]
+    ({'category': 'test1', 'tag': 'tag'}, None)]
 
 PARAMS_GET_VM_FILTERS = [
     ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},

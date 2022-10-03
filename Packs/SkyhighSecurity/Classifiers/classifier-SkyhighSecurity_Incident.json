@@ -1,0 +1,45 @@
+{
+    "defaultIncidentType": "Skyhigh Security Alert",
+    "description": "",
+    "feed": false,
+    "id": "Skyhigh Security Incident",
+    "keyTypeMap": {
+        "Alert": "Skyhigh Security Alert",
+        "Threat": "Skyhigh Security Threat"
+    },
+    "name": "Skyhigh Security Incident",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "incidentGroup",
+            "transformers": [
+                {
+                    "args": {
+                        "delimiter": {
+                            "value": {
+                                "simple": "."
+                            }
+                        }
+                    },
+                    "operator": "split"
+                },
+                {
+                    "args": {
+                        "index": {
+                            "value": {
+                                "simple": "0"
+                            }
+                        }
+                    },
+                    "operator": "atIndex"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

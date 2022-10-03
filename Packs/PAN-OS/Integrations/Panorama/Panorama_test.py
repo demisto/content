@@ -1267,6 +1267,50 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
     }
 
 
+def test_panorama_list_edls_command_main_flow(mocker):
+    """
+    Given
+     - integrations parameters.
+     - EDLs from panorama (including un-committed).
+
+    When -
+        running the pan-os-list-edls command through the main flow.
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the http request was sent as expected.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-list-edls')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value=load_json('test_data/list-edls-including-un-committed-edl.json')
+    )
+
+    result = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'get', 'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='Lab-Devices']/external-list/entry",
+        'key': 'thisisabogusAPIKEY!'
+    }
+
+    assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+        {
+            'Name': 'test-1', 'Type': 'domain', 'URL': 'http://test.com',
+            'Recurring': 'hourly', 'DeviceGroup': 'Lab-Devices'
+        },
+        {
+            'Name': 'test-2', 'Type': 'ip', 'URL': 'http://test1.com',
+            'Recurring': 'five-minute', 'DeviceGroup': 'Lab-Devices'
+        }
+    ]
+
+
 def test_panorama_edit_edl_command_main_flow(mocker):
     """
     Given
@@ -3426,3 +3470,73 @@ def test_pan_os_get_merged_config(mocker):
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
+
+
+class TestPanOSListTemplatesCommand:
+
+    def test_pan_os_list_templates_main_flow(self, mocker):
+        """
+        Given:
+         - Panorama instance configuration.
+
+        When:
+         - running the pan-os-list-templates through the main flow.
+
+        Then:
+         - make sure the context output is parsed correctly.
+         - make sure the xpath and the request is correct.
+        """
+        from Panorama import main
+
+        mock_request = mocker.patch(
+            "Panorama.http_request", return_value=load_json('test_data/list_templates_including_uncommitted.json')
+        )
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(demisto, 'args', return_value={})
+        mocker.patch.object(demisto, 'command', return_value='pan-os-list-templates')
+        result = mocker.patch('demistomock.results')
+
+        main()
+
+        assert list(result.call_args.args[0]['EntryContext'].values())[0] == [
+            {
+                'Name': 'test-1', 'Description': None,
+                'Variable': [
+                    {'Name': None, 'Type': None, 'Value': None, 'Description': None},
+                    {'Name': None, 'Type': None, 'Value': None, 'Description': None}
+                ]
+            },
+            {
+                'Name': 'test-2', 'Description': 'just a test description',
+                'Variable': [
+                    {
+                        'Name': '$variable-1', 'Type': 'ip-netmask',
+                        'Value': '1.1.1.1', 'Description': 'description for $variable-1'
+                    }
+                ]
+            }
+        ]
+
+        assert mock_request.call_args.kwargs['params'] == {
+            'type': 'config', 'action': 'get', 'key': 'thisisabogusAPIKEY!',
+            'xpath': "/config/devices/entry[@name='localhost.localdomain']/template"
+        }
+
+    def test_pan_os_list_templates_main_flow_firewall_instance(self):
+        """
+        Given:
+         - Firewall instance configuration.
+
+        When:
+         - running the pan_os_list_templates_command function.
+
+        Then:
+         - make sure an exception is raised because hte pan-os-list-templates can run only on Panorama instances.
+        """
+        from Panorama import pan_os_list_templates_command
+        import Panorama
+
+        Panorama.VSYS = 'vsys'  # VSYS are only firewall instances
+        Panorama.DEVICE_GROUP = ''  # device-groups are only panorama instances.
+        with pytest.raises(DemistoException):
+            pan_os_list_templates_command({})

@@ -1,0 +1,479 @@
+id: Detonate URL - SecneurX Analysis
+version: -1
+name: Detonate URL - SecneurX Analysis
+description: Detonates a URL using the SecneurX Analysis integration. Returns relevant reports to the War Room and file reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7012ab9b-329c-414a-8264-49d1e18a70ad
+    type: start
+    task:
+      id: 7012ab9b-329c-414a-8264-49d1e18a70ad
+      version: -1
+      name: ""
+      description: Playbook Start Point
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2309ddb7-852c-4649-8027-994ba231337d
+    type: condition
+    task:
+      id: 2309ddb7-852c-4649-8027-994ba231337d
+      version: -1
+      name: Is SecneurX Analysis enabled?
+      description: Check if SecneurX Analysis sandbox is configured?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Secneurx Analysis
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Secneurx Analysis
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 367c88aa-12f9-4fb5-8405-1f42f81c2f48
+    type: condition
+    task:
+      id: 367c88aa-12f9-4fb5-8405-1f42f81c2f48
+      version: -1
+      name: Is there a URL to detonate?
+      description: Check if a URL is provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a6022e20-d9ab-47f6-8a17-b4a7933b4354
+    type: regular
+    task:
+      id: a6022e20-d9ab-47f6-8a17-b4a7933b4354
+      version: -1
+      name: SecneurX Analysis URL Submit
+      description: Submit the URL to SecneurX Analysis
+      script: Secneurx Analysis|||snx-analysis-submit-url
+      type: regular
+      iscommand: true
+      brand: Secneurx Analysis
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Duration:
+        complex:
+          root: inputs.Duration
+      Priority:
+        complex:
+          root: inputs.Priority
+      Reboot:
+        complex:
+          root: inputs.Reboot
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 80dac24f-5137-4e26-8e2d-161b149210ab
+    type: condition
+    task:
+      id: 80dac24f-5137-4e26-8e2d-161b149210ab
+      version: -1
+      name: Filter UUIDs?
+      description: Receive the Task UUID (unique ID) returned by the upload command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SecneurXAnalysis.SubmitURL
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: SecneurXAnalysis.SubmitURL.task_uuid
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f9196b50-540b-48bf-87be-cfd26b4f904a
+    type: title
+    task:
+      id: f9196b50-540b-48bf-87be-cfd26b4f904a
+      version: -1
+      name: Done
+      description: Playbook End Point
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a1c5fedc-75b5-45a7-8b2b-0e5a6f86c74b
+    type: regular
+    task:
+      id: a1c5fedc-75b5-45a7-8b2b-0e5a6f86c74b
+      version: -1
+      name: SecneurX Analysis Get Report
+      description: Get the detailed report of the analyzed sample.
+      script: Secneurx Analysis|||snx-analysis-get-report
+      type: regular
+      iscommand: true
+      brand: Secneurx Analysis
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      report_format:
+        complex:
+          root: inputs.ReportFormat
+      task_uuid:
+        simple: ${SecneurXAnalysis.SubmitURL.task_uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4b6e934d-47f8-4f0c-803a-242334b7ae74
+    type: playbook
+    task:
+      id: 4b6e934d-47f8-4f0c-803a-242334b7ae74
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        complex:
+          root: SecneurXAnalysis.SubmitURL
+          accessor: task_uuid
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: task_uuid
+      PollingCommandName:
+        simple: snx-analysis-get-verdict
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: SecneurXAnalysis.Verdict(val.status !== 'Completed' && val.status !== 'Failed').task_uuid
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.55,
+      "1_6_#default#": 0.1,
+      "2_3_yes": 0.46,
+      "2_6_#default#": 0.24,
+      "4_11_yes": 0.53,
+      "4_6_#default#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1425,
+        "width": 680,
+        "x": 560,
+        "y": 10
+      }
+    }
+  }
+fromversion: 6.2.0
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+  required: false
+  description: URL to detonate.
+  playbookInputQuery: null
+- key: Priority
+  value:
+    simple: Normal
+  required: false
+  description: Analysis priority. Possible values are "High" or "Normal".
+  playbookInputQuery: null
+- key: Duration
+  value:
+    simple: "120"
+  required: false
+  description: Analysis duration in seconds.
+  playbookInputQuery: null
+- key: Reboot
+  value:
+    simple: "False"
+  required: false
+  description: Reboot the system during analysis. The value should be "True" or "False".
+  playbookInputQuery: null
+- key: ReportFormat
+  value:
+    simple: json
+  required: false
+  description: 'The resource type to download. Supported values are: ["json", "html"].'
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes).
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  playbookInputQuery: null
+outputs:
+- contextPath: SecneurXAnalysis.Report.SHA256
+  description: SHA256 value of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Platform
+  description: Platform of the analyzed sample
+  type: String  
+- contextPath: SecneurXAnalysis.Report.Verdict
+  description: Summary result of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Tags
+  description: More details of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.DnsRequests
+  description: List of DNS data observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.HttpRequests
+  description: List of HTTP data observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.JA3Digests
+  description: List of JA3 data observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.ProcessCreated
+  description: Process behaviour data observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.RegistrySet
+  description: List of Registry creations observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.RegistryDeleted
+  description: List of Registry deletions observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileCreated
+  description: List of File creations observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileDropped
+  description: List of File drops observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileDeleted
+  description: List of File deletions observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileModified
+  description: List of File changes observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.IOC
+  description: List of IOC's observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Status
+  description: Analysis queued sample state
+  type: String
+tests:
+- Detonate URL - SecneurX Anlaysis - Test
