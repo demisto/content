@@ -65,7 +65,7 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
     filter_str = fr'(&(objectClass=User)(distinguishedName={additional_info["manager_dn"]}))'
     response = demisto.executeCommand('ad-search', {'filter': filter_str, 'attributes': 'displayName,mail'})
 
-    if isError(response[0]):
+    if response and isError(response[0]):
         demisto.results(response)
         sys.exit(0)
 
@@ -111,7 +111,7 @@ def generate_mail_subject(incident_subject: str, investigation_id: str, allow_re
 
         response = demisto.executeCommand('addEntitlement', params)
 
-        if isError(response[0]):
+        if response and isError(response[0]):
             demisto.results(response)
             sys.exit(0)
 
