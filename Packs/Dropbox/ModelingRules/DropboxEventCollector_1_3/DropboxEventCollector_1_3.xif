@@ -1,12 +1,3 @@
-[RULE:file_copy_events]
-filter
-    json_extract_scalar(event_type, "$['.tag']") in ("file_copy", "file_move", "file_rename", "file_save_copy_reference")
-| alter
-    xdm.target.resource.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.display_name"),
-    xdm.target.resource.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.file_id"),
-    xdm.target.resource_before.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.display_name"),
-    xdm.target.resource_before.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.file_id");
-
 [MODEL: dataset=dropbox_dropbox_raw]
 filter
     json_extract_scalar(event_category, "$['.tag']") ! = "logins"
