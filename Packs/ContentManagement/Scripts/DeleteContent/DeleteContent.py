@@ -9,15 +9,10 @@ import requests
 import json
 
 SCRIPT_NAME = 'DeleteContent'
-ALWAYS_EXCLUDED_SCRIPTS = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
-ALWAYS_EXCLUDED_PACKS_SPECIFIC = ['ContentManagement', 'CleanUpContent']
-skip_proxy()
 CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json"
-core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=False)
-ALWAYS_EXCLUDED_PACKS = json.loads(core_packs_response.text) + ALWAYS_EXCLUDED_PACKS_SPECIFIC
 
 
-def verify_search_response_in_list(response: Union[dict, str, list], name: str):
+def verify_search_response_in_list(response: Any, name: str):
     ids = [entity.get('id', '') for entity in response] if type(response) is list else []
     return False if name not in ids else name
 
@@ -80,13 +75,12 @@ class PlaybookAPI(EntityAPI):  # works
 
 
 class IntegrationAPI(EntityAPI):  # works
-
     name = 'integration'
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration/search',
-                                'body': {'page': 0, 'size': 100, 'query': f'name:{specific_id}'}},
+                                'body': {'page': 0, 'size': 100, 'query': f'name:"{specific_id}"'}},
                                fail_on_error=False)
 
     def search_all(self):
@@ -97,7 +91,7 @@ class IntegrationAPI(EntityAPI):  # works
 
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
-                               {'uri': f'/settings/integration-conf/delete',
+                               {'uri': '/settings/integration-conf/delete',
                                 'body': {'id': quote(specific_id)}},
                                fail_on_error=False)
 
@@ -112,11 +106,12 @@ class IntegrationAPI(EntityAPI):  # works
 
 class ScriptAPI(EntityAPI):  # works :)
     name = 'script'
+    always_excluded = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
                                {'uri': '/automation/search',
-                                'body': {'page': 0, 'size': 100, 'query': f'name:{specific_id}'}},
+                                'body': {'page': 0, 'size': 1, 'query': f'name:"{specific_id}"'}},
                                fail_on_error=False)
 
     def search_all(self):
@@ -166,7 +161,7 @@ class PreProcessingRuleAPI(EntityAPI):  # checked and works
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
-                               {'uri': f'/preprocess/rules'},
+                               {'uri': '/preprocess/rules'},
                                fail_on_error=False)
 
     def search_all(self):
@@ -264,7 +259,7 @@ class IncidentTypeAPI(EntityAPI):  # checked and works
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
-                               {'uri': f'/incidenttypes/export'},
+                               {'uri': '/incidenttypes/export'},
                                fail_on_error=False)
 
     def search_all(self):
@@ -274,7 +269,7 @@ class IncidentTypeAPI(EntityAPI):  # checked and works
 
     def delete_specific_id(self, specific_id: str):
         return execute_command('demisto-api-post',
-                               {'uri': f'/incidenttype/delete',
+                               {'uri': '/incidenttype/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
@@ -419,6 +414,12 @@ class ListAPI(EntityAPI):
 
 class InstalledPackAPI(EntityAPI):
     name = 'pack'
+    always_excluded = ['ContentManagement', 'CleanUpContent']
+
+    def __init__(self):
+        skip_proxy()
+        core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=False)
+        self.always_excluded = json.loads(core_packs_response.text) + self.always_excluded
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
@@ -515,10 +516,8 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     if not included_ids and not excluded_ids:
         return [], []
 
-    if entity_api.name == InstalledPackAPI.name:
-        excluded_ids += ALWAYS_EXCLUDED_PACKS
-    if entity_api.name == ScriptAPI.name:
-        excluded_ids += ALWAYS_EXCLUDED_SCRIPTS
+    if hasattr(entity_api, 'always_excluded'):
+        excluded_ids += entity_api.always_excluded  # type: ignore
 
     new_included_ids = [item for item in included_ids if item not in excluded_ids]
     demisto.debug(f'Included ids for {entity_api.name} after excluding excluded are {new_included_ids}')
@@ -535,8 +534,8 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
 
     else:
         if entity_api.name == InstalledPackAPI.name:
-            demisto.info(f'Not deleting unspecified installed packs. To delete an installed pack, '
-                         f'use the included_ids option.')
+            demisto.info('Not deleting unspecified installed packs. To delete an installed pack, '
+                         'use the included_ids option.')
             return [], []
 
         all_entities = search_for_all_entities(entity_api=entity_api)
@@ -595,6 +594,12 @@ def handle_content_enitity(entity_api: EntityAPI,
     return deletion_status, {entity_api.name: deleted_ids}, {entity_api.name: undeleted_ids}
 
 
+def handle_input_dict(input_dict: Any) -> Any:
+    if type(input_dict) == str:
+        return json.loads(input_dict)
+    return input_dict
+
+
 def get_and_delete_needed_ids(args: dict) -> CommandResults:
     """Search and delete provided ids to delete.
 
@@ -612,8 +617,8 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
             status: Deletion status (Failed/Completed/Dry run, nothing really deleted.)
     """
     dry_run = True if args.get('dry_run', 'true') == 'true' else False
-    include_ids = json.loads(args.get('include_ids_dict')) if type(args.get('include_ids_dict')) == str else args.get('include_ids_dict')
-    exclude_ids = json.loads(args.get('exclude_ids_dict')) if type(args.get('exclude_ids_dict')) == str else args.get('exclude_ids_dict')
+    include_ids = handle_input_dict(args.get('include_ids_dict'))
+    exclude_ids = handle_input_dict(args.get('exclude_ids_dict'))
 
     entities_to_delete = [InstalledPackAPI(), IntegrationAPI(), ScriptAPI(), PlaybookAPI(), IncidentFieldAPI(),
                           PreProcessingRuleAPI(), WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(),
@@ -647,7 +652,7 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(get_and_delete_needed_ids(demisto.args()))
 
@@ -656,5 +661,5 @@ def main():
                      f'\n{traceback.format_exc()}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
