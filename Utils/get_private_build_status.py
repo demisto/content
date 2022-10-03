@@ -65,6 +65,9 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
         return 'completed', 'failure', failure_steps[0].get('name')
 
     # if the job is still in progress - get the current step
+    artifacts_folder = os.getenv('ARTIFACTS_FOLDER')
+    with open(os.path.join(artifacts_folder, 'curr_job.json'), 'w') as f:
+        f.write(json.dumps(curr_job))
     curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
 
     return job_status, job_conclusion, curr_step.get('name')
