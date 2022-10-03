@@ -171,15 +171,16 @@ class Client:
                 return res
 
             try:
-                if 'image' in res.headers.get('Content-Type', ''):
+                if 'image' in res.headers.get('Content-Type', '') or 'text' in res.headers.get('Content-Type', ''):
                     filename_from_headers = res.headers.get('Content-Disposition')
                     if 'filename=' in filename_from_headers:
                         filename = filename_from_headers.split('filename=')[-1]
                     else:
                         filename = str(uuid.uuid4())
                     stored_file = fileResult(filename, res.content)
+                    file_type = 'image' if 'image' in res.headers.get('Content-Type', '') else 'file'
                     file_entry = {
-                        'Type': entryTypes['image'],
+                        'Type': entryTypes[file_type],
                         'ContentsFormat': formats['text'],
                         'File': stored_file['File'],
                         'FileID': stored_file['FileID'],
