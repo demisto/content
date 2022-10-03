@@ -1,6 +1,6 @@
 # function to compare two zip files
 
-
+# %%
 import argparse
 import filecmp
 import json
@@ -30,6 +30,18 @@ def sort_dict(dct: dict):
                 v.sort(key=lambda item: item.get('name'))
 
 
+def compare_dirs(dir1: str, dir2: str, output_path: Path):
+    dir_compare = filecmp.dircmp(dir1, dir2)
+    full_report_path = output_path / 'full_report.log'
+    with open(full_report_path, 'w') as f:
+        with redirect_stdout(f):
+            dir_compare.report_full_closure()
+    diff_files: list[str] = []
+    compare_files(dir_compare, dir1, dir2, output_path, diff_files)
+    # TODO delete tmp folders?
+    return diff_files
+
+
 def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
     """Compare two zip files content"""
     # extract zip files
@@ -42,15 +54,7 @@ def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
         zip2_content.extractall(path=zip2_files)
 
     # compare the directories
-    dir_compare = filecmp.dircmp(zip1_files, zip2_files)
-    full_report_path = output_path / 'full_report.log'
-    with open(full_report_path, 'w') as f:
-        with redirect_stdout(f):
-            dir_compare.report_full_closure()
-    diff_files: list[str] = []
-    compare_files(dir_compare, zip1_files, zip2_files, output_path, diff_files)
-    # TODO delete tmp folders?
-    return diff_files
+    return compare_dirs(zip1_files, zip2_files, output_path)
 
 
 def compare_files(dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path: Path, diff_files: list[str]):
@@ -93,8 +97,8 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
             with open(file1_path) as f1, open(file2_path) as f2:
                 dct1 = load_func(f1)
                 dct2 = load_func(f2)
-                dct1.pop('updated')
-                dct2.pop('updated')
+                dct1.pop('updated', None)
+                dct2.pop('updated', None)
                 sort_dict(dct1)
                 sort_dict(dct2)
                 diff_found = list(dictdiffer.diff(dct1, dct2))
@@ -108,13 +112,12 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
         print(f'could not diff files {file1_path}:{file2_path}: {e}')
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--zip-id-set', help='id_set zip file to compare')
     parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
     parser.add_argument('--output-path', help='Output path')
-    parser.add_argument('--slack-token', '-s', help='Slack token')
-    parser.add_argument('--pipeline-id', '-p', help='Slack token')
+    parser.add_argument('--slack-token', '-s', help='Slack token', required=False)
 
     args = parser.parse_args()
     zip_id_set = Path(args.zip_id_set)
@@ -131,7 +134,12 @@ if __name__ == '__main__':
         diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
         message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
     shutil.make_archive(str(output_path / 'diff'), 'zip', output_path)
-    slack_client = WebClient(token=slack_token)
-    slack_client.chat_postMessage(channel='dmst-graph-tests',
-                                  text='\n'.join(message))
-    slack_client.files_upload(file=str(output_path / 'diff.zip'), channels='dmst-graph-tests')
+    if slack_token:
+        slack_client = WebClient(token=slack_token)
+        slack_client.chat_postMessage(channel='dmst-graph-tests',
+                                      text='\n'.join(message))
+        slack_client.files_upload(file=str(output_path / 'diff.zip'), channels='dmst-graph-tests')
+
+
+if __name__ == '__main__':
+    main()

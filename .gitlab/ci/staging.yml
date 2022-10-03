@@ -140,7 +140,7 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER/xsoar/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER/xsoar/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER/xsoar/report -s "$SLACK_TOKEN"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER/martketplacev2/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER/marketplacev2/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER/marketplacev2/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_MPV2/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_MPV2/uploaded_packs-graph --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
 
 
