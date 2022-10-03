@@ -5,6 +5,7 @@ from functools import lru_cache
 from urllib.parse import urlencode
 from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
+from requests import Response
 from typing import Callable, Iterable, Optional, List, Union, Iterator
 
 
@@ -339,7 +340,7 @@ class ZendeskClient(BaseClient):
         super(ZendeskClient, self).__init__(base_url, auth=auth, proxy=proxy, verify=verify, headers=headers)
 
     @staticmethod
-    def error_handler(res):
+    def error_handler(res: Response) -> None:
         res.raise_for_status()
 
     def _http_request(self, method: str, url_suffix: str = '', full_url: Optional[str] = None,  # type: ignore[override]
@@ -569,7 +570,7 @@ class ZendeskClient(BaseClient):
         return self._http_request('GET', f'tickets/{ticket_id}', **kwargs)['ticket']
 
     @staticmethod
-    def __sort_params(sort: str, cursor_paging: bool = False):
+    def __get_sort_params(sort: str, cursor_paging: bool = False):
         Validators.validate_ticket_sort(sort)
         if not cursor_paging:
             # using the offest paged request
@@ -583,7 +584,7 @@ class ZendeskClient(BaseClient):
         return {'sort': CURSOR_SORTS[sort]}
 
     @staticmethod
-    def __get_tickets_url_suffix(filter: str, user_id=None):
+    def __get_tickets_url_suffix(filter: str, user_id: Optional[Union[str, int]] = None) -> str:
         match filter:
             case None:
                 return 'tickets'
@@ -620,8 +621,8 @@ class ZendeskClient(BaseClient):
                     demisto.error(f'could not retrieve ticket: {single_ticket}\n{traceback.format_exc()}')
                     error_msgs.append(f'could not retrieve ticket: {single_ticket}\n{e}')
         else:
-            can_use_cursor_paging = page_number is not None
-            sort_params = self._get_sort_params(sort, can_use_cursor_paging) if sort else None
+            can_use_cursor_paging = page_number is None
+            sort_params = self.__get_sort_params(sort, can_use_cursor_paging) if sort else None
             url_suffix = self.__get_tickets_url_suffix(filter_, user_id)
             tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
                                                params=sort_params, page_number=page_number, **kwargs))
@@ -811,15 +812,15 @@ class ZendeskClient(BaseClient):
         params = {'query': urlencode({'A': query})[2:]}
         results = []
         if page_number:
-            results = list(self.__get_spesific_page(url_suffix=f'search.json', params=params,
+            results = list(self.__get_spesific_page(url_suffix='search.json', params=params,
                            data_field_name='results', page_number=int(page_number), page_size=int(page_size)))
         else:
-            count = self._http_request('GET', url_suffix=f'search/count.json', params=params)['count']
+            count = self._http_request('GET', url_suffix='search/count.json', params=params)['count']
             limit = min(int(limit), count)
             size = min(limit, MAX_PAGE_SIZE)
             current_page = 1
             while len(results) < limit:
-                results.extend(self.__get_spesific_page(url_suffix=f'search.json', params=params,
+                results.extend(self.__get_spesific_page(url_suffix='search.json', params=params,
                                data_field_name='results', page_number=current_page, page_size=size))
                 current_page += 1
             results = results[:limit]
@@ -888,10 +889,6 @@ class ZendeskClient(BaseClient):
         ))
         demisto.incidents(tickets)
         demisto.setLastRun(created_tickets.next_run())
-
-    # @staticmethod
-    # def __reset_tickets_to_delete():
-    #     set_to_integration_context_with_retries({}, )
 
     def get_modified_remote_data(self, lastUpdate: Optional[str] = None):
         try:

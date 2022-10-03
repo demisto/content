@@ -367,7 +367,8 @@ class TestZendeskClient:
                 'json_data': None,
                 'resp_type': 'json',
                 'return_empty_response': False,
-                'url_suffix': ''
+                'url_suffix': '',
+                'error_handler': ZendeskClient.error_handler
             }
 
         def test_without_params(self, zendesk_client, mocker, default_kwargs):
