@@ -1537,5 +1537,5 @@ inputs:
   description: ''
   playbookInputQuery:
 outputs: []
-fromversion: 6.2.0
+fromversion: 6.6.0
 description: ''
