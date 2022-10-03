@@ -1,5 +1,4 @@
 import pytest
-from typing import Any
 
 
 users_list_mock = [
