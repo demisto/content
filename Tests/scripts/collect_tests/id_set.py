@@ -172,7 +172,7 @@ class IdSet(DictFileBased):
 class Graph:
     def __init__(self, marketplace: MarketplaceVersions) -> None:
         with Neo4jContentGraphInterface() as content_graph_interface:
-
+            logger.info('before query graph')
             integrations = content_graph_interface.search_nodes(marketplace=marketplace,
                                                                 content_type=ContentType.INTEGRATION)
             scripts = content_graph_interface.search_nodes(marketplace=marketplace,
@@ -183,6 +183,7 @@ class Graph:
             content_items_to_tests: dict[ContentItem, list[TestPlaybook]
                                          ] = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
 
+            logger.info('after query graph')
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbooks = {
@@ -193,3 +194,4 @@ class Graph:
             self.implemented_scripts_to_tests = {item.object_id: tests for item,
                                                  tests in content_items_to_tests.items() if
                                                  item.content_type == ContentType.SCRIPT}
+            logger.info('after query objects')
