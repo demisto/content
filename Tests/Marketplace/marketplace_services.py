@@ -2242,6 +2242,7 @@ class Pack(object):
                     elif current_directory == PackFolders.AGENT_CONFIGS.value:
                         self.add_pack_type_tags(content_item, 'AgentConfig')
                         folder_collected_items.append({
+                            'id': content_item.get('content_global_id', ''),
                             'content_global_id': content_item.get('content_global_id', ''),
                             'name': content_item.get('name', ''),
                             'os_type': content_item.get('os_type', ''),
