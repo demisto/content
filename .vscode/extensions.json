@@ -23,7 +23,8 @@
         "PKief.material-icon-theme",
         "mikestead.dotenv",
         "KevinRose.vsc-python-indent",
-        "rangav.vscode-thunder-client"
+        "rangav.vscode-thunder-client",
+        "ms-python.black-formatter"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [
