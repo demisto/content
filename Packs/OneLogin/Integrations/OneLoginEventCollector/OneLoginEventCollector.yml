@@ -20,7 +20,7 @@ configuration:
   defaultvalue: 1000
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
+  name: since
   type: 0
   defaultvalue: 3 days
   required: false
@@ -40,23 +40,47 @@ script:
   - description: Manual command to fetch events and display them.
     name: onelogin-get-events
     arguments:
-    - name: from
-      description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
-      required: false
-      isArray: false
-    - name: limit
-      required: true
-      description: Number of events to fetch
-      defaultValue: "1"
     - auto: PREDEFINED
-      defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
       isArray: false
       name: should_push_events
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
       required: true
+    - default: false
+      description: Number of results to return, maximum is 2000.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    - default: false
+      description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the OneLogin Events API call.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Occurrence time of the least recent event to include (inclusive).
+      isArray: false
+      name: since
+      defaultValue: 3 days
+      required: false
+      secret: false
+    - default: false
+      description: Occurrence time of the most recent event to include (inclusive).
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      description: The type ID of events to include. The value can be comma separated with multiple type IDs.
+      isArray: false
+      name: event_type_id
+      required: false
+      secret: false
   isfetchevents: true
   runonce: false
   script: '-'

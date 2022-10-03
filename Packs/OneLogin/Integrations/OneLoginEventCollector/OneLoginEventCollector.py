@@ -1,43 +1,94 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
 
-import requests
-from typing import Dict, Any
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+from typing import Tuple
+from dateparser import parse
+from datetime import datetime, timedelta
 
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = "onelogin"
 PRODUCT = "iam"
+DEFAULT_LIMIT = 1000
+
+
+''' HELPER FUNCTIONS '''
+
+
+def arg_to_strtime(value: Any) -> Optional[str]:
+    if datetime_obj := arg_to_datetime(value):
+        return datetime_obj.strftime(DATE_FORMAT)
+    return None
+
+
+def increase_time_with_second(timestamp):
+    date_time_timestamp = parse(timestamp)
+    if not date_time_timestamp:
+        return timestamp
+    return datetime.strftime(date_time_timestamp + timedelta(seconds=1), DATE_FORMAT)
+
+
+def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
+    """
+    Parses the given inputs into OneLogin Events API expected format.
+    """
+    query_params = {
+        'limit': arg_to_number(params.get('limit', DEFAULT_LIMIT)),
+        'since': arg_to_strtime(last_run.get('since', None) or params.get('since')),
+        'until': arg_to_strtime(params.get('until')),
+        'event_type_id': params.get('event_type_id'),
+        'after_cursor': last_run.get('after_cursor', None) or params.get('after_cursor')
+    }
+
+    return query_params
+
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def test(self, params: dict) -> dict:
-        query_params = prepare_query_params(params)
-        return self.get_logs(query_params)[0]
 
-    def get_logs(self, query_params: dict) -> Tuple:
-        raw_response = self._http_request(method='GET', url_suffix='logs', params=query_params)
-        events = raw_response.get('entries', [])
-        cursor = raw_response.get('response_metadata', {}).get('next_cursor')
+    def get_access_token(self):
+        """
+        Send request to get an access token from OneLogin.
+        """
+        res = self._http_request(method='POST', url_suffix='/auth/oauth2/v2/token',
+                                 params={'grant_type': 'client_credentials'})
 
+        if 'status' in res and res.get('status', {}).get('error'):
+            error = res.get('status', {})
+            return_error(f"Got error {error.get('code')} - {error.get('type')}.\nError message: {error.get('message')}")
+
+        demisto.debug('Succesfully got access token.')
+        return res.get('access_token')
+
+    def get_events(self, access_token: str, query_params: dict) -> Tuple:
+        """
+        Send request to get events from OneLogin.
+        """
+        self._headers['Authorization'] = f'Bearer:{access_token}'
+        raw_response = self._http_request(method='GET', url_suffix='/api/1/events', params=query_params)
+
+        status = raw_response.get('status')
+        if status.get('code') != 200 and status.get('error'):
+            demisto.error(f"Failed to get events from OneLogin API. Error message: {status.get('message')}")
+            raise Exception(f"Error code: {status.get('code')}. Error type: {status.get('type')}.\n"
+                            f"Error message: {status.get('message')}")
+
+        events = raw_response.get('data', [])
+        cursor = raw_response.get('pagination', {}).get('after_cursor')
+        demisto.debug(f'Succesfully got {len(events)} events.')
         return raw_response, events, cursor
 
-    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> Tuple:
+    def handle_pagination_first_batch(self, access_token: str, query_params: dict, last_run: dict) -> Tuple:
         """
-        Makes the first logs API call in the current fetch run.
+        Makes the first evets API call in the current fetch run.
         If `first_id` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
-        query_params['cursor'] = last_run.pop('cursor', None)
-        _, events, cursor = self.get_logs(query_params)
+        _, events, cursor = self.get_events(access_token, query_params)
         if last_run.get('first_id'):
             for idx, event in enumerate(events):
                 if event.get('id') == last_run['first_id']:
@@ -46,103 +97,102 @@ class Client(BaseClient):
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
-    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> List[dict]:
+    def fetch_events(self, access_token: str, query_params: dict, last_run: dict) -> List[dict]:
         """
-        Aggregates logs using cursor-based pagination, until one of the following occurs:
-        1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
-           In both cases, clears the cursor from the lastRun obj, updates `last_id` to know where
-           to stop in the next runs and returns the aggragated logs.
-
-        2. Reaches the user-defined limit (parameter).
-           In this case, stores the last used cursor and the id of the next event to collect (`first_id`)
+        Aggregates events using cursor-based pagination, until one of the following occurs:
+        1. Reaches the user-defined limit (parameter).
+           In this case, stores the last used `cursor` and `since` and the id of the next event to collect (`first_id`)
            and returns the events that have been accumulated so far.
+
+        2. Reaches the end of the pagination.
+           In this case, the lastRun obj will be updated with the `cursor` that will be None
+           and with a new value for `since` taken from the last event that were fetched.
 
         3. Reaches a rate limit.
            In this case, stores the last cursor used in the lastRun obj
            and returns the events that have been accumulated so far.
         """
-        aggregated_logs: List[dict] = []
+        aggregated_events: List[dict] = []
 
         user_defined_limit = query_params.pop('limit')
-        query_params['limit'] = 200  # recommended limit value by Slack
+        query_params['limit'] = 1000  # Constant limit value for the request
         try:
-            events, cursor = self.handle_pagination_first_batch(query_params, last_run)
+            events, cursor = self.handle_pagination_first_batch(access_token, query_params, last_run)
             while events:
                 for event in events:
-                    if event.get('id') == last_run.get('last_id'):
-                        demisto.debug('Encountered an event that was already fetched - stopping.')
-                        cursor = None
-                        break
 
-                    elif len(aggregated_logs) == user_defined_limit:
+                    if len(aggregated_events) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
-                        cursor = query_params['cursor']
+                        cursor = query_params['after_cursor']
                         break
 
-                    aggregated_logs.append(event)
+                    aggregated_events.append(event)
 
                 else:
-                    # Finished iterating through all events in this batch (did not encounter a break statement)
-                    if not cursor:
-                        demisto.debug('Finished iterating through all events in this fetch run.')
-                        break
+                    # Finished iterating through all events in this batch
+                    if cursor:
+                        demisto.debug('Using the cursor from the last API call to execute the next call.')
+                        query_params['after_cursor'] = cursor
+                        _, events, cursor = self.get_events(access_token, query_params)
+                        continue
 
-                    demisto.debug('Using the cursor from the last API call to execute the next call.')
-                    query_params['cursor'] = cursor
-                    _, events, cursor = self.get_logs(query_params)
-
-                # Encountered a break statement in the for loop - exit while loop
+                demisto.debug('Finished iterating through all events in this fetch run.')
                 break
 
         except DemistoException as e:
             if not e.res or e.res.status_code != 429:
                 raise e
             demisto.debug('Reached API rate limit, storing last used cursor.')
-            cursor = query_params['cursor']
+            cursor = query_params['after_cursor']
 
-        last_run['cursor'] = cursor
-        if not cursor and aggregated_logs:
-            # we need to know where to stop in the next runs
-            last_run['last_id'] = aggregated_logs[0].get('id')
+        since = query_params['since'] if cursor else increase_time_with_second(aggregated_events[-1].get('created_at'))
+        last_run.update({
+            'after_cursor': cursor,
+            'since': since
+        })
 
-        return aggregated_logs
+        return aggregated_events
 
 
-def test_module_command(client: Client, params: dict) -> str:
+''' COMMAND FUNCTIONS '''
+
+
+def test_module_command(client: Client) -> str:
     """
-    Tests connection to Slack.
+    Tests connection to OneLogin.
     Args:
-        clent (Client): the client implementing the API to Slack.
-        params (dict): the instance configuration.
+        client (Client): the client implementing the API to OneLogin.
 
     Returns:
         (str) 'ok' if success.
     """
-    client.test(params)
+    access_token = client.get_access_token()
+    client.get_events(access_token, {})
     return 'ok'
 
 
 def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
     """
-    Gets log events from Slack.
+    Gets log events from OneLogin.
     Args:
-        clent (Client): the client implementing the API to Slack.
+        cilent (Client): the client implementing the API to OneLogin.
         args (dict): the command arguments.
 
     Returns:
-        (list) the events retrieved from the logs API call.
-        (CommandResults) the CommandResults object holding the collected logs information.
+        (list) the events retrieved from the API call.
+        (CommandResults) the CommandResults object holding the collected events information.
     """
+    access_token = client.get_access_token()
     query_params = prepare_query_params(args)
-    raw_response, events, cursor = client.get_logs(query_params)
+    raw_response, events, cursor = client.get_events(access_token, query_params)
     results = CommandResults(
         raw_response=raw_response,
         readable_output=tableToMarkdown(
-            'Slack Audit Logs',
+            'OneLogin Events',
             events,
             metadata=f'Cursor: {cursor}' if cursor else None,
-            date_fields=['date_create'],
+            date_fields=['created_at'],
         ),
     )
     return events, results
@@ -150,55 +200,68 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
 
 def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[list, dict]:
     """
-    Collects log events from Slack using pagination.
+    Collects log events from OneLogin using pagination.
     Args:
-        clent (Client): the client implementing the API to Slack.
-        params (dict): the instance configuration.
+        client (Client): the client implementing the API to OneLogin.
+        params (dict): the instance configuration parameters.
         last_run (dict): the lastRun object, holding information from the previous run.
 
     Returns:
-        (list) the events retrieved from the logs API call.
+        (list) the events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-    query_params = prepare_query_params(params)
-    events = client.get_logs_with_pagination(query_params, last_run)
+    access_token = client.get_access_token()
+    query_params = prepare_query_params(params, last_run)
+    events = client.fetch_events(access_token, query_params, last_run)
     return events, last_run
+
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()
+
+    demisto.debug(f'Command being called is {command}')
     try:
 
-        params = demisto.params()
-
-        headers: Dict = {}
-        base_url = urljoin(params.get('url'), '/api/v1/events')
         client_id = params.get('credentials', {}).get('identifier')
         client_secret = params.get('credentials', {}).get('password')
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            base_url=params.get('url'),
+            verify=not params.get('insecure', False),
+            proxy=params.get('proxy', False),
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'client_id:{client_id}, client_secret:{client_secret}'
+            },
+        )
 
-        command = demisto.command()
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module_command(client))
 
-        elif command == 'fetch-events':
-            return_results(fetch_events(client, demisto.args()))
+        else:
+            if command == 'onelogin-get-events':
+                events, results = get_events_command(client, args)
+                return_results(results)
 
-    # Log exceptions and return errors
+            else:  # command == 'fetch-events'
+                last_run = demisto.getLastRun()
+                events, last_run = fetch_events_command(client, params, last_run)
+                demisto.setLastRun(last_run)
+
+            if argToBoolean(args.get('should_push_events', 'true')):
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
 
 ''' ENTRY POINT '''
