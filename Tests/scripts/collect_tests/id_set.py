@@ -180,18 +180,20 @@ class Graph:
             test_playbooks = content_graph_interface.search_nodes(marketplace=marketplace,
                                                                   content_type=ContentType.TEST_PLAYBOOK)
             # maps content_items to test playbook where they are used recursively
-            content_items_to_tests: dict[ContentItem, list[TestPlaybook]
-                                         ] = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
+            content_items_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
 
             logger.info('after query graph')
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbooks = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
-            self.implemented_playbooks_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
+            self.implemented_playbooks_to_tests = {item: [IdSetItem.from_model(test) for test in tests]
                                                    for item, tests in content_items_to_tests.items()
                                                    if item.content_type == ContentType.PLAYBOOK}
-            self.implemented_scripts_to_tests = {item.object_id: tests for item,
+            self.implemented_scripts_to_tests = {item: tests for item,
                                                  tests in content_items_to_tests.items() if
                                                  item.content_type == ContentType.SCRIPT}
             logger.info('after query objects')
+
+
+Graph('xsoar')
