@@ -19,9 +19,9 @@
     Logins events occurred from a single user during a 10 minutes timeframe.
   drilldown_query_timeframe: ALERT
   execution_mode: SCHEDULED
-  global_rule_id: 886982b5-b00b-43b3-979a-faa0442084be
+  global_rule_id: 1df10e5d-74ff-4785-be2c-5d1e7e863109
   investigation_query_link: "dataset=cyberark_identity_raw \r\n|filter UserGuid=$UserGuid\r\
-    \n|fields _time ,UserName, FromIPAddress"
+    \n|filter UserName !=null\r\n|fields _time ,UserName, FromIPAddress"
   mapping_strategy: CUSTOM
   mitre_defs: {}
   name: CyberArk Failed Logins
