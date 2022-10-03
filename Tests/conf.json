@@ -778,7 +778,14 @@
         {
             "integrations": "Server Message Block (SMB) v2",
             "playbookID": "SMB_v2-Test",
-            "has_api": false
+            "has_api": false,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB test",
+            "has_api": false,
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -2561,10 +2568,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Symantec Advanced Threat Protection",
-            "playbookID": "Symantec ATP Test"
-        },
-        {
             "playbookID": "HTTPListRedirects - Test SSL",
             "has_api": true
         },
@@ -2994,9 +2997,9 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "QRadar_v2",
+            "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
-            "timeout": 600,
+            "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
@@ -4332,14 +4335,6 @@
             ]
         },
         {
-            "playbookID": "SMB test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Server Message Block (SMB) v2",
-                "Server Message Block (SMB)"
-            ]
-        },
-        {
             "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -4633,34 +4628,6 @@
                 "OpenLDAP"
             ],
             "instance_names": "LDAP Authentication (Active Directory)"
-        },
-        {
-            "playbookID": "Splunk-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPySearch_Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy KV commands",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
-        },
-        {
-            "playbookID": "SplunkPy-Test-V2",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "SplunkPy"
-            ]
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
@@ -5300,6 +5267,9 @@
         "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
+        "MicrosoftGraphMail-Test": "Issue CIAC-4222",
+        "MicrosoftGraphMail-Test_dev": "Issue CIAC-4223",
+        "MicrosoftGraphMail-Test_dev_no_oproxy": "Issue CIAC-512",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
@@ -5359,7 +5329,10 @@
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
-        "Carbon Black Enterprise Protection V2 Test": "No credentials"
+        "Carbon Black Enterprise Protection V2 Test": "No credentials",
+        "TruSTAR v2-Test": "No credentials",
+        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "AD v2 - debug-mode": "No credentials"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",

@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 import base64
 import email
@@ -7,11 +10,8 @@ from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -548,7 +548,7 @@ def init_rtr_single_session(host_id: str) -> str:
     raise ValueError('No session id found in the response')
 
 
-def init_rtr_batch_session(host_ids: list) -> str:
+def init_rtr_batch_session(host_ids: list, offline=False) -> str:
     """
         Start a session with one or more hosts
         :param host_ids: List of host agent ID’s to initialize a RTR session on.
@@ -556,7 +556,8 @@ def init_rtr_batch_session(host_ids: list) -> str:
     """
     endpoint_url = '/real-time-response/combined/batch-init-session/v1'
     body = json.dumps({
-        'host_ids': host_ids
+        'host_ids': host_ids,
+        'queue_offline': offline
     })
     response = http_request('POST', endpoint_url, data=body)
     return response.get('batch_id')
@@ -683,7 +684,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
     batch_id = init_rtr_batch_session(host_ids)
 
-    body = assign_params(batch_id=batch_id, file_path=file_path, optional_hosts=optional_hosts)
+    body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
     response = http_request('POST', endpoint_url, data=json.dumps(body), params=params)
     return response
@@ -2650,10 +2651,12 @@ def run_command():
     scope = args.get('scope', 'read')
     target = args.get('target', 'batch')
 
+    offline = argToBoolean(args.get('queue_offline', False))
+
     output = []
 
     if target == 'batch':
-        batch_id = init_rtr_batch_session(host_ids)
+        batch_id = init_rtr_batch_session(host_ids, offline)
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
         try:
@@ -3578,9 +3581,9 @@ def parse_rtr_command_response(response, host_ids, process_id=None) -> list:
 
 def match_remove_command_for_os(operating_system, file_path):
     if operating_system == 'Windows':
-        return f'rm {file_path} --force'
+        return f"rm '{file_path}' --force"
     elif operating_system == 'Linux' or operating_system == 'Mac':
-        return f'rm {file_path} -r -d'
+        return f"rm '{file_path}' -r -d"
     else:
         return ""
 
