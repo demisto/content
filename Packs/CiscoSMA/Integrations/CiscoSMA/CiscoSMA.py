@@ -74,7 +74,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res.status_code == 401:                
+            if e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
                 )
