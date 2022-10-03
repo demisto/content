@@ -2,8 +2,7 @@ id: QRadar Indicator Hunting V2
 version: -1
 fromversion: 5.0.0
 name: QRadar Indicator Hunting V2
-description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
-  IP addresses, domains, or urls. '
+description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
 starttaskid: '0'
 tasks:
   '0':
@@ -31,6 +30,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '2':
     id: '2'
     taskid: cb0b8450-ba2e-46e2-866a-670628878b67
@@ -57,6 +61,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '5':
     id: '5'
     taskid: 867e36f8-0818-4234-8bad-14a20fa15d52
@@ -83,6 +92,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '6':
     id: '6'
     taskid: de0159f1-152a-41de-8dca-632861723ce6
@@ -109,6 +123,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '7':
     id: '7'
     taskid: 8d9639c2-b27a-4112-8e06-e80b762d9fc9
@@ -145,6 +164,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '8':
     id: '8'
     taskid: 8336ee87-f03e-48cb-8bdf-82264304bd4d
@@ -193,6 +217,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '9':
     id: '9'
     taskid: 429ecc02-63f6-47c7-89bc-9b058a1ce00e
@@ -229,6 +258,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '11':
     id: '11'
     taskid: e6dbdea3-3ba4-44a1-88fe-3eb27736c1b1
@@ -265,6 +299,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '21':
     id: '21'
     taskid: e7203955-98bc-4bf7-8bfa-cf02c075fece
@@ -301,6 +340,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '22':
     id: '22'
     taskid: fd20ee90-ef39-408d-845e-dc23b2d6ef24
@@ -337,6 +381,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '26':
     id: '26'
     taskid: c6c5cf92-dc5e-4add-8490-2cbd7219a737
@@ -363,6 +412,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '27':
     id: '27'
     taskid: 3823b5d8-b662-4f7c-8cd4-fed7b5acd865
@@ -389,6 +443,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '29':
     id: '29'
     taskid: 56605f5c-b46b-4cfb-8895-f2c74721a9df
@@ -425,6 +484,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '31':
     id: '31'
     taskid: 6a6569df-3313-46e9-8139-46bcfa9ad7ed
@@ -462,6 +526,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '38':
     id: '38'
     taskid: 6e572c51-d37d-4a93-83ee-49e4c6ff46e4
@@ -488,6 +557,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '39':
     id: '39'
     taskid: b427aa24-1ee8-426e-80ee-e4c24f606db7
@@ -524,6 +598,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '41':
     id: '41'
     taskid: 95f09fa7-eb99-4528-88a2-2962a71712f0
@@ -561,6 +640,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '50':
     id: '50'
     taskid: d50bcaac-7d64-403c-81c9-aa87fa709b78
@@ -598,6 +682,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '55':
     id: '55'
     taskid: 194afa46-a209-42dd-830c-d4952a4327c5
@@ -654,6 +743,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '56':
     id: '56'
     taskid: 629d610b-f061-45c2-8071-747b25d3e86e
@@ -680,6 +774,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '57':
     id: '57'
     taskid: 6de28afc-b548-4b96-85cc-44451fd8501f
@@ -706,6 +805,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '58':
     id: '58'
     taskid: ae6e33ca-0ad7-4298-8e1e-e5cac7cfe384
@@ -732,6 +836,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '59':
     id: '59'
     taskid: a5ff9983-ca56-4293-8282-2db0c5b7134c
@@ -758,6 +867,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '60':
     id: '60'
     taskid: 335001ea-040d-4c14-8daa-041e247022bf
@@ -784,6 +898,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '61':
     id: '61'
     taskid: 38a85764-e47d-47e7-87ff-08ed0e2c9775
@@ -810,6 +929,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '62':
     id: '62'
     taskid: e5c58b9b-a541-4523-86f3-61a2cfbd8258
@@ -836,6 +960,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '63':
     id: '63'
     taskid: 24a13454-29bf-41d7-8c3c-dcfb68d3404a
@@ -862,6 +991,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '64':
     id: '64'
     taskid: 73dffeae-64dc-4425-8839-bdd4b261323d
@@ -888,6 +1022,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '65':
     id: '65'
     taskid: d5b51512-af37-4ca6-85e0-3f43eb609168
@@ -914,24 +1053,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '96':
     id: '96'
-    taskid: c1461fb2-0801-41c3-8749-356ecfaa9d52
+    taskid: 76e0d469-ea05-41b0-8085-3c53285cf3d8
     type: playbook
     task:
-      id: c1461fb2-0801-41c3-8749-356ecfaa9d52
+      id: 76e0d469-ea05-41b0-8085-3c53285cf3d8
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on IP
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -1013,7 +1156,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1021,6 +1163,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1031,15 +1174,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '97':
     id: '97'
-    taskid: 0684ed2d-08b5-465f-8431-f0546be68f8a
+    taskid: 2559107a-16de-4241-878c-3bb53eea7067
     type: playbook
     task:
-      id: 0684ed2d-08b5-465f-8431-f0546be68f8a
+      id: 2559107a-16de-4241-878c-3bb53eea7067
       version: -1
-      name: QRadarFullSearch
-      description: ''
+      name: QRadar Full Search on Domain/URL
+      description: 'This playbook runs a QRadar query and return its results to the context.'
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -1048,7 +1196,6 @@ tasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -1134,7 +1281,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1142,6 +1288,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1152,14 +1299,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '98':
     id: '98'
-    taskid: 489f7cfa-e9a4-42a4-8bca-968ea32b12be
+    taskid: a446630d-e14f-4498-8596-61f75c6ac24b
     type: regular
     task:
-      id: 489f7cfa-e9a4-42a4-8bca-968ea32b12be
+      id: a446630d-e14f-4498-8596-61f75c6ac24b
       version: -1
-      name: Set MD5 to array
+      name: Set MD5 to an array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1172,7 +1324,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: File.MD5
+        simple: FileMD5
       value:
         complex:
           root: inputs.MD5
@@ -1182,6 +1334,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1193,14 +1346,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '99':
     id: '99'
-    taskid: b7319018-fd2c-4bcb-8816-a6ed8a55c51e
+    taskid: 214f7849-dce3-4e6f-8806-bf245ed39035
     type: regular
     task:
-      id: b7319018-fd2c-4bcb-8816-a6ed8a55c51e
+      id: 214f7849-dce3-4e6f-8806-bf245ed39035
       version: -1
-      name: Set SHA1 to array
+      name: Set SHA1 to an array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1213,7 +1371,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: File.SHA1
+        simple: FileSHA1
       value:
         complex:
           root: inputs.SHA1
@@ -1223,6 +1381,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1234,14 +1393,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '100':
     id: '100'
-    taskid: f86deb33-6fff-4b29-8a0c-ab2c3300a105
+    taskid: e2d43153-4172-4ad3-8ae4-957e51c0c386
     type: regular
     task:
-      id: f86deb33-6fff-4b29-8a0c-ab2c3300a105
+      id: e2d43153-4172-4ad3-8ae4-957e51c0c386
       version: -1
-      name: Set SHA256 to array
+      name: Set SHA256 to an array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1254,8 +1418,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: File.SHA256
-      stringify: {}
+        simple: FileSHA256
       value:
         complex:
           root: inputs.SHA256
@@ -1265,6 +1428,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1276,14 +1440,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '101':
     id: '101'
-    taskid: 0bf852b5-219c-4b68-8bda-7d122d465999
+    taskid: aa455ae4-d526-4e24-838e-b62337e0b4b2
     type: regular
     task:
-      id: 0bf852b5-219c-4b68-8bda-7d122d465999
+      id: aa455ae4-d526-4e24-838e-b62337e0b4b2
       version: -1
-      name: Set IP to array
+      name: Set IP to an array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1296,8 +1465,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: IP
-      stringify: {}
+        simple: IPAddress
       value:
         complex:
           root: inputs.IPAddress
@@ -1307,6 +1475,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1318,14 +1487,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '102':
     id: '102'
-    taskid: 427ffefe-84c3-4402-82b9-2cb7e1deb802
+    taskid: 8f395aed-e855-4af0-8da1-e139018bd366
     type: regular
     task:
-      id: 427ffefe-84c3-4402-82b9-2cb7e1deb802
+      id: 8f395aed-e855-4af0-8da1-e139018bd366
       version: -1
-      name: Set domain or url to array
+      name: Set Domain or URL to the array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1348,6 +1522,7 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1359,15 +1534,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '17':
     id: '17'
-    taskid: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
+    taskid: 08c2739c-01f4-49ac-8919-9842783a16ee
     type: playbook
     task:
-      id: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
+      id: 08c2739c-01f4-49ac-8919-9842783a16ee
       version: -1
-      name: QRadarFullSearch
-      description: ''
+      name: QRadar Full Search on Domain/URL
+      description: 'This playbook runs a QRadar query and return its results to the context.'
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -1376,7 +1556,6 @@ tasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -1445,7 +1624,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1453,6 +1631,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1463,6 +1642,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '120':
     id: '120'
     taskid: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
@@ -1489,6 +1673,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '123':
     id: '123'
     taskid: b8f2ec71-559f-46ca-8a13-9eff306b9c52
@@ -1497,8 +1686,7 @@ tasks:
       id: b8f2ec71-559f-46ca-8a13-9eff306b9c52
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1511,7 +1699,6 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedExternalIPs
-      stringify: {}
       value:
         complex:
           root: IP
@@ -1538,6 +1725,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '124':
     id: '124'
     taskid: 00e1d579-b406-4db4-8af2-27369eee70f3
@@ -1545,8 +1737,8 @@ tasks:
     task:
       id: 00e1d579-b406-4db4-8af2-27369eee70f3
       version: -1
-      description: ''
       name: Are there detected IP addresses?
+      description: Are there detected IP addresses?
       type: condition
       iscommand: false
       brand: ''
@@ -1574,6 +1766,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '142':
     id: '142'
     taskid: c11c8eda-919b-409e-805d-bac3d7625b98
@@ -1582,8 +1779,7 @@ tasks:
       id: c11c8eda-919b-409e-805d-bac3d7625b98
       version: -1
       name: Determine whether the IP address is internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -1607,6 +1803,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '143':
     id: '143'
     taskid: c6f7a18d-5499-46a0-8060-acb9a13d9e23
@@ -1615,8 +1816,7 @@ tasks:
       id: c6f7a18d-5499-46a0-8060-acb9a13d9e23
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1629,7 +1829,6 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedInternalIPs
-      stringify: {}
       value:
         complex:
           root: IP
@@ -1656,24 +1855,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '149':
     id: '149'
-    taskid: bd196beb-4161-4e07-83fa-76ef26cac916
+    taskid: c83d997e-9262-4a83-80ce-b8ccdf7e975f
     type: playbook
     task:
-      id: bd196beb-4161-4e07-83fa-76ef26cac916
+      id: c83d997e-9262-4a83-80ce-b8ccdf7e975f
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA256
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -1755,7 +1958,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1763,6 +1965,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1773,30 +1976,33 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '151':
     id: '151'
-    taskid: d2db9183-bbb1-4911-870f-0db9cdd672d8
+    taskid: 2bed77e0-5c1f-4763-81da-c2487aacb095
     type: playbook
     task:
-      id: d2db9183-bbb1-4911-870f-0db9cdd672d8
+      id: 2bed77e0-5c1f-4763-81da-c2487aacb095
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA256
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
         complex:
-          root: File
-          accessor: SHA256
+          root: FileSHA256
           transformers:
           - operator: replaceMatch
             args:
@@ -1858,7 +2064,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1866,6 +2071,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1876,24 +2082,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '152':
     id: '152'
-    taskid: 3fc13679-3e1a-400e-841b-7b32a8ece629
+    taskid: bbc25cfd-7fd4-4e21-8670-7a294bc47edb
     type: playbook
     task:
-      id: 3fc13679-3e1a-400e-841b-7b32a8ece629
+      id: bbc25cfd-7fd4-4e21-8670-7a294bc47edb
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA1
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -1975,7 +2185,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -1983,6 +2192,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1993,24 +2203,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '156':
     id: '156'
-    taskid: 4242307b-70a2-4c69-8aee-1e63f06b4195
+    taskid: a9354a3f-4f69-4368-82b0-c2635288f837
     type: playbook
     task:
-      id: 4242307b-70a2-4c69-8aee-1e63f06b4195
+      id: a9354a3f-4f69-4368-82b0-c2635288f837
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on MD5
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
@@ -2092,7 +2306,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -2100,6 +2313,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2110,29 +2324,33 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '157':
     id: '157'
-    taskid: 795ff301-9c85-4ea5-8a51-07dc451f8d35
+    taskid: a2172120-e276-4839-8cf9-96f3aab74764
     type: playbook
     task:
-      id: 795ff301-9c85-4ea5-8a51-07dc451f8d35
+      id: a2172120-e276-4839-8cf9-96f3aab74764
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on IP
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
         complex:
-          root: IP
+          root: IPAddress
           transformers:
           - operator: replaceMatch
             args:
@@ -2194,7 +2412,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -2202,6 +2419,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2212,30 +2430,33 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '158':
     id: '158'
-    taskid: 4c9de8df-a0fe-46a1-870c-b039bbd32526
+    taskid: 7a601ad8-bad0-470f-8254-7513c8acc417
     type: playbook
     task:
-      id: 4c9de8df-a0fe-46a1-870c-b039bbd32526
+      id: 7a601ad8-bad0-470f-8254-7513c8acc417
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on SHA1
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
         complex:
-          root: File
-          accessor: SHA1
+          root: FileSHA1
           transformers:
           - operator: replaceMatch
             args:
@@ -2297,7 +2518,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -2305,6 +2525,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2315,30 +2536,33 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '159':
     id: '159'
-    taskid: 43bc08f7-955a-45d6-879b-af62e9061114
+    taskid: 7d519845-0844-4d34-8733-72c17fe63d44
     type: playbook
     task:
-      id: 43bc08f7-955a-45d6-879b-af62e9061114
+      id: 7d519845-0844-4d34-8733-72c17fe63d44
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Full Search on MD5
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
+      description: 'This playbook runs a QRadar query and return its results to the context.'
     nexttasks:
       '#none#':
       - '164'
     scriptarguments:
-      headers: {}
       interval:
         simple: '1'
       query_expression:
         complex:
-          root: File
-          accessor: MD5
+          root: FileMD5
           transformers:
           - operator: replaceMatch
             args:
@@ -2400,7 +2624,6 @@ tasks:
                 value:
                   simple: inputs.TimeFrame
                 iscontext: true
-      range: {}
       timeout:
         simple: '600'
     separatecontext: true
@@ -2408,6 +2631,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2418,6 +2642,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '160':
     id: '160'
     taskid: b5c837ba-5e3d-4bfe-859a-a65e8999377d
@@ -2439,7 +2668,6 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
-      stringify: {}
       value:
         complex:
           root: ${
@@ -2466,6 +2694,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '161':
     id: '161'
     taskid: 952ba242-20e8-4f24-8f95-35b33d35c0e6
@@ -2487,7 +2720,6 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
-      stringify: {}
       value:
         complex:
           root: ${
@@ -2514,6 +2746,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '162':
     id: '162'
     taskid: be5ae3b8-84fa-4733-895d-d8f8fb424d39
@@ -2531,7 +2768,6 @@ tasks:
       '#none#':
       - '163'
     scriptarguments:
-      fields: {}
       filter:
         complex:
           root: ${QRadar
@@ -2550,8 +2786,6 @@ tasks:
               separator:
                 value:
                   simple: ' OR '
-      headers: {}
-      range: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -2564,6 +2798,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '163':
     id: '163'
     taskid: 1453c864-a986-4422-8f04-4678b69fa4b5
@@ -2585,7 +2824,6 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedInternalHosts
-      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -2603,6 +2841,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '164':
     id: '164'
     taskid: 62f9be0a-4de9-4ead-89b7-4455030ea30d
@@ -2639,6 +2882,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '165':
     id: '165'
     taskid: 299c8685-8d43-4ef6-8a1c-0cfb2c00e518
@@ -2662,6 +2910,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '166':
     id: '166'
     taskid: c53ecc0c-38d3-4c8b-8103-ca8dd816672c
@@ -2688,6 +2941,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2706,50 +2964,55 @@ inputs:
   value: {}
   required: false
   description: MD5 hash file or an array of hashes to search.
+  playbookInputQuery:
 - key: QradarMD5Field
   value: {}
   required: false
-  description: MD5 field to search in QRadar. If none are specified, the search will
-    use a payload contains filter.
+  description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  playbookInputQuery:
 - key: SHA1
   value: {}
   required: false
   description: SHA1 hash file or an array of hashes to search.
+  playbookInputQuery:
 - key: QradarSHA1Field
   value: {}
   required: false
-  description: SHA1 field to search in QRadar. If none are specified, the search will
-    use a payload contains filter.
+  description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
   description: SHA256 hash file or an array of hashes to search.
+  playbookInputQuery:
 - key: QradarSHA256Field
   value: {}
   required: false
-  description: SHA256 field to search in QRadar. If none are specified, the search
-    will use a payload contains filter.
+  description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
   description: |
     Source or destination IP to search. Can be a single address or an array of addresses.
+  playbookInputQuery:
 - key: QradarIPfield
   value:
     simple: sourceip,destinationip
   required: false
-  description: IP field to search in QRadar. If none are specified, the search will
-    use sourceip or destinationip (combined).
+  description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
+  playbookInputQuery:
 - key: URLDomain
   value: {}
   required: false
   description: |
     Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+  playbookInputQuery:
 - key: QradarURLDomainField
   value: {}
   required: false
-  description: 'URL/Domain field to search in QRadar. If none are specified, the search
-    will use a payload contains filter. '
+  description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
+  playbookInputQuery:
 - key: TimeFrame
   value:
     simple: LAST 7 DAYS
@@ -2760,26 +3023,24 @@ inputs:
     LAST 7 DAYS
     START '2019-09-25 15:51' STOP '2019-09-25 17:51'
     For more examples review IBM's AQL documentation.
+  playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: InvestigationIPFields
   value:
     simple: sourceip,destinationip
   required: true
-  description: The values of these QRadar fields will be used for the playbook IP
-    addresses outputs.
+  description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
+  playbookInputQuery:
 - key: InvestigationUserFields
   value:
     simple: username
   required: true
-  description: The values of these QRadar fields will be used for the playbook user
-    name outputs.
+  description: The values of these QRadar fields will be used for the playbook user name outputs.
+  playbookInputQuery:
 outputs:
 - contextPath: QRadar.DetectedUsers
   description: Users detected based on the username field in your search.
@@ -2791,12 +3052,14 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 tests:
+- test_Qradar_v2
+- QRadar_v3-test
 - QRadar Indicator Hunting Test
+contentitemexportablefields:
+  contentitemfields: {}

@@ -120,6 +120,7 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-status job_id=31377
+!pan-os-list-templates limit=20
 !pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true
 !pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1
 !pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"

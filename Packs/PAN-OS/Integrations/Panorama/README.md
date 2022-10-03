@@ -7439,6 +7439,78 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-templates
+***
+Returns a list of available templates. (Used only in Panorama instances).
+
+
+#### Base Command
+
+`pan-os-list-templates`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_name | The name of the template to retrieve. If not provided then all available templates will be brought. | Optional | 
+| limit | The maximum number of templates to retrieve. This value will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the templates to return. Default is 50. | Optional | 
+| page | The page at which to start listing templates. This must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Template.Name | String | The name of the template. | 
+| Panorama.Template.Description | String | The description of the template. | 
+| Panorama.Template.Variable.Name | String | The variable name of the template. | 
+| Panorama.Template.Variable.Type | String | The type of the template. | 
+| Panorama.Template.Variable.Value | String | The value of the variable of the template. | 
+| Panorama.Template.Variable.Description | String | The description of the variable of the template. | 
+
+#### Command example
+```!pan-os-list-templates limit=20```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Template": [
+            {
+                "Description": null,
+                "Name": "test-1",
+                "Variable": []
+            },
+            {
+                "Description": "test description",
+                "Name": "test-2",
+                "Variable": [
+                    {
+                        "Description": "variable-1-test",
+                        "Name": "$variable-1",
+                        "Type": "ip-netmask",
+                        "Value": "1.1.1.1"
+                    },
+                    {
+                        "Description": null,
+                        "Name": "$variable-2",
+                        "Type": "fqdn",
+                        "Value": "google.com"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Templates:
+>|Description|Name|Variable|
+>|---|---|---|
+>|  | test-1 |  |
+>| test description | test-2 | $variable-1,<br/>$variable-2 |
+
 ### pan-os-list-nat-rules
 ***
 Returns a list of nat-rules of either Panorama/firewall instance.
