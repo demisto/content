@@ -26,7 +26,10 @@ def sort_dict(dct: dict):
             try:
                 v.sort()
             except TypeError:
-                v.sort(key=lambda item: item.get('name'))
+                try:
+                    v.sort(key=lambda item: item.get('name'))
+                except Exception as e:
+                    print(f'sorting failed: {e}')
 
 
 def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path: Path) -> bool:
@@ -89,6 +92,8 @@ def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
             diffs = [x for x in d.compare(f1lines, f2lines) if x[0] in ('+', '-')]
             if diffs:
                 f.writelines(diffs)
+                return True
+    return False
 
 
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, diff_files: list[str]):
@@ -127,22 +132,26 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--zip-id-set', help='id_set zip file to compare')
-    parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
-    parser.add_argument('--index-id-set', help='id set index')
-    parser.add_argument('--index-graph', help='graph index')
+    parser.add_argument('--artifacts', help='artifacts of the build')
     parser.add_argument('--marketplace', '--mp', help='Marketplace to use')
     parser.add_argument('--output-path', help='Output path')
     parser.add_argument('--slack-token', '-s', help='Slack token', required=False)
 
     args = parser.parse_args()
-    zip_id_set = Path(args.zip_id_set)
-    zip_graph = Path(args.zip_graph)
+    artifacts = Path(args.artifacts)
     output_path = Path(args.output_path)
     slack_token = args.slack_token
-    index_id_set_path = Path(args.index_id_set)
-    index_graph_path = Path(args.index_graph)
     marketplace = args.marketplace
+
+    zip_id_set = artifacts / 'uploaded_packs-id_set'
+    zip_graph = artifacts / 'uploaded_packs-graph'
+
+    index_id_set_path = artifacts / 'index-id_set.json'
+    index_graph_path = artifacts / 'index-graph.json'
+
+    collected_packs_id_set = artifacts / 'content_packs_to_install.txt'
+    collected_packs_graph = artifacts / 'content_packs_to_install-graph.txt'
+
     output_path.mkdir(exist_ok=True, parents=True)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
@@ -154,6 +163,9 @@ def main():
         message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
     if compare_indexes(index_id_set_path, index_graph_path, output_path / 'index-diff.json'):
         message.append('index.json is also different')
+    if file_diff_text(output_path / 'collect-test-diff', collected_packs_id_set, collected_packs_graph):
+        message.append('collected tests is also different')
+
     shutil.make_archive(str(output_path / f'diff-{marketplace}'), 'zip', output_path)
     if slack_token:
         slack_client = WebClient(token=slack_token)

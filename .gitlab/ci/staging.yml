@@ -53,6 +53,7 @@ graph-create-instances:
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
       fi
+    - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
@@ -120,6 +121,7 @@ graph-prepare-testing-bucket-mpv2:
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
       fi
+    - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
 
     - section_start "Prepare Content Packs for Testing"
@@ -139,7 +141,7 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_XSOAR/uploaded_packs-graph --index-id-set $ARTIFACTS_FOLDER_XSOAR/index-id-set.json --index-graph $ARTIFACTS_FOLDER_XSOAR/index-graph.json --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
-    - python3 ./Tests/scripts/utils/compare_zips.py --zip-id-set $ARTIFACTS_FOLDER_MPV2/uploaded_packs-id_set --zip-graph $ARTIFACTS_FOLDER_MPV2/uploaded_packs-graph --index-id-set $ARTIFACTS_FOLDER_MPV2/index-id-set.json --index-graph $ARTIFACTS_FOLDER_MPV2/index-graph.json --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_staging-graph.py --artifacts $ARTIFACTS_FOLDER_XSOAR --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_staging-graph.py --artifacts $ARTIFACTS_FOLDER_MPV2 --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
 
 
