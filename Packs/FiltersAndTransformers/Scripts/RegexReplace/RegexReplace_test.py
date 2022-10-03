@@ -13,7 +13,7 @@ def side_effect_demisto_dt(obj, dt):
 
 
 def test_main(mocker):
-    from RegexReplace import Main
+    from RegexReplace import main
 
     with open('./test_data/test-1.json', 'r') as f:
         test_list = json.load(f)
@@ -31,7 +31,7 @@ def test_main(mocker):
             'action_dt': t.get('action_dt'),
         })
         mocker.patch.object(demisto, 'results')
-        Main().run()
+        main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
         assert json.dumps(results) == json.dumps(t['result'])
