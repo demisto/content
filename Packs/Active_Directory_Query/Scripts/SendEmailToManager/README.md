@@ -1,4 +1,4 @@
-Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident
+Send an approval email to the manager of the employee, allowing the manager to reply directly into the incident
 
 ## Script Data
 ---
