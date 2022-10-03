@@ -99,7 +99,7 @@ filter
     xdm.network.session_id = spi_unique_identifier,
     xdm.observer.unique_identifier = peer_unique_identifier,
     xdm.source.subnet = subnet_mask,
-    //| alter xdm.observer.product = user_agent,
+    alter xdm.observer.product = user_agent,
     xdm.network.http.url = url,
     xdm.network.http.method = http_method,
     xdm.network.rule = action,
