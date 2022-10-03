@@ -4,7 +4,7 @@ filter
 | alter
     _time = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
     xdm.event.id = id,
-    xdm.event.type = action,
+    xdm.event.operation = action,
     xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
@@ -21,12 +21,12 @@ filter
 | alter
     _time = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
     xdm.event.id = id,
-    xdm.event.type = action,
+    xdm.event.operation = action,
     xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
     xdm.target.user.identifier = json_extract_scalar(entity, "$.user.id"),
     xdm.target.user.username = json_extract_scalar(entity, "$.user.name"),
     xdm.target.application.name = json_extract_scalar(context, "$.app.name"),
-    xdm.session_context_id = json_extract_scalar(context, "$.session_id"),
+    xdm.network.session_id = json_extract_scalar(context, "$.session_id"),
     xdm.source.ipv4 = json_extract_scalar(context, "$.ip_address");
