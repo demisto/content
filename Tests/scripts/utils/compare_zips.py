@@ -4,6 +4,7 @@
 import argparse
 import filecmp
 import json
+import os
 from pathlib import Path
 import shutil
 from zipfile import ZipFile
@@ -113,6 +114,8 @@ if __name__ == '__main__':
     parser.add_argument('--zip-graph', help='graph_id_set zip file to compare')
     parser.add_argument('--output-path', help='Output path')
     parser.add_argument('--slack-token', '-s', help='Slack token')
+    parser.add_argument('--pipeline-id', '-p', help='Slack token')
+
     args = parser.parse_args()
     zip_id_set = Path(args.zip_id_set)
     zip_graph = Path(args.zip_graph)
@@ -122,7 +125,7 @@ if __name__ == '__main__':
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
     dir_cmp.report_full_closure()
-    message = [f'Zip difference for {output_path}']
+    message = [f'JOB URL: {os.getenv("CI_JOB_URL")}. Zip difference for {output_path}']
     for file in dir_cmp.common_files:
         pack = file.removesuffix('.zip')
         diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
