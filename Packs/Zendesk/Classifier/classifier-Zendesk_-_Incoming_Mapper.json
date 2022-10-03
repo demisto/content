@@ -48,7 +48,7 @@
                 "Zendesk Forum Id": {
                     "simple": "forum_topic_id"
                 },
-                "Zendesk Organization Id": {
+                "Zendesk Organization": {
                     "simple": "organization"
                 },
                 "Zendesk Problem Id": {
