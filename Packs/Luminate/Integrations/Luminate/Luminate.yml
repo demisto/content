@@ -2,9 +2,9 @@ commonfields:
   id: Luminate
   version: -1
 name: Luminate
-display: Luminate
+display: Luminate (Deprecated)
 category: Network Security
-description: Enrich your report and Respond to incidents with Luminate
+description: Deprecated. Enrich your report and Respond to incidents with Luminate
 configuration:
 - display: Api Key
   name: api_key
@@ -125,6 +125,8 @@ script:
       description: SSH Access logs
     description: Getting Access logs from for SSH traffic
   dockerimage: demisto/luminate:1.0.0.14061
+  deprecated: true
+  comment: Deprecated. No available replacement.
   isfetch: true
   runonce: false
 fromversion: 5.0.0
