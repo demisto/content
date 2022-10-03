@@ -1,6 +1,7 @@
 id: playbook0
 version: -1
 fromversion: 5.0.0
+toversion: 7.9.9
 name: Default
 description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or
   more integrations.
