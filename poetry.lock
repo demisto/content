@@ -200,14 +200,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.84"
+version = "1.24.85"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.84,<1.28.0"
+botocore = ">=1.27.85,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -216,7 +216,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.84"
+version = "1.27.85"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -539,8 +539,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "afef2d8688007574552e0545cb3e90db9cf159be"
-resolved_reference = "afef2d8688007574552e0545cb3e90db9cf159be"
+reference = "2e9d728a6b3b8129f6c0fa6063b290e843c30ece"
+resolved_reference = "2e9d728a6b3b8129f6c0fa6063b290e843c30ece"
 
 [[package]]
 name = "Deprecated"
@@ -2552,7 +2552,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "f3fc0ea106db78ec59b764201ba060c7424f9066a9ffa4634a70cc5e7ce941b2"
+content-hash = "91f6a58306aa283be220e990ad668b8b03ea4403617fcb0485c98c76f67477ac"
 
 [metadata.files]
 aiohttp = [
@@ -2730,12 +2730,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.84-py3-none-any.whl", hash = "sha256:be151711bbb4db53e85dd5bbe506002ce6f2f21fc4e45fcf6d2cf356d32cc4c6"},
-    {file = "boto3-1.24.84.tar.gz", hash = "sha256:6194763348545bb1669ce8d03ba104be1ba822daa184613aa10b9303a6a79017"},
+    {file = "boto3-1.24.85-py3-none-any.whl", hash = "sha256:714b06755bd76b2001f7099a8e406604c0a0e76a8ff0425480bf1555bcbecee1"},
+    {file = "boto3-1.24.85.tar.gz", hash = "sha256:2c9004c1f0a47807c73247abe8cb2b8a7054c34b9cf6e90f448d51560de20ca1"},
 ]
 botocore = [
-    {file = "botocore-1.27.84-py3-none-any.whl", hash = "sha256:da15026329706caf83323d84996f5ff5c527837347633fca9b3b1be0efa60841"},
-    {file = "botocore-1.27.84.tar.gz", hash = "sha256:11f05d2acdf9a5f722856704b7b951b180647fb4340e1b5048b27273dc323909"},
+    {file = "botocore-1.27.85-py3-none-any.whl", hash = "sha256:06b3ebacbe9a532074db4ad68040235e3c7bd52741e3ff6710cef8ab144ecdfe"},
+    {file = "botocore-1.27.85.tar.gz", hash = "sha256:2b4c86178b5a5a2baa0a065aaf9ef9d33a7ac67bf3f30e39005de151b0408cac"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
