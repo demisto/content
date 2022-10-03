@@ -465,14 +465,13 @@ def users_to_entry(title, response, next_page_token=None):
     if next_page_token:
         human_readable += "\nTo get further results, rerun the command with this page-token:\n" + next_page_token
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=response,
+        readable_output=human_readable,
+        outputs_prefix='Account',
+        outputs_key_field=['ID', 'Type']
+    )
 
 
 def labels_to_entry(title, response, user_key):
@@ -490,14 +489,13 @@ def labels_to_entry(title, response, user_key):
     headers = ['Name', 'ID', 'Type', 'MessageListVisibility', 'LabelListVisibility']
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=response,
+        readable_output=human_readable,
+        outputs_prefix='GmailLabel',
+        outputs_key_field=['ID', 'Name', 'UserID']
+    )
 
 
 def autoreply_to_entry(title, response, user_id):
@@ -522,16 +520,13 @@ def autoreply_to_entry(title, response, user_id):
         "AutoReply": autoreply_context
     }
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': autoreply_context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, autoreply_context, headers, removeNull=True),
-        'EntryContext': {
-            'Account.Gmail(val.Address == obj.Address)': account_context
-        }
-    }
+    return CommandResults(
+        raw_response=autoreply_context,
+        outputs=account_context,
+        readable_output=tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        outputs_prefix='Account.Gmail',
+        outputs_key_field='Address'
+    )
 
 
 def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
@@ -554,15 +549,13 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
     headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
                'ThreadId']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {
-            'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
-    }
+    return CommandResults(
+        raw_response=response,
+        outputs=gmail_context,
+        readable_output=tableToMarkdown(title, gmail_context, headers, removeNull=True),
+        outputs_prefix='Gmail.SentMail',
+        outputs_key_field=['ID', 'Type']
+    )
 
 
 def user_roles_to_entry(title, response):
@@ -579,14 +572,13 @@ def user_roles_to_entry(title, response):
     headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
-    }
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=tableToMarkdown(title, context, headers, removeNull=True),
+        outputs_prefix='Gmail.Role',
+        outputs_key_field=['ID']
+    )
 
 
 def tokens_to_entry(title, response):
@@ -602,14 +594,13 @@ def tokens_to_entry(title, response):
 
     headers = ['DisplayText', 'ClientId', 'Kind', 'Scopes', 'UserKey']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)': context}
-    }
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=tableToMarkdown(title, context, headers, removeNull=True),
+        outputs_prefix='Tokens',
+        outputs_key_field=['ClientId']
+    )
 
 
 def filters_to_entry(title, mailbox, response):
@@ -656,14 +647,13 @@ def role_to_entry(title, role):
     privileges_title = f"Role {context.get('ID')} privileges:"
     privileges_hr = tableToMarkdown(privileges_title, privileges, privileges_headers, removeNull=True)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': details_hr + privileges_hr,
-        'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
-    }
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=details_hr + privileges_hr,
+        outputs_prefix='Gmail.Role',
+        outputs_key_field=['ID']
+    )
 
 
 def dict_keys_snake_to_camelcase(dictionary):
@@ -697,7 +687,7 @@ def get_millis_from_date(date, arg_name):
 ''' FUNCTIONS '''
 
 
-def list_users_command():
+def list_users_command() -> CommandResults:
     args = demisto.args()
     domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
@@ -746,7 +736,7 @@ def list_users(domain, customer=None, query=None, sort_order=None, view_type='ad
     return result['users'], result.get('nextPageToken')
 
 
-def get_user_command():
+def get_user_command() -> CommandResults:
     args = demisto.args()
     user_key = args.get('user-id')
     view_type = args.get('view-type-public-domain')
@@ -772,7 +762,7 @@ def get_user(user_key, view_type, projection, customer_field_mask=None):
     return result
 
 
-def hide_user_command():
+def hide_user_command() -> CommandResults:
     args = demisto.args()
     user_key = args.get('user-id')
     hide_value = args.get('visible-globally')
@@ -2017,17 +2007,13 @@ def forwarding_address_add_command():
                         with status {result.get('verificationStatus', '')}."
     context = dict(result)
     context['userId'] = user_id
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        'EntryContext': {
-            'Gmail.ForwardingAddress((val.forwardingEmail && val.forwardingEmail '
-            '== obj.forwardingEmail) && (val.userId && val.userId == obj.userId))': context,
-        }
-    }
+    return CommandResults(
+        raw_response=result,
+        outputs=context,
+        readable_output=readable_output,
+        outputs_prefix='Gmail.ForwardingAddress',
+        outputs_key_field=['forwardingEmail', 'userId']
+    )
 
 
 def send_as_add_command():
@@ -2075,17 +2061,13 @@ def send_as_add_command():
         context, headerTransform=pascalToSpace, removeNull=True,
         headers=hr_fields)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        'EntryContext': {
-            'Gmail.SendAs((val.sendAsEmail && val.sendAsEmail '
-            '== obj.sendAsEmail) && (val.userId && val.userId == obj.userId))': context,
-        }
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=result,
+        readable_output=readable_output,
+        outputs_prefix='Gmail.SendAs',
+        outputs_key_field=['sendAsEmail', 'userId']
+    )
 
 
 '''FETCH INCIDENTS'''

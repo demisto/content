@@ -229,7 +229,23 @@ def test_labels_to_entry():
         }
     ]
 
-    context_key = 'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)'
     result = labels_to_entry("test", labels, "me")
-    assert result.get('EntryContext').get(context_key) == expected_context_output
-    assert result.get('HumanReadable') == expected_human_readable
+    assert result.outputs == expected_context_output
+    assert result.readable_output == expected_human_readable
+
+
+# def test_template_params(params_str, expected_result):
+#     """
+#     Tests helloworld-scan-status command function.
+#         Given:
+#             - .
+#             - .
+#         When:
+#             -.
+#         Then:
+#             - .
+#     """
+
+#     from Gmail import template_params
+
+#     assert template_params(params_str) == expected_result
