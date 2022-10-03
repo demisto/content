@@ -902,8 +902,8 @@ class ZendeskClient(BaseClient):
             return_results(GetModifiedRemoteDataResponse(tickets_ids))
         try:
             set_last_mirror_run(updated_tickets.next_run())
-        except json.decoder.JSONDecodeError:
-            pass
+        except json.decoder.JSONDecodeError as e:
+            demisto.debug(f'{e}')
 
     @staticmethod
     def _create_entry_from_comment(comment: Dict):
