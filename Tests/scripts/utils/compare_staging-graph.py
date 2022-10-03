@@ -26,10 +26,7 @@ def sort_dict(dct: dict):
             try:
                 v.sort()
             except TypeError:
-                try:
-                    v.sort(key=lambda item: item.get('name'))
-                except Exception as e:
-                    print(f'sorting failed: {e}')
+                v.sort(key=lambda item: item.get('name'))
 
 
 def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path: Path) -> bool:
@@ -40,8 +37,10 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
         sort_dict(index_graph)
         diff_list = dictdiffer.diff(index_id_set, index_graph)
     if diff_list:
-        with output_path.open('w') as output:
+        with (output_path / 'index-diff.json').open('w') as output:
             json.dump(diff_list, output, indent=4)
+        shutil.copyfile(index_id_set_path, output_path / 'index-id_set.json')
+        shutil.copyfile(index_graph_path, output_path / 'index-graph.json')
         return True
     return False
 
@@ -117,8 +116,9 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
                 dct2 = load_func(f2)
                 dct1.pop('updated', None)
                 dct2.pop('updated', None)
-                sort_dict(dct1)
-                sort_dict(dct2)
+                if file == 'metadata.json':
+                    sort_dict(dct1)
+                    sort_dict(dct2)
                 diff_found = list(dictdiffer.diff(dct1, dct2))
                 if diff_found:
                     json.dump(diff_found, f, indent=4)
@@ -161,10 +161,12 @@ def main():
         pack = file.removesuffix('.zip')
         diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
         message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
-    if compare_indexes(index_id_set_path, index_graph_path, output_path / 'index-diff.json'):
+    if compare_indexes(index_id_set_path, index_graph_path, output_path):
         message.append('index.json is also different')
-    if file_diff_text(output_path / 'collect-test-diff', collected_packs_id_set, collected_packs_graph):
+    if file_diff_text(output_path / 'collect_tests_diff.json', collected_packs_id_set, collected_packs_graph):
         message.append('collected tests is also different')
+        shutil.copy(collected_packs_id_set, output_path / 'collected_packs-id_set.txt')
+        shutil.copy(collected_packs_graph, output_path / 'collected_packs-graph.txt')
 
     shutil.make_archive(str(output_path / f'diff-{marketplace}'), 'zip', output_path)
     if slack_token:
