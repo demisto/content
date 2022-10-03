@@ -2950,6 +2950,13 @@ script:
         map target has private use internal IPs. Using Express Lite, Internal Scanning
         must be enabled in your account.
       name: iscanner_name
+    - description: Filter IPs/ranges in “ip” parameter (valid when the networks feature 
+        is enabled).
+      name: ip_network_id
+    - description: The ID of the option profile to be used.
+      name: option_id
+    - description: End a scan after some number of hours. A valid value is from 0 to 119.
+      name: end_after
     description: Updates a scan schedule in the user’s account.
     execution: true
     name: qualys-schedule-scan-update
