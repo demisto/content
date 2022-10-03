@@ -1,6 +1,6 @@
-In order to create the API Key go to:
+To create the API Key, in the Proofpoint UI, go to:
 
-  Settings -> API Key -> Add api key
+  Settings > API Key > Add api key
   
-**Note:** if the **fetch-events** command results in a timeout, 
-consider changing **fetch_delta** and **fetch_limit** parameters to reduce the number of API calls and results.
+**Note:** If the ***fetch-events*** command results in a timeout, 
+consider changing *fetch_delta* and *fetch_limit* parameters to reduce the number of API calls and results.
