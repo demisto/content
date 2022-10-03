@@ -907,11 +907,11 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest=" not in searchable_query:
-                    searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest=" not in searchable_query:
-                    searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                if latest_offset:
+                    kwargs['latest_time'] = latest_offset
+                if earliest_offset:
+                    kwargs['earliest_time'] = earliest_offset
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
@@ -921,7 +921,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
             else:
                 demisto.debug('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
-            demisto.debug("Coldn't build search query for notable {} with the following drilldown "
+            demisto.debug("Couldn't build search query for notable {} with the following drilldown "
                           "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
@@ -1040,7 +1040,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
-                    if job.is_ready():
+                    if job.is_done():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
                         for item in results.ResultsReader(job.results()):
                             enrichment.data.append(item)
