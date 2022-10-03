@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
+from demisto_sdk.commands.content_graph.common import ContentType
 
 from Tests.scripts.collect_tests.constants import \
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
@@ -149,3 +151,13 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
+
+
+class Graph:
+    def __init__(self, marketplace: MarketplaceVersions) -> None:
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            self.integrations = content_graph_interface.search_nodes(marketplace=marketplace,
+                                                                     content_type=ContentType.INTEGRATION)
+            self.scripts = content_graph_interface.search_nodes(marketplace=marketplace,
+                                                                content_type=ContentType.SCRIPT)
+            self.content_items_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)

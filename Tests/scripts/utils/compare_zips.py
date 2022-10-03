@@ -134,4 +134,4 @@ if __name__ == '__main__':
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(channel='dmst-graph-tests',
                                   text='\n'.join(message))
-    slack_client.files_upload(str(output_path / 'diff.zip'), channels='dmst-graph-tests')
+    slack_client.files_upload(file=str(output_path / 'diff.zip'), channels='dmst-graph-tests')
