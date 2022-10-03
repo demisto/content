@@ -109,4 +109,3 @@ fromversion: 5.0.0
 tests:
 - Luminate-TestPlaybook
 deprecated: true
-comment: Deprecated. No available replacement.
