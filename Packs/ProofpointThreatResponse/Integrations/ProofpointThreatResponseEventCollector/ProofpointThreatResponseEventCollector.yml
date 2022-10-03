@@ -3,7 +3,7 @@ commonfields:
   id: ProofpointThreatResponseEventCollector
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g., https://192.168.0.1)
   name: url
   required: true
   type: 0
@@ -27,15 +27,15 @@ configuration:
 - defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching
     older incidents. If timeout errors occur, consider changing this value.
-  display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
+  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
   name: fetch_delta
   required: false
   type: 0
-- display: Fetch incidents with specific event sources. Can be a list of comma separated values.
+- display: Fetch incidents with specific event sources. Can be a list of comma-separated values.
   name: event_sources
   required: false
   type: 0
-- display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values.
+- display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma-separated values.
   name: abuse_disposition
   required: false
   type: 0
@@ -49,7 +49,7 @@ configuration:
   - ignored
   required: false
   type: 16
-- additionalinfo: You can find this value by navigating to Sources -> JSON event source -> POST URL.
+- additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
   display: POST URL of the JSON alert source.
   hidden: false
   name: post_url_id
@@ -120,7 +120,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.
+      description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts.
       isArray: false
       name: expand_events
       predefined:
