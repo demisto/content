@@ -5,7 +5,11 @@ import pytest
     ('aGVsbG8=', 'hello'),
     ('dGhpcw==', 'this'),
     ('VGhpcyBpcyBhIHRlc3Q', 'This is a test'),
-    ('VGhpcyBpcyBhIHRlc3Q=', 'This is a test')
+    ('VGhpcyBpcyBhIHRlc3Q=', 'This is a test'),
+    (' aGVs bG 8 ', 'hello'),
+    ('', ''),
+    ('    ', ''),
+    (' ', ''),
 ])
 def test_decoding(value, expected_result):
     """
@@ -35,7 +39,10 @@ def test_decoding(value, expected_result):
     ('aGVsbG80l', 'aGVsbG80l==='),
     ('dGhpcw', 'dGhpcw=='),
     ('VGhpcyBpcyBhIHRlc3Q', 'VGhpcyBpcyBhIHRlc3Q='),
-    ('ERVKHBEK0ejbce8IUBninli0', 'ERVKHBEK0ejbce8IUBninli0')
+    ('ERVKHBEK0ejbce8IUBninli0', 'ERVKHBEK0ejbce8IUBninli0'),
+    (' ', ' '),
+    ('', ''),
+    ('   ', '   ')
 ])
 def test_padding(value, expected_result):
     """
