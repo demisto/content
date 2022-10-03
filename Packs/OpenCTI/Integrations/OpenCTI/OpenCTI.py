@@ -626,7 +626,8 @@ def main():
     base_url = params.get('base_url').strip('/')
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+                                  proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")
 
