@@ -6,13 +6,11 @@ import filecmp
 import json
 from pathlib import Path
 import shutil
-import tempfile
 from zipfile import ZipFile
 
 import difflib
 from contextlib import redirect_stdout
 import dictdiffer
-from regex import D
 
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
@@ -25,7 +23,10 @@ def sort_dict(dct: dict):
         if isinstance(v, dict):
             sort_dict(v)
         if isinstance(v, list):
-            v.sort()
+            try:
+                v.sort()
+            except TypeError:
+                v.sort(key=lambda item: item.get('id'))
 
 
 def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
@@ -128,4 +129,4 @@ if __name__ == '__main__':
     slack_client.chat_postMessage(channel='dmst-graph-tests',
                                   text='\n'.join(message))
     with (output_path / 'diff.zip').open() as f:
-        slack_client.files_upload(f, 'diff.zip', channels='dmst-graph-tests')
+        slack_client.files_upload(file=f, filename='diff.zip', channels='dmst-graph-tests')
