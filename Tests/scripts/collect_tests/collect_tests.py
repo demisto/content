@@ -662,10 +662,16 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set,
                     is_nightly=False,
-                    override_pack_compatibility_check=override_pack_compatibility_check
+                    override_pack_compatibility_check=override_pack_compatibility_check,
                 ) for test in tests))
         else:
-            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
+            return self._collect_pack(
+                pack_id=yml.pack_id,
+                reason=reason,
+                reason_description='collecting pack only',
+                content_item_range=yml.version_range,
+                allow_incompatible_marketplace=override_pack_compatibility_check,
+            )
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
