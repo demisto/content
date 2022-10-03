@@ -533,6 +533,14 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
+    def test_collect_content_items(self):
+
+        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('modelingrule')) == 1
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -1009,7 +1017,8 @@ This is visible
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data)
 
-        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
+        assert version_changelog[
+                   'releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
     def test_create_filtered_changelog_entry_modified_same_entities(self, dummy_pack: Pack):
         """
@@ -1156,7 +1165,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1168,7 +1177,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1180,7 +1189,7 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Scripts\n##### New: Script Name\n\
+         "#### Scripts\n##### New: Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1192,8 +1201,8 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
-            "Script Name\n\
+         "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
+         "Script Name\n\
 - Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
