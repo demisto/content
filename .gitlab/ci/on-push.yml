@@ -109,14 +109,14 @@ create-instances:
     - section_end "Create Content Artifacts and Update Conf"
 
     - section_start "Collect Tests"
-    # - |
-    #   if [ -n "${INSTANCE_TESTS}" ]; then
-    #     echo "Skipping - not running in INSTANCE_TESTS build"
-    #   else
-    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #     python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-    #   fi
-    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
+      fi
+    # - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
 
     - section_end "Collect Tests"
     
@@ -187,12 +187,12 @@ prepare-testing-bucket-mpv2:
     #   python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     # - section_end "Collect Tests and Content Packs"
     
-    # - section_start "Collect Tests V2"
-    # - |
-    #   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #   python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    # - section_end "Collect Tests V2"
-    - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
+    - section_start "Collect Tests V2"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
+    - section_end "Collect Tests V2"
+    # - echo -en "Malware\nSplunkPy\nQRadar\nCommonPlaybooks\nCommonScripts\nBase\nPAN-OS\nCore\nCampaign" > $ARTIFACTS_FOLDER/content_packs_to_install.txt
 
 
     - section_start "Prepare Content Packs for Testing"

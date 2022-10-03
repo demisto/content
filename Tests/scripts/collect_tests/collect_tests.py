@@ -2,7 +2,7 @@ import json
 import os
 import sys
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser
+from argparse import ArgumentParser, BooleanOptionalAction
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
@@ -974,7 +974,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    parser.add_argument('--graph', '-g', type=bool, flag=True, help='Should use graph', default=False)
+    parser.add_argument('--graph', '-g', type=bool, help='Should use graph', default=False, action=BooleanOptionalAction)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
