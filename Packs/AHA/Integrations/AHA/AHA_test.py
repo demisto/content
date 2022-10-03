@@ -29,7 +29,44 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def test_main(mocker):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - main function test-module is executed
+    Then:
+        - Return ok result to War-Room
+    """
+    from AHA import main
+
+    mocker.patch.object(
+        demisto, 'params', return_value={
+            'url': 'example.com',
+            'project_name': 'DEMO',
+            'api_key': {'password': 'test_api'},
+        }
+    )
+    mocker.patch('AHA.Client.get_features', return_value={'name': 'test'})
+    mocker.patch.object(
+        demisto, 'command',
+        return_value='test-module'
+    )
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == 'ok'
+
+
 def test_Module(mocker):
+    """
+    Given:
+        - client is properly configured
+    When:
+        - calling test-module
+    Then:
+        - Return ok result
+    """
     from AHA import test_module
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
     results = test_module(client=client)
@@ -41,7 +78,7 @@ def test_getFeatures(mocker):
         When:
             - Requesting all features
         Then:
-            - Asserts get all features
+            - Asserts get a list of expected length with all features.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
     results = get_features(client=client, from_date='2022-01-01')
@@ -65,7 +102,7 @@ def test_getSpecificFeature(mocker):
         When:
             - Requesting a specific feature
         Then:
-            - Return the requested feature
+            - Returns the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
     result = get_features(client=client, from_date='2020-01-01', feature_name='DEMO-10')

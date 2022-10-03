@@ -26,13 +26,11 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: true
     type: 8
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: ""
     type: 8
     additionalinfo: null
 description: Use the Aha! integration to list and manage Cortex XSOAR features
@@ -50,35 +48,26 @@ script:
           required: false
           isArray: false
           defaultValue: "2020-01-01"
-          predefined:
         - name: feature_name
           description: get a specific feature
           required: false
           isArray: false
           defaultValue: ""
-          predefined:
-            - ""
         - name: fields
           description: Specify fields in comma sepereated manner to include in Aha! service response
           required: false
           isArray: false
           defaultValue: "name,reference_num,id,created_at"
-          predefined:
-            - ""
         - name: page
           description: "result set pagination: get a specific result page"
           required: false
           isArray: false
           defaultValue: "1"
-          predefined:
-            - ""
         - name: per_page
           description: "result set pagination: set max items per page"
           required: false
           isArray: false
           defaultValue: "30"
-          predefined:
-            - ""
       outputs:
         - contextPath: AHA.Feature.id
           description: The feature ID.
@@ -107,8 +96,6 @@ script:
           required: true
           isArray: false
           defaultValue: ""
-          predefined:
-            - ""
         - name: fields
           description:
             'Fields in JSON format to edit in a feature. Possible fields are name, description and status.
@@ -117,8 +104,6 @@ script:
           required: true
           isArray: false
           defaultValue: ""
-          predefined:
-            - ""
       outputs:
         - contextPath: AHA.Feature.id
           description: The feature ID.
@@ -146,5 +131,3 @@ script:
   dockerimage: demisto/python3:3.10.7.33922
   feed: false
 fromversion: 6.5.0
-tests:
-  - No tests (auto formatted)

@@ -1,5 +1,5 @@
 Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
-This integration was integrated and tested with API version 1.0 of Aha
+This integration was integrated and tested with API version September 30, 2022 release of Aha
 ## Configure Aha on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -31,10 +31,10 @@ Will list all features from service, unless a specific feature is specified
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | from_date | Show features created after that date. Default is 2020-01-01. | Optional | 
-| feature_name | get a specific feature. Possible values are: . | Optional | 
-| fields | Specify fields in comma sepereated manner to include in Aha! service response. Possible values are: . Default is name,reference_num,id,created_at. | Optional | 
-| page | result set pagination: get a specific result page. Possible values are: . Default is 1. | Optional | 
-| per_page | result set pagination: set max items per page. Possible values are: . Default is 30. | Optional | 
+| feature_name | get a specific feature. | Optional | 
+| fields | Specify fields in comma sepereated manner to include in Aha! service response. Default is name,reference_num,id,created_at. | Optional | 
+| page | result set pagination: get a specific result page. Default is 1. | Optional | 
+| per_page | result set pagination: set max items per page. Default is 30. | Optional | 
 
 
 #### Context Output
@@ -65,8 +65,8 @@ Edit of the following fields in a feature: Name, Status and Description
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feature_name | Select features to edit. Possible values are: . | Required | 
-| fields | Fields in JSON format to edit in a feature. Possible fields are name, description, status. Status should match Aha values under workflow_status. Possible values are: . Default is {"name": "name", "description": "desc", "status" : "Closed"}. | Required | 
+| feature_name | Select features to edit. | Required | 
+| fields | Fields in JSON format to edit in a feature. Possible fields are name, description and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "description": "desc", "status" : "Closed"}. | Required | 
 
 
 #### Context Output
