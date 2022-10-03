@@ -58,28 +58,3 @@ Parameters used:
 Response status code: {status_code}
 Error received:
 \t{error_received}"""
-
-# 'Parameters used:\n' \
-#         '\tURL: https://api-url\n'\
-#         '\tHeaders: {{' \
-#         '    "authorization": "TOKEN",' \
-#         '    "format": "json","' \
-#         '    "product": "some product",' \
-#         '    "vendor": "some vendor",' \
-#         '    "content-encoding": "gzip"' \
-#         '}}\n\n'
-#         'Response status code: {status_code}\n'
-#         'Error received:\n\t{error}'
-# 'Error sending new events into XSIAM. \n' \
-#         'Parameters used:
-#         URL: https://api-url
-#         Headers: {{
-#             "authorization": "TOKEN",
-#             "format": "json",
-#             "product": "some product",
-#             "vendor": "some vendor",
-#             "content-encoding": "gzip"
-#     }}
-#
-#     Response status code: {status_code}
-#     Error received:\n\t{error_received}"""
