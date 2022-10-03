@@ -29,7 +29,7 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
     response = demisto.executeCommand('ad-search', {'filter': filter_str,
                                                     'attributes': 'displayName,' + manager_attribute})
 
-    if isError(response[0]):
+    if response and isError(response[0]):
         demisto.results(response)
         sys.exit(0)
 
