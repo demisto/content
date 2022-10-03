@@ -3656,9 +3656,9 @@ def test_rtr_kill_process_command(mocker):
 
 
 @pytest.mark.parametrize('operating_system, expected_result', [
-    ("Windows", 'rm test.txt --force'),
-    ("Linux", 'rm test.txt -r -d'),
-    ("Mac", 'rm test.txt -r -d'),
+    ("Windows", "rm 'test.txt' --force"),
+    ("Linux", "rm 'test.txt' -r -d"),
+    ("Mac", "rm 'test.txt' -r -d"),
     ("bla", ""),
 ])
 def test_match_remove_command_for_os(operating_system, expected_result):
