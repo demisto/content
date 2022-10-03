@@ -18,7 +18,7 @@
     "isReadOnly": false,
     "selectValues": [
         "RED",
-        "AMBER + STRICT",
+        "AMBER+STRICT",
         "AMBER",
         "GREEN",
         "WHITE",
