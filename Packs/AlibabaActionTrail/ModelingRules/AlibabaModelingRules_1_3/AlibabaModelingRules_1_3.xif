@@ -2,7 +2,7 @@
 filter
     event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","PasswordReset")
 | alter
-    // xdm.event.operation_sub_type = event_eventtype,
+    xdm.event.operation_sub_type = event_eventtype,
     _time = timestamp_seconds(to_integer(__time__)),
     xdm.target.cloud.region = event_acsregion,
     xdm.event.id = event_eventid,
