@@ -1,7 +1,7 @@
-id: d84642ca-065b-4bd5-86ca-dbdf63746d48
-version: 397
+id: GitLab-Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: gitlab
+name: GitLab-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -2451,3 +2451,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: GitLab test playbook

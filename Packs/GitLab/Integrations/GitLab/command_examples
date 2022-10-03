@@ -27,11 +27,3 @@
 !gitlab-file-create file_path=275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f branch=main entry_id=.gitlab-ci.yml author_email=email@google.com author_name=authorName file_content='cfgdfr' commit_message=addFile execute_filemode=True
 !gitlab-file-update file_path=./gitlabca branch=thisbranch start_branch=main encoding=base64 author_email=author@email.com author_name=name entry_id=.gitlab-ci.yml file_content="contant of file" commit_message=commit last_commit_id=5 execute_filemode=True
 !gitlab-file-delete branch=main file file_path=./gitlabca commit_message=deleteFile
-
-
-
-
-
-
-
-

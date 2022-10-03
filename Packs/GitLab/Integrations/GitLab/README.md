@@ -1796,3 +1796,6 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 | GitLab.Code.ref | String | Branch name. | 
 | GitLab.Code.startline | Number | The line which the search code begin. | 
 | GitLab.Code.project_id | Number | The project's id. | 
+
+### limitation
+ Description is limited to 1,048,576 characters.

@@ -16,7 +16,7 @@ configuration:
 - display: Project ID
   name: project_id
   required: true
-  type: 4
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -92,7 +92,7 @@ script:
       required: false
       isArray: false
     - name: file_path
-      description: The file path.
+      description: URL-encoded full path to new file.
       required: false
       isArray: false
     - name: file_content
@@ -100,7 +100,7 @@ script:
       required: false
       isArray: false
     - name: branch
-      description: URL-encoded full path to new file.
+      description: Name of the new branch to create. The commit is added to this branch.
       required: true
       isArray: false
     - name: author_email
@@ -165,7 +165,7 @@ script:
       required: false
       isArray: false
     - name: entry_id
-      description: The ID or URL-encoded path of the project owned by the authenticated user
+      description: Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument.
       required: false
       isArray: false
     - name: file_content
@@ -237,11 +237,11 @@ script:
       required: false
       isArray: false
     - name: created_after
-      description: Return issues created on or after the given time.
+      description: Return issues created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: created_before
-      description: Return issues created on or before the given time.
+      description: Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -390,7 +390,7 @@ script:
       required: false
       isArray: false
     - name: description
-      description: The description of an issue. Limited to 1,048,576 characters.
+      description: The description of an issue.
       required: false
       isArray: false
     - name: discussion_locked
@@ -573,11 +573,11 @@ script:
       required: false
       isArray: false
     - name: created_before
-      description: Only commits before or on this date are returned (until).
+      description: Only commits before or on this date are returned (until). Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: created_after
-      description: Only commits after or on this date are returned(since).
+      description: Only commits after or on this date are returned(since). Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: path
@@ -696,19 +696,19 @@ script:
       required: false
       isArray: false
     - name: created_after
-      description: Return merge requests created on or after the given time. Expected in ISO 8601 format.
+      description: Return merge requests created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: created_before
-      description: Return merge requests created on or before the given time. Expected in ISO 8601 format.
+      description: Return merge requests created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: updated_after
-      description: Return merge requests updated on or after the given time. Expected in ISO 8601 format.
+      description: Return merge requests updated on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - name: updated_before
-      description: Return merge requests updated on or before the given time. Expected in ISO 8601 format.
+      description: Return merge requests updated on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -1650,7 +1650,7 @@ script:
       name: limit
       required: false
     - defaultValue: 1
-      description: The page number of the results to retrieve. Minimum value is 0.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
@@ -2392,7 +2392,7 @@ script:
       description: The open issues count number.
     - type: Number
       contextPath: GitLab.Project.ci_default_git_depth
-      description: The ci default git depth value  ## ?????????????
+      description: The ci default git depth value
     - type: Boolean
       contextPath: GitLab.Project.ci_forward_deployment_enabled
       description: If the ci forward deployment is enabled.
@@ -3294,4 +3294,4 @@ script:
   dockerimage: demisto/python3:3.10.7.33922
 fromversion: 6.5.0
 tests:
-- gitlabTestPlaybook.yml
+- GitLab-Test

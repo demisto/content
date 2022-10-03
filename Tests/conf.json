@@ -4186,20 +4186,14 @@
             ]
         },
         {
-            "playbookID": "GitLab-test-playbook",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "GitLab",
-                "LGTM",
-                "MinIO",
-                "Docker Engine API"
-            ]
+            "playbookID": "GitLab-Test",
+            "fromversion": "6.5.0",
+            "integrations": "GitLab"
         },
         {
             "playbookID": "LGTM-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"

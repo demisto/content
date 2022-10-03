@@ -632,14 +632,10 @@ def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def merged_branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Returns the content of a given file.
+    Deletes branches who had been merged.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
-            - 'project_id' (Required): Project ID to get the file from.
-            - 'file_path' (Required): The file path.
-            - 'ref': The branch to retrieve the file from, default is master
-            - `create_file_from_content` (Optional): bool, create file from the content data or not
 
     Returns:
         (CommandResults).
