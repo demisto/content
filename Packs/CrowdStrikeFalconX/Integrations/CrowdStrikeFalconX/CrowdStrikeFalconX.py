@@ -171,7 +171,7 @@ class Client:
                 return res
 
             try:
-                if 'image' in res.headers.get('Content-Type'):
+                if 'image' in res.headers.get('Content-Type', ''):
                     filename_from_headers = res.headers.get('Content-Disposition')
                     if 'filename=' in filename_from_headers:
                         filename = filename_from_headers.split('filename=')[-1]
