@@ -17,7 +17,7 @@ filter
 | alter
     _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", timeStamp),
     xdm.event.id = id,
-    xdm.session_context_id = json_extract_scalar(context, "$.sessionId"),
+    xdm.network.session_id = json_extract_scalar(context, "$.sessionId"),
     xdm.network.application_protocol = coalesce(json_extract_scalar(context, "$.applicationType"), json_extract_scalar(details, "$.credentialType")),
     xdm.source.application.name = json_extract_scalar(context, "$.applicationName"),
     xdm.event.type = json_extract_scalar(details, "$.type"),
