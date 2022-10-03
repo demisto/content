@@ -27,9 +27,9 @@ tags:
 - word
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runas: DBotRole
-dockerimage: demisto/office-utils:2.0.0.23094
+dockerimage: demisto/office-utils:2.0.0.34473
 runonce: false
 fromversion: 5.0.0
 tests:
