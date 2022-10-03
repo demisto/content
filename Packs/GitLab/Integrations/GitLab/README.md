@@ -9,7 +9,7 @@ This integration was integrated and tested with version 15.4 of GitLab
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://gitlab.com/api/v4) | True |
+    | Server URL | True |
     | API Key | True |
     | Project ID | True |
     | Trust any certificate (not secure) | False |
@@ -351,31 +351,31 @@ Get a list of repository commits in a project.
 {
     "GitLab": {
         "Commit": {
-            "author_email": "mmatyas@paloaltonetworks.com",
-            "author_name": "Moishy Matyas",
+            "author_email": "name@email.com",
+            "author_name": "dummy data",
             "authored_date": "2022-09-07T14:48:41.000+00:00",
             "committed_date": "2022-09-07T14:48:41.000+00:00",
-            "committer_email": "mmatyas@paloaltonetworks.com",
-            "committer_name": "Moishy Matyas",
+            "committer_email": "dummy@email.com",
+            "committer_name": "dummy data",
             "created_at": "2022-09-07T14:48:41.000+00:00",
-            "id": "c156b66b85372639eecd644062f9c664d959e887",
+            "id": "a123",
             "last_pipeline": {
                 "created_at": "2022-09-15T11:03:09.559Z",
                 "id": 641050082,
                 "iid": 49,
-                "project_id": 37904895,
+                "project_id": 1,
                 "ref": "branchToPlaybook",
                 "sha": "c156b66b85372639eecd644062f9c664d959e887",
                 "source": "push",
                 "status": "failed",
                 "updated_at": "2022-09-15T11:03:09.559Z",
-                "web_url": "https://gitlab.com/demistotest1/demistoTest/-/pipelines/641050082"
+                "web_url": "https://gitlab.com/dummydata1/dummydata/-/pipelines/641050082"
             },
             "message": "defs",
             "parent_ids": [
-                "1efa366cfe9984f8406312b9d62d9f6bfdcae4fe"
+                "1"
             ],
-            "project_id": 37904895,
+            "project_id": 1,
             "short_id": "c156b66b",
             "stats": {
                 "additions": 1,
@@ -385,7 +385,7 @@ Get a list of repository commits in a project.
             "status": "failed",
             "title": "defs",
             "trailers": {},
-            "web_url": "https://gitlab.com/demistotest1/demistoTest/-/commit/c156b66b85372639eecd644062f9c664d959e887"
+            "web_url": "https://gitlab.com/demo/commit/c156"
         }
     }
 }
@@ -397,7 +397,7 @@ Get a list of repository commits in a project.
 > c156b66b
 >|Message|ShortId|Author|CreatedAt|
 >|---|---|---|---|
->| defs | c156b66b | Moishy Matyas | 2022-09-07T14:48:41.000+00:00 |
+>| defs | c156b66b | dummy data | 2022-09-07T14:48:41.000+00:00 |
 
 
 ### gitlab-merge-request-list
@@ -744,20 +744,20 @@ Creates a new note to a single project issue.
         "IssueNote": {
             "attachment": null,
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/f348c31a1030e7c53138568d4dd09bda?s=80&d=identicon",
-                "id": 12088680,
-                "name": "Moishy Matyas",
+                "avatar_url": "https://secure.gravatar.com/avatar",
+                "id": 1,
+                "name": "dummy data",
                 "state": "active",
-                "username": "moishy",
-                "web_url": "https://gitlab.com/moishy"
+                "username": "dummy data",
+                "web_url": "https://gitlab.com/dummy_data"
             },
             "body": "body",
             "commands_changes": {},
             "confidential": true,
             "created_at": "2022-09-16T05:33:53.279Z",
-            "id": 1102983829,
+            "id": 1,
             "internal": true,
-            "noteable_id": 112293552,
+            "noteable_id": 1,
             "noteable_iid": 4,
             "noteable_type": "Issue",
             "resolvable": false,
@@ -937,20 +937,20 @@ Gets a list of all notes for a single merge request.
         "MergeRequestNote": {
             "attachment": null,
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/f348c31a1030e7c53138568d4dd09bda?s=80&d=identicon",
-                "id": 12088680,
-                "name": "Moishy Matyas",
+                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
+                "id": 1,
+                "name": "dummy data",
                 "state": "active",
-                "username": "moishy",
-                "web_url": "https://gitlab.com/moishy"
+                "username": "dummy data",
+                "web_url": "https://gitlab.com/dummy_data"
             },
-            "body": "assigned to @moishy",
+            "body": "assigned to @dummy data",
             "commands_changes": {},
             "confidential": false,
             "created_at": "2022-08-25T08:46:53.559Z",
-            "id": 1077673050,
+            "id": 1,
             "internal": false,
-            "noteable_id": 173453796,
+            "noteable_id": 1,
             "noteable_iid": 5,
             "noteable_type": "MergeRequest",
             "resolvable": false,
@@ -967,7 +967,7 @@ Gets a list of all notes for a single merge request.
 >### List Merge Issue Notes
 >|Id|Text|CreatedAt|UpdatedAt|
 >|---|---|---|---|
->| 1077673050 | assigned to @moishy | 2022-08-25T08:46:53.559Z | 2022-08-25T08:46:53.562Z |
+>| 1077673050 | assigned to @dummy data | 2022-08-25T08:46:53.559Z | 2022-08-25T08:46:53.562Z |
 
 
 ### gitlab-merge-request-note-create
@@ -1019,20 +1019,20 @@ Creates a new note for a single merge request.
         "MergeRequestNote": {
             "attachment": null,
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/f348c31a1030e7c53138568d4dd09bda?s=80&d=identicon",
-                "id": 12088680,
-                "name": "Moishy Matyas",
+                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
+                "id": 1,
+                "name": "dummy data",
                 "state": "active",
-                "username": "moishy",
-                "web_url": "https://gitlab.com/moishy"
+                "username": "dummy data",
+                "web_url": "https://gitlab.com/dummy_data"
             },
             "body": "body",
             "commands_changes": {},
             "confidential": false,
             "created_at": "2022-09-16T05:33:59.108Z",
-            "id": 1102983875,
+            "id": 1,
             "internal": false,
-            "noteable_id": 173453796,
+            "noteable_id": 1,
             "noteable_iid": 5,
             "noteable_type": "MergeRequest",
             "resolvable": false,
@@ -1181,21 +1181,21 @@ Create an issue.
     "GitLab": {
         "Issue": {
             "_links": {
-                "award_emoji": "https://gitlab.com/api/v4/projects/37904895/issues/109/award_emoji",
+                "award_emoji": "https://gitlab.com/api/v4/projects/1/issues/109/award_emoji",
                 "closed_as_duplicate_of": null,
-                "notes": "https://gitlab.com/api/v4/projects/37904895/issues/109/notes",
-                "project": "https://gitlab.com/api/v4/projects/37904895",
-                "self": "https://gitlab.com/api/v4/projects/37904895/issues/109"
+                "notes": "https://gitlab.com/api/v4/projects/dummy_project_id/issues/109/notes",
+                "project": "https://gitlab.com/api/v4/projects/dummy_project_id",
+                "self": "https://gitlab.com/api/v4/projects/dummy_project_id/issues/109"
             },
             "assignee": null,
             "assignees": [],
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/f348c31a1030e7c53138568d4dd09bda?s=80&d=identicon",
-                "id": 12088680,
-                "name": "Moishy Matyas",
+                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
+                "id": 1,
+                "name": "dummy data",
                 "state": "active",
-                "username": "moishy",
-                "web_url": "https://gitlab.com/moishy"
+                "username": "dummy data",
+                "web_url": "https://gitlab.com/dummy_data"
             },
             "blocking_issues_count": 0,
             "closed_at": null,
@@ -1207,7 +1207,7 @@ Create an issue.
             "downvotes": 0,
             "due_date": null,
             "has_tasks": false,
-            "id": 115180339,
+            "id": 1,
             "iid": 109,
             "issue_type": "issue",
             "labels": [
@@ -1217,9 +1217,9 @@ Create an issue.
             "merge_requests_count": 0,
             "milestone": null,
             "moved_to_id": null,
-            "project_id": 37904895,
+            "project_id": 1,
             "references": {
-                "full": "demistotest1/demistoTest#109",
+                "full": "dummydata1/dummydata#109",
                 "relative": "#109",
                 "short": "#109"
             },
@@ -1242,7 +1242,7 @@ Create an issue.
             "updated_at": "2022-09-16T05:33:45.672Z",
             "upvotes": 0,
             "user_notes_count": 0,
-            "web_url": "https://gitlab.com/demistotest1/demistoTest/-/issues/109"
+            "web_url": "https://gitlab.com/dummydata1/dummydata/-/issues/109"
         }
     }
 }

@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List
-
 '''--------------------- CLIENT CLASS --------------------'''
 
 
@@ -518,7 +517,6 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     updated_after = args.get('updated_after')
     updated_before = args.get('updated_before')
     response: List[Dict[str, Any]] = []
-
     while items_count_total < limit:
         response_temp = client.issue_list_request(per_page, page, assignee_id, assignee_username,
                                                   author_id, author_username, confidential,
