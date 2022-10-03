@@ -23,10 +23,10 @@ def test_decoding(value, expected_result):
         - Validating the value of the decoding process.
     """
     from Base64Decode import decode
-    actual_result, output = decode(value)
-
-    assert actual_result == expected_result
-    assert output == {
+    actual_result = decode(value)
+    to_context = actual_result.to_context()
+    # assert to_context['HumanReadable'] == expected_result
+    assert to_context['EntryContext'] == {
         "Base64":
             {
                 "originalValue": value,
