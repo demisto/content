@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
 
@@ -170,12 +171,12 @@ class Client:
                 return res
 
             try:
-                if res.headers.get('Content-Type') == 'image/png':
+                if 'image' in res.headers.get('Content-Type'):
                     filename_from_headers = res.headers.get('Content-Disposition')
-                    if filename_from_headers:
-                        filename = filename_from_headers.split('=')[-1]
+                    if 'filename=' in filename_from_headers:
+                        filename = filename_from_headers.split('filename=')[-1]
                     else:
-                        filename = 'filename'  # todo: what name should be given if no name was detected?
+                        filename = str(uuid.uuid4())
                     stored_file = fileResult(filename, res.content)
                     file_entry = {
                         'Type': entryTypes['image'],
@@ -1076,7 +1077,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> CommandResults:
+) -> Union[CommandResults, dict]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -1088,14 +1089,15 @@ def download_ioc_command(
     try:
         response = client.download_ioc(id, name, accept_encoding)
         if response.get('File'):  # In case the returned response is a file, output the file to the war room.
-            demisto.results(response)
-        return CommandResults(
-            outputs_prefix=OUTPUTS_PREFIX,
-            outputs_key_field='ioc',
-            outputs=response,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
-            raw_response=response
-        )
+            return response
+        else:
+            return CommandResults(
+                outputs_prefix=OUTPUTS_PREFIX,
+                outputs_key_field='ioc',
+                outputs=response,
+                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+                raw_response=response
+            )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
         raise DemistoException(f'Download ioc encountered an exception: {e}', exception=e, res=response)
