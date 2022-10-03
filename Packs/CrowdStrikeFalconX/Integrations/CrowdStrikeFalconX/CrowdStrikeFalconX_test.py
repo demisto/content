@@ -554,6 +554,6 @@ def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, moc
     requests_mock.get(mocked_address, headers=mocked_response.get('headers'), json={})
     command_results = download_ioc_command(client, ioc_id)
     if isinstance(command_results, dict):
-        assert command_results.get('File') == command_results_output    
+        assert command_results.get('File') == command_results_output
     else:
         assert command_results.outputs.get('File') == command_results_output
