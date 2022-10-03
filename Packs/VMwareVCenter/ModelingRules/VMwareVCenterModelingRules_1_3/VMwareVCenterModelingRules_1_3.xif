@@ -3,10 +3,10 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter Date = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+"),0)
 | alter Hour = arrayindex(regextract(_raw_log,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)"),0)
 | alter TimeStamp = concat(Date," ",Hour)
-| alter LogLevel = arrayindex(regextract(_raw_log,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)\s\s\|"),0)
-| alter LogLeve2 = arrayindex(regextract(_raw_log,"\[\w+\]\[(\w+)"),0)
-| alter LogLeve3 = arrayindex(regextract(_raw_log,"\[\w+\-\d+\-\w+\-\S+\s(\w+)"),0)
-| alter LogLeve = coalesce(LogLevel,LogLeve2, LogLeve3)
+| alter LogLevel1 = arrayindex(regextract(_raw_log,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)\s\s\|"),0)
+| alter LogLevel2 = arrayindex(regextract(_raw_log,"\[\w+\]\[(\w+)"),0)
+| alter LogLevel3 = arrayindex(regextract(_raw_log,"\[\w+\-\d+\-\w+\-\S+\s(\w+)"),0)
+| alter LogLevel = coalesce(LogLevel1,LogLevel2, LogLevel3)
 | alter Message0 = arrayindex(regextract(_raw_log,"\|\s\d+\s\|\s([^\t]+)"),0)
 | alter Message1 = arrayindex(regextract(_raw_log,"\]\s([^\t]+)"),0)
 | alter Message2 = arrayindex(regextract(_raw_log,"\|\s\S+\s\S+\S\s\<\S+([^\.]+)"),0)
@@ -17,7 +17,7 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter Description = coalesce(Description1,Description2,Description3)
 | alter msg = arrayindex(regextract(_raw_log,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)"),0)
 | alter msg2 = arrayindex(regextract(_raw_log,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)"),0)
-| alter msg1 = concat(msg,message,LogLeve,Description,msg2 )
+| alter msg1 = concat(msg,message,LogLevel,Description,msg2 )
 | alter originator = arrayindex(regextract(_raw_log,"Originator\@(\d+)"),0)
 | alter sub = arrayindex(regextract(_raw_log,"(\w+)\sopID"),0)
 | alter opID = arrayindex(regextract(_raw_log,"opID\=([^\]]+)"),0)
@@ -26,7 +26,7 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
     xdm.event.description = Message,
     xdm.target.resource.id = opID,
     xdm.source.user.identifier = originator,
-    xdm.target.user.username = LogLevel;
+    xdm.event.type = LogLevel;
 
 filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
 | alter Date = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+"),0)
