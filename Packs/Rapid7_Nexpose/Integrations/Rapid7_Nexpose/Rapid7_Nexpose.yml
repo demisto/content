@@ -1067,6 +1067,170 @@ script:
         type: int
   - arguments:
       - default: false
+        description: ID of a specific vulnerability to retrieve.
+        isArray: false
+        name: id
+        required: false
+        secret: false
+      - default: false
+        description: The number of records to retrieve in each API call when pagination is used.
+        isArray: false
+        name: page_size
+        required: false
+        secret: false
+      - default: false
+        description: An option to retrieve a specific page when pagination is used.
+        isArray: false
+        name: page
+        required: false
+        secret: false
+      - default: false
+        defaultValue: '10'
+        description: integer <int32> The number of records retrieve.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+      - default: false
+        description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
+        The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+        isArray: false
+        name: sort
+        required: false
+        secret: false
+    deprecated: false
+    description: Retrieve information about all or a specific vulnerability.
+    execution: false
+    name: nexpose-list-vulnerability
+    outputs:
+      - contextPath: Nexpose.Vulnerability.added
+        description: The date the vulnerability coverage was added in an ISO 8601 format.
+        type: string
+      - contextPath: Nexpose.Vulnerability.categories
+        description: All vulnerability categories assigned to this vulnerability.
+        type: array
+      - contextPath: Nexpose.Vulnerability.cves
+        description: All CVEs assigned to this vulnerability.
+        type: array
+      - contextPath: Nexpose.Vulnerability.cvss.v2.accessComplexity
+        description: Access Complexity (AC) component which measures the complexity of the attack required to exploit the vulnerability once an attacker has gained access to the target system.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.accessVector
+        description: Access Vector (Av) component which reflects how the vulnerability is exploited.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.authentication
+        description: Authentication (Au) component which measures the number of times an attacker must authenticate to a target in order to exploit a vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.availabilityImpact
+        description: Availability Impact (A) component which measures the impact to availability of a successfully exploited vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.confidentialityImpact
+        description: Confidentiality Impact (C) component which measures the impact on confidentiality of a successfully exploited vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.exploitScore
+        description: The CVSS exploit score.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v2.impactScore
+        description: The CVSS impact score.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v2.integrityImpact
+        description: Integrity Impact (I) component measures the impact to integrity of a successfully exploited vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v2.score
+        description: The CVSS score, which ranges from 0-10.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v2.vector
+        description: The CVSS v2 vector.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.attackComplexity
+        description: Access Complexity (AC) component with measures the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.attackVector
+        description: Attack Vector (AV) component which measures context by which vulnerability exploitation is possible.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.availabilityImpact
+        description: Availability Impact (A) measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.confidentialityImpact
+        description: Confidentiality Impact (C) component which measures the impact on confidentiality of a successfully exploited vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.exploitScore
+        description: The CVSS impact score.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v3.impactScore
+        description: The CVSS exploit score.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v3.integrityImpact
+        description: Integrity Impact (I) measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.privilegeRequired
+        description: Privileges Required (PR) measures the level of privileges an attacker must possess before successfully exploiting the vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.scope
+        description: Scope (S) measures the collection of privileges defined by a computing authority (e.g. an application, an operating system, or a sandbox environment) when granting access to computing resources (e.g. files, CPU, memory, etc). These privileges are assigned based on some method of identification and authorization.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.score
+        description: The CVSS score, which ranges from 0-10.
+        type: number
+      - contextPath: Nexpose.Vulnerability.cvss.v3.userInteraction
+        description: User Interaction (UI) measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component.
+        type: string
+      - contextPath: Nexpose.Vulnerability.cvss.v3.vector
+        description: The CVSS v3 vector.
+        type: string
+      - contextPath: Nexpose.Vulnerability.denialOfService
+        description: Whether the vulnerability can lead to Denial of Service (DoS).
+        type: boolean
+      - contextPath: Nexpose.Vulnerability.description.html
+        description: Hypertext Markup Language (HTML) representation of the content.
+        type: string
+      - contextPath: Nexpose.Vulnerability.description.text
+        description: Textual representation of the content.
+        type: string
+      - contextPath: Nexpose.Vulnerability.exploits
+        description: The exploits that can be used to exploit a vulnerability.
+        type: number
+      - contextPath: Nexpose.Vulnerability.id
+        description: The identifier of the vulnerability.
+        type: string
+      - contextPath: Nexpose.Vulnerability.malwareKits
+        description: The malware kits that are known to be used to exploit the vulnerability.
+        type: number
+      - contextPath: Nexpose.Vulnerability.modified
+        description: The last date the vulnerability was modified in an ISO 8601 format.
+        type: string
+      - contextPath: Nexpose.Vulnerability.pci.adjustedCVSSScore
+        description: The CVSS score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10.
+        type: number
+      - contextPath: Nexpose.Vulnerability.pci.adjustedSeverityScore
+        description: The severity score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10.
+        type: number
+      - contextPath: Nexpose.Vulnerability.pci.fail
+        description: Whether if present on a host this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise.
+        type: boolean
+      - contextPath: Nexpose.Vulnerability.pci.specialNotes
+        description: Any special notes or remarks about the vulnerability that pertain to PCI compliance.
+        type: string
+      - contextPath: Nexpose.Vulnerability.pci.status
+        description: The PCI compliance status of the vulnerability. Can be either "Pass", or "Fail".
+        type: string
+      - contextPath: Nexpose.Vulnerability.published
+        description: The date the vulnerability was first published or announced in an ISO 8601 format.
+        type: string
+      - contextPath: Nexpose.Vulnerability.riskScore
+        description: The risk score of the vulnerability, rounded to a maximum of to digits of precision. If using the default Rapid7 Real Risk model, this value ranges from 0-1000.
+        type: number
+      - contextPath: Nexpose.Vulnerability.severity
+        description: The severity of the vulnerability, can be either "Moderate", "Severe", or "Critical".
+        type: string
+      - contextPath: Nexpose.Vulnerability.severityScore
+        description: The severity score of the vulnerability, on a scale of 0-10.
+        type: number
+      - contextPath: Nexpose.Vulnerability.title
+        description: The title (summary) of the vulnerability.
+        type: string
+  - arguments:
+      - default: false
         description: ID of the site.
         isArray: false
         name: site_id

@@ -2819,6 +2819,82 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
+def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], page_size: Optional[int] = None,
+                               page: Optional[int] = None, sort: Optional[str] = None,
+                               limit: Optional[int] = None) -> CommandResults:
+    """
+    Retrieve information about all or a specific vulnerability.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_id (str | None, optional): ID of a specific vulnerability to retrieve.
+            Defaults to None (Results in getting all vulnerabilities).
+        page_size (int | None, optional): Number of scans to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
+        sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format. Defaults to None.
+        limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if not vulnerability_id:
+        vulnerabilities = client.get_vulnerabilities(
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+        )
+
+    else:
+        vulnerabilities = client.get_vulnerability(
+            vulnerability_id=vulnerability_id,
+        )
+
+        vulnerabilities = [vulnerabilities]
+
+    if not vulnerabilities:
+        return CommandResults(readable_output="No vulnerability exceptions were found.")
+
+    headers = [
+        "Title",
+        "MalwareKits",
+        "Exploits",
+        "CVSS",
+        "CVSSv3",
+        "Risk",
+        "PublishedOn",
+        "ModifiedOn",
+        "Severity",
+    ]
+
+    vulnerabilities_hr = vulnerabilities.copy()
+
+    replace_key_names(
+        data=vulnerabilities_hr,
+        name_mapping={
+            "title": "Title",
+            "malwareKits": "MalwareKits",
+            "exploits": "Exploits",
+            "CVSS.v2.score": "CVSS",
+            "CVSS.v3.score": "CVSSv3",
+            "riskScore": "Risk",
+            "published": "PublishedOn",
+            "modified": "ModifiedOn",
+            "severity": "Severity",
+        },
+        recursive=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.Vulnerability",
+        outputs_key_field="id",
+        outputs=vulnerabilities,
+        readable_output=tableToMarkdown(
+            "Nexpose Vulnerabilities", vulnerabilities_hr, headers, removeNull=True),
+        raw_response=vulnerabilities,
+    )
+
+
 def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: Optional[str] = None,
                                           page_size: Optional[int] = None, page: Optional[int] = None,
                                           sort: Optional[str] = None, limit: Optional[int] = None) -> CommandResults:
@@ -3406,6 +3482,14 @@ def main():
                 page_size=arg_to_number(args.get("page_size")),
                 page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-list-vulnerability":
+            results = list_vulnerability_command(
+                client=client,
+                vulnerability_id=args.get("id"),
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-list-vulnerability-exceptions":
