@@ -2,18 +2,7 @@ commonfields:
   id: SetDateField
   version: -1
 name: SetDateField
-script: >-
-  from time import strftime
-
-
-  field_name = demisto.args()['fieldName']
-
-
-  t = strftime("%a, %d %b %Y %H:%M:%S %Z")
-
-  res = demisto.executeCommand("setIncident", {field_name:t})
-
-  demisto.results(res)
+script: ''
 type: python
 subtype: python2
 tags:
@@ -25,7 +14,7 @@ args:
   required: true
   description: "The name of the incident custom field of type date"
 scripttarget: 0
-fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+fromversion: 6.5.0
+dockerimage: demisto/python:2.7.18.27799
 tests:
 - No tests (auto formatted)
