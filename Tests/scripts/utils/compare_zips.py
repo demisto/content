@@ -92,6 +92,8 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
             with open(file1_path) as f1, open(file2_path) as f2:
                 dct1 = load_func(f1)
                 dct2 = load_func(f2)
+                dct1.pop('updated')
+                dct2.pop('updated')
                 sort_dict(dct1)
                 sort_dict(dct2)
                 diff_found = list(dictdiffer.diff(dct1, dct2))
