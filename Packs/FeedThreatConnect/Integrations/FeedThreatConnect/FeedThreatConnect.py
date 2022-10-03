@@ -118,7 +118,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                        'lastModified': 'updateddate',
                        'description': 'description',
                        'name': 'name'},
-    'Campaign': {'firstSeen': 'firstseenbysource',
+    'Campaign': {'dateAdded': 'firstseenbysource',
                  'lastModified': 'updateddate',
                  'name': 'name'},
     'Course of Action': {'dateAdded': 'firstseenbysource',
@@ -181,35 +181,35 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
-def set_fields_query() -> str:
+def set_fields_query(params, endpoint) -> str:
     """Creating fields query to add information to the API response"""
-    fields_str = '&fields=threatAssess&fields=tags'
-    if demisto.getParam('createRelationships'):
+    fields_str = '&fields=tags'
+    if endpoint == 'indicators':
+        fields_str += '&fields=threatAssess'
+    if argToBoolean(params.get('createRelationships')):
         fields_str += '&fields=associatedGroups&fields=associatedIndicators'
 
     return fields_str
 
 
-def create_types_query() -> str:
+def create_types_query(params, endpoint) -> str:
     """Creating TypeName query to fetch different types of indicators"""
-    group_types = argToList(demisto.getParam('group_type'))
-    indicator_types = argToList(demisto.getParam('indicator_type'))
+    group_types = argToList(params.get('group_type'))
+    indicator_types = argToList(params.get('indicator_type'))
     types = []
 
     if not group_types and not indicator_types:
-        raise ValueError('No indicator type or group type were chosen, please choose at least one.')
-
-    if 'All' in group_types and 'All' in indicator_types:
-        return ''
-    elif 'All' in group_types:
-        types.extend(INDICATOR_GROUPS)
-        types.extend(indicator_types)
-    elif 'All' in indicator_types:
-        types.extend(INDICATOR_TYPES)
-        types.extend(group_types)
+        raise DemistoException('No indicator type or group type were chosen, please choose at least one.')
+    if endpoint == 'indicators':
+        if 'All' in indicator_types:
+            return ''
+        else:
+            types.extend(indicator_types)
     else:
-        types.extend(group_types)
-        types.extend(indicator_types)
+        if 'All' in group_types:
+            types.extend(INDICATOR_GROUPS)
+        else:
+            types.extend(group_types)
 
     query = 'typeName IN ("' + '","'.join(types) + '")'
 
@@ -241,6 +241,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     Returns:
         dict: Parsed indicator.
     """
+    demisto.debug("The indicator type is: " + indicator.get('type', ''))
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
     fields = create_indicator_fields(indicator, indicator_type)
@@ -249,10 +250,9 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         "value": indicator_value,
         "type": indicator_type,
         "rawJSON": indicator,
-        "score": calculate_dbot_score(indicator.get("threatAssessScore")),
+        "score": calculate_dbot_score(indicator.get("threatAssessScore", '')),
         "fields": fields,
         "relationships": relationships
-
     }
 
     return indicator_obj
@@ -265,6 +265,7 @@ def create_indicator_fields(indicator, indicator_type):
     fields: dict = {}
 
     for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
+        demisto.debug('The key is:' + xsoar_indicator_key)
         fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
 
     raw_tags = indicator.get('tags', {}).get('data', [])
@@ -295,6 +296,7 @@ def create_indicator_fields(indicator, indicator_type):
 def create_indicator_relationships(indicator, indicator_type, indicator_value):
     relationships_list = []
     if argToBoolean(demisto.getParam('createRelationships')):
+        demisto.debug('Creating relationships')
         b_entities = indicator.get('feedrelatedindicators', [])
         for entity_b in b_entities:
             entity_b_value = entity_b.get('summary') or entity_b.get('name')
@@ -348,12 +350,13 @@ class Client(BaseClient):
         self.api_secret = api_secret
 
     def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
-                     parse_json=True, get_next=False):  # pragma: no cover  # noqa
-        headers = self.create_header(url_suffix, method)
-
+                     parse_json=True, get_next=False, full_url=None):  # pragma: no cover  # noqa
+        if not full_url and not url_suffix:
+            # if no url is stated, there is no need to make a request
+            return [], None, ''
+        headers = self.create_header(url_suffix, full_url, method)
         response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
-                                      params=params,
-                                      headers=headers)
+                                      params=params, headers=headers, full_url=full_url)
 
         if get_next:
             return response.get('data'), response.get('status'), response.get('next')
@@ -361,8 +364,10 @@ class Client(BaseClient):
             return response.get('data'), response.get('status')
         return response
 
-    def create_header(self, url_suffix: str, method: Method) -> dict:
+    def create_header(self, url_suffix: str, full_url: str, method: Method) -> dict:
         timestamp = round(time.time())
+        if full_url:
+            url_suffix = full_url.replace(demisto.getParam('tc_api_path').rstrip('/'), '')
         to_sign = f'{url_suffix}:{method}:{timestamp}'
         api_hash = base64.b64encode(
             hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
@@ -384,7 +389,7 @@ def create_or_query(param_name: str, delimiter_str: str) -> str:
     return query[:len(query) - 3]
 
 
-def module_test_command(client: Client):  # pragma: no cover
+def module_test_command(client: Client, args):  # pragma: no cover
     """ Test module - Get 4 indicators from ThreatConnect.
     Args:
         client: ThreatConnect client.
@@ -404,7 +409,7 @@ def module_test_command(client: Client):  # pragma: no cover
                                                            'local help desk'))
 
 
-def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma: no cover
+def fetch_indicators_command(client: Client, params):  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -413,55 +418,99 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:  # pragma:
     Returns:
         list: indicator to populate in demisto server.
     """
+    indicators_url = set_url(params, 'indicators')
+    groups_url = set_url(params, 'groups')
+
+    indicators = []
+    groups = []
+    indicators_next_link = ''
+    groups_next_link = ''
+    while True:
+        if indicators_next_link or groups_next_link:
+            if indicators_next_link:
+                demisto.debug('Indicators Next Link: ' + indicators_next_link)
+                response, _, indicators_next_link = client.make_request(Method.GET,
+                                                                        url_suffix='',
+                                                                        get_next=True,
+                                                                        full_url=indicators_next_link)
+                indicators.extend(response)
+            if groups_next_link:
+                demisto.debug('Groups Next Link: ' + groups_next_link)
+                response, _, groups_next_link = client.make_request(Method.GET,
+                                                                    url_suffix='',
+                                                                    get_next=True,
+                                                                    full_url=groups_next_link)
+                groups.extend(response)
+        else:
+            demisto.debug('Indicators URL: ' + indicators_url)
+            indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
+            indicators.extend(indicators_response)
+
+            demisto.debug('Groups URL: ' + groups_url)
+            groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
+            groups.extend(groups_response)
+
+        # Limit the number of results to not get an error from the API
+        if (len(indicators) + len(groups)) > 15000 or not (indicators_next_link and groups_next_link):
+            break
+
+    return indicators, groups
+
+def set_url(params, endpoint):
+    """Setting the url for the request for each endpoint"""
+    if not should_send_request(params, endpoint):
+        return ''
+
     last_run = demisto.getLastRun()
-    last_run = last_run.get('from_date')
+    last_run_date = last_run.get(endpoint, {}).get('from_date', '')
     demisto.debug('last run get: ' + str(last_run))
     from_date = ''
-    if last_run:
+    if last_run_date:
         from_date = f'AND (dateAdded > "{last_run}") '
 
-    fields = set_fields_query()
-    tql = demisto.getParam('indicator_query')
+    fields = set_fields_query(params, endpoint)
+    tql = params.get('indicator_query')
     if not tql:
-        tql = set_tql_query(from_date)
+        tql = set_tql_query(from_date, params, endpoint)
 
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
-    url = f'/api/v3/indicators{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
+    url = f'/api/v3/{endpoint}{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
         # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
-
-    indicators = []
-    while True:
-        demisto.debug('URL: ' + url)
-        response, _, next_link = client.make_request(Method.GET, url, get_next=True)
-        indicators.extend(response)
-        # Limit the number of results to not get an error from the API
-        if len(indicators) < 15000 and next_link:
-            url = next_link.replace(demisto.getParam('tc_api_path').rstrip('/'), '')
-
-        else:
-            break
-
-    return indicators
+    
+    return url
 
 
-def set_tql_query(from_date):
+def should_send_request(params, endpoint):
+    """Checking if the user in indicated any indicator/group types to fetch from the API"""
+    if endpoint == 'indicators':
+        if not argToList(params.get('indicator_type')):
+            return False
+    else:
+        if not argToList(params.get('group_type')):
+            return False
+    
+    return True
+
+
+def set_tql_query(from_date, params, endpoint):
     """Creating tql query to add information to the API response"""
-    params = demisto.params()
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
     confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
     threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
                    if int(params.get("threat_assess_score")) != 0 else ''
+    active_only = ''
+    if endpoint == 'indicators':
+        active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
 
-    type_name_query = create_types_query()
+    type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
 
     tql = f'{owners if owners != "AND () " else ""}' \
@@ -472,8 +521,22 @@ def set_tql_query(from_date):
     tql = tql.replace('AND ', '', 1)
     return tql
 
+def set_last_run(indicators, groups):
+    """Setting the Last Run structure"""
+    previous_run = demisto.getLastRun()
+    next_run = {}
+    if indicators:
+        next_run['indicators'] = {'from_date': indicators[-1].get('firstseenbysource')}
+    else:
+        next_run['indicators'] = previous_run.get('indicators', {})
+    if groups:
+        next_run['groups'] = {'from_date': groups[-1].get('firstseenbysource')}
+    else:
+        next_run['groups'] = previous_run.get('groups', {})
+    
+    return next_run
 
-def get_indicators_command(client: Client):  # pragma: no cover
+def get_indicators_command(client: Client, args):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
@@ -482,7 +545,6 @@ def get_indicators_command(client: Client):  # pragma: no cover
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    args = demisto.args()
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
 
@@ -494,23 +556,24 @@ def get_indicators_command(client: Client):  # pragma: no cover
         confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
         threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
 
-        types = argToList(demisto.getArg("indicator_type"))
+        types = argToList(args.get("indicator_type"))
         query = ''
         if types and 'All' not in types:
             query = 'AND typeName IN ("' + '","'.join(types) + '")'
 
         tql = active_only + confidence + threat_score + confidence + owners + query
         tql = tql.replace('AND ', '', 1)
-        tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
 
     if tql:
+        tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
 
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
         # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
-
+    
+    demisto.debug("URL: " + url)
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
         t = [parse_indicator(indicator) for indicator in response]
@@ -520,7 +583,7 @@ def get_indicators_command(client: Client):  # pragma: no cover
         return readable_output, {}, list(response)
 
 
-def get_owners_command(client: Client) -> COMMAND_OUTPUT:  # pragma: no cover
+def get_owners_command(client: Client, args) -> COMMAND_OUTPUT:  # pragma: no cover
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
     Args:
         client: ThreatConnect client.
@@ -544,6 +607,8 @@ def main():  # pragma: no cover
     credentials = demisto.params().get('api_credentials', {})
     access_id = credentials.get('identifier') or demisto.params().get('api_access_id')
     secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
+    params = demisto.params()
+    args = demisto.args()
     client = Client(access_id, secret_key,
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
@@ -555,18 +620,21 @@ def main():  # pragma: no cover
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
-            if indicators:
-                demisto.info('Last run set:' + str(indicators[-1].get('dateAdded')))
-                demisto.setLastRun({'from_date': indicators[-1].get('dateAdded')})
-                demisto.debug(f'The last indicator is: {indicators[-1]}')
+            indicators, groups = fetch_indicators_command(client, params)
+            last_run = set_last_run(indicators, groups)
+            demisto.setLastRun(last_run)
+
             indicators = [parse_indicator(indicator) for indicator in indicators]
-            demisto.debug(f'The number of new indicators is:{len(indicators)}')
-            for b in batch(indicators, batch_size=2000):
+            groups = [group for group in groups if group.get('type') != 'Incident']
+            groups = [parse_indicator(group) for group in groups]
+
+            merged_list = groups + indicators
+            demisto.debug(f'The number of new indicators is:{len(merged_list)}')
+            for b in batch(merged_list, batch_size=2000):
                 demisto.createIndicators(b)
 
         else:
-            readable_output, outputs, raw_response = commands[command](client)
+            readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')

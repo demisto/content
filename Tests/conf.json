@@ -319,7 +319,8 @@
         {
             "integrations": ["ThreatConnect Feed", "Demisto REST API"],
             "playbookID": "FeedThreatConnect-Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 1000
         },
         {
             "integrations": "URLhaus",
