@@ -86,6 +86,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "Bitbucket",
+            "playbookID": "Test_Bitbucket",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },

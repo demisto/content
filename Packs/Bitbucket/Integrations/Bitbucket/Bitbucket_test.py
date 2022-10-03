@@ -1,13 +1,4 @@
-"""
-Pytest Unit Tests: all function names must start with "test_"
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS ""
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
 
 import json
 import io
@@ -339,7 +330,7 @@ def test_issue_list_command(mocker, bitbucket_client):
     args = {'limit': '3'}
     response = util_load_json('test_data/commands_test_data.json').get('test_issue_list_command')
     mocker.patch.object(bitbucket_client, 'issue_list_request', return_value=response)
-    expected_human_readable = '### List of the issues\n' \
+    expected_human_readable = '### Issues List\n' \
                               '|Id|Title|Type|Priority|Status|Votes|CreatedAt|UpdatedAt|\n' \
                               '|---|---|---|---|---|---|---|---|\n' \
                               '| 3 | hi | bug | minor | new | 0 | 2022-09-06T00:00:00.000000+00:00 ' \

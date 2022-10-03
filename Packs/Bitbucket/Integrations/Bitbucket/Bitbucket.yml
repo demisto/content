@@ -65,7 +65,7 @@ script:
           description: 'The project owner name.'
           type: String
         - contextPath: Bitbucket.Project.owner.links
-          description: 'Links with information about the project owner'
+          description: 'Links with information about the project owner.'
           type: String
         - contextPath: Bitbucket.Project.owner.type
           description: 'The type of the project owner.'

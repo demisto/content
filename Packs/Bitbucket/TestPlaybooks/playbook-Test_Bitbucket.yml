@@ -1,5 +1,5 @@
 id: Test_Bitbucket
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Test_Bitbucket
 description: A playbook for Bitbucket integration
@@ -2017,4 +2017,3 @@ view: |-
   }
 inputs: []
 outputs: []
-quiet: true

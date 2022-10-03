@@ -1,5 +1,5 @@
-Pack for handling Bitbucket operations
-This integration was integrated and tested with version xx of Bitbucket
+Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira
+This integration was integrated and tested with version 7.21.0 of Bitbucket
 
 ## Configure Bitbucket on Cortex XSOAR
 
@@ -44,9 +44,7 @@ If a project_key is given, returns the requested project. Else, returns a list o
 | --- | --- | --- |
 | Bitbucket.Project.type | String | The type of the object. | 
 | Bitbucket.Project.owner.display_name | String | The project owner name. | 
-| Bitbucket.Project.owner.links.self.href | String | The link to a json with the information about the owner of the project. | 
-| Bitbucket.Project.owner.links.avatar.href | String | A link to the project owner photo. | 
-| Bitbucket.Project.owner.links.html.href | String | A link to the project owner repositories. | 
+| Bitbucket.Project.owner.links | String | Links with information about the project owner. |
 | Bitbucket.Project.owner.type | String | The type of the project owner. | 
 | Bitbucket.Project.owner.uuid | String | The project owner universal unique id. | 
 | Bitbucket.Project.owner.account_id | String | The project owner account id. | 
@@ -55,18 +53,13 @@ If a project_key is given, returns the requested project. Else, returns a list o
 | Bitbucket.Project.workspace.uuid | String | The project workspace universal unique id. | 
 | Bitbucket.Project.workspace.name | String | The name of the project workspace. | 
 | Bitbucket.Project.workspace.slug | String | The slug of the project workspace. | 
-| Bitbucket.Project.workspace.links.avatar.href | String | A link to the project workspace photo. | 
-| Bitbucket.Project.workspace.links.html.href | String | A link to the project workspace repositories. | 
-| Bitbucket.Project.workspace.links.self.href | String | A link to the result json. | 
+| Bitbucket.Project.workspace.links | String | Links to information about the workspace. |
 | Bitbucket.Project.key | String | The project key. | 
 | Bitbucket.Project.uuid | String | the project universal unique id. | 
 | Bitbucket.Project.is_private | Boolean | Is the project private or not. | 
 | Bitbucket.Project.name | String | The project name. | 
 | Bitbucket.Project.description | String | The project description. | 
-| Bitbucket.Project.links.self.href | String | A link to the result json. | 
-| Bitbucket.Project.links.html.href | String | A link to the project repositories. | 
-| Bitbucket.Project.links.repositories.href | String | A link to the project repositories. | 
-| Bitbucket.Project.links.avatar.href | String | A link to the project photo. | 
+| Bitbucket.Project.links | String | Links to information about the project. |
 | Bitbucket.Project.created_on | String | The date the project was created. | 
 | Bitbucket.Project.updated_on | String | The date the project was updated. | 
 | Bitbucket.Project.has_publicly_visible_repos | Boolean | Does the project has a publicly visible repositories or not. | 
@@ -240,9 +233,7 @@ Returns a list of the open branches.
 | Bitbucket.Branch.target.author.type | String | The type of the author of the last action. | 
 | Bitbucket.Branch.target.author.raw | String | The raw information about the author of the last action. | 
 | Bitbucket.Branch.target.author.user.display_name | String | The display name of the author of the last action. | 
-| Bitbucket.Branch.target.author.user.links.self.href | String | The link to a json with the information about the author of the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.links.avatar.href | String | A link to the image of the author of the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.links.html.href | String | A link to the user repository | 
+| Bitbucket.Branch.target.author.user.links | String | The links with the information about the author of the last action in the target branch. |
 | Bitbucket.Branch.target.author.user.type | String | The type of the user who made the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.uuid | String | The unique user id of the user who made the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.account_id | String | The account id of the user who made the last action in the branch. | 
@@ -259,9 +250,7 @@ Returns a list of the open branches.
 | Bitbucket.Branch.target.repository.links.avatar.href | String | A link to the repository image | 
 | Bitbucket.Branch.target.repository.name | String | The name of the repository | 
 | Bitbucket.Branch.target.repository.uuid | String | The repository unique id. | 
-| Bitbucket.Branch.links.self.href | String | The api request to the branch. | 
-| Bitbucket.Branch.links.commits.href | String | A link to api request to the commits of the branch. | 
-| Bitbucket.Branch.links.html.href | String | A link to the commits in the branch. | 
+| Bitbucket.Branch.links | String | Links with information about the branch. |
 | Bitbucket.Branch.type | String | The type of the branch. | 
 | Bitbucket.Branch.merge_strategies | String | The merge strategy of the branch. | 
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy in the branch. | 
@@ -701,7 +690,7 @@ Creates a new branch in Bitbucket.
 | Bitbucket.Branch.target.parents.links | String | The links to the parent action information. | 
 | Bitbucket.Branch.target.repository.type | String | The type of the repository of the target branch. | 
 | Bitbucket.Branch.target.repository.full_name | String | The full name of the repository of the target branch. | 
-| Bitbucket.Branch.target.repository.links | String | The links with the information about the repository of the target branch. | 
+| Bitbucket.Branch.target.repository.links | String | Links with information about the branch repository. | 
 | Bitbucket.Branch.target.repository.name | String | The name of the repository of the target branch. | 
 | Bitbucket.Branch.target.repository.uuid | String | The unique id of the repository of the target branch. | 
 | Bitbucket.Branch.links | String | The links with the information about the new branch. | 
