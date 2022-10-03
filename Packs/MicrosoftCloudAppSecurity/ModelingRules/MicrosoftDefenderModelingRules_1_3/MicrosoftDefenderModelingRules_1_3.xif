@@ -25,7 +25,7 @@ filter
     _time = timestamp_seconds(to_integer(divide(timestamp, 1000))),
     xdm.event.id = _id,
     xdm.event.type = coalesce(to_string(eventType),title),
-    xdm.event.operation_sub_type = eventTypeValue,
+    xdm.event.operation_sub_type = coalesce(eventTypeValue,json_extract_scalar(mainInfo, "$.type")),
     xdm.source.ipv4 = json_extract_scalar(device, "$.clientIP"),
     xdm.source.agent.identifier = json_extract_scalar(device, "$.userAgent"),
     xdm.source.location.country = json_extract_scalar(location, "$.countryCode"),
@@ -44,4 +44,5 @@ filter
     xdm.target.resource.name = arraystring(arraymap(json_extract_array(entities,"$."), json_extract_scalar("@element", "$.label")),","),
     xdm.alert.category = if(stories="[0]", "THREAT_DETECTION", stories="[1]", "PRIVILEGED_ACCOUNT_MONITORING", stories="[2]", "COMPLIANCE", stories="[3]", "DLP", stories="[4]", "DISCOVERY", stories="[5]", "SHARING_CONTROL", stories="[7]", "ACCESS_CONTROL", stories="[8]", "CONFIGURATION_MONITORING"),
     xdm.alert.name = arraystring(arraymap(json_extract_array(evidence ,"$."), json_extract_scalar("@element", "$.title.template")),","),
-    xdm.alert.mitre_tactics = arraymap(json_extract_array(evidence ,"$."), json_extract_scalar("@element", "$.title.parameters.tactics"));
+    xdm.alert.mitre_tactics = arraymap(json_extract_array(evidence ,"$."), json_extract_scalar("@element", "$.title.parameters.tactics")),
+    xdm.email.sender=arraystring(arraymap(json_extract_array(entities ,"$."), json_extract_scalar("@element", "$.em")),",");
