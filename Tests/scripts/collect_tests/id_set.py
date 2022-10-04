@@ -175,7 +175,11 @@ class Graph:
             test_playbooks = content_graph_interface.search_nodes(marketplace=marketplace,
                                                                   content_type=ContentType.TEST_PLAYBOOK)
             # maps content_items to test playbook where they are used recursively
-            content_items_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace)
+            scripts_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace,
+                                                                                  content_type=ContentType.SCRIPT)
+
+            playbook_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace,
+                                                                                   content_type=ContentType.PLAYBOOK)
 
             logger.info('after query graph')
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
@@ -183,11 +187,9 @@ class Graph:
             self.id_to_test_playbooks = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
             self.implemented_playbooks_to_tests = {item: [IdSetItem.from_model(test) for test in tests]
-                                                   for item, tests in content_items_to_tests.items()
-                                                   if item.content_type == ContentType.PLAYBOOK}
+                                                   for item, tests in playbook_to_tests.items()}
             self.implemented_scripts_to_tests = {item: tests for item,
-                                                 tests in content_items_to_tests.items() if
-                                                 item.content_type == ContentType.SCRIPT}
+                                                 tests in scripts_to_tests.items()}
             logger.info('after query objects')
 
 
