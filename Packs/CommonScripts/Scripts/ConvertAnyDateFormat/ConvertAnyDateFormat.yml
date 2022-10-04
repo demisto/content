@@ -1,0 +1,32 @@
+args:
+- description: Time stamp to convert
+  name: value
+  required: true
+- defaultValue: '%a, %d %b %Y %H:%M:%S'
+  description: Python 'strptime' formatter for input string
+  name: input_formatter
+- defaultValue: '%m/%d/%Y %I:%M %p'
+  description: Python 'strftime' formatter for output string
+  name: output_formatter
+comment: Converts any date format specified in input formatter (for strptime function) to the date format specified in the output format (for strftime function).
+commonfields:
+  id: ConvertAnyDateFormat
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+name: ConvertAnyDateFormat
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
