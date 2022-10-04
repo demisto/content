@@ -9,11 +9,12 @@ from typing import Dict
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
-REPLACE = 'replace_from_args'
+REPLACE = 'replace'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX_PATTERN = f'/products/{REPLACE}/features/'
 EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 'created_at']
 DEFAULT_FIELDS = ['reference_num', 'name', 'id', 'created_at']
+
 ''' CLIENT CLASS '''
 
 
@@ -63,17 +64,26 @@ class Client(BaseClient):
             feature_name: str feature to update
             fields: Dict fields to update
         """
-        name = fields.get('name')
-        desc = fields.get('description')
-        status = fields.get('status')
-        payload = {'feature': {'name': name, 'description': desc,
-                   'workflow_status': {'name': status}}}
+        payload = extract_payload(fields=fields)
         demisto.debug(f'Edit feature payload: {payload}')
         fields = ','.join(EDIT_FIELDS)
         return self._http_request(method='PUT', url_suffix=f'{self.url}{feature_name}?fields={fields}',
                                   resp_type='json', json_data=payload)
 
-    ''' HELPER FUNCTIONS'''
+
+''' HELPER FUNCTIONS'''
+
+
+def extract_payload(fields: Dict):
+    payload: Dict = {'feature': {}}
+    for field in fields:
+        feature = payload.get('feature', {})
+        if field == 'status':
+            workflow_status = {'name': fields[field]}
+            feature['workflow_status'] = workflow_status
+        else:
+            feature[field] = fields[field]
+    return payload
 
 
 def parse_features(response: dict, fields: List) -> List:

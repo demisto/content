@@ -125,3 +125,20 @@ def test_editFeatureField(mocker):
     assert output.get('name') == 'Demo-10'
     assert output.get('description') == 'test desc'
     assert output.get('workflow_status') == 'Closed'
+
+
+def test_editSpecificFeatureField(mocker):
+    """
+        When:
+            - Requesting to update a specific field in a feautre.
+        Then:
+            - Return the feature with only the specific field updated.
+    """
+    new_description = 'change just description'
+    client = mock_client(mocker, util_load_json('test_data/update_feature_field.json'))
+    result = edit_feature(client=client, feature_name='DEMO-10', fields={'description': new_description})
+    assert len(result.outputs) == 1
+    output = result.outputs[0]
+    assert output.get('name') == 'Demo-10'
+    assert output.get('description') == new_description
+    assert output.get('workflow_status') == 'Closed'
