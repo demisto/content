@@ -102,7 +102,7 @@ graph-prepare-testing-bucket-mpv2:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2"
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
@@ -111,6 +111,8 @@ graph-prepare-testing-bucket-mpv2:
     # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
+    - section_start "Replace Cortex XSOAR"
+
     - pushd "$ARTIFACTS_FOLDER"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
     - pushd content_packs; zip -r ../content_packs.zip *; popd

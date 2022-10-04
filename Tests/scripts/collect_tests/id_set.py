@@ -184,7 +184,7 @@ class Graph:
             logger.info('after query graph')
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
-            self.id_to_test_playbooks = {
+            self.id_to_test_playbook = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
             self.implemented_playbooks_to_tests = {item: [IdSetItem.from_model(test) for test in tests]
                                                    for item, tests in playbook_to_tests.items()}
