@@ -111,14 +111,6 @@ graph-prepare-testing-bucket-mpv2:
     # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
-    - section_start "Replace Cortex XSOAR"
-
-    - pushd "$ARTIFACTS_FOLDER"
-    - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
-    - pushd content_packs; zip -r ../content_packs.zip *; popd
-    - rm -rf content_packs
-    - popd
-    - section_end "Replace Cortex XSOAR"
 
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
@@ -130,7 +122,6 @@ graph-prepare-testing-bucket-mpv2:
     - popd
     - section_end "Replace Cortex XSOAR"
 
-    
     - section_end "Calculate Packs Dependencies"
     - section_start "Collect Tests V2"
     - |
