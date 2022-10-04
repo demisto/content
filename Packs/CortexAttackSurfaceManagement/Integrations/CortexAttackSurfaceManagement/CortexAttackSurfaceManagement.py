@@ -144,7 +144,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
         search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
 
     response = client.getexternalservices_request(search_params)
-    parsed = response['reply']['external_services']
+    parsed = response.get('reply', {}).get('external_services')
     markdown = tableToMarkdown('External Services', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalServices',
