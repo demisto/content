@@ -203,7 +203,7 @@ def getexternalipaddressranges_command(client: Client) -> CommandResults:
         that contains external IP address ranges.
     """
     response = client.getexternalipaddressranges_request()
-    parsed = response['reply']['external_ip_address_ranges']
+    parsed = response.get('reply',{}).get('external_ip_address_ranges')
     markdown = tableToMarkdown('External IP Address Ranges', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRanges',
