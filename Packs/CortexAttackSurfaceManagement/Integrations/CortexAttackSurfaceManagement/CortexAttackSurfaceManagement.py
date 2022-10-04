@@ -209,7 +209,7 @@ def getexternalipaddressranges_command(client: Client) -> CommandResults:
         outputs_prefix='ASM.GetExternalIpAddressRanges',
         outputs_key_field='range_id',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
