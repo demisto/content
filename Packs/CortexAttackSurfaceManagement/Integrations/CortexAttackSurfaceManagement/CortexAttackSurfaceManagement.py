@@ -50,9 +50,6 @@ class Client(BaseClient):
     def getexternalipaddressranges_request(self):
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
-        Args:
-            None
-
         Returns:
             dict: dict containing list of external ip address ranges.
         """
@@ -153,7 +150,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_prefix='ASM.GetExternalServices',
         outputs_key_field='service_id',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
@@ -181,27 +178,25 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
         return_error("This command only supports one service_id at this time")
 
     response = client.getexternalservice_request(service_id_list)
-    parsed = response['reply']['details']
+    parsed = response.get('reply',{}).get('details')
     markdown = tableToMarkdown('External Service', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalService',
         outputs_key_field='service_id',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
     return command_results
 
 
-def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def getexternalipaddressranges_command(client: Client) -> CommandResults:
     """
     asm-getexternalipaddressranges command: Returns list of external ip ranges.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            No subkeys of args used.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
@@ -242,13 +237,13 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
         return_error("This command only supports one range_id at this time")
 
     response = client.getexternalipaddressrange_request(range_id_list)
-    parsed = response['reply']['details']
+    parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRange',
         outputs_key_field='range_id',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
@@ -287,13 +282,13 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
     response = client.getassetsinternetexposure_request(search_params)
-    parsed = response['reply']['assets_internet_exposure']
+    parsed = response.get('reply', {}).get('assets_internet_exposure')
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetsInternetExposure',
         outputs_key_field='asm_ids',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
@@ -321,13 +316,13 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
         return_error("This command only supports one asm_id at this time")
 
     response = client.getassetinternetexposure_request(asm_id_list)
-    parsed = response['reply']['details']
+    parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetInternetExposure',
         outputs_key_field='asm_ids',
         outputs=parsed,
-        raw_response=parsed,
+        raw_response=response,
         readable_output=markdown
     )
 
@@ -380,7 +375,7 @@ def main() -> None:
             'Content-Type': 'application/json'
         }
         url_suffix = "/public_api/v1"
-        url = params['url']
+        url = params.get('url', '')
         add_sensitive_log_strs(api)
         base_url = urljoin(url, url_suffix)
         client = Client(
@@ -407,7 +402,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
