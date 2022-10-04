@@ -1126,7 +1126,8 @@ class MsClient:
             app_name=app_name,
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            retry_on_rate_limit=True
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -1282,9 +1283,9 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts_by_params(self, filter_req=None, params=None):
+    def list_alerts_by_params(self, filter_req=None, params=None, overwrite_rate_limit_retry=False):
         """Retrieves a collection of Alerts.
-
+            overwrite_rate_limit_retry - Skip retry mechanism, True for fetch incidents
         Returns:
             dict. Alerts info
         """
@@ -1292,7 +1293,8 @@ class MsClient:
         if not params:
             params = {'$filter': filter_req} if filter_req else None
 
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
@@ -1417,7 +1419,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}/user'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_machine_action_by_id(self, action_id):
+    def get_machine_action_by_id(self, action_id, overwrite_rate_limit_retry=False):
         """Retrieves specific Machine Action by its ID.
 
         Args:
@@ -1431,7 +1433,8 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = f'/machineactions/{action_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def get_machine_actions(self, filter_req, limit):
         """Retrieves all Machine Actions.
@@ -1449,7 +1452,7 @@ class MsClient:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_investigation_package(self, machine_id, comment):
+    def get_investigation_package(self, machine_id, comment, overwrite_rate_limit_retry=False):
         """Collect investigation package from a machine.
 
         Args:
@@ -1463,9 +1466,10 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-    def get_investigation_package_sas_uri(self, action_id):
+    def get_investigation_package_sas_uri(self, action_id, overwrite_rate_limit_retry=False):
         """Get a URI that allows downloading of an Investigation package.
 
         Args:
@@ -1475,7 +1479,8 @@ class MsClient:
             dict. An object that holds the link for the package
         """
         cmd_url = f'/machineactions/{action_id}/getPackageUri'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def restrict_app_execution(self, machine_id, comment):
         """Restrict execution of all applications on the machine except a predefined set.
@@ -1921,14 +1926,16 @@ class MsClient:
         return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
                                             resp_type='response', should_use_security_center=use_security_center)
 
-    def get_live_response_result(self, machine_action_id, command_index=0):
+    def get_live_response_result(self, machine_action_id, command_index=0, overwrite_rate_limit_retry=False):
         cmd_url = f'machineactions/{machine_action_id}/GetLiveResponseResultDownloadLink(index={command_index})'
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
-    def create_action(self, machine_id, request_body):
+    def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False):
         cmd_url = f'machines/{machine_id}/runliveresponse'
-        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
     def download_file(self, url_link):
@@ -2821,7 +2828,7 @@ def get_machine_investigation_package(client: MsClient, args: dict):
 
     machine_id = args.get('machine_id')
     comment = args.get('comment')
-    res = client.get_investigation_package(machine_id, comment)
+    res = client.get_investigation_package(machine_id, comment, overwrite_rate_limit_retry=True)
     human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
@@ -2839,7 +2846,7 @@ def download_file_after_successful_status(client, res):
     machine_action_id = res['id']
 
     # get file uri from action:
-    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_uri}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -3464,7 +3471,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     incidents = []
     # get_alerts:
     try:
-        alerts = client.list_alerts_by_params(params=params)['value']
+        alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
@@ -4676,7 +4683,7 @@ def get_live_response_result_command(client, args):
 
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
-    res = client.get_machine_action_by_id(id)
+    res = client.get_machine_action_by_id(id, overwrite_rate_limit_retry=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
@@ -4738,7 +4745,7 @@ def run_live_response_script_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
 
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
     return CommandResults(
@@ -4750,7 +4757,7 @@ def run_live_response_script_action(client, args):
 
 def get_successfull_action_results_as_info(client, res):
     machine_action_id = res['id']
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
 
     f_data = client.download_file(file_link)
     try:
@@ -4793,7 +4800,7 @@ def get_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(
@@ -4806,7 +4813,7 @@ def get_file_get_successfull_action_results(client, res):
     machine_action_id = res['id']
 
     # get file link from action:
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_link}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -4852,7 +4859,7 @@ def put_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(
