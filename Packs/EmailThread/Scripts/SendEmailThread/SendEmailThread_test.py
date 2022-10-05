@@ -8,6 +8,7 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 
 """
 
+from array import array
 import json
 import io
 from venv import create
@@ -246,6 +247,14 @@ def test_get_email_from(mocker):
     integration_name = "EWSO365_instance_1"
     result = get_email_from(integration_name)
     assert result[0] == "xxxxxx" and result[1] == "EWSO365"
+
+
+def test_check_valid_args(mocker):
+    from SendEmailThread import check_valid_args
+    mocker.patch.object(demisto, 'executeCommand')
+    args = {"email_to": "", "email_subject": "Test Sbj", "email_body": "Test body"}
+    result = check_valid_args(args)
+    assert result == "ERROR: Email To is missing!"
 
 
 def test_main(mocker):

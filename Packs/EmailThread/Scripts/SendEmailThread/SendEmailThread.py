@@ -1,8 +1,10 @@
 import json
 import re
 import datetime
-from CommonServerPython import is_error, get_error, argToList, return_error
+from CommonServerPython import is_error, get_error, argToList, return_error, DemistoException
 import demistomock as demisto
+
+ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
 
 def current_time():
     now = datetime.datetime.now()
@@ -303,6 +305,36 @@ def get_email_from(integration_name):
         return '', ''
 
 
+def check_valid_args(args):
+    message = ""
+    if not args.get('email_to'):
+        message = "ERROR: Email To is missing!"
+        demisto.executeCommand('setIncident',
+            {
+                'customFields': {
+                    'emailto': message
+                }
+            })
+    if not args.get('email_subject'):
+        message = "ERROR: Email Subject is missing!"
+        demisto.executeCommand('setIncident',
+            {
+                'customFields': {
+                    'emailsubject': message
+                }
+            })
+    if not (args.get('email_body') or args.get('email_body_html')):
+        message = "ERROR: Email Body is missing!"
+        demisto.executeCommand('setIncident',
+            {
+                'customFields': {
+                    'emaileditor': message
+                }
+            })
+
+    return message
+
+
 def main():
     incident = demisto.incident()
     ctx = demisto.context()
@@ -310,6 +342,12 @@ def main():
     custom_fields = incident.get('CustomFields')
     args = demisto.args()
     integration_name = args.get('integration_name')
+    email_body_html = ''
+    # Check if user put email_to, subject and body
+    check_args = check_valid_args(args)
+    if check_args != "":
+        return_error(check_args)
+        return
     # Get email send params from arguments when using the script in playbook
     if args.get('email_subject') and args.get('email_to') and (args.get('email_body') or args.get('email_body_html')):
         email_to = args.get('email_to')

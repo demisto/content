@@ -6,7 +6,7 @@ script: '-'
 type: python
 tags:
 - emailthread
-comment: Send email reply
+comment: Send email reply script for layout button and playbook task
 enabled: true
 args:
 - name: files
@@ -44,7 +44,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.7.35188
 runas: Administrator
 fromversion: 6.5.0
 tests:
