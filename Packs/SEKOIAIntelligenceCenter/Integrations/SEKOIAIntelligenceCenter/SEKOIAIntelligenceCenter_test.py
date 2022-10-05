@@ -173,21 +173,6 @@ def test_get_indicator_context_incomplete(
 
 
 @pytest.mark.parametrize(
-    "command, indicator_type, indicator_value",
-    [
-        (SEKOIAIntelligenceCenter.ip_command, "broken", "broken"),
-    ],
-)
-def test_wrong_ip(
-    client, command, indicator_type, indicator_value
-):
-
-    args = {"ip": indicator_value, "type": indicator_type}
-    with pytest.raises(ValueError):
-        command(client=client, args=args)
-
-
-@pytest.mark.parametrize(
     "indicator_type, indicator_value, json_test_file",
     [
         ("email-addr", "eicar@sekoia.io", "test_data/indicator_context_email.json"),
@@ -331,24 +316,42 @@ def test_get_reputation_score(input: list, output: int):
 @pytest.mark.parametrize(
     "indicator_type, indicator_value, json_test_file",
     [
-        ("ipv6-addr", "2606:4700:4700::1111", "test_data/indicator_context_ip.json"),
-        ("ipv4-addr", "206.189.85.18", "test_data/indicator_context_ip.json"),
-        ("ipv4-addr", "1.1.1.1", "test_data/indicator_context_unknown.json"),
+        ("ipv4-addr", ['206.189.85.18'], "test_data/indicator_context_ip.json"),
+        (
+            "ipv6-addr",
+            ['2606:4700:4700::1111'],
+            "test_data/indicator_context_ip.json",
+        ),
+        ("ipv4-addr", ['1.1.1.1'], "test_data/indicator_context_unknown.json"),
+        (
+            "ipv4-addr",
+            ["1.1.1.1", "2.2.2.2"],
+            "test_data/indicator_context_unknown.json",
+        ),
     ],
 )
 def test_ip_command(
     client, requests_mock, indicator_type, indicator_value, json_test_file
 ):
+
     mock_response = util_load_json(json_test_file)
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
+        MOCK_URL + "/v2/inthreat/indicators/context",
         json=mock_response,
     )
 
-    args = {"ip": indicator_value}
-    command_results = SEKOIAIntelligenceCenter.ip_command(client=client, args=args)
+    command_results = SEKOIAIntelligenceCenter.ip_command(
+        client=client, args={"ip": indicator_value}
+    )
 
     for result in command_results:
         assert result.outputs != []
         assert result.to_context != []
+
+
+def test_wrong_ip(client):
+    indicator = ["abc", "123"]
+    with pytest.raises(ValueError):
+        SEKOIAIntelligenceCenter.ip_command(
+            client=client, args={"ip": indicator}
+        )

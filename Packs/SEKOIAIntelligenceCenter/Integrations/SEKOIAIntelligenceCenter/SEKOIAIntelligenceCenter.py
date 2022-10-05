@@ -1,13 +1,14 @@
 """SEKOIA.IO Integration for Cortex XSOAR (aka Demisto)
 """
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
+import ipaddress
 import traceback
 from typing import Any, Dict
-from stix2patterns.pattern import Pattern as PatternParser  # noqa: E402
-import ipaddress
 
+import urllib3
+from stix2patterns.pattern import Pattern as PatternParser  # noqa: E402
+
+import demistomock as demisto
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -628,15 +629,18 @@ def get_indicator_context_command(
     return command_results_list
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     This command is a wrapper around the `get_indicator_context_command`
     """
-    ip = args.get("ip")
-    version = ip_version(args.get("ip"))
-    indicator = {"value": ip, "type": version}
-    return get_indicator_context_command(client=client, args=indicator)
+    ips = argToList(args["ip"])
+    results: list[CommandResults] = list()
+
+    for ip in ips:
+        indicator = {"value": ip, "type": ip_version(ip)}
+        results += get_indicator_context_command(client=client, args=indicator)
+    return results
 
 
 """ MAIN FUNCTION """
