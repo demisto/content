@@ -40,6 +40,12 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
+- defaultvalue: 'false'
+  display: Close offense when fetched.
+  hidden: false
+  name: should_close_offense_in_fetch
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Retry events fetch
   name: retry_events_fetch

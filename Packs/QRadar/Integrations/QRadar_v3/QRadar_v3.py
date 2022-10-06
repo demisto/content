@@ -39,6 +39,8 @@ EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
 
+DEFAULT_CLOSING_REASON_ID = 1  # The default closing reason id to close when `should_close_offense_in_fetch` is enabled
+
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
     'RULES_ENRCH_FLG',
@@ -57,6 +59,7 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'SLEEP_FETCH_EVENT_RETRIES',
     'DEFAULT_EVENTS_TIMEOUT',
     'PROFILING_DUMP_ROWS_LIMIT',
+    'DEFAULT_CLOSING_REASON_ID',
 ]
 
 ''' CONSTANTS '''
@@ -1718,7 +1721,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str) \
+                                         first_fetch: str, should_close: bool = False) \
         -> Tuple[Optional[List[Dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -1755,6 +1758,9 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
     # if it fails here we can't recover, retry again later
     raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    if should_close:
+        for offense in raw_offenses:
+            client.offense_update(offense.get('id'), status='CLOSED', closing_reason_id=DEFAULT_CLOSING_REASON_ID)
     if raw_offenses:
         raw_offenses_len = len(raw_offenses)
         print_debug_msg(f'raw_offenses size: {raw_offenses_len}')
@@ -1862,7 +1868,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str):
+                              first_fetch: str, should_close: bool = False):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
@@ -1879,6 +1885,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
+        should_close=should_close,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -1923,6 +1930,7 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
+    should_close = argToBoolean(params.get('should_close_offense_in_fetch', False))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
     while True:
@@ -1939,6 +1947,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 incident_type=incident_type,
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
+                should_close=should_close,
             )
             demisto.updateModuleHealth('')
 
