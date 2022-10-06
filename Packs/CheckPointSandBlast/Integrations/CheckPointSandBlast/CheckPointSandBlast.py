@@ -318,13 +318,19 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 command_results.append(CommandResults(readable_output=f'File not found: "{file_hash}"\n{message}'))
                 continue
 
+            malicious_description = {
+                'confidence': dict_safe_get(raw_response, ['response', 'te', 'confidence']),
+                'severity': dict_safe_get(raw_response, ['response', 'te', 'severity']),
+                'signature_name': dict_safe_get(raw_response, ['response', 'av', 'malware_info', 'signature_name'])
+            }
+
             outputs = remove_empty_elements({
                 'MD5': dict_safe_get(raw_response, ['response', 'md5']),
                 'SHA1': dict_safe_get(raw_response, ['response', 'sha1']),
                 'SHA256': dict_safe_get(raw_response, ['response', 'sha256']),
                 'Malicious': {
                     'Vendor': 'CheckPointSandBlast',
-                    'Description': dict_safe_get(raw_response, ['response', 'av', 'malware_info']),
+                    'Description': malicious_description
                 }
             })
             readable_output = tableToMarkdown(
