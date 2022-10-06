@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -89,6 +90,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -407,3 +409,4 @@ outputs:
   description: AWS IAM information.
   type: unknown
 quiet: true
+fromversion: 6.5.0
