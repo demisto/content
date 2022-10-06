@@ -2,12 +2,21 @@ import demistomock as demisto
 import pytest
 import json
 from GetFailedTasks import main, get_failed_tasks_output
-from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
+from test_data.constants import INCIDENTS_RESULT, RESTAPI_TAS_RESULT, INTERNAL_TASKS_RESULT
 
 
-def test_get_failed_tasks(mocker):
-    mocker.patch.object(demisto, 'executeCommand', return_value=INCIDENTS_RESULT)
-    mocker.patch.object(demisto, 'internalHttpRequest', return_value=TASKS_RESULT)
+def mock_execute_command(command_name, _):
+    if command_name == 'getIncidents':
+        return INCIDENTS_RESULT
+    elif command_name == 'demisto-api-post':
+        return RESTAPI_TAS_RESULT
+
+
+@pytest.mark.parametrize('rest_api_instacne', ['rest_api_instacne', None])
+def test_get_failed_tasks(mocker, rest_api_instacne):
+    mocker.patch.object(demisto, 'args', return_value={'rest_api_instance': rest_api_instacne})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=mock_execute_command)
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=INTERNAL_TASKS_RESULT)
     mocker.patch.object(demisto, 'results')
 
     main()
@@ -35,7 +44,7 @@ def test_get_failed_tasks(mocker):
 
 @pytest.mark.parametrize('tasks,expected_outputs', [
     ([], ([], 0)),
-    (json.loads(TASKS_RESULT.get('body')), ([{
+    (json.loads(INTERNAL_TASKS_RESULT.get('body', '{}')), ([{
         'Command Name': '',
         'Error Entry ID': ['8@3', '9@3'],
         'Incident Created Date': '2020-09-29T14:02:45.82647067Z',
