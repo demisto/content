@@ -15,7 +15,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   type: 15
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
@@ -1215,14 +1214,14 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - No tests (auto formatted)

@@ -36,7 +36,7 @@ def mark_http_as_suspicious(set_http_as_suspicious):
     return set_http_as_suspicious != 'false'
 
 
-def main():
+def main():     # pragma: no cover
     url_arg = demisto.get(demisto.args(), "url")
     urls = arg_to_list_with_regex(url_arg)
 

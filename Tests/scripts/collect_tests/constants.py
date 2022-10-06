@@ -1,4 +1,7 @@
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import (SAMPLES_DIR,
+                                                   TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 
 XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with integration',
@@ -7,8 +10,10 @@ XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 SANITY_TEST_TO_PACK: dict[str, str] = {
-    # Some sanity tests (rarely) require a pack
     'Sanity Test - Playbook with Unmockable Whois Integration': 'Whois',
+    'Sanity Test - Playbook with integration': 'HelloWorld',
+    'Sanity Test - Playbook with no integration': 'HelloWorld',
+    'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
@@ -24,9 +29,9 @@ ALWAYS_INSTALLED_PACKS = (
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
-SKIPPED_CONTENT_ITEMS: set[str] = {
+SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
-    'playbook-Jask_Test-4.0.0.yml'
+    'playbook-Jask_Test-4.0.0.yml',
     'playbook-Recorded_Future_Test_4_0.yml',
     'playbook-TestCommonPython_4_1.yml',
 }
@@ -71,6 +76,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
+    FileType.AGENT_CONFIG,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -85,4 +91,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
+    FileType.AGENT_CONFIG_YML,
 }
+
+NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}

@@ -49,6 +49,7 @@ def panos_connect(net_connect: Netmiko = None):
 
 
 def panos_ssh(cmd: str, net_connect: Netmiko = None):
+    result_cmd = str()
     if sshConfigured:
         """
         Run any command
@@ -58,11 +59,16 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
         try:
             if not net_connect:
                 net_connect = Netmiko(**panos)
-            result_cmd = net_connect.send_command_timing(cmd)
+                # Sometimes returns "debug", and will not wait for results
+                result_cmd = net_connect.send_command_timing(cmd)
+
+                # This command ensures the first has finished
+                result_cmd += net_connect.send_command_timing("\n")
         finally:
             if net_connect:
                 net_connect.disconnect()
-        return result_cmd
+                # Remove newlines and carriage returns
+        return result_cmd.replace('\n', ' ').replace('\r', '')
     else:
         raise Exception('You must configure the SSH integration parameters to use this command.')
 

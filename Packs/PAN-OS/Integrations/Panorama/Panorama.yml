@@ -3662,8 +3662,28 @@ script:
       name: description
     - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
       name: serial_number
-    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: push job ID to use in polling commands. (automatically filled by polling).
+      name: push_job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '120'
+    - description: The interval (in seconds) when polling.
+      name: interval_in_seconds
+      defaultValue: '10'
+    - description: whether to hide the polling result (automatically filled by polling).
+      name: hide_polling_output
+      deprecated: true
+    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
     name: pan-os-push-to-device-group
+    polling: true
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
       description: The device group in which the policies were pushed.
@@ -3679,6 +3699,9 @@ script:
       type: String
     - contextPath: Panorama.Push.Errors
       description: The push errors.
+      type: String
+    - contextPath: Panorama.Push.Details
+      description: The job ID details.
       type: String
   - arguments:
     - description: The device group for which to return addresses (Panorama instances).
@@ -3964,6 +3987,9 @@ script:
     - description: The tag of the address group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the address group belongs to.
+      name: device-group
+      required: false
     description: Edits a static or dynamic address group.
     name: pan-os-edit-address-group
     outputs:
@@ -4207,6 +4233,9 @@ script:
     - description: The tag of the service group to edit.
       isArray: true
       name: tags
+    - description: The device group in which the service group belongs to.
+      name: device-group
+      required: false
     description: Edits a service group.
     name: pan-os-edit-service-group
     outputs:
@@ -4322,6 +4351,9 @@ script:
     - description: A comma-separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
+    - description: The device group in which the URL category belongs to.
+      name: device-group
+      required: false
     description: Adds or removes sites to and from a custom URL category.
     name: pan-os-edit-custom-url-category
     outputs:
@@ -4540,6 +4572,9 @@ script:
       predefined:
       - add
       - remove
+    - description: The device group in which the URL-filter belongs to.
+      name: device-group
+      required: false
     description: Edits a URL filtering rule.
     name: pan-os-edit-url-filter
     outputs:
@@ -4704,6 +4739,9 @@ script:
     - description: The element value.
       name: element_value
       required: true
+    - description: The device group in which the EDL belongs to.
+      name: device-group
+      required: false
     description: Modifies an element of an external dynamic list.
     name: pan-os-edit-edl
     outputs:
@@ -5053,6 +5091,9 @@ script:
       - replace
       - add
       - remove
+    - description: The device group in which the rule belongs to.
+      name: device-group
+      required: false
     description: Edits a policy rule.
     name: pan-os-edit-rule
     outputs:
@@ -5126,6 +5167,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: The device group for which to return applications.
+      name: device-group
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
@@ -6225,6 +6269,9 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
+    - description: The device group for which to return security profiles.
+      name: device-group
+      required: false
     description: Gets information for the specified security profile.
     name: pan-os-get-security-profiles
     outputs:
@@ -6382,6 +6429,9 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device-group
+      required: false
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
@@ -8050,7 +8100,47 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  - arguments:
+    - description: The name of the template to retrieve. If not provided then all available templates will be returned.
+      isArray: false
+      name: template_name
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the templates to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing templates. This must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of available templates. (To be used only in Panorama instances).
+    name: pan-os-list-templates
+    outputs:
+    - contextPath: Panorama.Template.Name
+      description: The name of the template.
+      type: String
+    - contextPath: Panorama.Template.Description
+      description: The description of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Name
+      description: The variable name of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Type
+      description: The type of template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Value
+      description: The value of the variable of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Description
+      description: The description of the variable of the template.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.34572
   feed: false
   isfetch: false
   longRunning: false

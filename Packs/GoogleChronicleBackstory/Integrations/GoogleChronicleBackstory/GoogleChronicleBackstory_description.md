@@ -2,6 +2,8 @@
 ---
 Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Backstory API.
 
+Starting from "First fetch time", XSOAR will retrieve "How many incidents to fetch each time" at every "Incident Fetch Interval" period.
+
 ### Reputation Calculation Algorithm
 Chronicle provides the intelligence context to the indicators as provided by the configured threat intelligence sources. The IOC context properties provided by Chronicle are Severity, Category and Confidence Score. To provide the user with control over the reputation calculation, the integration configuration enables granular control over these properties. 
 

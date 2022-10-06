@@ -1,0 +1,86 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "showOthers": false,
+        "timeFrame": "days",
+        "customGroupBy": [
+            null,
+            {
+                "General Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "GeneralError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "General Error"
+                },
+                "Quota Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "QuotaError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Quota Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "groupBy": [
+            "modified(d)",
+            "apiResponseType"
+        ],
+        "valuesFormat": "abbreviated",
+        "yAxisLabel": "Request Counts",
+        "xAxisLabel": "Time",
+        "referenceLine": {
+            "type": "max"
+        }
+    },
+    "query": "type:integration and instance:\"Cisco Umbrella Investigate_instance_1\"",
+    "modified": "2022-07-28T07:14:16.55383798Z",
+    "name": "API Call Results for Cisco Umbrella Investigate",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "days",
+            "byFrom": "days",
+            "toValue": 0,
+            "fromValue": 3,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
+    "widgetType": "line",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

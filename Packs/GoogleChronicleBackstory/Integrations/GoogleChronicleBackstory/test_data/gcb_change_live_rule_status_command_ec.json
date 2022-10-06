@@ -1,0 +1,7 @@
+{
+  "GoogleChronicleBackstory.LiveRuleStatusChange(val.ruleId == obj.ruleId)": {
+    "ruleId": "ru_abcd",
+    "actionStatus": "SUCCESS",
+    "liveRuleStatus": "enable"
+  }
+}
