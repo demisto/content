@@ -8128,7 +8128,6 @@ class TestSendEventsToXSIAMTest:
 
         with pytest.raises(
                 DemistoException,
-                # match=re.escape(expected_error_header + expected_error_msg),
                 match=re.escape(expected_error_header + expected_error_msg),
         ):
             send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
