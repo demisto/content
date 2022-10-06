@@ -1927,8 +1927,8 @@ def create_scan_schedule_command(client: Client, site: Site, enabled: bool, repe
     return CommandResults(
         readable_output=f"New scheduled scan has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.ScanSchedule",
-        outputs_key_field="Id",
-        outputs={"Id": response_data['id']},
+        outputs_key_field="id",
+        outputs={"id": response_data['id']},
         raw_response=response_data,
     )
 
@@ -2065,8 +2065,8 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     return CommandResults(
         readable_output=f"New vulnerability exception has been created with ID {str(response_data['id'])}.",
         outputs_prefix="Nexpose.VulnerabilityException",
-        outputs_key_field="Id",
-        outputs={"Id": response_data["id"]},
+        outputs_key_field="id",
+        outputs={"id": response_data["id"]},
         raw_response=response_data,
     )
 
@@ -2781,7 +2781,9 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     if not scan_schedules:
         return CommandResults(readable_output="No scan schedules were found for the site.")
 
-    for scan_schedule in scan_schedules:
+    hr_outputs = scan_schedules.copy()
+
+    for scan_schedule in hr_outputs:
         if scan_schedule.get("duration"):
             scan_schedule["duration"] = convert_from_duration_time(scan_schedule["duration"])
         if scan_schedule.get("repeat") and scan_schedule["repeat"].get("every"):
@@ -2796,8 +2798,8 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
         "NextStart",
     ]
 
-    outputs = replace_key_names(
-        data=scan_schedules,
+    hr_outputs = replace_key_names(
+        data=hr_outputs,
         name_mapping={
             "id": "Id",
             "enabled": "Enable",
@@ -2812,9 +2814,9 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
 
     return CommandResults(
         outputs_prefix="Nexpose.ScanSchedule",
-        outputs_key_field="Id",
-        outputs=outputs,
-        readable_output=tableToMarkdown("Nexpose scan schedules", outputs, headers, removeNull=True),
+        outputs_key_field="id",
+        outputs=scan_schedules,
+        readable_output=tableToMarkdown("Nexpose scan schedules", hr_outputs, headers, removeNull=True),
         raw_response=scan_schedules,
     )
 
@@ -2943,8 +2945,10 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         "ExpiresOn",
     ]
 
+    hr_outputs = vulnerability_exceptions.copy()
+
     replace_key_names(
-        data=vulnerability_exceptions,
+        data=hr_outputs,
         name_mapping={
             "id": "Id",
             "scope.vulnerability": "Vulnerability",
@@ -2960,10 +2964,10 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
 
     return CommandResults(
         outputs_prefix="Nexpose.VulnerabilityException",
-        outputs_key_field="Id",
+        outputs_key_field="id",
         outputs=vulnerability_exceptions,
         readable_output=tableToMarkdown(
-            "Nexpose Vulnerability Exceptions", vulnerability_exceptions, headers, removeNull=True),
+            "Nexpose Vulnerability Exceptions", hr_outputs, headers, removeNull=True),
         raw_response=vulnerability_exceptions,
     )
 

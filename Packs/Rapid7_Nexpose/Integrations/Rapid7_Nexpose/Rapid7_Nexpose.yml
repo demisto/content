@@ -593,7 +593,7 @@ script:
     execution: false
     name: nexpose-create-vulnerability-exception
     outputs:
-      - contextPath: Nexpose.VulnerabilityException.Id
+      - contextPath: Nexpose.VulnerabilityException.id
         description: The created site Id
         type: number
   - arguments:
@@ -1062,8 +1062,8 @@ script:
     execution: false
     name: nexpose-create-scan-schedule
     outputs:
-      - contextPath: Nexpose.ScanSchedule.Id
-        description: Id of the newly created scan schedule.
+      - contextPath: Nexpose.ScanSchedule.id
+        description: ID of the newly created scan schedule.
         type: int
   - arguments:
       - default: false
