@@ -153,4 +153,3 @@ def test_aws_secrets_manager_secret_policy_get_command(mocker, args, expected_re
         assert results == expected_results
     else:
         return_error_method.assert_called_with(expected_results)
-
