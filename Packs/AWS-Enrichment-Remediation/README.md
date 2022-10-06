@@ -1,10 +1,10 @@
-Introduction
+There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route53, etc).  The intent of this was so that users can install and use only the packs they need.  However, in that case that an AWS playbook uses multiple pack integartions (such as EC2 and IAM), they can't reside in one of the current packs because they include content from multiple.  This pack was created as a place to but AWS playbooks that use AWS integrations from multiple packs with a focus on enrichment and remediation.
 
 ##### What does this pack do?
 
-The integration allows Cortex XSOAR to ingest phishing threats from Cofense Triage and run response playbooks based on email attributes.
-- 
-- 
+The pack is intended to contain AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
+- Enrichment: give an IP address, see if there is a EC2 instance associated and if so pull information on the security group associated and IAM information for the user that created that security group.
+- Remediation: give the information collected from enrichment, replace the security group with a "quarentine" security group until vulnerabilities are resolved.
 
 ### Playbooks
 
@@ -15,4 +15,4 @@ This content pack includes the following playbooks:
 #### AWS - Enrichment
 AWS - Enrichment playbook reports EC2 and IAM information Given an IP address of an EC2 instance.
 
-![AWS - Enrichment](doc_files/AWS_-_Enrichment.png)
+![AWS - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
