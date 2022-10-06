@@ -5354,6 +5354,7 @@
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
         "Vertica": "No insance issue 45719",
+        "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
         "AnsibleAzure": "No instance - issue 40447",
         "AnsibleCiscoIOS": "No instance - issue 40447",
