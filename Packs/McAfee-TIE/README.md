@@ -1,4 +1,6 @@
 
+Use the McAfee Threat Intelligence Exchange (TIE) integration to get file reputations and the systems that reference the files.
+
 ## What does this content pack do?
 - Retrieves threat intelligence data about files from global, and local sources.
 - Determine which and when local systems have executed files.

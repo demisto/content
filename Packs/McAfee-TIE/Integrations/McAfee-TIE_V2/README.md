@@ -3,14 +3,12 @@ Connect to McAfee TIE using the McAfee DXL client.
 This integration was integrated and tested with version 2.0 of McAfee Threat Intelligence Exchange V2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes).
-## <a name="breaking-changes"></a>Changes compared to V1
-1. You can now pass more than one file to the commands `tie-set-file-reputation`, and `tie-file-references`.
-2. Added additional context outputs to the commands `file`, and `tie-file-references`.
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes).
+
 
 ## Detailed Instructions
 This section includes information required for configuring an integration instance.
-### <a name="prerequisites"></a>Prerequisites - Connect to McAfee Threat Intelligence Exchange (TIE) using the DXL TIE Client
+### Prerequisites - Connect to McAfee Threat Intelligence Exchange (TIE) using the DXL TIE Client
 To connect the McAfee TIE using the DXL TIE client, you need to create certificates and configure DXL. For more information, see the [documentation](https://xsoar.pan.dev/docs/reference/integrations/mc-afee-dxl#how-to-create-the-rsa-key-pair). After you complete this configuration, you will have the following files:
 1. Broker CA certificates (`brokercerts.crt` file)
 2. Client certificate (`client.crt` file)
@@ -19,7 +17,8 @@ To connect the McAfee TIE using the DXL TIE client, you need to create certifica
 
 **Important**: These are the actual certificates, not request certificates.
 
-<a name="set-file-instruction"></a>To use the `tie-set-file-reputation` command, you need to authorize the client (Demisto) to run the command. Follow the [instructions](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html) to do so. In step #4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
+### set-file instruction
+To use the ***tie-set-file-reputation*** command, you need to authorize the client (Cortex XSOAR) to run the command. Follow the [instructions](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html) to do so. In step 4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
 
 ### Dependencies (Python packages)
 You don't need to install the packages, they are included in the Docker image.
@@ -98,29 +97,29 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Server_Version | String | The version of the TIE server that returned the reputations \(encoded version string\). | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.First_Contact | String | The time the file was first seen. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Prevalence | String | The count of unique systems that have executed the file. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Enterprise_Size | String | The count of systems within the local enterprise. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Prevalence | String | The number of unique systems that have executed the file. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Enterprise_Size | String | The number of systems within the local enterprise. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Min_Local_Rep | String | The lowest reputation found locally on a system. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Max_Local_Rep | String | The highest reputation found locally on a system. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Avg_Local_Rep | String | The average reputation found locally on systems. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Min_Local_Rep | String | The lowest reputation for the parent found locally on a system. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Max_Local_Rep | String | The highest reputation for the parent found locally on a system. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Avg_Local_Rep | String | The average reputation for the parent found locally on systems. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.File_Name_Count | String | The count of unique file names for the file. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Detection_Count | String | The count of detections for the file or certificate. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.File_Name_Count | String | The number of unique file names for the file. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Detection_Count | String | The number of detections for the file or certificate. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time | String | The last time a detection occurred. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Is_Prevalent | String | Whether the file is considered to be prevalent within the enterprise. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps | String | The child file reputations \(aggregate string\) according to the following format:<br /> - The count of files<br />- The maximum trust level found across the files<br /> - The minimum trust level found across the files<br /> - The trust level for the last file<br /> - The average trust level across the files | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format:<br /> - The count of files<br /> - The maximum trust level found across the files<br /> - The minimum trust level found across the files<br /> - The trust level for the last file<br /> - The average trust level across the files | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps | String | The child file reputations \(aggregate string\) according to the following format:<br /> - The number of files.<br />- The maximum trust level found across the files.<br /> - The minimum trust level found across the files.<br /> - The trust level for the last file.<br /> - The average trust level across the files. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format:<br /> - The number of files.<br /> - The maximum trust level found across the files.<br /> - The minimum trust level found across the files.<br /> - The trust level for the last file.<br /> - The average trust level across the files. | 
 
-### <a name="providers-table"></a>Providers
+### Providers Table
 | **Provider** | **Numeric** | **Description** |
 | --- | --- | --- |
 | GTI | 1 | Global Threat Intelligence (GTI). |
 | ENTERPRISE | 3 | Enterprise reputation (specific to the local enterprise). |
 | ATD | 5 | McAfee Advanced Threat Defense (ATD). |
 
-### <a name="trust-level-table"></a>Trust Level Table
+### >Trust Level Table
 | **Trust Level** | **Numeric** | **Description** |
 | --- | --- | --- |
 | KNOWN_TRUSTED_INSTALLER | 100 | It is a trusted installer. |
@@ -133,7 +132,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | KNOWN_MALICIOUS | 1 | It is a malicious file. |
 | NOT_SET | 0 | The file's reputation hasn't been determined yet. |
 
-### <a name="atd-trust-score-table"></a>ATD Trust Score Table
+### ATD Trust Score Table
 | **Trust Level** | **Numeric** | **Description** |
 | --- | --- | --- |
 | KNOWN_TRUSTED | -1 | It is a trusted file. |
@@ -419,23 +418,14 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 | 33b05a2e-6bb2-46c2-998f-893668c46402 | 2017-10-16 17:12:17 |
 | 99ed15bb-ebc5-4b48-9a4d-5ad1b30abaac | 2017-10-16 17:14:36 |
 
-<!-- ## Breaking changes from the previous version of this integration - McAfee Threat Intelligence Exchange V2
-%%FILL HERE%%
+
+## Breaking Changes
 The following sections list the changes in this version.
+- You can now pass more than one file to the following commands:
+   - ***tie-set-file-reputation***
+   - ***tie-file-references***
+- Added additional context outputs to the following commands:
+   - ***file***
+   - ***tie-file-references***
 
 
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *file* command:
-* *File.TrustLevel* - this output was replaced by XXX.
-* *File.Vendor* - this output was replaced by XXX.
-* *File.Malicious.Score* - this output was replaced by XXX.
-
-In the *tie-file-references* command:
-* *File.References.AgentGuid* - this output was replaced by XXX.
-* *File.References.Date* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version. -->
