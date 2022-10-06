@@ -407,7 +407,7 @@ def module_test_command(client: Client, args):  # pragma: no cover
                                                            'local help desk'))
 
 
-def fetch_indicators_command(client: Client, params, last_run)-> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -456,6 +456,7 @@ def fetch_indicators_command(client: Client, params, last_run)-> Tuple[List[Dict
 
     return indicators, groups
 
+
 def build_url_with_query_params(params, endpoint, last_run):
     """Setting the url for the request for each endpoint"""
     if not should_send_request(params, endpoint):
@@ -481,7 +482,7 @@ def build_url_with_query_params(params, endpoint, last_run):
     if '?' not in url:
         # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
-    
+
     return url
 
 
@@ -493,7 +494,7 @@ def should_send_request(params, endpoint):
     else:
         if not argToList(params.get('group_type')):
             return False
-    
+
     return True
 
 
@@ -520,6 +521,7 @@ def set_tql_query(from_date, params, endpoint):
     tql = tql.replace('AND ', '', 1)
     return tql
 
+
 def get_updated_last_run(indicators, groups, previous_run):
     """Setting the Last Run structure"""
 
@@ -532,9 +534,10 @@ def get_updated_last_run(indicators, groups, previous_run):
         next_run['groups'] = {'from_date': groups[-1].get('dateAdded')}
     else:
         next_run['groups'] = previous_run.get('groups', {})
-    
+
     demisto.debug('The new last_run is: ' + str(next_run))
     return next_run
+
 
 def get_indicators_command(client: Client, args):  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
@@ -572,7 +575,7 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
     if '?' not in url:
         # replacing only the first occurence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
-    
+
     demisto.debug("URL: " + url)
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
