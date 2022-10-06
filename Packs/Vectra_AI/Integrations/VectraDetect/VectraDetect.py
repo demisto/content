@@ -33,6 +33,7 @@ DEFAULT_MAX_FETCH: int = 50
 API_VERSION_URL = '/api/v2.3'
 
 API_ENDPOINT_ACCOUNTS = '/accounts'
+API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
 API_ENDPOINT_DETECTIONS = '/detections'
 API_ENDPOINT_HOSTS = '/hosts'
 
@@ -54,6 +55,12 @@ DEFAULT_ORDERING = {
 DEFAULT_STATE = {'state': 'active'}
 
 ENTITY_TYPES = ('Accounts', 'Hosts', 'Detections')
+
+OUTCOME_CATEGORIES = {
+    'benign_true_positive': 'Benign True Positive',
+    'malicious_true_positive': 'Malicious True Positive',
+    'false_positive': 'False Positive'
+}
 
 
 ''' GLOBALS '''
@@ -302,6 +309,44 @@ class Client(BaseClient):
             method='GET',
             params=query_params,
             url_suffix=f'{API_SEARCH_ENDPOINT_HOSTS}'
+        )
+
+    def search_outcomes(self,
+                        id=None,
+                        max_results=None) -> Dict[str, Any]:
+        """
+        Gets Assignment outcomes using the 'assignment_outcomes' API endpoint
+
+        :return: dict containing all Outcomes details
+        :rtype: ``Dict[str, Any]``
+        """
+        # Default params
+        demisto.debug("Forcing 'page' and 'page_size' query arguments")
+        query_params: Dict[str, Any] = {
+            'page': 1
+        }
+        query_params['page_size'] = sanitize_max_results(max_results)
+
+        url_addon = f'/{id}' if id else ''
+
+        # Execute request
+        return self._http_request(
+            method='GET',
+            params=query_params,
+            url_suffix=f'{API_ENDPOINT_OUTCOMES}{url_addon}'
+        )
+
+        # Default params
+        # Outcomes endpoint doesn't support pagination
+        query_params: Dict[str, Any] = {}
+
+        url_addon = f'/{id}' if id else ''
+
+        # Execute request
+        return self._http_request(
+            method='GET',
+            params=query_params,
+            url_suffix=f'{API_ASSIGNMENT_OUTCOME}{url_addon}'
         )
 
     def get_pcap_by_detection_id(self, id: str):
@@ -792,6 +837,23 @@ def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Outcome object renaming attributes on the fly.
+
+    - params:
+        - outcome: The Vectra Outcome object
+    - returns:
+        The Outcome extracted data
+    """
+    return {
+        'Category'               : convert_outcome_category_raw2text(outcome.get('category')),  # noqa: E203
+        'ID'                     : outcome.get('id'),                                           # noqa: E203
+        'IsBuiltIn'              : outcome.get('builtin'),                                      # noqa: E203
+        'Title'                  : outcome.get('title')                                         # noqa: E203
+    }
+
+
 def detection_to_incident(detection: Dict):
     """
     Creates an incident of a Detection.
@@ -980,6 +1042,32 @@ def unify_severity(severity: Optional[str]) -> str:
         output = 'Unknown'
 
     return output
+
+
+def convert_outcome_category_raw2text(category: Optional[str]) -> Optional[str]:
+    """
+    Convert outcome category from raw to human readable text
+
+    - params:
+        - category: The raw outcome category string
+    - returns:
+        The human readable outcome category string
+    """
+    return OUTCOME_CATEGORIES.get(category) if category else None
+
+
+def convert_outcome_category_text2raw(category: str) -> Optional[str]:
+    """
+    Convert outcome category from human readable text to raw
+
+    - params:
+        - category: The human readable outcome category string
+    - returns:
+        The raw outcome category string
+    """
+    # Inverting Key/Value
+    category_text = {v: k for k, v in OUTCOME_CATEGORIES.items()}
+    return category_text.get(category) if category else None
 
 
 class VectraException(Exception):
@@ -1364,6 +1452,52 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     return command_result
 
 
+def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Returns several Assignment outcome objects maching the search criterias passed as arguments
+
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
+    """
+    api_response = client.search_outcomes(**kwargs)
+
+    count = api_response.get('count')
+    if count is None:
+        raise VectraException('API issue')
+
+    outcomes_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Outcomes.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
+
+        api_results = api_response.get('results', [])
+
+        for outcome in api_results:
+            outcomes_data.append(extract_outcome_data(outcome))
+
+        readable_output_keys = ['ID', 'Title', 'Category', 'IsBuiltIn']
+        readable_output = tableToMarkdown(
+            name=f'Outcomes table (Showing max {MAX_RESULTS} entries)',
+            t=outcomes_data,
+            headers=readable_output_keys
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcomes_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Account details using its ID
@@ -1570,6 +1704,45 @@ def mark_detection_as_fixed_command(client: Client, id: str, fixed: str) -> Comm
     return command_result
 
 
+def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
+    """
+    Gets Outcome details using its ID
+
+    - params:
+        - client: Vectra Client
+        - id: The Outcome ID
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not id:
+        raise VectraException('"id" not specified')
+
+    api_response = client.search_outcomes(id=id)
+
+    outcome_data = None
+    obtained_id = api_response.get('id')
+    if obtained_id is None:
+        readable_output = f'Cannot find Outcome with ID "{id}".'
+    else:
+        outcome_data = extract_outcome_data(api_response)
+
+        readable_output = tableToMarkdown(
+            name=f'Outcome ID {id} details table',
+            t=outcome_data
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcome_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def add_tags_command(client: Client, type: str, id: str, tags: str) -> CommandResults:
     """
     Adds several tags to an account/host/detection
@@ -1706,6 +1879,8 @@ def main() -> None:  # pragma: no cover
         elif command == 'vectra-search-detections':
             return_results(vectra_search_detections_command(client, **kwargs))
 
+        elif command == 'vectra-search-outcomes':
+            return_results(vectra_search_outcomes_command(client, **kwargs))
         # ## Accounts centric commands
         elif command == 'vectra-account-describe':
             return_results(vectra_get_account_by_id_command(client, **kwargs))
@@ -1734,6 +1909,8 @@ def main() -> None:  # pragma: no cover
         elif command == 'vectra-detection-del-tags':
             return_results(del_tags_command(client, type="detection", **kwargs))
 
+        elif command == 'vectra-outcome-describe':
+            return_results(vectra_get_outcome_by_id_command(client, **kwargs))
         else:
             raise NotImplementedError()
 

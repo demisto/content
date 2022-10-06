@@ -29,6 +29,7 @@ API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
 API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
 API_SEARCH_ENDPOINT_HOSTS = '/search/hosts'
 API_ENDPOINT_DETECTIONS = '/detections'
+API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
 API_TAGGING = '/tagging'
 
 
@@ -378,6 +379,23 @@ def test_extract_host_data(api_entry, expected):
 
 
 @pytest.mark.parametrize(
+    "api_entry,expected",
+    [
+        pytest.param(load_test_data('single_outcome.json'),
+                     load_test_data('single_outcome_extracted.json'),
+                     id="outcome_ok")
+    ]
+)
+def test_extract_outcome_data(api_entry, expected):
+    """
+    Tests extract_outcome_data helper function
+    """
+    from VectraDetect import extract_outcome_data
+
+    assert extract_outcome_data(api_entry) == expected
+
+
+@pytest.mark.parametrize(
     "input_date,expected,exception",
     [
         pytest.param('2022-06-30T01:23:45Z', '2022-06-30T0123',
@@ -417,6 +435,44 @@ def test_unify_severity(input_severity, expected):
     from VectraDetect import unify_severity
 
     assert unify_severity(input_severity) == expected
+
+
+@pytest.mark.parametrize(
+    "input_category,expected",
+    [
+        ('benign_true_positive', 'Benign True Positive'),
+        ('malicious_true_positive', 'Malicious True Positive'),
+        ('false_positive', 'False Positive'),
+        ('dummy', None),
+        ('', None),
+    ]
+)
+def test_convert_outcome_category_raw2text(input_category, expected):
+    """
+    Tests convert_outcome_category_raw2text helper function.
+    """
+    from VectraDetect import convert_outcome_category_raw2text
+
+    assert convert_outcome_category_raw2text(input_category) == expected
+
+
+@pytest.mark.parametrize(
+    "input_category,expected",
+    [
+        ('Benign True Positive', 'benign_true_positive'),
+        ('Malicious True Positive', 'malicious_true_positive'),
+        ('False Positive', 'false_positive'),
+        ('dummy', None),
+        ('', None),
+    ]
+)
+def test_convert_outcome_category_text2raw(input_category, expected):
+    """
+    Tests convert_outcome_category_text2raw helper function.
+    """
+    from VectraDetect import convert_outcome_category_text2raw
+
+    assert convert_outcome_category_text2raw(input_category) == expected
 
 
 #####
@@ -620,6 +676,38 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
 
     with exception:
         result = vectra_search_hosts_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({}, [load_test_data('single_outcome_extracted.json')], None,
+                     does_not_raise(),
+                     id="full-pull")
+    ]
+)
+def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_outcomes_command command function.
+    """
+    from VectraDetect import Client, vectra_search_outcomes_command
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}'
+                      f'?page=1&page_size=200',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_outcome.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_outcomes_command(client=client, **query_args)
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable
@@ -908,6 +996,44 @@ def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outp
 
     with exception:
         result = mark_detection_as_fixed_command(client=client, id=id, fixed=fixed)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('4', load_test_data('single_outcome_extracted.json'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_outcome_by_id_command command function.
+    """
+    from VectraDetect import Client, vectra_get_outcome_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}',
+                      json={})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}'
+                      f'/4'
+                      f'?page=1&page_size=200',
+                      complete_qs=True,
+                      json=load_test_data('single_outcome.json'))
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_outcome_by_id_command(client=client, id=id)
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable

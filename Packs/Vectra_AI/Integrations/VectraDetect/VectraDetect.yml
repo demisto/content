@@ -396,6 +396,22 @@ script:
       type: String
       description: Detection URL to pivot to Vectra UI
 
+  - name: vectra-search-outcomes
+    description: Returns a list of assignment outcomes.
+    outputs:  &outcomeOutput
+    - contextPath: Vectra.Outcome.IsBuiltIn
+      type: String
+      description: Is this Outcome a builtin Outcome
+    - contextPath: Vectra.Outcome.Category
+      type: String
+      description: Outcome's category ('False Positive', 'Benign True Positive', 'Malicious True Positive')
+    - contextPath: Vectra.Outcome.ID
+      type: Number
+      description: Outcome ID (unique)
+    - contextPath: Vectra.Outcome.Title
+      type: String
+      description: Outcome title
+
   ######
   ### Accounts
   #
@@ -531,6 +547,18 @@ script:
       description: The tags list (comma separated)
       isArray: true
     outputs: []
+
+  ######
+  ### Assignment Outcomes
+  #
+  - name: vectra-outcome-describe
+    description: Returns a single outcome details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Outcome ID you want to get details on
+    outputs: *outcomeOutput
 
 
 tests:
