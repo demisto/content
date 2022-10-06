@@ -1,0 +1,35 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "emailthreadtopic",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "9c3c2197-ff85-4308-89fd-c109f8574d7a",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailthreadtopic",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Thread Topic",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "EmailTopicsSelect",
+    "selectValues": [
+        "Choose topic to display"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

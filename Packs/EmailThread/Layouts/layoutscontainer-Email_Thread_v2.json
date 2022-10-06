@@ -1,0 +1,537 @@
+{
+    "description": "DBS",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "k8pjohtsgj",
+                "name": "Email",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 13,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "k8pjohtsgj-caseinfoid-640beec0-e5f3-11ec-abd3-bb1df17fba5a",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "emailthreadhtml",
+                                "height": 106,
+                                "id": "7950e670-e7b3-11ec-a2f7-a3982abe66aa",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email Thread",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": true,
+                        "i": "k8pjohtsgj-caseinfoid-5e8b0f50-e5f6-11ec-9898-299a6ea9e7f5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailthreadteam",
+                                "height": 22,
+                                "id": "ffdafd20-e5f6-11ec-9898-299a6ea9e7f5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "emailto",
+                                "height": 22,
+                                "id": "dd201be0-e5f5-11ec-9898-299a6ea9e7f5",
+                                "index": 1,
+                                "listId": "caseinfoid-c8209710-e5f5-11ec-9898-299a6ea9e7f5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailcc",
+                                "height": 22,
+                                "id": "e437e7a0-e5f5-11ec-9898-299a6ea9e7f5",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "emailbcc",
+                                "height": 22,
+                                "id": "ec25aff0-fc0d-11ec-a439-9d07246e62ef",
+                                "index": 3,
+                                "listId": "k8pjohtsgj-caseinfoid-5e8b0f50-e5f6-11ec-9898-299a6ea9e7f5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailsubject",
+                                "height": 22,
+                                "id": "342cf8d0-e782-11ec-bd5d-ab77a49b0d99",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "incident_attachment",
+                                "height": 53,
+                                "id": "5f092691-e783-11ec-bd5d-ab77a49b0d99",
+                                "index": 5,
+                                "isVisible": true,
+                                "listId": "k8pjohtsgj-0e43a290-eb74-11ec-9c1e-07ae362942f5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "integration_name": {
+                                        "simple": "EWSO365_instance_1"
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "3fa0c8a0-e5f6-11ec-9898-299a6ea9e7f5",
+                                "index": 5,
+                                "listId": "k8pjohtsgj-84372020-e783-11ec-bd5d-ab77a49b0d99",
+                                "name": "Send",
+                                "scriptId": "f34fda37-387d-4c06-805d-d0979ed0130b",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email Editor",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "k8pjohtsgj-84372020-e783-11ec-bd5d-ab77a49b0d99",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailthreadtopic",
+                                "height": 22,
+                                "id": "cd55c330-e781-11ec-bd5d-ab77a49b0d99",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email communication",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "k8pjohtsgj-0e43a290-eb74-11ec-9c1e-07ae362942f5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "emaileditor",
+                                "height": 44,
+                                "id": "25e71e40-eb74-11ec-9c1e-07ae362942f5",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email body",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    }
+                ],
+                "showEmptyFields": true,
+                "type": "custom"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Linked Incidents",
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Child Incidents",
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Evidence",
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "k8pjohtsgj-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Team Members",
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "k8pjohtsgj-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "showEmptyFields": true,
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Email Thread v2",
+    "name": "Email Thread v2",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

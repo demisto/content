@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "emailthreadshowtrigger",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailthreadshowtrigger",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Thread Show Trigger",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "EmailTopicsShow",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

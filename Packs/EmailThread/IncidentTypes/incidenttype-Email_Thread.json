@@ -1,0 +1,27 @@
+{
+    "autorun": true,
+    "color": "#FF00B6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Email Thread",
+    "layout": "8ad7c1ba-7f35-4f4c-897a-0162754a12cd",
+    "locked": false,
+    "name": "Email Thread",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

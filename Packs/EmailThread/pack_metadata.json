@@ -1,6 +1,6 @@
 {
-    "name": "## Email Thread Communication ##",
-    "description": "## This pack provides an email client inside the incident layout that allows the analysts to send/receive multiple email from within XSOAR ##",
+    "name": "Email Thread",
+    "description": "## This pack provides an email client inside the incident layout that allows sending/receiving multiple emails ##",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Hiep Nguyen",
