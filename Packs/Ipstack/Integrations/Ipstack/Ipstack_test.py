@@ -36,11 +36,11 @@ def test_right_location_format(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={'ip': '1.2.3.4,8.8.8.8'})
     mocker_results = mocker.patch.object(demisto, 'results')
     requests_mock.get(
-        'http://api.ipstack.com/1.2.3.4?access_key=apikey',
+        'http://api.ipstack.com/1.2.3.4?access_key=password',
         json=RAW_RESPONSE_MOCK_1
     )
     requests_mock.get(
-        'http://api.ipstack.com/8.8.8.8?access_key=apikey',
+        'http://api.ipstack.com/8.8.8.8?access_key=password',
         json=RAW_RESPONSE_MOCK_2
     )
     from Ipstack import do_ip_command
@@ -69,7 +69,7 @@ def test_test_module(mocker, requests_mock):
                                                          'integrationReliability': 'C - Fairly reliable'})
     results_mock = mocker.patch.object(demisto, 'results')
     requests_mock.get(
-        'http://api.ipstack.com/1.2.3.4?access_key=apikey',
+        'http://api.ipstack.com/1.2.3.4?access_key=password',
         json={'ip': '1.2.3.4'}
     )
     from Ipstack import test_module

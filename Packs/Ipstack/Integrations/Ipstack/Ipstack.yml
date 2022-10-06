@@ -12,16 +12,17 @@ configuration:
   type: 4
   required: false
   hidden: true
-- display: ""
-  displaypassword: API Key
-  name: credentials
+- name: credentials
+  display: ""
   type: 9
+  displaypassword: API Key
   required: false
   hiddenusername: true
-- name: integrationReliability
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
-  display: Source Reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -30,7 +31,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -89,7 +89,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
 tests:
 - Ipstack_Test
 fromversion: 5.0.0
