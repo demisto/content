@@ -5196,6 +5196,9 @@
             "integrations": [
                 "Panorama"
             ]
+        },
+        {
+            "playbookID": "GridFieldSetup_test"
         }
     ],
     "skipped_tests": {

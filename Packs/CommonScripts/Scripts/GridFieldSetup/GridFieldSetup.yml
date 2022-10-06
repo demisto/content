@@ -22,14 +22,11 @@ comment: |-
   Automation used to setup temporary context to be used then by the !setGridField command.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
   `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" context_path=temp`
 commonfields:
-  id: f7674ced-553d-4529-8962-f4f4b9dee91d
+  id: GridFieldSetup
   version: -1
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.7.35188
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: GridFieldSetup
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -38,3 +35,6 @@ subtype: python3
 tags:
 - Utility
 type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
