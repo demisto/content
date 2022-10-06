@@ -316,10 +316,10 @@ def create_user_command(client: MsGraphClient, args: Dict):
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
-    account = create_account_outputs(user_outputs)
+    accounts = create_account_outputs(user_outputs)
     outputs = {
         'MSGraphUser(val.ID == obj.ID)': user_outputs,
-        'Account(obj.ID == val.ID)': account
+        'Account(obj.ID == val.ID)': accounts
     }
 
     return human_readable, outputs, user_data
@@ -377,11 +377,11 @@ def get_user_command(client: MsGraphClient, args: Dict):
         return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
-    account = create_account_outputs(user_outputs)
+    accounts = create_account_outputs(user_outputs)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {
         'MSGraphUser(val.ID == obj.ID)': user_outputs,
-        'Account(obj.ID == val.ID)': account
+        'Account(obj.ID == val.ID)': accounts
     }
     return human_readable, outputs, user_data
 
