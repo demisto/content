@@ -1,5 +1,7 @@
 import demistomock as demisto
-from GetFailedTasks import main
+import pytest
+import json
+from GetFailedTasks import main, get_failed_tasks_output
 from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
 
 
@@ -27,4 +29,37 @@ def test_get_failed_tasks(mocker):
                                                           'Number of Errors': 2,
                                                           'Playbook Name': 'AutoFocusPolling',
                                                           'Task ID': '1',
-                                                          'Task Name': 'Fail'}
+                                                          'Task Name': 'Fail',
+                                                          'Command Description': 'command desc'}
+
+
+@pytest.mark.parametrize('tasks,expected_outputs', [
+    ([], ([], 0)),
+    (json.loads(TASKS_RESULT.get('body')), ([{
+        'Command Name': '',
+        'Error Entry ID': ['8@3', '9@3'],
+        'Incident Created Date': '2020-09-29T14:02:45.82647067Z',
+        'Incident ID': '3',
+        'Incident Owner': 'admin',
+        'Number of Errors': 2,
+        'Playbook Name': 'AutoFocusPolling',
+        'Task ID': '1',
+        'Task Name': 'Fail',
+        'Command Description': 'command desc'
+    }], 2))
+])
+def test_get_failed_tasks_output(tasks, expected_outputs):
+    """
+        Given:
+            - A list of tasks
+
+        When:
+            - Running the get_failed_tasks_output function
+
+        Then:
+            - Validates that the response is as expected.
+    """
+    tasks_res, num_tasks = get_failed_tasks_output(tasks, INCIDENTS_RESULT[0].get('Contents').get('data')[1])
+
+    assert tasks_res == expected_outputs[0]
+    assert num_tasks == expected_outputs[1]
