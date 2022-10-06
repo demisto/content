@@ -407,7 +407,7 @@ def module_test_command(client: Client, args):  # pragma: no cover
                                                            'local help desk'))
 
 
-def fetch_indicators_command(client: Client, params)-> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def fetch_indicators_command(client: Client, params, last_run)-> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -416,8 +416,8 @@ def fetch_indicators_command(client: Client, params)-> Tuple[List[Dict[str, Any]
     Returns:
         list: indicator to populate in demisto server.
     """
-    indicators_url = set_url(params, 'indicators')
-    groups_url = set_url(params, 'groups')
+    indicators_url = build_url_with_query_params(params, 'indicators', last_run)
+    groups_url = build_url_with_query_params(params, 'groups', last_run)
 
     indicators = []
     groups = []
@@ -439,32 +439,33 @@ def fetch_indicators_command(client: Client, params)-> Tuple[List[Dict[str, Any]
                                                                     get_next=True,
                                                                     full_url=groups_next_link)
                 groups.extend(response)
-        else:
+        elif indicators_url or groups_url:
             demisto.debug('Indicators URL: ' + indicators_url)
             indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
             indicators.extend(indicators_response)
+            indicators_url = ''
 
             demisto.debug('Groups URL: ' + groups_url)
             groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
             groups.extend(groups_response)
+            groups_url = ''
 
         # Limit the number of results to not get an error from the API
-        if (len(indicators) + len(groups)) > 15000 or not (indicators_next_link and groups_next_link):
+        if ((len(indicators) + len(groups)) > 15000) or (not indicators_next_link and not groups_next_link):
             break
 
     return indicators, groups
 
-def set_url(params, endpoint):
+def build_url_with_query_params(params, endpoint, last_run):
     """Setting the url for the request for each endpoint"""
     if not should_send_request(params, endpoint):
         return ''
 
-    last_run = demisto.getLastRun()
     last_run_date = last_run.get(endpoint, {}).get('from_date', '')
-    demisto.debug('last run get: ' + str(last_run))
+    demisto.debug('last run get: ' + str(last_run_date))
     from_date = ''
     if last_run_date:
-        from_date = f'AND (dateAdded > "{last_run}") '
+        from_date = f'AND (dateAdded > "{last_run_date}") '
 
     fields = set_fields_query(params, endpoint)
     tql = params.get('indicator_query')
@@ -485,7 +486,7 @@ def set_url(params, endpoint):
 
 
 def should_send_request(params, endpoint):
-    """Checking if the user in indicated any indicator/group types to fetch from the API"""
+    """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == 'indicators':
         if not argToList(params.get('indicator_type')):
             return False
@@ -519,19 +520,20 @@ def set_tql_query(from_date, params, endpoint):
     tql = tql.replace('AND ', '', 1)
     return tql
 
-def set_last_run(indicators, groups):
+def get_updated_last_run(indicators, groups, previous_run):
     """Setting the Last Run structure"""
-    previous_run = demisto.getLastRun()
+
     next_run = {}
     if indicators:
-        next_run['indicators'] = {'from_date': indicators[-1].get('firstseenbysource')}
+        next_run['indicators'] = {'from_date': indicators[-1].get('dateAdded')}
     else:
         next_run['indicators'] = previous_run.get('indicators', {})
     if groups:
-        next_run['groups'] = {'from_date': groups[-1].get('firstseenbysource')}
+        next_run['groups'] = {'from_date': groups[-1].get('dateAdded')}
     else:
         next_run['groups'] = previous_run.get('groups', {})
     
+    demisto.debug('The new last_run is: ' + str(next_run))
     return next_run
 
 def get_indicators_command(client: Client, args):  # pragma: no cover
@@ -607,6 +609,7 @@ def main():  # pragma: no cover
     secret_key = credentials.get('password') or demisto.params().get('api_secret_key')
     params = demisto.params()
     args = demisto.args()
+    last_run = demisto.getLastRun()
     client = Client(access_id, secret_key,
                     demisto.getParam('tc_api_path'), verify=insecure, proxy=proxy)
     command = demisto.command()
@@ -618,16 +621,16 @@ def main():  # pragma: no cover
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators, groups = fetch_indicators_command(client, params)
-            last_run = set_last_run(indicators, groups)
-            demisto.setLastRun(last_run)
+            indicators, groups = fetch_indicators_command(client, params, last_run)
+            next_run = get_updated_last_run(indicators, groups, last_run)
+            demisto.setLastRun(next_run)
 
             indicators = [parse_indicator(indicator) for indicator in indicators]
-            groups = [group for group in groups if group.get('type') != 'Incident']
+            demisto.debug(f'The number of new indicators: {len(indicators)}')
             groups = [parse_indicator(group) for group in groups]
+            demisto.debug(f'The number of new groups: {len(groups)}')
 
             merged_list = groups + indicators
-            demisto.debug(f'The number of new indicators is:{len(merged_list)}')
             for b in batch(merged_list, batch_size=2000):
                 demisto.createIndicators(b)
 

@@ -317,10 +317,9 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": ["ThreatConnect Feed", "Demisto REST API"],
+            "integrations": "ThreatConnect Feed",
             "playbookID": "FeedThreatConnect-Test",
-            "fromversion": "5.5.0",
-            "timeout": 1000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",
@@ -5244,6 +5243,7 @@
         "CuckooTest": "Issue 25601",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
+        "FeedThreatConnect-Test": "Issue 32317",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
