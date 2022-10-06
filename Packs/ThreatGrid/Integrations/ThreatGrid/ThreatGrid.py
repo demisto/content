@@ -272,7 +272,10 @@ def get_html_report_by_id():
     Download the html report for a sample given the id
     """
     sample_id = demisto.getArg('id')
+
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+    demisto.debug(f'api response:\n{r.content=}')
+
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
         {
@@ -281,7 +284,7 @@ def get_html_report_by_id():
             'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
                              + 'Your sample run HTML report download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.content,
+            'Contents': ec,
             'ContentsFormat': formats['html']
         },
         fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
