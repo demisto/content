@@ -976,6 +976,7 @@ def main() -> None:
         'sandblast-upload': setup_upload_polling_command,
         'sandblast-download': download_command,
         'sandblast-quota': quota_command,
+        'file': file_command
     }
 
     demisto.debug(f'Command being called is {command}')
