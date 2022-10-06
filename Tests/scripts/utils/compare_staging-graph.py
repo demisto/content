@@ -35,7 +35,7 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
         index_graph = json.load(f2)
         sort_dict(index_id_set)
         sort_dict(index_graph)
-        diff_list = dictdiffer.diff(index_id_set, index_graph)
+        diff_list = list(dictdiffer.diff(index_id_set, index_graph))
     if diff_list:
         with (output_path / 'index-diff.json').open('w') as output:
             json.dump(diff_list, output, indent=4)
