@@ -91,6 +91,8 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
+    FileType.XSIAM_DASHBOARD_IMAGE,
+    FileType.XSIAM_REPORT_IMAGE,
     FileType.AGENT_CONFIG_YML,
 }
 

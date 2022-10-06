@@ -2205,20 +2205,31 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
+                        logging.info(f"preview is {preview}")
+                        dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                        }
+
+                        if preview:
+                            dashboard.update({"preview": preview})
+                        folder_collected_items.append(dashboard)
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
+                        report = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                        }
+
+                        if preview:
+                            report.update({"preview": preview})
+                        folder_collected_items.append(report)
 
                     elif current_directory == PackFolders.TRIGGERS.value:
                         folder_collected_items.append({
@@ -3032,7 +3043,6 @@ class Pack(object):
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
-
         return True
 
     def cleanup(self):
@@ -3309,6 +3319,92 @@ class Pack(object):
             versions_dict[rn_version] = pr_numbers
 
         return versions_dict
+
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name) -> Optional[str]:
+        # TODO check names with . maybe should change the split
+        preview_image_name = self.find_preview_image_path(pack_file_name)
+        try:
+            preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
+            logging.info(f"yuval preview path {preview_image_path}")
+            if os.path.exists(preview_image_path):
+                if not self._current_version:
+                    self._current_version = ''
+                x = urllib.parse.quote(
+                os.path.join(GCPConfig.CONTENT_PACKS_PATH, self._pack_name, self._current_version, folder_name, preview_image_name))
+                logging.info(f"yuval x is {x}")
+                return x
+            return None
+        except Exception:
+            logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
+
+    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
+        """ Uploads pack preview images to gcs.
+
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            diff_files_list (list): The list of all modified/added files found in the diff
+        Returns:
+            bool: whether the operation succeeded.
+            list: list of dictionaries with uploaded pack integration images.
+
+        """
+        pack_preview_images = []
+        pack_storage_root_path = os.path.join(storage_base_path, self._pack_name, self._current_version)
+        logging.info(f"{pack_storage_root_path} pack_storage_root_path")
+
+        try:
+            for file in diff_files_list:
+                if self.is_preview_image(file.a_path):
+                    logging.info(f"yuval: file.a_path {file.a_path}")
+                    pack_preview_images.append(file.a_path)
+
+            for image_path in pack_preview_images:
+                logging.info(f"yuval: image_path {image_path}")
+                image_folder = os.path.dirname(image_path).split('/')[-1] or ''
+                logging.info(f"yuval {image_folder}")
+                image_name = os.path.basename(image_path)
+                image_storage_path = os.path.join(pack_storage_root_path,image_folder ,image_name)
+                logging.info(f"yuval {image_storage_path}")
+                pack_image_blob = storage_bucket.blob(image_storage_path)
+                with open(image_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+
+            return True
+        except Exception as e:
+            logging.exception(f"yuval Exception {e}")
+
+    def is_preview_image(self, file_path):
+        """ Indicates whether a file_path is an integration image or not
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is an integration image or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+            file_path.endswith('.png'),
+            '_image' in os.path.basename(file_path.lower()),
+            (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+        ])
+        # ontent/builds/previrew_images/3702025/marketplacev2/content/packs/content/previews/Intezer/MyDashboard2_image.png
+
+    @staticmethod
+    def find_preview_image_path(file_name):
+        try:
+            prefixes = ['xsiamdashboard', 'xsiamreport']
+            file_name = file_name.replace('external-', '')
+            logging.info(f"yuval file name 1 {file_name}")
+            for prefix in prefixes:
+                file_name = file_name.replace(f'{prefix}-', '')
+                logging.info(f"yuval file name 2 {file_name}")
+            image_file_name = file_name.split('.')[0] + '_image.png'
+            logging.info(f"yuval file name 1 {image_file_name}")
+            return image_file_name
+        except Exception as e:
+            logging.warning(f'could not conclude preview image path. Skipping {file_name}. Additional info: {e}')
+
+
 
 
 # HELPER FUNCTIONS
