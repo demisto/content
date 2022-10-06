@@ -47,7 +47,7 @@ configuration:
   name: raw_query
   required: false
   type: 12
-  additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be further filtered.
+  additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
   hidden: false
 - display: Time field type
   defaultvalue: 'Simple-Date'
