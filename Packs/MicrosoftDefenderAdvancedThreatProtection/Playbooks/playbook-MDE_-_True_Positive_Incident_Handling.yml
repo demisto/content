@@ -157,6 +157,7 @@ inputs:
           item:
             value:
               simple: URL
+            iscontext: true
       - operator: uniq
 name: MDE - True Positive Incident Handling
 outputs: []

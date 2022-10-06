@@ -118,6 +118,7 @@ inputs:
           item:
             value:
               simple: URL
+            iscontext: true
       - operator: uniq
 - key: FileSha1
   value:
