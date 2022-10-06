@@ -2,14 +2,13 @@ import SEKOIAIntelligenceCenter
 from CommonServerPython import *
 import pytest
 import os
-import io
 import json
 
 MOCK_URL = "https://api.sekoia.io"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

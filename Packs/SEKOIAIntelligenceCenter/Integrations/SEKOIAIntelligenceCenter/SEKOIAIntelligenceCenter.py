@@ -2,7 +2,6 @@
 """
 import ipaddress
 import traceback
-from typing import Any, Dict
 
 import urllib3
 from stix2patterns.pattern import Pattern as PatternParser  # noqa: E402
@@ -64,7 +63,7 @@ class Client(BaseClient):
         :param indicator_type: type of the indicator
 
         :return: dict containing the context as returned from the API
-        :rtype: ``Dict[str, Any]``
+        :rtype: ``dict[str, str]``
         """
 
         return self._http_request(
@@ -83,7 +82,7 @@ class Client(BaseClient):
         :param indicator_type: type of the indicator
 
         :return: dict containing the context as returned from the API
-        :rtype: ``Dict[str, Any]``
+        :rtype: ``dict[str, str]``
         """
 
         return self._http_request(
@@ -102,7 +101,7 @@ class Client(BaseClient):
         :param type: type of the indicator
 
         :return: dict containing the context as returned from the API
-        :rtype: ``Dict[str, Any]``
+        :rtype: ``dict[str, str]``
         """
 
         return self._http_request(
@@ -462,13 +461,13 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def get_observable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_observable_command(client: Client, args: dict[str, str]) -> CommandResults:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
     :param Client: SEKOIA.IO client to use
 
-    :type args: ``Dict[str, Any]``
+    :type args: ``dict[str, str]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['indicator']`` is a list of indicators or a single indicator
@@ -520,13 +519,13 @@ def get_observable_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicator_command(client: Client, args: dict[str, str]) -> CommandResults:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
     :param Client: SEKOIA.IO client to use
 
-    :type args: ``Dict[str, Any]``
+    :type args: ``dict[str, str]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['indicator']`` is a list of indicators or a single indicator
@@ -580,14 +579,14 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def get_indicator_context_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, str]
 ) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
     :param Client: SEKOIA.IO client to use
 
-    :type args: ``Dict[str, Any]``
+    :type args: ``dict[str, str]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['indicator']`` is a list of indicators or a single indicator
@@ -629,7 +628,7 @@ def get_indicator_context_command(
     return command_results_list
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     This command is a wrapper around the `get_indicator_context_command`
