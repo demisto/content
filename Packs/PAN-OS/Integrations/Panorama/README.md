@@ -1587,13 +1587,13 @@ Adds or removes sites to and from a custom URL category.
 `pan-os-edit-custom-url-category`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| name              | Name of the custom URL category to add or remove sites. | Required | 
-| sites             | A comma separated list of sites to add to the custom URL category. | Optional | 
-| action            | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
+| **Argument Name** | **Description**                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------| --- |
+| name              | Name of the custom URL category to add or remove sites.                 | Required | 
+| sites             | A comma separated list of sites to add to the custom URL category.      | Optional | 
+| action            | Adds or removes sites or categories. Possible values are: add, remove   | Required | 
 | categories        | A comma separated list of categories to add to the custom URL category. | Optional | 
-| device-group      | The device group in which the URL category belongs to. | Optional |
+| device-group      | The device group in which the URL category belongs to.                  | Optional |
 
 #### Context Output
 
@@ -7513,7 +7513,7 @@ Returns a list of available templates. (Used only in Panorama instances).
 
 ### pan-os-list-nat-rules
 ***
-Returns a list of nat-rules of either Panorama/firewall instance.
+Returns a list of NAT rules of either a Panorama/firewall instance.
 
 
 #### Base Command
@@ -7523,12 +7523,12 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
-| device-group | The device-group in which the nat-rules are part of. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| name | The name of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules. | Optional | 
+| device-group | The device group in which the NAT rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
-| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
-| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| limit | The maximum number of rules to retrieve, Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page at which to start listing NAT rules. Must be a positive number. Default is 50. | Optional | 
 | page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
 
 
@@ -7616,7 +7616,7 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 ### pan-os-create-nat-rule
 ***
-Returns a list of nat-rules of either Panorama/firewall instance.
+Creates a new NAT rule in a Panorama/firewall instance.
 
 
 #### Base Command
@@ -7626,27 +7626,27 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the nat-rule to create. | Required | 
-| description | The description that the new nat-rule should have. | Optional | 
-| device-group | The device-group in which the new rule should be created. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| nat_type | The nat-type in which the rule will be created with. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
+| rulename | The name of the NAT rule to create. | Required | 
+| description | The description that the new NAT rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created (Panorama instances only). | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| nat_type | The NAT type in which the rule will be created. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
 | source_zone | A comma-separated list of source zones. Default is any. | Optional | 
 | destination_zone | A comma-separated list of destination zones. | Optional | 
 | destination_interface | The page at which to start listing nat-rules, must be a positive number. Default is any. | Optional | 
 | service | The service in which the rule will be created with. Default is any. | Optional | 
 | source_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
 | destination_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
-| source_translation_type | The source translation type in which the rule will be created with. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
-| source_translated_address_type | The source translation address type in which the rule will be created with. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
-| source_translated_address | A comma-separated list of source translation addresses, only if source_translation_type == static_ip, must be a single value. | Optional | 
+| source_translation_type | The source translation type in which the rule will be created. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
+| source_translated_address_type | The source translation address type in which the rule will be created. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
+| source_translated_address | A comma-separated list of source translation addresses. If source_translation_type == static_ip, must be a single value. | Optional | 
 | source_translated_interface | The source translation interface. | Optional | 
 | destination_translation_type | The destination translation type. Possible values are: static_ip, dynamic_ip, none. Default is none. | Optional | 
 | destination_translated_address | A comma-separated list of destination translated addresses. | Optional | 
-| destination_translated_port | the destination translated port. | Optional | 
-| destination_translation_distribution_method | the destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
+| destination_translated_port | The destination translated port. | Optional | 
+| destination_translation_distribution_method | The destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
 | negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
-| destination_dns_rewrite_direction | the type in which the dns rewrite direction should be. Possible values are: forward, reverse. | Optional | 
+| destination_dns_rewrite_direction | The DNS rewrite direction. Possible values are: forward, reverse. | Optional | 
 
 
 #### Context Output
@@ -7659,8 +7659,7 @@ There is no context output for this command.
 >Nat rule test was created successfully.
 ### pan-os-delete-nat-rule
 ***
-Returns a list of nat-rules of either Panorama/firewall instance.
-
+Deletes a NAT rule.
 
 #### Base Command
 
@@ -7669,9 +7668,9 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the nat-rule to delete. | Optional | 
-| device-group | The device-group in which the nat-rule should be deleted from. Only for Panorama instance. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| rulename | The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command. | Optional | 
+| device-group | The device-group from which the NAT rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 
 
 #### Context Output
@@ -7684,8 +7683,7 @@ There is no context output for this command.
 >Nat rule test was deleted successfully.
 ### pan-os-edit-nat-rule
 ***
-Returns a list of nat-rules of either Panorama/firewall instance.
-
+Edits a NAT rule.
 
 #### Base Command
 
@@ -7694,8 +7692,8 @@ Returns a list of nat-rules of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- |--------------|
-| rulename | The name of the nat-rule to edit. | Required     | 
-| device-group | The device-group in which the nat-rule is part of. Only for Panorama instance. | Optional     | 
+| rulename | The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command. | Required     | 
+| device-group | The device-group that the NAT rule is part of. (Panorama instances only). | Optional     | 
 | pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
 | behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
 | element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
@@ -7722,26 +7720,26 @@ Returns a list of virtual routers of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| virtual_router | The name of the virtual router to retrieve, if not mentioned will bring all the virtual routers. | Optional | 
-| template | The template in which the virtual router are part of. Use only for panorama instances. | Optional | 
+| virtual_router | The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers. | Optional | 
+| template | The template that the virtual router is part of. Use only for Panorama instances. | Optional | 
 | show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
-| limit | The maximum number of virtual routers to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| limit | The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided. Default is 50. | Optional | 
 | page_size | The size of nat-rules to return. Default is 50. | Optional | 
-| page | The page at which to start listing virtual-routers, must be a positive number. | Optional | 
+| page | The page at which to start listing virtual-routers. Must be a positive number. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.VirtualRouter.Name | String | The name of the virtual Router | 
+| Panorama.VirtualRouter.Name | String | The name of the virtual router. | 
 | Panorama.VirtualRouter.Interface | Unknown | The interface\(s\) that the virtual router uses. | 
 | Panorama.VirtualRouter.RIP | Unknown | Information about the RIP of the virtual router. | 
 | Panorama.VirtualRouter.OSPF | Unknown | Information about the OSPF of the virtual router. | 
 | Panorama.VirtualRouter.OSPFv3 | Unknown | Information about the OSPFv3 of the virtual router. | 
 | Panorama.VirtualRouter.BGP | Unknown | Information about the BGP of the virtual router. | 
 | Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
-| Panorama.VirtualRouter.Multicast | Unknown | Information about the Multicast of the virtual router. | 
+| Panorama.VirtualRouter.Multicast | Unknown | Information about the multicast of the virtual router. | 
 | Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
 
 #### Command example
@@ -7939,7 +7937,7 @@ Returns a list of virtual routers of either Panorama/firewall instance.
 
 ### pan-os-list-redistribution-profiles
 ***
-Returns a list of redistribution-profiles of a specific virtual-router of either Panorama/firewall instance.
+Returns a list of redistribution-profiles of a specific virtual-router of either a Panorama/firewall instance.
 
 
 #### Base Command
@@ -7950,8 +7948,8 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Redistribution profile name. | Optional | 
-| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. can be retrieved from pan-os-list-virtual-routers. | Required | 
-| template | The template in which the redistribution profiles are part of. Use only for panorama instances. | Optional | 
+| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. Can be retrieved from pan-os-list-virtual-routers. | Required | 
+| template | The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances. | Optional | 
 | limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
 
 
@@ -8026,7 +8024,7 @@ There is no context output for this command.
 
 ### pan-os-create-redistribution-profile
 ***
-Creates a new redistribution-profile in panorama/firewall instance.
+Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
 
 
 #### Base Command
@@ -8038,8 +8036,8 @@ Creates a new redistribution-profile in panorama/firewall instance.
 | --- | --- | --- |
 | name | The name of the of the redistribution profile to create. | Required | 
 | virtual_router | The virtual router that the redistribution profile will be created on. | Required | 
-| template | The template in which the virtual-router is in. Use only for panorama instances. | Optional | 
-| filter_source_type | Comma separated list of The filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
+| template | The template that the virtual-router is in. Use only for Panorama instances. | Optional | 
+| filter_source_type | Comma-separated list of the filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
 | destination | A comma-separated list of destination to filter by. | Optional | 
 | nexthop | A comma-separated list of next-hops to filter by. | Optional | 
 | interface | A comma-separated list of interfaces to filter by. | Optional | 
@@ -8048,7 +8046,7 @@ Creates a new redistribution-profile in panorama/firewall instance.
 | filter_ospf_area | A comma-separated list of areas for the OSPF. | Optional | 
 | filter_ospf_tag | A comma-separated list of tags for the OSPF. | Optional | 
 | filter_ospf_path_type | A comma-separated list of path types for the OSPF. Possible values are: ext-1, ext-2, inter-area, intra-area. | Optional | 
-| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format - where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
+| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
 | filter_bgp_extended_community | A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values). | Optional | 
 
 
@@ -8074,7 +8072,7 @@ Edits a redistribution-profile in a virtual-router.
 | --- | --- | --- |
 | name | The name of the redistribution-profile to edit. | Required | 
 | virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
-| template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
+| template |  The template that the virtual-router is in. Only for Panorama instances. | Optional | 
 | element_to_change | The element to change. Possible values are: filter_type, filter_destination, filter_nexthop, filter_interface, priority, action, filter_ospf_area, filter_ospf_tag, filter_ospf_path_type, filter_bgp_community, filter_bgp_extended_community. | Required | 
 | element_value | The value of the element to change. Can be a list for all the elements except priority and action. | Required | 
 | behavior | The operation to perform on the profile. Possible values are: replace, add, remove. Default is replace. | Optional | 
@@ -8103,7 +8101,7 @@ Deletes a redistribution-profile from a virtual-router.
 | --- | --- | --- |
 | name | The name of the redistribution-profile to delete. | Required | 
 | virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
-| template | The template in which the virtual-router is in, relevant only for panorama instances. | Optional | 
+| template | The template that the virtual-router is in. Only for panorama instances. | Optional | 
 
 
 #### Context Output
@@ -8116,7 +8114,7 @@ There is no context output for this command.
 >Redistribution profile test was deleted successfully.
 ### pan-os-list-pbf-rules
 ***
-Returns a list of pbf-rules of either Panorama/firewall instance.
+Returns a list of pbf-rules of either a Panorama/firewall instance.
 
 
 #### Base Command
@@ -8126,13 +8124,13 @@ Returns a list of pbf-rules of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the pbf-rule to retrieve, if not mentioned will bring all the pbf rules. | Optional | 
-| device-group | The device-group in which the pbf-rules are part of. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| rulename | The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules. | Optional | 
+| device-group | The device-group that the pbf-rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
-| limit | The maximum number of rules to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The size of pbf-rules to return. Default is 50. | Optional | 
-| page | The page at which to start listing pbf-rules, must be a positive number. | Optional | 
+| page | The page at which to start listing pbf-rules. Must be a positive number. | Optional | 
 
 
 #### Context Output
@@ -8210,7 +8208,7 @@ Returns a list of pbf-rules of either Panorama/firewall instance.
 
 ### pan-os-create-pbf-rule
 ***
-Creates a new policy-based-forwarding rule in panorama/firewall instance.
+Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
 
 
 #### Base Command
@@ -8232,9 +8230,9 @@ Creates a new policy-based-forwarding rule in panorama/firewall instance.
 | destination_address | A comma-separated list of destination addresses. Default is any. | Optional | 
 | application | A comma-separated list of applications. Default is any. | Optional | 
 | action | The action that the rule will be created with. Possible values are: forward, discard, no-pbf. | Required | 
-| egress_interface | The egress interface the rule will be created with. must be provided if action == forward. | Optional | 
-| nex thop | The next-hop type when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
-| nexthop_value | The next-hop value when action = forward, could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
+| egress_interface | The egress interface the rule will be created with. Must be provided if action == forward. | Optional | 
+| nexthop | The next-hop. Relevant only when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
+| nexthop_value | The next-hop value when action = forward. Could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
 | enforce_symmetric_return | Whether to enforce symmetric return. Possible values are: yes, no. Default is no. | Optional | 
 | negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
 | negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
@@ -8261,11 +8259,11 @@ Edits a redistribution-profile in a virtual-router.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the PBF rule to edit. | Required | 
-| device-group | The device-group in which the PBF rule is in. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group that the PBF rule is in. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
-| element_value | The value of the element to change. Can be a list for some of the elements. when element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
+| element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
 
 
 #### Context Output
@@ -8288,9 +8286,9 @@ Deletes a PBF rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the pbf-rule to delete. | Required | 
-| device-group | The device-group in which the pbf-rule should be deleted from. Only for Panorama instance. | Optional | 
-| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| rulename | The name of the pbf-rule to delete. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group from which the pbf-rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 
 
 #### Context Output
@@ -8303,7 +8301,7 @@ There is no context output for this command.
 >PBF rule test4 was deleted successfully.
 ### pan-os-list-application-groups
 ***
-Returns a list of application-groups of either Panorama/firewall instance.
+Returns a list of application-groups of either a Panorama/firewall instance.
 
 
 #### Base Command
@@ -8313,12 +8311,12 @@ Returns a list of application-groups of either Panorama/firewall instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the nat-rule to retrieve, if not mentioned will bring all the nat rules. | Optional | 
-| device-group | The device-group in which the nat-rules are part of. | Optional | 
-| show_uncommitted | Whether to show the un-committed application-groups or not. can be true or false. Possible values are: true, false. Default is false. | Optional | 
-| limit | The maximum number of application-groups to retrieve, will be used by default if page argument was not provided. Default is 50. | Optional | 
+| name | The name of the application-group to retrieve. If not mentioned, will bring all the application-groups. | Optional | 
+| device-group | The device-group that the nat-rules are part of. | Optional | 
+| show_uncommitted | Whether to show the un-committed application-groups or not. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The page size of the application-groups to return. Default is 50. | Optional | 
-| page | The page at which to start listing application-groups, must be a positive number. | Optional | 
+| page | The page at which to start listing application-groups. Must be a positive number. | Optional | 
 
 
 #### Context Output
@@ -8376,7 +8374,7 @@ Returns a list of application-groups of either Panorama/firewall instance.
 
 ### pan-os-create-application-group
 ***
-Creates a new application group rule in panorama/firewall instance.
+Creates a new application group rule in a Panorama/firewall instance.
 
 
 #### Base Command
@@ -8397,7 +8395,7 @@ Creates a new application group rule in panorama/firewall instance.
 | --- | --- | --- |
 | Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
 | Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
-| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group. | 
 
 #### Command example
 ```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
@@ -8422,7 +8420,7 @@ Creates a new application group rule in panorama/firewall instance.
 >application-group test-3 was created successfully.
 ### pan-os-edit-application-group
 ***
-Edits an application-group
+Edits an application-group.
 
 
 #### Base Command
@@ -8432,9 +8430,9 @@ Edits an application-group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name for the application-group to be created with. | Required | 
+| name | The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command. | Required | 
 | applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
-| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+| device-group | The device-group in which the application-group should be created. Only for a Panorama instance. | Optional | 
 | action | The action to perform on the application-group. Possible values are: add, remove. Default is add. | Required | 
 
 
@@ -8478,8 +8476,8 @@ Deletes an application-group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the application-group to delete. | Required | 
-| device-group | The device-group in which the application-group is part of. Only for Panorama instance. | Optional | 
+| name | The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command. | Required | 
+| device-group | The device-group in which the application-group is part of. Only for a Panorama instance. | Optional | 
 
 
 #### Context Output
