@@ -145,8 +145,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
@@ -226,8 +226,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
@@ -316,8 +316,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
