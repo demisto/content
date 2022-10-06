@@ -241,7 +241,6 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     Returns:
         dict: Parsed indicator.
     """
-    demisto.debug("The indicator type is: " + indicator.get('type', ''))
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
     fields = create_indicator_fields(indicator, indicator_type)
@@ -265,7 +264,6 @@ def create_indicator_fields(indicator, indicator_type):
     fields: dict = {}
 
     for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
-        demisto.debug('The key is:' + xsoar_indicator_key)
         fields[xsoar_indicator_key] = indicator.get(indicator_key, '')
 
     raw_tags = indicator.get('tags', {}).get('data', [])
@@ -409,7 +407,7 @@ def module_test_command(client: Client, args):  # pragma: no cover
                                                            'local help desk'))
 
 
-def fetch_indicators_command(client: Client, params):  # pragma: no cover
+def fetch_indicators_command(client: Client, params)-> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
