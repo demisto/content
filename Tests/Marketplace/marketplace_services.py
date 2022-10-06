@@ -2184,7 +2184,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
@@ -2192,7 +2192,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
@@ -2201,7 +2201,7 @@ class Pack(object):
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
@@ -2209,7 +2209,7 @@ class Pack(object):
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
@@ -2217,7 +2217,7 @@ class Pack(object):
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     elif current_directory == PackFolders.TRIGGERS.value:
@@ -2237,6 +2237,17 @@ class Pack(object):
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                        })
+
+                    elif current_directory == PackFolders.AGENT_CONFIGS.value:
+                        self.add_pack_type_tags(content_item, 'AgentConfig')
+                        folder_collected_items.append({
+                            'id': content_item.get('content_global_id', ''),
+                            'content_global_id': content_item.get('content_global_id', ''),
+                            'name': content_item.get('name', ''),
+                            'os_type': content_item.get('os_type', ''),
+                            'profile_type': content_item.get('profile_type', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     else:
