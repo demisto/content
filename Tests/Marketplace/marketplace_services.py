@@ -3328,9 +3328,8 @@ class Pack(object):
             if os.path.exists(preview_image_path):
                 if not self._current_version:
                     self._current_version = ''
-                return urllib.parse.quote(
-                os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
-                             self.current_version, folder_name, preview_image_name))
+                return urllib.parse.quote(os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
+                                                       self.current_version, folder_name, preview_image_name))
             return None
         except Exception:
             logging.exception(f"Failed uploading {self.name} pack preview image.")
