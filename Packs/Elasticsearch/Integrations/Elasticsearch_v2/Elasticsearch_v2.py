@@ -682,7 +682,7 @@ def execute_raw_query(es, raw_query):
 
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
+    last_fetch = last_run.get('time') or FETCH_TIME
 
     time_range_dict = get_time_range(time_range_start=last_fetch)
     es = elasticsearch_builder(proxies)

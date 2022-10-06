@@ -16,7 +16,7 @@ dependson:
   - '|||gcb-list-events'
 timeout: 300ns
 runonce: false
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

@@ -23,6 +23,7 @@ demistomock.ps1
 !Tests/demistomock/demistomock.py
 !Tests/demistomock/demistomock.ps1
 Tests/filter_file.txt
+Tests/filter_file_old.txt
 Tests/id_set.json
 .mypy_cache
 Scripts/*/*_unified.yml
@@ -58,3 +59,7 @@ Packs/**/report_pytest.json
 **/.devcontainer
 !/.devcontainer
 
+# authentication files
+*.pem
+*.crt
+*.key

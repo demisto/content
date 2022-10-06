@@ -46,7 +46,7 @@ ignore=RM106
 [file:pack_metadata.json]
 ignore=PA129
 
-[file:script-ChangeRemediationSLAOnSevChange.yml]
+[file:ChangeRemediationSLAOnSevChange.yml]
 ignore=SC106
 
 [file:ExtractIndicatorsFromWordFile.yml]
@@ -70,6 +70,9 @@ ignore=SC106
 [file:ReadPDFFileV2_test.py]
 ignore=BA119
 
+[file:HideFieldsOnNewIncident.yml]
+ignore=SC105
+
 [known_words]
 UnzipFile
 ZipStrings
@@ -81,3 +84,13 @@ RTF
 msg
 lastCompletedTaskEntries
 cgroups
+AttachmentFile
+formatter
+FPs
+GetIndicatorDBotScore
+stringify
+Okta
+MicrosoftGraphUser
+SailPointIdentityIQ
+ActiveDirectoryQuery
+GenericPolling

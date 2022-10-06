@@ -3,8 +3,11 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
-from logger import logger
 
+from Tests.scripts.collect_tests.constants import \
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
+from Tests.scripts.collect_tests.exceptions import NotUnderPackException
+from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager, find_pack_folder,
                                                to_tuple)
@@ -25,7 +28,7 @@ class IdSetItem(DictBased):
 
         # None for packs, that have no id.
         self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path_str) if id_ else None
-        self.pack_path: Optional[Path] = find_pack_folder(Path(self.file_path_str)) if self.file_path_str else None
+        self.pack_path: Optional[Path] = self._calculate_pack_path(self.path)
 
         if self.pack_path and self.pack_path.name != self.pack_id:
             logger.warning(f'{self.pack_path.name=}!={self.pack_id} for content item {self.id_=} {self.name=}')
@@ -50,6 +53,35 @@ class IdSetItem(DictBased):
     def implementing_playbooks(self) -> tuple[str, ...]:
         return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
+    @staticmethod
+    def _calculate_pack_path(path: Optional[Path]) -> Optional[Path]:
+        if not path:
+            return None
+
+        try:
+            return find_pack_folder(path)
+
+        except NotUnderPackException:
+            if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                logger.info(f'{path=} is not under a pack, '
+                            'but is part of SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, skipping')
+                return None
+            else:
+                raise
+
+    @property
+    def implementing_integrations(self) -> tuple[str, ...]:
+        result: set[str] = set()
+        # command_to_integrations maps commands to either a single integration, or a list of them
+        # e.g. { command1: integration1,
+        #        command2: [integration1, integration2, ...] }
+        for command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
+            result.update(
+                (integrations,) if isinstance(integrations, str)
+                else integrations
+            )
+        return tuple(sorted(result))
+
 
 class IdSet(DictFileBased):
     """
@@ -61,6 +93,7 @@ class IdSet(DictFileBased):
         self.marketplace = marketplace
 
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
+        self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)

@@ -1,0 +1,567 @@
+{
+    "id": "Phishing",
+    "version": -1,
+    "modified": "2022-04-10T11:55:54.250933+03:00",
+    "fromVersion": "6.9.0",
+    "name": "Phishing",
+    "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment.",
+    "dependency_packs": [
+      {
+        "name": "Email Gateways",
+        "min_required": 1,
+        "packs": [
+          {
+            "name": "EWS",
+            "display_name": "Exchange Web Services - EWS"
+          },
+          {
+            "name": "Gmail",
+            "display_name": "Gmail"
+          },
+          {
+            "name": "GmailSingleUser",
+            "display_name": "Gmail - Single User (limited functionalities)"
+          },
+          {
+            "name": "MicrosoftGraphMail",
+            "display_name": "Microsoft Graph Mail"
+          },
+          {
+            "name": "MicrosoftGraphListener",
+            "display_name": "Microsoft Graph Mail - Single User (limited functionalities)"
+          }
+        ]
+      },
+      {
+        "name": "Sandbox",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "Palo_Alto_Networks_WildFire",
+            "display_name": "Palo Alto Networks WildFire"
+          },
+          {
+            "name": "CrowdStrikeFalconX",
+            "display_name": "CrowdStrike FalconX"
+          },
+          {
+            "name": "FortiSandbox",
+            "display_name": "Forti SandBox"
+          },
+          {
+            "name": "Polygon",
+            "display_name": "Polygon - Group-IB TH"
+          },
+          {
+            "name": "JoeSecurity",
+            "display_name": "Joe Security - Cloud SandBox"
+          },
+          {
+            "name": "ThreatGrid",
+            "display_name": "Cisco Secure Malware Analytics - Threat Grid"
+          },
+          {
+            "name": "CrowdStrikeFalconSandbox",
+            "display_name": "CrowdStrike Falcon Sandbox"
+          },
+          {
+            "name": "Lastline",
+            "display_name": "Lastline"
+          },
+          {
+            "name": "CuckooSandbox",
+            "display_name": "Cuckoo Sandbox"
+          },
+          {
+            "name": "HybridAnalysis",
+            "display_name": "Hybrid Analysis"
+          },
+          {
+            "name": "fireeye",
+            "display_name": "FireEye (AX Series)"
+          },
+          {
+            "name": "VMRay",
+            "display_name": "VMRay"
+          },
+          {
+            "name": "McAfee_Advanced_Threat_Defense",
+            "display_name": "McAfee Advanced Threat Defense"
+          }
+        ]
+      },
+      {
+        "name": "Data Enrichment & Threat Intelligence",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "AutoFocus",
+            "display_name": "Palo Alto Networks AutoFocus"
+          },
+          {
+            "name": "VirusTotal",
+            "display_name": "VirusTotal"
+          },
+          {
+            "name": "AgariPhishingDefense",
+            "display_name": "Agari Phishing Defense"
+          },
+          {
+            "name": "Active_Directory_Query",
+            "display_name": "Active Directory Query"
+          },
+          {
+            "name": "Campaign",
+            "display_name": "Phishing Campaigns"
+          },
+          {
+            "name": "PhishingURL",
+            "display_name": "Phishing URL"
+          },
+          {
+            "name": "ML",
+            "display_name": "Machine Learning"
+          },
+          {
+            "name": "VirusTotal-Private_API",
+            "display_name": "VirusTotal Private API"
+          },
+          {
+            "name": "Pwned",
+            "display_name": "Pwned - HaveIBeenPwned"
+          },
+          {
+            "name": "PhishTank",
+            "display_name": "PhishTank"
+          },
+          {
+            "name": "IsItPhishing",
+            "display_name": "IsItPhishing"
+          }
+        ]
+      },
+      {
+        "name": "Network Security",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "Zscaler",
+            "display_name": "Zscaler Internet Access"
+          },
+          {
+            "name": "PAN-OS",
+            "display_name": "PAN-OS (Firewall)"
+          },
+          {
+            "name": "FortiGate",
+            "display_name": "FortiGate"
+          }
+        ]
+      },
+      {
+        "name": "Endpoint Security",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "CortexXDR",
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+          },
+          {
+            "name": "Cylance_Protect",
+            "display_name": "Cylance Protect"
+          },
+          {
+            "name": "Cybereason",
+            "display_name": "Cybereason"
+          },
+          {
+            "name": "Carbon_Black_Enterprise_Response",
+            "display_name": "Carbon Black Enterprise Response"
+          },
+          {
+            "name": "TrendMicroApex",
+            "display_name": "Trend Micro Apex One"
+          }
+        ]
+      },
+      {
+        "name": "Email Security",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "ProofpointThreatResponse",
+            "display_name": "Proofpoint Threat Response"
+          },
+          {
+            "name": "FireEyeEX",
+            "display_name": "FireEye Email Security (EX)"
+          },
+          {
+            "name": "Mimecast",
+            "display_name": "Mimecast"
+          },
+          {
+            "name": "Symantec_Messaging_Gateway",
+            "display_name": "Symantec Messaging Gateway"
+          },
+          {
+            "name": "ProofpointServerProtection",
+            "display_name": "Proofpoint Protection Server"
+          }
+        ]
+      }
+    ],
+    "wizard": {
+      "fetching_integrations": [
+        {
+          "priority": 6,
+          "name": "Microsoft Graph Mail Single User",
+          "action": {
+            "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'.",
+            "new": "Set up new 'O365 Outlook Mail Single User' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Microsoft Graph Mail Single User-mapper'."
+          },
+          "description": "Set up the 'O365 Outlook Mail Single User' integration to work with your Phishing use case.",
+          "incident_type": "Phishing"
+        },
+        {
+          "priority": 5,
+          "name": "Gmail Single User",
+          "action": {
+            "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'.",
+            "new": "Set up new 'Gmail' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail Single User - Incoming Mapper'."
+          },
+          "description": "Set up the 'Gmail' integration to work with your Phishing use case.",
+          "incident_type": "Phishing"
+        },
+        {
+          "priority": 2,
+          "name": "EWSO365",
+          "action": {
+            "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'.",
+            "new": "Set up new 'EWSO365' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'."
+          },
+          "description": "Set up the 'EWSO365' integration to work with your Phishing use case.",
+          "incident_type": "Phishing"
+        },
+        {
+          "priority": 1,
+          "name": "Gmail",
+          "action": {
+            "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail - Incoming Mapper'.",
+            "new": "Set up new 'Gmail' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Gmail - Incoming Mapper'."
+          },
+          "description": "Set up the 'Gmail' integration to work with your Phishing use case.",
+          "incident_type": "Phishing"
+        },
+        {
+          "priority": 4,
+          "name": "EWS v2",
+          "action": {
+            "existing": "Update your current instance to work with the new Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'.",
+            "new": "Set up new 'EWS v2' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'."
+          },
+          "description": "Set up the 'EWS v2' integration to work with your Phishing use case.",
+           "incident_type": "Phishing"
+        },
+        {
+          "priority": 3,
+          "name": "MicrosoftGraphMail",
+          "action": {
+            "existing": "Update your current instance to work with the new Phishing type: \n1. Enable fetching. \n2. Set the 'Microsoft Graph Mail Mapper'.\n3. Set the Incident type field to Phishing.",
+            "new": "Set up new 'Microsoft Graph Mail' to work with the Phishing type: \n1. Enable fetching. \n2. Choose the 'Microsoft Graph Mail Mapper .\n3. Set the Incident type field to Phishing."
+          },
+          "description": "Set up the 'O365 Outlook Mail (Using Graph API)' integration to work with your Phishing use case.",
+          "incident_type": "Phishing"
+        }
+      ],
+      "set_playbook": [
+        {
+          "name": "Phishing - Generic v3"
+        }
+      ],
+      "supporting_integrations": [
+        {
+          "name": "WildFire-v2",
+          "action": {
+            "existing": "Configure 'Wildfire' to enable file detonation to improve investigation.",
+            "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
+          },
+          "description": "Configure Wildfire to enable file detonation to improve investigation."
+        },
+        {
+          "name": "CrowdStrike Falcon X",
+          "action": {
+            "existing": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation.",
+            "new": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+          },
+          "description": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+        },
+        {
+          "name": "Active Directory Query v2",
+          "action": {
+            "existing": "Configure 'Active Directory Query v2' to open query your organizational Active Directory.",
+            "new": "Configure 'Active Directory Query v2' to open query your organizational Active Directory."
+          },
+          "description": "Configure 'Active Directory Query v2' to open query your organizational Active Directory."
+        },
+        {
+        "name": "FireEye Email Security",
+        "action": {
+          "existing": "Configure 'FireEye Email Security' to block email senders in your organization.",
+          "new": "Configure 'FireEye Email Security' to block email senders in your organization."
+          },
+        "description": "Configure 'FireEye Email Security' to block email senders in your organization."
+        },
+        {
+        "name": "AutoFocus V2",
+        "action": {
+          "existing": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "VirusTotal (API v3)",
+        "action": {
+          "existing": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "MimecastV2",
+        "action": {
+          "existing": "Configure 'Mimecast V2' to block email senders in your organization.",
+          "new": "Configure 'Mimecast V2' to block email senders in your organization."
+          },
+        "description": "Configure 'Mimecast V2' to block email senders in your organization."
+        },
+        {
+        "name": "Proofpoint Protection Server v2",
+        "action": {
+          "existing": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization.",
+          "new": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization."
+          },
+        "description": "Configure 'Proofpoint Protection Server v2' to block email senders in your organization."
+        },
+        {
+        "name": "Group-IB TDS Polygon",
+        "action": {
+          "existing": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation.",
+          "new": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Group-IB TDS Polygon' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Joe Security",
+        "action": {
+          "existing": "Configure 'Joe Security' to enable file detonation to improve investigation.",
+          "new": "Configure 'Configure 'Joe Security' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Joe Security' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Threat Grid",
+        "action": {
+          "existing": "Configure 'Threat Grid' to enable file detonation to improve investigation",
+          "new": "Configure 'Threat Grid' to enable file detonation to improve investigation"
+          },
+        "description": "Configure 'Threat Grid' to enable file detonation to improve investigation"
+        },
+        {
+        "name": "CrowdStrike Falcon Sandbox V2",
+        "action": {
+          "existing": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation.",
+          "new": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'CrowdStrike Falcon Sandbox v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Lastline v2",
+        "action": {
+          "existing": "Configure 'Lastline v2' to enable file detonation to improve investigation.",
+          "new": "Configure 'Lastline v2' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'Lastline v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Cuckoo Sandbox",
+        "action": {
+          "existing": "Configure 'Cuckoo Sandbox' to enable file detonation to improve investigation.",
+          "new": "Configure 'Cuckoo Sandbox' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'MITRE ATT&CK v2' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Hybrid Analysis",
+        "action": {
+          "existing": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation.",
+          "new": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'Hybrid Analysis' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "fireeye",
+        "action": {
+          "existing": "Configure 'FireEye AX' to enable file detonation to improve investigation.",
+          "new": "Configure 'FireEye AX' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'FireEye AX' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "vmray",
+        "action": {
+          "existing": "Configure 'VMRay' to enable file detonation to improve investigation.",
+          "new": "Configure 'VMRay' to enable file detonation to improve investigation."
+          },
+        "description": "Configure 'VMRay' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "McAfee Advanced Threat Defense",
+        "action": {
+          "existing": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation.",
+          "new": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation.."
+          },
+        "description": "Configure 'McAfee Advanced Threat Defense' to enable file detonation to improve investigation."
+        },
+        {
+        "name": "Zscaler",
+        "action": {
+          "existing": "Configure 'Zscaler' to block IOCs as part of the investigation.",
+          "new": "Configure 'Zscaler' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Zscaler' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Symantec Messaging Gateway",
+        "action": {
+          "existing": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation.",
+          "new": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Symantec Messaging Gateway' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Trend Micro Apex",
+        "action": {
+          "existing": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation.",
+          "new": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Trend Micro Apex' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Proofpoint Threat Response",
+        "action": {
+          "existing": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation.",
+          "new": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Proofpoint Threat Response' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "VMware Carbon Black EDR v2",
+        "action": {
+          "existing": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation.",
+          "new": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'VMware Carbon Black EDR v2' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cybereason",
+        "action": {
+          "existing": "Configure 'Cybereason' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cybereason' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cybereason' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cylance Protect v2",
+        "action": {
+          "existing": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cylance Protect v2' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Cortex XDR - IR",
+        "action": {
+          "existing": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation.",
+          "new": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Cortex XDR - IR' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "FortiGate",
+        "action": {
+          "existing": "Configure 'FortiGate' to block IOCs as part of the investigation.",
+          "new": "Configure 'FortiGate' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'FortiGate' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Panorama",
+        "action": {
+          "existing": "Configure 'Panorama' to block IOCs as part of the investigation.",
+          "new": "Configure 'Panorama' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Panorama' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "Agari Phishing Defense",
+        "action": {
+          "existing": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation.",
+          "new": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation."
+          },
+        "description": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation."
+        },
+        {
+        "name": "SecurityAndCompliance",
+        "action": {
+          "existing": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search.",
+          "new": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+          },
+        "description": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+        },
+        {
+        "name": "VirusTotal - Private API",
+        "action": {
+          "existing": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'VirusTotal - Private API' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "Have I Been Pwned? V2",
+        "action": {
+          "existing": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'Have I Been Pwned? V2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "PhishTank V2",
+        "action": {
+          "existing": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'PhishTank V2' to enrich IOCs as part of the investigation."
+        },
+        {
+        "name": "IsItPhishing",
+        "action": {
+          "existing": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation.",
+          "new": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation."
+          },
+        "description": "Configure 'IsItPhishing' to enrich IOCs as part of the investigation."
+        }
+      ],
+      "next": [
+        {
+          "name": "Enable Your Use Case",
+          "action": {
+            "existing": "Enable the fetching integrations to start ingesting data and run the playbook.",
+            "new": "Enable the fetching integrations to start ingesting data and run the playbook."
+          }
+        }
+      ]
+    }
+  }
+  
