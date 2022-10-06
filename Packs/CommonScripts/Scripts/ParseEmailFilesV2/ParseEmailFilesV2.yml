@@ -37,10 +37,10 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   is to rely on these for the remainder of the playbook.
   This script is based on the parse-emails XSOAR python package, check the script documentation for more info
 commonfields:
-  id: ParseEmailFilesV2
+  id: ParseEmailFilesV2 - p7m-signed-files
   version: -1
 enabled: true
-name: ParseEmailFilesV2
+name: ParseEmailFilesV2Signedp7mFiles
 outputs:
 - contextPath: Email.To
   description: This shows to whom the message was addressed, but may not contain the
@@ -133,4 +133,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.33967
+dockerimage: devdemisto/parse-emails:1.0.0.35228
