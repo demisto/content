@@ -37,14 +37,14 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
                                                           'Incident Owner': 'admin',
                                                           'Number of Errors': 2,
                                                           'Playbook Name': 'AutoFocusPolling',
-                                                          'Task ID': '1',
+                                                          'Task ID': '3',
                                                           'Task Name': 'Fail',
                                                           'Command Description': 'command desc'}
 
 
 @pytest.mark.parametrize('tasks,expected_outputs', [
     ([], ([], 0)),
-    (json.loads(INTERNAL_TASKS_RESULT.get('body', '{}')), ([{
+    (json.loads(INTERNAL_TASKS_RESULT.get('body')), ([{
         'Command Name': '',
         'Error Entry ID': ['8@3', '9@3'],
         'Incident Created Date': '2020-09-29T14:02:45.82647067Z',
@@ -52,7 +52,7 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
         'Incident Owner': 'admin',
         'Number of Errors': 2,
         'Playbook Name': 'AutoFocusPolling',
-        'Task ID': '1',
+        'Task ID': '3',
         'Task Name': 'Fail',
         'Command Description': 'command desc'
     }], 2))

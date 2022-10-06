@@ -269,8 +269,8 @@ RESTAPI_TAS_RESULT = [
                     "dueDate": "0001-01-01T00:00:00Z",
                     "dueDateDuration": 0,
                     "entries": [
-                        "4@7",
-                        "5@7"
+                        "8@3",
+                        "9@3"
                     ],
                     "evidenceData": {
                         "description": None,
@@ -325,14 +325,14 @@ RESTAPI_TAS_RESULT = [
                     "task": {
                         "brand": "",
                         "conditions": None,
-                        "description": "RunPollingCommand",
-                        "id": "c6a3af0a-cc78-4323-80c1-93d686010d86",
+                        "description": "command desc",
+                        "id": "3",
                         "isCommand": False,
                         "isLocked": False,
                         "modified": "2020-09-29T08:23:25.596407031Z",
-                        "name": "RunPollingCommand",
+                        "name": "Fail",
                         "playbookName": "",
-                        "scriptId": "RunPollingCommand",
+                        "scriptId": "",
                         "sortValues": None,
                         "type": "regular",
                         "version": 1
@@ -421,7 +421,7 @@ RESTAPI_TAS_RESULT = [
 ]
 
 INTERNAL_TASKS_RESULT = {
-    "body": "[{\"Reopen\":False,\"ancestors\":[\"AutoFocusPolling\"],\"completedBy\":\"DBot\",\"completedDate\":\"2022-10-06T09:09:08.762414928Z\",\"conditions\":[{\"condition\":[[{\"left\":{\"isContext\":True,\"value\":{\"simple\":\"1\"}},\"operator\":\"isEqualString\",\"right\":{\"value\":{\"simple\":\"2\"}}}]],\"label\":\"yes\"}],\"doNotSaveTaskHistory\":True,\"dueDate\":\"0001-01-01T00:00:00Z\",\"entries\":[\"8@3\",\"9@3\"],\"evidenceData\":{},\"id\":\"1\",\"nextTasks\":{\"yes\":[\"2\"]},\"previousTasks\":{\"#none#\":[\"0\"]},\"quietMode\":2,\"startDate\":\"2022-10-06T09:09:08.744744147Z\",\"state\":\"Error\",\"task\":{\"cacheVersn\":0,\"id\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"modified\":\"2022-10-06T09:09:02.998455781Z\",\"name\":\"Fail\",\"type\":\"condition\",\"version\":1,\"description\":\"command desc\"},\"taskId\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"taskSize\":37,\"type\":\"condition\",\"view\":{\"position\":{\"x\":450,\"y\":230}}}]",
+    "body": "[{\"Reopen\":false,\"ancestors\":[\"AutoFocusPolling\"],\"completedBy\":\"DBot\",\"completedDate\":\"2022-10-06T09:09:08.762414928Z\",\"conditions\":[{\"condition\":[[{\"left\":{\"isContext\":true,\"value\":{\"simple\":\"1\"}},\"operator\":\"isEqualString\",\"right\":{\"value\":{\"simple\":\"2\"}}}]],\"label\":\"yes\"}],\"doNotSaveTaskHistory\":true,\"dueDate\":\"0001-01-01T00:00:00Z\",\"entries\":[\"8@3\",\"9@3\"],\"evidenceData\":{},\"id\":\"3\",\"nextTasks\":{\"yes\":[\"2\"]},\"previousTasks\":{\"#none#\":[\"0\"]},\"quietMode\":2,\"startDate\":\"2022-10-06T09:09:08.744744147Z\",\"state\":\"Error\",\"task\":{\"cacheVersn\":0,\"id\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"modified\":\"2022-10-06T09:09:02.998455781Z\",\"name\":\"Fail\",\"type\":\"condition\",\"version\":1,\"description\":\"command desc\"},\"taskId\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"taskSize\":37,\"type\":\"condition\",\"view\":{\"position\":{\"x\":450,\"y\":230}}}]",
     "headers": {
         "Content-Length": [
             "807"
