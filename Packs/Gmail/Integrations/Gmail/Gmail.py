@@ -429,13 +429,6 @@ def mail_to_incident(msg, service, user_key):
     return incident
 
 
-def organization_format(org_list):
-    if org_list:
-        return ','.join(str(org.get('name')) for org in org_list if org.get('name'))
-    else:
-        return None
-
-
 def users_to_entry(title, response, next_page_token=None):
     context = []
 
@@ -461,7 +454,6 @@ def users_to_entry(title, response, next_page_token=None):
                'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory']
 
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
-
     if next_page_token:
         human_readable += "\nTo get further results, rerun the command with this page-token:\n" + next_page_token
 
@@ -519,11 +511,10 @@ def autoreply_to_entry(title, response, user_id):
         "Address": user_id,
         "AutoReply": autoreply_context
     }
-
     return CommandResults(
         raw_response=autoreply_context,
         outputs=account_context,
-        readable_output=tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        readable_output= tableToMarkdown(title, autoreply_context, headers, removeNull=True),
         outputs_prefix='Account.Gmail',
         outputs_key_field='Address'
     )
@@ -732,7 +723,6 @@ def list_users(domain, customer=None, query=None, sort_order=None, view_type='ad
 
     service = get_service('admin', 'directory_v1')
     result = service.users().list(**command_args).execute()
-
     return result['users'], result.get('nextPageToken')
 
 
@@ -827,7 +817,6 @@ def get_autoreply(user_id):
                                              'https://www.googleapis.com/auth/gmail.settings.basic'],
                           delegated_user=user_id)
     result = service.users().settings().getVacation(**command_args).execute()
-
     return result
 
 
