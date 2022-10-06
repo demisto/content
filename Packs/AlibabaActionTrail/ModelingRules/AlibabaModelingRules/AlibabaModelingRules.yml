@@ -5,5 +5,3 @@ name: Alibaba Modeling Rule
 rules: ' '
 schema: ''
 tags: alibaba
-to_xdr_version: 3.4.9
-toversion: 6.9.9

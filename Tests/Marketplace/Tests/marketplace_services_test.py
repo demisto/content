@@ -534,7 +534,14 @@ class TestHelperFunctions:
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
     def test_collect_content_items(self):
+        """
+        Given: pack with modeling rules.
 
+        When: collecting content item to upload.
+
+        Then: collect only modeling rules file start with external prefix.
+
+        """
         pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
         pack = Pack('test_pack', pack_path)
         res = pack.collect_content_items()

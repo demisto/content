@@ -6,7 +6,6 @@ filter event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","Pas
         XDM.Audit.original_event_sub_type = event_eventname,
         XDM.Audit.operation_type = event_eventtype,
         XDM.Audit.audited_resource.name = event_resourcename,
-        XDM.Audit.audited_resource.type = event_resourcetype,
         XDM.Audit.TriggeredBy.ipv4 = event_sourceipaddress,
         XDM.Audit.TriggeredBy.identity.type = event_useridentity_type,
         XDM.Audit.TriggeredBy.identity.uuid = event_useridentity_principalid,
