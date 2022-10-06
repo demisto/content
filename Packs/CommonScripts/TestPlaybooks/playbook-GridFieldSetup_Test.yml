@@ -165,7 +165,7 @@ tasks:
       key:
         simple: IPs
       value:
-        simple: '"10.1.1.1"'
+        simple: '"10.11.12.13"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -204,7 +204,7 @@ tasks:
       key:
         simple: IPs
       value:
-        simple: '"10.1.1.2"'
+        simple: '"10.152.4.241"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
