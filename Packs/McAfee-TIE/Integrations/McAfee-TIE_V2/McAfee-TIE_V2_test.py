@@ -1,69 +1,13 @@
 from unittest.mock import patch
-import demistomock as demisto
 import io
 import json
 import importlib
 import pytest
 
 
-valid_private_key = """-----BEGIN PRIVATE KEY-----
-This is a vaild Private Key
------END PRIVATE KEY-----"""
-
-valid_certificate = """-----BEGIN CERTIFICATE-----
-This is a valid Certificate
------END CERTIFICATE-----"""
-
-invalid_private_key = r"\private\key\path.key"
-
-invalid_certificate = """""-----BEGIN CERTIFICATE REQUEST-----
-This is a valid Certificate
------END CERTIFICATE REQUEST-----"""
-
-spaces_in_certificate = """    -----BEGIN CERTIFICATE-----
-This is a valid Certificate
------END CERTIFICATE-----   """
-
-
 def util_load_json(path: str):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
-
-
-def test_validate_certificate_format(mocker):
-    mcafee_tie = importlib.import_module('McAfee-TIE_V2')
-
-    # Invalid private Key
-    valid_params = {'private_key': invalid_private_key,
-                    'cert_file': valid_certificate,
-                    'broker_ca_bundle': valid_certificate}
-    mocker.patch.object(demisto, "params", return_value=valid_params)
-
-    with pytest.raises(SystemExit):
-        mcafee_tie.validate_certificates_format()
-
-    # Invalid cert file
-    valid_params = {'private_key': valid_private_key,
-                    'cert_file': invalid_certificate,
-                    'broker_ca_bundle': valid_certificate}
-    mocker.patch.object(demisto, "params", return_value=valid_params)
-    with pytest.raises(SystemExit):
-        mcafee_tie.validate_certificates_format()
-
-    # Invalid broker_ca_bundle
-    valid_params = {'private_key': valid_private_key,
-                    'cert_file': valid_certificate,
-                    'broker_ca_bundle': invalid_certificate}
-    mocker.patch.object(demisto, "params", return_value=valid_params)
-    with pytest.raises(SystemExit):
-        mcafee_tie.validate_certificates_format()
-
-    # Everything is valid + spaces
-    valid_params = {'private_key': valid_private_key,
-                    'cert_file': valid_certificate,
-                    'broker_ca_bundle': spaces_in_certificate}
-    mocker.patch.object(demisto, "params", return_value=valid_params)
-    mcafee_tie.validate_certificates_format()
 
 
 def test_safe_get_file_reputation_returned_exception(mocker):
@@ -113,11 +57,11 @@ def test_set_files_reputation_invalid():
     with patch('dxltieclient.TieClient') as mock_tie_client:
         tie_client = mock_tie_client.return_value
         with pytest.raises(Exception) as e:
-            mcafee_tie.set_files_reputation(hashes=['hash1', 'hash2'],
-                                            tie_client=tie_client,
-                                            trust_level='invalid_trust_level',
-                                            filename='',
-                                            comment='')
+            mcafee_tie.set_files_reputation_command(hashes=['hash1', 'hash2'],
+                                                    tie_client=tie_client,
+                                                    trust_level='invalid_trust_level',
+                                                    filename='',
+                                                    comment='')
         assert 'Illegal argument trust_level' in str(e)
 
 
@@ -136,11 +80,11 @@ def test_set_files_reputation_valid(mocker):
     with patch('dxltieclient.TieClient') as mock_tie_client:
         tie_client = mock_tie_client.return_value
         mocker.patch.object(tie_client, 'set_file_reputation', return_value='test_value')
-        result = mcafee_tie.set_files_reputation(hashes=['hash1', 'hash2'],
-                                                 tie_client=tie_client,
-                                                 trust_level='valid_trust_level',
-                                                 filename='',
-                                                 comment='')
+        result = mcafee_tie.set_files_reputation_command(hashes=['hash1', 'hash2'],
+                                                         tie_client=tie_client,
+                                                         trust_level='valid_trust_level',
+                                                         filename='',
+                                                         comment='')
         assert 'Successfully set files reputation' in result.readable_output
 
 
@@ -171,9 +115,9 @@ def test_files_references_invalid_query_limit(params):
     with patch('dxltieclient.TieClient') as mock_tie_client:
         tie_client = mock_tie_client.return_value
         with pytest.raises(Exception) as e:
-            mcafee_tie.files_references(hashes=['hash1', 'hash2'],
-                                        tie_client=tie_client,
-                                        query_limit=params['query_limit'])
+            mcafee_tie.files_references_command(hashes=['hash1', 'hash2'],
+                                                tie_client=tie_client,
+                                                query_limit=params['query_limit'])
         assert 'Query limit must not exceed' in str(e) or 'Query limit must not be zero or negative' in str(e)
 
 
@@ -292,9 +236,9 @@ def test_files_references(mocker, params, raw_result, expected_parsed_results):
     with patch('dxltieclient.TieClient') as mock_tie_client:
         tie_client = mock_tie_client.return_value
         mocker.patch.object(tie_client, 'get_file_first_references', side_effect=raw_result)
-        results = mcafee_tie.files_references(hashes=params['hashes'],
-                                              tie_client=tie_client,
-                                              query_limit=query_limit)
+        results = mcafee_tie.files_references_command(hashes=params['hashes'],
+                                                      tie_client=tie_client,
+                                                      query_limit=query_limit)
         for (exp_parsed_res, result) in zip(expected_parsed_results, results):
             assert exp_parsed_res == result.outputs
 
@@ -338,9 +282,9 @@ def validate_parsed_files_reputations(mocker, raw_responses, parsed_results):
     expected_command_results = parsed_results['parsed_results']
     with patch('dxltieclient.TieClient') as mock_tie_client:
         tie_client = mock_tie_client.return_value
-        results = mcafee_tie.files_reputations(hashes=raw_responses['hashes'],
-                                               tie_client=tie_client,
-                                               reliability='C - Fairly reliable')
+        results = mcafee_tie.files_reputations_command(hashes=raw_responses['hashes'],
+                                                       tie_client=tie_client,
+                                                       reliability='C - Fairly reliable')
         for (exp_command_res, result) in zip(expected_command_results, results):
             to_context = result.to_context()
             assert exp_command_res.get('HumanReadable') == to_context.get('HumanReadable')

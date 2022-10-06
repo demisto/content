@@ -16,11 +16,17 @@ LOWEST_TRUST_LEVEL_KEY = 'lowest_trust_level_key'
 LOWEST_SCORE_KEY = 'lowest_score_key'
 MAX_QUERY_LIMIT = 500
 
-DXLConfigFiles = NamedTuple('DXLConfigFiles', [('broker_ca_bundle', str),
-                                               ('cert_file', str),
-                                               ('private_key', str),
+DXLConfigFiles = NamedTuple('DXLConfigFiles', [('broker_ca_bundle_file', str),
+                                               ('client_cert_file', str),
+                                               ('private_key_file', str),
                                                ('broker_urls', list[str]),
                                                ])
+
+InstanceCertificates = NamedTuple('InstanceCertificates', [('broker_ca_bundle', str),
+                                                           ('client_cert', str),
+                                                           ('private_key', str),
+                                                           ('broker_urls', list[str]),
+                                                           ])
 
 ProviderInfo = NamedTuple('ProviderInfo', [('name', str),
                                            ('abbreviation', str)
@@ -55,6 +61,13 @@ HASH_TYPE_KEYS = {
 
 
 class GeneralFileReputationParser(abc.ABC):
+    """
+    This abstract class is in charge of parsing the reputations' data returned from the following API call:
+    https://opendxl.github.io/opendxl-tie-client-python/pydoc/dxltieclient.client.html#dxltieclient.client.TieClient.get_file_reputation
+    Since all reputations have two sections, one that it is unique to each vendor, and the second that it is mutual to all,
+    this class provides a method to parse the mutual section, and an abstract method that each child class
+    (representing a specific vendor) must implement to parse the unique section of each vendor.
+    """
     GENERAL_REPUTATION_KEYS = {
         FileReputationProp.PROVIDER_ID: "Provider",
         FileReputationProp.TRUST_LEVEL: "Trust_Level",
@@ -78,9 +91,19 @@ class GeneralFileReputationParser(abc.ABC):
 
     @abstractmethod
     def parse_attributes(self, attributes: Dict[str, Any]):
+        """
+        The abstract method that is in charge of parsing the vendor's unique attributes.
+        Each child class implementing this abstract method holds a dictionary that maps the data returned
+        from the API (which are in numeric form) to humand readable data in order for the user to understand the
+        returned results.
+        """
         pass
 
     def parse_reputation_key(self, reputation_key: str, val: Union[str, int]):
+        """
+        This method is in charge of parsing the mutual section of the reputations by using the dictionary
+        that is defined in the parent class (GeneralFileReputationParser).
+        """
         if(reputation_key == FileReputationProp.PROVIDER_ID):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: get_provider_name(provider_id=val)}
 
@@ -94,6 +117,10 @@ class GeneralFileReputationParser(abc.ABC):
             return {reputation_key: val}
 
     def parse_data(self, reputation_data: Dict[str, Any]):
+        """
+        This method is in charge of parsing the full reputation, it does so by parsing the vendror's unique
+        attributes, and the mutual attributes of all vendors.
+        """
         parsed_res: Dict[str, Any] = {}
         for key, val in reputation_data.items():
             if(key == FileReputationProp.ATTRIBUTES):
@@ -205,32 +232,11 @@ class UnknownReputationHandler(GeneralFileReputationParser):
         return attributes
 
 
-def validate_certificates_format():
-    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
-        return_error(
-            "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
-    if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
-        return_error(
-            "The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
-    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['cert_file']:
-        return_error("The client certificates content seem to be "
-                     "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
-        return_error(
-            "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
-    if not demisto.params()['broker_ca_bundle'].lstrip(" ").startswith('-----BEGIN CERTIFICATE-----'):
-        return_error(
-            "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if not demisto.params()['broker_ca_bundle'].rstrip(" ").endswith('-----END CERTIFICATE-----'):
-        return_error(
-            "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
-
-
 def get_client_config(dxl_config_files: DXLConfigFiles) -> DxlClientConfig:
     config = DxlClientConfig(
-        broker_ca_bundle=dxl_config_files.broker_ca_bundle,
-        cert_file=dxl_config_files.cert_file,
-        private_key=dxl_config_files.private_key,
+        broker_ca_bundle=dxl_config_files.broker_ca_bundle_file,
+        cert_file=dxl_config_files.client_cert_file,
+        private_key=dxl_config_files.private_key_file,
         brokers=[Broker.parse(url) for url in dxl_config_files.broker_urls]
     )
 
@@ -265,7 +271,7 @@ def epoch_to_localtime(epoch_time: int) -> str:
     except ValueError:
         date = datetime.fromtimestamp(epoch_time / 1000)
 
-    return str(date.strftime("%Y-%m-%d %H:%M:%S"))
+    return date.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def parse_reputation_human_readable(reputation):
@@ -362,7 +368,7 @@ def parse_reputation(provider_id: int, reputation: Dict):
     return parsed_reputation
 
 
-def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_type_key: str):
+def parse_file_reputation_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_type_key: str):
     context_data = {}
     parsed_reputation_data = {}
 
@@ -416,7 +422,7 @@ def parse_raw_result(raw_result: Dict, file_hash: str, reliability: str, hash_ty
                           )
 
 
-def files_reputations(hashes: List[str], tie_client: TieClient, reliability: str) -> List[CommandResults]:
+def files_reputations_command(hashes: List[str], tie_client: TieClient, reliability: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for file_hash in hashes:
         hash_type_key = get_hash_type_key(file_hash=file_hash)
@@ -438,17 +444,17 @@ def files_reputations(hashes: List[str], tie_client: TieClient, reliability: str
                                             indicator=file_instance,
                                             )
         else:
-            command_result = parse_raw_result(raw_result=raw_result,
-                                              file_hash=file_hash,
-                                              reliability=reliability,
-                                              hash_type_key=hash_type_key,
-                                              )
+            command_result = parse_file_reputation_raw_result(raw_result=raw_result,
+                                                              file_hash=file_hash,
+                                                              reliability=reliability,
+                                                              hash_type_key=hash_type_key,
+                                                              )
 
         command_results.append(command_result)
     return command_results
 
 
-def files_references(hashes: List[str], tie_client: TieClient, query_limit: int) -> List[CommandResults]:
+def files_references_command(hashes: List[str], tie_client: TieClient, query_limit: int) -> List[CommandResults]:
     if(query_limit > MAX_QUERY_LIMIT):
         raise DemistoException(f'Query limit must not exceed {MAX_QUERY_LIMIT}')
     elif(query_limit <= 0):
@@ -492,7 +498,7 @@ def get_trust_level_key(trust_level: str):
         return trust_level_key[0]
 
 
-def set_files_reputation(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
+def set_files_reputation_command(hashes: List[str], tie_client: TieClient, trust_level: str, filename: str, comment: str):
     # Find trust_level key
     trust_level_key = get_trust_level_key(trust_level=trust_level)
 
@@ -507,30 +513,30 @@ def set_files_reputation(hashes: List[str], tie_client: TieClient, trust_level: 
     return CommandResults(readable_output='Successfully set files reputation')
 
 
-def create_temp_credentials(temp_file: tempfile._TemporaryFileWrapper, parameter_name: str):
-    temp_file.write(demisto.params()[parameter_name])
+def create_temp_credentials(temp_file: tempfile._TemporaryFileWrapper, data_to_write: str):
+    temp_file.write(data_to_write)
     temp_file.seek(0)
 
 
 @contextlib.contextmanager
-def create_dxl_config() -> DxlClientConfig:
+def create_dxl_config(instance_cert: InstanceCertificates) -> DxlClientConfig:
     with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file,\
             tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file,\
             tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.key') as private_key_file:
         broker_certs_file.delete
-        create_temp_credentials(broker_certs_file, 'broker_ca_bundle')
-        create_temp_credentials(client_cert_file, 'cert_file')
-        create_temp_credentials(private_key_file, 'private_key')
-        dxl_config_files = DXLConfigFiles(broker_ca_bundle=broker_certs_file.name,
-                                          cert_file=client_cert_file.name,
-                                          private_key=private_key_file.name,
-                                          broker_urls=demisto.params()['broker_urls'].split(','))
+        create_temp_credentials(broker_certs_file, instance_cert.broker_ca_bundle)
+        create_temp_credentials(client_cert_file, instance_cert.client_cert)
+        create_temp_credentials(private_key_file, instance_cert.private_key)
+        dxl_config_files = DXLConfigFiles(broker_ca_bundle_file=broker_certs_file.name,
+                                          client_cert_file=client_cert_file.name,
+                                          private_key_file=private_key_file.name,
+                                          broker_urls=instance_cert.broker_urls)
         yield get_client_config(dxl_config_files=dxl_config_files)
 
 
 @contextlib.contextmanager
-def create_dxl_client():
-    with create_dxl_config() as dxl_client_config:
+def create_dxl_client(instance_cert: InstanceCertificates):
+    with create_dxl_config(instance_cert=instance_cert) as dxl_client_config:
         dxl_client_cm = DxlClient(dxl_client_config)
 
     with dxl_client_cm as dxl_client:
@@ -542,13 +548,52 @@ def get_tie_client(dxl_client: DxlClient):
     return TieClient(dxl_client)
 
 
-def main():
-    command = demisto.command()
-    args = demisto.args()
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(demisto.params().get('integrationReliability',
-                                                                                                'C - Fairly reliable'))
+def get_instance_certificates(params: Dict[str, str]) -> InstanceCertificates:
+    return InstanceCertificates(broker_ca_bundle=params['broker_ca_bundle'],
+                                client_cert=params['cert_file'],
+                                private_key=params['private_key'],
+                                broker_urls=params['broker_urls'].split(','))
+
+
+def files_reputations(dxl_client: DxlClient, hashes: List[str], reliability: str) -> List[CommandResults]:
+    tie_client = get_tie_client(dxl_client)
+    return files_reputations_command(hashes=hashes,
+                                     tie_client=tie_client,
+                                     reliability=reliability
+                                     )
+
+
+def files_references(dxl_client: DxlClient, hashes: List[str], args_query_limit: Union[int, None]) -> List[CommandResults]:
+    tie_client = get_tie_client(dxl_client)
+    query_limit = args_query_limit if args_query_limit else MAX_QUERY_LIMIT
+    return files_references_command(hashes=hashes,
+                                    tie_client=tie_client,
+                                    query_limit=query_limit,
+                                    )
+
+
+def set_files_reputation(dxl_client: DxlClient, hashes: List[str], trust_level: str,
+                         filename: str, comment: str) -> CommandResults:
+    tie_client = get_tie_client(dxl_client)
+    return set_files_reputation_command(hashes=hashes,
+                                        tie_client=tie_client,
+                                        trust_level=trust_level,
+                                        filename=filename,
+                                        comment=comment,
+                                        )
+
+
+def main():  # pragma: no cover
     try:
-        with create_dxl_client() as dxl_client:
+        command = demisto.command()
+        args = demisto.args()
+        params = demisto.params()
+        instance_cert = get_instance_certificates(params=params)
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
+            demisto.params().get('integrationReliability', 'C - Fairly reliable'))
+        hashes = argToList(args.get('file'))
+        demisto.debug(f'Command being called is {command}')
+        with create_dxl_client(instance_cert=instance_cert) as dxl_client:
             # We must configure the DxlClient before trying to connect, which is why
             # we wrapped the following code with a "with" statement according to the DxlClient Docs.
             # Only after successfully configuring, can we try to connect using dxl_client.connect
@@ -558,30 +603,22 @@ def main():
                 return_results(test_module(dxl_client=dxl_client))
 
             elif command == 'file':
-                tie_client = get_tie_client(dxl_client)
-                return_results(files_reputations(hashes=argToList(args.get('file')),
-                                                 tie_client=tie_client,
-                                                 reliability=reliability
-                                                 ))
+                return_results(files_reputations(dxl_client=dxl_client,
+                                                 hashes=hashes,
+                                                 reliability=reliability))
 
             elif command == 'tie-file-references':
-                tie_client = get_tie_client(dxl_client)
-                args_query_limit = arg_to_number(args.get('query_limit', None))
-                query_limit = args_query_limit if args_query_limit else MAX_QUERY_LIMIT
-                return_results(files_references(hashes=argToList(args.get('file')),
-                                                tie_client=tie_client,
-                                                query_limit=query_limit
-                                                ))
+                return_results(files_references(dxl_client=dxl_client,
+                                                hashes=hashes,
+                                                args_query_limit=arg_to_number(args.get('query_limit', None))))
 
             elif command == 'tie-set-file-reputation':
-                tie_client = get_tie_client(dxl_client)
-                return_results(set_files_reputation(hashes=argToList(args.get('file')),
-                                                    tie_client=tie_client,
+                return_results(set_files_reputation(dxl_client=dxl_client,
+                                                    hashes=hashes,
                                                     trust_level=args.get('trust_level'),
-                                                    filename=args.get('filename'),
-                                                    comment=args.get('comment'),
+                                                    filename=args.get('filename', ''),
+                                                    comment=args.get('comment', ''),
                                                     ))
-
             else:
                 raise NotImplementedError(f'Command {command} is not supported.')
 
