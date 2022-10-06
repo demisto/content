@@ -120,6 +120,7 @@ graph-prepare-testing-bucket-mpv2:
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
     - pushd content_packs; zip -r ../content_packs.zip *; popd
     - popd
+    - rm -rf content_packs
     - section_end "Replace Cortex XSOAR"
 
     - section_end "Calculate Packs Dependencies"
