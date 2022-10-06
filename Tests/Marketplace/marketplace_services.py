@@ -3324,18 +3324,17 @@ class Pack(object):
     def get_preview_image_gcp_path(self, pack_file_name: str, folder_name) -> Optional[str]:
         preview_image_name = self.find_preview_image_path(pack_file_name)
         try:
-            preview_image_path = os.path.join(self._pack_path,folder_name, preview_image_name)  # disable-secrets-detection
-            logging.info(f"yuval preview path {preview_image_path}")
+            preview_image_path = os.path.join(self.path, folder_name, preview_image_name)  # disable-secrets-detection
             if os.path.exists(preview_image_path):
                 if not self._current_version:
                     self._current_version = ''
-                x = urllib.parse.quote(
-                os.path.join(GCPConfig.CONTENT_PACKS_PATH, self._pack_name, self._current_version, folder_name, preview_image_name))
-                logging.info(f"yuval x is {x}")
-                return x
+                return urllib.parse.quote(
+                os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
+                             self.current_version, folder_name, preview_image_name))
             return None
         except Exception:
-            logging.exception(f"Failed uploading {self._pack_name} pack preview image.")
+            logging.exception(f"Failed uploading {self.name} pack preview image.")
+            return None
 
     def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
         """ Uploads pack preview images to gcs.
@@ -3348,29 +3347,26 @@ class Pack(object):
             list: list of dictionaries with uploaded pack integration images.
         """
         pack_preview_images = []
-        pack_storage_root_path = os.path.join(storage_base_path, self._pack_name, self._current_version)
+        pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
         logging.info(f"{pack_storage_root_path} pack_storage_root_path")
 
         try:
             for file in diff_files_list:
                 if self.is_preview_image(file.a_path):
-                    logging.info(f"yuval: file.a_path {file.a_path}")
+                    logging.info(f"adding preview image {file.a_path} to pack preview images")
                     pack_preview_images.append(file.a_path)
 
             for image_path in pack_preview_images:
-                logging.info(f"yuval: image_path {image_path}")
                 image_folder = os.path.dirname(image_path).split('/')[-1] or ''
-                logging.info(f"yuval {image_folder}")
                 image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path,image_folder ,image_name)
-                logging.info(f"yuval {image_storage_path}")
                 pack_image_blob = storage_bucket.blob(image_storage_path)
                 with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
-
             return True
         except Exception as e:
-            logging.exception(f"yuval Exception {e}")
+            logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
+            return False
 
     def is_preview_image(self, file_path):
         """ Indicates whether a file_path is an integration image or not
@@ -3385,7 +3381,6 @@ class Pack(object):
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
-        # ontent/builds/previrew_images/3702025/marketplacev2/content/packs/content/previews/Intezer/MyDashboard2_image.png
 
     @staticmethod
     def find_preview_image_path(file_name):
