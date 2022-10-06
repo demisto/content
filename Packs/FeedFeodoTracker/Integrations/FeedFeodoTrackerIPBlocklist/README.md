@@ -9,7 +9,6 @@ Gets a list of bad IPs from Feodo Tracker.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Feed Source |  | True |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |

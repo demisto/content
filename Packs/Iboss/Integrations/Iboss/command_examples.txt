@@ -1,0 +1,11 @@
+!ip ip=1.1.1.1
+!domain domain=iboss.com
+!url url=https://www.iboss.com
+
+!iboss-add-entity-to-allow-list entity=iboss.com
+!iboss-remove-entity-from-allow-list entity=iboss.com
+!iboss-add-entity-to-block-list entity=iboss.com
+!iboss-remove-entity-from-block-list entity=iboss.com
+
+!iboss-add-entity-to-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"
+!iboss-remove-entity-from-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"

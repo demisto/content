@@ -137,6 +137,9 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -504,6 +507,10 @@ class FeedIndicatorType(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
+    AS = "ASN"
+    MUTEX = "Mutex"
+    Malware = "Malware"
+
 
     @staticmethod
     def is_valid_type(_type):
@@ -521,7 +528,10 @@ class FeedIndicatorType(object):
             FeedIndicatorType.IPv6CIDR,
             FeedIndicatorType.Registry,
             FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
+            FeedIndicatorType.URL,
+            FeedIndicatorType.AS,
+            FeedIndicatorType.MUTEX,
+            FeedIndicatorType.Malware
         )
 
     @staticmethod
@@ -4563,7 +4573,8 @@ class Common(object):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
-        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+        # Compare by both ID and Vendor if both exist, otherwise just by ID.
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
@@ -6941,10 +6952,13 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_command = hasattr(demisto, 'command')
-    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                             'fetch-credentials',
-                                                             'long-running-execution',
-                                                             'fetch-indicators')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -7069,7 +7083,7 @@ class ExecutionMetrics(object):
 
     @staticmethod
     def is_supported():
-        if is_demisto_version_ge('7.0.0'):
+        if is_demisto_version_ge('6.8.0'):
             return True
         return False
 
@@ -7154,6 +7168,9 @@ class ExecutionMetrics(object):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
 
+    def get_metric_list(self):
+        return self._metrics
+
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
             if len(self._metrics) == 0:
@@ -7166,6 +7183,24 @@ class ExecutionMetrics(object):
                 else:
                     self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             self.metrics = CommandResults(execution_metrics=self._metrics)
+
+
+def append_metrics(execution_metrics, results):
+    """
+    Returns a 'CommandResults' list appended with metrics.
+
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: Metrics object to be added to CommandResults list(optional).
+
+    :type results: ``list``
+    :param results: 'CommandResults' list to append metrics to (required).
+
+    :return: results appended with the metrics if the server version is supported.
+    :rtype: ``list``
+    """
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        results.append(execution_metrics.metrics)
+    return results
 
 
 class CommandRunner:
@@ -7305,7 +7340,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [res.result for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -7334,11 +7378,12 @@ class CommandRunner:
             res.args.pop('using-brand', None)
             command = {'command': res.command,
                        'args': res.args}
+            comment = res.result.get('Contents', 'No contents found, see entry.') if isinstance(res.result, dict) else None
             results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
                                                                                          instance=res.instance),
                                           'Command': command,
                                           'Result': 'Success',
-                                          'Comment': None})
+                                          'Comment': comment})
 
         for err in errors:
             # don't care about using arg in command
@@ -8056,6 +8101,11 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
+        # Make the fractions shorter less than 6 charactors
+        # e.g. '2022-01-23T12:34:56.123456789+09:00' to '2022-01-23T12:34:56.123456+09:00'
+        #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
+        date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
+
         return datetime.strptime(date_string, date_format)
 
 
@@ -8215,17 +8265,17 @@ if 'requests' in sys.modules:
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
 
-        :type ok_codes: ``tuple``
+        :type ok_codes: ``tuple`` or ``None``
         :param ok_codes:
             The request codes to accept as OK, for example: (200, 201, 204).
-            If you specify "None", will use requests.Response.ok
+            Will use requests.Response.ok if set to None.
 
-        :type headers: ``dict``
+        :type headers: ``dict`` or ``None``
         :param headers:
             The request headers, for example: {'Accept`: `application/json`}.
             Can be None.
 
-        :type auth: ``dict`` or ``tuple``
+        :type auth: ``dict`` or ``tuple`` or ``None``
         :param auth:
             The request authorization, for example: (username, password).
             Can be None.
@@ -8414,9 +8464,6 @@ if 'requests' in sys.modules:
                 The request codes to accept as OK, for example: (200, 201, 204). If you specify
                 "None", will use self._ok_codes.
 
-            :return: Depends on the resp_type parameter
-            :rtype: ``dict`` or ``str`` or ``requests.Response``
-
             :type retries: ``int``
             :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
 
@@ -8451,13 +8498,15 @@ if 'requests' in sys.modules:
                 been exhausted.
 
             :type error_handler ``callable``
-            :param error_handler: Given an error entery, the error handler outputs the
+            :param error_handler: Given an error entry, the error handler outputs the
                 new formatted error message.
 
             :type empty_valid_codes: ``list``
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
             try:
                 # Replace params if supplied
@@ -9963,10 +10012,16 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     """
 
     def dec(func):
-        def inner(client, args):
-            if not requires_polling_arg or args.get(polling_arg_name):
+        def inner(args, *arguments, **kwargs):
+            """
+            Args:
+                args (dict): command arguments (demisto.args()).
+                *arguments: any additional arguments to the command function.
+                **kwargs: additional keyword arguments to the command function.
+            """
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
                 ScheduledCommand.raise_error_if_not_supported()
-                poll_result = func(client, args)
+                poll_result = func(args, *arguments, **kwargs)
 
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
@@ -9982,7 +10037,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                                                                    args=poll_args, timeout_in_seconds=timeout)
                 return poll_response
             else:
-                return func(client, args).response
+                return func(args, *arguments, **kwargs).response
 
         return inner
 

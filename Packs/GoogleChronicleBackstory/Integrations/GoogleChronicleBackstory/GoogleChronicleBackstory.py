@@ -9,6 +9,7 @@ from oauth2client import service_account
 from copy import deepcopy
 import dateparser
 from hashlib import sha256
+from datetime import datetime
 
 # A request will be tried 3 times if it fails at the socket/connection level
 httplib2.RETRIES = 3
@@ -43,7 +44,13 @@ CHRONICLE_OUTPUT_PATHS = {
     'Events': 'GoogleChronicleBackstory.Events',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
     'Rules': 'GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)',
-    'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)'
+    'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)',
+    'DeleteRule': 'GoogleChronicleBackstory.DeleteRule(val.ruleId == obj.ruleId)',
+    'RuleAlertingChange': 'GoogleChronicleBackstory.RuleAlertingChange(val.ruleId == obj.ruleId)',
+    'LiveRuleStatusChange': 'GoogleChronicleBackstory.LiveRuleStatusChange(val.ruleId == obj.ruleId)',
+    'RetroHunt': 'GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)',
+    'ReferenceList': 'GoogleChronicleBackstory.ReferenceList(val.name == obj.name)',
+    'ListReferenceList': 'GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)',
 }
 
 ARTIFACT_NAME_DICT = {
@@ -104,10 +111,19 @@ SEVERITY_MAP = {
 }
 
 MESSAGES = {
-    "INVALID_DAY_ARGUMENT": 'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
+    "INVALID_DAY_ARGUMENT": 'Invalid preset time range value provided. Allowed values are "Last 1 day", "Last 7 days", '
                             '"Last 15 days" and "Last 30 days"',
-    "INVALID_PAGE_SIZE": 'Page size should be in the range from 1 to 1000.',
-    "NO_RECORDS": 'No Records Found'
+    "INVALID_PAGE_SIZE": 'Page size should be in the range from 1 to {}.',
+    "NO_RECORDS": 'No Records Found',
+    "INVALID_RULE_TEXT": 'Invalid rule text provided. Section "meta", "events" or "condition" is missing.',
+    "REQUIRED_ARGUMENT": 'Missing argument {}.',
+    "VALIDATE_SINGLE_SELECT": '{} can have one of these values only {}.',
+    "CHANGE_RULE_ALERTING_METADATA": 'Alerting status for the rule with ID {} has been successfully {}.',
+    "CHANGE_LIVE_RULE_STATUS_METADATA": 'Live rule status for the rule with ID {} has been successfully {}.',
+    "CANCEL_RETROHUNT": 'Retrohunt for the rule with ID {} has been successfully cancelled.',
+    "INVALID_DATE": 'Invalid {} time, supported formats are: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, '
+                    'N hours. E.g. 2022-05-15T12:24:36Z, 2021-18-19, 6 days, 20 hours, 01 Mar 2021,'
+                    ' 01 Feb 2021 04:45:33',
 }
 FIRST_ACCESSED_TIME = 'First Accessed Time'
 LAST_ACCESSED_TIME = 'Last Accessed Time'
@@ -175,7 +191,7 @@ def get_http_client(proxy, disable_ssl):
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
 
 
-def validate_response(client, url, method='GET'):
+def validate_response(client, url, method='GET', body=None):
     """
     Get response from Chronicle Search API and validate it.
 
@@ -188,10 +204,13 @@ def validate_response(client, url, method='GET'):
     :param method: HTTP request method
     :type method: str
 
+    :param body: data to pass with the request
+    :type body: str
+
     :return: response
     """
     demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(REGIONS[client.region]))
-    raw_response = client.http_client.request(url.format(REGIONS[client.region]), method)
+    raw_response = client.http_client.request(url.format(REGIONS[client.region]), method, body=body)
     if not raw_response:
         raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
     if raw_response[0].status == 500:
@@ -205,10 +224,87 @@ def validate_response(client, url, method='GET'):
         raise ValueError(
             'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
     try:
-        response = json.loads(raw_response[1])
+        response = remove_empty_elements(json.loads(raw_response[1]))
         return response
     except json.decoder.JSONDecodeError:
         raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
+
+
+def trim_args(args):
+    """
+    Trim the arguments for extra spaces.
+
+    :type args: Dict
+    :param args: it contains arguments of the command
+    """
+    for key, value in args.items():
+        args[key] = value.strip()
+
+    return args
+
+
+def validate_argument(value, name) -> str:
+    """
+    Check if empty string is passed as value for argument and raise appropriate ValueError.
+
+    :type value: str
+    :param value: value of the argument.
+
+    :type name: str
+    :param name: name of the argument.
+    """
+    if not value:
+        raise ValueError(MESSAGES['REQUIRED_ARGUMENT'].format(name))
+    return value
+
+
+def validate_single_select(value, name, single_select_choices):
+    """
+    Validate the status has valid input.
+
+    :type value: str
+    param status: input from user to enable or disable the status
+
+    :type name: str
+    param name: name of the argument to validate
+
+    :type single_select_choices: List
+    param single_select_choices: list of choices to single select for an argument
+
+    :return: status value
+    :rtype: str
+    """
+    if value not in single_select_choices:
+        raise ValueError(MESSAGES['VALIDATE_SINGLE_SELECT'].format(name, ', '.join(single_select_choices)))
+    return value
+
+
+def validate_list_retrohunts_args(args):
+    """
+    Return and validate page_size, retrohunts_list_all_versions, page_token, rule_id, state.
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for gcb-list-retrohunts command
+
+    :return: Dictionary containing values of page_size, retrohunts_list_all_versions, page_token, rule_id, state
+     or raise ValueError if the arguments are invalid
+    :rtype: Dict[str, Any]
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    if int(page_size) > 1000:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(1000))
+    retrohunts_for_all_versions = argToBoolean(args.get('retrohunts_for_all_versions', False))
+    page_token = args.get('page_token')
+    rule_id = args.get('id')
+    state = args.get('state')
+
+    valid_args = {'page_size': page_size, 'page_token': page_token, 'rule_id': rule_id,
+                  'retrohunts_for_all_versions': retrohunts_for_all_versions, 'state': state}
+    if rule_id and '@' in rule_id and retrohunts_for_all_versions:
+        raise ValueError("Invalid value in argument 'id'. Expected rule_id.")
+
+    return valid_args
 
 
 def get_params_for_reputation_command():
@@ -271,7 +367,7 @@ def validate_configuration_parameters(param: Dict[str, Any]):
     """
     # get configuration parameters
     service_account_json = param.get('service_account_credential', '')
-    fetch_days = param.get('first_fetch', DEFAULT_FIRST_FETCH).lower()
+    first_fetch = param.get('first_fetch', DEFAULT_FIRST_FETCH).lower()
     page_size = param.get('max_fetch', '10')
     time_window = param.get('time_window', '15')
 
@@ -302,16 +398,7 @@ def validate_configuration_parameters(param: Dict[str, Any]):
             raise ValueError(invalid_time_window_error_message)
 
         # validate first_fetch parameter
-        range_split = fetch_days.split(' ')
-        if len(range_split) != 2:
-            raise ValueError('First fetch days must be "number time_unit", '
-                             'examples: (10 days, 6 months, 1 year, etc.)')
-
-        if not range_split[0].isdigit():
-            raise ValueError('First fetch days must be "number time_unit", '
-                             'examples: (10 days, 6 months, 1 year, etc.)')
-        if not range_split[1] in ['day', 'days', 'month', 'months', 'year', 'years']:
-            raise ValueError('First fetch days field\'s unit is invalid. Must be in day(s), month(s) or year(s)')
+        arg_to_datetime(first_fetch, 'First fetch time')
 
         # validate override_confidence_score_malicious_threshold and override_confidence_score_suspicious_threshold
         # parameters
@@ -329,57 +416,6 @@ def validate_configuration_parameters(param: Dict[str, Any]):
         raise ValueError('User\'s Service Account JSON has invalid format')
 
 
-def validate_start_end_date(start_date, end_date=None, reference_time=None):
-    """
-    Perform start and end date validation.
-
-    Check whether the start_date and end_date provided are in valid ISO Format(e.g. 2019-10-17T00:00:00Z).
-    Check whether start_date is not later than end_date.
-    Check whether start_date and end_date are not a future date.
-
-    :type start_date: string
-    :param start_date: date
-
-    :type end_date: string
-    :param end_date: date
-
-    :type reference_time: string
-    :param reference_time: date
-
-    :return: raise ValueError if validation fails, else return None
-    :rtype: str, str, Optional[str]
-    """
-    if start_date.isdigit():
-        raise ValueError("Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
-
-    # checking date format
-    start_date = dateparser.parse(start_date, settings={'STRICT_PARSING': True})
-    if not start_date:
-        raise ValueError('Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
-
-    start_date = str(datetime.strftime(start_date, DATE_FORMAT))
-
-    if end_date:
-        if end_date.isdigit():
-            raise ValueError("Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
-        # checking date format
-        end_date = dateparser.parse(end_date, settings={'STRICT_PARSING': True})
-        if not end_date:
-            raise ValueError('Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
-
-        end_date = str(datetime.strftime(end_date, DATE_FORMAT))
-
-    if reference_time:
-        # checking date format
-        reference_time = dateparser.parse(reference_time, settings={'STRICT_PARSING': True})
-        if not reference_time:
-            raise ValueError('Invalid reference time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
-
-        reference_time = str(datetime.strftime(reference_time, DATE_FORMAT))
-
-    return start_date, end_date, reference_time
-
-
 def validate_page_size(page_size):
     """
     Validate that page size parameter is in numeric format or not.
@@ -391,7 +427,7 @@ def validate_page_size(page_size):
     :rtype: bool
     """
     if not page_size or not str(page_size).isdigit() or int(page_size) == 0:
-        raise ValueError('Page size must be a non-zero numeric value')
+        raise ValueError('Page size must be a non-zero and positive numeric value')
     return True
 
 
@@ -423,15 +459,15 @@ def validate_preset_time_range(value):
     return value_split[1] + ' ' + value_split[2].lower()
 
 
-def get_chronicle_default_date_range(days=DEFAULT_FIRST_FETCH):
+def get_chronicle_default_date_range(days=DEFAULT_FIRST_FETCH, arg_name='start_time'):
     """
     Get Chronicle Backstory default date range(last 3 days).
 
     :return: start_date, end_date (ISO date in UTC)
     :rtype: string
     """
-    start_date, end_date = parse_date_range(days)
-    return start_date.strftime(DATE_FORMAT), end_date.strftime(DATE_FORMAT)
+    start_date, end_date = arg_to_datetime(days, arg_name), datetime.now()
+    return start_date.strftime(DATE_FORMAT), end_date.strftime(DATE_FORMAT)  # type: ignore
 
 
 def get_artifact_type(value):
@@ -536,38 +572,43 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
     return context_data, tabular_data_list, host_context
 
 
-def get_default_command_args_value(args: Dict[str, Any], date_range=None):
+def get_default_command_args_value(args: Dict[str, Any], max_page_size=10000, date_range=None):
     """
     Validate and return command arguments default values as per Chronicle Backstory.
 
     :type args: dict
     :param args: contain all arguments for command
 
+    :type max_page_size: int
+    :param max_page_size: maximum allowed page size
+
     :type date_range: string
     :param date_range: The date range to be parsed
 
-    :return : start_time, end_time, page_size
-    :rtype : datetime, datetime, int̥
+    :return : start_time, end_time, page_size, reference_time
+    :rtype : str, str, int, Optional[str]
     """
     preset_time_range = args.get('preset_time_range', None)
     reference_time = None
     if preset_time_range:
         preset_time_range = validate_preset_time_range(preset_time_range)
-        start_time, end_time = get_chronicle_default_date_range(preset_time_range)
+        start_time, end_time = get_chronicle_default_date_range(preset_time_range, 'preset_time_range')
     else:
         if date_range is None:
             date_range = DEFAULT_FIRST_FETCH
         start_time, end_time = get_chronicle_default_date_range(days=date_range)
-        start_time = args.get('start_time', start_time)
-        end_time = args.get('end_time', end_time)
+        if args.get('start_time'):
+            start_time = arg_to_datetime(args.get('start_time'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+        if args.get('end_time'):
+            end_time = arg_to_datetime(args.get('end_time'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+    if args.get('reference_time'):
+        reference_time = arg_to_datetime(args.get('reference_time'), 'reference_time') \
+            .strftime(DATE_FORMAT)  # type: ignore
+
     page_size = args.get('page_size', 10000)
     validate_page_size(page_size)
-    if args.get('reference_time', ''):
-        start_time, end_time, reference_time = validate_start_end_date(start_time, end_time,
-                                                                       args.get('reference_time', ''))
-    else:
-        start_time, end_time, _ = validate_start_end_date(start_time, end_time)
-
+    if int(page_size) > max_page_size:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(max_page_size))
     return start_time, end_time, page_size, reference_time
 
 
@@ -813,15 +854,16 @@ def prepare_hr_for_ioc_details(addresses, hr_table_row):
         if address.get('domain'):
             address_data.append({
                 'Domain': address['domain'],
-                'Port': address.get('port', '')
+                'Port': address.get('port', [])
             })
             hr_table_row['Domain'] = address['domain']
         if address.get('ipAddress'):
             address_data.append({
                 'IpAddress': address['ipAddress'],
-                'Port': address.get('port', '')
+                'Port': address.get('port', [])
             })
             hr_table_row[IP_ADDRESS] = address['ipAddress']
+            address_data = remove_empty_elements(address_data)
     return address_data, hr_table_row
 
 
@@ -897,7 +939,8 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
             'Indicator': artifact_indicator,
             'Type': artifact_type,
             'Vendor': VENDOR,
-            'Score': dbot_score_max
+            'Score': dbot_score_max,
+            'Reliability': demisto.params().get('integrationReliability')
         }
         if dbot_score_max == 3:
             standard_context['Malicious'] = {
@@ -1189,7 +1232,7 @@ def get_list_events_hr(events):
     return hr
 
 
-def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[str, str]:
+def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[Optional[datetime], Optional[datetime]]:
     """
     Validate and return detection_start_time and detection_end_time as per Chronicle Backstory or \
     raise a ValueError if the given inputs are invalid.
@@ -1198,38 +1241,22 @@ def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[s
     :param args: contains all arguments for command
 
     :return : detection_start_time, detection_end_time: Detection start and end time in the format API accepts
-    :rtype : Tuple[str, str]
+    :rtype : Tuple[Optional[str], Optional[str]]
     """
-    detection_start_time = args.get('start_time') if args.get('start_time') else args.get('detection_start_time')
-    detection_end_time = args.get('end_time') if args.get('end_time') else args.get('detection_end_time')
+    detection_start_time = arg_to_datetime(args.get('start_time'), 'start_time') if args.get('start_time') \
+        else arg_to_datetime(args.get('detection_start_time'), 'detection_start_time')
+    detection_end_time = arg_to_datetime(args.get('end_time'), 'end_time') if args.get('end_time') \
+        else arg_to_datetime(args.get('detection_end_time'), 'detection_end_time')
 
     list_basis = args.get('list_basis', '')
     if list_basis and not detection_start_time and not detection_end_time:
         raise ValueError("To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" argument is "
                          "required.")
 
-    invalid_time_error_message = 'Invalid {} time. Some supported formats are ISO date format and relative time.' \
-                                 ' e.g. 2019-10-17T00:00:00Z, 3 days'
     if detection_start_time:
-        if detection_start_time.isdigit():
-            raise ValueError(invalid_time_error_message.format('start'))
-        detection_start_time = dateparser.parse(detection_start_time, settings={'STRICT_PARSING': True})
-
-        if not detection_start_time:
-            raise ValueError(invalid_time_error_message.format('start'))
-
-        detection_start_time = str(datetime.strftime(detection_start_time, DATE_FORMAT))
-
+        detection_start_time = detection_start_time.strftime(DATE_FORMAT)  # type: ignore
     if detection_end_time:
-        if detection_end_time.isdigit():
-            raise ValueError(invalid_time_error_message.format('end'))
-
-        detection_end_time = dateparser.parse(detection_end_time, settings={'STRICT_PARSING': True})
-        if not detection_end_time:
-            raise ValueError(invalid_time_error_message.format('end'))
-
-        detection_end_time = str(datetime.strftime(detection_end_time, DATE_FORMAT))
-
+        detection_end_time = detection_end_time.strftime(DATE_FORMAT)  # type: ignore
     return detection_start_time, detection_end_time
 
 
@@ -1247,7 +1274,7 @@ def validate_and_parse_list_detections_args(args: Dict[str, Any]) -> Dict[str, A
     page_size = args.get('page_size', 100)
     validate_page_size(page_size)
     if int(page_size) > 1000:
-        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(1000))
 
     rule_id = args.get('id', '')
     detection_for_all_versions = argToBoolean(args.get('detection_for_all_versions', False))
@@ -1929,7 +1956,11 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
     if not last_run.get('rule_first_fetched_time'):
         demisto.info(f"Starting new time window from START-TIME :  {start_time} to END_TIME : {end_time}")
 
-    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    if params.get('fetch_detection_by_list_basis') == 'DETECTION_TIME':
+        delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    else:
+        delayed_start_time = start_time
+
     fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
     fetch_detection_by_list_basis = pending_rule_or_version_id_with_alert_state.get('listBasis', 'CREATED_TIME')
     # giving priority to comma separated detection ids over check box of fetch all live detections
@@ -2182,7 +2213,7 @@ def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[st
     validate_page_size(page_size)
     page_token = args.get('page_token', '')
     if int(page_size) > 1000:
-        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(1000))
 
     live_rule = args.get('live_rule', '').lower()
     if live_rule and live_rule != 'true' and live_rule != 'false':
@@ -2236,6 +2267,750 @@ def get_list_rules_hr(rules: List[Dict[str, Any]]) -> str:
     return hr
 
 
+def validate_rule_text(rule_text: str):
+    """
+    Validate the rule text.
+
+    :type rule_text: str
+    :param rule_text: the rule text
+    """
+    validate_argument(value=rule_text, name='rule_text')
+
+    if 'meta' not in rule_text or 'events' not in rule_text or 'condition' not in rule_text:
+        raise ValueError(MESSAGES['INVALID_RULE_TEXT'])
+
+
+def create_rule(client_obj, rule_text: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-create-rule command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_text: str
+    :param rule_text: the rule text to for the rule to be created
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the created rule
+    """
+    req_json_data = {
+        'ruleText': rule_text
+    }
+    request_url = "{}/detect/rules".format(BACKSTORY_API_V2_URL)
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(req_json_data))
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['Rules']: json_data
+    }
+
+    return ec, json_data
+
+
+def prepare_hr_for_create_rule(rule_details: Dict[str, Any]) -> str:
+    """
+    Prepare human-readable for create rule command.
+
+    :type rule_details: Dict[str, Any]
+    :param rule_details: Response of create rule
+
+    :rtype: str
+    :return: Human readable string for create rule command
+    """
+    hr_output = {
+        'Rule ID': rule_details.get('ruleId'),
+        'Version ID': rule_details.get('versionId'),
+        'Author': rule_details.get('metadata', {}).get('author'),
+        'Rule Name': rule_details.get('ruleName'),
+        'Description': rule_details.get('metadata', {}).get('description'),
+        'Version Creation Time': rule_details.get('versionCreateTime'),
+        'Compilation Status': rule_details.get('compilationState'),
+        'Rule Text': rule_details.get('ruleText')
+    }
+
+    headers = ['Rule ID', 'Version ID', 'Author', 'Rule Name', 'Description', 'Version Creation Time',
+               'Compilation Status', 'Rule Text']
+
+    return tableToMarkdown('Rule Detail', hr_output, headers=headers, removeNull=True)
+
+
+def gcb_get_rule(client_obj, rule_id):
+    """
+    Return context data and raw response for gcb-get-rule command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: it is the ruleId or versionId
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the fetched rules
+    """
+    request_url = '{}/detect/rules/{}'.format(BACKSTORY_API_V2_URL, rule_id)
+    json_data = validate_response(client_obj, request_url)
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['Rules']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_get_rule_command(json_data):
+    """
+    Prepare Human Readable output from the response received.
+
+    :type json_data: Dict
+    :param json_data: raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    hr_output = {
+        'Rule ID': json_data.get('ruleId'),
+        'Version ID': json_data.get('versionId'),
+        'Author': json_data.get('metadata', {}).get('author'),
+        'Rule Name': json_data.get('ruleName'),
+        'Description': json_data.get('metadata', {}).get('description'),
+        'Version Creation Time': json_data.get('versionCreateTime'),
+        'Compilation Status': json_data.get('compilationState'),
+        'Rule Text': json_data.get('ruleText')
+    }
+    hr = tableToMarkdown('Rule Details', hr_output,
+                         headers=['Rule ID', 'Version ID', 'Author', 'Rule Name', 'Description',
+                                  'Version Creation Time', 'Compilation Status', 'Rule Text'], removeNull=True)
+    return hr
+
+
+def delete_rule(client_obj, rule_id: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-delete-rule command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: rule id of the rule to be deleted
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the created rule
+    """
+    request_url = '{}/detect/rules/{}'.format(BACKSTORY_API_V2_URL, rule_id)
+    json_data = validate_response(client_obj, request_url, method='DELETE')
+
+    json_data = {
+        'ruleId': rule_id,
+        'actionStatus': 'SUCCESS' if not json_data else 'FAILURE'
+    }
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['DeleteRule']: json_data
+    }
+
+    return ec, json_data
+
+
+def prepare_hr_for_delete_rule(response: Dict[str, str]) -> str:
+    """
+    Prepare human-readable for create rule command.
+
+    :type response: Dict[str, Any]
+    :param response: Response of create rule
+
+    :rtype: str
+    :return: Human readable string for create rule command
+    """
+    hr_output = {
+        'Rule ID': response.get('ruleId'),
+        'Action Status': response.get('actionStatus')
+    }
+
+    if response.get('actionStatus') == 'SUCCESS':
+        title = f'Rule with ID {response.get("ruleId")} deleted successfully.'
+    else:
+        title = f'Could not delete the rule with ID {response.get("ruleId")}.'
+
+    return tableToMarkdown(title, hr_output, headers=['Rule ID', 'Action Status'], removeNull=True)
+
+
+def gcb_create_rule_version(client_obj, rule_id, rule_text):
+    """
+    Return context data and raw response for gcb-create-rule-version command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: it is the ruleId or versionId
+
+    :type rule_text: str
+    :param rule_text: it is the rule itself to add.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = '{}/detect/rules/{}:createVersion'.format(BACKSTORY_API_V2_URL, rule_id)
+    body = {
+        "ruleText": rule_text
+    }
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    json_data = remove_empty_elements(json_data)
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['Rules']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_create_rule_version_command(json_data):
+    """
+    Prepare human-readable for gcb_create_rule_version_command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb_create_rule_version_command
+
+    :rtype: str
+    :return: Human readable string for gcb_create_rule_version_command
+    """
+    hr_output = {
+        'Rule ID': json_data.get('ruleId'),
+        'Version ID': json_data.get('versionId'),
+        'Author': json_data.get('metadata', {}).get('author'),
+        'Rule Name': json_data.get('ruleName'),
+        'Description': json_data.get('metadata', {}).get('description'),
+        'Version Creation Time': json_data.get('versionCreateTime'),
+        'Compilation Status': json_data.get('compilationState'),
+        'Rule Text': json_data.get('ruleText')
+    }
+    hr = tableToMarkdown('New Rule Version Details', hr_output,
+                         headers=['Rule ID', 'Version ID', 'Author', 'Rule Name', 'Description',
+                                  'Version Creation Time', 'Compilation Status', 'Rule Text'], removeNull=True)
+    return hr
+
+
+def gcb_change_rule_alerting_status(client_obj, rule_id, alerting_status):
+    """
+    Return context data and raw response for gcb-change-rule-alerting-status command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: the ruleId of the rule whose alerting status is to be updated.
+
+    :type alerting_status: str
+    :param alerting_status: indicates whether to enable or disable the alerting stats for the rule.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the update in alerting status of the rule
+    """
+    alert_status = 'enableAlerting' if alerting_status == 'enable' else 'disableAlerting'
+    request_url = '{}/detect/rules/{}:{}'.format(BACKSTORY_API_V2_URL, rule_id, alert_status)
+    json_data = validate_response(client_obj, request_url, method='POST')
+    json_data = {
+        'ruleId': rule_id,
+        'actionStatus': 'SUCCESS' if not json_data else 'FAILURE',
+        'alertingStatus': alerting_status
+    }
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['RuleAlertingChange']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_change_rule_alerting_status(json_data, alerting_status):
+    """
+    Prepare human-readable for gcb-change-rule-alerting-status command.
+
+    :type json_data: Dict
+    :param json_data: raw response received from api in json format.
+
+    :type alerting_status: str
+    :param alerting_status: status value to be updated.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    status = 'enabled' if alerting_status == 'enable' else 'disabled'
+    hr_output = {
+        'Rule ID': json_data.get('ruleId'),
+        'Action Status': json_data.get('actionStatus')
+    }
+    hr = tableToMarkdown('Alerting Status', hr_output, headers=['Rule ID', 'Action Status'], removeNull=True,
+                         metadata=MESSAGES['CHANGE_RULE_ALERTING_METADATA'].format(json_data.get('ruleId'), status))
+    return hr
+
+
+def gcb_change_live_rule_status(client_obj, rule_id, live_rule_status):
+    """
+    Return context data and raw response for gcb-change-live-rule-status command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: it is the ruleId or versionId
+
+    :type live_rule_status: str
+    :param live_rule_status: new status of the rule to be changed
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    if live_rule_status == 'enable':
+        request_url = '{}/detect/rules/{}:enableLiveRule'.format(BACKSTORY_API_V2_URL, rule_id)
+    else:
+        request_url = '{}/detect/rules/{}:disableLiveRule'.format(BACKSTORY_API_V2_URL, rule_id)
+
+    json_data = validate_response(client_obj, request_url, method='POST')
+
+    json_data = {
+        'ruleId': rule_id,
+        'actionStatus': 'SUCCESS' if not json_data else 'FAILED',
+        'liveRuleStatus': live_rule_status
+    }
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['LiveRuleStatusChange']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_change_live_rule_status_command(json_data, live_rule_status):
+    """
+    Prepare human-readable for gcb-change-live-rule-status-command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-change-live-rule-status-command
+
+    :type live_rule_status: str
+    :param live_rule_status: status value to be changed
+
+    :rtype: str
+    :return: Human readable string for gcb-change-live-rule-status-command
+    """
+    hr_output = {
+        'Rule ID': json_data.get('ruleId'),
+        'Action Status': json_data.get('actionStatus')
+    }
+    status = 'enabled' if live_rule_status == 'enable' else 'disabled'
+    hr = tableToMarkdown('Live Rule Status', hr_output,
+                         headers=['Rule ID', 'Action Status'], removeNull=True,
+                         metadata=MESSAGES['CHANGE_LIVE_RULE_STATUS_METADATA'].format(json_data.get('ruleId'), status))
+
+    return hr
+
+
+def gcb_start_retrohunt(client_obj, rule_id, start_time, end_time):
+    """
+    Return context data and raw response for gcb-start-retrohunt command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: it is the ruleId or versionId
+
+    :type start_time: str
+    :param start_time: start time for the time range of logs being processed
+
+    :type end_time: str
+    :param end_time: end time for the time range of logs being processed.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = '{}/detect/rules/{}:runRetrohunt'.format(BACKSTORY_API_V2_URL, rule_id)
+    body = {
+        "start_time": start_time,
+        "end_time": end_time
+    }
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['RetroHunt']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_start_retrohunt_command(json_data):
+    """
+    Prepare human-readable for gcb-start-retrohunt command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-start-retrohunt command
+
+    :rtype: str
+    :return: Human readable string for gcb-start-retrohunt command
+    """
+    hr_output = {
+        "Retrohunt ID": json_data.get('retrohuntId'),
+        "Rule ID": json_data.get('ruleId'),
+        "Version ID": json_data.get('versionId'),
+        "Event Start Time": json_data.get('eventStartTime'),
+        "Event End Time": json_data.get('eventEndTime'),
+        "Retrohunt Start Time": json_data.get('retrohuntStartTime'),
+        "State": json_data.get('state')
+    }
+
+    hr = tableToMarkdown('Retrohunt Details', hr_output,
+                         headers=['Retrohunt ID', 'Rule ID', 'Version ID', 'Event Start Time',
+                                  'Event End Time', 'Retrohunt Start Time', 'State'],
+                         removeNull=True)
+    return hr
+
+
+def gcb_list_retrohunts(client_obj, rule_id, retrohunts_for_all_versions, state, page_size, page_token):
+    """
+    Return context data and raw response for gcb-list-retrohunts command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_id: str
+    :param rule_id: it is the ruleId or versionId
+
+    :type retrohunts_for_all_versions: bool
+    :param retrohunts_for_all_versions: bool value to create list for all retrohunt of the rule id provided
+
+    :type state: str
+    :param state: it is the state of the retrohunt to include in list
+
+    :type page_size: int
+    :param page_size: it indicates the no of output entries to display
+
+    :type page_token: str
+    :param page_token: it is the base64 page token for next page of the outputs
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    encoded_params = urllib.parse.urlencode(assign_params(page_size=page_size, page_token=page_token, state=state))
+    if retrohunts_for_all_versions and rule_id:
+        request_url = '{}/detect/rules/{}@-/retrohunts?{}'.format(BACKSTORY_API_V2_URL, rule_id, encoded_params)
+    elif rule_id:
+        request_url = '{}/detect/rules/{}/retrohunts?{}'.format(BACKSTORY_API_V2_URL, rule_id, encoded_params)
+    else:
+        request_url = '{}/detect/rules/-/retrohunts?{}'.format(BACKSTORY_API_V2_URL, encoded_params)
+
+    json_data = validate_response(client_obj, request_url)
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['RetroHunt']: json_data.get('retrohunts')
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_list_retrohunts_commands(json_data):
+    """
+    Prepare human-readable for gcb-list-retrohunts.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-list-retrohunts
+
+    :rtype: str
+    :return: Human readable string for gcb-list-retrohunts
+    """
+    next_page_token = json_data.get('nextPageToken')
+    json_data = json_data.get('retrohunts')
+    hr_output = []
+    for output in json_data:
+        hr_output.append({
+            'Retrohunt ID': output.get('retrohuntId'),
+            'Rule ID': output.get('ruleId'),
+            'Version ID': output.get('versionId'),
+            'Event Start Time': output.get('eventStartTime'),
+            'Event End Time': output.get('eventEndTime'),
+            'Retrohunt Start Time': output.get('retrohuntStartTime'),
+            'Retrohunt End Time': output.get('retrohuntEndTime'),
+            'State': output.get('state'),
+            'Progress Percentage': output.get('progressPercentage')
+        })
+    hr = tableToMarkdown('Retrohunt Details', hr_output,
+                         headers=['Retrohunt ID', 'Rule ID', 'Version ID', 'Event Start Time', 'Event End Time',
+                                  'Retrohunt Start Time', 'Retrohunt End Time', 'State', 'Progress Percentage'],
+                         removeNull=True)
+    if next_page_token:
+        hr += '\nMaximum number of retrohunts specified in page_size has been returned. To fetch the next set of' \
+              ' retrohunts, execute the command with the page token as {}'.format(next_page_token)
+    return hr
+
+
+def gcb_get_retrohunt(client_obj, rule_or_version_id, retrohunt_id):
+    """
+    Return context data and raw response for gcb-get-retrohunt command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_or_version_id: str
+    :param rule_or_version_id: Rule ID or Version ID of the rule whose retrohunts are to be listed.
+
+    :type retrohunt_id: str
+    :param retrohunt_id: Unique identifier for a retrohunt, defined and returned by the server.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the created rule
+    """
+    request_url = '{}/detect/rules/{}/retrohunts/{}'.format(BACKSTORY_API_V2_URL, rule_or_version_id, retrohunt_id)
+    json_data = validate_response(client_obj, request_url)
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['RetroHunt']: json_data
+    }
+
+    return ec, json_data
+
+
+def prepare_hr_for_get_retrohunt(retrohunt_details: Dict[str, Any]) -> str:
+    """
+    Prepare human-readable for get-retrohunt command.
+
+    :type retrohunt_details: Dict[str, Any]
+    :param retrohunt_details: Response of get retrohunt
+
+    :rtype: str
+    :return: Human readable string for get-retrohunt command
+    """
+    hr_output = {
+        'Retrohunt ID': retrohunt_details.get('retrohuntId'),
+        'Rule ID': retrohunt_details.get('ruleId'),
+        'Version ID': retrohunt_details.get('versionId'),
+        'Event Start Time': retrohunt_details.get('eventStartTime'),
+        'Event End Time': retrohunt_details.get('eventEndTime'),
+        'Retrohunt Start Time': retrohunt_details.get('retrohuntStartTime'),
+        'Retrohunt End Time': retrohunt_details.get('retrohuntEndTime'),
+        'State': retrohunt_details.get('state'),
+        'Progress Percentage': retrohunt_details.get('progressPercentage')
+    }
+
+    headers = ['Retrohunt ID', 'Rule ID', 'Version ID', 'Event Start Time', 'Event End Time', 'Retrohunt Start Time',
+               'Retrohunt End Time', 'State', 'Progress Percentage']
+
+    return tableToMarkdown('Retrohunt Details', hr_output, headers=headers, removeNull=True)
+
+
+def gcb_cancel_retrohunt(client_obj, rule_or_version_id, retrohunt_id):
+    """
+    Return context data and raw response for gcb-cancel-retrohunt command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_or_version_id: str
+    :param rule_or_version_id: it is the ruleId or versionId
+
+    :type retrohunt_id: str
+    :param retrohunt_id: it is the unique id of the retrohunt
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = '{}/detect/rules/{}/retrohunts/{}:cancelRetrohunt'.format(BACKSTORY_API_V2_URL, rule_or_version_id,
+                                                                            retrohunt_id)
+    json_data = validate_response(client_obj, request_url, method='POST')
+    json_data = {
+        'id': rule_or_version_id,
+        'retrohuntId': retrohunt_id,
+        'cancelled': True if not json_data else False,
+    }
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['RetroHunt']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_cancel_retrohunt(json_data):
+    """
+    Prepare human-readable for gcb-cancel-retrohunt command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of get cb-cancel-retrohunt
+
+    :rtype: str
+    :return: Human readable string for gcb-cancel-retrohunt command
+    """
+    hr_output = {
+        'ID': json_data.get('id'),
+        'Retrohunt ID': json_data.get('retrohuntId'),
+        'Action Status': 'SUCCESS' if json_data.get('cancelled') else 'FAILURE'
+    }
+    hr = tableToMarkdown('Cancelled Retrohunt', hr_output, headers=['ID', 'Retrohunt ID', 'Action Status'],
+                         removeNull=True,
+                         metadata=MESSAGES['CANCEL_RETROHUNT'].format(json_data.get('id')))
+    return hr
+
+
+def gcb_create_reference_list(client_obj, name, description, lines):
+    """
+    Return context data and raw response for gcb_create_reference_list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type name: str
+    :param name: the name of the list to create
+
+    :type description: str
+    :param description: description of the list to create
+
+    :type lines: list
+    :param lines: items to put in the list
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    body = {
+        "name": name,
+        "description": description,
+        "lines": lines
+    }
+    request_url = '{}/lists'.format(BACKSTORY_API_V2_URL)
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_create_get_update_reference_list(json_data, table_name='Reference List Details'):
+    """
+    Prepare human-readable for gcb_create_reference_list, gcb_get_reference_list, gcb_update_reference_list command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of the command
+
+    :type table_name: str
+    :param table_name: Name of the table to display
+
+    :rtype: str
+    :return: Human readable string for the command
+    """
+    hr_output = {
+        'Name': json_data.get('name'),
+        'Description': json_data.get('description'),
+        'Creation Time': json_data.get('createTime'),
+        'Content': json_data.get('lines')
+    }
+
+    headers = ['Name', 'Description', 'Creation Time', 'Content']
+
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def gcb_list_reference_list(client_obj, page_size, page_token, view):
+    """
+    Return context data and raw response for gcb-list-reference-list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type page_size: int
+    :param page_size: it indicates the no. of output entries to display
+
+    :type page_token: str
+    :param page_token: it is the base64 page token for next page of the outputs
+
+    :type view: str
+    :param view: it is the view type of the lists to be displayed
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    encoded_params = urllib.parse.urlencode(assign_params(page_size=page_size, page_token=page_token, view=view))
+
+    request_url = '{}/lists?{}'.format(BACKSTORY_API_V2_URL, encoded_params)
+
+    json_data = validate_response(client_obj, request_url, method='GET')
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['ListReferenceList']: json_data.get('lists')
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_gcb_list_reference_list(json_data):
+    """
+    Prepare human-readable for gcb-list-reference-list.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-list-reference-list
+
+    :rtype: str
+    :return: Human readable string for gcb-list-reference-list
+    """
+    page_token = json_data.get('nextPageToken')
+    json_data = json_data.get('lists')
+    hr_output = []
+    for output in json_data:
+        hr_output.append({
+            'Name': output.get('name'),
+            'Creation Time': output.get('createTime'),
+            'Description': output.get('description'),
+            'Content': output.get('lines')
+        })
+    hr = tableToMarkdown('Reference List Details', hr_output,
+                         headers=['Name', 'Creation Time', 'Description', 'Content'], removeNull=True)
+    if page_token:
+        hr += '\nMaximum number of reference lists specified in page_size has been returned. To fetch the next set of' \
+              ' lists, execute the command with the page token as {}'.format(page_token)
+    return hr
+
+
+def gcb_get_reference_list(client_obj, name, view):
+    """
+    Return context data and raw response for gcb-get-reference-list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type name: str
+    :param name: Unique name of the reference list
+
+    :type view: str
+    :param view: it is the view type of the lists to be displayed
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    encoded_params = urllib.parse.urlencode(assign_params(view=view))
+    request_url = '{}/lists/{}?{}'.format(BACKSTORY_API_V2_URL, name, encoded_params)
+    json_data = validate_response(client_obj, request_url, method='GET')
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
+    }
+    return ec, json_data
+
+
+def gcb_update_reference_list(client_obj, name, lines, description):
+    """
+    Return context data and raw response for gcb_update_reference_list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type name: str
+    :param name: the name of the list to create
+
+    :type description: str
+    :param description: description of the list to create
+
+    :type lines: list
+    :param lines: items to put in the list
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = '{}/lists?update_mask=list.lines'.format(BACKSTORY_API_V2_URL)
+    body = {
+        "name": name,
+        "lines": lines,
+        "description": description
+    }
+    if description:
+        request_url += ',list.description'
+        # body["description"] = description
+    json_data = validate_response(client_obj, request_url, method='PATCH', body=json.dumps(body))
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
+    }
+    return ec, json_data
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -2246,7 +3021,7 @@ def test_function(client_obj, params: Dict[str, Any]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type params:  Dict[str, Any]
+    :type params: Dict[str, Any]
     :param params: it contain configuration parameter
 
     :return: raise ValueError if any error occurred during connection
@@ -2267,7 +3042,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, Any]
+    :type args: Dict[str, Any]
     :param args: it contain arguments of gcb-list-ioc command
 
     :return: command output
@@ -2275,7 +3050,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     """
     # retrieve arguments and validate it
 
-    start_time, _, page_size, _ = get_default_command_args_value(args)
+    start_time, _, page_size, _ = get_default_command_args_value(args=args)
 
     # Make a request
     request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
@@ -2311,7 +3086,7 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, str]
+    :type args: Dict[str, str]
     :param args: it contain arguments of gcb-list-ioc command
 
     :return: command output
@@ -2319,7 +3094,7 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
     artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
-    start_time, end_time, page_size, _ = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args=args)
 
     request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
         BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
@@ -2384,7 +3159,7 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, str]):
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('IoC Details', context_dict['hr_table_data'],
                                   ['Domain', IP_ADDRESS, 'Category', CONFIDENCE_SCORE, 'Severity',
-                                   FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME])
+                                   FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME], removeNull=True)
             hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
             hr += MESSAGES["NO_RECORDS"]
@@ -2444,7 +3219,8 @@ def ip_command(client_obj, ip_address: str):
             'Indicator': ip_address,
             'Type': 'ip',
             'Vendor': VENDOR,
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         hr += '### IP: {} found with Reputation: Unknown\n'.format(ip_address)
@@ -2503,7 +3279,8 @@ def domain_command(client_obj, domain_name: str):
             'Indicator': domain_name,
             'Type': 'domain',
             'Vendor': VENDOR,
-            'Score': 0
+            'Score': 0,
+            'Reliability': demisto.params().get('integrationReliability')
         }
 
         hr += '### Domain: {} found with Reputation: Unknown\n'.format(domain_name)
@@ -2527,12 +3304,13 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
     :param params: configuration parameter of fetch incidents
     :return:
     """
-    first_fetch_in_days = params.get('first_fetch', DEFAULT_FIRST_FETCH).lower()  # 3 days as default
+    first_fetch = params.get('first_fetch', DEFAULT_FIRST_FETCH).lower()  # 3 days as default
     max_fetch = params.get('max_fetch', 10)  # default page size
     time_window = params.get('time_window', '15')
 
     # getting numeric value from string representation
-    start_time, end_time = parse_date_range(first_fetch_in_days, date_format=DATE_FORMAT)
+    start_time, end_time = arg_to_datetime(first_fetch), datetime.now()
+    start_time, end_time = start_time.strftime(DATE_FORMAT), end_time.strftime(DATE_FORMAT)  # type: ignore
 
     # backstory_alert_type will create actionable incidents based on input selection in configuration
     backstory_alert_type = params.get('backstory_alert_type', 'ioc domain matches').lower()
@@ -2579,7 +3357,7 @@ def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
     :param args: inputs to fetch alerts from a specified date range. start_time, end_time, and page_size are
         considered for pulling the data.
     """
-    start_time, end_time, page_size, _ = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args=args, max_page_size=100000)
 
     alert_type = args.get('alert_type', 'Asset Alerts').lower()
 
@@ -2621,7 +3399,7 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, str]
+    :type args: Dict[str, str]
     :param args: it contain arguments of gcb-list-ioc command
 
     :return: command output
@@ -2632,15 +3410,10 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
 
     # retrieve arguments and validate it
-    start_time, end_time, _, _ = get_default_command_args_value(args, '2 hours')
+    start_time, end_time, page_size, reference_time = get_default_command_args_value(args=args, date_range='2 hours')
 
-    page_size = args.get('page_size', '100')
-
-    # validate page size argument
-    if int(page_size) > 1000:
-        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
-
-    reference_time = args.get('reference_time', start_time)
+    if not reference_time:
+        reference_time = args.get('reference_time', start_time)
 
     # Make a request URL
     request_url = '{}/asset/listevents?asset.{}={}&start_time={}&end_time={}&page_size={}&reference_time={}' \
@@ -2688,7 +3461,7 @@ def gcb_list_detections_command(client_obj, args: Dict[str, str]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, str]
+    :type args: Dict[str, str]
     :param args: it contain arguments of gcb-list-detections command
 
     :return: command output
@@ -2730,7 +3503,7 @@ def gcb_list_rules_command(client_obj, args: Dict[str, str]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, str]
+    :type args: Dict[str, str]
     :param args: it contain arguments of gcb-list-rules command
 
     :return: command output
@@ -2753,6 +3526,306 @@ def gcb_list_rules_command(client_obj, args: Dict[str, str]):
     return hr, ec, json_data
 
 
+def gcb_create_rule_command(client_obj, args: Dict[str, str]):
+    """
+    Create a new rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from the api.
+
+    :type args: Dict[str, str]
+    :param args: it contains the arguments for the gcb-create-rule command.
+    """
+    rule_text = args.get('rule_text', '')
+    validate_rule_text(rule_text)
+
+    ec, json_data = create_rule(client_obj, rule_text)
+
+    hr = prepare_hr_for_create_rule(json_data)
+
+    return hr, ec, json_data
+
+
+def gcb_get_rule_command(client_obj, args):
+    """
+    Retrieve the rule details of specified Rule ID or Version ID.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments of gcb-get-rule command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    validate_argument(args.get('id'), 'id')
+    ec, json_data = gcb_get_rule(client_obj, args.get('id'))
+    hr = prepare_hr_for_gcb_get_rule_command(json_data)
+    return hr, ec, json_data
+
+
+def gcb_delete_rule_command(client_obj, args: Dict[str, str]):
+    """
+    Delete an already existing rule.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from the api.
+
+    :type args: Dict[str, str]
+    :param args: it contains the arguments for the gcb-delete-rule command.
+    """
+    rule_id = args.get('rule_id', '')
+    validate_argument(value=rule_id, name='rule_id')
+
+    ec, json_data = delete_rule(client_obj, rule_id)
+
+    hr = prepare_hr_for_delete_rule(json_data)
+
+    return hr, ec, json_data
+
+
+def gcb_create_rule_version_command(client_obj, args):
+    """
+    Create a new version of an existing rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-create-rule-version command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    rule_id = validate_argument(args.get('rule_id'), 'rule_id')
+    rule_text = validate_argument(args.get('rule_text'), 'rule_text')
+    validate_rule_text(rule_text)
+    ec, json_data = gcb_create_rule_version(client_obj, rule_id, rule_text)
+    hr = prepare_hr_for_gcb_create_rule_version_command(json_data)
+    return hr, ec, json_data
+
+
+def gcb_change_rule_alerting_status_command(client_obj, args):
+    """
+    Change the alerting status of a rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments of gcb-change-rule-alerting-status command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    rule_id = validate_argument(args.get('rule_id'), 'rule_id')
+    alerting_status = validate_argument(args.get('alerting_status'), 'alerting_status')
+    validate_single_select(alerting_status, 'alerting_status', ['enable', 'disable'])
+    ec, json_data = gcb_change_rule_alerting_status(client_obj, rule_id, alerting_status)
+    hr = prepare_hr_for_gcb_change_rule_alerting_status(json_data, alerting_status)
+    return hr, ec, json_data
+
+
+def gcb_change_live_rule_status_command(client_obj, args):
+    """
+    Change the live status of an existing rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-change-live-rule-status command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    rule_id = validate_argument(args.get('rule_id'), 'rule_id')
+    live_rule_status = validate_argument(args.get('live_rule_status'), 'live_rule_status')
+    validate_single_select(live_rule_status, 'live_rule_status', ['enable', 'disable'])
+    ec, json_data = gcb_change_live_rule_status(client_obj, rule_id, live_rule_status)
+    hr = prepare_hr_for_gcb_change_live_rule_status_command(json_data, live_rule_status)
+    return hr, ec, json_data
+
+
+def gcb_start_retrohunt_command(client_obj, args):
+    """
+    Initiate a retrohunt for the specified rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-start-retrohunt command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    rule_id = validate_argument(args.get('rule_id'), 'rule_id')
+    start_time = arg_to_datetime(args.get('start_time', '1 week'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+    end_time = arg_to_datetime(args.get('end_time', '10 min'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+
+    ec, json_data = gcb_start_retrohunt(client_obj, rule_id, start_time, end_time)
+    hr = prepare_hr_for_gcb_start_retrohunt_command(json_data)
+
+    return hr, ec, json_data
+
+
+def gcb_list_retrohunts_command(client_obj, args):
+    """
+    List retrohunts for a rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-create-rule-version command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    valid_args = validate_list_retrohunts_args(args)
+    ec, json_data = gcb_list_retrohunts(client_obj, valid_args.get('rule_id'),
+                                        valid_args.get('retrohunts_for_all_versions'), valid_args.get('state'),
+                                        valid_args.get('page_size'), valid_args.get('page_token'))
+    if not json_data:
+        return "## RetroHunt Details\nNo Records Found.", {}, {}
+    hr = prepare_hr_for_gcb_list_retrohunts_commands(json_data)
+    return hr, ec, json_data
+
+
+def gcb_get_retrohunt_command(client_obj, args):
+    """
+    Get retrohunt for a specific version of a rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from the api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-get-retrohunt command
+
+    :rtype: str, dict, dict
+    :return command output
+    """
+    rule_or_version_id = validate_argument(args.get('id'), 'id')
+    retrohunt_id = validate_argument(args.get('retrohunt_id'), 'retrohunt_id')
+
+    ec, json_data = gcb_get_retrohunt(client_obj, rule_or_version_id=rule_or_version_id, retrohunt_id=retrohunt_id)
+    hr = prepare_hr_for_get_retrohunt(retrohunt_details=json_data)
+
+    return hr, ec, json_data
+
+
+def gcb_cancel_retrohunt_command(client_obj, args):
+    """
+    Cancel a retrohunt for a specified rule.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from the api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-cancel-retrohunt command
+
+    :rtype: str, dict, dict
+    :return command output
+    """
+    rule_or_version_id = validate_argument(args.get('id'), 'id')
+    retrohunt_id = validate_argument(args.get('retrohunt_id'), 'retrohunt_id')
+    ec, json_data = gcb_cancel_retrohunt(client_obj, rule_or_version_id, retrohunt_id)
+    hr = prepare_hr_for_gcb_cancel_retrohunt(json_data)
+    return hr, ec, json_data
+
+
+def gcb_create_reference_list_command(client_obj, args):
+    """
+    Create a new reference list.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from the api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-create-reference-list command
+
+    :rtype: str, dict, dict
+    :return command output
+    """
+    name = validate_argument(args.get('name'), 'name')
+    description = validate_argument(args.get('description'), 'description')
+    lines = validate_argument(args.get('lines'), 'lines')
+    lines = argToList(lines, args.get('delimiter', ','))
+    ec, json_data = gcb_create_reference_list(client_obj, name=name, description=description, lines=lines)
+    hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data)
+    return hr, ec, json_data
+
+
+def gcb_list_reference_list_command(client_obj, args):
+    """
+    List all the reference lists.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-list-reference-list command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    if int(page_size) > 1000:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(1000))
+    page_token = args.get('page_token', '')
+    view = validate_single_select(args.get('view', 'BASIC'), 'view', ['BASIC', 'FULL'])
+
+    ec, json_data = gcb_list_reference_list(client_obj, page_size, page_token, view)
+    hr = prepare_hr_for_gcb_list_reference_list(json_data)
+
+    return hr, ec, json_data
+
+
+def gcb_get_reference_list_command(client_obj, args):
+    """
+    Return the specified list.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-list-reference-list command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    name = validate_argument(args.get('name'), 'name')
+    view = validate_single_select(args.get('view', 'FULL'), 'view', ['FULL', 'BASIC'])
+    ec, json_data = gcb_get_reference_list(client_obj, name=name, view=view)
+    hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data)
+    return hr, ec, json_data
+
+
+def gcb_update_reference_list_command(client_obj, args):
+    """
+    Update an existing reference list.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-update-reference-list command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    name = validate_argument(args.get('name'), 'name')
+    lines = validate_argument(args.get('lines'), 'lines')
+    lines = argToList(lines, args.get('delimiter', ','))
+    description = args.get('description')
+    ec, json_data = gcb_update_reference_list(client_obj, name=name, lines=lines, description=description)
+    hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, 'Updated Reference List Details')
+    return hr, ec, json_data
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
@@ -2763,7 +3836,21 @@ def main():
         'gcb-list-alerts': gcb_list_alerts_command,
         'gcb-list-events': gcb_list_events_command,
         'gcb-list-detections': gcb_list_detections_command,
-        'gcb-list-rules': gcb_list_rules_command
+        'gcb-list-rules': gcb_list_rules_command,
+        'gcb-create-rule': gcb_create_rule_command,
+        'gcb-get-rule': gcb_get_rule_command,
+        'gcb-delete-rule': gcb_delete_rule_command,
+        'gcb-create-rule-version': gcb_create_rule_version_command,
+        'gcb-change-rule-alerting-status': gcb_change_rule_alerting_status_command,
+        'gcb-change-live-rule-status': gcb_change_live_rule_status_command,
+        'gcb-start-retrohunt': gcb_start_retrohunt_command,
+        'gcb-get-retrohunt': gcb_get_retrohunt_command,
+        'gcb-list-retrohunts': gcb_list_retrohunts_command,
+        'gcb-cancel-retrohunt': gcb_cancel_retrohunt_command,
+        'gcb-create-reference-list': gcb_create_reference_list_command,
+        'gcb-list-reference-list': gcb_list_reference_list_command,
+        'gcb-get-reference-list': gcb_get_reference_list_command,
+        'gcb-update-reference-list': gcb_update_reference_list_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')
@@ -2788,7 +3875,8 @@ def main():
             domain = demisto.args()['domain']
             reputation_operation_command(client_obj, domain, domain_command)
         elif command in chronicle_commands:
-            return_outputs(*chronicle_commands[command](client_obj, demisto.args()))
+            args = trim_args(demisto.args())
+            return_outputs(*chronicle_commands[command](client_obj, args))
 
     except Exception as e:
         return_error('Failed to execute {} command.\nError: {}'.format(demisto.command(), str(e)))

@@ -43,7 +43,7 @@ class Client(BaseClient):
                      url_suffix: str,
                      data: str = '',
                      params: dict = None,
-                     is_test: bool = False):
+                     is_test: bool = False): # pragma: no cover
         try:
             res = self.atlassian_client.http_request(method=method,
                                                      full_url=urljoin(self.base_url, url_suffix),
@@ -419,7 +419,7 @@ def delete_content_command(client: Client, args):
     }
 
 
-def test(client: Client, args: dict = {}):
+def test(client: Client, args: dict = {}):   # pragma: no cover
 
     res = client.send_request('GET', '/user/current', is_test=True)
 

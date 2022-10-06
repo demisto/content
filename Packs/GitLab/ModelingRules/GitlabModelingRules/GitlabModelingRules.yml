@@ -1,30 +1,9 @@
-name: Gitlab Mapping Rules
-id: gitlab_mapping_rules
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: gitlab
+id: gitlab_mapping_rules
+name: Gitlab Mapping Rules
 rules: ''
-schema: |-
-  {
-    "gitlab_gitlab_raw": {
-      "id": {
-        "type": "string",
-        "is_array": false
-      },
-      "author_id": {
-        "type": "string",
-        "is_array": false
-      },
-      "entity_id": {
-        "type": "string",
-        "is_array": false
-      },
-      "entity_type": {
-        "type": "string",
-        "is_array": false
-      },
-      "details": {
-        "type": "string",
-        "is_array": false
-      }
-    }
-  }
+schema: ''
+tags: gitlab
+to_xdr_version: 3.4.9
+toversion: 6.9.9

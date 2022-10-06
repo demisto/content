@@ -296,6 +296,86 @@ def test_crossproc(data_str, expected):
     assert res == expected
 
 
+NETCONN_CASES = [
+    (
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": 167772448,
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": -2080555708}],
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "10.0.1.32",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "131.253.61.68"}],
+    )
+]
+
+
+NETCONN_BAD_CASES = [
+    (
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "ff02::fb",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}],
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "ff02::fb",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}]  # ipv6 expected
+    )
+]
+
+
+@pytest.mark.parametrize('data_str, expected', NETCONN_CASES)
+def test_netconn(data_str, expected):
+    """
+        Given:
+            - A process event data containing netconn field
+
+        When:
+            - formatting the IP addresses to the correct format
+
+        Then:
+            - validating the new netconn field contains json with correctly formatted IP addresses.
+    """
+    from CarbonBlackResponseV2 import netconn_complete
+
+    res = netconn_complete(data_str).format()
+    assert res == expected
+
+
+@pytest.mark.parametrize('data_str, expected', NETCONN_BAD_CASES)
+def test_fail_netconn(mocker, data_str, expected):
+    """
+        Given:
+            - A process event data containing IPV6 addresses in remote_ip and local_ip
+
+        When:
+            - Skip modifying
+
+        Then:
+            - validating the json is unmodified
+    """
+    from CarbonBlackResponseV2 import netconn_complete
+
+    res = netconn_complete(data_str).format()
+    assert res == expected
+
+
 @freeze_time("2021-03-14T13:34:14.758295Z")
 def test_fetch_incidents_first_fetch(mocker):
     """
@@ -410,3 +490,20 @@ def test_endpoint_command(mocker):
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
+
+
+def test_watchlist_update_action_command(mocker, requests_mock):
+
+    from CarbonBlackResponseV2 import watchlist_update_action_command, Client
+
+    mock_response = {"result": "success"}
+
+    id = '1021'
+    action_type = 'alert'
+    enabled = 'True'
+
+    client = Client(base_url='https://test.com', apitoken='api_key', use_ssl=True, use_proxy=False)
+    requests_mock.put(f'{client._base_url}/v1/watchlist/{id}/action_type/{action_type}', json=mock_response)
+
+    result = watchlist_update_action_command(client, id=id, action_type=action_type, enabled=enabled)
+    assert result.readable_output == 'success'

@@ -1,41 +1,8 @@
-name: OracleDBEventCollector
-id: OracleDBEventCollector
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
+id: OracleDBEventCollector
+name: OracleDBEventCollector
 rules: ''
-schema: |-
-  {
-    "oracle_db_raw": {
-      "ACTION_NAME": {
-          "type": "string", 
-          "is_array": false
-      },
-      "OS_USERNAME": {
-          "type": "string", 
-          "is_array": false
-      },
-      "SQL_TEXT": {
-          "type": "string", 
-          "is_array": false
-      },
-      "USERHOST": {
-          "type": "string", 
-          "is_array": false
-      },
-      "AUTHENTICATION_TYPE": {
-          "type": "string", 
-          "is_array": false
-      },
-      "CLIENT_PROGRAM_NAME": {
-          "type": "string", 
-          "is_array": false
-      },
-      "SESSIONID": {
-          "type": "string", 
-          "is_array": false
-      },
-      "EVENT_TIMESTAMP_UTC": {
-          "type": "datetime",
-          "is_array": false
-      }
-    }
-  }
+schema: ''
+to_xdr_version: 3.4.9
+toversion: 6.9.9

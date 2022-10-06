@@ -279,7 +279,8 @@ def create_domain_context_outputs(domain_result):
     dbot_context = {'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'DomainTools Iris',
-                    'Score': dbot_score}
+                    'Score': dbot_score,
+                    'Reliability': demisto.params().get('integrationReliability')}
     if dbot_score == 3:
         domain_context['Malicious'] = {
             'Vendor': 'DomainTools Iris',

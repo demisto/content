@@ -3,14 +3,39 @@ commonfields:
   id: MicrosoftCloudAppSecurity
   version: -1
 configuration:
+- defaultvalue: legacy
+  display: Authentication Mode
+  hidden: false
+  name: auth_mode
+  options:
+  - client credentials
+  - legacy
+  - device code flow
+  required: false
+  type: 15
 - display: Server URL (e.g., https://example.net)
   name: url
   required: true
   type: 0
-- display: User's key to access the API
+- display: User's key to access the API (for legacy method)
   name: token
-  required: true
+  required: false
   type: 4
+- additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
+  display: Application ID
+  name: app_id
+  required: false
+  type: 0
+- display: Tenant ID (for Client Credentials mode)
+  name: tenant_id
+  required: false
+  type: 0
+- display: ""
+  displaypassword: Client Secret (for Client Credentials mode)
+  name: client_id
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -71,6 +96,14 @@ configuration:
   name: custom_filter
   required: false
   type: 0
+- additionalinfo: Use this parameter to determine how long backward to look in the
+    search for incidents that were created before the last run time and did not match
+    the query when they were created.
+  defaultvalue: '0'
+  display: 'Advanced: Minutes to look back when fetching'
+  name: look_back
+  required: false
+  type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
   (CASB). It provides rich visibility, control over data travel, and sophisticated
   analytics to identify and combat cyber threats across all your cloud services. Use
@@ -80,6 +113,26 @@ display: Microsoft Cloud App Security
 name: MicrosoftCloudAppSecurity
 script:
   commands:
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results. (for device-code mode)
+    execution: false
+    name: microsoft-cas-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the microsoft-365-defender-auth-start command. (for device-code
+      mode)
+    execution: false
+    name: microsoft-cas-auth-complete
+  - deprecated: false
+    description: Run this command if you need to re-run the authentication process.
+      (for device-code mode)
+    execution: false
+    name: microsoft-cas-auth-reset
+  - deprecated: false
+    description: Tests the connectivity to the Microsoft 365 Defender.
+    execution: false
+    name: microsoft-cas-auth-test
   - arguments:
     - default: false
       description: |-
@@ -91,9 +144,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -148,9 +201,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -302,9 +355,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -623,9 +676,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned activities. If
+      description: A custom filter by which to filter the returned activities. If
         you pass the custom_filter argument it will override the other filters in
-        this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+        this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -637,13 +690,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
+      description: Timeout of the request to Microsoft CAS, in seconds. Default is
+        60 seconds.
       isArray: false
       name: timeout
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
+    description: Returns a list of activities that match the specified filters. In
+      case of timeout errors, please consider increasing the timeout argument.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
@@ -851,9 +906,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -978,6 +1033,7 @@ script:
     - default: false
       description: The group ID by which to filter the information about the user
         accounts.
+      isArray: false
       name: group_id
       required: false
       secret: false
@@ -1014,9 +1070,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -1116,7 +1172,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/crypto:1.0.0.34720
   feed: false
   isfetch: true
   longRunning: false

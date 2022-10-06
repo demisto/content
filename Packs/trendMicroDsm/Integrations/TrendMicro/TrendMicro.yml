@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: Trend Micro
 system: true
-display: Trend Micro
+display: Trend Micro (Deprecated)
 category: Endpoint
-description: Uses Trend Micro Deep Security
+deprecated: true
+description: Deprecated. Use Trend Micro Deep Security instead.
 configuration:
 - display: Credentials
   name: credentials

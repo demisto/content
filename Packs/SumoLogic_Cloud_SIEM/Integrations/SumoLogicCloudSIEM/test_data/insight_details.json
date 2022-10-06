@@ -17,6 +17,7 @@
     "lastUpdatedBy": null,
     "name": "Command and Control with Defense Evasion and Execution",
     "readableId": "INSIGHT-220",
+    "SumoUrl":"https://test.us2.sumologic.com/sec/insight/INSIGHT-220",
     "recordSummaryFields": [
       {
         "fieldName": "description",

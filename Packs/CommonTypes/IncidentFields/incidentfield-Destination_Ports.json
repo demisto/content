@@ -2,7 +2,8 @@
   "associatedToAll": false,
   "associatedTypes": [
     "Qradar Generic",
-    "FW change management"
+    "FW change management",
+    "Vectra Detection"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -15,7 +16,6 @@
   "editForm": true,
   "extractIndicatorTypesIDs": [],
   "fieldCalcScript": "",
-  "fromServerVersion": "",
   "group": 0,
   "hidden": false,
   "id": "incident_dstports",

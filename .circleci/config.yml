@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.30555  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -123,6 +123,14 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        poetry --version
+
+        # Check if CircleCI's config file and poetry files files are up to date
+        # if poetry isn't up-to-date, checkout from origin/master.
+        ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+        ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
@@ -148,24 +156,22 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
-        if [ ! -e ".venv" ]; then
-          echo "installing venv"
-          NO_HOOKS=1 .hooks/bootstrap
-          source ./.venv/bin/activate
-        else
-          echo "venv exists (from cache). activating"
-          source ./.venv/bin/activate
-        fi
+        echo "Checking if pyproject.toml is consistent with poetry.lock"
+        poetry lock --check
+
+        # we still need to install even if cached. if cached, `poetry` will handle it
+        echo "installing venv"
+        NO_HOOKS=1 .hooks/bootstrap
+        source ./.venv/bin/activate
+
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 --version | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
-        python -m pip list | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         node --version
         npm --version
         demisto-sdk --version
@@ -235,8 +241,15 @@ references:
       when: always
       no_output_timeout: 1h
       command: |
+        EXIT_CODE=0
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json || EXIT_CODE=1
+          # Checks if the $XSOAR_BOT_TEST_CONTENT exist. for security reasons only non forked pr's have access to it.
+          if [[ -n $XSOAR_BOT_TEST_CONTENT && -e $ARTIFACTS_FOLDER/coverage_report/html/index.html ]]; then
+            echo "Adding unit tests coverage comment to the pr"
+            python3 ./Tests/scripts/add_pr_comment.py
+          fi
+          exit $EXIT_CODE
         fi
 
   infrastructure_testing: &infrastructure_testing
@@ -246,7 +259,6 @@ references:
       command: |
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
-        python3 -m pytest ./Tests/scripts/utils/tests -v
         python3 -m pytest ./Tests/tests -v
         python3 -m pytest ./Tests/private_build/tests -v
         python3 -m pytest Utils -v
@@ -357,13 +369,6 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - run:
-          name: Check if CircleCI's config file and requirements.txt files are up to date
-          when: always
-          command: |
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment

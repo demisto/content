@@ -97,8 +97,14 @@ configuration:
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
-  display: File Entry Tag
+  display: File Entry Tag To ServiceNow
   name: file_tag
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
+  defaultvalue: FromServiceNow
+  display: File Entry Tag From ServiceNow
+  name: file_tag_from_service_now
   required: false
   type: 0
 - additionalinfo: According to the timestamp in this field, records will be queried
@@ -129,12 +135,24 @@ configuration:
   name: close_incident
   required: false
   type: 8
+- additionalinfo: Define how to close the mirrored tickets,
+    choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: None
+  display: Mirrored ServiceNow Ticket closure method
+  name: close_ticket_multiple_options
+  options:
+  - None
+  - closed
+  - resolved
+  required: false
+  type: 15
 - additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -726,7 +744,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed"'
       isArray: false
       name: state
       required: false
@@ -1297,7 +1315,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed", or "Resolved" or "6" or "6 - Resolved".'
       isArray: false
       name: state
       required: false
@@ -1600,21 +1618,21 @@ script:
     description: Queries the specified table in ServiceNow.
     name: servicenow-query-table
     outputs:
-    - contextPath: ServiceNow.Results.ID
+    - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedBy
+    - contextPath: ServiceNow.Record.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Results.UpdatedAt
+    - contextPath: ServiceNow.Record.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Results.CreatedBy
+    - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Results.CreatedOn
+    - contextPath: ServiceNow.Record.CreatedOn
       description: A time-stamp field that indicates when a record was created.
       type: date
   - arguments:
@@ -2185,7 +2203,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.7.33922
   isfetch: true
   ismappable: true
   isremotesyncin: true

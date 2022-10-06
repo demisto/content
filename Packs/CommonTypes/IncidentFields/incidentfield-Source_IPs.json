@@ -6,7 +6,9 @@
     "CrowdStrike Falcon Detection",
     "CrowdStrike Falcon Incident",
     "Malware",
-    "Microsoft Defender For Endpoint"
+    "Microsoft Defender For Endpoint",
+    "Skyhigh Security Alert",
+    "Skyhigh Security Threat"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -19,7 +21,6 @@
   "editForm": true,
   "extractIndicatorTypesIDs": [],
   "fieldCalcScript": "",
-  "fromServerVersion": "",
   "group": 0,
   "hidden": false,
   "id": "incident_sourceips",

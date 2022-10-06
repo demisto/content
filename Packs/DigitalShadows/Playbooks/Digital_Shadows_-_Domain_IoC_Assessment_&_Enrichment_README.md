@@ -10,11 +10,10 @@ This playbook does not use any sub-playbooks.
 * Digital Shadows
 
 ### Scripts
+* Print
 * AddEvidence
 
 ### Commands
-* associateIndicatorsToIncident
-* createNewIndicator
 * ds-search
 
 ## Playbook Inputs
@@ -22,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_Domain | The domain name to assess and enrich | Domain.Name.None | Optional |
+| IoC_Domain | A Digital Shadows ShadowSearch query containing domains | Domain.Name.None | Optional |
 
 ## Playbook Outputs
 ---

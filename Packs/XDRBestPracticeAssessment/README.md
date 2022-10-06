@@ -1,0 +1,2 @@
+This content pack includes an incident type, custom fields, layout, and playbook to facilitate an XDR Best Practice Assessment for an existing deployment of Palo Alto Networks Cortex XDR Product.
+The assessment contains survey questions covering the following domains: Configurations, Agent Management, Policy and Profiles, Profile Extensions, Incident Management, and Incident Response.  Answers to survey questions will be output to the incident layout along with best practice recommendations.

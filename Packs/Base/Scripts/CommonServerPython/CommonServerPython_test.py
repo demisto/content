@@ -23,7 +23,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
 
 try:
     from StringIO import StringIO
@@ -4678,7 +4678,8 @@ class TestGetResultsWrapper:
                                                   args=args,
                                                   brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
                                                   instance='instance',
-                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
+                                                  result='Command did not succeeded' if command == 'error-command' else {'Contents': 'Good',
+                                                                                                                         'HumanReadable': 'Good'})
             if command == 'error-command':
                 errors.append(result_wrapper)
             elif command != 'unsupported-command':
@@ -4705,24 +4706,27 @@ class TestGetResultsWrapper:
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         results = CommandRunner.run_commands_with_summary(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
-        assert all(res == 'Good' for res in results[:-1])
+        assert results[:-1] == [{'Contents': 'Good', 'HumanReadable': '***my-brand1 (instance)***\nGood'},
+                                {'Contents': 'Good', 'HumanReadable': '***my-brand2 (instance)***\nGood'},
+                                {'Contents': 'Good', 'HumanReadable': '***my-brand2 (instance)***\nGood'}]
+
         assert isinstance(results[-1], CommandResults)
         if IS_PY3:
             md_summary = """### Results Summary
 |Instance|Command|Result|Comment|
 |---|---|---|---|
-| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
-| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
-| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success | Good |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success | Good |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success | Good |
 | ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
 """
         else:
             md_summary = u"""### Results Summary
 |Instance|Command|Result|Comment|
 |---|---|---|---|
-| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
-| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
-| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success | Good |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success | Good |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success | Good |
 | ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
 """
         assert results[-1].readable_output == md_summary
@@ -8097,7 +8101,7 @@ class TestIsMetricsSupportedByServer:
 
     def test_metrics_supported(self, mocker):
         """
-        Given: An XSOAR server running version 7.0.0
+        Given: An XSOAR server running version 6.8.0
         When: Testing that a server supports ExecutionMetrics
         Then: Assert that is_supported reports True
         """
@@ -8106,7 +8110,7 @@ class TestIsMetricsSupportedByServer:
             demisto,
             'demistoVersion',
             return_value={
-                'version': '7.0.0',
+                'version': '6.8.0',
                 'buildNumber': '50000'
             }
         )
@@ -8230,3 +8234,21 @@ def test_is_scheduled_command_retry(mocker):
 
     # The run should not be considered a scheduled command
     assert is_scheduled_command_retry() is False
+
+
+def test_append_metrics(mocker):
+    """
+
+    Given: CommandResults list and Execution_metrics object to be added to the list.
+    When: Metrics need to be added after reputation commands ran.
+    Then: Metrics added as the last object of the list.
+
+    """
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+    metrics = ExecutionMetrics()
+    results = []
+    metrics.success += 1
+
+    results = CommonServerPython.append_metrics(metrics, results)
+    assert len(results) == 1
+

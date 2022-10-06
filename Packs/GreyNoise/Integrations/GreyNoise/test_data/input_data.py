@@ -400,7 +400,7 @@ valid_ip_context_data_response = [
         "VPN": True,
         "VPN Service": "dummy vpn",
         "Tor": False,
-        "IP": "[71.6.135.131](https://www.greynoise.io/viz/ip/71.6.135.131)",  # NOSONAR
+        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
         "Seen": True,
         "Classification": "malicious",
         "First Seen": "2019-04-04",
@@ -413,23 +413,25 @@ valid_ip_context_data_response = [
 get_ip_context_data_data = [([valid_ip_context_data], valid_ip_context_data_response)]
 
 valid_riot_response = {
-    "raw_data": {
+    "output": {
         "ip": "8.8.8.8",
         "riot": True,
         "category": "public_dns",
         "name": "Google Public DNS",
         "description": "Google's global domain name system (DNS) resolution service.",
         "explanation": "Public DNS services are used as alternatives to ISP's name servers. "
-        "You may see devices on your network communicating with Google Public DNS over port "
-        "53/TCP or 53/UDP to resolve DNS lookups.",
+                       "You may see devices on your network communicating with Google Public DNS over port "
+                       "53/TCP or 53/UDP to resolve DNS lookups.",
         "last_updated": "2021-04-12T09:55:37Z",
         "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative",
-    }
+    },
+    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS |  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n"
 }
 
-valid_riot_response_2 = {"raw_data": {"ip": "114.119.130.178", "riot": False}}
+valid_riot_response_2 = {"output": {"ip": "114.119.130.178", "riot": False},
+                         "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n"}
 invalid_riot_response = {
-    "raw_data": {"message": "IP provided is not a routable IPv4 address"},
+    "output": {"message": "IP provided is not a routable IPv4 address"},
     "error_message": "Invalid IP address: '{}'",
 }
 riot_command_response_data = [

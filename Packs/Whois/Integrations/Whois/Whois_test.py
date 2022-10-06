@@ -260,6 +260,72 @@ def test_parse_raw_whois():
     assert result['registrar'] == ['IONOS SE']
 
 
+def test_parse_raw_whois_empty_nameserver():
+    with open('test_data/EU domains_empty_nameservers.text', 'r') as f:
+        raw_data = f.read()
+    result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
+    assert result['nameservers'] == ['ns1060.ui-dns.biz']
+
+
+def test_parse_nic_contact():
+    data = ["%%\n%% This is the AFNIC Whois server.\n%%\n%% complete date format : YYYY-MM-DDThh:mm:ssZ\n%% short date "
+            "format    : DD/MM\n%% version              : FRNIC-2.5\n%%\n%% Rights restricted by copyright.\n%% See "
+            "https://www.afnic.fr/en/products-and-services/services/whois/whois-special-notice/\n%%\n%% Use '-h' option"
+            "to obtain more information about this service.\n%%\n%% [1111 REQUEST] >> google.fr\n%%\n%% RL "
+            "Net [##########] - RL IP [#########.]\n%%\n\ndomain:      google.fr\nstatus:      ACTIVE\nhold:        "
+            "NO\nholder-c:    GIHU100-FRNIC\nadmin-c:     GIHU101-FRNIC\ntech-c:      MI3669-FRNIC\nzone-c:      "
+            "NFC1-FRNIC\nnsl-id:      NSL4386-FRNIC\nregistrar:   MARKMONITOR Inc.\nExpiry Date: 2022-12-30T17:16"
+            ":48Z\ncreated:     2000-07-26T22:00:00Z\nlast-update: 2022-08-17T16:39:47Z\nsource:      FRNIC\n\nns-list:"
+            "    NSL4386-FRNIC\nnserver:     ns1.google.com\nnserver:     ns2.google.com\nnserver:     ns3.google.com\n"
+            "nserver:   ns4.google.com\nsource:      FRNIC\n\nregistrar:   MARKMONITOR Inc.\ntype:        Isp Option "
+            "\naddress:     2150 S. Bonito Way, Suite 150\naddress:     ID 83642 MERIDIAN\ncountry:     US\n"
+            "phone:       +1 208 389 5740\nfax-no:      +1 208 389 5771\ne-mail:      registry.admin@markmonitor.com\n"
+            "website:    http://www.markmonitor.com\nanonymous:   NO\nregistered:  2002-01-10T12:00:00Z\nsource:      "
+            "FRNIC\n\nnic-hdl:     GIHU100-FRNIC\ntype:        ORGANIZATION\ncontact:     Google Ireland Holdings "
+            "Unlimited Company\naddress:     Google Ireland Holdings Unlimited Company\naddress:     70 Sir John "
+            "Rogerson's Quay\naddress:     2 Dublin\naddress:     Dublin\ncountry:     IE\nphone:       "
+            "+353.14361000\ne-mail:      dns-admin@google.com\nregistrar:   MARKMONITOR Inc.\nchanged:    "
+            " 2018-03-02T18:03:31Z nic.fr\nanonymous:   NO\nobsoleted:   NO\neligstatus:  not identified\n"
+            "reachstatus: not identified\nsource:      FRNIC\n\nnic-hdl:     GIHU101-FRNIC\ntype:        ORGANIZATION"
+            "\ncontact:     Google Ireland Holdings Unlimited Company\naddress:     70 Sir John Rogerson's Quay\n"
+            "address:     2 Dublin\ncountry:     IE\nphone:       +353.14361000\ne-mail:      dns-admin@google.com\n"
+            "registrar:   MARKMONITOR Inc.\nchanged:     2018-03-02T17:52:06Z nic.fr\nanonymous:   NO\nobsoleted:  "
+            " NO\neligstatus:  not identified\nreachmedia:  email\nreachstatus: ok\nreachsource: REGISTRAR\nreachdate: "
+            "2018-03-02T17:52:06Z\nsource:      FRNIC\n\nnic-hdl:     MI3669-FRNIC\ntype:        ORGANIZATION\ncontact:"
+            "MarkMonitor Inc.\naddress:     2150 S. Bonito Way, Suite 150\naddress:     83642 Meridian\naddress:     "
+            "ID\ncountry:     US\nphone:       +1.2083895740\nfax-no:      +1.2083895771\ne-mail:      "
+            "ccops@markmonitor"
+            ".com\nregistrar:   MARKMONITOR Inc.\nchanged:     2021-10-05T15:17:57Z nic.fr\nanonymous:   NO\n"
+            "obsoleted:   NO\neligstatus:  ok\neligsource:  REGISTRAR\neligdate:    2021-10-05T15:17:56Z\nreachmedia: "
+            "email\nreachstatus: ok\nreachsource: REGISTRAR\nreachdate:   2021-10-05T15:17:56Z\nsource:      FRNIC\n\n"]
+
+    res = Whois.parse_nic_contact(data)
+
+    expected = [{'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
+                 'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
+                 'street3': '2 Dublin', 'phone': None, 'fax': None, 'email': None,
+                 'changedate': '2018-03-02T18:03:31Z nic.fr'},
+                {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
+                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'phone': None,
+                 'fax': None, 'email': None, 'changedate': '2018-03-02T17:52:06Z nic.fr'},
+                {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
+                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': 'ID',
+                 'phone': None, 'fax': None, 'email': None, 'changedate': '2021-10-05T15:17:57Z nic.fr'},
+                {'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
+                 'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
+                 'street3': '2 Dublin', 'street4': 'Dublin', 'country': 'IE', 'phone': '+353.14361000', 'fax': None,
+                 'email': 'dns-admin@google.com', 'changedate': '2018-03-02T18:03:31Z nic.fr'},
+                {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
+                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'street4': None,
+                 'country': 'IE', 'phone': '+353.14361000', 'fax': None, 'email': 'dns-admin@google.com',
+                 'changedate': '2018-03-02T17:52:06Z nic.fr'},
+                {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
+                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': 'ID',
+                 'street4': None, 'country': 'US', 'phone': '+1.2083895740', 'fax': '+1.2083895771',
+                 'email': 'ccops@markmonitor.com', 'changedate': '2021-10-05T15:17:57Z nic.fr'}]
+    assert res == expected
+
+
 def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     """
     Background:
@@ -306,3 +372,35 @@ def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     domain = "test.plus"
     response = get_whois_raw(domain=domain, server=server)
     assert response == [mock_response]
+
+
+def test_get_raw_response_with_non_recursive_data_query(mocker):
+    """
+    Given:
+        - A domain to query, non-recursive data query and a mock response which simulates a
+          Whois server response that includes a name of a refer server.
+    When:
+        - running the Whois.get_whois_raw(domain, server) function
+
+    Then:
+        - Verify that the final response of the get_whois_raw() includes only the response of the first server which was
+          queried, without the response of the refer server.
+    """
+    import socket
+    from Whois import get_whois_raw
+
+    def connect_mocker(curr_server):
+        """
+        This function is a mocker for the function socket.connect()
+        """
+        return None
+
+    mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
+    mock_response2 = "Domain Name: test_refer_server\n"
+
+    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
+    mocker.patch('Whois.whois_request_get_response', side_effect=[mock_response1, mock_response2])
+
+    domain = "test.plus"
+    response = get_whois_raw(domain=domain, is_recursive=False)
+    assert response == [mock_response1]

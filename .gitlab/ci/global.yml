@@ -63,8 +63,9 @@
       echo "running nightly or bucket upload, skipping files up-to-date validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH
-      ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH
+      # we want to checkout if it's not up-to-date
+      ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CI_COMMIT_BRANCH true
+      ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CI_COMMIT_BRANCH true
     fi
   - section_end "Check Build Files Are Up To Date"
 
@@ -98,14 +99,12 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - |
-    if [ -f "./.venv/bin/activate" ]; then
-      echo "found venv"
-    else
-      echo "installing venv"
-      NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-      npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-    fi
+  - echo "Checking if pyproject.toml is consistent with poetry.lock"
+  - poetry lock --check
+  # we still need to install even if cached. if cached, `poetry` will handle it
+  - echo "installing venv"
+  - NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - source ./.venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
@@ -114,10 +113,8 @@
       pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
   - |
-      python --version | tee -a $ARTIFACTS_FOLDER/python2_list.txt
-      python3 --version | tee -a $ARTIFACTS_FOLDER/python3_list.txt
-      python -m pip list | tee -a $ARTIFACTS_FOLDER/python2_list.txt
-      python3 -m pip list | tee -a $ARTIFACTS_FOLDER/python3_list.txt
+      python3 --version | tee -a $ARTIFACTS_FOLDER/installed_python_libraries.txt
+      python3 -m pip list | tee -a $ARTIFACTS_FOLDER/installed_python_libraries.txt
   - section_end "Installing Virtualenv"
 
 .install_ssh_keys: &install_ssh_keys
@@ -185,7 +182,9 @@
   stage: unittests-and-validations
   artifacts:
     reports:
-      cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -204,7 +203,6 @@
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/scripts/utils/tests -v
     - python3 -m pytest ./Tests/tests -v
     - python3 -m pytest ./Tests/private_build/ -v
     - python3 -m pytest Utils -v
@@ -241,7 +239,7 @@
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
             demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
           else
-            demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+            echo "Skipping, Should run on circleCi."
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
@@ -252,8 +250,6 @@
             fi
           else
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
-            echo "Adding unit tests coverage comment to the pr"
-            python3 ./Tests/scripts/add_pr_comment.py
           fi
         fi
       fi

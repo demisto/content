@@ -6,13 +6,12 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: Displays the highest severity among the incidents that make up the phishing
-  campaign.
+comment: Displays the highest severity among the incidents that make up the phishing campaign.
 enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

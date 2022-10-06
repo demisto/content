@@ -1,11 +1,13 @@
 from collections import defaultdict
 from http import HTTPStatus
 from typing import Callable
+from typing import Tuple
 
 from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
 from intezer_sdk.api import IntezerApi
+from intezer_sdk.endpoint_analysis import EndpointAnalysis
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import FamilyNotFoundError
@@ -79,19 +81,30 @@ def _get_missing_analysis_result(analysis_id: str, sub_analysis_id: str = None) 
     )
 
 
+def _get_missing_endpoint_analysis_result(analysis_id: str) -> CommandResults:
+    output = f'Could not find the endpoint analysis \'{analysis_id}\''
+
+    return CommandResults(
+        readable_output=output
+    )
+
+
 def _get_missing_family_result(family_id: str) -> CommandResults:
     return CommandResults(
         readable_output=f'The Family {family_id} was not found on Intezer Analyze'
     )
 
 
-def _get_analysis_running_result(analysis_id: str = None, response: requests.Response = None) -> CommandResults:
+def _get_analysis_running_result(analysis_type: str,
+                                 analysis_id: str = None,
+                                 response: requests.Response = None) -> CommandResults:
     if response:
         analysis_id = response.json()['result_url'].split('/')[2]
 
     context_json = {
         'ID': analysis_id,
-        'Status': 'InProgress'
+        'Status': 'InProgress',
+        'Type': analysis_type
     }
 
     return CommandResults(
@@ -132,7 +145,7 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'File'
+            'Type': 'File'
         }
 
         return CommandResults(
@@ -144,7 +157,7 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
     except HashDoesNotExistError:
         return _get_missing_file_result(file_hash)
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result(analysis_type='File', response=error.response)
 
 
 def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
@@ -162,7 +175,7 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'Url'
+            'Type': 'Url'
         }
 
         return CommandResults(
@@ -172,7 +185,7 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
             readable_output='Analysis created successfully: {}'.format(analysis_id)
         )
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result('Url', response=error.response)
     except ServerError as ex:
         return _get_missing_url_result(url, ex)
 
@@ -188,7 +201,8 @@ def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> 
     if not latest_analysis:
         return _get_missing_file_result(file_hash)
 
-    return enrich_dbot_and_display_file_analysis_results(latest_analysis.result())
+    file_metadata = latest_analysis.get_root_analysis().metadata
+    return enrich_dbot_and_display_file_analysis_results(latest_analysis.result(), file_metadata)
 
 
 def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
@@ -196,13 +210,13 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
     file_data = demisto.getFilePath(file_id)
 
     try:
-        analysis = FileAnalysis(file_path=file_data['path'], api=intezer_api)
+        analysis = FileAnalysis(file_path=file_data['path'], file_name=file_data['name'], api=intezer_api)
         analysis.send(requester=REQUESTER)
 
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
-            'type': 'File'
+            'Type': 'File'
         }
 
         return CommandResults(
@@ -212,7 +226,7 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
             readable_output='Analysis created successfully: {}'.format(analysis.analysis_id)
         )
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(response=error.response)
+        return _get_analysis_running_result('File', response=error.response)
 
 
 def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args: dict) -> List[CommandResults]:
@@ -221,12 +235,16 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     indicator_name = args.get('indicator_name')
 
     command_results = []
+    file_metadata = {}
 
     for analysis_id in analysis_ids:
         try:
             if analysis_type == 'Endpoint':
-                response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
-                analysis_result = response.json()['result']
+                analysis = EndpointAnalysis.from_analysis_id(analysis_id, intezer_api)
+                if not analysis:
+                    command_results.append(_get_missing_endpoint_analysis_result(analysis_id))
+                    continue
+                analysis_result = analysis.result()
             elif analysis_type == 'Url':
                 analysis = UrlAnalysis.from_analysis_id(analysis_id, api=intezer_api)
                 if not analysis:
@@ -241,6 +259,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                     continue
                 else:
                     analysis_result = analysis.result()
+                    file_metadata = analysis.get_root_analysis().metadata
 
             if analysis_result and analysis_type == 'Endpoint':
                 command_results.append(
@@ -249,17 +268,17 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 command_results.append(
                     enrich_dbot_and_display_url_analysis_results(analysis_result, intezer_api))
             elif analysis_result:
-                command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result))
+                command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result, file_metadata))
 
         except HTTPError as http_error:
             if http_error.response.status_code == HTTPStatus.CONFLICT:
-                command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+                command_results.append(_get_analysis_running_result(analysis_type, analysis_id=analysis_id))
             elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
                 command_results.append(_get_missing_analysis_result(analysis_id))
             else:
                 raise http_error
         except AnalysisIsStillRunning:
-            command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+            command_results.append(_get_analysis_running_result(analysis_type, analysis_id=analysis_id))
 
     return command_results
 
@@ -272,7 +291,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
         if not analysis:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except AnalysisIsStillRunning:
-        return _get_analysis_running_result(analysis_id=str(analysis_id))
+        return _get_analysis_running_result('File', analysis_id=str(analysis_id))
 
     sub_analyses: List[SubAnalysis] = analysis.get_sub_analyses()
 
@@ -298,19 +317,14 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
     try:
-        sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
-                                                composed_analysis_id=analysis_id,
-                                                sha256='',
-                                                source='',
-                                                extraction_info=None,
-                                                api=intezer_api)
+        sub_analysis: SubAnalysis = SubAnalysis.from_analysis_id(sub_analysis_id, analysis_id, api=intezer_api)
 
         sub_analysis_code_reuse = sub_analysis.code_reuse
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
 
     if not sub_analysis_code_reuse:
@@ -370,7 +384,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
@@ -406,7 +420,7 @@ def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandRes
         analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=str(analysis_id))
+            return _get_analysis_running_result('File', analysis_id=str(analysis_id))
         raise
 
     if not analysis:
@@ -462,22 +476,20 @@ def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResul
 
 # region Enrich DBot
 
-def enrich_dbot_and_display_file_analysis_results(intezer_result):
+def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_metadata: dict) -> CommandResults:
     verdict = intezer_result.get('verdict')
     sha256 = intezer_result.get('sha256')
     analysis_id = intezer_result.get('analysis_id')
+    md5 = file_metadata.get('md5')
+    sha1 = file_metadata.get('sha1')
 
-    dbot = {
-        'Vendor': 'Intezer',
-        'Type': 'hash',
-        'Indicator': sha256,
-        'Score': dbot_score_by_verdict.get(verdict, 0)
-    }
-
-    file = {'SHA256': sha256, 'Metadata': intezer_result, 'ExistsInIntezer': True}
+    dbot_entry, file = _get_dbot_score_and_file_entries(intezer_result, file_metadata)
 
     if verdict == 'malicious':
         file['Malicious'] = {'Vendor': 'Intezer'}
+
+    intezer_result['sha1'] = sha1
+    intezer_result['md5'] = md5
 
     presentable_result = _file_analysis_presentable_code(intezer_result, sha256, verdict)
 
@@ -485,11 +497,41 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result):
         readable_output=presentable_result,
         raw_response=intezer_result,
         outputs={
-            outputPaths['dbotscore']: dbot,
+            outputPaths['dbotscore']: dbot_entry,
             outputPaths['file']: file,
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
+
+
+def _get_dbot_score_and_file_entries(file_analysis_result: dict, file_metadata: dict) -> Tuple[List[dict], dict]:
+    verdict: str = file_analysis_result.get('verdict', '')
+    sha256 = file_metadata.get('sha256')
+    md5 = file_metadata.get('md5')
+    sha1 = file_metadata.get('sha1')
+
+    dbot = [
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': sha256,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        },
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': sha1,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        },
+        {
+            'Vendor': 'Intezer',
+            'Type': 'file',
+            'Indicator': md5,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        }]
+    file = {'SHA256': sha256, 'MD5': md5, 'SHA1': sha1, 'Metadata': file_analysis_result, 'ExistsInIntezer': True}
+
+    return dbot, file
 
 
 def _file_analysis_presentable_code(intezer_result: dict, sha256: str = None, verdict: str = None):
@@ -522,16 +564,25 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     intezer_result.update(summary)
     verdict = summary['verdict_type']
     submitted_url = intezer_result['submitted_url']
+    scanned_url = intezer_result['scanned_url']
     analysis_id = intezer_result['analysis_id']
 
-    dbot = {
+    dbot = [{
         'Vendor': 'Intezer',
         'Type': 'Url',
         'Indicator': submitted_url,
         'Score': dbot_score_by_verdict.get(verdict, 0)
-    }
+    }]
 
-    url = {'URL': submitted_url, 'Metadata': intezer_result, 'ExistsInIntezer': True}
+    if scanned_url != submitted_url:
+        dbot.append({
+            'Vendor': 'Intezer',
+            'Type': 'Url',
+            'Indicator': scanned_url,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        })
+
+    url = {'URL': submitted_url, 'Data': submitted_url, 'Metadata': intezer_result, 'ExistsInIntezer': True}
 
     if verdict == 'malicious':
         url['Malicious'] = {'Vendor': 'Intezer'}
@@ -559,13 +610,26 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     presentable_result += f'[Analysis Link]({intezer_result["analysis_url"]})\n'
 
     downloaded_file_presentable_result = ''
+    file_entry: dict = {}
     if 'downloaded_file' in intezer_result:
         downloaded_file = intezer_result.pop('downloaded_file')
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
         downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
-        intezer_result['downloaded_file'] = downloaded_file_analysis.result()
-        downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
+        download_file_result = downloaded_file_analysis.result()
+        intezer_result['downloaded_file'] = download_file_result
+        metadata = downloaded_file_analysis.get_root_analysis().metadata
+
+        file_dbot_entry, file_entry = _get_dbot_score_and_file_entries(download_file_result, metadata)
+
+        sha1 = metadata.get('sha1')
+        md5 = metadata.get('md5')
+        download_file_result['sha1'] = sha1
+        download_file_result['md5'] = md5
+        downloaded_file_presentable_result = _file_analysis_presentable_code(download_file_result)
+
+        dbot.extend(file_dbot_entry)
+        file_entry = {outputPaths['file']: file_entry}
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
     presentable_result += md + downloaded_file_presentable_result
@@ -576,6 +640,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         outputs={
             outputPaths['dbotscore']: dbot,
             outputPaths['url']: url,
+            **file_entry,
             'Intezer.Analysis(val.ID && val.ID == obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
         }
     )
@@ -639,7 +704,11 @@ def main():
         use_ssl = not demisto.params().get('insecure', False)
         analyze_base_url = intezer_base_url_param or consts.BASE_URL
 
-        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, use_ssl)
+        intezer_api = IntezerApi(consts.API_VERSION,
+                                 intezer_api_key,
+                                 analyze_base_url,
+                                 use_ssl,
+                                 user_agent=get_pack_version())
 
         command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
             'test-module': check_is_available,

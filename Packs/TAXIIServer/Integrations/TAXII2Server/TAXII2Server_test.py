@@ -3,7 +3,8 @@ import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list
+from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
+    create_query
 import demistomock as demisto
 
 HEADERS = {
@@ -249,6 +250,32 @@ def test_taxii20_collection(mocker, taxii2_server_v20):
         assert response.json == collections.get('collections')[0]
 
 
+def test_taxii20_get_collections(mocker, taxii2_server_v20):
+    from TAXII2Server import get_server_collections_command
+
+    collections = taxii2_server_v20.get_collections()
+
+    integration_context = {
+        'collections': collections['collections']
+    }
+    result = get_server_collections_command(integration_context=integration_context)
+
+    assert result.outputs == integration_context['collections']
+
+
+def test_taxii20_get_server_info(mocker, taxii2_server_v20):
+    from TAXII2Server import get_server_info_command
+
+    integration_context = {}
+    integration_context['server_info'] = taxii2_server_v20.get_discovery_service(instance_execute=True)
+    default_url = integration_context['server_info']['default']
+    assert default_url == 'https://demisto/instance/execute/threatintel/'
+
+    result = get_server_info_command(integration_context=integration_context)
+
+    assert result.outputs == integration_context['server_info']
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given
@@ -486,3 +513,62 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
+
+
+@pytest.mark.parametrize('header', (MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20))
+def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
+    """
+    Given
+        a TAXII 2.1 server
+    When
+        calling /taxii2/ with TAXII 2.0 header
+    Then
+        validate that an appropriate error is returned
+    """
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    with APP.test_client() as test_client:
+        response = test_client.get('/taxii2/', headers=HEADERS | {'Accept': header})
+        assert response.status_code == 406
+
+
+@pytest.mark.parametrize('query,types,expected_response', (
+    ('my custom query', [], 'my custom query'),
+    ('my custom query', ['file'], '(my custom query) and (type:"File")'),
+    ('my custom query', ['file', 'domain'], '(my custom query) and (type:"File" or type:"domain")'),
+))
+def test_create_query(query: str, types: list[str], expected_response: str):
+    """
+        Given
+            a query and types to match
+        When
+            calling create_query
+        Then
+            Validate that right query is returned.
+    """
+    assert create_query(query, types) == expected_response
+
+
+@pytest.mark.parametrize('endpoint', [
+    ('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=4&added_after=2022-06-03T00:00:00Z'),
+    ('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=4&added_after=2022-06-03T13:54:27.234765Z')
+])
+def test_parse_manifest_and_object_args_with_valid_date(mocker, taxii2_server_v21, endpoint):
+    """
+        Given
+            case 1: endpoint with utc date format.
+            case 2: endpoint with stix date format.
+        When
+            testing parse_manifest_and_object_args.
+        Then
+            Ensure that Should parsing was done correctly and a valid results message was returned.
+    """
+    iocs = util_load_json('test_files/ip_iocs.json')
+    manifest = util_load_json('test_files/manifest21.json')
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    with APP.test_client() as test_client:
+        response = test_client.get(endpoint, headers=HEADERS)
+        assert response.status_code == 200
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        assert response.json == manifest

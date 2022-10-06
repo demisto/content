@@ -37,6 +37,7 @@ configuration:
   - low
   - medium
   - high
+  - critical
   required: true
   type: 15
 - additionalinfo: Supports CSV values.
@@ -205,7 +206,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.7.33922
   feed: true
   isfetch: false
   longRunning: false

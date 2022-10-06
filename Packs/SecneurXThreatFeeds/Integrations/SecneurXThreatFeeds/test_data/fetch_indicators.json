@@ -1,0 +1,71 @@
+{
+    "type": "bundle",
+    "id": "bundle--d2355c6f-592a-41d8-95e2-0c09a00fa043",
+    "objects": [ 
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--a54b7ee7-2078-4fe3-a138-f693ff6944b8",
+            "created": "2022-07-06T14:11:10.248694Z",
+            "modified": "2022-07-06T14:11:10.248694Z",
+            "name": "PDF Phishing",
+            "description": "PDF Phishing is a phishing-trojan - a document file that is designed to look legitimate, but actually serves as a delivery vehicle for harmful programs.",
+            "malware_types": [
+                "unknown"
+            ],
+            "is_family": false
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "created": "2022-07-07T20:14:35.892Z",
+            "modified": "2022-07-26T13:03:40.5723Z",
+            "name": "Malicious Url",
+            "description": "PDF Phishing",
+            "indicator_types": [
+                "compromised"
+            ],
+            "pattern": "[url:value = 'http://www.hkqi.com/wp-content/plugins/formcraft/file-upload/server/content/files/16087a94379ccb---78452952514.pdf']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2022-07-07T20:14:35.892Z",
+            "confidence": 90
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--0c7b5b88-8ff7-4a4d-aa9d-feb398cd2244",
+            "created": "2016-05-12T08:17:27.000Z",
+            "modified": "2016-05-12T08:17:27.000Z",
+            "name": "PDF Phishing",
+            "description": "PDF Phishing is a phishing-trojan - a document file that is designed to look legitimate, but actually serves as a delivery vehicle for harmful programs.",
+            "external_references": [
+              {
+                "source_name": "capec",
+                "external_id": "CAPEC-163"
+              }
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--727e8765-8d1c-4c47-9148-c6fde24c0670",
+            "created": "2022-08-08T10:56:18.757325Z",
+            "modified": "2022-08-08T10:56:18.757325Z",
+            "relationship_type": "Indicates",
+            "source_ref": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "target_ref": "attack-pattern--0c7b5b88-8ff7-4a4d-aa9d-feb398cd2244"
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--d48263b6-0438-4130-9289-e6c2ca7ac842",
+            "created": "2022-07-26T13:03:40.5723Z",
+            "modified": "2022-07-26T13:03:40.5723Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "target_ref": "malware--a54b7ee7-2078-4fe3-a138-f693ff6944b8"
+        }        
+    ]
+}

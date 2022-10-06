@@ -37,9 +37,9 @@ tasks:
     task:
       id: e7f4ce47-bc3e-498c-8fc8-0c18ef98e988
       version: -1
-      name: panorama-query-logs (query threat logs)
+      name: pan-os-query-logs (query threat logs)
       description: Query logs in Panorama.
-      script: Panorama|||panorama-query-logs
+      script: Panorama|||pan-os-query-logs
       type: regular
       iscommand: true
       brand: Panorama
@@ -80,9 +80,9 @@ tasks:
     task:
       id: 81702d7f-3631-4752-8a6c-0a6239294803
       version: -1
-      name: panorama-get-logs (retrieve completed log query)
+      name: pan-os-get-logs (retrieve completed log query)
       description: Retrieves the data of a logs query.
-      script: Panorama|||panorama-get-logs
+      script: Panorama|||pan-os-get-logs
       type: regular
       iscommand: true
       brand: Panorama
@@ -306,7 +306,7 @@ tasks:
         simple: '1'
       playbookId: {}
       pollingCommand:
-        simple: panorama-check-logs-status
+        simple: pan-os-check-logs-status
       pollingCommandArgName:
         simple: job_id
       tag: {}
@@ -331,9 +331,9 @@ tasks:
     task:
       id: 15f1f59b-a7a2-4abe-879d-e562e1ae0933
       version: -1
-      name: panorama-check-logs-status
+      name: pan-os-check-logs-status
       description: Command to check panorama log status.
-      script: '|||panorama-check-logs-status'
+      script: '|||pan-os-check-logs-status'
       type: regular
       iscommand: true
       brand: ''

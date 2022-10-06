@@ -40,7 +40,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
@@ -744,16 +745,17 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
+                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
-            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
+            closing_entry['Contents']['closeNotes'] = close_notes
+            incident_data['closeNotes'] = close_notes
 
     return closing_entry
 
@@ -1309,10 +1311,11 @@ def main():  # pragma: no cover
                                                          "PENDING_ABORT"])
             raw = polling.raw_response
             # raw is the response returned by the get-action-status
-            status = raw[0].get('status')  # type: ignore
             if polling.scheduled_command:
                 return_results(polling)
-            elif status == 'COMPLETED_SUCCESSFULLY':
+                return
+            status = raw[0].get('status')  # type: ignore
+            if status == 'COMPLETED_SUCCESSFULLY':
                 file_details_results(client, args, True)
             else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
                 polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
@@ -1336,6 +1339,9 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
+
+        elif command == 'xdr-script-run':  # used with polling = true always
+            return_results(script_run_polling_command(args, client))
 
         elif command == 'xdr-run-script':
             return_results(run_script_command(client, args))
@@ -1455,7 +1461,6 @@ def main():  # pragma: no cover
             return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

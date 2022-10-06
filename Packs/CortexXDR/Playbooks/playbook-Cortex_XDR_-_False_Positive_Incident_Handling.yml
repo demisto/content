@@ -1,7 +1,3 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Cortex XDR - False Positive Incident Handling
 inputs:
 - description: Add comment to close this incident.
@@ -60,12 +56,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      id: d504f050-f463-40cd-8859-79106e33b0a8
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    taskid: d504f050-f463-40cd-8859-79106e33b0a8
     timertriggers: []
     type: start
     view: |-
@@ -75,6 +71,7 @@ tasks:
           "y": -340
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -86,13 +83,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3c963ac6-062d-43ad-82d3-e32d2345e793
+      id: 429fc0f1-f440-4272-8269-283ca640f1ab
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 3c963ac6-062d-43ad-82d3-e32d2345e793
+    taskid: 429fc0f1-f440-4272-8269-283ca640f1ab
     timertriggers: []
     type: title
     view: |-
@@ -102,6 +99,7 @@ tasks:
           "y": 765
         }
       }
+    continueonerrortype: ""
   '4':
     id: '4'
     ignoreworker: false
@@ -116,13 +114,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 95e97d87-0448-492c-8170-0ec11c604b99
+      id: 01b7a8db-5505-48f9-880f-7a1a0f4e7755
       iscommand: false
       name: Unisolate host
       type: title
       version: -1
       description: ''
-    taskid: 95e97d87-0448-492c-8170-0ec11c604b99
+    taskid: 01b7a8db-5505-48f9-880f-7a1a0f4e7755
     timertriggers: []
     type: title
     view: |-
@@ -132,6 +130,7 @@ tasks:
           "y": -180
         }
       }
+    continueonerrortype: ""
   '5':
     id: '5'
     ignoreworker: false
@@ -166,22 +165,23 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 82c575e9-5484-4d95-8728-6cd14c71d448
+      id: ff2cc290-801a-471b-8d5b-406e487f549b
       iscommand: false
       name: Approve unisolation
       description: Approve unisolation.
       type: condition
       version: -1
-    taskid: 82c575e9-5484-4d95-8728-6cd14c71d448
+    taskid: ff2cc290-801a-471b-8d5b-406e487f549b
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 100,
+          "x": -370,
           "y": 130
         }
       }
+    continueonerrortype: ""
   '7':
     id: '7'
     ignoreworker: false
@@ -194,9 +194,11 @@ tasks:
     quietmode: 0
     scriptarguments:
       closeNotes:
-        simple: ${inputs.Comment}
+        complex:
+          root: inputs.Comment
       closeReason:
-        simple: ${inputs.Reason}
+        complex:
+          root: inputs.Reason
       id:
         complex:
           accessor: id
@@ -213,13 +215,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 6cd2cc29-a623-45c8-8275-070b232df358
+      id: 952e4b23-57dd-41ee-89df-ac3d6ed4a7f2
       iscommand: true
       name: Close  XSOAR incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 6cd2cc29-a623-45c8-8275-070b232df358
+    taskid: 952e4b23-57dd-41ee-89df-ac3d6ed4a7f2
     timertriggers: []
     type: regular
     view: |-
@@ -229,6 +231,7 @@ tasks:
           "y": 615
         }
       }
+    continueonerrortype: ""
   '8':
     id: '8'
     ignoreworker: false
@@ -243,13 +246,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3bfba053-05d1-4bb9-8a41-c1815043ab44
+      id: 1605130b-3070-44ea-8ea1-280159a00beb
       iscommand: false
-      name: False positive Incident closing
+      name: Done - Unisolating Device
       type: title
       version: -1
       description: ''
-    taskid: 3bfba053-05d1-4bb9-8a41-c1815043ab44
+    taskid: 1605130b-3070-44ea-8ea1-280159a00beb
     timertriggers: []
     type: title
     view: |-
@@ -259,6 +262,7 @@ tasks:
           "y": 475
         }
       }
+    continueonerrortype: ""
   '9':
     id: '9'
     ignoreworker: false
@@ -273,13 +277,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ada72dde-d968-4766-8009-b3f6eff1c1e2
+      id: f80378aa-ee83-42f9-89ed-5d9386cef767
       iscommand: false
       name: Allow indicators
       type: title
       version: -1
       description: ''
-    taskid: ada72dde-d968-4766-8009-b3f6eff1c1e2
+    taskid: f80378aa-ee83-42f9-89ed-5d9386cef767
     timertriggers: []
     type: title
     view: |-
@@ -289,6 +293,7 @@ tasks:
           "y": -180
         }
       }
+    continueonerrortype: ""
   '14':
     form:
       description: ''
@@ -303,7 +308,7 @@ tasks:
           simple: Mark IOCs to be approved
         options: []
         optionsarg:
-        - simple: ${incident.filesha256}
+        - simple: ${inputs.FileSha256}
         placeholder: ''
         readonly: false
         required: false
@@ -332,21 +337,20 @@ tasks:
       to:
     nexttasks:
       '#none#':
-      - '71'
-      - '15'
+      - "72"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: c45a1727-d309-446d-850b-b9fffb2dfc1e
+      id: ea83f0fb-23f0-41b6-80d4-7e1850d106be
       iscommand: false
       name: Choose the marked IOC to be added to approve list
       description: Choose the marked IOC to be added to approve list.
       type: collection
       version: -1
-    taskid: c45a1727-d309-446d-850b-b9fffb2dfc1e
+    taskid: ea83f0fb-23f0-41b6-80d4-7e1850d106be
     timertriggers: []
     type: collection
     view: |-
@@ -356,6 +360,7 @@ tasks:
           "y": -50
         }
       }
+    continueonerrortype: ""
   '15':
     id: '15'
     ignoreworker: false
@@ -370,28 +375,30 @@ tasks:
       indicatorsValues:
         simple: ${Indicators to block.Questions.0}
       tags:
-        simple: ${inputs.AllowTag}
+        complex:
+          root: inputs.AllowTag
     separatecontext: false
     skipunavailable: false
     task:
       brand: Builtin
       description: commands.local.cmd.set.indicators
-      id: 81ac51cd-e033-40c6-82f2-95ba8a9468ab
+      id: 977b11e5-5eea-4b7c-8ce4-0020377ce048
       iscommand: true
       name: Tag Indicators
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: 81ac51cd-e033-40c6-82f2-95ba8a9468ab
+    taskid: 977b11e5-5eea-4b7c-8ce4-0020377ce048
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 350,
+          "x": 590,
           "y": 300
         }
       }
+    continueonerrortype: ""
   '16':
     id: '16'
     ignoreworker: false
@@ -406,13 +413,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 6950430d-209b-4dee-8c7c-7c9aa063e2fa
+      id: 20f6e532-b982-42e3-88fb-75ba6c47fd1f
       iscommand: false
       name: Done approving indicators
       type: title
       version: -1
       description: ''
-    taskid: 6950430d-209b-4dee-8c7c-7c9aa063e2fa
+    taskid: 20f6e532-b982-42e3-88fb-75ba6c47fd1f
     timertriggers: []
     type: title
     view: |-
@@ -422,6 +429,7 @@ tasks:
           "y": 475
         }
       }
+    continueonerrortype: ""
   '18':
     conditions:
     - condition:
@@ -429,7 +437,7 @@ tasks:
           left:
             iscontext: true
             value:
-              simple: inputs.AutoUnisolate
+              simple: inputs.AutoUnisolation
           operator: isEqualString
           right:
             value:
@@ -450,13 +458,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1b32f8b2-6624-465f-8f1e-20369a23503b
+      id: 3b496b81-a247-484c-8ba2-19bbc04c0706
       iscommand: false
       name: Auto-Unisolate?
       description: Auto-unisolate?
       type: condition
       version: -1
-    taskid: 1b32f8b2-6624-465f-8f1e-20369a23503b
+    taskid: 3b496b81-a247-484c-8ba2-19bbc04c0706
     timertriggers: []
     type: condition
     view: |-
@@ -466,6 +474,7 @@ tasks:
           "y": -50
         }
       }
+    continueonerrortype: ""
   '69':
     id: '69'
     ignoreworker: false
@@ -483,19 +492,20 @@ tasks:
     quietmode: 0
     scriptarguments:
       Endpoint_ID:
-        simple: ${Endpoint.ID}
+        complex:
+          root: inputs.HostID
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      id: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
+      id: ad95977e-af03-4574-8470-37187f4ab61d
       iscommand: false
       name: Cortex XDR - Unisolate Endpoint
-      playbookId: Cortex XDR - Unisolate Endpoint
       type: playbook
       version: -1
-      description: ''
-    taskid: e9dfb706-0a59-4e5a-8cd0-99f3b55d5cac
+      description: 'This playbook unisolates endpoints according to the endpoint ID that is provided in the playbook input.'
+      playbookName: Cortex XDR - Unisolate Endpoint
+    taskid: ad95977e-af03-4574-8470-37187f4ab61d
     timertriggers: []
     type: playbook
     view: |-
@@ -505,6 +515,7 @@ tasks:
           "y": 300
         }
       }
+    continueonerrortype: ""
   '71':
     id: '71'
     ignoreworker: false
@@ -525,22 +536,65 @@ tasks:
     task:
       brand: ''
       description: Adds requested files to allow list if they are not already on block list or allow list.
-      id: a6fc15d7-73c2-4c11-89b9-e09c69258d18
+      id: 5ee3c4f2-ab41-4ec6-8024-e700be553e37
       iscommand: true
       name: Create IOCs in Cortex XDR - Approved Hashes
       script: '|||xdr-allowlist-files'
       type: regular
       version: -1
-    taskid: a6fc15d7-73c2-4c11-89b9-e09c69258d18
+    taskid: 5ee3c4f2-ab41-4ec6-8024-e700be553e37
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 560,
+          "x": 1000,
+          "y": 300
+        }
+      }
+    continueonerrortype: ""
+  "72":
+    id: "72"
+    taskid: 7bbb5650-b559-44fb-8da4-474260b38087
+    type: condition
+    task:
+      id: 7bbb5650-b559-44fb-8da4-474260b38087
+      version: -1
+      name: Any Hashes Specified?
+      description: Any Hashes Specified?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators to Allow.Answers.0
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
           "y": 130
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 version: -1
 view: |-
   {
@@ -548,8 +602,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1170,
-        "width": 1050,
-        "x": -110,
+        "width": 1750,
+        "x": -370,
         "y": -340
       }
     }
@@ -557,4 +611,6 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-description: This Playbook handles false-positive incident closure for Cortex XDR - Malware investigation.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles false-positive incident closures for Cortex XDR - Malware investigation.

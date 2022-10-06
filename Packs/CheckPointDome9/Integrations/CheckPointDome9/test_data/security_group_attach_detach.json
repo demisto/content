@@ -1,0 +1,57 @@
+{
+    "profileArn": null,
+    "isRunning": true,
+    "osType": "osType",
+    "isMicro": true,
+    "niCs": [
+        {
+            "name": "name"
+        }
+    ],
+    "amiLaunchIndex": 0,
+    "architecture": "architecture",
+    "blockDeviceMappings": [
+        {}
+    ],
+    "clientToken": null,
+    "ebsOptimized": false,
+    "enaSupport": true,
+    "hypervisor": "hypervisor",
+    "iamInstanceProfile": null,
+    "imageId": "ami-imageId",
+    "imageName": null,
+    "instanceId": "i-instanceId",
+    "instanceLifecycle": null,
+    "instanceType": "instanceType",
+    "kernelId": null,
+    "keyName": "keyName",
+    "launchTime": "launchTime",
+    "monitoring": {
+        "state": "disabled"
+    },
+    "networkInterfaces": [
+        {}
+    ],
+    "placement": {},
+    "platform": null,
+    "privateDnsName": "privateDnsName",
+    "privateIpAddress": "privateIpAddress",
+    "productCodes": [],
+    "publicDnsName": "publicDnsName",
+    "publicIpAddress": "publicIpAddress",
+    "ramdiskId": null,
+    "rootDeviceName": "rootDeviceName",
+    "rootDeviceType": "rootDeviceType",
+    "securityGroups": [],
+    "sourceDestCheck": true,
+    "spotInstanceRequestId": null,
+    "sriovNetSupport": null,
+    "state": {},
+    "stateReason": null,
+    "stateTransitionReason": null,
+    "subnetId": "subnet-subnetId",
+    "tags": [],
+    "virtualizationType": "virtualizationType",
+    "vpcId": "vpc-vpcId",
+    "externalId": "i-externalId"
+}

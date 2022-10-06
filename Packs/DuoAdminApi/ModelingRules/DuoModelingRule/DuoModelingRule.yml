@@ -1,70 +1,9 @@
-name: Duo Modeling Rule
-id: duo_modeling_rule
+from_xdr_version: 3.4.0
 fromversion: 6.8.0
-tags: duo
+id: duo_modeling_rule
+name: Duo Modeling Rule
 rules: ''
-schema: |-
-  {
-    "duo_duo_raw": {
-      "access_device": {
-        "type": "string",
-        "is_array": false
-      },
-      "application": {
-        "type": "string",
-        "is_array": false
-      },
-      "eventtype": {
-        "type": "string",
-        "is_array": false
-      },
-      "factor": {
-        "type": "string",
-        "is_array": false
-      },
-      "isotimestamp": {
-        "type": "string",
-        "is_array": false
-      },
-      "action": {
-        "type": "string",
-        "is_array": false
-      },
-      "description": {
-        "type": "string",
-        "is_array": false
-      },
-      "object": {
-        "type": "string",
-        "is_array": false
-      },
-      "timestamp": {
-        "type": "string",
-        "is_array": false
-      },
-      "username": {
-        "type": "string",
-        "is_array": false
-      },
-      "context": {
-        "type": "string",
-        "is_array": false
-      },
-      "phone": {
-        "type": "string",
-        "is_array": false
-      },
-      "type": {
-        "type": "string",
-        "is_array": false
-      },
-      "phone": {
-        "type": "string",
-        "is_array": false
-      },
-      "description": {
-        "type": "string",
-        "is_array": false
-      }
-    }
-  }
+schema: ''
+tags: duo
+to_xdr_version: 3.4.9
+toversion: 6.9.9

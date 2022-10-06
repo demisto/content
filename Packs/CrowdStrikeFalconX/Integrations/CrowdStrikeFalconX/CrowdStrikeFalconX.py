@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
 
@@ -170,7 +171,24 @@ class Client:
                 return res
 
             try:
-                return res.json()
+                if 'image' in res.headers.get('Content-Type', '') or 'text' in res.headers.get('Content-Type', ''):
+                    filename_from_headers = res.headers.get('Content-Disposition')
+                    if 'filename=' in filename_from_headers:
+                        filename = filename_from_headers.split('filename=')[-1]
+                    else:
+                        filename = str(uuid.uuid4())
+                    stored_file = fileResult(filename, res.content)
+                    file_type = 'image' if 'image' in res.headers.get('Content-Type', '') else 'file'
+                    file_entry = {
+                        'Type': entryTypes[file_type],
+                        'ContentsFormat': formats['text'],
+                        'File': stored_file['File'],
+                        'FileID': stored_file['FileID'],
+                        'Contents': ''
+                    }
+                    return file_entry
+                else:  # handle the response as json
+                    return res.json()
             except ValueError as exception:
                 raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
         except requests.exceptions.ConnectTimeout as exception:
@@ -739,10 +757,18 @@ def test_module(client: Client) -> str:
 def upload_file_command(  # type: ignore[return]
         client: Client,
         file: str,
+        environment_id: str = "160: Windows 10",
         file_name: Optional[str] = None,
         is_confidential: str = "true",
         comment: str = "",
         submit_file: str = "no",
+        action_script: str = "",
+        command_line: str = "",
+        document_password: str = "",
+        enable_tor: str = "false",
+        submit_name: str = "",
+        system_date: str = "",
+        system_time: str = "",
 ) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -751,6 +777,14 @@ def upload_file_command(  # type: ignore[return]
     :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
     :param comment: a descriptive comment to identify the file for other users
     :param submit_file: if "yes" run cs-fx-submit-uploaded-file for the uploaded file
+    :param environment_id: specifies the sandbox environment used for analysis
+    :param action_script: runtime script for sandbox analysis
+    :param command_line: command line script passed to the submitted file at runtime
+    :param document_password: auto-filled for Adobe or Office files that prompt for a password
+    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
+    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
+    :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
@@ -768,7 +802,9 @@ def upload_file_command(  # type: ignore[return]
 
     else:
         sha256 = str(result.output.get("sha256"))  # type: ignore[union-attr]
-        return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
+        return send_uploaded_file_to_sandbox_analysis_command(client, sha256, environment_id, action_script,
+                                                              command_line, document_password, enable_tor,
+                                                              submit_name, system_date, system_time)
 
 
 def send_uploaded_file_to_sandbox_analysis_command(
@@ -1042,7 +1078,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> CommandResults:
+) -> Union[CommandResults, dict]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -1053,13 +1089,16 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        return CommandResults(
-            outputs_prefix=OUTPUTS_PREFIX,
-            outputs_key_field='ioc',
-            outputs=response,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
-            raw_response=response
-        )
+        if response.get('File'):  # In case the returned response is a file, output the file to the war room.
+            return response
+        else:
+            return CommandResults(
+                outputs_prefix=OUTPUTS_PREFIX,
+                outputs_key_field='ioc',
+                outputs=response,
+                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+                raw_response=response
+            )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
         raise DemistoException(f'Download ioc encountered an exception: {e}', exception=e, res=response)

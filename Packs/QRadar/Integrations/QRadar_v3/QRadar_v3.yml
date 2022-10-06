@@ -25,6 +25,11 @@ configuration:
   name: incident_type
   required: false
   type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
@@ -35,69 +40,75 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
+- defaultvalue: 'true'
+  display: Retry events fetch
+  name: retry_events_fetch
+  required: false
+  type: 8
+  additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5"
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
-  required: false
-  type: 0
   additionalinfo: The maximal amount of events to pull per incident.
-- defaultvalue: '20'
-  display: Number of offenses to pull per API call (max 50)
-  name: offenses_per_fetch
-  additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   required: false
   type: 0
+- display: Number of offenses to pull per API call (max 50)
+  name: offenses_per_fetch
+  required: false
+  type: 0
+  additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
+  defaultvalue: '20'
 - display: Query to fetch offenses
   name: query
   required: false
   type: 0
   additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5 AND status=OPEN".
 - defaultvalue: IPs And Assets
-  display: Incidents Enrichment
-  hidden: false
+  display: 'Incidents Enrichment'
   name: enrichment
+  required: true
+  additionalinfo: 'IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.'
+  type: 15
+  hidden: false
   options:
   - IPs
   - IPs And Assets
   - None
-  required: true
-  type: 15
-  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.
 - defaultvalue: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
   required: false
-  additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
   type: 12
-- defaultvalue: No Mirroring
+  additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
+- additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
+  defaultvalue: 'No Mirroring'
   display: Mirroring Options
   hidden: false
   name: mirror_options
+  required: false
+  type: 15
   options:
   - No Mirroring
   - Mirror Offense
   - Mirror Offense and Events
-  required: false
-  type: 15
-  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
-  hidden: false
   name: close_incident
   required: false
   type: 8
+  hidden: false
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
-  defaultvalue: '100'
   display: The number of incoming incidents to mirror each time
   name: mirror_limit
   required: false
   type: 0
-- additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
-  display: Advanced Parameters
+  defaultvalue: '100'
+- display: Advanced Parameters
   name: adv_params
-  required: false
   type: 12
+  required: false
+  additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -774,12 +785,35 @@ script:
       description: ID of the newly created search.
       type: String
     arguments:
+    - name: offense_id
+      required: false
+      type: Number
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression and saved_search_id.
+    - name: events_limit
+      required: false
+      type: Number
+      description: The number of events to return. Mutually exclusive with query_expression and saved_search_id.
+    - name: events_columns
+      required: false
+      type: String
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression and saved_search_id.
+    - name: fetch_mode
+      type: PREDEFINED
+      predefined:
+      - Fetch With All Events
+      - Fetch Correlation Events Only
+      required: false
+      description: The mode to use when fetching events. Mutually exclusive with query_expression and saved_search_id.
+    - name: start_time
+      required: false
+      type: Date
+      description: The start time of the search.
     - name: query_expression
       required: false
-      description: The AQL query to execute. Mutually exclusive with saved_search_id.
+      description: The AQL query to execute. Mutually exclusive with all other arguments.
     - name: saved_search_id
       required: false
-      description: Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
+      description: Saved search ID to execute. Mutually exclusive with all other arguments. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
   - name: qradar-search-status-get
     description: Retrieves status information for a search, based on the search ID.
     outputs:
@@ -2668,11 +2702,76 @@ script:
     - contextPath: QRadar.LocalDestinationIP.SourceAddressIDs
       description: List of source address IDs associated with the destination address.
       type: Unknown
+  - arguments:
+    - name: offense_id
+      required: false
+      type: Number
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression.
+    - name: events_limit
+      required: false
+      type: Number
+      description: The number of events to return. Mutually exclusive with query_expression.
+    - name: events_columns
+      required: false
+      type: String
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression.
+    - name: fetch_mode
+      type: PREDEFINED
+      predefined:
+      - Fetch With All Events
+      - Fetch Correlation Events Only
+      required: false
+      description: The mode to use when fetching events. Mutually exclusive with query_expression.
+    - name: start_time
+      required: false
+      type: Date
+      description: The start time of the search. Mutually exclusive with query_expression.
+    - name: query_expression
+      required: false
+      type: String
+      description: The AQL query to execute. Mutually exclusive with the other arguments.
+    - name: interval_in_seconds
+      required: false
+      type: Number
+      description: The interval in seconds to use when polling events.
+    - name: search_id
+      required: false
+      type: String
+      description: The search id to query the results.
+    - name: retry_if_not_all_fetched
+      required: false
+      auto: PREDEFINED
+      description: Whenever set to true, the command retries to fetch all events if the number of events fetched is less than `event_count`.
+      predefined:
+      - 'true'
+      - 'false'
+    - name: polling
+      description: Wait for search results.
+      required: false
+      auto: PREDEFINED
+      default: true
+      predefined:
+      - 'true'
+      - 'false'
+    deprecated: false
+    description: Polling command to search for events of a specific offense.
+    name: qradar-search-retrieve-events
+    polling: true
+    outputs:
+    - contextPath: QRadar.SearchEvents.ID
+      description: The search id of the query.
+      type: Unknown
+    - contextPath: QRadar.SearchEvents.Events
+      description: The events from QRadar search.
+      type: Unknown
+    - contextPath: QRadar.SearchEvents.Status
+      description: The status of the search ('wait', 'partial', 'success').
+      type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: false
   isremotesyncin: true

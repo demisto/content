@@ -62,7 +62,8 @@ class pXScoring:
             integration_name='PerimeterX',
             score=pXScoring.dbotscore_from_risk(risk_score, thresholds),
             malicious_description='High risk score indicates high probability that the requests from the IP are '
-                                  'malicious '
+                                  'malicious ',
+            reliability=demisto.params().get('integrationReliability')
         )
 
         # Create the IP Standard Context structure using Common.IP and add

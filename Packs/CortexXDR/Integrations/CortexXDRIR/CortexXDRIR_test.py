@@ -6,6 +6,8 @@ from freezegun import freeze_time
 
 import demistomock as demisto
 from CommonServerPython import Common
+from CoreIRApiModule import MIRROR_IN_CLOSE_REASON
+from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -586,7 +588,8 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     assert response.entries == []
 
 
-def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
+@pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
+def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incident_status):
     """
     Given:
         -  an XDR client
@@ -608,8 +611,11 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'lastUpdate': 0
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    raw_incident['reply']['incident']['status'] = 'resolved_true_positive'
+    raw_incident['reply']['incident']['status'] = incident_status
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
+
+    close_notes_prefix = 'Known Issue.\n' if incident_status == 'resolved_known_issue' else ''
+    close_notes = f'{close_notes_prefix}{MIRROR_IN_CLOSE_REASON}\nHandled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
@@ -618,8 +624,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['closeReason'] = 'Resolved'
-    expected_modified_incident['closeNotes'] = 'Handled'
+    expected_modified_incident['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR[incident_status]
+    expected_modified_incident['closeNotes'] = close_notes
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
@@ -629,8 +635,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'Type': 1,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': 'Resolved',
-            'closeNotes': 'Handled'
+            'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR[incident_status],
+            'closeNotes': close_notes
         },
         'ContentsFormat': 'json'
     }

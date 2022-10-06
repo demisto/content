@@ -3216,6 +3216,7 @@ def test_close_channel_with_name(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(SlackV3, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(SlackV3, 'find_mirror_by_investigation', return_value={})
     mocker.patch.object(slack_sdk.WebClient, 'api_call')
     mocker.patch.object(demisto, 'results')
 
@@ -4716,3 +4717,50 @@ def test_handle_tags_in_message_sync_url(mocker):
     # Assert
 
     assert user_message_exists_in_url_result == 'Hello <@U012A3CDE>! <https://google.com|This message is a link to google.>'
+
+
+def test_remove_channel_from_context(mocker):
+    """
+    Given:
+        An integration context dict containing a known channel ID to remove
+    When:
+        Removing a deleted channel from the context
+    Then:
+        Assert that the channel ID of the channel to remove is no longer found in the context
+    """
+    from SlackV3 import remove_channel_from_context
+    testing_context = {'conversations': "["
+                                        "{\"name\": \"1657185964826\", \"id\": \"C03NF1QTK38\"},"
+                                        "{\"name\": \"1657186151481\", \"id\": \"C03NF23NFRU\"},"
+                                        "{\"name\": \"1657186333246\", \"id\": \"C03NMJJTJ75\"}"
+                                        "]"}
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    remove_channel_from_context(channel_id="C03NF1QTK38", integration_context=testing_context)
+
+    updated_context = demisto.setIntegrationContext.call_args[0][0]
+    new_conversations = json.loads(updated_context.get('conversations', {}))
+    for new_conversation in new_conversations:
+        assert new_conversation.get('id') != 'C03NF1QTK38'
+
+
+def test_slack_get_integration_context(mocker):
+    """
+    Given:
+        An integration context dict
+    When:
+        Fetching statistics about the context
+    Then:
+        Assert that the human-readable of the result is correct
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    from SlackV3 import slack_get_integration_context
+
+    expected_results = ('### Long Running Context Statistics\n'
+                        '|Conversations Count|Conversations Size In Bytes|Mirror Size In '
+                        'Bytes|Mirrors Count|Users Count|Users Size In Bytes|\n'
+                        '|---|---|---|---|---|---|\n'
+                        '| 2 | 1706 | 1397 | 5 | 2 | 1843 |\n')
+    slack_get_integration_context()
+
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == expected_results

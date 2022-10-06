@@ -1464,7 +1464,7 @@ tasks:
           root: inputs.InternalDomainName
       InternalHostRegex:
         complex:
-          root: inputs.InternalHostRegexc
+          root: inputs.InternalHostRegex
       InternalRange:
         complex:
           root: inputs.InternalRange
@@ -1794,12 +1794,6 @@ inputs:
       accessor: xdrincidentid
   required: false
   description: Incident ID.
-  playbookInputQuery:
-- key: similarIncidentFields
-  value:
-    simple: xdrdescription
-  required: false
-  description: A comma-separated list of similar incident field keys.
   playbookInputQuery:
 - key: LinkSimilarIncidents
   value:

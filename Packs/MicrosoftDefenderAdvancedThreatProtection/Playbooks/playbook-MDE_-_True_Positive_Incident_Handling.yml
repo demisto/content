@@ -1,8 +1,8 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
 id: MDE - True Positive Incident Handling
 inputs:
 - description: 'The Cortex XSOAR investigation IDs to be closed. '
@@ -115,6 +115,7 @@ tasks:
           "y": -170
         }
       }
+    continueonerrortype: ""
   '1':
     id: '1'
     ignoreworker: false
@@ -141,7 +142,7 @@ tasks:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       id: 6fd207d1-791f-4b90-850b-a28c922534b3
       iscommand: false
-      name: Retrieve MDE alert IDs based on Cortex XSOAR investigation
+      name: Retrieve MDE alert ID based on Cortex XSOAR investigation
       scriptName: SearchIncidentsV2
       type: regular
       version: -1
@@ -155,6 +156,7 @@ tasks:
           "y": 1460
         }
       }
+    continueonerrortype: ""
   '2':
     id: '2'
     ignoreworker: false
@@ -206,6 +208,7 @@ tasks:
           "y": 1640
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -233,6 +236,7 @@ tasks:
           "y": 1955
         }
       }
+    continueonerrortype: ""
   '7':
     id: '7'
     ignoreworker: false
@@ -264,7 +268,7 @@ tasks:
       description: commands.local.cmd.close.inv
       id: e02da1ef-4f9b-48f0-85e3-b035227d72c2
       iscommand: true
-      name: Close  XSOAR incident
+      name: Close  Cortex XSOAR incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
@@ -278,6 +282,7 @@ tasks:
           "y": 1805
         }
       }
+    continueonerrortype: ""
   '19':
     id: '19'
     ignoreworker: false
@@ -328,6 +333,7 @@ tasks:
           "y": 400
         }
       }
+    continueonerrortype: ""
   '20':
     conditions:
     - condition:
@@ -371,6 +377,7 @@ tasks:
           "y": 220
         }
       }
+    continueonerrortype: ""
   '21':
     id: '21'
     ignoreworker: false
@@ -401,6 +408,7 @@ tasks:
           "y": -30
         }
       }
+    continueonerrortype: ""
   '22':
     conditions:
     - condition:
@@ -408,17 +416,26 @@ tasks:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: SNOW
+        - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
       label: SNOW
     - condition:
       - - left:
             iscontext: true
             value:
               simple: inputs.TicketingSystemToUse
-          operator: isEqualString
+          operator: containsString
           right:
             value:
               simple: JIRA
@@ -456,6 +473,7 @@ tasks:
           "y": 180
         }
       }
+    continueonerrortype: ""
   '25':
     id: '25'
     ignoreworker: false
@@ -486,6 +504,7 @@ tasks:
           "y": 720
         }
       }
+    continueonerrortype: ""
   '26':
     id: '26'
     ignoreworker: false
@@ -516,6 +535,7 @@ tasks:
           "y": 110
         }
       }
+    continueonerrortype: ""
   '27':
     form:
       description: ''
@@ -536,6 +556,22 @@ tasks:
         required: false
         tooltip: ''
         type: multiSelect
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Generate alerts on this indicator?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "False"
+        - simple: "True"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
       sender: ''
       title: Indicators to block
       totalanswers: 0
@@ -567,12 +603,12 @@ tasks:
     task:
       brand: ''
       description: Confirms the indicators to block.
-      id: b8bb6567-7dff-4770-87a7-b875a24a158f
+      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
       iscommand: false
       name: Confirm Indicators to block
       type: collection
       version: -1
-    taskid: b8bb6567-7dff-4770-87a7-b875a24a158f
+    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
     timertriggers: []
     type: collection
     view: |-
@@ -582,6 +618,7 @@ tasks:
           "y": 220
         }
       }
+    continueonerrortype: ""
   '29':
     id: '29'
     ignoreworker: false
@@ -618,6 +655,7 @@ tasks:
           "y": 720
         }
       }
+    continueonerrortype: ""
   '30':
     id: '30'
     ignoreworker: false
@@ -648,6 +686,7 @@ tasks:
           "y": 890
         }
       }
+    continueonerrortype: ""
   '31':
     id: '31'
     ignoreworker: false
@@ -680,6 +719,7 @@ tasks:
           "y": -30
         }
       }
+    continueonerrortype: ""
   '32':
     id: '32'
     ignoreworker: false
@@ -710,6 +750,7 @@ tasks:
           "y": 1040
         }
       }
+    continueonerrortype: ""
   '33':
     id: '33'
     ignoreworker: false
@@ -740,6 +781,7 @@ tasks:
           "y": 110
         }
       }
+    continueonerrortype: ""
   '34':
     id: '34'
     ignoreworker: false
@@ -773,9 +815,9 @@ tasks:
       id: 3d50b4ec-7259-4fa9-8f2d-dcad005880bb
       iscommand: false
       name: Microsoft Defender For Endpoint - Isolate Endpoint
-      playbookId: Microsoft Defender For Endpoint - Isolate Endpoint
       type: playbook
       version: -1
+      playbookName: Microsoft Defender For Endpoint - Isolate Endpoint
     taskid: 3d50b4ec-7259-4fa9-8f2d-dcad005880bb
     timertriggers: []
     type: playbook
@@ -786,6 +828,7 @@ tasks:
           "y": 575
         }
       }
+    continueonerrortype: ""
   '44':
     id: '44'
     ignoreworker: false
@@ -816,6 +859,7 @@ tasks:
           "y": 890
         }
       }
+    continueonerrortype: ""
   '53':
     id: '53'
     ignoreworker: false
@@ -846,6 +890,7 @@ tasks:
           "y": 1160
         }
       }
+    continueonerrortype: ""
   '54':
     id: '54'
     ignoreworker: false
@@ -870,9 +915,9 @@ tasks:
       id: 4b0e11b0-60fd-4630-89f6-a3fecf503e57
       iscommand: false
       name: Open ServiceNow ticket
-      scriptName: ServiceNowCreateIncident
       type: regular
       version: -1
+      script: ServiceNowCreateIncident
     taskid: 4b0e11b0-60fd-4630-89f6-a3fecf503e57
     timertriggers: []
     type: regular
@@ -883,6 +928,7 @@ tasks:
           "y": 535
         }
       }
+    continueonerrortype: ""
   '56':
     id: '56'
     ignoreworker: false
@@ -921,6 +967,7 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
   '57':
     id: '57'
     ignoreworker: false
@@ -959,6 +1006,7 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
   '60':
     conditions:
     - condition:
@@ -1010,6 +1058,7 @@ tasks:
           "y": 1290
         }
       }
+    continueonerrortype: ""
   '62':
     id: '62'
     ignoreworker: false
@@ -1056,6 +1105,7 @@ tasks:
           "y": 720
         }
       }
+    continueonerrortype: ""
   '63':
     id: '63'
     ignoreworker: false
@@ -1092,6 +1142,7 @@ tasks:
           "y": 575
         }
       }
+    continueonerrortype: ""
   '64':
     id: '64'
     ignoreworker: false
@@ -1122,6 +1173,7 @@ tasks:
           "y": 890
         }
       }
+    continueonerrortype: ""
   '66':
     id: '66'
     ignoreworker: false
@@ -1152,6 +1204,7 @@ tasks:
           "y": 110
         }
       }
+    continueonerrortype: ""
   '68':
     id: '68'
     ignoreworker: false
@@ -1175,6 +1228,8 @@ tasks:
         simple: ${Indicators to block.Answers.0}
       severity:
         simple: Informational
+      generate_alert:
+        simple: ${Indicators to block.Answers.1}
     separatecontext: false
     skipunavailable: false
     task:
@@ -1196,6 +1251,7 @@ tasks:
           "y": 720
         }
       }
+    continueonerrortype: ""
   '70':
     id: '70'
     ignoreworker: false
@@ -1234,6 +1290,7 @@ tasks:
           "y": 535
         }
       }
+    continueonerrortype: ""
   '71':
     form:
       description: ''
@@ -1300,6 +1357,7 @@ tasks:
           "y": 220
         }
       }
+    continueonerrortype: ""
   '72':
     conditions:
     - condition:
@@ -1343,6 +1401,7 @@ tasks:
           "y": 370
         }
       }
+    continueonerrortype: ""
   '73':
     conditions:
     - condition:
@@ -1385,6 +1444,7 @@ tasks:
           "y": 400
         }
       }
+    continueonerrortype: ""
 version: -1
 view: |-
   {
@@ -1399,5 +1459,6 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender - ATP - Indicators SC Test
 fromversion: 6.5.0

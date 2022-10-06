@@ -11,18 +11,17 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * AddEvidence
+* Print
 
 ### Commands
-* createNewIndicator
 * ds-search
-* associateIndicatorsToIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_MD5 | A MD5 hash to assess and enrich | File.MD5 | Optional |
+| IoC_MD5 | A Digital Shadows ShadowSearch query containing MD5 hashes | File.MD5 | Optional |
 
 ## Playbook Outputs
 ---

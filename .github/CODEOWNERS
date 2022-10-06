@@ -20,16 +20,12 @@
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
 # Test Collection
-/Tests/scripts/collect_tests_and_content_packs.py @dorschw
+/Tests/scripts/collect_tests @dorschw
 
 # PANW Products
-/Packs/PaloAltoNetworksIoT/Integrations/ @bakatzir
-/Packs/PaloAltoNetworksIoT3rdParty/Integrations/ @bakatzir
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik
-/Packs/PrismaAccess/Integrations/ @bakatzir
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
-/Packs/PrismaCloud/Integrations/ @bakatzir
 /Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
 
 # Important Integrations
@@ -45,14 +41,14 @@
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Common Packs
-/Packs/CommonTypes/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonPlaybooks/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonDashboards/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonTypes/ @michalgold @idovandijk
+/Packs/CommonPlaybooks/ @michalgold @idovandijk
+/Packs/CommonDashboards/ @michalgold @idovandijk
 
 
 # Build related
@@ -74,3 +70,9 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 # Dependencies
 pyproject.toml @ilaner
 poetry.lock @ilaner
+
+# Devcontainers
+.devcontainer/* @ilaner
+
+# Demisto Class
+Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval

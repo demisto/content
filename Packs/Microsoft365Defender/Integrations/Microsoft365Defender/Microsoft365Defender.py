@@ -1,9 +1,9 @@
+import json
 from typing import Dict
 
+import demistomock as demisto  # noqa: F401
 import urllib3
-
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -58,7 +58,7 @@ class Client:
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
-                       skip: Optional[int] = None) -> Dict:
+                       skip: Optional[int] = None, odata: Optional[dict] = None) -> Dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -72,6 +72,7 @@ class Client:
                 establish a connection to a remote machine before a timeout occurs.
             from_date (datetime): get incident with creation date more recent than from_date
             skip (int): how many entries to skip
+            odata (dict): alternative method for listing incidents, accepts dictionary of URI parameters
 
         Returns (Dict): request results as dict:
                     { '@odata.context',
@@ -80,25 +81,30 @@ class Client:
                     }
 
         """
-        params = {'$top': limit}
-        filter_query = ''
-        if status:
-            filter_query += 'status eq ' + "'" + status + "'"
+        params = {}
 
-        if assigned_to:
-            filter_query += ' and ' if filter_query else ''
-            filter_query += f"assignedTo eq '{assigned_to}'"
+        if odata:
+            params = odata
+        else:
+            filter_query = ''
+            params = {'$top': limit}
+            if status:
+                filter_query += 'status eq ' + "'" + status + "'"
 
-        # fetch incidents
-        if from_date:
-            filter_query += ' and ' if filter_query else ''
-            filter_query += f"createdTime gt {from_date}"
+            if assigned_to:
+                filter_query += ' and ' if filter_query else ''
+                filter_query += f"assignedTo eq '{assigned_to}'"
 
-        if filter_query:
-            params['$filter'] = filter_query  # type: ignore
+            # fetch incidents
+            if from_date:
+                filter_query += ' and ' if filter_query else ''
+                filter_query += f"createdTime gt {from_date}"
 
-        if skip:
-            params['$skip'] = skip
+            if filter_query:
+                params['$filter'] = filter_query  # type: ignore
+
+            if skip:
+                params['$skip'] = skip
 
         return self.ms_client.http_request(method='GET', url_suffix='api/incidents', timeout=timeout,
                                            params=params)
@@ -106,7 +112,7 @@ class Client:
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> Dict:
         """
         PATCH request to update single incident.
         Args:
@@ -120,6 +126,7 @@ class Client:
                  for example: tag1,tag2,tag3.
             timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+            comment (str): Comment to be added to the incident
        Returns( Dict): request results as dict:
                     { '@odata.context',
                       'value': updated incident,
@@ -127,7 +134,9 @@ class Client:
 
         """
         body = assign_params(status=status, assignedTo=assigned_to, classification=classification,
-                             determination=determination, tags=tags)
+                             determination=determination, tags=tags, comment=comment)
+        if assigned_to == "":
+            body['assignedTo'] = ""
         updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
                                                        json_data=body, timeout=timeout)
         return updated_incident
@@ -330,6 +339,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
               - status (str) - get incidents with the given status (Active, Resolved or Redirected)
               - assigned_to (str) - get incidents assigned to the given user
               - offset (int) - skip the first N entries of the list
+              - odata (str) - json dictionary containing odata uri parameters
     Returns: CommandResults
 
     """
@@ -338,8 +348,16 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     assigned_to = args.get('assigned_to')
     offset = arg_to_number(args.get('offset'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
+    odata = args.get('odata')
 
-    response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset, timeout=timeout)
+    if odata:
+        try:
+            odata = json.loads(odata)
+        except json.JSONDecodeError:
+            return_error(f"Can't parse odata argument as JSON array.\nvalue: {odata}")
+
+    response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to,
+                                     skip=offset, timeout=timeout, odata=odata)
 
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
@@ -380,10 +398,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
     determination = args.get('determination')
     incident_id = arg_to_number(args.get('id'))
     timeout = arg_to_number(args.get('timeout', TIMEOUT))
+    comment = args.get('comment')
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
                                               classification=classification, determination=determination, tags=tags,
-                                              timeout=timeout)
+                                              timeout=timeout, comment=comment)
     if updated_incident.get('@odata.context'):
         del updated_incident['@odata.context']
 

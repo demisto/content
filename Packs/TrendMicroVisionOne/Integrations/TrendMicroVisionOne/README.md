@@ -19,6 +19,8 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 | Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
 | Sync On First Run (days) | How many days to go back during first sync | False |
 | Max Incidents | Maximum Number of Workbenches to Retrieve | False |
+| Use system proxy settings | Connect to Trend Micro Vision One APIs via system proxy | False
+| Trust any certificate (not secure) | Trust any certificate | False
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands

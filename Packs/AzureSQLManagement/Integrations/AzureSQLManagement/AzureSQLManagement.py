@@ -9,7 +9,6 @@ import copy
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2019-06-01-preview'
 ''' CLIENT CLASS '''
@@ -20,30 +19,43 @@ class Client:
     """
 
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
-                 azure_ad_endpoint='https://login.microsoftonline.com'):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, auth_type, tenant_id=None,
+                 enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
+        AUTH_TYPES_DICT: dict = {'Authorization Code': {
+            'grant_type': AUTHORIZATION_CODE,
+            'resource': None,
+            'scope': 'https://management.azure.com/.default'},
+            'Device Code': {
+            'grant_type': DEVICE_CODE,
+            'resource': 'https://management.core.windows.net',
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+        }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+        client_args = assign_params(
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,  # disable-secrets-detection
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
-        }
+            auth_id=app_id,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),  # disable-secrets-detection
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key
+        )
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
@@ -413,7 +425,10 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    if demisto.params().get('auth_type') == 'Device Code':
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    else:
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
@@ -436,6 +451,23 @@ def reset_auth(client: Client) -> CommandResults:
                                           '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
 
 
+@logger
+def test_module(client):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-sql-auth-test`\n"
+                        "For more details press the (?) button.")
+
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !msgraph-user-test command in order to test it")
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -449,6 +481,11 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
+            tenant_id=params.get('tenant_id', ''),
+            auth_type=params.get('auth_type', 'Device Code'),
+            auth_code=params.get('auth_code', {}).get('password', ''),
+            redirect_uri=params.get('redirect_uri', ''),
+            enc_key=params.get('credentials', {}).get('password', ''),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
@@ -458,10 +495,7 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
-            return_error(
-                'Please run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in. '
-                'You can validate the connection by running `!azure-sql-auth-test`\n '
-                'For more details press the (?) button.')
+            return_results(test_module(client))
 
         elif command == 'azure-sql-servers-list':
             return_results(azure_sql_servers_list_command(client, args))

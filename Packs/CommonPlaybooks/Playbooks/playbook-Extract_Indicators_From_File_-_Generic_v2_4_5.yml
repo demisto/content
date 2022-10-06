@@ -17,22 +17,22 @@ description: |-
   - XLS
   - XLSX
   - XML
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 66ff4520-efa0-4c28-81d4-6d933e7ac182
     type: start
     task:
       id: 66ff4520-efa0-4c28-81d4-6d933e7ac182
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -48,8 +48,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 01e70914-25f3-495d-81f4-5864bd04340a
     type: condition
     task:
@@ -60,15 +60,15 @@ tasks:
         Checks if there is a file in the playbook input.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "2"
+      - '10'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -91,8 +91,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
     type: regular
     task:
@@ -103,10 +103,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       key:
         simple: File
@@ -131,8 +131,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: cd4f63cd-d080-4574-86f2-73b6dd9854d9
     type: title
     task:
@@ -141,7 +141,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -158,8 +158,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 3745ecc5-a6c8-4c53-83ff-25d3dbef7eb1
     type: title
     task:
@@ -168,14 +168,14 @@ tasks:
       name: Extract Indicators From Files
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
-      - "7"
-      - "9"
-      - "15"
+      - '5'
+      - '7'
+      - '9'
+      - '15'
     separatecontext: false
     view: |-
       {
@@ -191,27 +191,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 816708c1-620e-495b-8102-081c06a0146f
     type: condition
     task:
       id: 816708c1-620e-495b-8102-081c06a0146f
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "6"
+      - '10'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -346,8 +345,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: baa0320d-9647-44bb-8110-99b6d1c618df
     type: regular
     task:
@@ -358,10 +357,10 @@ tasks:
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       entryID:
         complex:
@@ -487,8 +486,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 60ecb284-7af0-463e-80d7-8f7e36dce929
     type: condition
     task:
@@ -498,15 +497,15 @@ tasks:
       description: Checks if there is a PDF file in context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "8"
+      - '10'
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -550,8 +549,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: fa0e5d0b-c66c-4837-8b73-bacf7e890d12
     type: regular
     task:
@@ -562,10 +561,10 @@ tasks:
       scriptName: ReadPDFFileV2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       entryID:
         complex:
@@ -607,26 +606,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+  '9':
+    id: '9'
+    taskid: 77dcaf0d-5cb9-4f91-812a-695afc8225f1
     type: condition
     task:
-      id: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+      id: 77dcaf0d-5cb9-4f91-812a-695afc8225f1
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "11"
+      - '10'
+      yes:
+      - '11'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -761,10 +760,25 @@ tasks:
                     right:
                       value:
                         simple: xlsb
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsm
                 accessor: EntryID
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -779,8 +793,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: c0b4f86a-6063-455f-8bc7-92d09cd519fa
     type: title
     task:
@@ -789,11 +803,11 @@ tasks:
       name: No File To Parse
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     separatecontext: false
     view: |-
       {
@@ -809,22 +823,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 54ad5a67-0f23-40af-8e77-451ddbc84108
+  '11':
+    id: '11'
+    taskid: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
     type: regular
     task:
-      id: 54ad5a67-0f23-40af-8e77-451ddbc84108
+      id: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
       scriptName: ExtractIndicatorsFromWordFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       entryID:
         complex:
@@ -932,6 +946,19 @@ tasks:
               right:
                 value:
                   simple: pptx
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsm
           accessor: EntryID
           transformers:
           - operator: uniq
@@ -951,8 +978,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 1572cbb3-ceff-4d00-8f8a-468ad338953b
     type: condition
     task:
@@ -962,15 +989,15 @@ tasks:
       description: Checks whether images were extracted from PDF files.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "19"
-      "yes":
-      - "14"
+      - '19'
+      yes:
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1031,27 +1058,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 92e92794-63db-4875-88c3-89bd5a4ec179
     type: condition
     task:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration.
-        enabled.
+      description: Checks whether there is an active instance of the Image OCR integration. enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "19"
-      "yes":
-      - "12"
+      - '19'
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1082,23 +1108,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: c6d841e4-812f-40e0-8ef4-9203859c9781
     type: regular
     task:
       id: c6d841e4-812f-40e0-8ef4-9203859c9781
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
-        to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       entryid:
         complex:
@@ -1159,8 +1184,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 32dd3613-cac8-4ac6-8b2a-59fd9c2e4233
     type: condition
     task:
@@ -1177,15 +1202,15 @@ tasks:
         - XML
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "16"
+      - '10'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1309,8 +1334,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 430b4252-4478-4150-8641-2444119a6005
     type: regular
     task:
@@ -1328,13 +1353,13 @@ tasks:
       scriptName: ConvertFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       all_files:
-        simple: "yes"
+        simple: yes
       entry_id:
         complex:
           root: File
@@ -1447,8 +1472,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
     type: regular
     task:
@@ -1461,10 +1486,10 @@ tasks:
       script: '|||rasterize-pdf'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       EntryID:
         complex:
@@ -1508,8 +1533,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: d3466327-cfe5-4364-8b19-187f67320432
     type: condition
     task:
@@ -1519,15 +1544,15 @@ tasks:
       description: Checks if the Rasterize integration is enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "13"
-      "yes":
-      - "17"
+      - '13'
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1570,8 +1595,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
     type: regular
     task:
@@ -1584,10 +1609,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       key:
         simple: ExtractedURLsFromFiles
@@ -1645,6 +1670,26 @@ inputs:
   required: false
   description: The file to extract indicators from.
   playbookInputQuery:
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
 outputs:
 - contextPath: Domain.Name
   description: The extracted domains.
@@ -1698,31 +1743,8 @@ outputs:
   description: The list of URLs that were extracted from the file.
   type: string
 - contextPath: ExtractedURLsFromFiles
-  description: The list of URLs that were extracted from the file. This output is a
-    duplicate of the URL.Data output and it enables parent playbooks to identify
-    the URLs generated by this playbook.
+  description: The list of URLs that were extracted from the file. This output is a duplicate of the URL.Data output and it enables parent playbooks to identify the URLs generated by this playbook.
   type: String
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
 - Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Isolate and unisolate endpoint - test
 fromversion: 5.0.0

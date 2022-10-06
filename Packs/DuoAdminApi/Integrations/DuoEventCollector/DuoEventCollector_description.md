@@ -21,8 +21,6 @@ Duo Events collector XSIAM
 * **First fetch from api time** - The time to take events from if no time is saved in the system.
 * **XSIAM request limit** - The maximum amount of events to retrieve from the API.
 * **Request retries** - The number of retries to perform in the API. (This is necessary because if there are too many retries, the API will return a "too many requests 429" error).
-* **The vendor corresponding to the integration that originated the events** - Product name of the product to name the dataset after.
-* **The product corresponding to the integration that originated the events** - Vendor name of the product to name the dataset after.
 
 
 ## Step-by-step configuration
@@ -34,5 +32,3 @@ Duo Events collector XSIAM
 - **First fetch from api time** - 1 Day  
 - **XSIAM request limit** - 01 Minutes 
 - **Request retries** - 5 
-- **The vendor corresponding to the integration that originated the events** - duo 
-- **The product corresponding to the integration that originated the events** - duo 

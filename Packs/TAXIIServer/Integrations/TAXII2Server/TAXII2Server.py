@@ -1,5 +1,6 @@
 import functools
 import uuid
+import json
 from typing import Callable
 from flask import Flask, request, make_response, jsonify, Response
 from urllib.parse import ParseResult, urlparse
@@ -33,6 +34,7 @@ TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
@@ -66,7 +68,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     FeedIndicatorType.CVE: 'vulnerability',
 }
 
-STIX2_TYPES_TO_XSOAR = {
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
@@ -79,7 +81,7 @@ STIX2_TYPES_TO_XSOAR = {
     'vulnerability': FeedIndicatorType.CVE,
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
-    'domain-name': [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
+    'domain-name': (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
     'user-account': FeedIndicatorType.Account,
     'email-addr': FeedIndicatorType.Email,
     'url': FeedIndicatorType.URL,
@@ -129,7 +131,7 @@ class TAXII2Server:
         self.collections_by_id: dict = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
-        self.types_for_indicator_sdo = types_for_indicator_sdo if types_for_indicator_sdo else []
+        self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
     @property
     def taxii_collections_media_type(self):
@@ -198,17 +200,16 @@ class TAXII2Server:
         self._collections_resource = collections_resource
         self.collections_by_id = collections_by_id
 
-    def get_discovery_service(self) -> dict:
+    def get_discovery_service(self, instance_execute=False) -> dict:
         """
         Handle discovery request.
 
         Returns:
             The discovery response.
         """
-        request_headers = request.headers
         if self._service_address:
             service_address = self._service_address
-        elif request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
+        elif instance_execute or (request.headers and '/instance/execute' in request.headers.get('X-Request-URI', '')):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
             self._url_scheme = 'https'
@@ -391,6 +392,14 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
+
+        if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
+            return handle_response(HTTP_406_NOT_ACCEPABLE, {
+                'title': 'Invalid TAXII Header',
+                'description': 'The media type (version=2.0) provided in the Accept header'
+                               ' is not supported on TAXII v2.1.'
+            })
+
         return f(*args, **kwargs)
 
     return validate_request_headers
@@ -484,7 +493,7 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query: str, types: list) -> str:
+def create_query(query: str, types: list[str]) -> str:
     """
     Args:
         query: collections query
@@ -495,23 +504,19 @@ def create_query(query: str, types: list) -> str:
     """
     new_query = ''
     if types:
+        demisto.debug(f'raw query: {query}')
         xsoar_types: list = []
-        if 'domain-name' in types:
-            xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
         for t in types:
-            if t != 'domain-name':
-                try:
-                    xsoar_type = STIX2_TYPES_TO_XSOAR[t]
-                except KeyError:
-                    xsoar_type = t
-                xsoar_types.append(xsoar_type)
+            xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
+            xsoar_types.extend(xsoar_type if isinstance(xsoar_type, tuple) else (xsoar_type,))
 
         if query.strip():
-            new_query = f'({query}) '
+            new_query = f'({query})'
 
-        new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
+        if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
+            new_query += f' and ({or_part})'
 
-        demisto.debug(f'new query: {new_query}')
+        demisto.debug(f'modified query, after adding types: {new_query}')
         return new_query
     else:
         return query
@@ -687,7 +692,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         description=xsoar_indicator.get('CustomFields', {}).get('description', '')
     )
     return dict({k: v for k, v in stix_object.items()
-                if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+                 if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
@@ -799,10 +804,11 @@ def parse_content_range(content_range: str) -> tuple:
     return offset, limit
 
 
-def get_collections(params: dict = demisto.params()) -> dict:
+def get_collections(params: Optional[dict] = None) -> dict:
     """
     Gets the indicator query collections from the integration parameters.
     """
+    params = params or demisto.params()
     collections_json: str = params.get('collections', '')
 
     try:
@@ -833,9 +839,12 @@ def parse_manifest_and_object_args() -> tuple:
 
     try:
         if added_after:
+            datetime.strptime(added_after, UTC_DATE_FORMAT)
+    except ValueError:
+        try:
             datetime.strptime(added_after, STIX_DATE_FORMAT)
-    except Exception as e:
-        raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+        except Exception as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
     if SERVER.version == TAXII_VER_2_0:
         if content_range := request.headers.get('Content-Range'):
@@ -882,7 +891,7 @@ def taxii2_server_discovery() -> Response:
     return handle_response(HTTP_200_OK, discovery_response)
 
 
-@APP.route('/<api_root>/', methods=['GET'])
+@APP.route('/<api_root>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_api_root(api_root: str) -> Response:
@@ -906,7 +915,7 @@ def taxii2_api_root(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, api_root_response)
 
 
-@APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
+@APP.route('/<api_root>/status/<status_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
@@ -921,7 +930,7 @@ def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
                                                                'access to the resource'})
 
 
-@APP.route('/<api_root>/collections/', methods=['GET'])
+@APP.route('/<api_root>/collections', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collections(api_root: str) -> Response:
@@ -945,7 +954,7 @@ def taxii2_collections(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, collections_response)
 
 
-@APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
@@ -970,7 +979,7 @@ def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
     return handle_response(HTTP_200_OK, collection_response)  # type: ignore[arg-type]
 
 
-@APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/manifest', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_manifest(api_root: str, collection_id: str) -> Response:
@@ -1020,7 +1029,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
     )
 
 
-@APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/objects', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_objects(api_root: str, collection_id: str) -> Response:
@@ -1079,6 +1088,35 @@ def test_module(params: dict) -> str:
     return 'ok'
 
 
+def get_server_info_command(integration_context):
+    server_info = integration_context.get('server_info', None)
+
+    metadata = '**In case the default/api_roots URL is incorrect, you can override it by setting' \
+               '"TAXII2 Service URL Address" field in the integration configuration**\n\n'
+    hr = tableToMarkdown('Server Info', server_info, metadata=metadata)
+
+    result = CommandResults(
+        outputs=server_info,
+        outputs_prefix='TAXIIServer.ServerInfo',
+        readable_output=hr
+    )
+
+    return result
+
+
+def get_server_collections_command(integration_context):
+    collections = integration_context.get('collections', None)
+    markdown = tableToMarkdown('Collections', collections, headers=['id', 'title', 'query', 'description'])
+    result = CommandResults(
+        outputs=collections,
+        outputs_prefix='TAXIIServer.Collection',
+        outputs_key_field='id',
+        readable_output=markdown
+    )
+
+    return result
+
+
 def main():  # pragma: no cover
     """
     Main
@@ -1124,10 +1162,25 @@ def main():  # pragma: no cover
                               types_for_indicator_sdo)
 
         if command == 'long-running-execution':
+            # save TAXII server info in the integration context to make it available later for other commands
+            integration_context = get_integration_context(True)
+            integration_context['collections'] = SERVER.get_collections().get('collections', [])
+            integration_context['server_info'] = SERVER.get_discovery_service(instance_execute=True)
+
+            set_integration_context(integration_context)
+
             run_long_running(params)
 
         elif command == 'test-module':
             return_results(test_module(params))
+
+        elif command == 'taxii-server-list-collections':
+            integration_context = get_integration_context(True)
+            return_results(get_server_collections_command(integration_context))
+
+        elif command == 'taxii-server-info':
+            integration_context = get_integration_context(True)
+            return_results(get_server_info_command(integration_context))
 
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

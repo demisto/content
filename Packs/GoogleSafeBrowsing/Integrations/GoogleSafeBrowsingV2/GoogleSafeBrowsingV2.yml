@@ -99,7 +99,7 @@ script:
     - contextPath: GoogleSafeBrowsing.URL.threatEntryType
       description: The URL threat entry type.
       type: string
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

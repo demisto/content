@@ -8,6 +8,7 @@ configuration:
   options:
   - https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
   - https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv
+  - https://sslbl.abuse.ch/blacklist/sslblacklist.csv
   required: true
   type: 16
 - display: Fetch indicators
@@ -15,8 +16,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: 'true'
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -56,10 +56,10 @@ configuration:
   required: false
   type: 17
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
 - display: ""
   name: feedExpirationInterval
   required: false
@@ -70,9 +70,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -97,8 +95,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and
-  identified as being associated with a malicious SSL certificate.
+description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and identified as being associated with a malicious SSL certificate.
 display: abuse.ch SSL Blacklist Feed
 name: abuse.ch SSL Blacklist Feed
 script:
@@ -121,7 +118,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: sslbl-get-indicators
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.7.33922
   feed: true
   isfetch: false
   longRunning: false
@@ -131,3 +128,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

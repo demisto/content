@@ -14,11 +14,11 @@
     "version": -1,
     "unmapped": false,
     "hidden": false,
-    "type": "longText",
+    "type": "markdown",
     "breachScript": "",
     "editForm": true,
     "description": "",
-    "associatedToAll": false,
+    "associatedToAll": true,
     "associatedTypes": [
         "AWS Security Hub",
         "Campaign",

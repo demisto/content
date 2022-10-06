@@ -1,7 +1,5 @@
 from CommonServerPython import *
 
-import traceback
-
 ''' STANDALONE FUNCTION '''
 
 
@@ -39,7 +37,6 @@ def main():
             readable_output=tableToMarkdown('Remediation Actions Information', result, headers=list(result.keys())))
         return_results(command_result)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute RemediationActionsWidget. Error: {str(ex)}')
 
 

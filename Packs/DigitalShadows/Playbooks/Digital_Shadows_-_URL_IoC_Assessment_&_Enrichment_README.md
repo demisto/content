@@ -10,11 +10,10 @@ This playbook does not use any sub-playbooks.
 * Digital Shadows
 
 ### Scripts
+* Print
 * AddEvidence
 
 ### Commands
-* associateIndicatorsToIncident
-* createNewIndicator
 * ds-search
 
 ## Playbook Inputs
@@ -22,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_URL | A URL to assess and enrich | URL.Data | Optional |
+| IoC_URL | A Digital Shadows ShadowSearch query containing URLs | URL.Data | Optional |
 
 ## Playbook Outputs
 ---
@@ -30,4 +29,4 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | DBotScore.Indicator | Indicator Value | string |
-| DBotScore.Type | Indicator Type | string |
+| DBotScore.Type | Indicator Type | string |gi

@@ -24,7 +24,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: The timeout of the HTTP requests sent to McAfee ePO API (in seconds).
+- additionalinfo: The timeout of the HTTP requests sent to McAfee ePO API (in seconds), the max timeout allowed is 300s.
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
@@ -41,16 +41,14 @@ script:
       description: The command for which to display help information.
     - name: prefix
       description: Displays help information for commands with the specified prefix.
-    description: Displays help (information) for ePO commands. If no command argument
-      is specified, returns all ePO commands.
+    description: Displays help (information) for ePO commands. If no command argument is specified, returns all ePO commands.
   - name: epo-get-latest-dat
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.latestDAT
       description: Latest available McAfee DAT file version.
       type: number
-    description: Checks the latest available DAT file version in the public McAfee
-      repository.
+    description: Checks the latest available DAT file version in the public McAfee repository.
   - name: epo-get-current-dat
     arguments: []
     outputs:
@@ -60,36 +58,26 @@ script:
     description: Checks the existing DAT file version in the ePO repository.
   - name: epo-command
     arguments: []
-    description: Executes the ePO command. Receives the mandatory 'command' argument,
-      and other optional arguments. Run the 'epo-help' command to get a list of available
-      commands. You can control the response format to be text instead of the default
-      JSON format using resp_type=text. You can also specify the 'headers' argument
-      to filter table headers. Example/:/ !epo-command command=system.find searchText=10.0.0.1
-      headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
+    description: Executes the ePO command. Receives the mandatory 'command' argument, and other optional arguments. Run the 'epo-help' command to get a list of available commands. You can control the response format to be text instead of the default JSON format using resp_type=text. You can also specify the 'headers' argument to filter table headers. Example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
   - name: epo-update-client-dat
     arguments:
     - name: systems
       required: true
       description: A CSV list of IP addresses or system names.
     - name: retryAttempts
-      description: Number of times the server will attempt to send the task to the
-        client. Default is 1 retry.
+      description: Number of times the server will attempt to send the task to the client. Default is 1 retry.
     - name: retryIntervalInSeconds
       description: Retry interval in seconds. Default is 30.
     - name: abortAfterMinutes
-      description: The threshold (in minutes) after which attempts to send the task
-        to the client are aborted. Default is 5.
+      description: The threshold (in minutes) after which attempts to send the task to the client are aborted. Default is 5.
     - name: stopAfterMinutes
-      description: The threshold (in minutes) that the client task is allowed to run.
-        Default is 20.
+      description: The threshold (in minutes) that the client task is allowed to run. Default is 20.
     - name: randomizationInterval
-      description: Duration (in minutes) over which to randomly spread task execution.
-        Default is 0 (executes on all clients immediately).
+      description: Duration (in minutes) over which to randomly spread task execution. Default is 0 (executes on all clients immediately).
     description: Runs a client task to update the DAT file on the given endpoints.
   - name: epo-update-repository
     arguments: []
-    description: Triggers a server task in specific ePO servers to retrieve the latest
-      signatures from the updated server.
+    description: Triggers a server task in specific ePO servers to retrieve the latest signatures from the updated server.
   - name: epo-get-system-tree-group
     arguments:
     - name: search
@@ -276,8 +264,7 @@ script:
     - contextPath: McAfee.ePO.Endpoint.AutoID
       description: Endpoint EPO auto ID.
       type: Number
-    description: Finds computers within a specified group in the McAfee ePO system
-      tree.
+    description: Finds computers within a specified group in the McAfee ePO system tree.
   - name: epo-find-system
     arguments:
     - name: searchText
@@ -482,8 +469,7 @@ script:
     - name: searchText
       required: false
       description: List tags that contain the searchText in their name field.
-    description: List tags that contain the searchText. If no searchText is specified,
-      list all tags available in the ePO system.
+    description: List tags that contain the searchText. If no searchText is specified, list all tags available in the ePO system.
     outputs:
     - contextPath: McAfee.ePO.Tags.tagId
       description: Tag ID.
@@ -498,22 +484,18 @@ script:
     arguments:
     - name: table
       description: Name of the table to retrieve.
-    description: Returns the ePO table of the table argument that is specified. If
-      no table argument is specified, returns all ePO tables.
+    description: Returns the ePO table of the table argument that is specified. If no table argument is specified, returns all ePO tables.
   - name: epo-query-table
     arguments:
     - name: target
       required: true
       description: Name of the table.
     - name: select
-      description: 'The columns to return, in SQUID syntax. Example: "(select EPOEvents.AutoID
-        EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
+      description: 'The columns to return, in SQUID syntax. Example: "(select EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
     - name: where
-      description: 'Filter results, in SQUID syntax. Example: "(where ( eq ( OrionTaskLogTask
-        .UserName "ga" )))"'
+      description: 'Filter results, in SQUID syntax. Example: "(where ( eq ( OrionTaskLogTask .UserName "ga" )))"'
     - name: order
-      description: 'Order in which to return the results, in SQUID syntax. Example:
-        "(order (asc OrionTaskLogTask.StartDate) )")'
+      description: 'Order in which to return the results, in SQUID syntax. Example: "(order (asc OrionTaskLogTask.StartDate) )")'
     - name: group
       description: 'Group the results, in SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
     - name: joinTables
@@ -544,17 +526,11 @@ script:
     arguments:
     - name: command
       required: true
-      description: The command to execute. Run either the core.help command or the
-        !epo-help to get all available commands.
+      description: The command to execute. Run either the core.help command or the !epo-help to get all available commands.
     - name: commandArgs
       required: true
-      description: CSV list of key value pairs as additional arguments to pass, for
-        example, "argName1:argValue1,argName2:argValue2".
-    description: Executes the ePO command. Run the 'epo-help' command to get a list
-      of available commands. For example/:/  !epo-advanced-command command=clienttask.find
-      commandArgs=searchText:On-Demand. You can also specify the 'headers' argument
-      to filter table headers, for example/:/ !epo-command command=system.find searchText=10.0.0.1
-      headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
+      description: CSV list of key value pairs as additional arguments to pass, for example, "argName1:argValue1,argName2:argValue2".
+    description: Executes the ePO command. Run the 'epo-help' command to get a list of available commands. For example/:/  !epo-advanced-command command=clienttask.find commandArgs=searchText:On-Demand. You can also specify the 'headers' argument to filter table headers, for example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
   - name: epo-find-client-task
     arguments:
     - name: searchText
@@ -584,8 +560,7 @@ script:
     arguments:
     - name: searchText
       required: false
-      description: List policies that contains the searchText in their name field.
-        If no searchText is specified, list all policies in the ePO system.
+      description: List policies that contains the searchText in their name field. If no searchText is specified, list all policies in the ePO system.
     description: Finds policy.
   - name: epo-assign-policy-to-group
     arguments:
@@ -604,16 +579,13 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, resets the inheritance for the specified policy on the
-        given group. Default is false.
-    description: Assigns a policy to the specified group or resets the group's inheritance
-      for the specified policy
+      description: If true, resets the inheritance for the specified policy on the given group. Default is false.
+    description: Assigns a policy to the specified group or resets the group's inheritance for the specified policy
   - name: epo-assign-policy-to-system
     arguments:
     - name: names
       required: true
-      description: Either supply a comma-separated list of names/ip addresses or a
-        comma-separated list of IDs to which the policy is to be assigned.
+      description: Either supply a comma-separated list of names/ip addresses or a comma-separated list of IDs to which the policy is to be assigned.
     - name: productId
       required: true
       description: Product ID (as returned by policy.find).
@@ -629,17 +601,14 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, resets the inheritance for the specified object. Default
-        is false.
-    description: Assigns a policy to a supplied list of systems or resets the systems'
-      inheritance for the specified policy.
+      description: If true, resets the inheritance for the specified object. Default is false.
+    description: Assigns a policy to a supplied list of systems or resets the systems' inheritance for the specified policy.
   - name: epo-list-issues
     arguments:
     - name: id
       required: false
       description: The ID of the issue to display.
-    description: List the issue for the ID that is specified. If no ID is specified,
-      list all issues in the McAfee ePO system.
+    description: List the issue for the ID that is specified. If no ID is specified, list all issues in the McAfee ePO system.
     outputs:
     - contextPath: McAfee.ePO.Issue.activityLog.date
       description: Date of the issue activity log.
@@ -860,7 +829,7 @@ script:
       required: false
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   longRunning: false

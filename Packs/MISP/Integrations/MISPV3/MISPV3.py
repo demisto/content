@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import urllib3
 
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
-from pymisp.tools import GenericObjectGenerator
+from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
 from pymisp.tools import FileObject
 
@@ -1300,6 +1300,14 @@ def add_file_object(demisto_args: dict):
     return add_object(event_id, obj)
 
 
+def add_email_object(demisto_args: dict):
+    entry_id = demisto_args.get('entry_id')
+    event_id = demisto_args.get('event_id')
+    email_path = demisto.getFilePath(entry_id).get('path')
+    obj = EMailObject(email_path)
+    return add_object(event_id, obj)
+
+
 def add_domain_object(demisto_args: dict):
     """Adds a domain object to MISP
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
@@ -1621,6 +1629,8 @@ def main():
                                                       reliability, attributes_limit))
         elif command == 'misp-add-file-object':
             return_results(add_file_object(args))
+        elif command == 'misp-add-email-object':
+            return_results(add_email_object(args))
         elif command == 'misp-add-domain-object':
             return_results(add_domain_object(args))
         elif command == 'misp-add-url-object':

@@ -1,6 +1,5 @@
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
-from urllib import parse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,8 +10,6 @@ requests.packages.urllib3.disable_warnings()
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
-
-SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -111,9 +108,9 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
-                  'priority', 'state', 'urgency', 'severity', 'closed_at',
-                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
+SIR_OUT_FIELDS = ['attack_vector', 'affected_user', 'change_request', 'incident', 'parent_security_incident',
+                  'substate']
+
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -403,6 +400,12 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     fields_to_clear = argToList(
         args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
+    # This is for updating null fields for update_remote_system function for example: assigned_to.
+    for arg in args.keys():
+        if not args[arg]:
+            fields_to_clear.append(arg)
+    demisto.debug(f'Fields to clear {fields_to_clear}')
+
     ticket_fields = {}
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
@@ -483,37 +486,6 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
                 dic_fields[field[0]] = field[1]
 
     return dic_fields
-
-
-def build_query_for_request_params(query):
-    """Split query that contains '&' to a list of queries.
-
-    Args:
-        query: query (Example: "id=5&status=1")
-
-    Returns:
-        List of sub queries. (Example: ["id=5", "status=1"])
-    """
-
-    if '&' in query:
-        query_params = []  # type: ignore
-        query_args = parse.parse_qsl(query)
-        for arg in query_args:
-            query_params.append(parse.urlencode([arg]))  # type: ignore
-        return query_params
-    else:
-        return query
-
-
-def parse_build_query(sys_param_query, parse_amp=True):
-    """
-      Used to parse build the query parameters or ignore parsing.
-    """
-
-    if sys_param_query:
-        if parse_amp:
-            return build_query_for_request_params(sys_param_query)
-    return sys_param_query
 
 
 class Client(BaseClient):
@@ -930,7 +902,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None, parse_amp: bool = True) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -940,7 +912,6 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
-        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
@@ -948,7 +919,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = parse_build_query(sys_param_query, parse_amp)
+            query_params['sysparm_query'] = sys_param_query
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
@@ -1535,10 +1506,11 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
     fields_delimiter = args.get('fields_delimiter', ';')
+    fields = get_ticket_fields(args, ticket_type=table_name)
 
-    fields = {}
     if fields_str:
-        fields = split_fields(fields_str, fields_delimiter)
+        additional_fields = split_fields(fields_str, fields_delimiter)
+        fields.update(additional_fields)
     custom_fields = {}
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str, fields_delimiter)
@@ -1715,7 +1687,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query, parse_amp=False)
+        result = client.query(table_name, limit, offset, group_query)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False
@@ -2022,7 +1994,8 @@ def get_mirroring():
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
             params.get('comment_tag'),
-            params.get('file_tag'),
+            params.get('file_tag'),  # file tag to service now
+            params.get('file_tag_from_service_now'),
             params.get('work_notes_tag')
         ],
         'mirror_instance': demisto.integrationInstance()
@@ -2294,6 +2267,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     if file_entries:
         for file in file_entries:
             if '_mirrored_from_xsoar' not in file.get('File'):
+                file['Tags'] = [params.get('file_tag_from_service_now')]
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
@@ -2361,17 +2335,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
+    closure_case = get_closure_case(params)
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # These ticket types are closed by changing their state.
-            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+        if parsed_args.inc_status == IncidentStatus.DONE:
+            if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
-            elif ticket_type == INCIDENT:  # Closing incident ticket.
-                parsed_args.data['state'] = '7'
+            # These ticket types are closed by changing their state.
+            if closure_case == 'closed' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '7'  # Closing incident ticket.
+            elif closure_case == 'resolved' and ticket_type == INCIDENT:
+                parsed_args.data['state'] = '6'  # resolving incident ticket.
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-        if not params.get('close_ticket'):
+        if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
@@ -2410,6 +2387,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     return ticket_id
 
 
+def get_closure_case(params: Dict[str, Any]):
+    """
+    return the right incident closing states according to old and new close_ticket integration param.
+    Args:
+        params: the integration params dict.
+
+    Returns: None if no closure method is specified. otherwise returns (str) The right closure method.
+    """
+    if not params.get('close_ticket_multiple_options') == 'None':
+        return params.get('close_ticket_multiple_options')
+    elif params.get('close_ticket'):
+        return 'closed'
+    else:
+        return None
+
+
 def is_entry_type_mirror_supported(entry_type):
     """
         Args:
@@ -2435,7 +2428,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
+    out_fields = SNOW_ARGS + SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
     for field in out_fields:
         incident_type_scheme.add_field(field)
 
@@ -2743,6 +2737,16 @@ def main():
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
     add_custom_fields(params)
+
+    file_tag_from_service_now, file_tag_to_service_now = (
+        params.get('file_tag_from_service_now'), params.get('file_tag')
+    )
+
+    if file_tag_from_service_now == file_tag_to_service_now:
+        raise Exception(
+            f'File Entry Tag To ServiceNow and File Entry Tag '
+            f'From ServiceNow cannot be the same name [{file_tag_from_service_now}].'
+        )
 
     raise_exception = False
     try:

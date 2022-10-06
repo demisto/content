@@ -1,0 +1,54 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Google Dorking",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Detection URL": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "File Name": {
+                    "complex": null,
+                    "simple": "displayLink"
+                },
+                "Incident Link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Google Dork detection - "
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Google Dorking",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

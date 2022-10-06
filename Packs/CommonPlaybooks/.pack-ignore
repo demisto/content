@@ -1,3 +1,21 @@
+[known_words]
+xlsm
+Mimecast
+subplaybook
+Zscaler
+Symantec
+Proofpoint
+Stealthwatch
+Sophos
+Forcepoint
+Netcraft
+SailPoint
+PingOne
+Clarizen
+ExceedLMS
+Okta
+SecneurX
+
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
 
@@ -5,7 +23,7 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Detonate_URL_-_Generic.yml]
-ignore=BA101
+ignore=BA101,PB110
 
 [file:playbook-Get_File_Sample_From_Path_-_Generic.yml]
 ignore=BA101
@@ -35,10 +53,13 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Search_And_Delete_Emails_-_Generic_-_v2.yml]
-ignore=BA101
+ignore=BA101,PB121
 
 [file:playbook-Send_Investigation_Summary_Reports_Job.yml]
 ignore=PB105
+
+[file:playbook-Extract_Indicators_From_File_-_Generic_v2_4_5.yml]
+ignore=PB114
 
 [file:README.md]
 ignore=RM104
@@ -60,5 +81,18 @@ ignore=RM106
 
 [file:playbook-Block_Domain_-_Generic.yml]
 ignore=PB110
+
+[file:playbook-File_Enrichment_-_Generic_v2.yml]
+ignore=PB110
+
+[file:playbook-IP_Enrichment_-_Internal_-_Generic_v2.yml]
+ignore=PB121
+
+[file:playbook-URL_Enrichment_-_Generic_v2.yml]
+ignore=PB121
+
+[file:playbook-IP_Enrichment_-_External_-_Generic_v2.yml]
+ignore=PB121
+
 [file:pack_metadata.json]
 ignore=PA129

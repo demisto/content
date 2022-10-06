@@ -8,7 +8,6 @@ description: Use Remedy On-Demand to manage tickets
 configuration:
 - display: Server URL (e.g. 'https://myurl.com', 'http://41.79.151.82')
   name: url
-  defaultvalue: ""
   type: 0
   required: true
 - display: Port
@@ -18,7 +17,6 @@ configuration:
   required: false
 - display: Username
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: Use system proxy settings
@@ -44,16 +42,12 @@ script:
   - name: remedy-incident-create
     arguments:
     - name: first-name
-      required: false
       description: costumer's first name (make sure costumer already exists)
     - name: last-name
-      required: false
       description: costumer's first name (make sure costumer already exists)
     - name: description
-      required: false
       description: Incident description
     - name: status
-      required: false
       auto: PREDEFINED
       predefined:
       - New
@@ -65,7 +59,6 @@ script:
       - Cancelled
       description: Incident status
     - name: source
-      required: false
       auto: PREDEFINED
       predefined:
       - Direct Input
@@ -81,7 +74,6 @@ script:
       - Other
       description: Incident source
     - name: service-type
-      required: false
       auto: PREDEFINED
       predefined:
       - User Service Restoration
@@ -90,7 +82,6 @@ script:
       - Infrastructure Restoration
       description: Incident service-type
     - name: impact
-      required: false
       auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
@@ -99,7 +90,6 @@ script:
       - 4-Minor/Localized
       description: Incident impact
     - name: urgency
-      required: false
       auto: PREDEFINED
       predefined:
       - 1-Critical
@@ -108,8 +98,7 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Should be comma separated
-        query (i.e. field1=value1,field2=value2).
+      description: Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2).
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -133,9 +122,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident Entry ID. If EntryID is not available to you, incident
-        details can be found using `remedy-fetch-incidents query="'Incident Number'
-        = \"<incident number>\"".
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -157,8 +144,7 @@ script:
   - name: remedy-fetch-incidents
     arguments:
     - name: query
-      description: Search query/qualification format of '<field> LIKE "<values>"'
-        (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+      description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -182,9 +168,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident Entry ID. If EntryID is not available to you, incident
-        details can be found using `remedy-fetch-incidents query="'Incident Number'
-        = \"<incident number>\"".
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     - name: description
       description: Updated description
     - name: status
@@ -256,5 +240,7 @@ script:
       description: Ticket service type
     description: Update exiting incident
   isfetch: true
-hidden: false
+  runonce: false
 fromversion: 5.0.0
+tests:
+- Remedy-On-Demand-Test

@@ -1,7 +1,8 @@
 {
   "associatedToAll": false,
   "associatedTypes": [
-    "Qradar Generic"
+    "Qradar Generic",
+    "Vectra Account"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -14,7 +15,6 @@
   "editForm": true,
   "extractIndicatorTypesIDs": [],
   "fieldCalcScript": "",
-  "fromServerVersion": "",
   "group": 0,
   "hidden": false,
   "id": "incident_usernames",

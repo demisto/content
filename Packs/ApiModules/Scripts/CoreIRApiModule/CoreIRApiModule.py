@@ -129,6 +129,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
+
 
 class CoreClient(BaseClient):
 
@@ -190,7 +192,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
-                      no_filter=False
+                      username=None
                       ):
 
         search_from = page_number * limit
@@ -201,139 +203,40 @@ class CoreClient(BaseClient):
             'search_to': search_to,
         }
 
-        if no_filter:
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoints/',
-                json_data={},
-                timeout=self.timeout
-            )
-            endpoints = reply.get('reply')[search_from:search_to]
-            for endpoint in endpoints:
-                if not endpoint.get('endpoint_id'):
-                    endpoint['endpoint_id'] = endpoint.get('agent_id')
+        filters = create_request_filters(
+            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+        )
 
-        else:
-            filters = []
+        if search_from:
+            request_data['search_from'] = search_from
 
-            if status:
-                filters.append({
-                    'field': 'endpoint_status',
-                    'operator': 'IN',
-                    'value': [status]
-                })
+        if search_to:
+            request_data['search_to'] = search_to
 
-            if endpoint_id_list:
-                filters.append({
-                    'field': 'endpoint_id_list',
-                    'operator': 'in',
-                    'value': endpoint_id_list
-                })
+        if sort_by_first_seen:
+            request_data['sort'] = {
+                'field': 'first_seen',
+                'keyword': sort_by_first_seen
+            }
+        elif sort_by_last_seen:
+            request_data['sort'] = {
+                'field': 'last_seen',
+                'keyword': sort_by_last_seen
+            }
 
-            if dist_name:
-                filters.append({
-                    'field': 'dist_name',
-                    'operator': 'in',
-                    'value': dist_name
-                })
+        request_data['filters'] = filters
 
-            if ip_list:
-                filters.append({
-                    'field': 'ip_list',
-                    'operator': 'in',
-                    'value': ip_list
-                })
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
 
-            if group_name:
-                filters.append({
-                    'field': 'group_name',
-                    'operator': 'in',
-                    'value': group_name
-                })
-
-            if platform:
-                filters.append({
-                    'field': 'platform',
-                    'operator': 'in',
-                    'value': platform
-                })
-
-            if alias_name:
-                filters.append({
-                    'field': 'alias',
-                    'operator': 'in',
-                    'value': alias_name
-                })
-
-            if isolate:
-                filters.append({
-                    'field': 'isolate',
-                    'operator': 'in',
-                    'value': [isolate]
-                })
-
-            if hostname:
-                filters.append({
-                    'field': 'hostname',
-                    'operator': 'in',
-                    'value': hostname
-                })
-
-            if first_seen_gte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'gte',
-                    'value': first_seen_gte
-                })
-
-            if first_seen_lte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'lte',
-                    'value': first_seen_lte
-                })
-
-            if last_seen_gte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'gte',
-                    'value': last_seen_gte
-                })
-
-            if last_seen_lte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'lte',
-                    'value': last_seen_lte
-                })
-
-            if search_from:
-                request_data['search_from'] = search_from
-
-            if search_to:
-                request_data['search_to'] = search_to
-
-            if sort_by_first_seen:
-                request_data['sort'] = {
-                    'field': 'first_seen',
-                    'keyword': sort_by_first_seen
-                }
-            elif sort_by_last_seen:
-                request_data['sort'] = {
-                    'field': 'last_seen',
-                    'keyword': sort_by_last_seen
-                }
-
-            request_data['filters'] = filters
-
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data},
-                timeout=self.timeout
-            )
-
-            endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
@@ -1295,6 +1198,41 @@ class CoreClient(BaseClient):
         reply = res.get("reply")
         return reply[:limit]
 
+    def add_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Add tag to an endpoint
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/assign/')
+
+    def remove_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Remove tag from an endpoint.
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/remove/')
+
+    def call_tag_endpoint(self, endpoint_ids, tag, args, url_suffix):
+        """
+        Add or remove a tag from an endpoint.
+        """
+        filters = args_to_request_filters(args)
+
+        body_request = {
+            'context': {
+                'lcaas_id': endpoint_ids,
+            },
+            'request_data': {
+                'filters': filters,
+                'tag': tag
+            },
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=body_request,
+            timeout=self.timeout
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1759,6 +1697,8 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
 
 
 def get_endpoints_command(client, args):
+    integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
+    integration_name = args.pop("integration_name", "CoreApiModule")
     page_number = arg_to_int(
         arg=args.get('page', '0'),
         arg_name='Failed to parse "page". Must be a number.',
@@ -1771,63 +1711,62 @@ def get_endpoints_command(client, args):
         required=True
     )
 
-    if list(args.keys()) == ['limit', 'page', 'sort_order']:
-        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
-    else:
-        endpoint_id_list = argToList(args.get('endpoint_id_list'))
-        dist_name = argToList(args.get('dist_name'))
-        ip_list = argToList(args.get('ip_list'))
-        group_name = argToList(args.get('group_name'))
-        platform = argToList(args.get('platform'))
-        alias_name = argToList(args.get('alias_name'))
-        isolate = args.get('isolate')
-        hostname = argToList(args.get('hostname'))
-        status = args.get('status')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias_name = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    status = args.get('status')
 
-        first_seen_gte = arg_to_timestamp(
-            arg=args.get('first_seen_gte'),
-            arg_name='first_seen_gte'
-        )
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
 
-        first_seen_lte = arg_to_timestamp(
-            arg=args.get('first_seen_lte'),
-            arg_name='first_seen_lte'
-        )
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
 
-        last_seen_gte = arg_to_timestamp(
-            arg=args.get('last_seen_gte'),
-            arg_name='last_seen_gte'
-        )
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
 
-        last_seen_lte = arg_to_timestamp(
-            arg=args.get('last_seen_lte'),
-            arg_name='last_seen_lte'
-        )
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
 
-        sort_by_first_seen = args.get('sort_by_first_seen')
-        sort_by_last_seen = args.get('sort_by_last_seen')
+    sort_by_first_seen = args.get('sort_by_first_seen')
+    sort_by_last_seen = args.get('sort_by_last_seen')
 
-        endpoints = client.get_endpoints(
-            endpoint_id_list=endpoint_id_list,
-            dist_name=dist_name,
-            ip_list=ip_list,
-            group_name=group_name,
-            platform=platform,
-            alias_name=alias_name,
-            isolate=isolate,
-            hostname=hostname,
-            page_number=page_number,
-            limit=limit,
-            first_seen_gte=first_seen_gte,
-            first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte,
-            last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen,
-            status=status
-        )
+    username = argToList(args.get('username'))
 
-    integration_name = args.get("integration_name", "CoreApiModule")
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        dist_name=dist_name,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias_name=alias_name,
+        isolate=isolate,
+        hostname=hostname,
+        page_number=page_number,
+        limit=limit,
+        first_seen_gte=first_seen_gte,
+        first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte,
+        last_seen_lte=last_seen_lte,
+        sort_by_first_seen=sort_by_first_seen,
+        sort_by_last_seen=sort_by_last_seen,
+        status=status,
+        username=username
+    )
+
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
     for endpoint in standard_endpoints:
@@ -1835,9 +1774,9 @@ def get_endpoints_command(client, args):
         endpoint_context_list.append(endpoint_context)
 
     context = {
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
         Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint.count': len(standard_endpoints)
+        f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -2634,9 +2573,12 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
-        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes', '')
+        if MIRROR_IN_CLOSE_REASON not in update_args.get('closeNotes', ''):
+            update_args['resolve_comment'] = update_args.get('closeNotes', '')
+            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+            demisto.debug(f"Closing Remote incident with status {update_args['status']}")
+        else:
+            demisto.debug('Ignore closing Remote incident because incident closed during mirroring in')
 
 
 def get_update_args(delta, inc_status):
@@ -2931,7 +2873,45 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     )
 
 
-def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    requires_polling_arg=False  # means it will always be default to poll, poll=true
+)
+def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
+
+    if action_id := args.get('action_id'):
+        response = client.get_script_execution_status(action_id)
+        general_status = response.get('reply', {}).get('general_status') or ''
+
+        return PollResult(
+            response=get_script_execution_results_command(
+                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+            ),
+            continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
+        )
+
+    else:
+        endpoint_ids = argToList(args.get('endpoint_ids'))
+        response = get_run_script_execution_response(client, args)
+        reply = response.get('reply')
+        action_id = reply.get('action_id')
+
+        args['action_id'] = action_id
+
+        return PollResult(
+            response=None,  # since polling defaults to true, no need to deliver response here
+            continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
+            partial_result=CommandResults(
+                readable_output=f'Waiting for the script to finish running '
+                                f'on the following endpoints: {endpoint_ids}...'
+            ),
+            args_for_next_run=args
+        )
+
+
+def get_run_script_execution_response(client: CoreClient, args: Dict):
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -2943,7 +2923,11 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     else:
         parameters = {}
-    response = client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+    return client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+
+
+def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+    response = get_run_script_execution_response(client, args)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script', reply),
@@ -3279,4 +3263,191 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.DynamicAnalysis',
         outputs=filtered_alerts,
         raw_response=raw_response,
+    )
+
+
+def create_request_filters(
+    status: Optional[str] = None,
+    username: Optional[List] = None,
+    endpoint_id_list: Optional[List] = None,
+    dist_name: Optional[List] = None,
+    ip_list: Optional[List] = None,
+    group_name: Optional[List] = None,
+    platform: Optional[List] = None,
+    alias_name: Optional[List] = None,
+    isolate: Optional[str] = None,
+    hostname: Optional[List] = None,
+    first_seen_gte=None,
+    first_seen_lte=None,
+    last_seen_gte=None,
+    last_seen_lte=None,
+):
+    filters = []
+
+    if status:
+        filters.append({
+            'field': 'endpoint_status',
+            'operator': 'IN',
+            'value': [status]
+        })
+
+    if username:
+        filters.append({
+            'field': 'username',
+            'operator': 'IN',
+            'value': username
+        })
+
+    if endpoint_id_list:
+        filters.append({
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_id_list
+        })
+
+    if dist_name:
+        filters.append({
+            'field': 'dist_name',
+            'operator': 'in',
+            'value': dist_name
+        })
+
+    if ip_list:
+        filters.append({
+            'field': 'ip_list',
+            'operator': 'in',
+            'value': ip_list
+        })
+
+    if group_name:
+        filters.append({
+            'field': 'group_name',
+            'operator': 'in',
+            'value': group_name
+        })
+
+    if platform:
+        filters.append({
+            'field': 'platform',
+            'operator': 'in',
+            'value': platform
+        })
+
+    if alias_name:
+        filters.append({
+            'field': 'alias',
+            'operator': 'in',
+            'value': alias_name
+        })
+
+    if isolate:
+        filters.append({
+            'field': 'isolate',
+            'operator': 'in',
+            'value': [isolate]
+        })
+
+    if hostname:
+        filters.append({
+            'field': 'hostname',
+            'operator': 'in',
+            'value': hostname
+        })
+
+    if first_seen_gte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'gte',
+            'value': first_seen_gte
+        })
+
+    if first_seen_lte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'lte',
+            'value': first_seen_lte
+        })
+
+    if last_seen_gte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'gte',
+            'value': last_seen_gte
+        })
+
+    if last_seen_lte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'lte',
+            'value': last_seen_lte
+        })
+
+    return filters
+
+
+def args_to_request_filters(args):
+
+    if set(args.keys()) & {  # check if any filter argument was provided
+        'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
+        'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
+    }:
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
+        status = args.get('status')
+
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        return create_request_filters(
+            endpoint_id_list=endpoint_id_list, dist_name=dist_name, ip_list=ip_list,
+            group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate, hostname=hostname,
+            first_seen_lte=first_seen_lte, first_seen_gte=first_seen_gte,
+            last_seen_lte=last_seen_lte, last_seen_gte=last_seen_gte, status=status
+        )
+    # a request must be sent with at least one filter parameter, so by default we will send the endpoint_id_list filter
+    return create_request_filters(endpoint_id_list=argToList(args.get('endpoint_ids')))
+
+
+def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+
+    raw_response = client.add_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+
+    return CommandResults(
+        readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+
+    raw_response = client.remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+
+    return CommandResults(
+        readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
     )

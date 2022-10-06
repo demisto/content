@@ -1,3 +1,5 @@
+import re
+
 import pytest
 import json
 import io
@@ -11,9 +13,9 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -148,25 +150,6 @@ def test_split_fields_with_special_delimiter():
         assert "must contain a '=' to specify the keys and values" in str(err)
         return
     assert False
-
-
-@pytest.mark.parametrize('query, parsed, result', [
-    ('&', False, '&'),
-    ('&', True, []),
-    ('noampersand', False, 'noampersand'),
-    ('noampersand', True, 'noampersand')
-])
-def test_parse_build_query(query, parsed, result):
-    """Unit test
-    Given
-    - an ampersand
-    When
-    - no parsing the ampersand
-    - when parsing the ampersand
-    Then
-    -  Validate the query field is parsed correctly.
-    """
-    assert parse_build_query(query, parse_amp=parsed) == result
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
@@ -715,7 +698,9 @@ def test_incident_name_is_initialized(mocker, requests_mock):
                 'identifier': 'identifier',
                 'password': 'password',
             },
-            'incident_name': None
+            'incident_name': None,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag_to_service_now': 'ToServiceNow'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -735,6 +720,33 @@ def test_incident_name_is_initialized(mocker, requests_mock):
     with pytest.raises(ValueError) as e:
         main()
     assert str(e.value) == 'The field [number] does not exist in the ticket.'
+
+
+def test_file_tags_names_are_the_same_main_flow(mocker):
+    """
+    Given:
+     - file tags from service now & file tag to service now that are identical
+
+    When:
+     - running main flow
+
+    Then:
+     - make sure an exception is raised
+    """
+    import ServiceNowv2
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag': 'ServiceNow'}
+    )
+    mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
+    with pytest.raises(
+        Exception,
+        match=re.escape(
+            'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
+        )
+    ):
+        main()
 
 
 def test_not_authenticated_retry_positive(requests_mock, mocker):
@@ -869,7 +881,9 @@ def test_oauth_authentication(mocker, requests_mock):
                 'identifier': 'client_id',
                 'password': 'client_secret'
             },
-            'use_oauth': True
+            'use_oauth': True,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag': 'ForServiceNow'
         }
     )
     ServiceNowClient.get_access_token = MagicMock()
@@ -1050,7 +1064,7 @@ def test_get_remote_data(mocker):
                     ticket_type='incident', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
     mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY)
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
@@ -1058,6 +1072,7 @@ def test_get_remote_data(mocker):
 
     res = get_remote_data_command(client, args, params)
 
+    assert res[1]['Tags'] == ['FromServiceNow']
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
@@ -1279,7 +1294,7 @@ def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type=ticket_type, get_attachments=False, incident_name='description')
-    params = {'ticket_type': ticket_type, 'close_ticket': True}
+    params = {'ticket_type': ticket_type, 'close_ticket_multiple_options': 'None', 'close_ticket': True}
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
             'status': 2}
     mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)
@@ -1287,30 +1302,9 @@ def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
     update_remote_system_command(client, args, params)
 
 
-@pytest.mark.parametrize('query, expected', [
-    ("id=5&status=pi", ["id=5", "status=pi"]),
-    ("id=5&status=pi&name=bobby", ["id=5", "status=pi", "name=bobby"]),
-    ("&status=pi", ["status=pi"]),
-    ("status=pi&", ["status=pi"]),
-])
-def test_build_query_for_request_params(query, expected):
-    """
-    Given:
-     - Query with multiple arguments
-
-    When:
-     - Running Cilent.query function
-
-    Then:
-     - Verify the query was split to a list of sub queries according to the &.
-    """
-    sub_queries = build_query_for_request_params(query)
-    assert sub_queries == expected
-
-
 @pytest.mark.parametrize('command, args', [
-    (query_tickets_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'ticket_type': "sc_task"}),
-    (query_table_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'table_name': "sc_task"})
+    (query_tickets_command, {'limit': "50", 'query': "assigned_to=123^active=true", 'ticket_type': "sc_task"}),
+    (query_table_command, {'limit': "50", 'query': "assigned_to=123^active=true", 'table_name': "sc_task"})
 ])
 def test_multiple_query_params(requests_mock, command, args):
     """
@@ -1322,14 +1316,14 @@ def test_multiple_query_params(requests_mock, command, args):
      - Using servicenow-query-table command with multiple sysparm_query arguments.
 
     Then:
-     - Verify the right request is called with '&' distinguishing different arguments.
+     - Verify the right request is called with '^' distinguishing different arguments.
     """
     url = 'https://test.service-now.com/api/now/v2/'
     client = Client(url, 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
                     'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.request('GET', f'{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&'
-                                 'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
+                                 'sysparm_query=assigned_to%3D123^active%3Dtrue',
                           json=RESPONSE_TICKET_ASSIGNED)
     human_readable, entry_context, result, bol = command(client, args)
 
@@ -1418,6 +1412,25 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
     else:
         res = get_ticket_fields(args)
         assert res == expected_ticket_fields
+
+
+def test_clear_fields_for_update_remote_system():
+    """
+    Given:
+        - The fields from the parsed_args.data (from update_remote_system)
+    When:
+        - Run get_ticket_fields
+    Then:
+        - Validate that the ampty fields exists in the fields that returns.
+    """
+    parsed_args_data = {'assigned_to': '', 'category': 'Software', 'description': '', 'impact': '3 - Low',
+                        'notify': '1 - Do Not Notify', 'priority': '5 - Planning', 'severity': '1 - High - Low',
+                        'short_description': 'Testing 3', 'sla_due': '0001-01-01T02:22:42+02:20',
+                        'state': '2 - In Progress', 'subcategory': '', 'urgency': '3 - Low',
+                        'work_start': '0001-01-01T02:22:42+02:20'}
+
+    res = get_ticket_fields(parsed_args_data)
+    assert 'assigned_to' in res
 
 
 def test_query_table_with_fields(mocker):
@@ -1596,3 +1609,34 @@ def test_is_entry_type_mirror_supported(file_type, expected):
         - return True if the file entry type supports mirroring else return False
     """
     assert ServiceNowv2.is_entry_type_mirror_supported(file_type) == expected
+
+
+@pytest.mark.parametrize('params, expected',
+                         [({'close_ticket_multiple_options': 'None', 'close_ticket': True}, 'closed'),
+                          ({'close_ticket_multiple_options': 'None', 'close_ticket': False}, None),
+                          ({'close_ticket_multiple_options': 'resolved', 'close_ticket': True}, 'resolved'),
+                          ({'close_ticket_multiple_options': 'resolved', 'close_ticket': False}, 'resolved'),
+                          ({'close_ticket_multiple_options': 'closed', 'close_ticket': True}, 'closed'),
+                          ({'close_ticket_multiple_options': 'closed', 'close_ticket': False}, 'closed')])
+def test_get_closure_case(params, expected):
+    """
+    Given:
+        - params dict with both old and new close_ticket integration params.
+        - case 1: params dict with none configured new param and old param configured to True.
+        - case 2: params dict with none configured new param and old param configured to False.
+        - case 3: params dict with resolved configured new param and old param configured to True.
+        - case 4: params dict with resolved configured new param and old param configured to False.
+        - case 5: params dict with closed configured new param and old param configured to True.
+        - case 6: params dict with closed configured new param and old param configured to False.
+    When:
+        - running get_closure_case method.
+    Then:
+        - Ensure the right closure method was returned.
+        - case 1: Should return 'closed'
+        - case 2: Should return None
+        - case 3: Should return 'resolved'
+        - case 4: Should return 'resolved'
+        - case 5: Should return 'closed'
+        - case 6: Should return 'closed'
+    """
+    assert get_closure_case(params) == expected

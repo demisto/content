@@ -22,5 +22,5 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.5.31797
 fromversion: 5.0.0

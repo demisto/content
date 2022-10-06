@@ -1,6 +1,7 @@
 id: Account Enrichment - Generic v2.1
 version: -1
 fromversion: 5.0.0
+toversion: 6.4.9
 name: Account Enrichment - Generic v2.1
 description: |-
   Enrich accounts using one or more integrations.

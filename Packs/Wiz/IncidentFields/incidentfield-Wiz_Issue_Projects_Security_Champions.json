@@ -1,0 +1,30 @@
+{
+    "id": "incident_wizprojectsecuritychampions",
+    "version": -1,
+    "modified": "2022-06-15T12:53:42.736248893Z",
+    "name": "Wiz Project Security Champions",
+    "ownerOnly": false,
+    "cliName": "wizprojectsecuritychampions",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Wiz Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

@@ -1,0 +1,306 @@
+{
+    "comments": "",
+    "confidence-level": "Medium",
+    "domain": {
+        "domain-type": "domain",
+        "name": "SMC User",
+        "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+    },
+    "follow-up": false,
+    "ipsAdditionalProperties": [
+        {
+            "name": "Threat Year",
+            "uid": "3ca76952-99f7-034d-a0c4-f909ee2aafab",
+            "values": [
+                {
+                    "name": "2015",
+                    "uid": "fb5a9959-56b5-ca40-bdaf-063ae4164fdc"
+                }
+            ]
+        },
+        {
+            "name": "Protocol",
+            "uid": "8259b9d8-62c6-f247-80d4-da4047f137cb",
+            "values": [
+                {
+                    "name": "HTTP",
+                    "uid": "2ea1aa92-c229-9040-9119-f8c65bd49394"
+                },
+                {
+                    "name": "SMTP",
+                    "uid": "9603a7de-330a-7845-a7a7-dbbbcf663b4f"
+                }
+            ]
+        },
+        {
+            "name": "Vendor",
+            "uid": "3a4367d6-534c-264a-91ab-1cf690b75916",
+            "values": [
+                {
+                    "name": "Generic",
+                    "uid": "c266ef0f-7579-2841-8177-271bac9d4c0c"
+                }
+            ]
+        },
+        {
+            "name": "Product",
+            "uid": "d87fed3d-de66-bb48-9a5e-5f2c61dac2f6",
+            "values": [
+                {
+                    "name": "Generic",
+                    "uid": "b8349647-f166-5f48-8fe9-4a338c7b5fe8"
+                }
+            ]
+        },
+        {
+            "name": "Threat Prevalence",
+            "uid": "eb5720e4-a7ae-fa44-91f4-af2f779e8aef",
+            "values": [
+                {
+                    "name": "Common",
+                    "uid": "b36d1847-1dd8-9740-ae38-1fc9aa2f6747"
+                }
+            ]
+        },
+        {
+            "name": "Protected Asset",
+            "uid": "dc9d2116-59d7-c345-a7f6-b15678d7a996",
+            "values": [
+                {
+                    "name": "CLIENT",
+                    "uid": "5f21aad1-d6d1-4a35-bf1c-ddfe320adcac"
+                }
+            ]
+        },
+        {
+            "name": "Protection Tuning",
+            "uid": "58d65d86-ab73-604c-a741-1175e3b64374",
+            "values": [
+                {
+                    "name": "Non-Configurable",
+                    "uid": "9e12fff2-71ec-084e-be5d-f46a99a70e58"
+                }
+            ]
+        },
+        {
+            "name": "Product Prevalence",
+            "uid": "fa6e6f33-a2fb-f449-8809-fac2eba59c18",
+            "values": [
+                {
+                    "name": "Common",
+                    "uid": "eefa53c8-86ca-5c46-8d68-9a174a786de2"
+                }
+            ]
+        }
+    ],
+    "name": "ACE Files",
+    "performance-impact": "Medium",
+    "profiles": [
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Basic",
+            "uid": "eb39a60d-c454-49f5-a28c-a89aa5bd2e09"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "TailoredProfile_6_25_2021_1_12_56_PM",
+            "uid": "215f6d96-cdd4-43d5-b00d-d034fc053f8b"
+        },
+        {
+            "default": {
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Detect",
+                "capture-packets": false,
+                "track": "user alert 2"
+            },
+            "name": "New_HK_profile",
+            "override": {
+                "action": "Detect",
+                "capture-packets": false,
+                "track": "user alert 2"
+            },
+            "uid": "8af9e236-1419-4d11-9b01-ae06ccc75511"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "new_profile",
+            "uid": "175a5661-ea4a-4242-86f6-0aeb0b2748c8"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "xsoar_test2",
+            "uid": "31e9bab8-1913-4224-a9e9-0905e473da5b"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "lalala8",
+            "uid": "541ec8c1-bfe0-4472-b7c3-20f840f7142b"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Optimized (Clone)",
+            "uid": "f1a9679f-a296-4eab-88c1-598f5f2c5487"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Threat_emulation_test",
+            "uid": "f37ba2dc-a3ae-4e45-be7d-1a2f5606c258"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Test Profile",
+            "uid": "f8db7291-e493-41b0-bdce-7230963dcf7d"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Optimized (Clone) 2",
+            "uid": "0495f1d6-d6eb-4a8f-a0de-a04711074cb1"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Optimized",
+            "uid": "fa1aa324-a8cc-4dbd-bc04-f31fdb8abf61"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "lalala7",
+            "uid": "b6641909-4a2d-4585-aa6c-d703665611c0"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "xsoar_test",
+            "uid": "af629e93-9c94-4dac-ad32-dc8beae8fb35"
+        },
+        {
+            "default": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "final": {
+                "action": "Inactive",
+                "capture-packets": false,
+                "track": "log"
+            },
+            "name": "Strict",
+            "uid": "caf8b711-d762-4c1e-82d5-6af2549b2869"
+        }
+    ],
+    "protection-type": "Threat Cloud",
+    "release-date": "20150519",
+    "severity": "N/A",
+    "type": "threat-protection",
+    "uid": "e275dee7-3a0b-1f4e-a587-50f18d1478a5",
+    "update-date": "20150526"
+}

@@ -278,6 +278,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
 106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+108. [Download the running configuration](#pan-os-get-running-config)
+109. [Download the merged configuration](#pan-os-get-merged-config)
 
 
 
@@ -368,7 +370,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 ### pan-os-commit
 ***
-Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true", otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
@@ -378,46 +380,75 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID to commit. | 
-| Panorama.Commit.Status | string | Commit status | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
+#### Command example with polling
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+#### Human Readable Output
 
-#### Command Example
-```!pan-os-commit```
+>Waiting for commit "test" with job ID 12345 to finish...
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Success | test
 
 #### Context Example
 ```json
 {
     "Panorama": {
         "Commit": {
-            "JobID": "113198",
-            "Status": "Pending"
+            "JobID": "12345",
+            "Status": "Success",
+            "Description": "test"
         }
     }
 }
 ```
 
+#### Command example without polling
+```!pan-os-commit description=test```
+
 #### Human Readable Output
 
->### Commit:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Pending | test
+
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Commit": {
+            "JobID": "12345",
+            "Status": "Pending",
+            "Description": "test"
+        }
+    }
+}
+```
 
 
 ### pan-os-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
 
 
 #### Base Command
@@ -427,31 +458,92 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional |
-| validate-only | Pre policy validation. | Optional. |
-| include-template | Whether to include template changes. | Optional. |
-| description | Push description. | Optional |
-| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
+| device-group | The device group to which to push (Panorama instances). | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| include-template | Whether to include template changes. Possible values are: true, false. Default is true. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
-| Panorama.Push.Status | String | Push status. | 
+| Panorama.Push.DeviceGroup | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+| Panorama.Push.Details | String | The job ID details. | 
 
+#### Command example with polling=true
+```!pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60```
 
-#### Command Example
-```!pan-os-push-to-device-group ```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": ,
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>Waiting for Job-ID 31374 to finish push changes to device-group Lab-Devices..
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
+#### Command example with polling=false
+```!pan-os-push-to-device-group description=test polling=false```
+
+#### Human Readable Output
+
+>### Push to Device Group status:
+>|JobID|Status|Description|
+>|---|---|---|
+>| 113198 | Pending | test |
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+          "JobID": "113198",
+          "Status": "Pending",
+          "Description": "test",
+          "DeviceGroup": "device group name"
+        }
+    }
+}
+```
 
 ### pan-os-list-addresses
 ***
@@ -911,15 +1003,15 @@ Edits a static or dynamic address group.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the address group to edit. | Required | 
-| type | Address group type. | Required | 
-| match | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
-| element_to_add | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
+|-------------------| --- | --- |
+| name              | Name of the address group to edit. | Required | 
+| type              | Address group type. | Required | 
+| match             | Address group new match. For example, '1.1.1.1 and 2.2.2.2'. | Optional | 
+| element_to_add    | Element to add to the list of the static address group. Only existing Address objects can be added. | Optional | 
 | element_to_remove | Element to remove from the list of the static address group. Only existing Address objects can be removed. | Optional | 
-| description | Address group new description. | Optional | 
-| tags | The tag of the Address group to edit. | Optional | 
-
+| description       | Address group new description. | Optional | 
+| tags              | The tag of the Address group to edit. | Optional | 
+| device-group      | The device group in which the address group belongs to. | Optional |
 
 #### Context Output
 
@@ -1317,13 +1409,13 @@ Edit a service group.
 `pan-os-edit-service-group`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the service group to edit. | Required | 
-| services_to_add | Services to add to the service group. Only existing Services objects can be added. | Optional | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the service group to edit. | Required | 
+| services_to_add    | Services to add to the service group. Only existing Services objects can be added. | Optional | 
 | services_to_remove | Services to remove from the service group. Only existing Services objects can be removed. | Optional | 
-| tags | Tag of the Service group to edit. | Optional | 
-
+| tags               | Tag of the Service group to edit. | Optional | 
+| device-group       | The device group in which the service group belongs to. | Optional |
 
 #### Context Output
 
@@ -1493,12 +1585,12 @@ Adds or removes sites to and from a custom URL category.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the custom URL category to add or remove sites. | Required | 
-| sites | A comma separated list of sites to add to the custom URL category. | Optional | 
-| action | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
-| categories | A comma separated list of categories to add to the custom URL category. | Optional | 
-
+|-------------------| --- | --- |
+| name              | Name of the custom URL category to add or remove sites. | Required | 
+| sites             | A comma separated list of sites to add to the custom URL category. | Optional | 
+| action            | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
+| categories        | A comma separated list of categories to add to the custom URL category. | Optional | 
+| device-group      | The device group in which the URL category belongs to. | Optional |
 
 #### Context Output
 
@@ -1779,12 +1871,13 @@ Edit a URL filtering rule.
 `pan-os-edit-url-filter`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. | Required | 
-| element_value | Element value. Limited to one value. | Required | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| name               | Name of the URL filter to edit. | Required | 
+| element_to_change  | Element to change. | Required | 
+| element_value      | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
+| device-group       | The device group in which the URL-filter belongs to. | Optional |
 
 
 #### Context Output
@@ -2036,10 +2129,11 @@ Modifies an element of an external dynamic list.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Name of the external dynamic list to edit. | Required | 
+|-------------------| --- | --- |
+| name              | Name of the external dynamic list to edit. | Required | 
 | element_to_change | The element to change (“url”, “recurring”, “certificate_profile”, “description”). | Required | 
-| element_value | The element value. | Required | 
+| element_value     | The element value. | Required | 
+| device-group      | The device group in which the EDL belongs to. | Optional |
 
 
 #### Context Output
@@ -2177,8 +2271,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2245,8 +2339,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2297,8 +2391,8 @@ Changes the location of a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to move. | Required | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional | 
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Required | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional | 
 | pre_post | Rule location. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
@@ -2329,13 +2423,13 @@ Edits a policy rule.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| rulename | Name of the rule to edit. | Required | 
+|-------------------| --- | --- |
+| rulename          | Name of the rule to edit. | Required | 
 | element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
-| element_value | The new value for the parameter. | Required | 
-| pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
-| behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
-
+| element_value     | The new value for the parameter. | Required | 
+| pre_post          | Pre-rule or post-rule (Panorama instances). | Optional | 
+| behaviour         | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
+| device-group      | The device group in which the rule belongs to. | Optional |
 
 #### Context Output
 
@@ -2419,9 +2513,9 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| predefined | Whether to list predefined applications or not. | Optional | 
-
+|-------------------| --- | --- |
+| predefined        | Whether to list predefined applications or not. | Optional | 
+| device-group      | The device group for which to return applications. | Optional |
 
 #### Context Output
 
@@ -2463,40 +2557,42 @@ Returns a list of applications.
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
-### pan-os-commit-status
+### pan-os-commit
 ***
-Returns commit status for a configuration.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
 
-`pan-os-commit-status`
+`pan-os-commit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID of the configuration to be committed. | 
-| Panorama.Commit.Status | string | Commit status. | 
-| Panorama.Commit.Details | string | Job ID details. | 
-| Panorama.Commit.Warnings | String | Job ID warnings | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
-
-#### Command Example
-```!pan-os-commit-status job_id=948 ```
-
+#### Command example
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->### Commit Status:
->|JobID|Status|
->|---|---|
->| 948 | Pending |
+>Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 ***
@@ -2510,29 +2606,59 @@ Returns the push status for a configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| job_id | The job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Push.DeviceGroup | string | Device group to which the policies were pushed. | 
-| Panorama.Push.JobID | number | Job ID of the configuration to be pushed. | 
-| Panorama.Push.Status | string | Push status. | 
-| Panorama.Push.Details | string | Job ID details. | 
-| Panorama.Push.Warnings | String | Job ID warnings | 
+| Panorama.Push.DeviceGroup | string | The device group to which the policies were pushed. | 
+| Panorama.Push.JobID | number | The job ID of the configuration to be pushed. | 
+| Panorama.Push.Status | string | The push status. | 
+| Panorama.Push.Details | string | The job ID details. | 
+| Panorama.Push.Warnings | String | The job ID warnings | 
 
-
-#### Command Example
-```!pan-os-push-status job_id=951 ```
+#### Command example
+```!pan-os-push-status job_id=31377```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "Details": [
+                "commit succeeded with warnings",
+                "commit succeeded with warnings"
+            ],
+            "Errors": [],
+            "JobID": "31377",
+            "Status": "Completed",
+            "Warnings": [
+                "Interface loopback.645 has no zone configuration.",
+                "External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.",
+                "Warning: No valid Antivirus content package exists",
+                "(Module: device)"
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->### Push to Device Group Status:
->|JobID|Status|Details|
->|---|---|---|
->| 951 | Completed | commit succeeded with warnings |
+>### Push to Device Group status:
+>|JobID|Status|Details|Errors|Warnings|
+>|---|---|---|---|---|
+>| 31377 | Completed | commit succeeded with warnings,<br/>commit succeeded with warnings | | Interface loopback.645 has no zone configuration.,<br/>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.,<br/>Warning: No valid Antivirus content package exists,<br/>(Module: device) |
+
 
 ### pan-os-get-pcap
 ***
@@ -3908,9 +4034,9 @@ Gets information for the specified security profile.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| security_profile | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
-
+|-------------------| --- | --- |
+| security_profile  | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
+| device-group      | The device group for which to return security profiles. | Optional |
 
 #### Context Output
 
@@ -3981,12 +4107,12 @@ Apply a security profile to specific rules or rules with a specific tag.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| profile_type | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
-| rule_name | The rule name to apply. | Required | 
-| profile_name | The profile name to apply to the rule. | Required | 
-| pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
-
+|-------------------| --- | --- |
+| profile_type      | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
+| rule_name         | The rule name to apply. | Required | 
+| profile_name      | The profile name to apply to the rule. | Required | 
+| pre_post          | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| device-group      | The device group for which to apply security profiles. | Optional |
 
 #### Context Output
 
@@ -7231,3 +7357,154 @@ Pushes the given PAN-OS template-stack to the given devices or all devices that 
 >|JobID|Status|
 >|---|---|
 >| 565 | Pending |
+
+
+### pan-os-get-running-config
+***
+Pull the running config file
+
+
+#### Base Command
+
+`pan-os-get-running-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The target device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-running-config target=00000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3678@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "da7faf4c6440d87a3e50ef93536ed81a",
+        "Name": "running_config",
+        "SHA1": "7910271adc8b3e9de28b804442a11a5160d4adda",
+        "SHA256": "a4da4cbee7f3e411fbf76f2595d7dfcffce85bd6b3c000dac7a17e58747d1a2b",
+        "SHA512": "e90d995061b5771f068c07e727ece3b57eeabdac424dabe8f420848e482e2ad18411c030bd4b455f589d8cdae9a1dae942bfef1ebd038104dd975e168cfb7d19",
+        "SSDeep": "3072:KGH5vDQ4MEa4fM0EYRCmgQKQZyVlxgW0ITUj4MO2jCKH2:ZLMGyQKQZaw2",
+        "Size": 1284823,
+        "Type": "ASCII text, with very long lines"
+    }    
+}
+```
+
+
+### pan-os-get-merged-config
+***
+Pull the merged config file
+
+
+#### Base Command
+
+`pan-os-get-merged-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number of the device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-merged-config target=0000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3682@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "3204cc188e4b4a6616b449441d4d1ad4",
+        "Name": "merged_config",
+        "SHA1": "0b058a2ae4b595f80599ef0aeffda640ff386e95",
+        "SHA256": "7178b16cb30880c93345ff80810af4e1428573a28d1ee354d5c79b03372cc027",
+        "SHA512": "edf5b851eab40588e4e338071de3c18cc8d198d811ea0759670c0aa4c8028fa3b7870b9554c4b7d85f8429641d7cd6f6217a6b37500e24ad9c60b6cf39b39f3b",
+        "SSDeep": "3072:OGH5vDQ4MEa4fM0EYRCmgQKQZyVlxDW0ITUj4MO2jCKH2:tLMGyQKQZtw2",
+        "Size": 1322335,
+        "Type": "ASCII text, with very long lines"
+    }
+}
+```
+
+### pan-os-list-templates
+***
+Returns a list of available templates. (Used only in Panorama instances).
+
+
+#### Base Command
+
+`pan-os-list-templates`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_name | The name of the template to retrieve. If not provided then all available templates will be brought. | Optional | 
+| limit | The maximum number of templates to retrieve. This value will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the templates to return. Default is 50. | Optional | 
+| page | The page at which to start listing templates. This must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Template.Name | String | The name of the template. | 
+| Panorama.Template.Description | String | The description of the template. | 
+| Panorama.Template.Variable.Name | String | The variable name of the template. | 
+| Panorama.Template.Variable.Type | String | The type of the template. | 
+| Panorama.Template.Variable.Value | String | The value of the variable of the template. | 
+| Panorama.Template.Variable.Description | String | The description of the variable of the template. | 
+
+#### Command example
+```!pan-os-list-templates limit=20```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Template": [
+            {
+                "Description": null,
+                "Name": "test-1",
+                "Variable": []
+            },
+            {
+                "Description": "test description",
+                "Name": "test-2",
+                "Variable": [
+                    {
+                        "Description": "variable-1-test",
+                        "Name": "$variable-1",
+                        "Type": "ip-netmask",
+                        "Value": "1.1.1.1"
+                    },
+                    {
+                        "Description": null,
+                        "Name": "$variable-2",
+                        "Type": "fqdn",
+                        "Value": "google.com"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Templates:
+>|Description|Name|Variable|
+>|---|---|---|
+>|  | test-1 |  |
+>| test description | test-2 | $variable-1,<br/>$variable-2 |
+

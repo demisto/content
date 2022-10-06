@@ -1,7 +1,37 @@
 Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity.
 
-For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/defender-cloud-apps/api-tokens-legacy).
+1. *Device Code Flow*.
+2. *Client Credentials Flow*.
+3. *By token (legacy method)*. 
+
+### Device Code Flow
+___
+
+To use a Device Code Flow, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en&#45;us/defender&#45;cloud&#45;apps/api&#45;authentication&#45;user).
+
+To connect to the Microsoft Cloud App Security:
+1. Fill in the required parameters.
+2. Run the ***!microsoft-cas-auth-start*** command. 
+3. Follow the instructions that appear.
+4. Run the ***!microsoft-cas-auth-complete*** command.
+
+At the end of the process you'll see a message that you've logged in successfully.
+
+
+### Client Credentials Flow
+___
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en&#45;us/defender&#45;cloud&#45;apps/api&#45;authentication&#45;application).
+2. In the instance configuration, select in the *Authentication Mode* parameter ***Client Credentials***.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Password*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+
+### By token (legacy method)
+To access the Microsoft Cloud App Security API, you need to grant authorization.
+See the [Microsoft documentation](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
 
 For more information about which permissions are required for the token owner in Microsoft Cloud App Security, see [Microsoft Cloud App Security - Manage admin access](https://docs.microsoft.com/en-us/cloud-app-security/manage-admins).
 
@@ -9,12 +39,15 @@ For more information about which permissions are required for the token owner in
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for MicrosoftCloudAppSecurity.
-3. Click **Add instance** to create and configure a new integration instance.
+ Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL \(e.g., https://example.net\) |  | True |
-    | User's key to access the API |  | True |
+    | Authentication Mode |  | False |
+    | User's key to access the API |  | False |
+    | Application ID |  | False |
+    | Tenant ID (for Client Credentials mode) |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -24,11 +57,131 @@ For more information about which permissions are required for the token owner in
     | First fetch time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incident resolution status |  | False |
     | Custom Filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: \{"severity":\{"eq":2\}\}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: \{"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"\}" please query on \{"entity.policy":\{"eq":1234\}\}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters. | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents to ensure collecting all incidents. | False
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+5. Click **Test** to validate the URLs, token, and connection.
+
+
+
+## Look-back parameter note
+In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+the look back to a number that is greater than the previous value, then in the next fetch there might be incidents duplications.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### microsoft-cas-auth-start
+
+***
+Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
+
+
+#### Base Command
+
+`microsoft-cas-auth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!microsoft-cas-auth-start```
+
+#### Human Readable Output
+
+
+>###Authorization instructions
+>1. To sign in, use a web browser to open the page {URL}
+>and enter the code {code} to authenticate.
+>2. Run the !microsoft-cas-auth-complete command in the War Room.
+
+
+### microsoft-cas-auth-complete
+
+***
+Run this command to complete the authorization process. Should be used after running the microsoft-cas-auth-start command. (for device-code mode)
+
+
+#### Base Command
+
+`microsoft-cas-auth-complete`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!microsoft-cas-auth-complete```
+
+#### Human Readable Output
+
+>✅ Authorization completed successfully.
+
+
+### microsoft-cas-auth-reset
+***
+Run this command if you need to rerun the authentication process. (for device-code mode)
+
+
+#### Base Command
+
+`microsoft-cas-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!microsoft-cas-auth-reset```
+
+#### Human Readable Output
+
+
+>Authorization was reset successfully. 
+>You can now run !microsoft-cas-auth-start and
+>!microsoft-cas-auth-complete.
+
+
+
+### microsoft-cas-auth-test
+***
+Tests the connectivity to the Microsoft cas.
+
+
+#### Base Command
+
+`microsoft-cas-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-cas-auth-test```
+
+#### Human Readable Output
+>✅ Success!
+
 ### microsoft-cas-alerts-list
 ***
 Returns a list of alerts that match the specified filters.

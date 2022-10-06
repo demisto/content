@@ -13,7 +13,6 @@
     "description": "",
     "editForm": true,
     "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 2,
     "hidden": false,
     "id": "indicator_roles",

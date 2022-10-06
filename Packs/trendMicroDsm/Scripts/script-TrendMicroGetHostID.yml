@@ -33,7 +33,8 @@ type: python
 subtype: python2
 tags:
 - Trend Micro
-comment: Returns a table of hosts and thers TrendMicro IDs
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 args:
 - name: hostname

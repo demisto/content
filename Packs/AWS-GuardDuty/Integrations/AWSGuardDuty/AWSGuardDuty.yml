@@ -2,19 +2,25 @@ category: IT Services
 commonfields:
   id: AWS - GuardDuty
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: AWS Default Region
   name: defaultRegion
   required: true
   type: 0
+  section: Connect
 - display: Role Arn
   name: roleArn
   required: false
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
@@ -23,18 +29,23 @@ configuration:
   name: roleSessionName
   required: false
   type: 0
+  section: Connect
 - display: Role Session Duration
   name: sessionDuration
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Access Key
   name: access_key
   required: false
   type: 0
+  section: Connect
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  section: Connect
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can
@@ -44,6 +55,8 @@ configuration:
   defaultvalue: 60,10
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Retries
   name: retries
   defaultvalue: 5
@@ -52,20 +65,31 @@ configuration:
   Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Guard Duty Severity level
   name: gs_severity
+  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". 
+    For example, if you set the severity
+    level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Amazon Web Services Guard Duty Service (gd)
 display: AWS - GuardDuty
 name: AWS - GuardDuty
@@ -1273,15 +1297,15 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3py3:1.0.0.33854
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
-- No test
+- No tests
 fromversion: 5.0.0

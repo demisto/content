@@ -5,6 +5,7 @@ import PyPDF2
 import subprocess
 import glob
 import os
+import stat
 import re
 import errno
 import shutil
@@ -33,6 +34,25 @@ except ValueError:
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 # Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
 IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
+
+
+def handle_error_read_only(fun, path, exp):
+    """
+    Handling errors that can be encountered in `shutil.rmtree()` execution.
+    """
+    demisto.debug(exp)
+
+    # Checking if the file is Read-Only
+    if not os.access(path, os.W_OK):
+        demisto.debug(f'The {path} file is read-only')
+        # Change the file permission to the writting
+        try:
+            os.chmod(path, stat.S_IWUSR)
+            fun(path)
+        except Exception as e:
+            raise ValueError(str(e))
+    else:
+        raise ValueError(str(exp))
 
 
 def mark_suspicious(suspicious_reason, entry_id):
@@ -382,29 +402,29 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     all_urls: Set[str] = set()
     all_emails: Set[str] = set()
 
-    pdf_file = open(file_path, 'rb')
-    pdf = PyPDF2.PdfFileReader(pdf_file)
-    pages_len = len(pdf.pages)
+    with open(file_path, 'rb') as pdf_file:
+        pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+        pages_len = len(pdf.pages)
 
-    # Goes over the PDF, page by page, and extracts urls and emails:
-    for page in range(pages_len):
-        page_sliced = pdf.pages[page]
-        page_object = page_sliced.get_object()
+        # Goes over the PDF, page by page, and extracts urls and emails:
+        for page in range(pages_len):
+            page_sliced = pdf.pages[page]
+            page_object = page_sliced.get_object()
 
-        # Extracts the PDF's Annots (Annotations and Commenting):
-        if annots := page_object.get('/Annots'):
-            if not isinstance(annots, PyPDF2.generic.ArrayObject):
-                annots = [annots]
+            # Extracts the PDF's Annots (Annotations and Commenting):
+            if annots := page_object.get('/Annots'):
+                if not isinstance(annots, PyPDF2.generic.ArrayObject):
+                    annots = [annots]
 
-            for annot in annots:
-                annot_objects = annot.get_object()
-                if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
-                    annot_objects = [annot_objects]
+                for annot in annots:
+                    annot_objects = annot.get_object()
+                    if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
+                        annot_objects = [annot_objects]
 
-                # Extracts URLs and Emails:
-                urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
-                all_urls = all_urls.union(urls_set)
-                all_emails = all_emails.union(emails_set)
+                    # Extracts URLs and Emails:
+                    urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
+                    all_urls = all_urls.union(urls_set)
+                    all_emails = all_emails.union(emails_set)
 
     # Logging:
     if len(all_urls) == 0:
@@ -516,7 +536,7 @@ def main():
     finally:
         os.chdir(ROOT_PATH)
         for folder in folders_to_remove:
-            shutil.rmtree(folder)
+            shutil.rmtree(folder, onerror=handle_error_read_only)
 
 
 # python2 uses __builtin__ python3 uses builtins

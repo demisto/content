@@ -413,22 +413,22 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndCompliance
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.brand
+                        iscontext: true
+                      right:
+                        value:
+                          simple: SecurityAndCompliance
+                  - - operator: isEqualString
+                      left:
+                        value:
+                          simple: modules.state
+                        iscontext: true
+                      right:
+                        value:
+                          simple: active
             iscontext: true
       - - operator: isEqualString
           left:
@@ -438,7 +438,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: EWS v2
+              simple: EWS
     - label: Gmail
       condition:
       - - operator: isExists
@@ -1032,13 +1032,7 @@ inputs:
   required: false
   description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
   playbookInputQuery:
-- key: O365Description
-  value: {}
-  required: false
-  description: Used only in O365. Description of the compliance search.
-  playbookInputQuery:
-- key: |
-    O365AllowNotFoundExchangeLocations
+- key:  O365AllowNotFoundExchangeLocations
   value:
     simple: "False"
   required: false
@@ -1053,14 +1047,6 @@ inputs:
   value: {}
   required: false
   description: 'Used only when searching and deleting emails in O365. The exchange location. Determines where to search and delete emails searched using O365 playbooks. Use the value ''All'' to search all mailboxes, use ''SingleMailbox'' to search and delete the email only from the recipient''s inbox, or use ''Manual'' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time.'
-  playbookInputQuery:
-- key: To
-  value:
-    complex:
-      root: incident
-      accessor: emailto
-  required: false
-  description: The email address to which the email was sent. This is used in 0365 to search for and delete emails only from the recipient's inbox.
   playbookInputQuery:
 - key: SearchThisWeek
   value:

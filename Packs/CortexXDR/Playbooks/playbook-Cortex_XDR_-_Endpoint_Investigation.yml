@@ -1,14 +1,4 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n
-* Pre-defined MITRE Tactics\n
-* Host fields (Host ID)\n
-* Attacker fields (Attacker IP, External host)\n
-* MITRE techniques\n
-* File hash (currently, the playbook supports only SHA256)  \n\n
-Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
 id: Cortex XDR - Endpoint Investigation
 inputs:
 - description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
@@ -168,12 +158,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 26771da9-59e7-422f-8f4b-5c08be96bdfa
+      id: 7f99e097-2966-4248-8c94-7728cc480f73
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 26771da9-59e7-422f-8f4b-5c08be96bdfa
+    taskid: 7f99e097-2966-4248-8c94-7728cc480f73
     timertriggers: []
     type: start
     view: |-
@@ -183,6 +173,7 @@ tasks:
           "y": -1090
         }
       }
+    continueonerrortype: ""
   '1':
     conditions:
     - condition:
@@ -212,12 +203,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for discovery techniques.
-      id: 81e61b1f-bd6c-4751-856d-c11bdd35354f
+      id: b069741b-856a-4895-8b8e-13e068daf9e0
       iscommand: false
       name: Should hunt for Discovery techniques?
       type: condition
       version: -1
-    taskid: 81e61b1f-bd6c-4751-856d-c11bdd35354f
+    taskid: b069741b-856a-4895-8b8e-13e068daf9e0
     timertriggers: []
     type: condition
     view: |-
@@ -227,6 +218,7 @@ tasks:
           "y": 2220
         }
       }
+    continueonerrortype: ""
   '2':
     conditions:
     - condition:
@@ -257,12 +249,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for persistence techniques.
-      id: 26f1e9ec-dddf-454a-8d1c-e770f7a0a4d7
+      id: 57cd7c7c-0c59-4b26-85e3-5fbc8b9d880a
       iscommand: false
       name: Should hunt for Persistence techniques?
       type: condition
       version: -1
-    taskid: 26f1e9ec-dddf-454a-8d1c-e770f7a0a4d7
+    taskid: 57cd7c7c-0c59-4b26-85e3-5fbc8b9d880a
     timertriggers: []
     type: condition
     view: |-
@@ -272,6 +264,7 @@ tasks:
           "y": 800
         }
       }
+    continueonerrortype: ""
   '3':
     conditions:
     - condition:
@@ -302,12 +295,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for initial access techniques.
-      id: 6631c326-a3b2-4bf9-859e-e7718e61eb1e
+      id: 52b2a847-1a4b-48c5-8202-5586e37bf920
       iscommand: false
       name: Should hunt for Initial Access techniques?
       type: condition
       version: -1
-    taskid: 6631c326-a3b2-4bf9-859e-e7718e61eb1e
+    taskid: 52b2a847-1a4b-48c5-8202-5586e37bf920
     timertriggers: []
     type: condition
     view: |-
@@ -317,6 +310,7 @@ tasks:
           "y": -140
         }
       }
+    continueonerrortype: ""
   '4':
     conditions:
     - condition:
@@ -347,12 +341,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for privilege escalation techniques.
-      id: 018c1cab-9901-43fa-8995-ee0325036bcb
+      id: 428b7dbc-de17-4a1d-875e-5147dc1be909
       iscommand: false
       name: Should hunt for Privilege Escalation techniques?
       type: condition
       version: -1
-    taskid: 018c1cab-9901-43fa-8995-ee0325036bcb
+    taskid: 428b7dbc-de17-4a1d-875e-5147dc1be909
     timertriggers: []
     type: condition
     view: |-
@@ -362,6 +356,7 @@ tasks:
           "y": 1270
         }
       }
+    continueonerrortype: ""
   '5':
     conditions:
     - condition:
@@ -392,12 +387,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for defense evasion techniques.
-      id: baa1e20f-4b89-4ef2-86e4-2eaf12d733c2
+      id: 2e8b45ac-6c4a-4878-82cf-29aca8596886
       iscommand: false
       name: Should hunt for Defense Evasion techniques?
       type: condition
       version: -1
-    taskid: baa1e20f-4b89-4ef2-86e4-2eaf12d733c2
+    taskid: 2e8b45ac-6c4a-4878-82cf-29aca8596886
     timertriggers: []
     type: condition
     view: |-
@@ -407,6 +402,7 @@ tasks:
           "y": 1740
         }
       }
+    continueonerrortype: ""
   '6':
     conditions:
     - condition:
@@ -437,12 +433,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for execution techniques.
-      id: 6daefce0-8773-4e2b-84c0-c298adf12464
+      id: 30e79652-c79a-4f7b-81e3-4f66e0af7cac
       iscommand: false
       name: Should hunt for Execution techniques?
       type: condition
       version: -1
-    taskid: 6daefce0-8773-4e2b-84c0-c298adf12464
+    taskid: 30e79652-c79a-4f7b-81e3-4f66e0af7cac
     timertriggers: []
     type: condition
     view: |-
@@ -452,6 +448,7 @@ tasks:
           "y": 330
         }
       }
+    continueonerrortype: ""
   '7':
     conditions:
     - condition:
@@ -482,12 +479,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for lateral movement techniques.
-      id: b0f80114-76f0-4a92-8e6c-b74f4ee31de6
+      id: c6aace17-413b-4e40-8b35-1a5f96447aae
       iscommand: false
       name: Should hunt for Lateral Movement techniques?
       type: condition
       version: -1
-    taskid: b0f80114-76f0-4a92-8e6c-b74f4ee31de6
+    taskid: c6aace17-413b-4e40-8b35-1a5f96447aae
     timertriggers: []
     type: condition
     view: |-
@@ -497,6 +494,7 @@ tasks:
           "y": 2700
         }
       }
+    continueonerrortype: ""
   '8':
     conditions:
     - condition:
@@ -527,12 +525,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for collection techniques.
-      id: 87c3bced-78d4-49ce-83a9-e99b8df241e3
+      id: a0a29eb3-0325-4416-8aa4-dec14e4040b8
       iscommand: false
       name: Should hunt for Collection techniques?
       type: condition
       version: -1
-    taskid: 87c3bced-78d4-49ce-83a9-e99b8df241e3
+    taskid: a0a29eb3-0325-4416-8aa4-dec14e4040b8
     timertriggers: []
     type: condition
     view: |-
@@ -542,6 +540,7 @@ tasks:
           "y": 3195
         }
       }
+    continueonerrortype: ""
   '9':
     conditions:
     - condition:
@@ -559,7 +558,7 @@ tasks:
             iscontext: true
             value:
               complex:
-                root: inputs.attackerRemoteHost
+                root: inputs.attackerExternalHost
           operator: isNotEmpty
         - left:
             iscontext: true
@@ -584,12 +583,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt by the attacker indicators.
-      id: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+      id: 356d0462-16e4-4630-8f89-d21d3b9d5741
       iscommand: false
       name: Should investigate by attacker fields?
       type: condition
       version: -1
-    taskid: 09238f4e-5ee7-498b-893b-1cce9fb3c997
+    taskid: 356d0462-16e4-4630-8f89-d21d3b9d5741
     timertriggers: []
     type: condition
     view: |-
@@ -599,6 +598,7 @@ tasks:
           "y": -290
         }
       }
+    continueonerrortype: ""
   '10':
     conditions:
     - condition:
@@ -634,12 +634,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt by the host fields.
-      id: c896ea76-878a-43f4-80bd-5d5be9f46fc2
+      id: c6c79e7c-3452-44eb-84c9-855eb9420cb7
       iscommand: false
       name: Should hunt by host fields?
       type: condition
       version: -1
-    taskid: c896ea76-878a-43f4-80bd-5d5be9f46fc2
+    taskid: c6c79e7c-3452-44eb-84c9-855eb9420cb7
     timertriggers: []
     type: condition
     view: |-
@@ -649,6 +649,7 @@ tasks:
           "y": -770
         }
       }
+    continueonerrortype: ""
   '11':
     conditions:
     - condition:
@@ -685,12 +686,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt by MITRE technique.
-      id: 7553edad-1b98-4459-834c-07f66fe82731
+      id: a8ef04d2-d9f8-4fe9-8ae1-5eab8f5a02d4
       iscommand: false
       name: Should investigate by MITRE techniques?
       type: condition
       version: -1
-    taskid: 7553edad-1b98-4459-834c-07f66fe82731
+    taskid: a8ef04d2-d9f8-4fe9-8ae1-5eab8f5a02d4
     timertriggers: []
     type: condition
     view: |-
@@ -700,6 +701,7 @@ tasks:
           "y": 180
         }
       }
+    continueonerrortype: ""
   '12':
     conditions:
     - condition:
@@ -736,12 +738,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt by file hash.
-      id: d2a6e731-c4f1-4e1c-8cfe-ff42b7726e8a
+      id: 6cde2c9d-d6c6-4181-80b9-2ea4880fbdb2
       iscommand: false
       name: Should investigate by file hash?
       type: condition
       version: -1
-    taskid: d2a6e731-c4f1-4e1c-8cfe-ff42b7726e8a
+    taskid: 6cde2c9d-d6c6-4181-80b9-2ea4880fbdb2
     timertriggers: []
     type: condition
     view: |-
@@ -751,6 +753,7 @@ tasks:
           "y": 660
         }
       }
+    continueonerrortype: ""
   '13':
     id: '13'
     ignoreworker: false
@@ -762,13 +765,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: bd9e01ff-9927-453d-8702-b81c3fe81f0a
+      id: ba5184c9-0af7-4daa-82af-2d88d2894cc5
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: bd9e01ff-9927-453d-8702-b81c3fe81f0a
+    taskid: ba5184c9-0af7-4daa-82af-2d88d2894cc5
     timertriggers: []
     type: title
     view: |-
@@ -778,6 +781,7 @@ tasks:
           "y": 1145
         }
       }
+    continueonerrortype: ""
   '14':
     id: '14'
     ignoreworker: false
@@ -792,13 +796,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: aa13b3d0-4124-4586-87d0-a122a811588e
+      id: b6881c8f-e9e8-4fe4-86c2-7047f5838110
       iscommand: false
       name: Persistence
       type: title
       version: -1
       description: ''
-    taskid: aa13b3d0-4124-4586-87d0-a122a811588e
+    taskid: b6881c8f-e9e8-4fe4-86c2-7047f5838110
     timertriggers: []
     type: title
     view: |-
@@ -808,6 +812,7 @@ tasks:
           "y": 970
         }
       }
+    continueonerrortype: ""
   '15':
     evidencedata:
       customfields: {}
@@ -917,15 +922,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: c2580602-dd3f-44d7-8b4f-07c5dd498869
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 9cf749bf-95d5-4971-8110-0aa0a502ba3f
       iscommand: true
       name: Hunt Persistence techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: c2580602-dd3f-44d7-8b4f-07c5dd498869
+    taskid: 9cf749bf-95d5-4971-8110-0aa0a502ba3f
     timertriggers: []
     type: regular
     view: |-
@@ -935,6 +939,7 @@ tasks:
           "y": 1100
         }
       }
+    continueonerrortype: ""
   '16':
     id: '16'
     ignoreworker: false
@@ -949,13 +954,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 17850962-ee9d-462e-8a68-86992f3476b1
+      id: 81e37a3a-ad78-4d56-85d8-112192f5445a
       iscommand: false
       name: Initial Access
       type: title
       version: -1
       description: ''
-    taskid: 17850962-ee9d-462e-8a68-86992f3476b1
+    taskid: 81e37a3a-ad78-4d56-85d8-112192f5445a
     timertriggers: []
     type: title
     view: |-
@@ -965,6 +970,7 @@ tasks:
           "y": 30
         }
       }
+    continueonerrortype: ""
   '17':
     id: '17'
     ignoreworker: false
@@ -979,13 +985,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 38d79a1d-432e-4b43-84fb-2df946466f06
+      id: cb9be798-fa52-4585-8c21-1f26ed50326d
       iscommand: false
       name: Execution
       type: title
       version: -1
       description: ''
-    taskid: 38d79a1d-432e-4b43-84fb-2df946466f06
+    taskid: cb9be798-fa52-4585-8c21-1f26ed50326d
     timertriggers: []
     type: title
     view: |-
@@ -995,6 +1001,7 @@ tasks:
           "y": 500
         }
       }
+    continueonerrortype: ""
   '18':
     id: '18'
     ignoreworker: false
@@ -1009,13 +1016,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 54aede8a-286a-47f8-8578-da4cd0b042ce
+      id: e0aaf664-0f94-49c9-837b-5a64a9ed9a6c
       iscommand: false
       name: Privilege Escalation
       type: title
       version: -1
       description: ''
-    taskid: 54aede8a-286a-47f8-8578-da4cd0b042ce
+    taskid: e0aaf664-0f94-49c9-837b-5a64a9ed9a6c
     timertriggers: []
     type: title
     view: |-
@@ -1025,6 +1032,7 @@ tasks:
           "y": 1440
         }
       }
+    continueonerrortype: ""
   '19':
     id: '19'
     ignoreworker: false
@@ -1039,13 +1047,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: d9287202-7433-4836-8e86-59f0acebaf1b
+      id: 8e776614-f7a6-4d60-80c5-d7c0453f297d
       iscommand: false
       name: Defense Evasion
       type: title
       version: -1
       description: ''
-    taskid: d9287202-7433-4836-8e86-59f0acebaf1b
+    taskid: 8e776614-f7a6-4d60-80c5-d7c0453f297d
     timertriggers: []
     type: title
     view: |-
@@ -1055,6 +1063,7 @@ tasks:
           "y": 1910
         }
       }
+    continueonerrortype: ""
   '20':
     id: '20'
     ignoreworker: false
@@ -1069,13 +1078,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: bb43e613-8041-41cc-8d6a-031d2ea4bcb6
+      id: af705a0c-f875-4824-887c-a58a04af71e4
       iscommand: false
       name: Discovery
       type: title
       version: -1
       description: ''
-    taskid: bb43e613-8041-41cc-8d6a-031d2ea4bcb6
+    taskid: af705a0c-f875-4824-887c-a58a04af71e4
     timertriggers: []
     type: title
     view: |-
@@ -1085,6 +1094,7 @@ tasks:
           "y": 2390
         }
       }
+    continueonerrortype: ""
   '21':
     id: '21'
     ignoreworker: false
@@ -1099,13 +1109,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: e132947f-bf00-48da-8305-fa34c72c42dc
+      id: ebe035ce-68e3-4204-8dfb-33e554b2cfa0
       iscommand: false
       name: Lateral Movement
       type: title
       version: -1
       description: ''
-    taskid: e132947f-bf00-48da-8305-fa34c72c42dc
+    taskid: ebe035ce-68e3-4204-8dfb-33e554b2cfa0
     timertriggers: []
     type: title
     view: |-
@@ -1115,6 +1125,7 @@ tasks:
           "y": 2870
         }
       }
+    continueonerrortype: ""
   '22':
     id: '22'
     ignoreworker: false
@@ -1129,13 +1140,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 7f301311-2cb6-4f0a-8d10-4e8d5f82cea1
+      id: 4cf15745-735b-4567-8b8b-fcb6586ba121
       iscommand: false
       name: Collection
       type: title
       version: -1
       description: ''
-    taskid: 7f301311-2cb6-4f0a-8d10-4e8d5f82cea1
+    taskid: 4cf15745-735b-4567-8b8b-fcb6586ba121
     timertriggers: []
     type: title
     view: |-
@@ -1145,6 +1156,7 @@ tasks:
           "y": 3370
         }
       }
+    continueonerrortype: ""
   '23':
     conditions:
     - condition:
@@ -1175,12 +1187,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for command and control techniques.
-      id: 1ff80560-73b2-4e6d-8713-fdbddb0c8958
+      id: e49225e7-b9db-4b46-8afa-ac490a271b92
       iscommand: false
       name: Should hunt for CnC techniques?
       type: condition
       version: -1
-    taskid: 1ff80560-73b2-4e6d-8713-fdbddb0c8958
+    taskid: e49225e7-b9db-4b46-8afa-ac490a271b92
     timertriggers: []
     type: condition
     view: |-
@@ -1190,6 +1202,7 @@ tasks:
           "y": 3680
         }
       }
+    continueonerrortype: ""
   '24':
     conditions:
     - condition:
@@ -1220,12 +1233,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for impact techniques.
-      id: 21f9942f-6dd3-426f-8e9a-eb3ae3a2fb4b
+      id: a69eaab8-21e9-4633-8801-5fc2a2c8b028
       iscommand: false
       name: Should hunt for Impact techniques?
       type: condition
       version: -1
-    taskid: 21f9942f-6dd3-426f-8e9a-eb3ae3a2fb4b
+    taskid: a69eaab8-21e9-4633-8801-5fc2a2c8b028
     timertriggers: []
     type: condition
     view: |-
@@ -1235,6 +1248,7 @@ tasks:
           "y": 4140
         }
       }
+    continueonerrortype: ""
   '25':
     id: '25'
     ignoreworker: false
@@ -1249,13 +1263,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ff4496b4-e914-4bba-8112-6ed6b4508c79
+      id: ea84a2c0-f9b1-4a76-8ecc-268ac6ccd4ec
       iscommand: false
       name: Command and Control
       type: title
       version: -1
       description: ''
-    taskid: ff4496b4-e914-4bba-8112-6ed6b4508c79
+    taskid: ea84a2c0-f9b1-4a76-8ecc-268ac6ccd4ec
     timertriggers: []
     type: title
     view: |-
@@ -1265,6 +1279,7 @@ tasks:
           "y": 3850
         }
       }
+    continueonerrortype: ""
   '26':
     id: '26'
     ignoreworker: false
@@ -1279,13 +1294,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c89859a8-0333-4872-8dc7-9feb1fad74fb
+      id: a5719c28-9424-4e64-84f3-af7d1d0ce2ea
       iscommand: false
       name: Impact
       type: title
       version: -1
       description: ''
-    taskid: c89859a8-0333-4872-8dc7-9feb1fad74fb
+    taskid: a5719c28-9424-4e64-84f3-af7d1d0ce2ea
     timertriggers: []
     type: title
     view: |-
@@ -1295,6 +1310,7 @@ tasks:
           "y": 4310
         }
       }
+    continueonerrortype: ""
   '27':
     conditions:
     - condition:
@@ -1325,12 +1341,12 @@ tasks:
     task:
       brand: ''
       description: Whether to hunt for reconnaissance techniques.
-      id: 9cd16df8-9f8c-4040-81e9-345ffb028daf
+      id: 3c0ecb66-b6de-4286-8658-ba7ef56b83d4
       iscommand: false
       name: Should hunt for suspicious Reconnaissance techniques?
       type: condition
       version: -1
-    taskid: 9cd16df8-9f8c-4040-81e9-345ffb028daf
+    taskid: 3c0ecb66-b6de-4286-8658-ba7ef56b83d4
     timertriggers: []
     type: condition
     view: |-
@@ -1340,6 +1356,7 @@ tasks:
           "y": -620
         }
       }
+    continueonerrortype: ""
   '28':
     id: '28'
     ignoreworker: false
@@ -1354,13 +1371,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: fda5f54d-76eb-4fba-8dd4-7e74b0e9da86
+      id: 69d8cc9d-bdd4-42ea-82c6-ddf644634fbc
       iscommand: false
       name: Reconnaissance
       type: title
       version: -1
       description: ''
-    taskid: fda5f54d-76eb-4fba-8dd4-7e74b0e9da86
+    taskid: 69d8cc9d-bdd4-42ea-82c6-ddf644634fbc
     timertriggers: []
     type: title
     view: |-
@@ -1370,6 +1387,7 @@ tasks:
           "y": -450
         }
       }
+    continueonerrortype: ""
   '29':
     evidencedata:
       customfields: {}
@@ -1411,15 +1429,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 4026ad92-0a13-4150-8bc8-d18c132bce46
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: ef461110-a55a-434b-857a-f4c0fdff7fbe
       iscommand: true
       name: Hunt Reconnaissance techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 4026ad92-0a13-4150-8bc8-d18c132bce46
+    taskid: ef461110-a55a-434b-857a-f4c0fdff7fbe
     timertriggers: []
     type: regular
     view: |-
@@ -1429,6 +1446,7 @@ tasks:
           "y": -320
         }
       }
+    continueonerrortype: ""
   '30':
     evidencedata:
       customfields: {}
@@ -1470,15 +1488,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 9d9f94f4-c4a8-4843-8a29-c2a46a88d226
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 1a884666-28cb-421e-8b89-2588bbaf02b9
       iscommand: true
       name: Hunt Initial Access techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 9d9f94f4-c4a8-4843-8a29-c2a46a88d226
+    taskid: 1a884666-28cb-421e-8b89-2588bbaf02b9
     timertriggers: []
     type: regular
     view: |-
@@ -1488,6 +1505,7 @@ tasks:
           "y": 160
         }
       }
+    continueonerrortype: ""
   '31':
     evidencedata:
       customfields: {}
@@ -1562,15 +1580,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 55256a99-e191-4d49-838e-e0e083e6c2fa
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: a5a7102d-5fb6-482b-8c91-92402f628776
       iscommand: true
       name: Hunt Execution techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 55256a99-e191-4d49-838e-e0e083e6c2fa
+    taskid: a5a7102d-5fb6-482b-8c91-92402f628776
     timertriggers: []
     type: regular
     view: |-
@@ -1580,6 +1597,7 @@ tasks:
           "y": 630
         }
       }
+    continueonerrortype: ""
   '32':
     evidencedata:
       customfields: {}
@@ -1634,15 +1652,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: d0a87664-d4bb-40d6-890b-b8e52adb2302
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: c77258bd-28c1-4e81-80aa-dd76e55cef2a
       iscommand: true
       name: Hunt Privilege Escalation techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: d0a87664-d4bb-40d6-890b-b8e52adb2302
+    taskid: c77258bd-28c1-4e81-80aa-dd76e55cef2a
     timertriggers: []
     type: regular
     view: |-
@@ -1652,6 +1669,7 @@ tasks:
           "y": 1570
         }
       }
+    continueonerrortype: ""
   '33':
     evidencedata:
       customfields: {}
@@ -1736,15 +1754,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: e35bdab9-f37c-44f9-8b3b-fae9bca7db40
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: df72255d-43d7-4a64-8fde-cbc6771b33d4
       iscommand: true
       name: Hunt Defense Evasion techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: e35bdab9-f37c-44f9-8b3b-fae9bca7db40
+    taskid: df72255d-43d7-4a64-8fde-cbc6771b33d4
     timertriggers: []
     type: regular
     view: |-
@@ -1754,6 +1771,7 @@ tasks:
           "y": 2050
         }
       }
+    continueonerrortype: ""
   '34':
     evidencedata:
       customfields: {}
@@ -1823,15 +1841,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 11faa761-a508-434b-85bb-6cdfaa0b443d
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: cd469df0-05d0-4934-89f1-5310259b51db
       iscommand: true
       name: Hunt Discovery techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 11faa761-a508-434b-85bb-6cdfaa0b443d
+    taskid: cd469df0-05d0-4934-89f1-5310259b51db
     timertriggers: []
     type: regular
     view: |-
@@ -1841,6 +1858,7 @@ tasks:
           "y": 2530
         }
       }
+    continueonerrortype: ""
   '35':
     evidencedata:
       customfields: {}
@@ -1915,15 +1933,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 597d0a82-ea6f-4c28-81e8-5f7afc203c12
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 4491cd2c-169c-4e03-8428-4762c959e431
       iscommand: true
       name: Hunt Lateral Movement techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 597d0a82-ea6f-4c28-81e8-5f7afc203c12
+    taskid: 4491cd2c-169c-4e03-8428-4762c959e431
     timertriggers: []
     type: regular
     view: |-
@@ -1933,6 +1950,7 @@ tasks:
           "y": 3020
         }
       }
+    continueonerrortype: ""
   '36':
     evidencedata:
       customfields: {}
@@ -1990,15 +2008,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: f5d97a15-581c-4bf7-8d69-781cf2343040
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 0cf1722b-ff9c-40f5-8d4b-5f7e15c35e3a
       iscommand: true
       name: Hunt Collection techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: f5d97a15-581c-4bf7-8d69-781cf2343040
+    taskid: 0cf1722b-ff9c-40f5-8d4b-5f7e15c35e3a
     timertriggers: []
     type: regular
     view: |-
@@ -2008,6 +2025,7 @@ tasks:
           "y": 3510
         }
       }
+    continueonerrortype: ""
   '37':
     evidencedata:
       customfields: {}
@@ -2067,15 +2085,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 7a459be8-7e52-4af6-8b19-3ba613ca6730
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: cc6666ba-88c7-4b42-8ed3-7bbfebbf594a
       iscommand: true
       name: Hunt Command and Control techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 7a459be8-7e52-4af6-8b19-3ba613ca6730
+    taskid: cc6666ba-88c7-4b42-8ed3-7bbfebbf594a
     timertriggers: []
     type: regular
     view: |-
@@ -2085,6 +2102,7 @@ tasks:
           "y": 3970
         }
       }
+    continueonerrortype: ""
   '38':
     evidencedata:
       customfields: {}
@@ -2145,20 +2163,19 @@ tasks:
       extend-context:
         simple: Impact_techniques
       time_frame:
-         simple: ${inputs.timeRange}
+        simple: ${inputs.timeRange}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 58498f0a-9f60-415f-8551-2aa65ac1c151
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: f3446402-e971-4d1c-87b8-dec659f43e96
       iscommand: true
       name: Hunt Impact techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 58498f0a-9f60-415f-8551-2aa65ac1c151
+    taskid: f3446402-e971-4d1c-87b8-dec659f43e96
     timertriggers: []
     type: regular
     view: |-
@@ -2168,6 +2185,7 @@ tasks:
           "y": 4450
         }
       }
+    continueonerrortype: ""
   '39':
     id: '39'
     ignoreworker: false
@@ -2182,13 +2200,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 790c95cf-af51-440a-8cc6-0d22ec470532
+      id: 5ffe189e-933f-4786-8fc6-2747c64ee522
       iscommand: false
       name: Host activity
       type: title
       version: -1
       description: ''
-    taskid: 790c95cf-af51-440a-8cc6-0d22ec470532
+    taskid: 5ffe189e-933f-4786-8fc6-2747c64ee522
     timertriggers: []
     type: title
     view: |-
@@ -2198,6 +2216,7 @@ tasks:
           "y": -600
         }
       }
+    continueonerrortype: ""
   '43':
     id: '43'
     ignoreworker: false
@@ -2212,13 +2231,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: d679a72b-0099-4649-8887-8458fb29b79c
+      id: 59789ba0-a9bb-4890-8537-5c429119b063
       iscommand: false
       name: Attacker network activity
       type: title
       version: -1
       description: ''
-    taskid: d679a72b-0099-4649-8887-8458fb29b79c
+    taskid: 59789ba0-a9bb-4890-8537-5c429119b063
     timertriggers: []
     type: title
     view: |-
@@ -2228,6 +2247,7 @@ tasks:
           "y": -110
         }
       }
+    continueonerrortype: ""
   '44':
     evidencedata:
       customfields: {}
@@ -2246,28 +2266,31 @@ tasks:
     quietmode: 0
     scriptarguments:
       action_external_hostname:
-        simple: ${inputs.attackerExternalHost}
+        complex:
+          root: inputs.attackerExternalHost
       action_local_ip:
-        simple: ${inputs.attackerRemoteIP}
+        complex:
+          root: inputs.attackerRemoteIP
       action_remote_ip:
-        simple: ${inputs.attackerRemoteIP}
+        complex:
+          root: inputs.attackerRemoteIP
       extend-context:
         simple: Attacker_Network_Activity
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: a3aec506-0ee9-4f06-8433-4ccf7e5fd60a
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 206b9474-f208-4cd2-8969-06542cd62a6b
       iscommand: true
       name: Hunt by attacker source IP or external host
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: a3aec506-0ee9-4f06-8433-4ccf7e5fd60a
+    taskid: 206b9474-f208-4cd2-8969-06542cd62a6b
     timertriggers: []
     type: regular
     view: |-
@@ -2277,6 +2300,7 @@ tasks:
           "y": 10
         }
       }
+    continueonerrortype: ""
   '46':
     id: '46'
     ignoreworker: false
@@ -2291,13 +2315,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 710569db-85e4-4d8d-8f63-dd9904d01d04
+      id: b657438a-b7d3-4d84-8cfc-c569be6857fc
       iscommand: false
       name: MITRE Techniques
       type: title
       version: -1
       description: ''
-    taskid: 710569db-85e4-4d8d-8f63-dd9904d01d04
+    taskid: b657438a-b7d3-4d84-8cfc-c569be6857fc
     timertriggers: []
     type: title
     view: |-
@@ -2307,6 +2331,7 @@ tasks:
           "y": 350
         }
       }
+    continueonerrortype: ""
   '47':
     evidencedata:
       customfields: {}
@@ -2326,23 +2351,20 @@ tasks:
     scriptarguments:
       mitre_technique_id_and_name:
         simple: ${inputs.mitreTechniqueID}
-        time_frame:
-          simple: ${inputs.timeRange}
       extend-context:
         simple: MITRE_Techniques_Specific_ID
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 8636fe8e-0d6a-4d0f-8fa1-b1e4dfae5436
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: d6d3940a-49fb-4f52-8ba8-a653cb97543a
       iscommand: true
       name: Hunt by technique ID
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 8636fe8e-0d6a-4d0f-8fa1-b1e4dfae5436
+    taskid: d6d3940a-49fb-4f52-8ba8-a653cb97543a
     timertriggers: []
     type: regular
     view: |-
@@ -2352,6 +2374,7 @@ tasks:
           "y": 485
         }
       }
+    continueonerrortype: ""
   '48':
     id: '48'
     ignoreworker: false
@@ -2366,13 +2389,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: d481827b-144e-4cc6-8dff-92f2293d587e
+      id: f1947fbc-9f93-4121-8807-98a644eb5562
       iscommand: false
       name: Hunt File Hash
       type: title
       version: -1
       description: ''
-    taskid: d481827b-144e-4cc6-8dff-92f2293d587e
+    taskid: f1947fbc-9f93-4121-8807-98a644eb5562
     timertriggers: []
     type: title
     view: |-
@@ -2382,6 +2405,7 @@ tasks:
           "y": 830
         }
       }
+    continueonerrortype: ""
   '49':
     evidencedata:
       customfields: {}
@@ -2400,30 +2424,34 @@ tasks:
     quietmode: 0
     scriptarguments:
       action_file_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       action_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       actor_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       causality_actor_process_image_sha256:
-        simple: ${inputs.FileSHA256}
+        complex:
+          root: inputs.FileSHA256
       extend-context:
         simple: Hunt_File_Hash
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 2d0fe604-acf7-4a1f-805b-ba7d8bcb0a98
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 58ba3eff-0d34-4d4c-8b40-958050da9a0f
       iscommand: true
       name: Hunt by file hash
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 2d0fe604-acf7-4a1f-805b-ba7d8bcb0a98
+    taskid: 58ba3eff-0d34-4d4c-8b40-958050da9a0f
     timertriggers: []
     type: regular
     view: |-
@@ -2433,6 +2461,7 @@ tasks:
           "y": 960
         }
       }
+    continueonerrortype: ""
   '50':
     id: '50'
     ignoreworker: false
@@ -2447,13 +2476,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c224069c-cebb-446b-8dc6-07d9a5a63438
+      id: 3744b340-e96a-4248-82fe-200f27fc05fe
       iscommand: false
       name: Hunt by MITRE Tactics
       type: title
       version: -1
       description: ''
-    taskid: c224069c-cebb-446b-8dc6-07d9a5a63438
+    taskid: 3744b340-e96a-4248-82fe-200f27fc05fe
     timertriggers: []
     type: title
     view: |-
@@ -2463,6 +2492,7 @@ tasks:
           "y": -940
         }
       }
+    continueonerrortype: ""
   '51':
     id: '51'
     ignoreworker: false
@@ -2477,13 +2507,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1b10baff-223f-4a9b-88fc-f6e30e6d0273
+      id: 8a91b76d-55c5-48b0-801a-e1a416bda1c9
       iscommand: false
       name: Hunt by Indicators
       type: title
       version: -1
       description: ''
-    taskid: 1b10baff-223f-4a9b-88fc-f6e30e6d0273
+    taskid: 8a91b76d-55c5-48b0-801a-e1a416bda1c9
     timertriggers: []
     type: title
     view: |-
@@ -2493,6 +2523,7 @@ tasks:
           "y": -940
         }
       }
+    continueonerrortype: ""
   '52':
     id: '52'
     ignoreworker: false
@@ -2504,13 +2535,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: f5f485bf-8035-4c97-8529-bc289e584adf
+      id: 93d8c0e0-4f47-417d-8e85-91d21e3ad5bc
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: f5f485bf-8035-4c97-8529-bc289e584adf
+    taskid: 93d8c0e0-4f47-417d-8e85-91d21e3ad5bc
     timertriggers: []
     type: title
     view: |-
@@ -2520,6 +2551,7 @@ tasks:
           "y": 4630
         }
       }
+    continueonerrortype: ""
   '57':
     evidencedata:
       customfields: {}
@@ -2547,15 +2579,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
-      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: b2143569-691b-4156-8452-0fd43badb181
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 93b29a9b-c1b2-4d8e-8c71-84594b9a744b
       iscommand: true
       name: Hunt by host ID
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: b2143569-691b-4156-8452-0fd43badb181
+    taskid: 93b29a9b-c1b2-4d8e-8c71-84594b9a744b
     timertriggers: []
     type: regular
     view: |-
@@ -2565,6 +2596,7 @@ tasks:
           "y": -465
         }
       }
+    continueonerrortype: ""
   '58':
     conditions:
     - condition:
@@ -2603,13 +2635,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 742a7ba1-083b-441d-8ff4-0d10dc891403
+      id: 991f8326-7ca6-4762-864d-793e82ae5566
       iscommand: false
       description: Run all Hunting Queries on Mitre Tactics?
       name: Run all Hunting Queries on Mitre Tactics?
       type: condition
       version: -1
-    taskid: 742a7ba1-083b-441d-8ff4-0d10dc891403
+    taskid: 991f8326-7ca6-4762-864d-793e82ae5566
     timertriggers: []
     type: condition
     view: |-
@@ -2619,6 +2651,7 @@ tasks:
           "y": -800
         }
       }
+    continueonerrortype: ""
 version: -1
 view: |-
   {

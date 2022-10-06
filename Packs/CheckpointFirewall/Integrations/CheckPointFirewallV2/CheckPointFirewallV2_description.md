@@ -4,3 +4,7 @@ In the Smart Console, enable the web api: Management & Setting → Blades → Ma
 
 Enable sftp on your server CheckPoint guide to walk you through: https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&solutionid=sk82281 
 
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/check-point-firewall-v2)

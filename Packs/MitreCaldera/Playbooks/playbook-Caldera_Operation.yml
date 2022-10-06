@@ -1,0 +1,401 @@
+id: Caldera Operation
+version: -1
+name: Caldera Operation
+description: This playbook is used to create a new Operation in Mitre Caldera.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 031d51ea-474d-4d92-878c-820cb230fe12
+    type: start
+    task:
+      id: 031d51ea-474d-4d92-878c-820cb230fe12
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: c5939ed7-c453-4e39-836c-1538e213ed2f
+    type: regular
+    task:
+      id: c5939ed7-c453-4e39-836c-1538e213ed2f
+      version: -1
+      name: Create New Operation
+      description: Create a new CALDERA operation record
+      script: MitreCaldera|||caldera-create-operation
+      type: regular
+      iscommand: true
+      brand: MitreCaldera
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      adversary_id:
+        complex:
+          root: incident
+          accessor: calderaoperationadversaryid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+      name:
+        complex:
+          root: incident
+          accessor: calderaoperationname
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: New Operation
+      planner_id:
+        complex:
+          root: incident
+          accessor: calderaoperationplannerid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+      source_id:
+        complex:
+          root: incident
+          accessor: calderaoperationsourceid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 81f1a669-8857-46fb-872d-54094ea99d8f
+    type: title
+    task:
+      id: 81f1a669-8857-46fb-872d-54094ea99d8f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 4c99f441-d1d8-4272-8aba-26900b7114ac
+    type: regular
+    task:
+      id: 4c99f441-d1d8-4272-8aba-26900b7114ac
+      version: -1
+      name: Set Incident Name
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: calderaoperationname
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: New Operation
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Caldera Operation - '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 6cf1cced-130c-470a-84ab-4b5deb345bab
+    type: regular
+    task:
+      id: 6cf1cced-130c-470a-84ab-4b5deb345bab
+      version: -1
+      name: Set Incident Fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      calderaoperationid:
+        simple: ${MitreCaldera.Operations.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 22179e90-6430-40a3-8c3c-d6c91c564c9b
+    type: condition
+    task:
+      id: 22179e90-6430-40a3-8c3c-d6c91c564c9b
+      version: -1
+      name: Is this operation scheduled?
+      description: Checks whether the operation has been requested to be scheduled at a specific date and time.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '1'
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: calderascheduleoperation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: calderascheduledatetime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 753da45f-55e8-4da0-8fbf-942859873624
+    type: regular
+    task:
+      id: 753da45f-55e8-4da0-8fbf-942859873624
+      version: -1
+      name: Set the Schedule timer
+      description: Sets the MITRE Caldera Schedule Date Time SLA field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      sla:
+        complex:
+          root: incident
+          accessor: calderascheduledatetime
+      slaField:
+        simple: calderascheduledatetimesla
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 3d42e346-88cf-4f36-8b87-1740c9617506
+    type: title
+    task:
+      id: 3d42e346-88cf-4f36-8b87-1740c9617506
+      version: -1
+      name: Start the schedule timer
+      description: Starts the MITRE Caldera Schedule Date Time SLA
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: calderascheduledatetimesla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 7a21f7c1-52c3-41b2-830b-2963946521aa
+    type: regular
+    task:
+      id: 7a21f7c1-52c3-41b2-830b-2963946521aa
+      version: -1
+      name: Wait for scheduled date time
+      description: Waits for the MITRE Caldera Schedule Date Time SLA to expire.
+      tags:
+      - mitrecalderadatetimestart
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

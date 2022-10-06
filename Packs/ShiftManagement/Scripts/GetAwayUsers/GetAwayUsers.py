@@ -22,7 +22,6 @@ def main():
             'EntryContext': {'AwayUsers': outputs} if outputs else {}
         })
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetAwayUsers. Error: {str(e)}')
 
 

@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 import urllib3
-import traceback
 from typing import Any, Dict, Tuple, List
 from _collections import defaultdict
 import ast
@@ -556,7 +555,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
