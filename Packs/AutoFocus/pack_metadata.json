@@ -1,5 +1,5 @@
 {
-    "name": "AutoFocus",
+    "name": "AutoFocus by Palo Alto Networks",
     "description": "Use the Palo Alto Networks AutoFocus integration to distinguish the most\n  important threats from everyday commodity attacks.",
     "support": "xsoar",
     "currentVersion": "2.0.27",
