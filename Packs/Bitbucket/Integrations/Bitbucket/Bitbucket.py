@@ -1224,17 +1224,17 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         hr_title = f'List of the comments on pull request "{pr_id}"'
     human_readable = []
     # After a comment on a pull request is deleted it will still appear on the response from the api.
-    # Those comments can be recognized when their raw content is an empty string.
+    # Those comments can be recognized when their 'deleted' value is True.
     # In order not to show the deleted comments, they are saved in records_to_delete array, and then are deleted.
     records_to_delete = []
     for value in results:
-        if not value.get('content', {}).get('raw') == "":
+        if not value.get('deleted'):
             d = {'Id': value.get('id'),
                  'Content': value.get('content', {}).get('raw'),
                  'CreatedBy': value.get('user', {}).get('display_name'),
                  'CreatedAt': value.get('created_on'),
                  'UpdatedAt': value.get('updated_on'),
-                 'PullRequestIdIssueId': value.get('pullrequest', {}).get('id'),
+                 'PullRequestId': value.get('pullrequest', {}).get('id'),
                  'PullRequestTitle': value.get('pullrequest', {}).get('title')}
             human_readable.append(d)
         else:
@@ -1243,7 +1243,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         for item in records_to_delete:
             results.remove(item)
 
-    headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'IssueId', 'IssueTitle']
+    headers = ['Id', 'Content', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'PullRequestId', 'PullRequestTitle']
     readable_output = tableToMarkdown(
         name=hr_title,
         t=human_readable,
@@ -1340,7 +1340,7 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     workspace = demisto.params().get('workspace')
     server_url = demisto.params().get('server_url')
     user_name = demisto.params().get('credentials', {}).get('identifier', "")

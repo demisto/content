@@ -417,6 +417,85 @@ def test_pull_request_create_command(mocker, bitbucket_client):
                                     json_data=expected_body)
 
 
+def test_pull_request_update_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-pull-request-update command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import pull_request_update_command
+    args = {
+        'title': 'PR from test to master',
+        'source_branch': 'test',
+        'destination_branch': 'master',
+        'description': 'Wanted to update the description of the pr',
+        'close_source_branch': 'yes',
+        'pull_request_id': '8'
+    }
+    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_update_command')
+    mocker.patch.object(bitbucket_client, 'pull_request_update_request', return_value=response)
+    expected_human_readable = 'The pull request 8 was updated successfully'
+    result = pull_request_update_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response
+
+
+def test_issue_comment_create_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-issue-comment-create command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_comment_create_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'issue_id': '1',
+        'content': 'A new bug in line 0'
+    }
+    expected_body = {
+        'content': {
+            'raw': 'A new bug in line 0'
+        }
+    }
+    issue_comment_create_command(bitbucket_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/repositories/workspace/repository/issues/1/comments',
+                                    json_data=expected_body)
+
+
+def test_issue_comment_update_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-issue-comment-update command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import issue_comment_update_command
+    http_request = mocker.patch.object(bitbucket_client, '_http_request')
+    args = {
+        'issue_id': '2',
+        'content': 'debug issue',
+        'comment_id': '11111'
+    }
+    expected_body = {
+        'content': {
+            'raw': 'debug issue'
+        }
+    }
+    issue_comment_update_command(bitbucket_client, args)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/repositories/workspace/repository/issues/2/comments/11111',
+                                    json_data=expected_body)
+
+
 def test_pull_request_list_command(mocker, bitbucket_client):
     """
     Given:
@@ -463,5 +542,53 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
                               '| 22222222 | The new and updated comment | Some User | 2022-09-14T00:00:00.000000+00:00 '\
                               '| 2022-09-14T00:00:00.000000+00:00 | 8 | hi resolved |\n'
     result = issue_comment_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')
+
+
+def test_pull_request_comment_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-pull-request-comment-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import pull_request_comment_list_command
+    args = {'limit': '3', 'pull_request_id': '6'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_comment_list_command')
+    mocker.patch.object(bitbucket_client, 'pull_request_comment_list_request', return_value=response)
+    expected_human_readable = '### List of the comments on pull request "6"\n' \
+                              '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|PullRequestId|PullRequestTitle|\n' \
+                              '|---|---|---|---|---|---|---|\n' \
+                              '| 111111111 | hi | Some User | 2022-09-12T00:00:00.000000+00:00 ' \
+                              '| 2022-09-12T00:00:00.000000+00:00 | 6 | uuuupdate |\n' \
+                              '| 222222222 | hello | Some User | 2022-09-12T00:00:00.000000+00:00 ' \
+                              '| 2022-09-12T00:00:00.000000+00:00 | 6 | uuuupdate |\n'
+    result = pull_request_comment_list_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response.get('values')
+
+
+def test_workspace_member_list_command(mocker, bitbucket_client):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - bitbucket-workspace-member-list command is executed
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from Bitbucket import workspace_member_list_command
+    args = {'limit': '2'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_workspace_member_list_command')
+    mocker.patch.object(bitbucket_client, 'workspace_member_list_request', return_value=response)
+    expected_human_readable = '### The list of all the workspace members\n' \
+                              '|Name|AccountId|\n' \
+                              '|---|---|\n' \
+                              '| Some User | 111111111111111111111111 |\n' \
+                              '| Another User | 222222222222222222222222 |\n'
+    result = workspace_member_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
     assert result.raw_response == response.get('values')
