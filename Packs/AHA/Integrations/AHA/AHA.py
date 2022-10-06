@@ -86,24 +86,24 @@ def extract_payload(fields: Dict):
     return payload
 
 
-def parse_features(response: dict, fields: List) -> List:
+def parse_features(features: dict, fields: List) -> List:
     res_list = []
-    for res in response:
+    for res in features:
         curr = parse_feature(res, fields=fields)
         res_list.extend(curr)
     demisto.debug(f'Parsed response fields: {res_list}')
     return res_list
 
 
-def parse_feature(response: dict, fields: List = DEFAULT_FIELDS) -> List:
+def parse_feature(feature: dict, fields: List = DEFAULT_FIELDS) -> List:
     ret_dict = {}
     for curr in fields:
         if curr == 'description':
-            ret_dict[curr] = response.get(curr, {}).get('body')
+            ret_dict[curr] = feature.get(curr, {}).get('body')
         elif curr == 'workflow_status':
-            ret_dict[curr] = response.get(curr, {}).get('name')
+            ret_dict[curr] = feature.get(curr, {}).get('name')
         else:
-            ret_dict[curr] = response.get(curr, '')
+            ret_dict[curr] = feature.get(curr, '')
     return [ret_dict]
 
 
