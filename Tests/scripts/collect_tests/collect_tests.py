@@ -974,7 +974,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    parser.add_argument('--graph', '-g', help='Should use graph', default=False, action=BooleanOptionalAction)
+    parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')

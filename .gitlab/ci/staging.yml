@@ -52,7 +52,7 @@ graph-create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph true
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
@@ -129,7 +129,7 @@ graph-prepare-testing-bucket-mpv2:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph true
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
