@@ -186,12 +186,19 @@ install-packs-in-server-master:
     - echo "Finished removing lock file"
 
 
-install-packs-in-xsiam-master:
+#install-packs-in-xsiam-dev:
+#  extends: .install-mpv2-packs-on-xsiam-instances
+#  variables:
+#    INSTANCE_ROLE: "XSIAM Master"
+#    GCS_QUEUE_FILE: "queue-master"
+#    TEST_MACHINES_LIST: "test-machines-master"
+
+install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
-    INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-master"
-    TEST_MACHINES_LIST: "test-machines-master"
+    INSTANCE_ROLE: "XSIAM 1.2"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"
 
 
 upload-packs-to-marketplace:
@@ -272,7 +279,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-master"]
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
