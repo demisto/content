@@ -2,7 +2,7 @@ import json
 import demistomock as demisto
 import pytest
 from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, create_types_query, should_send_request, \
-     build_url_with_query_params, set_fields_query, get_updated_last_run
+    build_url_with_query_params, set_fields_query, get_updated_last_run
 
 
 def load_json_file(path):
@@ -99,8 +99,8 @@ def test_should_send_request(params, expected_result, endpoint):
 
 @pytest.mark.parametrize("params, expected_result, endpoint",
                          [({"indicator_type": ['All'], 'indicator_query': '', 'createRelationships': False},
-                          '/api/v3/indicators?tql=indicatorActive%20EQ%20True&fields=tags&fields=threatAssess&resultStart'
-                          '=0&resultLimit=100&sorting=dateAdded%20ASC', 'indicators'),
+                           '/api/v3/indicators?tql=indicatorActive%20EQ%20True&fields=tags&fields=threatAssess&resultStart'
+                           '=0&resultLimit=100&sorting=dateAdded%20ASC', 'indicators'),
                           ({"group_type": ['All'], 'indicator_query': 'indicatorActive EQ False', 'createRelationships': True},
                            '/api/v3/groups?tql=indicatorActive%20EQ%20False&fields=tags&fields=associatedGroups'
                            '&fields=associatedIndicators&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC', 'groups')])
