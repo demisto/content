@@ -115,10 +115,10 @@ class Client(BaseClient):
 
 
 def ip_version(ip: str | None) -> str | None:
-    if ip:
-        ip_version = ipaddress.ip_address(ip).version
-        return f"ipv{ip_version}-addr"
-    return None
+    if not ip:
+        return None
+    ip_version = ipaddress.ip_address(ip).version
+    return f"ipv{ip_version}-addr"
 
 
 def get_reputation_score(indicator_types: list[str]) -> int:

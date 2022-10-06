@@ -3,6 +3,7 @@ from CommonServerPython import *
 import pytest
 import os
 import json
+from stix2patterns.exceptions import ParseException
 
 MOCK_URL = "https://api.sekoia.io"
 
@@ -46,6 +47,12 @@ def client():
 )
 def test_extract_indicator_from_pattern(input, output):
     SEKOIAIntelligenceCenter.extract_indicator_from_pattern(input) == output
+
+
+def test_extract_indicator_from_pattern_wrong_pattern(client):
+    pattern = "wrong-pattern"
+    with pytest.raises(ParseException):
+        SEKOIAIntelligenceCenter.extract_indicator_from_pattern(pattern)
 
 
 @pytest.mark.parametrize(
@@ -315,13 +322,13 @@ def test_get_reputation_score(input: list, output: int):
 @pytest.mark.parametrize(
     "indicator_type, indicator_value, json_test_file",
     [
-        ("ipv4-addr", ['206.189.85.18'], "test_data/indicator_context_ip.json"),
+        ("ipv4-addr", ["206.189.85.18"], "test_data/indicator_context_ip.json"),
         (
             "ipv6-addr",
-            ['2606:4700:4700::1111'],
+            ["2606:4700:4700::1111"],
             "test_data/indicator_context_ip.json",
         ),
-        ("ipv4-addr", ['1.1.1.1'], "test_data/indicator_context_unknown.json"),
+        ("ipv4-addr", ["1.1.1.1"], "test_data/indicator_context_unknown.json"),
         (
             "ipv4-addr",
             ["1.1.1.1", "2.2.2.2"],
@@ -349,8 +356,19 @@ def test_ip_command(
 
 
 def test_wrong_ip(client):
-    indicator = ["abc", "123"]
+    indicator = ["abc", "123", "", None]
     with pytest.raises(ValueError):
-        SEKOIAIntelligenceCenter.ip_command(
-            client=client, args={"ip": indicator}
-        )
+        SEKOIAIntelligenceCenter.ip_command(client=client, args={"ip": indicator})
+
+
+@pytest.mark.parametrize(
+    "input, output",
+    [
+        ("1.1.1.1", "ipv4-addr"),
+        ("2606:4700:4700::1111", "ipv6-addr"),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_ip_version(client, input, output):
+    assert SEKOIAIntelligenceCenter.ip_version(input) == output
